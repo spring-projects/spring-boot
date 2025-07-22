@@ -17,4 +17,7 @@
 /**
  * Test utilities to run application contexts for testing.
  */
+@NullMarked
 package org.springframework.boot.test.context.runner;
+
+import org.jspecify.annotations.NullMarked;

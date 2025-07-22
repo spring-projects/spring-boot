@@ -27,6 +27,7 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 
 import org.assertj.core.api.Assertions;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
@@ -68,9 +69,9 @@ import org.springframework.util.ReflectionUtils;
  */
 public abstract class AbstractJsonMarshalTester<T> {
 
-	private Class<?> resourceLoadClass;
+	private @Nullable Class<?> resourceLoadClass;
 
-	private ResolvableType type;
+	private @Nullable ResolvableType type;
 
 	/**
 	 * Create a new uninitialized {@link AbstractJsonMarshalTester} instance.
@@ -107,16 +108,28 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * Return the type under test.
 	 * @return the type under test
 	 */
-	protected final ResolvableType getType() {
+	protected final @Nullable ResolvableType getType() {
 		return this.type;
+	}
+
+	private ResolvableType getTypeNotNull() {
+		ResolvableType type = getType();
+		Assert.state(type != null, "Instance has not been initialized");
+		return type;
 	}
 
 	/**
 	 * Return class used to load relative resources.
 	 * @return the resource load class
 	 */
-	protected final Class<?> getResourceLoadClass() {
+	protected final @Nullable Class<?> getResourceLoadClass() {
 		return this.resourceLoadClass;
+	}
+
+	private Class<?> getResourceLoadClassNotNull() {
+		Class<?> resourceLoadClass = getResourceLoadClass();
+		Assert.state(resourceLoadClass != null, "Instance has not been initialized");
+		return resourceLoadClass;
 	}
 
 	/**
@@ -128,7 +141,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	public JsonContent<T> write(T value) throws IOException {
 		verify();
 		Assert.notNull(value, "'value' must not be null");
-		String json = writeObject(value, this.type);
+		String json = writeObject(value, getTypeNotNull());
 		return getJsonContent(json);
 	}
 
@@ -140,7 +153,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	 * @since 2.1.5
 	 */
 	protected JsonContent<T> getJsonContent(String json) {
-		return new JsonContent<>(getResourceLoadClass(), getType(), json);
+		return new JsonContent<>(getResourceLoadClassNotNull(), getType(), json);
 	}
 
 	/**
@@ -281,7 +294,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 		verify();
 		Assert.notNull(resource, "'resource' must not be null");
 		InputStream inputStream = resource.getInputStream();
-		T object = readObject(inputStream, this.type);
+		T object = readObject(inputStream, getTypeNotNull());
 		closeQuietly(inputStream);
 		return new ObjectContent<>(this.type, object);
 	}
@@ -306,7 +319,7 @@ public abstract class AbstractJsonMarshalTester<T> {
 	public ObjectContent<T> read(Reader reader) throws IOException {
 		verify();
 		Assert.notNull(reader, "'reader' must not be null");
-		T object = readObject(reader, this.type);
+		T object = readObject(reader, getTypeNotNull());
 		closeQuietly(reader);
 		return new ObjectContent<>(this.type, object);
 	}

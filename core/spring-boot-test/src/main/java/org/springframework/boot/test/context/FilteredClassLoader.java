@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.SmartClassLoader;
 import org.springframework.core.io.ClassPathResource;
 
@@ -117,7 +119,7 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	@Override
-	public URL getResource(String name) {
+	public @Nullable URL getResource(String name) {
 		for (Predicate<String> filter : this.resourcesFilters) {
 			if (filter.test(name)) {
 				return null;
@@ -137,7 +139,7 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	@Override
-	public InputStream getResourceAsStream(String name) {
+	public @Nullable InputStream getResourceAsStream(String name) {
 		for (Predicate<String> filter : this.resourcesFilters) {
 			if (filter.test(name)) {
 				return null;
@@ -147,7 +149,7 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	}
 
 	@Override
-	public Class<?> publicDefineClass(String name, byte[] b, ProtectionDomain protectionDomain) {
+	public Class<?> publicDefineClass(String name, byte[] b, @Nullable ProtectionDomain protectionDomain) {
 		for (Predicate<String> filter : this.classesFilters) {
 			if (filter.test(name)) {
 				throw new IllegalArgumentException(String.format("Defining class with name %s is not supported", name));

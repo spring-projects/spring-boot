@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.BeanUtils;
@@ -105,6 +107,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	private static final Consumer<SpringApplication> ALREADY_CONFIGURED = (springApplication) -> {
 	};
 
+	private static final Object NONE = new Object();
+
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig) throws Exception {
 		return loadContext(mergedConfig, Mode.STANDARD, null, null);
@@ -123,8 +127,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	private ApplicationContext loadContext(MergedContextConfiguration mergedConfig, Mode mode,
-			ApplicationContextInitializer<ConfigurableApplicationContext> initializer, RuntimeHints runtimeHints)
-			throws Exception {
+			@Nullable ApplicationContextInitializer<ConfigurableApplicationContext> initializer,
+			@Nullable RuntimeHints runtimeHints) throws Exception {
 		assertHasClassesOrLocations(mergedConfig);
 		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
 		String[] args = annotation.getArgs();
@@ -153,7 +157,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 						+ SpringVersion.getVersion() + ").");
 	}
 
-	private Method getMainMethod(MergedContextConfiguration mergedConfig, UseMainMethod useMainMethod) {
+	private @Nullable Method getMainMethod(MergedContextConfiguration mergedConfig, UseMainMethod useMainMethod) {
 		if (useMainMethod == UseMainMethod.NEVER) {
 			return null;
 		}
@@ -167,14 +171,16 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				"Cannot use main method as no @SpringBootConfiguration-annotated class is available");
 		Method mainMethod = findMainMethod(springBootConfiguration);
 		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
-				() -> "Main method not found on '%s'".formatted(springBootConfiguration.getName()));
+				() -> "Main method not found on '%s'"
+					.formatted((springBootConfiguration != null) ? springBootConfiguration.getName() : null));
 		return mainMethod;
 	}
 
-	private static Method findMainMethod(Class<?> type) {
+	private static @Nullable Method findMainMethod(@Nullable Class<?> type) {
 		Method mainMethod = (type != null) ? ReflectionUtils.findMethod(type, "main", String[].class) : null;
 		if (mainMethod == null && KotlinDetector.isKotlinPresent()) {
 			try {
+				Assert.state(type != null, "'type' must not be null");
 				Class<?> kotlinClass = ClassUtils.forName(type.getName() + "Kt", type.getClassLoader());
 				mainMethod = ReflectionUtils.findMethod(kotlinClass, "main", String[].class);
 			}
@@ -285,7 +291,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	 * method if you need a custom environment.
 	 * @return a {@link ConfigurableEnvironment} instance
 	 */
-	protected ConfigurableEnvironment getEnvironment() {
+	protected @Nullable ConfigurableEnvironment getEnvironment() {
 		return null;
 	}
 
@@ -462,9 +468,9 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	private static class ParentContextApplicationContextInitializer
 			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-		private final ApplicationContext parent;
+		private final @Nullable ApplicationContext parent;
 
-		ParentContextApplicationContextInitializer(ApplicationContext parent) {
+		ParentContextApplicationContextInitializer(@Nullable ApplicationContext parent) {
 			this.parent = parent;
 		}
 
@@ -507,7 +513,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 		private final Mode mode;
 
-		private final ApplicationContextInitializer<ConfigurableApplicationContext> initializer;
+		private final @Nullable ApplicationContextInitializer<ConfigurableApplicationContext> initializer;
 
 		private final Consumer<SpringApplication> configurer;
 
@@ -515,7 +521,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 		private final List<ApplicationContext> failedContexts = Collections.synchronizedList(new ArrayList<>());
 
-		ContextLoaderHook(Mode mode, ApplicationContextInitializer<ConfigurableApplicationContext> initializer,
+		ContextLoaderHook(Mode mode,
+				@Nullable ApplicationContextInitializer<ConfigurableApplicationContext> initializer,
 				Consumer<SpringApplication> configurer) {
 			this.mode = mode;
 			this.initializer = initializer;
@@ -530,6 +537,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				public void starting(ConfigurableBootstrapContext bootstrapContext) {
 					ContextLoaderHook.this.configurer.accept(application);
 					if (ContextLoaderHook.this.mode == Mode.AOT_RUNTIME) {
+						Assert.state(ContextLoaderHook.this.initializer != null, "'initializer' must not be null");
 						application.addInitializers(
 								(AotApplicationContextInitializer<?>) ContextLoaderHook.this.initializer::initialize);
 					}
@@ -544,24 +552,24 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				}
 
 				@Override
-				public void failed(ConfigurableApplicationContext context, Throwable exception) {
+				public void failed(@Nullable ConfigurableApplicationContext context, Throwable exception) {
 					ContextLoaderHook.this.failedContexts.add(context);
 				}
 
 			};
 		}
 
-		private <T> ApplicationContext runMain(Runnable action) throws Exception {
+		private ApplicationContext runMain(Runnable action) throws Exception {
 			return run(() -> {
 				action.run();
-				return null;
+				return NONE;
 			});
 		}
 
-		private ApplicationContext run(ThrowingSupplier<ConfigurableApplicationContext> action) throws Exception {
+		private ApplicationContext run(ThrowingSupplier<?> action) throws Exception {
 			try {
-				ConfigurableApplicationContext context = SpringApplication.withHook(this, action);
-				if (context != null) {
+				Object result = SpringApplication.withHook(this, action);
+				if (result instanceof ApplicationContext context) {
 					return context;
 				}
 			}

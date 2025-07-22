@@ -18,6 +18,8 @@ package org.springframework.boot.test.context.filter;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.test.context.TestComponent;
@@ -68,7 +70,7 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return (obj != null) && (getClass() == obj.getClass());
 	}
 

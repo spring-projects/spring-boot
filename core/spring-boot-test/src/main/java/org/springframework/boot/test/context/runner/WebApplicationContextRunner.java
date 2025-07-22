@@ -18,8 +18,11 @@ package org.springframework.boot.test.context.runner;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
+import org.springframework.lang.Contract;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -81,8 +84,9 @@ public final class WebApplicationContextRunner extends
 	 * @param contextFactory the context factory to decorate
 	 * @return an updated supplier that will set the {@link MockServletContext}
 	 */
-	public static Supplier<ConfigurableWebApplicationContext> withMockServletContext(
-			Supplier<ConfigurableWebApplicationContext> contextFactory) {
+	@Contract("!null -> !null")
+	public static @Nullable Supplier<ConfigurableWebApplicationContext> withMockServletContext(
+			@Nullable Supplier<ConfigurableWebApplicationContext> contextFactory) {
 		return (contextFactory != null) ? () -> {
 			ConfigurableWebApplicationContext context = contextFactory.get();
 			context.setServletContext(new MockServletContext());

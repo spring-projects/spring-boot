@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
@@ -39,9 +41,9 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 
 	private final Class<?> applicationContextType;
 
-	private final ApplicationContext applicationContext;
+	private final @Nullable ApplicationContext applicationContext;
 
-	private final RuntimeException startupFailure;
+	private final @Nullable RuntimeException startupFailure;
 
 	AssertProviderApplicationContextInvocationHandler(Class<?> applicationContextType, Supplier<?> contextSupplier) {
 		this.applicationContextType = applicationContextType;
@@ -66,7 +68,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 	}
 
 	@Override
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+	public @Nullable Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if (isToString(method)) {
 			return toString();
 		}
@@ -95,6 +97,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 			return "Unstarted application context " + this.applicationContextType.getName() + "[startupFailure="
 					+ this.startupFailure.getClass().getName() + "]";
 		}
+		Assert.state(this.applicationContext != null, "'applicationContext' must not be null");
 		ToStringCreator builder = new ToStringCreator(this.applicationContext)
 			.append("id", this.applicationContext.getId())
 			.append("applicationName", this.applicationContext.getApplicationName())
@@ -119,7 +122,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 		return ("getStartupFailure".equals(method.getName()) && method.getParameterCount() == 0);
 	}
 
-	private Object getStartupFailure() {
+	private @Nullable Object getStartupFailure() {
 		return this.startupFailure;
 	}
 
@@ -135,7 +138,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 		return ("close".equals(method.getName()) && method.getParameterCount() == 0);
 	}
 
-	private Object invokeClose() throws IOException {
+	private @Nullable Object invokeClose() throws IOException {
 		if (this.applicationContext instanceof Closeable closeable) {
 			closeable.close();
 		}
@@ -155,6 +158,7 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 		if (this.startupFailure != null) {
 			throw new IllegalStateException(this + " failed to start", this.startupFailure);
 		}
+		Assert.state(this.applicationContext != null, "'applicationContext' must not be null");
 		return this.applicationContext;
 	}
 

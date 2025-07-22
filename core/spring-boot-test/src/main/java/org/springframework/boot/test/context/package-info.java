@@ -18,4 +18,7 @@
  * Classes and annotations related to configuring Spring's {@code ApplicationContext} for
  * tests.
  */
+@NullMarked
 package org.springframework.boot.test.context;
+
+import org.jspecify.annotations.NullMarked;

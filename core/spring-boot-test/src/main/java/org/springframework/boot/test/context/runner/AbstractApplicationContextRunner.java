@@ -24,6 +24,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -213,7 +215,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @return a new instance with the updated class loader
 	 * @see FilteredClassLoader
 	 */
-	public SELF withClassLoader(ClassLoader classLoader) {
+	public SELF withClassLoader(@Nullable ClassLoader classLoader) {
 		return newInstance(this.runnerConfiguration.withClassLoader(classLoader));
 	}
 
@@ -258,7 +260,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param <T> the type of the bean
 	 * @return a new instance with the updated bean
 	 */
-	public <T> SELF withBean(String name, Class<T> type, Object... constructorArgs) {
+	public <T> SELF withBean(@Nullable String name, Class<T> type, Object... constructorArgs) {
 		return newInstance(this.runnerConfiguration.withBean(name, type, constructorArgs));
 	}
 
@@ -295,7 +297,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param <T> the type of the bean
 	 * @return a new instance with the updated bean
 	 */
-	public <T> SELF withBean(String name, Class<T> type, Supplier<T> supplier,
+	public <T> SELF withBean(@Nullable String name, Class<T> type, Supplier<T> supplier,
 			BeanDefinitionCustomizer... customizers) {
 		return newInstance(this.runnerConfiguration.withBean(name, type, supplier, customizers));
 	}
@@ -370,7 +372,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 	}
 
-	private void withContextClassLoader(ClassLoader classLoader, Runnable action) {
+	private void withContextClassLoader(@Nullable ClassLoader classLoader, Runnable action) {
 		if (classLoader == null) {
 			action.run();
 		}
@@ -392,6 +394,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		ResolvableType resolvableType = ResolvableType.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
+		Assert.state(assertType != null, "'assertType' must not be null");
+		Assert.state(contextType != null, "'contextType' must not be null");
 		return ApplicationContextAssertProvider.get(assertType, contextType, () -> createAndLoadContext(refresh),
 				this.runnerConfiguration.additionalContextInterfaces);
 	}
@@ -471,11 +475,11 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		Consumer<GenericApplicationContext> registrar;
 
-		public BeanRegistration(String name, Class<T> type, Object... constructorArgs) {
+		public BeanRegistration(@Nullable String name, Class<T> type, Object... constructorArgs) {
 			this.registrar = (context) -> context.registerBean(name, type, constructorArgs);
 		}
 
-		public BeanRegistration(String name, Class<T> type, Supplier<T> supplier,
+		public BeanRegistration(@Nullable String name, Class<T> type, Supplier<T> supplier,
 				BeanDefinitionCustomizer... customizers) {
 			this.registrar = (context) -> context.registerBean(name, type, supplier, customizers);
 		}
@@ -503,9 +507,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		private TestPropertyValues systemProperties = TestPropertyValues.empty();
 
-		private ClassLoader classLoader;
+		private @Nullable ClassLoader classLoader;
 
-		private ApplicationContext parent;
+		private @Nullable ApplicationContext parent;
 
 		private List<BeanRegistration<?>> beanRegistrations = Collections.emptyList();
 
@@ -561,7 +565,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			return config;
 		}
 
-		private RunnerConfiguration<C> withClassLoader(ClassLoader classLoader) {
+		private RunnerConfiguration<C> withClassLoader(@Nullable ClassLoader classLoader) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.classLoader = classLoader;
 			return config;
@@ -573,14 +577,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 			return config;
 		}
 
-		private <T> RunnerConfiguration<C> withBean(String name, Class<T> type, Object... constructorArgs) {
+		private <T> RunnerConfiguration<C> withBean(@Nullable String name, Class<T> type, Object... constructorArgs) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.beanRegistrations = add(config.beanRegistrations,
 					new BeanRegistration<>(name, type, constructorArgs));
 			return config;
 		}
 
-		private <T> RunnerConfiguration<C> withBean(String name, Class<T> type, Supplier<T> supplier,
+		private <T> RunnerConfiguration<C> withBean(@Nullable String name, Class<T> type, Supplier<T> supplier,
 				BeanDefinitionCustomizer... customizers) {
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.beanRegistrations = add(config.beanRegistrations,

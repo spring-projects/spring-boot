@@ -19,6 +19,8 @@ package org.springframework.boot.test.context;
 import java.util.Arrays;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -52,7 +54,7 @@ class SpringBootTestAnnotation implements ContextCustomizer {
 		this(TestContextAnnotationUtils.findMergedAnnotation(testClass, SpringBootTest.class));
 	}
 
-	private SpringBootTestAnnotation(SpringBootTest annotation) {
+	private SpringBootTestAnnotation(@Nullable SpringBootTest annotation) {
 		this.args = (annotation != null) ? annotation.args() : NO_ARGS;
 		this.webEnvironment = (annotation != null) ? annotation.webEnvironment() : WebEnvironment.NONE;
 		this.useMainMethod = (annotation != null) ? annotation.useMainMethod() : UseMainMethod.NEVER;

@@ -17,4 +17,7 @@
 /**
  * Mock web classes specific to Spring Boot.
  */
+@NullMarked
 package org.springframework.boot.test.mock.web;
+
+import org.jspecify.annotations.NullMarked;

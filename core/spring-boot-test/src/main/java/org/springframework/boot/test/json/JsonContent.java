@@ -18,6 +18,7 @@ package org.springframework.boot.test.json;
 
 import com.jayway.jsonpath.Configuration;
 import org.assertj.core.api.AssertProvider;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
@@ -36,7 +37,7 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 
 	private final Class<?> resourceLoadClass;
 
-	private final ResolvableType type;
+	private final @Nullable ResolvableType type;
 
 	private final String json;
 
@@ -48,7 +49,7 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	 * @param type the type under test (or {@code null} if not known)
 	 * @param json the actual JSON content
 	 */
-	public JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json) {
+	public JsonContent(Class<?> resourceLoadClass, @Nullable ResolvableType type, String json) {
 		this(resourceLoadClass, type, json, Configuration.defaultConfiguration());
 	}
 
@@ -59,7 +60,7 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	 * @param json the actual JSON content
 	 * @param configuration the JsonPath configuration
 	 */
-	JsonContent(Class<?> resourceLoadClass, ResolvableType type, String json, Configuration configuration) {
+	JsonContent(Class<?> resourceLoadClass, @Nullable ResolvableType type, String json, Configuration configuration) {
 		Assert.notNull(resourceLoadClass, "'resourceLoadClass' must not be null");
 		Assert.notNull(json, "'json' must not be null");
 		Assert.notNull(configuration, "'configuration' must not be null");

@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -63,7 +65,7 @@ public final class AnnotatedClassFinder {
 	 * @return the first {@link Class} annotated with the target annotation within the
 	 * hierarchy defined by the given {@code source} or {@code null} if none is found.
 	 */
-	public Class<?> findFromClass(Class<?> source) {
+	public @Nullable Class<?> findFromClass(Class<?> source) {
 		Assert.notNull(source, "'source' must not be null");
 		return findFromPackage(ClassUtils.getPackageName(source));
 	}
@@ -75,7 +77,7 @@ public final class AnnotatedClassFinder {
 	 * @return the first {@link Class} annotated with the target annotation within the
 	 * hierarchy defined by the given {@code source} or {@code null} if none is found.
 	 */
-	public Class<?> findFromPackage(String source) {
+	public @Nullable Class<?> findFromPackage(String source) {
 		Assert.notNull(source, "'source' must not be null");
 		Class<?> configuration = cache.get(source);
 		if (configuration == null) {
@@ -85,13 +87,15 @@ public final class AnnotatedClassFinder {
 		return configuration;
 	}
 
-	private Class<?> scanPackage(String source) {
+	private @Nullable Class<?> scanPackage(String source) {
 		while (!source.isEmpty()) {
 			Set<BeanDefinition> components = this.scanner.findCandidateComponents(source);
 			if (!components.isEmpty()) {
 				Assert.state(components.size() == 1, () -> "Found multiple @" + this.annotationType.getSimpleName()
 						+ " annotated classes " + components);
-				return ClassUtils.resolveClassName(components.iterator().next().getBeanClassName(), null);
+				String beanClassName = components.iterator().next().getBeanClassName();
+				Assert.state(beanClassName != null, "'beanClassName' must not be null");
+				return ClassUtils.resolveClassName(beanClassName, null);
 			}
 			source = getParentPackage(source);
 		}

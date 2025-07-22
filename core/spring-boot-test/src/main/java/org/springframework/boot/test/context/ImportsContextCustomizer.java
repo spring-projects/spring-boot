@@ -24,6 +24,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -156,6 +158,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		private static final String[] NO_IMPORTS = {};
 
+		@SuppressWarnings("NullAway.Init")
 		private ConfigurableListableBeanFactory beanFactory;
 
 		@Override
@@ -254,7 +257,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return ANNOTATION_FILTERS.stream().anyMatch((filter) -> filter.matches(typeName));
 		}
 
-		private Set<Object> determineImports(MergedAnnotations annotations, Class<?> testClass) {
+		private @Nullable Set<Object> determineImports(MergedAnnotations annotations, Class<?> testClass) {
 			Set<Object> determinedImports = new LinkedHashSet<>();
 			AnnotationMetadata metadata = AnnotationMetadata.introspect(testClass);
 			for (MergedAnnotation<Import> annotation : annotations.stream(Import.class).toList()) {
@@ -269,7 +272,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return determinedImports;
 		}
 
-		private Set<Object> determineImports(Class<?> source, AnnotationMetadata metadata) {
+		private @Nullable Set<Object> determineImports(Class<?> source, AnnotationMetadata metadata) {
 			if (DeterminableImports.class.isAssignableFrom(source)) {
 				// We can determine the imports
 				return ((DeterminableImports) instantiate(source)).determineImports(metadata);

@@ -17,4 +17,7 @@
 /**
  * Support for testing JSON.
  */
+@NullMarked
 package org.springframework.boot.test.json;
+
+import org.jspecify.annotations.NullMarked;

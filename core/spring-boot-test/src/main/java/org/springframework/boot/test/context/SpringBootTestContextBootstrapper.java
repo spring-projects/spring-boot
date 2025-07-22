@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
@@ -287,7 +288,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 * the bootstrapper class as a property.
 	 * @return the differentiator or {@code null}
 	 */
-	protected String getDifferentiatorPropertySourceProperty() {
+	protected @Nullable String getDifferentiatorPropertySourceProperty() {
 		return getClass().getName() + "=true";
 	}
 
@@ -320,22 +321,22 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 * @param testClass the source test class
 	 * @return the {@link WebEnvironment} or {@code null}
 	 */
-	protected WebEnvironment getWebEnvironment(Class<?> testClass) {
+	protected @Nullable WebEnvironment getWebEnvironment(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
 		return (annotation != null) ? annotation.webEnvironment() : null;
 	}
 
-	protected Class<?>[] getClasses(Class<?> testClass) {
+	protected Class<?> @Nullable [] getClasses(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
 		return (annotation != null) ? annotation.classes() : null;
 	}
 
-	protected String[] getProperties(Class<?> testClass) {
+	protected String @Nullable [] getProperties(Class<?> testClass) {
 		SpringBootTest annotation = getAnnotation(testClass);
 		return (annotation != null) ? annotation.properties() : null;
 	}
 
-	protected SpringBootTest getAnnotation(Class<?> testClass) {
+	protected @Nullable SpringBootTest getAnnotation(Class<?> testClass) {
 		return TestContextAnnotationUtils.findMergedAnnotation(testClass, SpringBootTest.class);
 	}
 

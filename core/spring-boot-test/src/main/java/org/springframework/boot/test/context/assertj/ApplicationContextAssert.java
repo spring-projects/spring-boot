@@ -29,6 +29,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.error.BasicErrorMessageFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -54,14 +55,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApplicationContextAssert<C extends ApplicationContext>
 		extends AbstractAssert<ApplicationContextAssert<C>, C> {
 
-	private final Throwable startupFailure;
+	private final @Nullable Throwable startupFailure;
 
 	/**
 	 * Create a new {@link ApplicationContextAssert} instance.
 	 * @param applicationContext the source application context
 	 * @param startupFailure the startup failure or {@code null}
 	 */
-	ApplicationContextAssert(C applicationContext, Throwable startupFailure) {
+	ApplicationContextAssert(C applicationContext, @Nullable Throwable startupFailure) {
 		super(applicationContext, ApplicationContextAssert.class);
 		Assert.notNull(applicationContext, "'applicationContext' must not be null");
 		this.startupFailure = startupFailure;
@@ -80,7 +81,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> hasBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("to have bean named:%n <%s>", name));
+			throwAssertionError(
+					contextFailedToStartWhenExpecting(this.startupFailure, "to have bean named:%n <%s>", name));
 		}
 		if (findBean(name) == null) {
 			throwAssertionError(new BasicErrorMessageFactory(
@@ -123,7 +125,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public ApplicationContextAssert<C> hasSingleBean(Class<?> type, Scope scope) {
 		Assert.notNull(scope, "'scope' must not be null");
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("to have a single bean of type:%n <%s>", type));
+			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure,
+					"to have a single bean of type:%n <%s>", type));
 		}
 		String[] names = scope.getBeanNamesForType(getApplicationContext(), type);
 		if (names.length == 0) {
@@ -170,7 +173,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public ApplicationContextAssert<C> doesNotHaveBean(Class<?> type, Scope scope) {
 		Assert.notNull(scope, "'scope' must not be null");
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("not to have any beans of type:%n <%s>", type));
+			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure,
+					"not to have any beans of type:%n <%s>", type));
 		}
 		String[] names = scope.getBeanNamesForType(getApplicationContext(), type);
 		if (names.length > 0) {
@@ -194,7 +198,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> doesNotHaveBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("not to have any beans of name:%n <%s>", name));
+			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure,
+					"not to have any beans of name:%n <%s>", name));
 		}
 		try {
 			Object bean = getApplicationContext().getBean(name);
@@ -221,7 +226,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public <T> AbstractObjectArrayAssert<?, String> getBeanNames(Class<T> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("to get beans names with type:%n <%s>", type));
+			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure,
+					"to get beans names with type:%n <%s>", type));
 		}
 		return Assertions.assertThat(getApplicationContext().getBeanNamesForType(type))
 			.as("Bean names of type <%s> from <%s>", type, getApplicationContext());
@@ -267,7 +273,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public <T> AbstractObjectAssert<?, T> getBean(Class<T> type, Scope scope) {
 		Assert.notNull(scope, "'scope' must not be null");
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("to contain bean of type:%n <%s>", type));
+			throwAssertionError(
+					contextFailedToStartWhenExpecting(this.startupFailure, "to contain bean of type:%n <%s>", type));
 		}
 		String[] names = scope.getBeanNamesForType(getApplicationContext(), type);
 		String name = (names.length > 0) ? getPrimary(names, scope) : null;
@@ -280,7 +287,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		return Assertions.assertThat(bean).as("Bean of type <%s> from <%s>", type, getApplicationContext());
 	}
 
-	private String getPrimary(String[] names, Scope scope) {
+	private @Nullable String getPrimary(String[] names, Scope scope) {
 		if (names.length == 1) {
 			return names[0];
 		}
@@ -325,7 +332,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public AbstractObjectAssert<?, Object> getBean(String name) {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("to contain a bean of name:%n <%s>", name));
+			throwAssertionError(
+					contextFailedToStartWhenExpecting(this.startupFailure, "to contain a bean of name:%n <%s>", name));
 		}
 		Object bean = findBean(name);
 		return Assertions.assertThat(bean).as("Bean of name <%s> from <%s>", name, getApplicationContext());
@@ -351,8 +359,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	@SuppressWarnings("unchecked")
 	public <T> AbstractObjectAssert<?, T> getBean(String name, Class<T> type) {
 		if (this.startupFailure != null) {
-			throwAssertionError(
-					contextFailedToStartWhenExpecting("to contain a bean of name:%n <%s> (%s)", name, type));
+			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure,
+					"to contain a bean of name:%n <%s> (%s)", name, type));
 		}
 		Object bean = findBean(name);
 		if (bean != null && type != null && !type.isInstance(bean)) {
@@ -364,7 +372,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 			.as("Bean of name <%s> and type <%s> from <%s>", name, type, getApplicationContext());
 	}
 
-	private Object findBean(String name) {
+	private @Nullable Object findBean(String name) {
 		try {
 			return getApplicationContext().getBean(name);
 		}
@@ -409,7 +417,8 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	public <T> MapAssert<String, T> getBeans(Class<T> type, Scope scope) {
 		Assert.notNull(scope, "'scope' must not be null");
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("to get beans of type:%n <%s>", type));
+			throwAssertionError(
+					contextFailedToStartWhenExpecting(this.startupFailure, "to get beans of type:%n <%s>", type));
 		}
 		return Assertions.assertThat(scope.getBeansOfType(getApplicationContext(), type))
 			.as("Beans of type <%s> from <%s>", type, getApplicationContext());
@@ -456,7 +465,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 	 */
 	public ApplicationContextAssert<C> hasNotFailed() {
 		if (this.startupFailure != null) {
-			throwAssertionError(contextFailedToStartWhenExpecting("to have not failed"));
+			throwAssertionError(contextFailedToStartWhenExpecting(this.startupFailure, "to have not failed"));
 		}
 		return this;
 	}
@@ -465,12 +474,13 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		return this.actual;
 	}
 
-	protected final Throwable getStartupFailure() {
+	protected final @Nullable Throwable getStartupFailure() {
 		return this.startupFailure;
 	}
 
-	private ContextFailedToStart<C> contextFailedToStartWhenExpecting(String expectationFormat, Object... arguments) {
-		return new ContextFailedToStart<>(getApplicationContext(), this.startupFailure, expectationFormat, arguments);
+	private ContextFailedToStart<C> contextFailedToStartWhenExpecting(Throwable startupFailure,
+			String expectationFormat, Object... arguments) {
+		return new ContextFailedToStart<>(getApplicationContext(), startupFailure, expectationFormat, arguments);
 	}
 
 	/**

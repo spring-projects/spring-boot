@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -47,7 +49,7 @@ import org.springframework.util.Assert;
  */
 public class BasicJsonTester {
 
-	private JsonLoader loader;
+	private @Nullable JsonLoader loader;
 
 	/**
 	 * Create a new uninitialized {@link BasicJsonTester} instance.
@@ -69,7 +71,7 @@ public class BasicJsonTester {
 	 * @param charset the charset used to load resources
 	 * @since 1.4.1
 	 */
-	public BasicJsonTester(Class<?> resourceLoadClass, Charset charset) {
+	public BasicJsonTester(Class<?> resourceLoadClass, @Nullable Charset charset) {
 		Assert.notNull(resourceLoadClass, "'resourceLoadClass' must not be null");
 		this.loader = new JsonLoader(resourceLoadClass, charset);
 	}
@@ -91,7 +93,7 @@ public class BasicJsonTester {
 	 * @param charset the charset used when loading relative classpath resources
 	 * @since 1.4.1
 	 */
-	protected final void initialize(Class<?> resourceLoadClass, Charset charset) {
+	protected final void initialize(Class<?> resourceLoadClass, @Nullable Charset charset) {
 		if (this.loader == null) {
 			this.loader = new JsonLoader(resourceLoadClass, charset);
 		}
@@ -105,8 +107,8 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(CharSequence source) {
-		verify();
-		return getJsonContent(this.loader.getJson(source));
+		JsonLoader loader = verify();
+		return getJsonContent(loader, loader.getJson(source));
 	}
 
 	/**
@@ -116,8 +118,8 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(String path, Class<?> resourceLoadClass) {
-		verify();
-		return getJsonContent(this.loader.getJson(path, resourceLoadClass));
+		JsonLoader loader = verify();
+		return getJsonContent(loader, loader.getJson(path, resourceLoadClass));
 	}
 
 	/**
@@ -126,8 +128,8 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(byte[] source) {
-		verify();
-		return getJsonContent(this.loader.getJson(source));
+		JsonLoader loader = verify();
+		return getJsonContent(loader, loader.getJson(source));
 	}
 
 	/**
@@ -136,8 +138,8 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(File source) {
-		verify();
-		return getJsonContent(this.loader.getJson(source));
+		JsonLoader loader = verify();
+		return getJsonContent(loader, loader.getJson(source));
 	}
 
 	/**
@@ -146,8 +148,8 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(InputStream source) {
-		verify();
-		return getJsonContent(this.loader.getJson(source));
+		JsonLoader loader = verify();
+		return getJsonContent(loader, loader.getJson(source));
 	}
 
 	/**
@@ -156,16 +158,17 @@ public class BasicJsonTester {
 	 * @return the JSON content
 	 */
 	public JsonContent<Object> from(Resource source) {
-		verify();
-		return getJsonContent(this.loader.getJson(source));
+		JsonLoader loader = verify();
+		return getJsonContent(loader, loader.getJson(source));
 	}
 
-	private void verify() {
+	private JsonLoader verify() {
 		Assert.state(this.loader != null, "Uninitialized BasicJsonTester");
+		return this.loader;
 	}
 
-	private JsonContent<Object> getJsonContent(String json) {
-		return new JsonContent<>(this.loader.getResourceLoadClass(), null, json);
+	private JsonContent<Object> getJsonContent(JsonLoader loader, String json) {
+		return new JsonContent<>(loader.getResourceLoadClass(), null, json);
 	}
 
 }

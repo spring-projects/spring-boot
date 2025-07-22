@@ -17,4 +17,7 @@
 /**
  * General purpose test utilities.
  */
+@NullMarked
 package org.springframework.boot.test.util;
+
+import org.jspecify.annotations.NullMarked;

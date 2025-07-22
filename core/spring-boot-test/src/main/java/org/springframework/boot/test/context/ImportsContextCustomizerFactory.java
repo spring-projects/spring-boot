@@ -19,6 +19,8 @@ package org.springframework.boot.test.context;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -41,7 +43,7 @@ import org.springframework.util.ReflectionUtils;
 class ImportsContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override
-	public ContextCustomizer createContextCustomizer(Class<?> testClass,
+	public @Nullable ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		if (AotDetector.useGeneratedArtifacts()) {
 			return null;

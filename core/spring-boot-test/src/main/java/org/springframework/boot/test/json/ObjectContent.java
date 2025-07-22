@@ -17,6 +17,7 @@
 package org.springframework.boot.test.json;
 
 import org.assertj.core.api.AssertProvider;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
@@ -32,7 +33,7 @@ import org.springframework.util.Assert;
  */
 public final class ObjectContent<T> implements AssertProvider<ObjectContentAssert<T>> {
 
-	private final ResolvableType type;
+	private final @Nullable ResolvableType type;
 
 	private final T object;
 
@@ -41,7 +42,7 @@ public final class ObjectContent<T> implements AssertProvider<ObjectContentAsser
 	 * @param type the type under test (or {@code null} if not known)
 	 * @param object the actual object content
 	 */
-	public ObjectContent(ResolvableType type, T object) {
+	public ObjectContent(@Nullable ResolvableType type, T object) {
 		Assert.notNull(object, "'object' must not be null");
 		this.type = type;
 		this.object = object;

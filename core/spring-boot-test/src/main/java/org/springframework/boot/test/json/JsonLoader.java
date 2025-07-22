@@ -25,8 +25,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.Contract;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -41,7 +44,7 @@ class JsonLoader {
 
 	private final Charset charset;
 
-	JsonLoader(Class<?> resourceLoadClass, Charset charset) {
+	JsonLoader(Class<?> resourceLoadClass, @Nullable Charset charset) {
 		this.resourceLoadClass = resourceLoadClass;
 		this.charset = (charset != null) ? charset : StandardCharsets.UTF_8;
 	}
@@ -50,7 +53,8 @@ class JsonLoader {
 		return this.resourceLoadClass;
 	}
 
-	String getJson(CharSequence source) {
+	@Contract("!null -> !null")
+	@Nullable String getJson(@Nullable CharSequence source) {
 		if (source == null) {
 			return null;
 		}

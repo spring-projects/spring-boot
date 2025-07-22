@@ -27,6 +27,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.util.Assert;
@@ -47,7 +49,7 @@ class OutputCapture implements CapturedOutput {
 
 	private final Deque<SystemCapture> systemCaptures = new ArrayDeque<>();
 
-	private AnsiOutputState ansiOutputState;
+	private @Nullable AnsiOutputState ansiOutputState;
 
 	private final AtomicReference<String> out = new AtomicReference<>(null);
 
@@ -329,7 +331,7 @@ class OutputCapture implements CapturedOutput {
 			AnsiOutput.setEnabled(this.saved);
 		}
 
-		static AnsiOutputState saveAndDisable() {
+		static @Nullable AnsiOutputState saveAndDisable() {
 			if (!ClassUtils.isPresent("org.springframework.boot.ansi.AnsiOutput",
 					OutputCapture.class.getClassLoader())) {
 				return null;

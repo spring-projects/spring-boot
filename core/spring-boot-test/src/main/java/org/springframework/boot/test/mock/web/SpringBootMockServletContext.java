@@ -22,6 +22,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -42,7 +44,7 @@ public class SpringBootMockServletContext extends MockServletContext {
 
 	private final ResourceLoader resourceLoader;
 
-	private File emptyRootDirectory;
+	private @Nullable File emptyRootDirectory;
 
 	public SpringBootMockServletContext(String resourceBasePath) {
 		this(resourceBasePath, new FileSystemResourceLoader());
@@ -86,7 +88,7 @@ public class SpringBootMockServletContext extends MockServletContext {
 	}
 
 	@Override
-	public URL getResource(String path) throws MalformedURLException {
+	public @Nullable URL getResource(String path) throws MalformedURLException {
 		URL resource = super.getResource(path);
 		if (resource == null && "/".equals(path)) {
 			// Liquibase assumes that "/" always exists, if we don't have a directory

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 import org.assertj.core.api.AssertProvider;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
@@ -86,7 +87,7 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 	 * context started without issue.
 	 * @return the startup failure or {@code null}
 	 */
-	Throwable getStartupFailure();
+	@Nullable Throwable getStartupFailure();
 
 	@Override
 	void close();

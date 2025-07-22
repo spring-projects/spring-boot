@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
@@ -66,7 +67,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	private final ObjectMapper objectMapper;
 
-	private Class<?> view;
+	private @Nullable Class<?> view;
 
 	/**
 	 * Create a new {@link JacksonTester} instance.
@@ -87,7 +88,8 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		this(resourceLoadClass, type, objectMapper, null);
 	}
 
-	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type, ObjectMapper objectMapper, Class<?> view) {
+	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type, ObjectMapper objectMapper,
+			@Nullable Class<?> view) {
 		super(resourceLoadClass, type);
 		Assert.notNull(objectMapper, "'objectMapper' must not be null");
 		this.objectMapper = objectMapper;
@@ -100,7 +102,9 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 			.jsonProvider(new JacksonJsonProvider(this.objectMapper))
 			.mappingProvider(new JacksonMappingProvider(this.objectMapper))
 			.build();
-		return new JsonContent<>(getResourceLoadClass(), getType(), json, configuration);
+		Class<?> resourceLoadClass = getResourceLoadClass();
+		Assert.state(resourceLoadClass != null, "'resourceLoadClass' must not be null");
+		return new JsonContent<>(resourceLoadClass, getType(), json, configuration);
 	}
 
 	@Override
@@ -167,7 +171,11 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @return the new instance
 	 */
 	public JacksonTester<T> forView(Class<?> view) {
-		return new JacksonTester<>(getResourceLoadClass(), getType(), this.objectMapper, view);
+		Class<?> resourceLoadClass = getResourceLoadClass();
+		ResolvableType type = getType();
+		Assert.state(resourceLoadClass != null, "'resourceLoadClass' must not be null");
+		Assert.state(type != null, "'type' must not be null");
+		return new JacksonTester<>(resourceLoadClass, type, this.objectMapper, view);
 	}
 
 	/**
