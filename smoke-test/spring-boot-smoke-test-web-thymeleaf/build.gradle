@@ -22,7 +22,7 @@ description = "Spring Boot web Thymeleaf smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-thymeleaf"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 	implementation(project(":starter:spring-boot-starter-validation"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))

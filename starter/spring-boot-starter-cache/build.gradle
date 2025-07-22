@@ -18,9 +18,10 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for using Spring Framework's caching support"
+description = "Starter for using Spring's caching support"
 
 dependencies {
-	api(project(":module:spring-boot-cache"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-cache"))
 }

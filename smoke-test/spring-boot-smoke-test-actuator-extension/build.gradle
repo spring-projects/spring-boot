@@ -22,7 +22,7 @@ description = "Spring Boot Actuator Extension smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

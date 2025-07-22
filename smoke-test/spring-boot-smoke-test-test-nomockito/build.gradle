@@ -22,7 +22,7 @@ description = "Spring Boot Test no Mockito smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	runtimeOnly("com.h2database:h2")
 

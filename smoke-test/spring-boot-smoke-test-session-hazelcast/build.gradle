@@ -24,7 +24,7 @@ dependencies {
 	implementation(project(":module:spring-boot-session-hazelcast"))
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-security"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

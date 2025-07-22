@@ -21,7 +21,7 @@ plugins {
 description = "Spring Boot Web Services smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-web-services"))
+	implementation(project(":starter:spring-boot-starter-webservices"))
 	implementation("org.jdom:jdom2")
 
 	runtimeOnly("jaxen:jaxen")

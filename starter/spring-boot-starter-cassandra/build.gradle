@@ -18,11 +18,10 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for using Spring Web Services"
+description = "Starter for using Cassandra distributed database"
 
 dependencies {
-	api(project(":module:spring-boot-webservices"))
-	api(project(":starter:spring-boot-starter-web"))
-	api("com.sun.xml.messaging.saaj:saaj-impl")
-	api("jakarta.xml.ws:jakarta.xml.ws-api")
+	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-cassandra"))
 }

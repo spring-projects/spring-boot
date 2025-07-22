@@ -18,9 +18,10 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for using jOOQ to access SQL databases with JDBC. An alternative to spring-boot-starter-data-jpa or spring-boot-starter-jdbc"
+description = "Starter for using jOOQ to access SQL databases with JDBC"
 
 dependencies {
-	api(project(":module:spring-boot-jooq"))
 	api(project(":starter:spring-boot-starter-jdbc"))
+
+	api(project(":module:spring-boot-jooq"))
 }

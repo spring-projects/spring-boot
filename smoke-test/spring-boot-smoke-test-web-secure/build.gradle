@@ -22,7 +22,7 @@ description = "Spring Boot web secure smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-security"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")

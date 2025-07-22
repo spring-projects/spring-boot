@@ -21,9 +21,9 @@ plugins {
 description = "Starter for using Spring for Apache Pulsar"
 
 dependencies {
-	api(project(":module:spring-boot-pulsar"))
-	api(project(":module:spring-boot-tx"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-pulsar"))
 }
 
 checkRuntimeClasspathForConflicts {

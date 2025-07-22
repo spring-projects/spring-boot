@@ -21,6 +21,7 @@ plugins {
 description = "Starter for using Java Bean Validation with Hibernate Validator"
 
 dependencies {
-	api(project(":module:spring-boot-validation"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-validation"))
 }

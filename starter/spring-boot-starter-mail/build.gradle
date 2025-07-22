@@ -22,5 +22,6 @@ description = "Starter for using Java Mail and Spring Framework's email sending 
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
+
 	api(project(":module:spring-boot-mail"))
 }

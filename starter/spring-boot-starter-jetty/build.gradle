@@ -18,11 +18,13 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for using Jetty as the embedded servlet container. An alternative to spring-boot-starter-tomcat"
+description = "Starter for using Jetty as the embedded servlet container"
 
 dependencies {
-	api(project(":module:spring-boot-jetty"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-jetty"))
+
 	api("jakarta.servlet:jakarta.servlet-api")
 	api("jakarta.websocket:jakarta.websocket-api")
 	api("jakarta.websocket:jakarta.websocket-client-api")

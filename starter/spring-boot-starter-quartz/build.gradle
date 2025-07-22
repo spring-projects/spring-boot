@@ -21,7 +21,7 @@ plugins {
 description = "Starter for using the Quartz scheduler"
 
 dependencies {
-	api(project(":module:spring-boot-quartz"))
-	api(project(":module:spring-boot-tx"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-quartz"))
 }

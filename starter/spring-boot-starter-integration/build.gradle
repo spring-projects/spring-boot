@@ -21,7 +21,7 @@ plugins {
 description = "Starter for using Spring Integration"
 
 dependencies {
-	api(project(":module:spring-boot-integration"))
-	api(project(":module:spring-boot-tx"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-integration"))
 }

@@ -29,7 +29,7 @@ configurations {
 dependencies {
 	compileOnly(project(":starter:spring-boot-starter-jetty"))
 
-	implementation(project(":starter:spring-boot-starter-web")) {
+	implementation(project(":starter:spring-boot-starter-webmvc")) {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 

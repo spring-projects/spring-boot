@@ -22,7 +22,7 @@ description = "Spring Boot OAuth2 Client smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-oauth2-client"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")

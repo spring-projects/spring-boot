@@ -27,6 +27,7 @@ description = "Spring Boot Data LDAP"
 dependencies {
 	api(project(":module:spring-boot-data-commons"))
 	api(project(":module:spring-boot-ldap"))
+	api(project(":module:spring-boot-tx"))
 	api("org.springframework.data:spring-data-ldap")
 
 	optional(project(":core:spring-boot-autoconfigure"))

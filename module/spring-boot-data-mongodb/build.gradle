@@ -25,9 +25,9 @@ plugins {
 description = "Spring Boot Data MongoDB"
 
 dependencies {
-	api(project(":core:spring-boot"))
 	api(project(":module:spring-boot-data-commons"))
 	api(project(":module:spring-boot-mongodb"))
+	api(project(":module:spring-boot-tx"))
 	api("org.springframework.data:spring-data-mongodb")
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")

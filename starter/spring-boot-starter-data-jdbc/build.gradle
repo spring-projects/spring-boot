@@ -21,6 +21,7 @@ plugins {
 description = "Starter for using Spring Data JDBC"
 
 dependencies {
-	api(project(":module:spring-boot-data-jdbc"))
 	api(project(":starter:spring-boot-starter-jdbc"))
+
+	api(project(":module:spring-boot-data-jdbc"))
 }

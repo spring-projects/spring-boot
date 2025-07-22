@@ -25,7 +25,7 @@ plugins {
 description = "Spring Boot Integration"
 
 dependencies {
-	api(project(":core:spring-boot"))
+	api(project(":module:spring-boot-tx"))
 	api("org.springframework.integration:spring-integration-core")
 
 	optional(project(":core:spring-boot-autoconfigure"))

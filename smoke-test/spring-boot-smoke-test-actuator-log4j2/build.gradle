@@ -29,7 +29,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-log4j2"))
 	implementation(project(":starter:spring-boot-starter-security"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

@@ -21,7 +21,7 @@ plugins {
 description = "Starter for using Spring Data LDAP"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-ldap"))
+
 	api(project(":module:spring-boot-data-ldap"))
-	api(project(":module:spring-boot-tx"))
-	api(project(":starter:spring-boot-starter"))
 }

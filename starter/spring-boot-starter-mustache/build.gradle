@@ -18,9 +18,10 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for building web applications using Mustache views"
+description = "Starter for using Mustache"
 
 dependencies {
-	api(project(":module:spring-boot-mustache"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-mustache"))
 }

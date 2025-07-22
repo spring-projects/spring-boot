@@ -22,7 +22,7 @@ description = "Spring Boot GraphQL smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-graphql"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 	implementation(project(":starter:spring-boot-starter-security"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))

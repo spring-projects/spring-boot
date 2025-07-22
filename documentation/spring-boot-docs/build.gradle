@@ -380,7 +380,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 
-	testRuntimeOnly(project(":starter:spring-boot-starter-web"))
+	testRuntimeOnly(project(":starter:spring-boot-starter-webmvc"))
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("org.springframework:spring-jdbc")
 

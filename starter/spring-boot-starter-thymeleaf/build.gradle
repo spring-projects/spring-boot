@@ -18,9 +18,10 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for building MVC web applications using Thymeleaf views"
+description = "Starter for using Thymeleaf"
 
 dependencies {
-	api(project(":module:spring-boot-thymeleaf"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-thymeleaf"))
 }

@@ -32,5 +32,5 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-data-redis"))
 	implementation(project(":starter:spring-boot-starter-security"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 }

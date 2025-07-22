@@ -34,7 +34,7 @@ configurations.all {
 dependencies {
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 
-	implementation(project(":starter:spring-boot-starter-web")) {
+	implementation(project(":starter:spring-boot-starter-webmvc")) {
 		exclude group: "org.hibernate.validator"
 		exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
 	}

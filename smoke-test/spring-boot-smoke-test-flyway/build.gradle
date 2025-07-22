@@ -23,7 +23,7 @@ description = "Spring Boot Flyway smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-data-jpa"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	runtimeOnly(project(":module:spring-boot-flyway"))
 	runtimeOnly("com.h2database:h2")

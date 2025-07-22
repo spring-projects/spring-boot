@@ -21,7 +21,7 @@ plugins {
 description = "Spring Boot Undertow smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-web")) {
+	implementation(project(":starter:spring-boot-starter-webmvc")) {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 	implementation(project(":starter:spring-boot-starter-undertow"))

@@ -38,7 +38,7 @@ dependencies {
 	app project(path: ":module:spring-boot-webflux", configuration: "mavenRepository")
 
 	intTestImplementation(enforcedPlatform(project(":platform:spring-boot-internal-dependencies")))
-	intTestImplementation(project(":starter:spring-boot-starter-web"))
+	intTestImplementation(project(":starter:spring-boot-starter-webmvc"))
 	intTestImplementation(project(":test-support:spring-boot-test-support"))
 	intTestImplementation(project(":starter:spring-boot-starter-test"))
 	intTestImplementation("org.testcontainers:junit-jupiter")

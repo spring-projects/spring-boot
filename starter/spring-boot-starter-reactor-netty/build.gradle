@@ -18,9 +18,10 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for using Reactor Netty as the embedded reactive HTTP server."
+description = "Starter for Reactor Netty"
 
 dependencies {
-	api(project(":module:spring-boot-reactor-netty"))
 	api(project(":starter:spring-boot-starter"))
+
+	api(project(":module:spring-boot-reactor-netty"))
 }

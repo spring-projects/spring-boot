@@ -21,8 +21,8 @@ plugins {
 description = "Starter for using Cassandra distributed database and Spring Data Cassandra Reactive"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-cassandra"))
+
 	api(project(":module:spring-boot-data-cassandra"))
 	api(project(":module:spring-boot-reactor"))
-	api(project(":module:spring-boot-tx"))
-	api(project(":starter:spring-boot-starter"))
 }

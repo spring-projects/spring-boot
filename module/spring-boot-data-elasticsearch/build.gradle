@@ -28,6 +28,7 @@ description = "Spring Boot Data Elasticsearch"
 dependencies {
 	api(project(":module:spring-boot-data-commons"))
 	api(project(":module:spring-boot-elasticsearch"))
+	api(project(":module:spring-boot-tx"))
 	api("org.springframework.data:spring-data-elasticsearch")
 
 	optional(project(":core:spring-boot-autoconfigure"))

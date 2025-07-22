@@ -21,9 +21,9 @@ plugins {
 description = "Starter for using Elasticsearch search and analytics engine and Spring Data Elasticsearch"
 
 dependencies {
-	api(project(":module:spring-boot-data-elasticsearch"))
-	api(project(":module:spring-boot-tx"))
-	api(project(":starter:spring-boot-starter"))
+	api(project(":starter:spring-boot-starter-elasticsearch"))
 
-	runtimeOnly(project(":starter:spring-boot-starter-json"))
+	api(project(":module:spring-boot-data-elasticsearch"))
+
+	runtimeOnly(project(":starter:spring-boot-starter-jackson"))
 }

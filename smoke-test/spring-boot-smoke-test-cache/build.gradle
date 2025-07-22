@@ -60,7 +60,7 @@ dependencies {
 
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-cache"))
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	infinispan(enforcedPlatform(project(":platform:spring-boot-dependencies")))
 	infinispan("javax.cache:cache-api")

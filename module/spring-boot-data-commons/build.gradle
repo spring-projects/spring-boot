@@ -25,11 +25,12 @@ plugins {
 description = "Spring Boot Data Commons"
 
 dependencies {
-	api(project(":module:spring-boot-webmvc"))
+	api(project(":core:spring-boot"))
 	api("org.springframework.data:spring-data-commons")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-webmvc"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-jdbc"))

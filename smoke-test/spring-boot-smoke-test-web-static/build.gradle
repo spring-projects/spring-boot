@@ -27,7 +27,7 @@ configurations {
 }
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-web"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	providedRuntime( project(":starter:spring-boot-starter-tomcat"))
 
