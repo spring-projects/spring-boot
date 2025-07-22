@@ -49,8 +49,9 @@ import org.springframework.util.ObjectUtils;
 class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
 	ElasticCommonSchemaStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
-			ContextPairs contextPairs, StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, members), customizer);
+			ContextPairs contextPairs, StructuredLoggingJsonMembersCustomizer.Builder<?> customizerBuilder) {
+		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, members),
+				customizerBuilder.nested().build());
 	}
 
 	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,

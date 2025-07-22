@@ -73,6 +73,18 @@ class StructuredLogLayoutTests extends AbstractStructuredLoggingTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
+	void shouldOutputNestedAdditionalEcsJson() {
+		this.environment.setProperty("logging.structured.json.add.extra.value", "test");
+		StructuredLogLayout layout = newBuilder().setFormat("ecs").build();
+		String json = layout.toSerializable(createEvent(new RuntimeException("Boom!")));
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("extra");
+		assertThat((Map<String, Object>) deserialized.get("extra")).containsEntry("value", "test");
+		System.out.println(deserialized);
+	}
+
+	@Test
 	void shouldSupportLogstashCommonFormat() {
 		StructuredLogLayout layout = newBuilder().setFormat("logstash").build();
 		String json = layout.toSerializable(createEvent(new RuntimeException("Boom!")));

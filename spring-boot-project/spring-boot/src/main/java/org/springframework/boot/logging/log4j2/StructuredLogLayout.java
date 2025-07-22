@@ -115,10 +115,10 @@ final class StructuredLogLayout extends AbstractStringLayout {
 			Environment environment = instantiator.getArg(Environment.class);
 			StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
 			ContextPairs contextPairs = instantiator.getArg(ContextPairs.class);
-			StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
-				.getArg(StructuredLoggingJsonMembersCustomizer.class);
+			StructuredLoggingJsonMembersCustomizer.Builder<?> jsonMembersCustomizerBuilder = instantiator
+				.getArg(StructuredLoggingJsonMembersCustomizer.Builder.class);
 			return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextPairs,
-					jsonMembersCustomizer);
+					jsonMembersCustomizerBuilder);
 		}
 
 		private GraylogExtendedLogFormatStructuredLogFormatter createGraylogFormatter(Instantiator<?> instantiator) {

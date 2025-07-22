@@ -93,10 +93,10 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 		StackTracePrinter stackTracePrinter = instantiator.getArg(StackTracePrinter.class);
 		ContextPairs contextParis = instantiator.getArg(ContextPairs.class);
 		ThrowableProxyConverter throwableProxyConverter = instantiator.getArg(ThrowableProxyConverter.class);
-		StructuredLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
-			.getArg(StructuredLoggingJsonMembersCustomizer.class);
+		StructuredLoggingJsonMembersCustomizer.Builder<?> jsonMembersCustomizerBuilder = instantiator
+			.getArg(StructuredLoggingJsonMembersCustomizer.Builder.class);
 		return new ElasticCommonSchemaStructuredLogFormatter(environment, stackTracePrinter, contextParis,
-				throwableProxyConverter, jsonMembersCustomizer);
+				throwableProxyConverter, jsonMembersCustomizerBuilder);
 	}
 
 	private StructuredLogFormatter<ILoggingEvent> createGraylogFormatter(Instantiator<?> instantiator) {

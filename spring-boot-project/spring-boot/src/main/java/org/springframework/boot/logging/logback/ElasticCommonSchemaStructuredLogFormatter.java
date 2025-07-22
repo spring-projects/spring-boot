@@ -53,9 +53,9 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 
 	ElasticCommonSchemaStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
 			ContextPairs contextPairs, ThrowableProxyConverter throwableProxyConverter,
-			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+			StructuredLoggingJsonMembersCustomizer.Builder<?> customizerBuilder) {
 		super((members) -> jsonMembers(environment, stackTracePrinter, contextPairs, throwableProxyConverter, members),
-				customizer);
+				customizerBuilder.nested().build());
 	}
 
 	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,
