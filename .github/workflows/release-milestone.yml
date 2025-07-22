@@ -124,6 +124,7 @@ jobs:
       - name: Create GitHub Release
         uses: ./.github/actions/create-github-release
         with:
+          commercial: ${{ vars.COMMERCIAL }}
           milestone: ${{ needs.build-and-stage-release.outputs.version }}
           pre-release: true
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}

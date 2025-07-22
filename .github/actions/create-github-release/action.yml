@@ -1,6 +1,9 @@
 name: Create GitHub Release
 description: 'Create the release on GitHub with a changelog'
 inputs:
+  commercial:
+    description: 'Whether to generate the changelog for the commercial release'
+    required: true
   milestone:
     description: 'Name of the GitHub milestone for which a release will be created'
     required: true
@@ -10,9 +13,6 @@ inputs:
     default: 'false'
   token:
     description: 'Token to use for authentication with GitHub'
-    required: true
-  commercial:
-    description: 'Whether to generate the changelog for the commercial release'
     required: true
 runs:
   using: composite
