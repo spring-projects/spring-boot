@@ -2326,7 +2326,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
-	library("Spring HATEOAS", "3.0.0-M2") {
+	library("Spring HATEOAS", "3.0.0-M3") {
 		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
