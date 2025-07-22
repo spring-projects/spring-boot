@@ -49,8 +49,11 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
+import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.SystemPropertyUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
@@ -67,6 +70,8 @@ class ConfigurationPropertiesBinder {
 	private static final String BEAN_NAME = "org.springframework.boot.context.internalConfigurationPropertiesBinder";
 
 	private static final String VALIDATOR_BEAN_NAME = EnableConfigurationProperties.VALIDATOR_BEAN_NAME;
+
+	private static final String IGNORE_UNRESOLVABLE_PLACEHOLDER_PROPERTY = "spring.configurationproperties.ignore-unresolvable-placeholders";
 
 	private final ApplicationContext applicationContext;
 
@@ -191,7 +196,16 @@ class ConfigurationPropertiesBinder {
 	}
 
 	private PropertySourcesPlaceholdersResolver getPropertySourcesPlaceholdersResolver() {
-		return new PropertySourcesPlaceholdersResolver(this.propertySources);
+		return new PropertySourcesPlaceholdersResolver(this.propertySources, getPropertyPlaceholderHelper());
+	}
+
+	private PropertyPlaceholderHelper getPropertyPlaceholderHelper() {
+		Environment environment = this.applicationContext.getEnvironment();
+		boolean ignoreUnresolvablePlaceholders = environment.getProperty(IGNORE_UNRESOLVABLE_PLACEHOLDER_PROPERTY,
+				Boolean.class, true);
+		return new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
+				SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR,
+				SystemPropertyUtils.ESCAPE_CHARACTER, ignoreUnresolvablePlaceholders);
 	}
 
 	private List<ConversionService> getConversionServices() {
