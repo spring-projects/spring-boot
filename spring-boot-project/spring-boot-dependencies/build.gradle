@@ -1662,6 +1662,7 @@ bom {
 		}
 	}
 	library("MySQL", "9.3.0") {
+		upgradePolicy = "same-major"
 		group("com.mysql") {
 			modules = [
 				"mysql-connector-j" {
