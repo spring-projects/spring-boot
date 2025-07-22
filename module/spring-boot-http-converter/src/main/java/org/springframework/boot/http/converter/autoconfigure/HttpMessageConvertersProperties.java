@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HttpMessageConvertersProperties {
 
 	/**
-	 * The charset to use for String conversion.
+	 * Charset to use for String conversion.
 	 */
 	private Charset stringEncodingCharset = StandardCharsets.UTF_8;
 

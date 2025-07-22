@@ -119,10 +119,10 @@ class CollectionBinderTests {
 			.satisfies((ex) -> {
 				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
 					.getUnboundProperties();
-				assertThat(unbound).hasSize(1);
-				ConfigurationProperty property = unbound.iterator().next();
-				assertThat(property.getName()).hasToString("foo[3]");
-				assertThat(property.getValue()).isEqualTo("3");
+				assertThat(unbound).singleElement().satisfies((property) -> {
+					assertThat(property.getName()).hasToString("foo[3]");
+					assertThat(property.getValue()).isEqualTo("3");
+				});
 			});
 	}
 
@@ -139,10 +139,10 @@ class CollectionBinderTests {
 			.satisfies((ex) -> {
 				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
 					.getUnboundProperties();
-				assertThat(unbound).hasSize(1);
-				ConfigurationProperty property = unbound.iterator().next();
-				assertThat(property.getName()).hasToString("foo[1].missing");
-				assertThat(property.getValue()).isEqualTo("bad");
+				assertThat(unbound).singleElement().satisfies((property) -> {
+					assertThat(property.getName()).hasToString("foo[1].missing");
+					assertThat(property.getValue()).isEqualTo("bad");
+				});
 			});
 	}
 
@@ -155,10 +155,10 @@ class CollectionBinderTests {
 		source.put("foo[0].string", "test");
 		this.sources.add(source);
 		List<ExampleCollectionBean> list = this.binder.bind("foo", Bindable.listOf(ExampleCollectionBean.class)).get();
-		assertThat(list).hasSize(1);
-		ExampleCollectionBean bean = list.get(0);
-		assertThat(bean.getItems()).containsExactly("a", "b", "d");
-		assertThat(bean.getString()).isEqualTo("test");
+		assertThat(list).singleElement().satisfies((bean) -> {
+			assertThat(bean.getItems()).containsExactly("a", "b", "d");
+			assertThat(bean.getString()).isEqualTo("test");
+		});
 	}
 
 	@Test
@@ -173,10 +173,10 @@ class CollectionBinderTests {
 			.satisfies((ex) -> {
 				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
 					.getUnboundProperties();
-				assertThat(unbound).hasSize(1);
-				ConfigurationProperty property = unbound.iterator().next();
-				assertThat(property.getName()).hasToString("foo[4].value");
-				assertThat(property.getValue()).isEqualTo("4");
+				assertThat(unbound).singleElement().satisfies((property) -> {
+					assertThat(property.getName()).hasToString("foo[4].value");
+					assertThat(property.getValue()).isEqualTo("4");
+				});
 			});
 	}
 
