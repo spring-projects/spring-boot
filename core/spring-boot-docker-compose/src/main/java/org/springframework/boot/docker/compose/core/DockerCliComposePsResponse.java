@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.core;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Response from {@link DockerCliCommand.ComposePs docker compose ps}.
  *
@@ -27,6 +29,6 @@ package org.springframework.boot.docker.compose.core;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-record DockerCliComposePsResponse(String id, String name, String image, String state) {
+record DockerCliComposePsResponse(String id, String name, @Nullable String image, String state) {
 
 }

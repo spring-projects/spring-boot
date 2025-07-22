@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplicationAotProcessor;
 import org.springframework.util.ClassUtils;
 
@@ -44,7 +46,7 @@ class DockerComposeSkipCheck {
 		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
 	}
 
-	boolean shouldSkip(ClassLoader classLoader, DockerComposeProperties.Skip properties) {
+	boolean shouldSkip(@Nullable ClassLoader classLoader, DockerComposeProperties.Skip properties) {
 		if (properties.isInTests() && hasAtLeastOneRequiredClass(classLoader)) {
 			Thread thread = Thread.currentThread();
 			for (StackTraceElement element : thread.getStackTrace()) {
@@ -56,7 +58,7 @@ class DockerComposeSkipCheck {
 		return false;
 	}
 
-	private boolean hasAtLeastOneRequiredClass(ClassLoader classLoader) {
+	private boolean hasAtLeastOneRequiredClass(@Nullable ClassLoader classLoader) {
 		for (String requiredClass : REQUIRED_CLASSES) {
 			if (ClassUtils.isPresent(requiredClass, classLoader)) {
 				return true;

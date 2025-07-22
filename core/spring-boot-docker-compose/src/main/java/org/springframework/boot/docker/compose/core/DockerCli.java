@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeVersion;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.Type;
@@ -60,7 +61,7 @@ class DockerCli {
 	 * @param workingDirectory the working directory or {@code null}
 	 * @param dockerComposeOptions the Docker Compose options to use or {@code null}.
 	 */
-	DockerCli(File workingDirectory, DockerComposeOptions dockerComposeOptions) {
+	DockerCli(@Nullable File workingDirectory, @Nullable DockerComposeOptions dockerComposeOptions) {
 		this.processRunner = new ProcessRunner(workingDirectory);
 		this.dockerCommands = dockerCommandsCache.computeIfAbsent(workingDirectory,
 				(key) -> new DockerCommands(this.processRunner));
@@ -82,7 +83,7 @@ class DockerCli {
 		return dockerCommand.deserialize(json);
 	}
 
-	private Consumer<String> createOutputConsumer(LogLevel logLevel) {
+	private @Nullable Consumer<String> createOutputConsumer(@Nullable LogLevel logLevel) {
 		if (logLevel == null || logLevel == LogLevel.OFF) {
 			return null;
 		}
@@ -123,7 +124,7 @@ class DockerCli {
 	 * Return the {@link DockerComposeFile} being used by this CLI instance.
 	 * @return the Docker Compose file
 	 */
-	DockerComposeFile getDockerComposeFile() {
+	@Nullable DockerComposeFile getDockerComposeFile() {
 		return this.dockerComposeOptions.composeFile();
 	}
 
@@ -205,11 +206,14 @@ class DockerCli {
 	 * @param activeProfiles the profiles to activate
 	 * @param arguments the arguments to pass to Docker Compose
 	 */
-	record DockerComposeOptions(DockerComposeFile composeFile, Set<String> activeProfiles, List<String> arguments) {
+	record DockerComposeOptions(@Nullable DockerComposeFile composeFile, Set<String> activeProfiles,
+			List<String> arguments) {
 
-		DockerComposeOptions {
-			activeProfiles = (activeProfiles != null) ? activeProfiles : Collections.emptySet();
-			arguments = (arguments != null) ? arguments : Collections.emptyList();
+		DockerComposeOptions(@Nullable DockerComposeFile composeFile, @Nullable Set<String> activeProfiles,
+				@Nullable List<String> arguments) {
+			this.composeFile = composeFile;
+			this.activeProfiles = (activeProfiles != null) ? activeProfiles : Collections.emptySet();
+			this.arguments = (arguments != null) ? arguments : Collections.emptyList();
 		}
 
 		static DockerComposeOptions none() {

@@ -23,6 +23,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -64,7 +66,7 @@ public class DockerComposeProperties {
 	/**
 	 * Hostname or IP of the machine where the docker containers are started.
 	 */
-	private String host;
+	private @Nullable String host;
 
 	/**
 	 * Start configuration.
@@ -109,11 +111,11 @@ public class DockerComposeProperties {
 		this.lifecycleManagement = lifecycleManagement;
 	}
 
-	public String getHost() {
+	public @Nullable String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	public void setHost(@Nullable String host) {
 		this.host = host;
 	}
 

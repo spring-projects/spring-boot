@@ -25,6 +25,8 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.util.Assert;
 
@@ -41,7 +43,7 @@ class DefaultDockerCompose implements DockerCompose {
 
 	private final DockerHost hostname;
 
-	DefaultDockerCompose(DockerCli cli, String host) {
+	DefaultDockerCompose(DockerCli cli, @Nullable String host) {
 		this.cli = cli;
 		this.hostname = DockerHost.get(host, () -> cli.run(new DockerCliCommand.Context()));
 	}
@@ -114,7 +116,8 @@ class DefaultDockerCompose implements DockerCompose {
 		return inspectResponses.stream().collect(Collectors.toMap(DockerCliInspectResponse::id, Function.identity()));
 	}
 
-	private DockerCliInspectResponse inspectContainer(String id, Map<String, DockerCliInspectResponse> inspected) {
+	private @Nullable DockerCliInspectResponse inspectContainer(String id,
+			Map<String, DockerCliInspectResponse> inspected) {
 		DockerCliInspectResponse inspect = inspected.get(id);
 		if (inspect != null) {
 			return inspect;

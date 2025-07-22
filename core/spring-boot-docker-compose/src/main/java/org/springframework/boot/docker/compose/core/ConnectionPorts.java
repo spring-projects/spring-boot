@@ -18,6 +18,8 @@ package org.springframework.boot.docker.compose.core;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Provides access to the ports that can be used to connect to a {@link RunningService}.
  *
@@ -52,6 +54,6 @@ public interface ConnectionPorts {
 	 * all host ports
 	 * @return a list of all host ports using the given protocol
 	 */
-	List<Integer> getAll(String protocol);
+	List<Integer> getAll(@Nullable String protocol);
 
 }

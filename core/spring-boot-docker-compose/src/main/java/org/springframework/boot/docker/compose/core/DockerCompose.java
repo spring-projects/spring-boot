@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.DockerCli.DockerComposeOptions;
 import org.springframework.boot.logging.LogLevel;
 
@@ -126,7 +128,7 @@ public interface DockerCompose {
 	 * @param activeProfiles a set of the profiles that should be activated
 	 * @return a {@link DockerCompose} instance
 	 */
-	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles) {
+	static DockerCompose get(DockerComposeFile file, @Nullable String hostname, Set<String> activeProfiles) {
 		return get(file, hostname, activeProfiles, Collections.emptyList());
 	}
 
@@ -140,7 +142,7 @@ public interface DockerCompose {
 	 * @return a {@link DockerCompose} instance
 	 * @since 3.4.0
 	 */
-	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles,
+	static DockerCompose get(DockerComposeFile file, @Nullable String hostname, Set<String> activeProfiles,
 			List<String> arguments) {
 		DockerCli cli = new DockerCli(null, new DockerComposeOptions(file, activeProfiles, arguments));
 		return new DefaultDockerCompose(cli, hostname);

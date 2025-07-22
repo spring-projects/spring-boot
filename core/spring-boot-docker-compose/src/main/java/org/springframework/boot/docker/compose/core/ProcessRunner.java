@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.log.LogMessage;
 
@@ -47,7 +48,7 @@ class ProcessRunner {
 
 	private static final Log logger = LogFactory.getLog(ProcessRunner.class);
 
-	private final File workingDirectory;
+	private final @Nullable File workingDirectory;
 
 	/**
 	 * Create a new {@link ProcessRunner} instance.
@@ -60,7 +61,7 @@ class ProcessRunner {
 	 * Create a new {@link ProcessRunner} instance.
 	 * @param workingDirectory the working directory for the process
 	 */
-	ProcessRunner(File workingDirectory) {
+	ProcessRunner(@Nullable File workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
 
@@ -83,7 +84,7 @@ class ProcessRunner {
 	 * @return the output of the command
 	 * @throws ProcessExitException if execution failed
 	 */
-	String run(Consumer<String> outputConsumer, String... command) {
+	String run(@Nullable Consumer<String> outputConsumer, String... command) {
 		logger.trace(LogMessage.of(() -> "Running '%s'".formatted(String.join(" ", command))));
 		Process process = startProcess(command);
 		ReaderThread stdOutReader = new ReaderThread(process.getInputStream(), "stdout", outputConsumer);
@@ -133,13 +134,13 @@ class ProcessRunner {
 
 		private final InputStream source;
 
-		private final Consumer<String> outputConsumer;
+		private final @Nullable Consumer<String> outputConsumer;
 
 		private final StringBuilder output = new StringBuilder();
 
 		private final CountDownLatch latch = new CountDownLatch(1);
 
-		ReaderThread(InputStream source, String name, Consumer<String> outputConsumer) {
+		ReaderThread(InputStream source, String name, @Nullable Consumer<String> outputConsumer) {
 			this.source = source;
 			this.outputConsumer = outputConsumer;
 			setName("OutputReader-" + name);
@@ -174,7 +175,7 @@ class ProcessRunner {
 				return this.output.toString();
 			}
 			catch (InterruptedException ex) {
-				return null;
+				return "";
 			}
 		}
 

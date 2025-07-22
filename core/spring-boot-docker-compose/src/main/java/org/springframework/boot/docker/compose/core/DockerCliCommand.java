@@ -78,8 +78,8 @@ abstract sealed class DockerCliCommand<R> {
 
 	@SuppressWarnings("unchecked")
 	R deserialize(String json) {
-		if (this.responseType == Void.class) {
-			return null;
+		if (this.responseType == None.class) {
+			return (R) None.INSTANCE;
 		}
 		return (R) ((!this.listResponse) ? DockerJson.deserialize(json, this.responseType)
 				: DockerJson.deserializeToList(json, this.responseType));
@@ -175,10 +175,10 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose up} command.
 	 */
-	static final class ComposeUp extends DockerCliCommand<Void> {
+	static final class ComposeUp extends DockerCliCommand<None> {
 
 		ComposeUp(LogLevel logLevel, List<String> arguments) {
-			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, getCommand(arguments));
+			super(Type.DOCKER_COMPOSE, logLevel, None.class, false, getCommand(arguments));
 		}
 
 		private static String[] getCommand(List<String> arguments) {
@@ -196,10 +196,10 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose down} command.
 	 */
-	static final class ComposeDown extends DockerCliCommand<Void> {
+	static final class ComposeDown extends DockerCliCommand<None> {
 
 		ComposeDown(Duration timeout, List<String> arguments) {
-			super(Type.DOCKER_COMPOSE, Void.class, false, getCommand(timeout, arguments));
+			super(Type.DOCKER_COMPOSE, None.class, false, getCommand(timeout, arguments));
 		}
 
 		private static String[] getCommand(Duration timeout, List<String> arguments) {
@@ -216,10 +216,10 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose start} command.
 	 */
-	static final class ComposeStart extends DockerCliCommand<Void> {
+	static final class ComposeStart extends DockerCliCommand<None> {
 
 		ComposeStart(LogLevel logLevel, List<String> arguments) {
-			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, getCommand(arguments));
+			super(Type.DOCKER_COMPOSE, logLevel, None.class, false, getCommand(arguments));
 		}
 
 		private static String[] getCommand(List<String> arguments) {
@@ -234,10 +234,10 @@ abstract sealed class DockerCliCommand<R> {
 	/**
 	 * The {@code docker compose stop} command.
 	 */
-	static final class ComposeStop extends DockerCliCommand<Void> {
+	static final class ComposeStop extends DockerCliCommand<None> {
 
 		ComposeStop(Duration timeout, List<String> arguments) {
-			super(Type.DOCKER_COMPOSE, Void.class, false, getCommand(timeout, arguments));
+			super(Type.DOCKER_COMPOSE, None.class, false, getCommand(timeout, arguments));
 		}
 
 		private static String[] getCommand(Duration timeout, List<String> arguments) {
@@ -265,6 +265,15 @@ abstract sealed class DockerCliCommand<R> {
 		 * A command executed using {@code docker compose} or {@code docker-compose}.
 		 */
 		DOCKER_COMPOSE
+
+	}
+
+	static final class None {
+
+		public static final None INSTANCE = new None();
+
+		private None() {
+		}
 
 	}
 

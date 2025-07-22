@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.lifecycle;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 
 /**
@@ -33,7 +35,7 @@ class ServiceNotReadyException extends RuntimeException {
 		this(service, message, null);
 	}
 
-	ServiceNotReadyException(RunningService service, String message, Throwable cause) {
+	ServiceNotReadyException(RunningService service, String message, @Nullable Throwable cause) {
 		super(message, cause);
 		this.service = service;
 	}

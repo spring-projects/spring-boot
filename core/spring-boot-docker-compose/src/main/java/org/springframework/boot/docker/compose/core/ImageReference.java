@@ -18,6 +18,8 @@ package org.springframework.boot.docker.compose.core;
 
 import java.util.regex.Matcher;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -32,13 +34,13 @@ public final class ImageReference {
 
 	private final ImageName name;
 
-	private final String tag;
+	private final @Nullable String tag;
 
-	private final String digest;
+	private final @Nullable String digest;
 
 	private final String string;
 
-	private ImageReference(ImageName name, String tag, String digest) {
+	private ImageReference(ImageName name, @Nullable String tag, @Nullable String digest) {
 		Assert.notNull(name, "'name' must not be null");
 		this.name = name;
 		this.tag = tag;
@@ -68,7 +70,7 @@ public final class ImageReference {
 	 * Return the tag from the reference or {@code null}.
 	 * @return the referenced tag
 	 */
-	public String getTag() {
+	public @Nullable String getTag() {
 		return this.tag;
 	}
 
@@ -76,7 +78,7 @@ public final class ImageReference {
 	 * Return the digest from the reference or {@code null}.
 	 * @return the referenced digest
 	 */
-	public String getDigest() {
+	public @Nullable String getDigest() {
 		return this.digest;
 	}
 
@@ -111,7 +113,7 @@ public final class ImageReference {
 		return this.string;
 	}
 
-	private String buildString(String name, String tag, String digest) {
+	private String buildString(String name, @Nullable String tag, @Nullable String digest) {
 		StringBuilder string = new StringBuilder(name);
 		if (tag != null) {
 			string.append(":").append(tag);

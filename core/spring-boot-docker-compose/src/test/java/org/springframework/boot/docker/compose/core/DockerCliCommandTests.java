@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeVersion;
+import org.springframework.boot.docker.compose.core.DockerCliCommand.None;
 import org.springframework.boot.logging.LogLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,7 +86,7 @@ class DockerCliCommandTests {
 		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
 		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("up", "--no-color", "--detach", "--wait",
 				"--renew-anon-volumes");
-		assertThat(command.deserialize("[]")).isNull();
+		assertThat(command.deserialize("[]")).isSameAs(None.INSTANCE);
 	}
 
 	@Test
@@ -94,7 +95,7 @@ class DockerCliCommandTests {
 				List.of("--remove-orphans"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
 		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("down", "--timeout", "1", "--remove-orphans");
-		assertThat(command.deserialize("[]")).isNull();
+		assertThat(command.deserialize("[]")).isSameAs(None.INSTANCE);
 	}
 
 	@Test
@@ -103,7 +104,7 @@ class DockerCliCommandTests {
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
 		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
 		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("start", "--dry-run");
-		assertThat(command.deserialize("[]")).isNull();
+		assertThat(command.deserialize("[]")).isSameAs(None.INSTANCE);
 	}
 
 	@Test
@@ -111,7 +112,7 @@ class DockerCliCommandTests {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposeStop(Duration.ofSeconds(1), List.of("--dry-run"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
 		assertThat(command.getCommand(COMPOSE_VERSION)).containsExactly("stop", "--timeout", "1", "--dry-run");
-		assertThat(command.deserialize("[]")).isNull();
+		assertThat(command.deserialize("[]")).isSameAs(None.INSTANCE);
 	}
 
 	@Test

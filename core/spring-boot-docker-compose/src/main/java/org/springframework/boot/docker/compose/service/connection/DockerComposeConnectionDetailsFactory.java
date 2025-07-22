@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.core.DockerComposeFile;
@@ -92,7 +94,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	}
 
 	@Override
-	public final D getConnectionDetails(DockerComposeConnectionSource source) {
+	public final @Nullable D getConnectionDetails(DockerComposeConnectionSource source) {
 		return (!accept(source)) ? null : getDockerComposeConnectionDetails(source);
 	}
 
@@ -112,7 +114,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	 * @param source the source
 	 * @return the service connection or {@code null}.
 	 */
-	protected abstract D getDockerComposeConnectionDetails(DockerComposeConnectionSource source);
+	protected abstract @Nullable D getDockerComposeConnectionDetails(DockerComposeConnectionSource source);
 
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
@@ -120,9 +122,9 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	 */
 	protected static class DockerComposeConnectionDetails implements ConnectionDetails, OriginProvider {
 
-		private final Origin origin;
+		private final @Nullable Origin origin;
 
-		private volatile SslBundle sslBundle;
+		private volatile @Nullable SslBundle sslBundle;
 
 		/**
 		 * Create a new {@link DockerComposeConnectionDetails} instance.
@@ -134,11 +136,11 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 		}
 
 		@Override
-		public Origin getOrigin() {
+		public @Nullable Origin getOrigin() {
 			return this.origin;
 		}
 
-		protected SslBundle getSslBundle(RunningService service) {
+		protected @Nullable SslBundle getSslBundle(RunningService service) {
 			if (this.sslBundle != null) {
 				return this.sslBundle;
 			}
@@ -155,7 +157,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 			return sslBundle;
 		}
 
-		private SslBundle getJksSslBundle(RunningService service) {
+		private @Nullable SslBundle getJksSslBundle(RunningService service) {
 			JksSslStoreDetails keyStoreDetails = getJksSslStoreDetails(service, "keystore");
 			JksSslStoreDetails trustStoreDetails = getJksSslStoreDetails(service, "truststore");
 			if (keyStoreDetails == null && trustStoreDetails == null) {
@@ -173,13 +175,13 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 					options, protocol);
 		}
 
-		private ResourceLoader getResourceLoader(Path workingDirectory) {
+		private ResourceLoader getResourceLoader(@Nullable Path workingDirectory) {
 			ClassLoader classLoader = ApplicationResourceLoader.get().getClassLoader();
 			return ApplicationResourceLoader.get(classLoader,
 					SpringFactoriesLoader.forDefaultResourceLocation(classLoader), workingDirectory);
 		}
 
-		private JksSslStoreDetails getJksSslStoreDetails(RunningService service, String storeType) {
+		private @Nullable JksSslStoreDetails getJksSslStoreDetails(RunningService service, String storeType) {
 			String type = service.labels().get("org.springframework.boot.sslbundle.jks.%s.type".formatted(storeType));
 			String provider = service.labels()
 				.get("org.springframework.boot.sslbundle.jks.%s.provider".formatted(storeType));
@@ -193,7 +195,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 			return new JksSslStoreDetails(type, provider, location, password);
 		}
 
-		private Path getWorkingDirectory(RunningService runningService) {
+		private @Nullable Path getWorkingDirectory(RunningService runningService) {
 			DockerComposeFile composeFile = runningService.composeFile();
 			if (composeFile == null || CollectionUtils.isEmpty(composeFile.getFiles())) {
 				return Path.of(".");
@@ -201,7 +203,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 			return composeFile.getFiles().get(0).toPath().getParent();
 		}
 
-		private SslOptions createSslOptions(String ciphers, String enabledProtocols) {
+		private SslOptions createSslOptions(@Nullable String ciphers, @Nullable String enabledProtocols) {
 			Set<String> ciphersSet = null;
 			if (StringUtils.hasLength(ciphers)) {
 				ciphersSet = StringUtils.commaDelimitedListToSet(ciphers);
@@ -213,7 +215,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 			return SslOptions.of(ciphersSet, enabledProtocolsSet);
 		}
 
-		private SslBundle getPemSslBundle(RunningService service) {
+		private @Nullable SslBundle getPemSslBundle(RunningService service) {
 			PemSslStoreDetails keyStoreDetails = getPemSslStoreDetails(service, "keystore");
 			PemSslStoreDetails trustStoreDetails = getPemSslStoreDetails(service, "truststore");
 			if (keyStoreDetails == null && trustStoreDetails == null) {
@@ -231,7 +233,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 					PemSslStore.load(trustStoreDetails, resourceLoader)), key, options, protocol);
 		}
 
-		private PemSslStoreDetails getPemSslStoreDetails(RunningService service, String storeType) {
+		private @Nullable PemSslStoreDetails getPemSslStoreDetails(RunningService service, String storeType) {
 			String type = service.labels().get("org.springframework.boot.sslbundle.pem.%s.type".formatted(storeType));
 			String certificate = service.labels()
 				.get("org.springframework.boot.sslbundle.pem.%s.certificate".formatted(storeType));

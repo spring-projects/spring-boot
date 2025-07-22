@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -69,7 +71,7 @@ final class DockerHost {
 	 * {@link DockerCliContextResponse}
 	 * @return a new docker host instance
 	 */
-	static DockerHost get(String host, Supplier<List<DockerCliContextResponse>> contextsSupplier) {
+	static DockerHost get(@Nullable String host, Supplier<List<DockerCliContextResponse>> contextsSupplier) {
 		return get(host, System::getenv, contextsSupplier);
 	}
 
@@ -81,7 +83,7 @@ final class DockerHost {
 	 * {@link DockerCliContextResponse}
 	 * @return a new docker host instance
 	 */
-	static DockerHost get(String host, Function<String, String> systemEnv,
+	static DockerHost get(@Nullable String host, Function<String, String> systemEnv,
 			Supplier<List<DockerCliContextResponse>> contextsSupplier) {
 		host = (StringUtils.hasText(host)) ? host : fromServicesHostEnv(systemEnv);
 		host = (StringUtils.hasText(host)) ? host : fromDockerHostEnv(systemEnv);
@@ -94,24 +96,24 @@ final class DockerHost {
 		return systemEnv.apply("SERVICES_HOST");
 	}
 
-	private static String fromDockerHostEnv(Function<String, String> systemEnv) {
+	private static @Nullable String fromDockerHostEnv(Function<String, String> systemEnv) {
 		return fromEndpoint(systemEnv.apply("DOCKER_HOST"));
 	}
 
-	private static String fromCurrentContext(Supplier<List<DockerCliContextResponse>> contextsSupplier) {
+	private static @Nullable String fromCurrentContext(Supplier<List<DockerCliContextResponse>> contextsSupplier) {
 		DockerCliContextResponse current = getCurrentContext(contextsSupplier.get());
 		return (current != null) ? fromEndpoint(current.dockerEndpoint()) : null;
 	}
 
-	private static DockerCliContextResponse getCurrentContext(List<DockerCliContextResponse> candidates) {
+	private static @Nullable DockerCliContextResponse getCurrentContext(List<DockerCliContextResponse> candidates) {
 		return candidates.stream().filter(DockerCliContextResponse::current).findFirst().orElse(null);
 	}
 
-	private static String fromEndpoint(String endpoint) {
+	private static @Nullable String fromEndpoint(@Nullable String endpoint) {
 		return (StringUtils.hasLength(endpoint)) ? fromUri(URI.create(endpoint)) : null;
 	}
 
-	private static String fromUri(URI uri) {
+	private static @Nullable String fromUri(URI uri) {
 		try {
 			return switch (uri.getScheme()) {
 				case "http", "https", "tcp" -> uri.getHost();

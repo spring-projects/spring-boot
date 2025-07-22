@@ -19,6 +19,8 @@ package org.springframework.boot.docker.compose.core;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Response from {@link DockerCliCommand.Inspect docker inspect}.
  *
@@ -31,7 +33,8 @@ import java.util.Map;
  * @author Phillip Webb
  */
 record DockerCliInspectResponse(String id, DockerCliInspectResponse.Config config,
-		DockerCliInspectResponse.NetworkSettings networkSettings, DockerCliInspectResponse.HostConfig hostConfig) {
+		DockerCliInspectResponse.NetworkSettings networkSettings,
+		DockerCliInspectResponse.@Nullable HostConfig hostConfig) {
 
 	/**
 	 * Configuration for the container that is portable between hosts.

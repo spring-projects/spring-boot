@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.core;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Exception thrown by {@link ProcessRunner} when the process exits with a non-zero code.
  *
@@ -37,7 +39,7 @@ class ProcessExitException extends RuntimeException {
 		this(exitCode, command, stdOut, stdErr, null);
 	}
 
-	ProcessExitException(int exitCode, String[] command, String stdOut, String stdErr, Throwable cause) {
+	ProcessExitException(int exitCode, String[] command, String stdOut, String stdErr, @Nullable Throwable cause) {
 		super(buildMessage(exitCode, command, stdOut, stdErr), cause);
 		this.exitCode = exitCode;
 		this.command = command;

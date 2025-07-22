@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.Config;
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.HostConfig;
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.HostPort;
@@ -57,7 +59,7 @@ class DefaultConnectionPorts implements ConnectionPorts {
 		return (config != null) && "host".equals(config.networkMode());
 	}
 
-	private Map<ContainerPort, Integer> buildMappingsForNetworkSettings(NetworkSettings networkSettings) {
+	private Map<ContainerPort, Integer> buildMappingsForNetworkSettings(@Nullable NetworkSettings networkSettings) {
 		if (networkSettings == null || CollectionUtils.isEmpty(networkSettings.ports())) {
 			return Collections.emptyMap();
 		}
@@ -73,7 +75,7 @@ class DefaultConnectionPorts implements ConnectionPorts {
 		return Collections.unmodifiableMap(mappings);
 	}
 
-	private boolean isIpV4(HostPort hostPort) {
+	private boolean isIpV4(@Nullable HostPort hostPort) {
 		String ip = (hostPort != null) ? hostPort.hostIp() : null;
 		return !StringUtils.hasLength(ip) || ip.contains(".");
 	}
@@ -108,7 +110,7 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	}
 
 	@Override
-	public List<Integer> getAll(String protocol) {
+	public List<Integer> getAll(@Nullable String protocol) {
 		List<Integer> hostPorts = new ArrayList<>();
 		this.mappings.forEach((containerPort, hostPort) -> {
 			if (protocol == null || protocol.equalsIgnoreCase(containerPort.protocol())) {

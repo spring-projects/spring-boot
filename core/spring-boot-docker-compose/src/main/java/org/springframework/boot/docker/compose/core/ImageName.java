@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.core;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -38,7 +40,7 @@ class ImageName {
 
 	private final String string;
 
-	ImageName(String domain, String path) {
+	ImageName(@Nullable String domain, String path) {
 		Assert.hasText(path, "'path' must not be empty");
 		this.domain = getDomainOrDefault(domain);
 		this.name = getNameWithDefaultPath(this.domain, path);
@@ -90,7 +92,7 @@ class ImageName {
 		return this.string;
 	}
 
-	private String getDomainOrDefault(String domain) {
+	private String getDomainOrDefault(@Nullable String domain) {
 		if (domain == null || LEGACY_DOMAIN.equals(domain)) {
 			return DEFAULT_DOMAIN;
 		}
@@ -104,7 +106,7 @@ class ImageName {
 		return name;
 	}
 
-	static String parseDomain(String value) {
+	static @Nullable String parseDomain(String value) {
 		int firstSlash = value.indexOf('/');
 		String candidate = (firstSlash != -1) ? value.substring(0, firstSlash) : null;
 		if (candidate != null && Regex.DOMAIN.matcher(candidate).matches()) {

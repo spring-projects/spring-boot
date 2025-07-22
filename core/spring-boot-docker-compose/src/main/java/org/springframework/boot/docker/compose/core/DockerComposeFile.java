@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -107,7 +109,7 @@ public final class DockerComposeFile {
 	 * current directory
 	 * @return the located file or {@code null} if no Docker Compose file can be found
 	 */
-	public static DockerComposeFile find(File workingDirectory) {
+	public static @Nullable DockerComposeFile find(@Nullable File workingDirectory) {
 		File base = (workingDirectory != null) ? workingDirectory : new File(".");
 		if (!base.exists()) {
 			return null;

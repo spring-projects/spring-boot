@@ -19,6 +19,8 @@ package org.springframework.boot.docker.compose.core;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 
@@ -45,10 +47,10 @@ class DefaultRunningService implements RunningService, OriginProvider {
 
 	private final DockerEnv env;
 
-	private final DockerComposeFile composeFile;
+	private final @Nullable DockerComposeFile composeFile;
 
-	DefaultRunningService(DockerHost host, DockerComposeFile composeFile, DockerCliComposePsResponse composePsResponse,
-			DockerCliInspectResponse inspectResponse) {
+	DefaultRunningService(DockerHost host, @Nullable DockerComposeFile composeFile,
+			DockerCliComposePsResponse composePsResponse, DockerCliInspectResponse inspectResponse) {
 		this.origin = new DockerComposeOrigin(composeFile, composePsResponse.name());
 		this.name = composePsResponse.name();
 		this.image = ImageReference
@@ -101,7 +103,7 @@ class DefaultRunningService implements RunningService, OriginProvider {
 	}
 
 	@Override
-	public DockerComposeFile composeFile() {
+	public @Nullable DockerComposeFile composeFile() {
 		return this.composeFile;
 	}
 

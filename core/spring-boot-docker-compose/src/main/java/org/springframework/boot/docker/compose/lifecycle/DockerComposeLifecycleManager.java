@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
@@ -57,11 +58,11 @@ class DockerComposeLifecycleManager {
 
 	private static final String IGNORE_LABEL = "org.springframework.boot.ignore";
 
-	private final File workingDirectory;
+	private final @Nullable File workingDirectory;
 
 	private final ApplicationContext applicationContext;
 
-	private final ClassLoader classLoader;
+	private final @Nullable ClassLoader classLoader;
 
 	private final SpringApplicationShutdownHandlers shutdownHandlers;
 
@@ -80,10 +81,10 @@ class DockerComposeLifecycleManager {
 				new DockerComposeSkipCheck(), null);
 	}
 
-	DockerComposeLifecycleManager(File workingDirectory, ApplicationContext applicationContext, Binder binder,
+	DockerComposeLifecycleManager(@Nullable File workingDirectory, ApplicationContext applicationContext, Binder binder,
 			SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
 			Set<ApplicationListener<?>> eventListeners, DockerComposeSkipCheck skipCheck,
-			ServiceReadinessChecks serviceReadinessChecks) {
+			@Nullable ServiceReadinessChecks serviceReadinessChecks) {
 		this.workingDirectory = workingDirectory;
 		this.applicationContext = applicationContext;
 		this.classLoader = applicationContext.getClassLoader();

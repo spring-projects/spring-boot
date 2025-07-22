@@ -18,6 +18,8 @@ package org.springframework.boot.docker.compose.core;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Provides details of a running Docker Compose service.
  *
@@ -69,7 +71,7 @@ public interface RunningService {
 	 * @return the Docker Compose file
 	 * @since 3.5.0
 	 */
-	default DockerComposeFile composeFile() {
+	default @Nullable DockerComposeFile composeFile() {
 		return null;
 	}
 
