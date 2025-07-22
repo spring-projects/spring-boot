@@ -32,15 +32,15 @@ configurations.all {
 }
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-json"))
+	implementation(project(":starter:spring-boot-starter-kafka"))
+
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:kafka")
-
-	implementation(project(":starter:spring-boot-starter-json"))
-	implementation(project(":module:spring-boot-kafka"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.awaitility:awaitility")

@@ -22,9 +22,10 @@ description = "Spring Boot Hibernate smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-freemarker"))
+	implementation(project(":starter:spring-boot-starter-jdbc"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
-	implementation(project(":module:spring-boot-jdbc"))
 	implementation(project(":module:spring-boot-hibernate"))
+
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 
 	runtimeOnly("com.h2database:h2")

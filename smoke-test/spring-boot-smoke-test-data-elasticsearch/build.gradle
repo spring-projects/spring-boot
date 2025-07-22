@@ -23,6 +23,8 @@ plugins {
 description = "Spring Boot Data Elasticsearch smoke test"
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-data-elasticsearch"))
+
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
@@ -33,6 +35,4 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:elasticsearch")
 	dockerTestImplementation("org.testcontainers:testcontainers")
-
-	implementation(project(":starter:spring-boot-starter-data-elasticsearch"))
 }

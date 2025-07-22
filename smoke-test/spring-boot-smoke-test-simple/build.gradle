@@ -22,10 +22,7 @@ description = "Spring Boot Simple smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter"))
-	implementation("jakarta.validation:jakarta.validation-api")
-	implementation("org.hibernate.validator:hibernate-validator") {
-		exclude group: "javax.validation"
-	}
+	implementation(project(":starter:spring-boot-starter-validation"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

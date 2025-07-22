@@ -25,7 +25,6 @@ configurations.all {
 }
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter"))
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-log4j2"))
 	implementation(project(":starter:spring-boot-starter-security"))

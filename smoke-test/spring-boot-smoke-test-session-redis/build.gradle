@@ -22,15 +22,14 @@ plugins {
 description = "Spring Boot Session Mongodb smoke test"
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-actuator"))
+	implementation(project(":starter:spring-boot-starter-security"))
+	implementation(project(":starter:spring-boot-starter-session-data-redis"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
+
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
-
-	implementation(project(":module:spring-boot-session-data-redis"))
-	implementation(project(":starter:spring-boot-starter-actuator"))
-	implementation(project(":starter:spring-boot-starter-data-redis"))
-	implementation(project(":starter:spring-boot-starter-security"))
-	implementation(project(":starter:spring-boot-starter-webmvc"))
 }

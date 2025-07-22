@@ -22,13 +22,13 @@ plugins {
 description = "Spring Boot Pulsar smoke test"
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-pulsar"))
+	implementation(project(":starter:spring-boot-starter-pulsar-reactive"))
+
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:pulsar")
-
-	implementation(project(":starter:spring-boot-starter-pulsar"))
-	implementation(project(":starter:spring-boot-starter-pulsar-reactive"))
 }

@@ -22,6 +22,9 @@ plugins {
 description = "Spring Boot Data Cassandra smoke test"
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-data-cassandra"))
+	implementation(project(":starter:spring-boot-starter-data-cassandra-reactive"))
+
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
@@ -32,7 +35,4 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:cassandra")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
-
-	implementation(project(":starter:spring-boot-starter-data-cassandra"))
-	implementation(project(":starter:spring-boot-starter-data-cassandra-reactive"))
 }

@@ -22,6 +22,12 @@ plugins {
 description = "Spring Boot Data R2DBC with Liquibase smoke test"
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-data-r2dbc"))
+	implementation(project(":starter:spring-boot-starter-liquibase"))
+
+	runtimeOnly("org.postgresql:postgresql")
+	runtimeOnly("org.postgresql:r2dbc-postgresql")
+
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
@@ -29,12 +35,4 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:postgresql")
 	dockerTestImplementation("org.testcontainers:r2dbc")
-
-	implementation(project(":starter:spring-boot-starter-data-r2dbc"))
-
-	runtimeOnly(project(":module:spring-boot-jdbc"))
-	runtimeOnly(project(":module:spring-boot-liquibase"))
-	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("org.postgresql:r2dbc-postgresql")
-	runtimeOnly("org.springframework:spring-jdbc")
 }

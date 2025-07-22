@@ -29,9 +29,8 @@ configurations.all {
 }
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-security"))
+	implementation(project(":starter:spring-boot-starter-security-saml2"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
-	implementation(project(":module:spring-boot-security-saml2"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")

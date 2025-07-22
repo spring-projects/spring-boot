@@ -37,18 +37,15 @@ configurations {
 }
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-actuator"))
+	implementation(project(":starter:spring-boot-starter-cache"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
+
 	caffeine(enforcedPlatform(project(":platform:spring-boot-dependencies")))
 	caffeine("com.github.ben-manes.caffeine:caffeine")
 
 	couchbase(enforcedPlatform(project(":platform:spring-boot-dependencies")))
 	couchbase(project(":starter:spring-boot-starter-data-couchbase"))
-
-	dockerTestImplementation(project(":starter:spring-boot-starter-data-redis"))
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
-	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
-	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
-	dockerTestImplementation("com.redis:testcontainers-redis")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	ehcache(enforcedPlatform(project(":platform:spring-boot-dependencies")))
 	ehcache("javax.cache:cache-api")
@@ -58,16 +55,19 @@ dependencies {
 	hazelcast(project(":module:spring-boot-hazelcast"))
 	hazelcast("com.hazelcast:hazelcast-spring")
 
-	implementation(project(":starter:spring-boot-starter-actuator"))
-	implementation(project(":starter:spring-boot-starter-cache"))
-	implementation(project(":starter:spring-boot-starter-webmvc"))
-
 	infinispan(enforcedPlatform(project(":platform:spring-boot-dependencies")))
 	infinispan("javax.cache:cache-api")
 	infinispan("org.infinispan:infinispan-commons")
 	infinispan("org.infinispan:infinispan-component-annotations")
 	infinispan("org.infinispan:infinispan-core")
 	infinispan("org.infinispan:infinispan-jcache")
+
+	dockerTestImplementation(project(":starter:spring-boot-starter-data-redis"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
+	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

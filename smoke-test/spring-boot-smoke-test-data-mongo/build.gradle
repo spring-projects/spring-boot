@@ -22,6 +22,9 @@ plugins {
 description = "Spring Boot Data MongoDB smoke test"
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-data-mongodb"))
+	implementation(project(":starter:spring-boot-starter-data-mongodb-reactive"))
+
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
@@ -33,8 +36,4 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
 	dockerTestImplementation("org.testcontainers:testcontainers")
-
-	implementation(project(":module:spring-boot-reactor"))
-	implementation(project(":starter:spring-boot-starter-data-mongodb"))
-	implementation(project(":starter:spring-boot-starter-data-mongodb-reactive"))
 }

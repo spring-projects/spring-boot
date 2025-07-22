@@ -21,8 +21,8 @@ plugins {
 description = "Spring Boot Test smoke test"
 
 dependencies {
-	implementation(project(":module:spring-boot-restclient"))
 	implementation(project(":starter:spring-boot-starter-data-jpa"))
+	implementation(project(":starter:spring-boot-starter-restclient"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	runtimeOnly("com.h2database:h2")

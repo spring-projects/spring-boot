@@ -21,10 +21,7 @@ plugins {
 description = "Spring Boot Tomcat smoke test"
 
 dependencies {
-	implementation(project(":module:spring-boot-http-converter"))
-	implementation(project(":starter:spring-boot-starter"))
-	implementation(project(":starter:spring-boot-starter-tomcat"))
-	implementation(project(":module:spring-boot-webmvc"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }
