@@ -44,7 +44,7 @@ public final class ExtendedWhitespaceThrowablePatternConverter extends LogEventP
 	private ExtendedWhitespaceThrowablePatternConverter(Configuration configuration, String[] options) {
 		super("WhitespaceExtendedThrowable", "throwable");
 		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
-		this.separator = WhitespaceThrowablePatternConverter.readSeparatorOption(options);
+		this.separator = ((ExtendedThrowablePatternConverter) this.delegate).getOptions().getSeparator();
 	}
 
 	@Override
