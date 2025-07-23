@@ -208,8 +208,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		ZipEntry entry = getPackagedEntry("BOOT-INF/lib/" + libJarFile.getName());
 		assertThat(entry.getTime()).isEqualTo(JAN_1_1985);
 		entry = getPackagedEntry("BOOT-INF/lib/" + libJarFileToUnpack.getName());
-		assertThat(entry.getComment()).startsWith("UNPACK:");
-		assertThat(entry.getComment()).hasSize(47);
+		assertThat(entry.getComment()).isEqualTo("UNPACK:");
 	}
 
 	@Test
