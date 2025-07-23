@@ -44,12 +44,11 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 
 	@Test
 	void backsOffWithoutEncoding() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(OpenTelemetryConfiguration.class))
-			.run((context) -> {
-				assertThat(context).hasNotFailed();
-				assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class);
-				assertThat(context).doesNotHaveBean(BytesEncoder.class);
-			});
+		new ApplicationContextRunner().withUserConfiguration(OpenTelemetryConfiguration.class).run((context) -> {
+			assertThat(context).hasNotFailed();
+			assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class);
+			assertThat(context).doesNotHaveBean(BytesEncoder.class);
+		});
 	}
 
 	@Test
