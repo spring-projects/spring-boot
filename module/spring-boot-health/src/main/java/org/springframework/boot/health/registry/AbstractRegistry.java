@@ -49,12 +49,12 @@ abstract class AbstractRegistry<C, E> {
 
 	AbstractRegistry(BiFunction<String, C, E> entryAdapter,
 			Collection<? extends HealthContributorNameValidator> nameValidators,
-			Consumer<BiConsumer<String, C>> intialRegistrations) {
+			Consumer<BiConsumer<String, C>> initialRegistrations) {
 		this.nameValidators = (nameValidators != null) ? List.copyOf(nameValidators) : Collections.emptyList();
 		this.entryAdapter = entryAdapter;
 		Map<String, C> contributors = new LinkedHashMap<>();
-		if (intialRegistrations != null) {
-			intialRegistrations.accept((name, contributor) -> registerContributor(contributors, name, contributor));
+		if (initialRegistrations != null) {
+			initialRegistrations.accept((name, contributor) -> registerContributor(contributors, name, contributor));
 		}
 		this.contributors = Collections.unmodifiableMap(contributors);
 	}

@@ -111,8 +111,8 @@ class HealthEndpointTests extends
 
 	@Override
 	protected HealthContributorRegistry createRegistry(
-			Consumer<BiConsumer<String, HealthContributor>> intialRegistrations) {
-		return new DefaultHealthContributorRegistry(Collections.emptyList(), intialRegistrations);
+			Consumer<BiConsumer<String, HealthContributor>> initialRegistrations) {
+		return new DefaultHealthContributorRegistry(Collections.emptyList(), initialRegistrations);
 	}
 
 	@Override
