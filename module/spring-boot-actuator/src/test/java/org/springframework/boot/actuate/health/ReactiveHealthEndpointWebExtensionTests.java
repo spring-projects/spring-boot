@@ -108,8 +108,8 @@ class ReactiveHealthEndpointWebExtensionTests extends
 
 	@Override
 	protected ReactiveHealthContributorRegistry createRegistry(
-			Consumer<BiConsumer<String, ReactiveHealthContributor>> intialRegistrations) {
-		return new DefaultReactiveHealthContributorRegistry(Collections.emptyList(), intialRegistrations);
+			Consumer<BiConsumer<String, ReactiveHealthContributor>> initialRegistrations) {
+		return new DefaultReactiveHealthContributorRegistry(Collections.emptyList(), initialRegistrations);
 	}
 
 	@Override

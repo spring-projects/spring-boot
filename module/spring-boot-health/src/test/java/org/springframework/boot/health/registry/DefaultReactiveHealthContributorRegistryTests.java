@@ -38,8 +38,8 @@ class DefaultReactiveHealthContributorRegistryTests
 	@Override
 	protected AbstractRegistry<ReactiveHealthContributor, Entry> createRegistry(
 			Collection<? extends HealthContributorNameValidator> nameValidators,
-			Consumer<BiConsumer<String, ReactiveHealthContributor>> intialRegistrations) {
-		return new DefaultReactiveHealthContributorRegistry(nameValidators, intialRegistrations);
+			Consumer<BiConsumer<String, ReactiveHealthContributor>> initialRegistrations) {
+		return new DefaultReactiveHealthContributorRegistry(nameValidators, initialRegistrations);
 	}
 
 	@Override

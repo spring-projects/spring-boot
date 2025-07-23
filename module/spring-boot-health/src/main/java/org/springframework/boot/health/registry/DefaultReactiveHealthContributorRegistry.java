@@ -43,11 +43,11 @@ public class DefaultReactiveHealthContributorRegistry extends AbstractRegistry<R
 	/**
 	 * Create a new {@link DefaultReactiveHealthContributorRegistry} instance.
 	 * @param nameValidators the name validators to apply
-	 * @param intialRegistrations callback to setup any initial registrations
+	 * @param initialRegistrations callback to setup any initial registrations
 	 */
 	public DefaultReactiveHealthContributorRegistry(Collection<? extends HealthContributorNameValidator> nameValidators,
-			Consumer<BiConsumer<String, ReactiveHealthContributor>> intialRegistrations) {
-		super(Entry::new, nameValidators, intialRegistrations);
+			Consumer<BiConsumer<String, ReactiveHealthContributor>> initialRegistrations) {
+		super(Entry::new, nameValidators, initialRegistrations);
 	}
 
 	@Override
