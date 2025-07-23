@@ -2153,6 +2153,7 @@ bom {
 				"spring-boot-starter-webmvc",
 				"spring-boot-starter-webservices",
 				"spring-boot-starter-websocket",
+				"spring-boot-starter-zipkin",
 				"spring-boot-test",
 				"spring-boot-test-autoconfigure",
 				"spring-boot-testcontainers",
