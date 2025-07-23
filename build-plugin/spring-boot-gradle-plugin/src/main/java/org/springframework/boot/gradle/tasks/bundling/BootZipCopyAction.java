@@ -23,13 +23,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -585,25 +582,16 @@ class BootZipCopyAction implements CopyAction {
 
 		private static final int BUFFER_SIZE = 32 * 1024;
 
-		private final @Nullable MessageDigest messageDigest;
+		private final boolean unpack;
 
 		private final CRC32 crc = new CRC32();
 
 		private long size;
 
 		StoredEntryPreparator(InputStream inputStream, boolean unpack) throws IOException {
-			this.messageDigest = (unpack) ? sha1Digest() : null;
+			this.unpack = unpack;
 			try (inputStream) {
 				load(inputStream);
-			}
-		}
-
-		private static MessageDigest sha1Digest() {
-			try {
-				return MessageDigest.getInstance("SHA-1");
-			}
-			catch (NoSuchAlgorithmException ex) {
-				throw new IllegalStateException(ex);
 			}
 		}
 
@@ -612,9 +600,6 @@ class BootZipCopyAction implements CopyAction {
 			int bytesRead;
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
 				this.crc.update(buffer, 0, bytesRead);
-				if (this.messageDigest != null) {
-					this.messageDigest.update(buffer, 0, bytesRead);
-				}
 				this.size += bytesRead;
 			}
 		}
@@ -624,8 +609,8 @@ class BootZipCopyAction implements CopyAction {
 			entry.setCompressedSize(this.size);
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
-			if (this.messageDigest != null) {
-				entry.setComment("UNPACK:" + HexFormat.of().formatHex(this.messageDigest.digest()));
+			if (this.unpack) {
+				entry.setComment("UNPACK:");
 			}
 		}
 
