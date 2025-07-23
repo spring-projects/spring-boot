@@ -360,7 +360,7 @@ abstract class HealthEndpointSupportTests<E extends HealthEndpointSupport<H, D>,
 		return createRegistry((registrations) -> registrations.accept(name, contributor));
 	}
 
-	protected abstract R createRegistry(Consumer<BiConsumer<String, C>> intialRegistrations);
+	protected abstract R createRegistry(Consumer<BiConsumer<String, C>> initialRegistrations);
 
 	protected abstract C createContributor(Health health);
 

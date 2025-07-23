@@ -127,9 +127,9 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 
 	@Test
 	void nameValidatorsValidateMapKeys() {
-		assertThatIllegalStateException().isThrownBy(() -> createRegistry(testValidator(), (intialRegistrations) -> {
-			intialRegistrations.accept("ok", mockHealthIndicator());
-			intialRegistrations.accept("fail", mockHealthIndicator());
+		assertThatIllegalStateException().isThrownBy(() -> createRegistry(testValidator(), (initialRegistrations) -> {
+			initialRegistrations.accept("ok", mockHealthIndicator());
+			initialRegistrations.accept("fail", mockHealthIndicator());
 		})).withMessage("Failed validation");
 	}
 
@@ -147,7 +147,7 @@ abstract class AbstractHealthContributorRegistryTests<C, E> {
 
 	protected abstract AbstractRegistry<C, E> createRegistry(
 			Collection<? extends HealthContributorNameValidator> nameValidators,
-			Consumer<BiConsumer<String, C>> intialRegistrations);
+			Consumer<BiConsumer<String, C>> initialRegistrations);
 
 	protected abstract C mockHealthIndicator();
 
