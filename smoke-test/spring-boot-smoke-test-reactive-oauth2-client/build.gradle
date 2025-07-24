@@ -22,7 +22,7 @@ description = "Spring Boot reactive OAuth 2 client smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
-	implementation(project(":starter:spring-boot-starter-oauth2-client"))
+	implementation(project(":starter:spring-boot-starter-security-oauth2-client"))
 	implementation(project(":starter:spring-boot-starter-webflux"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))

@@ -18,11 +18,8 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for using Spring Authorization Server features"
+description = "Starter for using Spring Authorization Server features (deprecated in favor of spring-boot-starter-security-oauth2-authorization-server)"
 
 dependencies {
-	api(project(":starter:spring-boot-starter-security"))
-	api(project(":starter:spring-boot-starter-webmvc"))
-
-	api(project(":module:spring-boot-security-oauth2-authorization-server"))
+	api(project(":starter:spring-boot-starter-security-oauth2-authorization-server"))
 }

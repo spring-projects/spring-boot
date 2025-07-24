@@ -18,10 +18,8 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for using Spring Security's OAuth2 resource server features"
+description = "Starter for using Spring Security's OAuth2 resource server features (deprecated in favor of spring-boot-starter-security-oauth2-resource-server)"
 
 dependencies {
-	api(project(":starter:spring-boot-starter-security"))
-
-	api(project(":module:spring-boot-security-oauth2-resource-server"))
+	api(project(":starter:spring-boot-starter-security-oauth2-resource-server"))
 }

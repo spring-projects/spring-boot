@@ -21,7 +21,7 @@ plugins {
 description = "Spring Boot OAuth2 Resource Server smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-oauth2-resource-server"))
+	implementation(project(":starter:spring-boot-starter-security-oauth2-resource-server"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))

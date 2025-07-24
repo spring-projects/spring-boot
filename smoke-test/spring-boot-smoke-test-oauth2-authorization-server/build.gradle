@@ -21,7 +21,7 @@ plugins {
 description = "Spring Boot OAuth2 Authorization Server smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-oauth2-authorization-server"))
+	implementation(project(":starter:spring-boot-starter-security-oauth2-authorization-server"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")

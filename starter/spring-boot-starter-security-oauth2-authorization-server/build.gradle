@@ -15,15 +15,14 @@
  */
 
 plugins {
-	id "java"
+	id "org.springframework.boot.starter"
 }
 
-description = "Spring Boot reactive OAuth 2 resource server smoke test"
+description = "Starter for using Spring Authorization Server features"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-security-oauth2-resource-server"))
-	implementation(project(":starter:spring-boot-starter-webflux"))
+	api(project(":starter:spring-boot-starter-security"))
+	api(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
-	testImplementation("com.squareup.okhttp3:mockwebserver")
+	api(project(":module:spring-boot-security-oauth2-authorization-server"))
 }
