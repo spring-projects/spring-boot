@@ -29,6 +29,9 @@ pluginManagement {
 			if (requested.id.id == "org.jetbrains.kotlin.plugin.spring") {
 				useVersion "${kotlinVersion}"
 			}
+			if (requested.id.id == "org.jetbrains.kotlin.plugin.serialization") {
+				useVersion "${kotlinVersion}"
+			}
 		}
 	}
 	includeBuild("gradle/plugins")
@@ -123,6 +126,7 @@ include "module:spring-boot-jooq"
 include "module:spring-boot-jpa"
 include "module:spring-boot-jsonb"
 include "module:spring-boot-kafka"
+include "module:spring-boot-kotlin-serialization"
 include "module:spring-boot-ldap"
 include "module:spring-boot-liquibase"
 include "module:spring-boot-mail"
@@ -213,6 +217,7 @@ include "starter:spring-boot-starter-jooq"
 include "starter:spring-boot-starter-json"
 include "starter:spring-boot-starter-jsonb"
 include "starter:spring-boot-starter-kafka"
+include "starter:spring-boot-starter-kotlin-serialization"
 include "starter:spring-boot-starter-ldap"
 include "starter:spring-boot-starter-liquibase"
 include "starter:spring-boot-starter-log4j2"

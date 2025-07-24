@@ -6,6 +6,7 @@ Spring Boot provides integration with three JSON mapping libraries:
 - Gson
 - Jackson 3
 - JSON-B
+- Kotlin Serialization
 
 Jackson is the preferred and default library.
 
@@ -68,3 +69,12 @@ To take more control, one or more javadoc:org.springframework.boot.autoconfigure
 Auto-configuration for JSON-B is provided.
 When the JSON-B API and an implementation are on the classpath a javadoc:jakarta.json.bind.Jsonb[] bean will be automatically configured.
 The preferred JSON-B implementation is Eclipse Yasson for which dependency management is provided.
+
+
+
+[[features.json.kotlin-serialization]]
+== Kotlin Serialization
+
+Auto-configuration for Kotlin Serialization is provided.
+When `kotlinx-serialization-json` is on the classpath a https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-json/kotlinx.serialization.json/-json/[Json] bean is automatically configured.
+Several `+spring.kotlin-serialization.*+` configuration properties are provided for customizing the configuration.
