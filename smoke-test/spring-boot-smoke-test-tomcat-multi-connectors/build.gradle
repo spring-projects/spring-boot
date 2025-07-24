@@ -23,6 +23,7 @@ description = "Spring Boot Tomcat multi-connectors smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
+	testImplementation(project(":starter:spring-boot-starter-restclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }

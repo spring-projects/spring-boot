@@ -26,6 +26,7 @@ dependencies {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 
+	testImplementation(project(":starter:spring-boot-starter-restclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 
 	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")

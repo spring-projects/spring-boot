@@ -24,5 +24,6 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-mustache"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
+	testImplementation(project(":starter:spring-boot-starter-restclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

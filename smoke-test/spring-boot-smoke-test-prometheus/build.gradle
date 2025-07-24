@@ -27,5 +27,6 @@ dependencies {
 
 	runtimeOnly('io.micrometer:micrometer-registry-prometheus')
 
+	testImplementation(project(":starter:spring-boot-starter-restclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

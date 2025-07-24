@@ -24,6 +24,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-webflux"))
 
+	testImplementation(project(":starter:spring-boot-starter-restclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("io.projectreactor:reactor-test")
 }

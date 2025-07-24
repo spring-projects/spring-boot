@@ -23,5 +23,6 @@ description = "Spring Boot HATEOAS smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-hateoas"))
 
+	testImplementation(project(":starter:spring-boot-starter-restclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }
