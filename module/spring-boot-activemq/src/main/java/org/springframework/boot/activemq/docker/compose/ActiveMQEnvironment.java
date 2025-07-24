@@ -18,6 +18,8 @@ package org.springframework.boot.activemq.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * ActiveMQ environment details.
  *
@@ -25,20 +27,20 @@ import java.util.Map;
  */
 class ActiveMQEnvironment {
 
-	private final String user;
+	private final @Nullable String user;
 
-	private final String password;
+	private final @Nullable String password;
 
 	ActiveMQEnvironment(Map<String, String> env) {
 		this.user = env.get("ACTIVEMQ_USERNAME");
 		this.password = env.get("ACTIVEMQ_PASSWORD");
 	}
 
-	String getUser() {
+	@Nullable String getUser() {
 		return this.user;
 	}
 
-	String getPassword() {
+	@Nullable String getPassword() {
 		return this.password;
 	}
 

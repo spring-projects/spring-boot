@@ -17,4 +17,7 @@
 /**
  * Support for Docker Compose ActiveMQ service connections.
  */
+@NullMarked
 package org.springframework.boot.activemq.docker.compose;
+
+import org.jspecify.annotations.NullMarked;

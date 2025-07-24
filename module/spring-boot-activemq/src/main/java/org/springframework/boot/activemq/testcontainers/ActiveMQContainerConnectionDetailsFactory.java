@@ -16,6 +16,7 @@
 
 package org.springframework.boot.activemq.testcontainers;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
@@ -56,12 +57,12 @@ class ActiveMQContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getUser() {
+		public @Nullable String getUser() {
 			return getContainer().getEnvMap().get("ACTIVEMQ_USERNAME");
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return getContainer().getEnvMap().get("ACTIVEMQ_PASSWORD");
 		}
 

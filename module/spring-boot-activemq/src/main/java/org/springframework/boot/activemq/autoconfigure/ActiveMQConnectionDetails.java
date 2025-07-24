@@ -16,6 +16,8 @@
 
 package org.springframework.boot.activemq.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
@@ -37,12 +39,12 @@ public interface ActiveMQConnectionDetails extends ConnectionDetails {
 	 * Login user to authenticate to the broker.
 	 * @return the login user to authenticate to the broker or {@code null}
 	 */
-	String getUser();
+	@Nullable String getUser();
 
 	/**
 	 * Login to authenticate against the broker.
 	 * @return the login to authenticate against the broker or {@code null}
 	 */
-	String getPassword();
+	@Nullable String getPassword();
 
 }

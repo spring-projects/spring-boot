@@ -18,6 +18,7 @@ package org.springframework.boot.activemq.autoconfigure;
 
 import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -71,12 +72,12 @@ public final class ActiveMQAutoConfiguration {
 		}
 
 		@Override
-		public String getUser() {
+		public @Nullable String getUser() {
 			return this.properties.getUser();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.properties.getPassword();
 		}
 
