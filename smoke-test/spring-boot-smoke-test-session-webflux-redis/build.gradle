@@ -29,6 +29,7 @@ dependencies {
 	runtimeOnly(project(":starter:spring-boot-starter-data-redis-reactive"))
 
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-webclient"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
