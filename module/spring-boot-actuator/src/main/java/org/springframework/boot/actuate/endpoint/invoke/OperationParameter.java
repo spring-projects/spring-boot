@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint.invoke;
 
 import java.lang.annotation.Annotation;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A single operation parameter.
  *
@@ -53,6 +55,6 @@ public interface OperationParameter {
 	 * @param <T> type of the annotation
 	 * @since 2.7.8
 	 */
-	<T extends Annotation> T getAnnotation(Class<T> annotation);
+	<T extends Annotation> @Nullable T getAnnotation(Class<T> annotation);
 
 }

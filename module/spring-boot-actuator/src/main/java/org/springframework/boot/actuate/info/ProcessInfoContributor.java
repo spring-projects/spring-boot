@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.info;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -50,7 +52,7 @@ public class ProcessInfoContributor implements InfoContributor {
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), ProcessInfo.class);
 			hints.reflection()
 				.registerTypeIfPresent(classLoader, "jdk.management.VirtualThreadSchedulerMXBean",

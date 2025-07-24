@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.info;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -48,7 +50,7 @@ public class OsInfoContributor implements InfoContributor {
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), OsInfo.class);
 		}
 

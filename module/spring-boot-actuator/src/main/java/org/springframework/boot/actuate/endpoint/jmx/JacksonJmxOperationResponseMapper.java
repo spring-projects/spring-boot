@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link JmxOperationResponseMapper} that delegates to a Jackson {@link ObjectMapper} to
@@ -38,7 +39,7 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 
 	private final JavaType mapType;
 
-	public JacksonJmxOperationResponseMapper(ObjectMapper objectMapper) {
+	public JacksonJmxOperationResponseMapper(@Nullable ObjectMapper objectMapper) {
 		this.objectMapper = (objectMapper != null) ? objectMapper : new ObjectMapper();
 		this.listType = this.objectMapper.getTypeFactory().constructParametricType(List.class, Object.class);
 		this.mapType = this.objectMapper.getTypeFactory()
@@ -57,7 +58,7 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 	}
 
 	@Override
-	public Object mapResponse(Object response) {
+	public @Nullable Object mapResponse(@Nullable Object response) {
 		if (response == null) {
 			return null;
 		}

@@ -17,4 +17,7 @@
 /**
  * Core actuator auditing classes.
  */
+@NullMarked
 package org.springframework.boot.actuate.audit;
+
+import org.jspecify.annotations.NullMarked;

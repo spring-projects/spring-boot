@@ -17,4 +17,7 @@
 /**
  * Actuator support relating to Spring Beans.
  */
+@NullMarked
 package org.springframework.boot.actuate.beans;
+
+import org.jspecify.annotations.NullMarked;

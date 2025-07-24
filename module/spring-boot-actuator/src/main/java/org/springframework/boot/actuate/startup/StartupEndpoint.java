@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.startup;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -105,7 +107,7 @@ public class StartupEndpoint {
 			.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep");
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.reflection()
 				.registerType(DEFAULT_TAG, (typeHint) -> typeHint.onReachableType(BUFFERED_STARTUP_STEP)
 					.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));

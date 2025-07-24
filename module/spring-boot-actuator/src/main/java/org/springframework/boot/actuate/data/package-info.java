@@ -17,4 +17,7 @@
 /**
  * Actuator support dependent on Spring Data.
  */
+@NullMarked
 package org.springframework.boot.actuate.data;
+
+import org.jspecify.annotations.NullMarked;

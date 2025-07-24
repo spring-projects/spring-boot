@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -42,7 +44,7 @@ public interface OperationArgumentResolver {
 	 * @param type argument type
 	 * @return an argument of the required type, or {@code null}
 	 */
-	<T> T resolve(Class<T> type);
+	<T> @Nullable T resolve(Class<T> type);
 
 	/**
 	 * Factory method that creates an {@link OperationArgumentResolver} for a specific

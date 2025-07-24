@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.util.Assert;
@@ -46,7 +48,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param basePath the base path of the endpoints
 	 * @param supplier the endpoint supplier
 	 */
-	public PathMappedEndpoints(String basePath, EndpointsSupplier<?> supplier) {
+	public PathMappedEndpoints(@Nullable String basePath, EndpointsSupplier<?> supplier) {
 		Assert.notNull(supplier, "'supplier' must not be null");
 		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(Collections.singleton(supplier));
@@ -57,7 +59,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param basePath the base path of the endpoints
 	 * @param suppliers the endpoint suppliers
 	 */
-	public PathMappedEndpoints(String basePath, Collection<EndpointsSupplier<?>> suppliers) {
+	public PathMappedEndpoints(@Nullable String basePath, Collection<EndpointsSupplier<?>> suppliers) {
 		Assert.notNull(suppliers, "'suppliers' must not be null");
 		this.basePath = (basePath != null) ? basePath : "";
 		this.endpoints = getEndpoints(suppliers);
@@ -87,7 +89,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param endpointId the endpoint ID
 	 * @return the root path or {@code null}
 	 */
-	public String getRootPath(EndpointId endpointId) {
+	public @Nullable String getRootPath(EndpointId endpointId) {
 		PathMappedEndpoint endpoint = getEndpoint(endpointId);
 		return (endpoint != null) ? endpoint.getRootPath() : null;
 	}
@@ -98,7 +100,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param endpointId the endpoint ID
 	 * @return the full path or {@code null}
 	 */
-	public String getPath(EndpointId endpointId) {
+	public @Nullable String getPath(EndpointId endpointId) {
 		return getPath(getEndpoint(endpointId));
 	}
 
@@ -129,7 +131,8 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 		return getAdditionalPaths(webServerNamespace, getEndpoint(endpointId)).toList();
 	}
 
-	private Stream<String> getAdditionalPaths(WebServerNamespace webServerNamespace, PathMappedEndpoint endpoint) {
+	private Stream<String> getAdditionalPaths(WebServerNamespace webServerNamespace,
+			@Nullable PathMappedEndpoint endpoint) {
 		List<String> additionalPaths = (endpoint != null) ? endpoint.getAdditionalPaths(webServerNamespace) : null;
 		if (CollectionUtils.isEmpty(additionalPaths)) {
 			return Stream.empty();
@@ -147,7 +150,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	 * @param endpointId the endpoint ID
 	 * @return the path mapped endpoint or {@code null}
 	 */
-	public PathMappedEndpoint getEndpoint(EndpointId endpointId) {
+	public @Nullable PathMappedEndpoint getEndpoint(EndpointId endpointId) {
 		return this.endpoints.get(endpointId);
 	}
 
@@ -164,7 +167,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 		return this.endpoints.values().iterator();
 	}
 
-	private String getPath(PathMappedEndpoint endpoint) {
+	private @Nullable String getPath(@Nullable PathMappedEndpoint endpoint) {
 		if (endpoint == null) {
 			return null;
 		}

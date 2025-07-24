@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -39,7 +41,7 @@ public interface PathMapper {
 	 * @return the path of the endpoint or {@code null} if this mapper doesn't support the
 	 * given endpoint ID
 	 */
-	String getRootPath(EndpointId endpointId);
+	@Nullable String getRootPath(EndpointId endpointId);
 
 	/**
 	 * Resolve the root path for the specified {@code endpointId} from the given path
@@ -48,7 +50,7 @@ public interface PathMapper {
 	 * @param endpointId the id of an endpoint
 	 * @return the path of the endpoint
 	 */
-	static String getRootPath(List<PathMapper> pathMappers, EndpointId endpointId) {
+	static String getRootPath(@Nullable List<PathMapper> pathMappers, EndpointId endpointId) {
 		Assert.notNull(endpointId, "'endpointId' must not be null");
 		if (pathMappers != null) {
 			for (PathMapper mapper : pathMappers) {

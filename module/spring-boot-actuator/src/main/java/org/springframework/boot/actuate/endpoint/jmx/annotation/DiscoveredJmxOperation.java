@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
@@ -39,6 +41,7 @@ import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.metadata.JmxAttributeSource;
 import org.springframework.jmx.export.metadata.ManagedOperation;
 import org.springframework.jmx.export.metadata.ManagedOperationParameter;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -81,7 +84,7 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 			return Collections.emptyList();
 		}
 		Method method = operationMethod.getMethod();
-		ManagedOperationParameter[] managed = jmxAttributeSource.getManagedOperationParameters(method);
+		@Nullable ManagedOperationParameter[] managed = jmxAttributeSource.getManagedOperationParameters(method);
 		if (managed.length == 0) {
 			Stream<JmxOperationParameter> parameters = operationMethod.getParameters()
 				.stream()
@@ -92,10 +95,12 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 	}
 
 	private List<JmxOperationParameter> mergeParameters(OperationParameters operationParameters,
-			ManagedOperationParameter[] managedParameters) {
+			@Nullable ManagedOperationParameter[] managedParameters) {
 		List<JmxOperationParameter> merged = new ArrayList<>(managedParameters.length);
 		for (int i = 0; i < managedParameters.length; i++) {
-			merged.add(new DiscoveredJmxOperationParameter(managedParameters[i], operationParameters.get(i)));
+			ManagedOperationParameter managedParameter = managedParameters[i];
+			Assert.state(managedParameter != null, "'managedParameter' must not be null");
+			merged.add(new DiscoveredJmxOperationParameter(managedParameter, operationParameters.get(i)));
 		}
 		return Collections.unmodifiableList(merged);
 	}
@@ -137,7 +142,7 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 
 		private final Class<?> type;
 
-		private final String description;
+		private final @Nullable String description;
 
 		DiscoveredJmxOperationParameter(OperationParameter operationParameter) {
 			this.name = operationParameter.getName();
@@ -163,7 +168,7 @@ class DiscoveredJmxOperation extends AbstractDiscoveredOperation implements JmxO
 		}
 
 		@Override
-		public String getDescription() {
+		public @Nullable String getDescription() {
 			return this.description;
 		}
 

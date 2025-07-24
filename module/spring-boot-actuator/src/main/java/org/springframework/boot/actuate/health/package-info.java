@@ -17,4 +17,7 @@
 /**
  * Actuator health indicator and endpoints.
  */
+@NullMarked
 package org.springframework.boot.actuate.health;
+
+import org.jspecify.annotations.NullMarked;

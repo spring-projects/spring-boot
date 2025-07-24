@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
@@ -52,11 +54,11 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T resolve(Class<T> type) {
+	public <T> @Nullable T resolve(Class<T> type) {
 		return (T) resolveProducible((Class<Enum<? extends Producible<?>>>) type);
 	}
 
-	private Enum<? extends Producible<?>> resolveProducible(Class<Enum<? extends Producible<?>>> type) {
+	private @Nullable Enum<? extends Producible<?>> resolveProducible(Class<Enum<? extends Producible<?>>> type) {
 		List<String> accepts = this.accepts.get();
 		List<Enum<? extends Producible<?>>> values = getValues(type);
 		if (CollectionUtils.isEmpty(accepts)) {
@@ -71,14 +73,15 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 		return result;
 	}
 
-	private Enum<? extends Producible<?>> mostRecent(Enum<? extends Producible<?>> existing,
-			Enum<? extends Producible<?>> candidate) {
+	private @Nullable Enum<? extends Producible<?>> mostRecent(@Nullable Enum<? extends Producible<?>> existing,
+			@Nullable Enum<? extends Producible<?>> candidate) {
 		int existingOrdinal = (existing != null) ? existing.ordinal() : -1;
 		int candidateOrdinal = (candidate != null) ? candidate.ordinal() : -1;
 		return (candidateOrdinal > existingOrdinal) ? candidate : existing;
 	}
 
-	private Enum<? extends Producible<?>> forMimeType(List<Enum<? extends Producible<?>>> values, MimeType mimeType) {
+	private @Nullable Enum<? extends Producible<?>> forMimeType(List<Enum<? extends Producible<?>>> values,
+			MimeType mimeType) {
 		if (mimeType.isWildcardType() && mimeType.isWildcardSubtype()) {
 			return getDefaultValue(values);
 		}

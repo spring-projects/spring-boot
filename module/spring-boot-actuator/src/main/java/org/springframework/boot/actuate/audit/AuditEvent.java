@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -82,7 +83,7 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data the event data
 	 */
-	public AuditEvent(Instant timestamp, String principal, String type, Map<String, Object> data) {
+	public AuditEvent(Instant timestamp, @Nullable String principal, String type, Map<String, Object> data) {
 		Assert.notNull(timestamp, "'timestamp' must not be null");
 		Assert.notNull(type, "'type' must not be null");
 		this.timestamp = timestamp;

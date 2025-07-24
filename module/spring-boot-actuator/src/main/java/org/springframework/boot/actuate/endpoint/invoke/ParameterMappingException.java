@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.invoke;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 
 /**
@@ -29,7 +31,7 @@ public final class ParameterMappingException extends InvalidEndpointRequestExcep
 
 	private final OperationParameter parameter;
 
-	private final Object value;
+	private final @Nullable Object value;
 
 	/**
 	 * Creates a new {@code ParameterMappingException} for a failure that occurred when
@@ -38,8 +40,8 @@ public final class ParameterMappingException extends InvalidEndpointRequestExcep
 	 * @param value the value being mapped
 	 * @param cause the cause of the mapping failure
 	 */
-	public ParameterMappingException(OperationParameter parameter, Object value, Throwable cause) {
-		super("Failed to map " + value + " of type " + value.getClass() + " to " + parameter,
+	public ParameterMappingException(OperationParameter parameter, @Nullable Object value, Throwable cause) {
+		super("Failed to map " + value + " of type " + ((value != null) ? value.getClass() : null) + " to " + parameter,
 				"Parameter mapping failure", cause);
 		this.parameter = parameter;
 		this.value = value;
@@ -57,7 +59,7 @@ public final class ParameterMappingException extends InvalidEndpointRequestExcep
 	 * Return the value being mapped.
 	 * @return the value
 	 */
-	public Object getValue() {
+	public @Nullable Object getValue() {
 		return this.value;
 	}
 

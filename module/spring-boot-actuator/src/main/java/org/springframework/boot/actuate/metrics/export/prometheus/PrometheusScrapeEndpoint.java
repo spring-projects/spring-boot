@@ -26,6 +26,7 @@ import io.prometheus.metrics.config.PrometheusPropertiesLoader;
 import io.prometheus.metrics.expositionformats.ExpositionFormats;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import io.prometheus.metrics.model.snapshots.MetricSnapshots;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
@@ -60,7 +61,7 @@ public class PrometheusScrapeEndpoint {
 	 * {@link ExpositionFormats}
 	 * @since 3.3.1
 	 */
-	public PrometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry, Properties exporterProperties) {
+	public PrometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry, @Nullable Properties exporterProperties) {
 		this.prometheusRegistry = prometheusRegistry;
 		PrometheusProperties prometheusProperties = (exporterProperties != null)
 				? PrometheusPropertiesLoader.load(exporterProperties) : PrometheusPropertiesLoader.load();
@@ -69,7 +70,7 @@ public class PrometheusScrapeEndpoint {
 
 	@ReadOperation(producesFrom = PrometheusOutputFormat.class)
 	public WebEndpointResponse<byte[]> scrape(PrometheusOutputFormat format,
-			@OptionalParameter Set<String> includedNames) {
+			@OptionalParameter @Nullable Set<String> includedNames) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(this.nextMetricsScrapeSize);
 			MetricSnapshots metricSnapshots = (includedNames != null)

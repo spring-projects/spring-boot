@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.health.contributor.Status;
 import org.springframework.util.CollectionUtils;
@@ -56,7 +58,7 @@ public class SimpleHttpCodeStatusMapper implements HttpCodeStatusMapper {
 	 * Create a new {@link SimpleHttpCodeStatusMapper} with the specified mappings.
 	 * @param mappings the mappings to use or {@code null} to use the default mappings
 	 */
-	public SimpleHttpCodeStatusMapper(Map<String, Integer> mappings) {
+	public SimpleHttpCodeStatusMapper(@Nullable Map<String, Integer> mappings) {
 		this.mappings = CollectionUtils.isEmpty(mappings) ? DEFAULT_MAPPINGS : getUniformMappings(mappings);
 	}
 
@@ -77,7 +79,7 @@ public class SimpleHttpCodeStatusMapper implements HttpCodeStatusMapper {
 		return Collections.unmodifiableMap(result);
 	}
 
-	private static String getUniformCode(String code) {
+	private static @Nullable String getUniformCode(@Nullable String code) {
 		if (code == null) {
 			return null;
 		}

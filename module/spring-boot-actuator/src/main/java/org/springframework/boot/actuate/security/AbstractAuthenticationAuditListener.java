@@ -34,6 +34,7 @@ import org.springframework.security.authentication.event.AbstractAuthenticationE
 public abstract class AbstractAuthenticationAuditListener
 		implements ApplicationListener<AbstractAuthenticationEvent>, ApplicationEventPublisherAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationEventPublisher publisher;
 
 	@Override

@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Strategy that should be used by endpoint implementations to sanitize potentially
  * sensitive keys.
@@ -63,7 +65,7 @@ public class Sanitizer {
 	 * @return the potentially updated data
 	 * @since 3.0.0
 	 */
-	public Object sanitize(SanitizableData data, boolean showUnsanitized) {
+	public @Nullable Object sanitize(SanitizableData data, boolean showUnsanitized) {
 		Object value = data.getValue();
 		if (value == null) {
 			return null;

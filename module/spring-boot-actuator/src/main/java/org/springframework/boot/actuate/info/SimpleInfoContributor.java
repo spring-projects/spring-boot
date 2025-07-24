@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.info;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -28,9 +30,9 @@ public class SimpleInfoContributor implements InfoContributor {
 
 	private final String prefix;
 
-	private final Object detail;
+	private final @Nullable Object detail;
 
-	public SimpleInfoContributor(String prefix, Object detail) {
+	public SimpleInfoContributor(String prefix, @Nullable Object detail) {
 		Assert.notNull(prefix, "'prefix' must not be null");
 		this.prefix = prefix;
 		this.detail = detail;

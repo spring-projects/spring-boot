@@ -47,6 +47,7 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 
 	private static final Log logger = LogFactory.getLog(JmxEndpointExporter.class);
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader classLoader;
 
 	private final MBeanServer mBeanServer;
@@ -57,6 +58,7 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 
 	private final Collection<ExposableJmxEndpoint> endpoints;
 
+	@SuppressWarnings("NullAway.Init")
 	private Collection<ObjectName> registered;
 
 	public JmxEndpointExporter(MBeanServer mBeanServer, EndpointObjectNameFactory objectNameFactory,

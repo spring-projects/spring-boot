@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -54,7 +55,7 @@ abstract class HealthEndpointSupport<H, D> {
 
 	private final HealthEndpointGroups groups;
 
-	private final Duration slowContributorLoggingThreshold;
+	private final @Nullable Duration slowContributorLoggingThreshold;
 
 	/**
 	 * Create a new {@link HealthEndpointSupport} instance.
@@ -64,7 +65,7 @@ abstract class HealthEndpointSupport<H, D> {
 	 * logging should occur
 	 */
 	HealthEndpointSupport(Contributor<H, D> rootContributor, HealthEndpointGroups groups,
-			Duration slowContributorLoggingThreshold) {
+			@Nullable Duration slowContributorLoggingThreshold) {
 		Assert.notNull(rootContributor, "'rootContributor' must not be null");
 		Assert.notNull(groups, "'groups' must not be null");
 		this.rootContributor = rootContributor;
@@ -72,8 +73,8 @@ abstract class HealthEndpointSupport<H, D> {
 		this.slowContributorLoggingThreshold = slowContributorLoggingThreshold;
 	}
 
-	Result<D> getResult(ApiVersion apiVersion, WebServerNamespace serverNamespace, SecurityContext securityContext,
-			boolean showAll, String... path) {
+	@Nullable Result<D> getResult(ApiVersion apiVersion, @Nullable WebServerNamespace serverNamespace,
+			SecurityContext securityContext, boolean showAll, String... path) {
 		HealthEndpointGroup group = (path.length > 0) ? getGroup(serverNamespace, path) : null;
 		if (group != null) {
 			return getResult(apiVersion, group, securityContext, showAll, path, 1);
@@ -81,7 +82,7 @@ abstract class HealthEndpointSupport<H, D> {
 		return getResult(apiVersion, this.groups.getPrimary(), securityContext, showAll, path, 0);
 	}
 
-	private HealthEndpointGroup getGroup(WebServerNamespace serverNamespace, String... path) {
+	private @Nullable HealthEndpointGroup getGroup(@Nullable WebServerNamespace serverNamespace, String... path) {
 		if (this.groups.get(path[0]) != null) {
 			return this.groups.get(path[0]);
 		}
@@ -91,8 +92,8 @@ abstract class HealthEndpointSupport<H, D> {
 		return null;
 	}
 
-	private Result<D> getResult(ApiVersion apiVersion, HealthEndpointGroup group, SecurityContext securityContext,
-			boolean showAll, String[] path, int pathOffset) {
+	private @Nullable Result<D> getResult(ApiVersion apiVersion, HealthEndpointGroup group,
+			SecurityContext securityContext, boolean showAll, String[] path, int pathOffset) {
 		boolean showComponents = showAll || group.showComponents(securityContext);
 		boolean showDetails = showAll || group.showDetails(securityContext);
 		boolean isSystemHealth = group == this.groups.getPrimary() && pathOffset == 0;
@@ -110,9 +111,10 @@ abstract class HealthEndpointSupport<H, D> {
 		return (descriptor != null) ? new Result<>(descriptor, group) : null;
 	}
 
-	private Contributor<H, D> getContributor(String[] path, int pathOffset) {
+	private @Nullable Contributor<H, D> getContributor(String[] path, int pathOffset) {
 		Contributor<H, D> contributor = this.rootContributor;
 		while (pathOffset < path.length) {
+			Assert.state(contributor != null, "'contributor' must not be null");
 			if (!contributor.isComposite()) {
 				return null;
 			}
@@ -132,8 +134,9 @@ abstract class HealthEndpointSupport<H, D> {
 		return name.toString();
 	}
 
-	private D getDescriptor(ApiVersion apiVersion, HealthEndpointGroup group, String name,
-			Contributor<H, D> contributor, boolean showComponents, boolean showDetails, Set<String> groupNames) {
+	private @Nullable D getDescriptor(ApiVersion apiVersion, HealthEndpointGroup group, String name,
+			Contributor<H, D> contributor, boolean showComponents, boolean showDetails,
+			@Nullable Set<String> groupNames) {
 		if (contributor.isComposite()) {
 			return getAggregateDescriptor(apiVersion, group, name, contributor, showComponents, showDetails,
 					groupNames);
@@ -144,8 +147,9 @@ abstract class HealthEndpointSupport<H, D> {
 		return null;
 	}
 
-	private D getAggregateDescriptor(ApiVersion apiVersion, HealthEndpointGroup group, String name,
-			Contributor<H, D> contributor, boolean showComponents, boolean showDetails, Set<String> groupNames) {
+	private @Nullable D getAggregateDescriptor(ApiVersion apiVersion, HealthEndpointGroup group, String name,
+			Contributor<H, D> contributor, boolean showComponents, boolean showDetails,
+			@Nullable Set<String> groupNames) {
 		String prefix = (StringUtils.hasText(name)) ? name + "/" : "";
 		Map<String, D> descriptors = new LinkedHashMap<>();
 		for (Contributor.Child<H, D> child : contributor) {
@@ -162,7 +166,7 @@ abstract class HealthEndpointSupport<H, D> {
 		return aggregateDescriptors(apiVersion, descriptors, group.getStatusAggregator(), showComponents, groupNames);
 	}
 
-	private D getDescriptorAndLogIfSlow(Contributor<H, D> contributor, String name, boolean showDetails) {
+	private @Nullable D getDescriptorAndLogIfSlow(Contributor<H, D> contributor, String name, boolean showDetails) {
 		Instant start = Instant.now();
 		try {
 			return contributor.getDescriptor(showDetails);
@@ -179,11 +183,11 @@ abstract class HealthEndpointSupport<H, D> {
 	}
 
 	abstract D aggregateDescriptors(ApiVersion apiVersion, Map<String, D> descriptors,
-			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames);
+			StatusAggregator statusAggregator, boolean showComponents, @Nullable Set<String> groupNames);
 
 	final CompositeHealthDescriptor getCompositeDescriptor(ApiVersion apiVersion,
 			Map<String, HealthDescriptor> descriptors, StatusAggregator statusAggregator, boolean showComponents,
-			Set<String> groupNames) {
+			@Nullable Set<String> groupNames) {
 		Status status = statusAggregator
 			.getAggregateStatus(descriptors.values().stream().map(this::getStatus).collect(Collectors.toSet()));
 		descriptors = (!showComponents) ? null : descriptors;
@@ -191,7 +195,7 @@ abstract class HealthEndpointSupport<H, D> {
 				: new CompositeHealthDescriptor(apiVersion, status, descriptors);
 	}
 
-	private Status getStatus(HealthDescriptor component) {
+	private Status getStatus(@Nullable HealthDescriptor component) {
 		return (component != null) ? component.getStatus() : Status.UNKNOWN;
 	}
 

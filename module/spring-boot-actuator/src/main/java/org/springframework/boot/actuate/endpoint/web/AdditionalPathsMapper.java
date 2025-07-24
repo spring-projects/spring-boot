@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint.web;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.EndpointId;
 
 /**
@@ -38,6 +40,6 @@ public interface AdditionalPathsMapper {
 	 * @return the additional paths of the endpoint or {@code null} if this mapper doesn't
 	 * support the given endpoint ID.
 	 */
-	List<String> getAdditionalPaths(EndpointId endpointId, WebServerNamespace webServerNamespace);
+	@Nullable List<String> getAdditionalPaths(EndpointId endpointId, WebServerNamespace webServerNamespace);
 
 }

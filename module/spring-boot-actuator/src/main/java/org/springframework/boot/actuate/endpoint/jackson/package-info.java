@@ -17,4 +17,7 @@
 /**
  * Jackson support classes for actuator endpoints.
  */
+@NullMarked
 package org.springframework.boot.actuate.endpoint.jackson;
+
+import org.jspecify.annotations.NullMarked;

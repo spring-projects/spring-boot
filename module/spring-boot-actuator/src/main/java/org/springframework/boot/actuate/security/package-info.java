@@ -18,4 +18,7 @@
  * Actuator support for security.
  *
  */
+@NullMarked
 package org.springframework.boot.actuate.security;
+
+import org.jspecify.annotations.NullMarked;

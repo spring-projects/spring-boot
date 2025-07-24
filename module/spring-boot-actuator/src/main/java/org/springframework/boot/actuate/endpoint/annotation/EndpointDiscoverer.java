@@ -30,6 +30,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -82,7 +84,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private final Map<EndpointBean, E> filterEndpoints = new ConcurrentHashMap<>();
 
-	private volatile Collection<E> endpoints;
+	private volatile @Nullable Collection<E> endpoints;
 
 	/**
 	 * Create a new {@link EndpointDiscoverer} instance.
@@ -155,7 +157,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private EndpointBean createEndpointBean(String beanName) {
-		Class<?> beanType = ClassUtils.getUserClass(this.applicationContext.getType(beanName, false));
+		Class<?> type = this.applicationContext.getType(beanName, false);
+		Assert.state(type != null, "'type' must not be null");
+		Class<?> beanType = ClassUtils.getUserClass(type);
 		Supplier<Object> beanSupplier = () -> this.applicationContext.getBean(beanName);
 		return new EndpointBean(this.applicationContext.getEnvironment(), beanName, beanType, beanSupplier);
 	}
@@ -175,7 +179,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private ExtensionBean createExtensionBean(String beanName) {
-		Class<?> beanType = ClassUtils.getUserClass(this.applicationContext.getType(beanName));
+		Class<?> type = this.applicationContext.getType(beanName);
+		Assert.state(type != null, "'type' must not be null");
+		Class<?> beanType = ClassUtils.getUserClass(type);
 		Supplier<Object> beanSupplier = () -> this.applicationContext.getBean(beanName);
 		return new ExtensionBean(this.applicationContext.getEnvironment(), beanName, beanType, beanSupplier);
 	}
@@ -243,14 +249,16 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 				OperationKey key = createOperationKey(operation);
 				O last = getLast(indexed.get(key));
 				if (replaceLast && replacedLast.add(key) && last != null) {
-					indexed.get(key).remove(last);
+					List<O> os = indexed.get(key);
+					Assert.state(os != null, "'os' must not be null");
+					os.remove(last);
 				}
 				indexed.add(key, operation);
 			}
 		}
 	}
 
-	private <T> T getLast(List<T> list) {
+	private <T> @Nullable T getLast(@Nullable List<T> list) {
 		return CollectionUtils.isEmpty(list) ? null : list.get(list.size() - 1);
 	}
 
@@ -310,7 +318,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean isFilterMatch(Class<?> filter, EndpointBean endpointBean) {
+	private boolean isFilterMatch(@Nullable Class<?> filter, EndpointBean endpointBean) {
 		if (!isEndpointTypeExposed(endpointBean.getBeanType())) {
 			return false;
 		}
@@ -330,12 +338,14 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		return isFilterMatch(filter, getFilterEndpoint(endpointBean));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked" })
 	private boolean isFilterMatch(EndpointFilter<E> filter, E endpoint) {
-		return LambdaSafe.callback(EndpointFilter.class, filter, endpoint)
+		Boolean result = LambdaSafe.callback(EndpointFilter.class, filter, endpoint)
 			.withLogger(EndpointDiscoverer.class)
 			.invokeAnd((f) -> f.match(endpoint))
 			.get();
+		Assert.state(result != null, "'result' must not be null");
+		return result;
 	}
 
 	private boolean isOperationFiltered(Operation operation, EndpointId endpointId, Access defaultAccess) {
@@ -350,10 +360,12 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	@SuppressWarnings("unchecked")
 	private boolean isFilterMatch(OperationFilter<O> filter, Operation operation, EndpointId endpointId,
 			Access defaultAccess) {
-		return LambdaSafe.callback(OperationFilter.class, filter, operation)
+		Boolean result = LambdaSafe.callback(OperationFilter.class, filter, operation)
 			.withLogger(EndpointDiscoverer.class)
 			.invokeAnd((f) -> f.match(operation, endpointId, defaultAccess))
 			.get();
+		Assert.state(result != null, "'result' must not be null");
+		return result;
 	}
 
 	private E getFilterEndpoint(EndpointBean endpointBean) {
@@ -363,7 +375,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	@SuppressWarnings("unchecked")
 	protected Class<? extends E> getEndpointType() {
-		return (Class<? extends E>) ResolvableType.forClass(EndpointDiscoverer.class, getClass()).resolveGeneric(0);
+		Class<?> generic = ResolvableType.forClass(EndpointDiscoverer.class, getClass()).resolveGeneric(0);
+		Assert.state(generic != null, "'generic' must not be null");
+		return (Class<? extends E>) generic;
 	}
 
 	/**
@@ -454,7 +468,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		private final Access defaultAccess;
 
-		private final Class<?> filter;
+		private final @Nullable Class<?> filter;
 
 		private final Set<ExtensionBean> extensions = new LinkedHashSet<>();
 
@@ -480,7 +494,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			return this.extensions;
 		}
 
-		private Class<?> getFilter(Class<?> type) {
+		private @Nullable Class<?> getFilter(Class<?> type) {
 			return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY)
 				.get(FilteredEndpoint.class)
 				.getValue(MergedAnnotation.VALUE, Class.class)
@@ -507,7 +521,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			return this.defaultAccess;
 		}
 
-		Class<?> getFilter() {
+		@Nullable Class<?> getFilter() {
 			return this.filter;
 		}
 

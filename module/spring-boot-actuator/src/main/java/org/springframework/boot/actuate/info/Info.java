@@ -23,6 +23,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Carries information of the application.
@@ -53,12 +54,12 @@ public final class Info {
 		return this.details;
 	}
 
-	public Object get(String id) {
+	public @Nullable Object get(String id) {
 		return this.details.get(id);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(String id, Class<T> type) {
+	public <T> @Nullable T get(String id, @Nullable Class<T> type) {
 		Object value = get(id);
 		if (value != null && type != null && !type.isInstance(value)) {
 			throw new IllegalStateException("Info entry is not of required type [" + type.getName() + "]: " + value);

@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
@@ -125,7 +126,8 @@ public class EnvironmentEndpoint {
 		return result;
 	}
 
-	private PropertySummaryDescriptor getPropertySummaryDescriptor(Map<String, PropertyValueDescriptor> descriptors) {
+	private @Nullable PropertySummaryDescriptor getPropertySummaryDescriptor(
+			Map<String, PropertyValueDescriptor> descriptors) {
 		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
 			if (entry.getValue() != null) {
 				return new PropertySummaryDescriptor(entry.getKey(), entry.getValue().getValue());
@@ -188,11 +190,12 @@ public class EnvironmentEndpoint {
 		}
 	}
 
-	private Object sanitize(PropertySource<?> source, String name, Object value, boolean showUnsanitized) {
+	private @Nullable Object sanitize(PropertySource<?> source, String name, @Nullable Object value,
+			boolean showUnsanitized) {
 		return this.sanitizer.sanitize(new SanitizableData(source, name, value), showUnsanitized);
 	}
 
-	protected Object stringifyIfNecessary(Object value) {
+	protected @Nullable Object stringifyIfNecessary(@Nullable Object value) {
 		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass())
 				|| Number.class.isAssignableFrom(value.getClass())) {
 			return value;
@@ -241,7 +244,7 @@ public class EnvironmentEndpoint {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static final class EnvironmentEntryDescriptor {
 
-		private final PropertySummaryDescriptor property;
+		private final @Nullable PropertySummaryDescriptor property;
 
 		private final List<String> activeProfiles;
 
@@ -249,7 +252,7 @@ public class EnvironmentEndpoint {
 
 		private final List<PropertySourceEntryDescriptor> propertySources;
 
-		EnvironmentEntryDescriptor(PropertySummaryDescriptor property, List<String> activeProfiles,
+		EnvironmentEntryDescriptor(@Nullable PropertySummaryDescriptor property, List<String> activeProfiles,
 				List<String> defaultProfiles, List<PropertySourceEntryDescriptor> propertySources) {
 			this.property = property;
 			this.activeProfiles = activeProfiles;
@@ -257,7 +260,7 @@ public class EnvironmentEndpoint {
 			this.propertySources = propertySources;
 		}
 
-		public PropertySummaryDescriptor getProperty() {
+		public @Nullable PropertySummaryDescriptor getProperty() {
 			return this.property;
 		}
 
@@ -283,9 +286,9 @@ public class EnvironmentEndpoint {
 
 		private final String source;
 
-		private final Object value;
+		private final @Nullable Object value;
 
-		public PropertySummaryDescriptor(String source, Object value) {
+		public PropertySummaryDescriptor(String source, @Nullable Object value) {
 			this.source = source;
 			this.value = value;
 		}
@@ -294,7 +297,7 @@ public class EnvironmentEndpoint {
 			return this.source;
 		}
 
-		public Object getValue() {
+		public @Nullable Object getValue() {
 			return this.value;
 		}
 
@@ -355,13 +358,13 @@ public class EnvironmentEndpoint {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static final class PropertyValueDescriptor {
 
-		private final Object value;
+		private final @Nullable Object value;
 
-		private final String origin;
+		private final @Nullable String origin;
 
-		private final String[] originParents;
+		private final String @Nullable [] originParents;
 
-		private PropertyValueDescriptor(Object value, Origin origin) {
+		private PropertyValueDescriptor(@Nullable Object value, @Nullable Origin origin) {
 			this.value = value;
 			this.origin = (origin != null) ? origin.toString() : null;
 			List<Origin> originParents = Origin.parentsFrom(origin);
@@ -369,15 +372,15 @@ public class EnvironmentEndpoint {
 					: originParents.stream().map(Object::toString).toArray(String[]::new);
 		}
 
-		public Object getValue() {
+		public @Nullable Object getValue() {
 			return this.value;
 		}
 
-		public String getOrigin() {
+		public @Nullable String getOrigin() {
 			return this.origin;
 		}
 
-		public String[] getOriginParents() {
+		public String @Nullable [] getOriginParents() {
 			return this.originParents;
 		}
 

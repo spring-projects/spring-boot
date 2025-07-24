@@ -17,4 +17,7 @@
 /**
  * Actuator support for system-related concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.system;
+
+import org.jspecify.annotations.NullMarked;

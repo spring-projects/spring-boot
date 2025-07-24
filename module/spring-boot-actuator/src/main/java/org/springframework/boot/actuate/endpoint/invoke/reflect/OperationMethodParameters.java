@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -50,17 +52,19 @@ class OperationMethodParameters implements OperationParameters {
 		Assert.notNull(method, "'method' must not be null");
 		Assert.notNull(parameterNameDiscoverer, "'parameterNameDiscoverer' must not be null");
 		Assert.notNull(optionalParameters, "'optionalParameters' must not be null");
-		String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
+		@Nullable String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
 		Parameter[] parameters = method.getParameters();
 		Assert.state(parameterNames != null, () -> "Failed to extract parameter names for " + method);
 		this.operationParameters = getOperationParameters(parameters, parameterNames, optionalParameters);
 	}
 
-	private List<OperationParameter> getOperationParameters(Parameter[] parameters, String[] names,
+	private List<OperationParameter> getOperationParameters(Parameter[] parameters, @Nullable String[] names,
 			Predicate<Parameter> optionalParameters) {
 		List<OperationParameter> operationParameters = new ArrayList<>(parameters.length);
 		for (int i = 0; i < names.length; i++) {
-			operationParameters.add(new OperationMethodParameter(names[i], parameters[i], optionalParameters));
+			String name = names[i];
+			Assert.state(name != null, "'name' must not be null");
+			operationParameters.add(new OperationMethodParameter(name, parameters[i], optionalParameters));
 		}
 		return Collections.unmodifiableList(operationParameters);
 	}

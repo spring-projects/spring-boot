@@ -17,4 +17,7 @@
 /**
  * Actuator support for ssl concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.ssl;
+
+import org.jspecify.annotations.NullMarked;

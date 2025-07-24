@@ -50,7 +50,12 @@ public class EndpointMediaTypes {
 	 * @since 2.2.0
 	 */
 	public EndpointMediaTypes(String... producedAndConsumed) {
-		this((producedAndConsumed != null) ? Arrays.asList(producedAndConsumed) : null);
+		this(toList(producedAndConsumed));
+	}
+
+	private static List<String> toList(String[] producedAndConsumed) {
+		Assert.notNull(producedAndConsumed, "'producedAndConsumed' must not be null");
+		return Arrays.asList(producedAndConsumed);
 	}
 
 	/**

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * An operation on an {@link ExposableEndpoint endpoint}.
  *
@@ -38,6 +40,6 @@ public interface Operation {
 	 * @param context the context in to use when invoking the operation
 	 * @return the result of the operation, may be {@code null}
 	 */
-	Object invoke(InvocationContext context);
+	@Nullable Object invoke(InvocationContext context);
 
 }

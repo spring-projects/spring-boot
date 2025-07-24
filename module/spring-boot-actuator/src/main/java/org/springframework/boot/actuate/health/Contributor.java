@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import java.util.Iterator;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.health.contributor.Health;
@@ -53,7 +54,7 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 	 * @param name the child name
 	 * @return the child or {@code null}
 	 */
-	Contributor<H, D> getChild(String name);
+	@Nullable Contributor<H, D> getChild(String name);
 
 	/**
 	 * Get the health. Must only be called if {@link #isComposite()} returns
@@ -61,7 +62,7 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 	 * @param includeDetails if details are to be included.
 	 * @return the health
 	 */
-	D getDescriptor(boolean includeDetails);
+	@Nullable D getDescriptor(boolean includeDetails);
 
 	/**
 	 * Return an identifier for logging purposes.
@@ -85,7 +86,8 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 	 * @param fallbackRegistry the fallback registry or {@code null}
 	 * @return a new {@link Contributor}
 	 */
-	static Blocking blocking(HealthContributorRegistry registry, ReactiveHealthContributorRegistry fallbackRegistry) {
+	static Blocking blocking(HealthContributorRegistry registry,
+			@Nullable ReactiveHealthContributorRegistry fallbackRegistry) {
 		return new Blocking((fallbackRegistry != null)
 				? HealthContributors.of(registry, fallbackRegistry.asHealthContributors()) : registry);
 	}
@@ -96,7 +98,8 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 	 * @param fallbackRegistry the fallback registry or {@code null}
 	 * @return a new {@link Contributor}
 	 */
-	static Reactive reactive(ReactiveHealthContributorRegistry registry, HealthContributorRegistry fallbackRegistry) {
+	static Reactive reactive(ReactiveHealthContributorRegistry registry,
+			@Nullable HealthContributorRegistry fallbackRegistry) {
 		return new Reactive((fallbackRegistry != null)
 				? ReactiveHealthContributors.of(registry, ReactiveHealthContributors.adapt(fallbackRegistry))
 				: registry);
@@ -128,7 +131,7 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 		}
 
 		@Override
-		public Blocking getChild(String name) {
+		public @Nullable Blocking getChild(String name) {
 			HealthContributor child = ((HealthContributors) contributor()).getContributor(name);
 			return (child != null) ? new Blocking(child) : null;
 		}
@@ -141,7 +144,7 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 		}
 
 		@Override
-		public HealthDescriptor getDescriptor(boolean includeDetails) {
+		public @Nullable HealthDescriptor getDescriptor(boolean includeDetails) {
 			Health health = ((HealthIndicator) contributor()).health(includeDetails);
 			return (health != null) ? new IndicatedHealthDescriptor(health) : null;
 		}
@@ -168,7 +171,7 @@ sealed interface Contributor<H, D> extends Iterable<Contributor.Child<H, D>> {
 		}
 
 		@Override
-		public Reactive getChild(String name) {
+		public @Nullable Reactive getChild(String name) {
 			ReactiveHealthContributor child = ((ReactiveHealthContributors) contributor()).getContributor(name);
 			return (child != null) ? new Reactive(child) : null;
 		}

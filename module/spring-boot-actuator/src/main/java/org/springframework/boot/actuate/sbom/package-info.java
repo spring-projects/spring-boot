@@ -17,4 +17,7 @@
 /**
  * Actuator support for SBOMs.
  */
+@NullMarked
 package org.springframework.boot.actuate.sbom;
+
+import org.jspecify.annotations.NullMarked;

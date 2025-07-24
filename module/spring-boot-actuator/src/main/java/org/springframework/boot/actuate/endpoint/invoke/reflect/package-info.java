@@ -17,4 +17,7 @@
 /**
  * Endpoint reflection support.
  */
+@NullMarked
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
+
+import org.jspecify.annotations.NullMarked;

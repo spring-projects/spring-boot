@@ -20,6 +20,8 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
@@ -49,7 +51,7 @@ public class AuditEventsEndpoint {
 		return new AuditEventsDescriptor(events);
 	}
 
-	private Instant getInstant(OffsetDateTime offsetDateTime) {
+	private @Nullable Instant getInstant(@Nullable OffsetDateTime offsetDateTime) {
 		return (offsetDateTime != null) ? offsetDateTime.toInstant() : null;
 	}
 

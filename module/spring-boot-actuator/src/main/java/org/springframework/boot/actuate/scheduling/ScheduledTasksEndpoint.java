@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -144,7 +146,7 @@ public class ScheduledTasksEndpoint {
 			return this.runnable;
 		}
 
-		public final NextExecution getNextExecution() {
+		public final @Nullable NextExecution getNextExecution() {
 			Instant nextExecution = this.scheduledTask.nextExecution();
 			if (nextExecution != null) {
 				return new NextExecution(nextExecution);
@@ -152,7 +154,7 @@ public class ScheduledTasksEndpoint {
 			return null;
 		}
 
-		public final LastExecution getLastExecution() {
+		public final @Nullable LastExecution getLastExecution() {
 			TaskExecutionOutcome lastExecutionOutcome = this.scheduledTask.getTask().getLastExecutionOutcome();
 			if (lastExecutionOutcome.status() != Status.NONE) {
 				return new LastExecution(lastExecutionOutcome);
@@ -188,11 +190,11 @@ public class ScheduledTasksEndpoint {
 			return this.lastExecutionOutcome.status();
 		}
 
-		public Instant getTime() {
+		public @Nullable Instant getTime() {
 			return this.lastExecutionOutcome.executionTime();
 		}
 
-		public ExceptionInfo getException() {
+		public @Nullable ExceptionInfo getException() {
 			Throwable throwable = this.lastExecutionOutcome.throwable();
 			if (throwable != null) {
 				return new ExceptionInfo(throwable);
@@ -214,7 +216,7 @@ public class ScheduledTasksEndpoint {
 			return this.throwable.getClass().getName();
 		}
 
-		public String getMessage() {
+		public @Nullable String getMessage() {
 			return this.throwable.getMessage();
 		}
 
@@ -240,7 +242,7 @@ public class ScheduledTasksEndpoint {
 			this.describer = describer;
 		}
 
-		static TaskType forTask(ScheduledTask scheduledTask) {
+		static @Nullable TaskType forTask(ScheduledTask scheduledTask) {
 			for (TaskType taskType : TaskType.values()) {
 				if (taskType.taskClass.isInstance(scheduledTask.getTask())) {
 					return taskType;
@@ -400,7 +402,7 @@ public class ScheduledTasksEndpoint {
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), FixedRateTaskDescriptor.class,
 					FixedDelayTaskDescriptor.class, CronTaskDescriptor.class, CustomTriggerTaskDescriptor.class);
 		}

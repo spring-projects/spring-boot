@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.annotation;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -56,7 +58,7 @@ public abstract class AbstractDiscoveredOperation implements Operation {
 	}
 
 	@Override
-	public Object invoke(InvocationContext context) {
+	public @Nullable Object invoke(InvocationContext context) {
 		return this.invoker.invoke(context);
 	}
 

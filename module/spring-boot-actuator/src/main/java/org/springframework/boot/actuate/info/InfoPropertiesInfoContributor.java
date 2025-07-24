@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -131,7 +133,7 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 	 * @param key the property to replace
 	 * @param value the new value
 	 */
-	protected void replaceValue(Map<String, Object> content, String key, Object value) {
+	protected void replaceValue(Map<String, Object> content, String key, @Nullable Object value) {
 		if (content.containsKey(key) && value != null) {
 			content.put(key, value);
 		}

@@ -17,4 +17,7 @@
 /**
  * Actuator web request mappings support.
  */
+@NullMarked
 package org.springframework.boot.actuate.web.mappings;
+
+import org.jspecify.annotations.NullMarked;

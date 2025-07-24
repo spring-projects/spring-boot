@@ -17,4 +17,7 @@
 /**
  * Actuator support for application availability concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.availability;
+
+import org.jspecify.annotations.NullMarked;

@@ -37,6 +37,7 @@ import org.springframework.security.authorization.event.AuthorizationGrantedEven
 public abstract class AbstractAuthorizationAuditListener
 		implements ApplicationListener<AuthorizationEvent>, ApplicationEventPublisherAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationEventPublisher publisher;
 
 	@Override

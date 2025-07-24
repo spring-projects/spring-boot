@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.health.contributor.Status;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -84,7 +86,7 @@ public class SimpleStatusAggregator implements StatusAggregator {
 		return codes.map(SimpleStatusAggregator::getUniformCode).toList();
 	}
 
-	private static String getUniformCode(String code) {
+	private static @Nullable String getUniformCode(@Nullable String code) {
 		if (code == null) {
 			return null;
 		}

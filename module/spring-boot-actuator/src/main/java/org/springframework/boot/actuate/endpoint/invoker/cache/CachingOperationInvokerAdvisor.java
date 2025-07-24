@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint.invoker.cache;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -32,9 +34,9 @@ import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
  */
 public class CachingOperationInvokerAdvisor implements OperationInvokerAdvisor {
 
-	private final Function<EndpointId, Long> endpointIdTimeToLive;
+	private final Function<EndpointId, @Nullable Long> endpointIdTimeToLive;
 
-	public CachingOperationInvokerAdvisor(Function<EndpointId, Long> endpointIdTimeToLive) {
+	public CachingOperationInvokerAdvisor(Function<EndpointId, @Nullable Long> endpointIdTimeToLive) {
 		this.endpointIdTimeToLive = endpointIdTimeToLive;
 	}
 

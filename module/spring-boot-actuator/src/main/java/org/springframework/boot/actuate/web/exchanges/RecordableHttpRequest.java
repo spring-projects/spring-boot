@@ -20,6 +20,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The recordable parts of an HTTP request used when creating an {@link HttpExchange}.
  *
@@ -40,7 +42,7 @@ public interface RecordableHttpRequest {
 	 * Returns the remote address from which the request was sent, if available.
 	 * @return the remote address or {@code null}
 	 */
-	String getRemoteAddress();
+	@Nullable String getRemoteAddress();
 
 	/**
 	 * Returns the method (GET, POST, etc.) of the request.

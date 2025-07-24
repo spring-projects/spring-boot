@@ -52,6 +52,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
@@ -79,6 +80,7 @@ import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
@@ -111,9 +113,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private final Show showValues;
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext context;
 
-	private ObjectMapper objectMapper;
+	private @Nullable ObjectMapper objectMapper;
 
 	public ConfigurationPropertiesReportEndpoint(Iterable<SanitizingFunction> sanitizingFunctions, Show showValues) {
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
@@ -233,7 +236,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @return the serialized instance
 	 */
 	@SuppressWarnings({ "unchecked" })
-	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean, String prefix) {
+	private Map<String, Object> safeSerialize(ObjectMapper mapper, @Nullable Object bean, String prefix) {
 		try {
 			return new HashMap<>(mapper.convertValue(bean, Map.class));
 		}
@@ -267,7 +270,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return map;
 	}
 
-	private Object sanitizeWithPropertySourceIfPresent(String qualifiedKey, Object value, boolean showUnsanitized) {
+	private @Nullable Object sanitizeWithPropertySourceIfPresent(String qualifiedKey, Object value,
+			boolean showUnsanitized) {
 		ConfigurationPropertyName currentName = getCurrentName(qualifiedKey);
 		ConfigurationProperty candidate = getCandidate(currentName);
 		PropertySource<?> propertySource = getPropertySource(candidate);
@@ -279,7 +283,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return this.sanitizer.sanitize(data, showUnsanitized);
 	}
 
-	private PropertySource<?> getPropertySource(ConfigurationProperty configurationProperty) {
+	private @Nullable PropertySource<?> getPropertySource(@Nullable ConfigurationProperty configurationProperty) {
 		if (configurationProperty == null) {
 			return null;
 		}
@@ -292,7 +296,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return ConfigurationPropertyName.adapt(qualifiedKey, '.');
 	}
 
-	private ConfigurationProperty getCandidate(ConfigurationPropertyName currentName) {
+	private @Nullable ConfigurationProperty getCandidate(ConfigurationPropertyName currentName) {
 		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.context);
 		if (bound == null) {
 			return null;
@@ -365,6 +369,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		ConfigurationProperty candidate = getCandidate(currentName);
 		PropertySource<?> propertySource = getPropertySource(candidate);
 		if (propertySource != null) {
+			Assert.state(candidate != null, "'candidate' must not be null");
 			Object value = stringifyIfNecessary(candidate.getValue());
 			SanitizableData data = new SanitizableData(propertySource, currentName.toString(), value);
 			return getInput(candidate, this.sanitizer.sanitize(data, showUnsanitized));
@@ -372,7 +377,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return Collections.emptyMap();
 	}
 
-	private Map<String, Object> getInput(ConfigurationProperty candidate, Object sanitizedValue) {
+	private Map<String, Object> getInput(ConfigurationProperty candidate, @Nullable Object sanitizedValue) {
 		Map<String, Object> input = new LinkedHashMap<>();
 		Origin origin = Origin.from(candidate);
 		List<Origin> originParents = Origin.parentsFrom(candidate);
@@ -384,7 +389,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return input;
 	}
 
-	private Object stringifyIfNecessary(Object value) {
+	private @Nullable Object stringifyIfNecessary(@Nullable Object value) {
 		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
 			return value;
 		}
@@ -502,10 +507,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return result;
 		}
 
-		private boolean isCandidate(BeanDescription beanDesc, BeanPropertyWriter writer, Constructor<?> constructor) {
+		private boolean isCandidate(BeanDescription beanDesc, BeanPropertyWriter writer,
+				@Nullable Constructor<?> constructor) {
 			if (constructor != null) {
 				Parameter[] parameters = constructor.getParameters();
-				String[] names = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
+				@Nullable String[] names = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
 				if (names == null) {
 					names = new String[parameters.length];
 				}
@@ -536,7 +542,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 					|| Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type);
 		}
 
-		private AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {
+		private @Nullable AnnotatedMethod findSetter(BeanDescription beanDesc, BeanPropertyWriter writer) {
 			String name = "set" + determineAccessorSuffix(writer.getName());
 			Class<?> type = writer.getType().getRawClass();
 			AnnotatedMethod setter = beanDesc.findMethod(name, new Class<?>[] { type });
@@ -590,10 +596,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final Map<String, ConfigurationPropertiesBeanDescriptor> beans;
 
-		private final String parentId;
+		private final @Nullable String parentId;
 
 		private ContextConfigurationPropertiesDescriptor(Map<String, ConfigurationPropertiesBeanDescriptor> beans,
-				String parentId) {
+				@Nullable String parentId) {
 			this.beans = beans;
 			this.parentId = parentId;
 		}
@@ -602,7 +608,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return this.beans;
 		}
 
-		public String getParentId() {
+		public @Nullable String getParentId() {
 			return this.parentId;
 		}
 

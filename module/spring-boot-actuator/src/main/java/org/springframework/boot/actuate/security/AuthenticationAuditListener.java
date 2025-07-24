@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
@@ -61,9 +63,9 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 
 	private static final String WEB_LISTENER_CHECK_CLASS = "org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent";
 
-	private final WebAuditListener webListener = maybeCreateWebListener();
+	private final @Nullable WebAuditListener webListener = maybeCreateWebListener();
 
-	private static WebAuditListener maybeCreateWebListener() {
+	private static @Nullable WebAuditListener maybeCreateWebListener() {
 		if (ClassUtils.isPresent(WEB_LISTENER_CHECK_CLASS, null)) {
 			return new WebAuditListener();
 		}
@@ -114,7 +116,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 
 	private static final class WebAuditListener {
 
-		void process(AuthenticationAuditListener listener, AbstractAuthenticationEvent input) {
+		void process(@Nullable AuthenticationAuditListener listener, AbstractAuthenticationEvent input) {
 			if (listener != null) {
 				AuthenticationSwitchUserEvent event = (AuthenticationSwitchUserEvent) input;
 				Map<String, Object> data = new HashMap<>();

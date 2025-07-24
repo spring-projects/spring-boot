@@ -24,6 +24,7 @@ import java.util.concurrent.ScheduledFuture;
 import io.prometheus.metrics.exporter.pushgateway.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -64,7 +65,7 @@ public class PrometheusPushGatewayManager {
 	}
 
 	PrometheusPushGatewayManager(PushGateway pushGateway, TaskScheduler scheduler, Duration pushRate,
-			ShutdownOperation shutdownOperation) {
+			@Nullable ShutdownOperation shutdownOperation) {
 		Assert.notNull(pushGateway, "'pushGateway' must not be null");
 		Assert.notNull(scheduler, "'scheduler' must not be null");
 		Assert.notNull(pushRate, "'pushRate' must not be null");

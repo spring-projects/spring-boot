@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.util.MimeType;
@@ -68,11 +70,11 @@ public final class WebEndpointResponse<T> {
 	 */
 	public static final int STATUS_SERVICE_UNAVAILABLE = 503;
 
-	private final T body;
+	private final @Nullable T body;
 
 	private final int status;
 
-	private final MimeType contentType;
+	private final @Nullable MimeType contentType;
 
 	/**
 	 * Creates a new {@code WebEndpointResponse} with no body and a 200 (OK) status.
@@ -95,7 +97,7 @@ public final class WebEndpointResponse<T> {
 	 * status.
 	 * @param body the body
 	 */
-	public WebEndpointResponse(T body) {
+	public WebEndpointResponse(@Nullable T body) {
 		this(body, STATUS_OK);
 	}
 
@@ -106,7 +108,7 @@ public final class WebEndpointResponse<T> {
 	 * @param producible the producible providing the content type
 	 * @since 2.5.0
 	 */
-	public WebEndpointResponse(T body, Producible<?> producible) {
+	public WebEndpointResponse(@Nullable T body, Producible<?> producible) {
 		this(body, STATUS_OK, producible.getProducedMimeType());
 	}
 
@@ -117,7 +119,7 @@ public final class WebEndpointResponse<T> {
 	 * @param contentType the content type of the response
 	 * @since 2.5.0
 	 */
-	public WebEndpointResponse(T body, MimeType contentType) {
+	public WebEndpointResponse(@Nullable T body, MimeType contentType) {
 		this(body, STATUS_OK, contentType);
 	}
 
@@ -126,7 +128,7 @@ public final class WebEndpointResponse<T> {
 	 * @param body the body
 	 * @param status the HTTP status
 	 */
-	public WebEndpointResponse(T body, int status) {
+	public WebEndpointResponse(@Nullable T body, int status) {
 		this(body, status, null);
 	}
 
@@ -137,7 +139,7 @@ public final class WebEndpointResponse<T> {
 	 * @param contentType the content type of the response
 	 * @since 2.5.0
 	 */
-	public WebEndpointResponse(T body, int status, MimeType contentType) {
+	public WebEndpointResponse(@Nullable T body, int status, @Nullable MimeType contentType) {
 		this.body = body;
 		this.status = status;
 		this.contentType = contentType;
@@ -147,7 +149,7 @@ public final class WebEndpointResponse<T> {
 	 * Returns the content type of the response.
 	 * @return the content type;
 	 */
-	public MimeType getContentType() {
+	public @Nullable MimeType getContentType() {
 		return this.contentType;
 	}
 
@@ -155,7 +157,7 @@ public final class WebEndpointResponse<T> {
 	 * Returns the body for the response.
 	 * @return the body
 	 */
-	public T getBody() {
+	public @Nullable T getBody() {
 		return this.body;
 	}
 

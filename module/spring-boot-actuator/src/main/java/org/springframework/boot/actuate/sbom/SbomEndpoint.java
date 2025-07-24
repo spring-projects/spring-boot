@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
@@ -106,7 +108,7 @@ public class SbomEndpoint {
 		}
 	}
 
-	private Resource loadResource(String location) {
+	private @Nullable Resource loadResource(@Nullable String location) {
 		if (location == null) {
 			return null;
 		}
@@ -127,7 +129,7 @@ public class SbomEndpoint {
 	}
 
 	@ReadOperation
-	Resource sbom(@Selector String id) {
+	@Nullable Resource sbom(@Selector String id) {
 		return this.sboms.get(id);
 	}
 
@@ -167,7 +169,7 @@ public class SbomEndpoint {
 	static class SbomEndpointRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			for (AutodetectedSbom sbom : AUTODETECTED_SBOMS) {
 				sbom.registerHintsIfNeeded(hints);
 			}

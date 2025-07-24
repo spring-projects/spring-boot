@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Indicate that an endpoint request is invalid.
  *
@@ -24,14 +26,14 @@ package org.springframework.boot.actuate.endpoint;
  */
 public class InvalidEndpointRequestException extends RuntimeException {
 
-	private final String reason;
+	private final @Nullable String reason;
 
-	public InvalidEndpointRequestException(String message, String reason) {
+	public InvalidEndpointRequestException(String message, @Nullable String reason) {
 		super(message);
 		this.reason = reason;
 	}
 
-	public InvalidEndpointRequestException(String message, String reason, Throwable cause) {
+	public InvalidEndpointRequestException(String message, @Nullable String reason, @Nullable Throwable cause) {
 		super(message, cause);
 		this.reason = reason;
 	}
@@ -40,7 +42,7 @@ public class InvalidEndpointRequestException extends RuntimeException {
 	 * Return the reason explaining why the request is invalid, potentially {@code null}.
 	 * @return the reason for the failure
 	 */
-	public String getReason() {
+	public @Nullable String getReason() {
 		return this.reason;
 	}
 

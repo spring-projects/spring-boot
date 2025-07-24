@@ -20,6 +20,8 @@ import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -71,7 +73,7 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 	}
 
 	@Override
-	public List<AuditEvent> find(String principal, Instant after, String type) {
+	public List<AuditEvent> find(@Nullable String principal, @Nullable Instant after, @Nullable String type) {
 		LinkedList<AuditEvent> events = new LinkedList<>();
 		synchronized (this.monitor) {
 			for (int i = 0; i < this.events.length; i++) {
@@ -84,7 +86,8 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 		return events;
 	}
 
-	private boolean isMatch(String principal, Instant after, String type, AuditEvent event) {
+	private boolean isMatch(@Nullable String principal, @Nullable Instant after, @Nullable String type,
+			AuditEvent event) {
 		boolean match = true;
 		match = match && (principal == null || event.getPrincipal().equals(principal));
 		match = match && (after == null || event.getTimestamp().isAfter(after));

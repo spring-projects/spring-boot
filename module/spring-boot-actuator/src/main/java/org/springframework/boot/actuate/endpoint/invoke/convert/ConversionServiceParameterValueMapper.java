@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.invoke.convert;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterMappingException;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
@@ -52,7 +54,8 @@ public class ConversionServiceParameterValueMapper implements ParameterValueMapp
 	}
 
 	@Override
-	public Object mapParameterValue(OperationParameter parameter, Object value) throws ParameterMappingException {
+	public @Nullable Object mapParameterValue(OperationParameter parameter, @Nullable Object value)
+			throws ParameterMappingException {
 		try {
 			return this.conversionService.convert(value, parameter.getType());
 		}

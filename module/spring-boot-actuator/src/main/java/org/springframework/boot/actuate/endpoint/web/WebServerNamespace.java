@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -80,7 +82,7 @@ public final class WebServerNamespace {
 	 * @param value the namespace value or {@code null}
 	 * @return the web server namespace
 	 */
-	public static WebServerNamespace from(String value) {
+	public static WebServerNamespace from(@Nullable String value) {
 		if (StringUtils.hasText(value)) {
 			return new WebServerNamespace(value);
 		}

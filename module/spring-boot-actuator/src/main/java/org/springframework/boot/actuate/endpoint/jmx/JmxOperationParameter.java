@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Describes the parameters of an operation on a JMX endpoint.
  *
@@ -41,6 +43,6 @@ public interface JmxOperationParameter {
 	 * Return the description of the parameter or {@code null} if none is available.
 	 * @return the description or {@code null}
 	 */
-	String getDescription();
+	@Nullable String getDescription();
 
 }

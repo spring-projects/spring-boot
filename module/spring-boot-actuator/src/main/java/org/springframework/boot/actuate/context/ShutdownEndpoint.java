@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
@@ -24,6 +26,7 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint @Endpoint} to shutdown the {@link ApplicationContext}.
@@ -36,7 +39,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 @Endpoint(id = "shutdown", defaultAccess = Access.NONE)
 public class ShutdownEndpoint implements ApplicationContextAware {
 
-	private ConfigurableApplicationContext context;
+	@Nullable private ConfigurableApplicationContext context;
 
 	@WriteOperation
 	public ShutdownDescriptor shutdown() {
@@ -60,6 +63,7 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
+		Assert.state(this.context != null, "'context' must not be null");
 		this.context.close();
 	}
 

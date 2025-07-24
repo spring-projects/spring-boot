@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -66,10 +68,10 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	}
 
 	@Override
-	public Object invoke(InvocationContext context) {
+	public @Nullable Object invoke(InvocationContext context) {
 		validateRequiredParameters(context);
 		Method method = this.operationMethod.getMethod();
-		Object[] resolvedArguments = resolveArguments(context);
+		@Nullable Object[] resolvedArguments = resolveArguments(context);
 		ReflectionUtils.makeAccessible(method);
 		return ReflectionUtils.invokeMethod(method, this.target, resolvedArguments);
 	}
@@ -94,14 +96,14 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 		return context.getArguments().get(parameter.getName()) == null;
 	}
 
-	private Object[] resolveArguments(InvocationContext context) {
+	private @Nullable Object[] resolveArguments(InvocationContext context) {
 		return this.operationMethod.getParameters()
 			.stream()
 			.map((parameter) -> resolveArgument(parameter, context))
 			.toArray();
 	}
 
-	private Object resolveArgument(OperationParameter parameter, InvocationContext context) {
+	private @Nullable Object resolveArgument(OperationParameter parameter, InvocationContext context) {
 		Object resolvedByType = context.resolveArgument(parameter.getType());
 		if (resolvedByType != null) {
 			return resolvedByType;

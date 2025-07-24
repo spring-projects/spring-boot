@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.security.Principal;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Security context in which an endpoint is being invoked.
  *
@@ -32,7 +34,7 @@ public interface SecurityContext {
 	SecurityContext NONE = new SecurityContext() {
 
 		@Override
-		public Principal getPrincipal() {
+		public @Nullable Principal getPrincipal() {
 			return null;
 		}
 
@@ -47,7 +49,7 @@ public interface SecurityContext {
 	 * Return the currently authenticated {@link Principal} or {@code null}.
 	 * @return the principal or {@code null}
 	 */
-	Principal getPrincipal();
+	@Nullable Principal getPrincipal();
 
 	/**
 	 * Returns {@code true} if the currently authenticated user is in the given

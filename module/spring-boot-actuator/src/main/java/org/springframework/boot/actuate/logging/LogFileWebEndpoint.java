@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -41,17 +42,17 @@ public class LogFileWebEndpoint {
 
 	private static final Log logger = LogFactory.getLog(LogFileWebEndpoint.class);
 
-	private final LogFile logFile;
+	private final @Nullable LogFile logFile;
 
-	private final File externalFile;
+	private final @Nullable File externalFile;
 
-	public LogFileWebEndpoint(LogFile logFile, File externalFile) {
+	public LogFileWebEndpoint(@Nullable LogFile logFile, @Nullable File externalFile) {
 		this.logFile = logFile;
 		this.externalFile = externalFile;
 	}
 
 	@ReadOperation(produces = "text/plain; charset=UTF-8")
-	public Resource logFile() {
+	public @Nullable Resource logFile() {
 		Resource logFileResource = getLogFileResource();
 		if (logFileResource == null || !logFileResource.isReadable()) {
 			return null;
@@ -59,7 +60,7 @@ public class LogFileWebEndpoint {
 		return logFileResource;
 	}
 
-	private Resource getLogFileResource() {
+	private @Nullable Resource getLogFileResource() {
 		if (this.externalFile != null) {
 			return new FileSystemResource(this.externalFile);
 		}

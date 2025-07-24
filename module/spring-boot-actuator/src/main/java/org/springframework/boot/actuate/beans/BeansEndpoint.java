@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.beans;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -63,7 +65,8 @@ public class BeansEndpoint {
 		return new BeansDescriptor(contexts);
 	}
 
-	private static ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
+	private static @Nullable ConfigurableApplicationContext getConfigurableParent(
+			ConfigurableApplicationContext context) {
 		ApplicationContext parent = context.getParent();
 		if (parent instanceof ConfigurableApplicationContext configurableParent) {
 			return configurableParent;
@@ -95,14 +98,14 @@ public class BeansEndpoint {
 
 		private final Map<String, BeanDescriptor> beans;
 
-		private final String parentId;
+		private final @Nullable String parentId;
 
-		private ContextBeansDescriptor(Map<String, BeanDescriptor> beans, String parentId) {
+		private ContextBeansDescriptor(Map<String, BeanDescriptor> beans, @Nullable String parentId) {
 			this.beans = beans;
 			this.parentId = parentId;
 		}
 
-		public String getParentId() {
+		public @Nullable String getParentId() {
 			return this.parentId;
 		}
 
@@ -110,7 +113,7 @@ public class BeansEndpoint {
 			return this.beans;
 		}
 
-		private static ContextBeansDescriptor describing(ConfigurableApplicationContext context) {
+		private static @Nullable ContextBeansDescriptor describing(@Nullable ConfigurableApplicationContext context) {
 			if (context == null) {
 				return null;
 			}
@@ -150,15 +153,16 @@ public class BeansEndpoint {
 
 		private final String[] aliases;
 
-		private final String scope;
+		private final @Nullable String scope;
 
-		private final Class<?> type;
+		private final @Nullable Class<?> type;
 
-		private final String resource;
+		private final @Nullable String resource;
 
 		private final String[] dependencies;
 
-		private BeanDescriptor(String[] aliases, String scope, Class<?> type, String resource, String[] dependencies) {
+		private BeanDescriptor(String[] aliases, @Nullable String scope, @Nullable Class<?> type,
+				@Nullable String resource, String[] dependencies) {
 			this.aliases = aliases;
 			this.scope = (StringUtils.hasText(scope) ? scope : ConfigurableBeanFactory.SCOPE_SINGLETON);
 			this.type = type;
@@ -170,15 +174,15 @@ public class BeansEndpoint {
 			return this.aliases;
 		}
 
-		public String getScope() {
+		public @Nullable String getScope() {
 			return this.scope;
 		}
 
-		public Class<?> getType() {
+		public @Nullable Class<?> getType() {
 			return this.type;
 		}
 
-		public String getResource() {
+		public @Nullable String getResource() {
 			return this.resource;
 		}
 

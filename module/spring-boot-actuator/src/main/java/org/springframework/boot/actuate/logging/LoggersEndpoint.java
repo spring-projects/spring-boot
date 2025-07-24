@@ -24,6 +24,8 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -87,7 +89,7 @@ public class LoggersEndpoint {
 	}
 
 	@ReadOperation
-	public LoggerLevelsDescriptor loggerLevels(@Selector String name) {
+	public @Nullable LoggerLevelsDescriptor loggerLevels(@Selector String name) {
 		Assert.notNull(name, "'name' must not be null");
 		LoggerGroup group = this.loggerGroups.get(name);
 		if (group != null) {
@@ -131,28 +133,29 @@ public class LoggersEndpoint {
 		 */
 		public static final LoggersDescriptor NONE = new LoggersDescriptor(null, null, null);
 
-		private final NavigableSet<LogLevel> levels;
+		private final @Nullable NavigableSet<LogLevel> levels;
 
-		private final Map<String, LoggerLevelsDescriptor> loggers;
+		private final @Nullable Map<String, LoggerLevelsDescriptor> loggers;
 
-		private final Map<String, GroupLoggerLevelsDescriptor> groups;
+		private final @Nullable Map<String, GroupLoggerLevelsDescriptor> groups;
 
-		public LoggersDescriptor(NavigableSet<LogLevel> levels, Map<String, LoggerLevelsDescriptor> loggers,
-				Map<String, GroupLoggerLevelsDescriptor> groups) {
+		public LoggersDescriptor(@Nullable NavigableSet<LogLevel> levels,
+				@Nullable Map<String, LoggerLevelsDescriptor> loggers,
+				@Nullable Map<String, GroupLoggerLevelsDescriptor> groups) {
 			this.levels = levels;
 			this.loggers = loggers;
 			this.groups = groups;
 		}
 
-		public NavigableSet<LogLevel> getLevels() {
+		public @Nullable NavigableSet<LogLevel> getLevels() {
 			return this.levels;
 		}
 
-		public Map<String, LoggerLevelsDescriptor> getLoggers() {
+		public @Nullable Map<String, LoggerLevelsDescriptor> getLoggers() {
 			return this.loggers;
 		}
 
-		public Map<String, GroupLoggerLevelsDescriptor> getGroups() {
+		public @Nullable Map<String, GroupLoggerLevelsDescriptor> getGroups() {
 			return this.groups;
 		}
 
@@ -163,21 +166,21 @@ public class LoggersEndpoint {
 	 */
 	public static class LoggerLevelsDescriptor implements OperationResponseBody {
 
-		private final String configuredLevel;
+		private final @Nullable String configuredLevel;
 
-		public LoggerLevelsDescriptor(LogLevel configuredLevel) {
+		public LoggerLevelsDescriptor(@Nullable LogLevel configuredLevel) {
 			this.configuredLevel = (configuredLevel != null) ? configuredLevel.name() : null;
 		}
 
-		LoggerLevelsDescriptor(LevelConfiguration directConfiguration) {
+		LoggerLevelsDescriptor(@Nullable LevelConfiguration directConfiguration) {
 			this.configuredLevel = (directConfiguration != null) ? directConfiguration.getName() : null;
 		}
 
-		protected final String getName(LogLevel level) {
+		protected final @Nullable String getName(@Nullable LogLevel level) {
 			return (level != null) ? level.name() : null;
 		}
 
-		public String getConfiguredLevel() {
+		public @Nullable String getConfiguredLevel() {
 			return this.configuredLevel;
 		}
 
@@ -190,7 +193,7 @@ public class LoggersEndpoint {
 
 		private final List<String> members;
 
-		public GroupLoggerLevelsDescriptor(LogLevel configuredLevel, List<String> members) {
+		public GroupLoggerLevelsDescriptor(@Nullable LogLevel configuredLevel, List<String> members) {
 			super(configuredLevel);
 			this.members = members;
 		}

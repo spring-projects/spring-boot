@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -65,10 +67,11 @@ class RequestPredicateFactory {
 		return new WebOperationRequestPredicate(path, httpMethod, consumes, produces);
 	}
 
-	private OperationParameter getAllRemainingPathSegmentsParameter(OperationParameter[] selectorParameters) {
+	private @Nullable OperationParameter getAllRemainingPathSegmentsParameter(OperationParameter[] selectorParameters) {
 		OperationParameter trailingPathsParameter = null;
 		for (OperationParameter selectorParameter : selectorParameters) {
 			Selector selector = selectorParameter.getAnnotation(Selector.class);
+			Assert.state(selector != null, "'selector' must not be null");
 			if (selector.match() == Match.ALL_REMAINING) {
 				Assert.state(trailingPathsParameter == null,
 						"@Selector annotation with Match.ALL_REMAINING must be unique");

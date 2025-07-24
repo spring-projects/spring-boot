@@ -30,6 +30,7 @@ import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.BundleInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.info.SslInfo.CertificateInfo;
+import org.springframework.boot.info.SslInfo.CertificateValidityInfo;
 import org.springframework.util.Assert;
 
 /**
@@ -94,7 +95,9 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	private boolean isValidCertificate(CertificateInfo certificate) {
-		return certificate.getValidity().getStatus().isValid();
+		CertificateValidityInfo validity = certificate.getValidity();
+		Assert.state(validity != null, "'validity' must not be null");
+		return validity.getStatus().isValid();
 	}
 
 	private boolean isNotValidCertificate(CertificateInfo certificate) {

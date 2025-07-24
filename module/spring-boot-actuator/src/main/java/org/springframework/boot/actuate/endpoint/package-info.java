@@ -17,4 +17,7 @@
 /**
  * Endpoint support.
  */
+@NullMarked
 package org.springframework.boot.actuate.endpoint;
+
+import org.jspecify.annotations.NullMarked;

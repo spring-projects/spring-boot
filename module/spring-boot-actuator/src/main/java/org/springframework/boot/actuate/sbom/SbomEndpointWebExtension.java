@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
@@ -60,7 +62,7 @@ public class SbomEndpointWebExtension {
 		return (type != null) ? new WebEndpointResponse<>(resource, type) : new WebEndpointResponse<>(resource);
 	}
 
-	private MimeType getMediaType(String id, Resource resource) {
+	private @Nullable MimeType getMediaType(String id, Resource resource) {
 		if (SbomEndpoint.APPLICATION_SBOM_ID.equals(id) && this.properties.getApplication().getMediaType() != null) {
 			return this.properties.getApplication().getMediaType();
 		}
@@ -115,13 +117,13 @@ public class SbomEndpointWebExtension {
 			}
 		};
 
-		private final MimeType mediaType;
+		private final @Nullable MimeType mediaType;
 
-		SbomType(MimeType mediaType) {
+		SbomType(@Nullable MimeType mediaType) {
 			this.mediaType = mediaType;
 		}
 
-		MimeType getMediaType() {
+		@Nullable MimeType getMediaType() {
 			return this.mediaType;
 		}
 

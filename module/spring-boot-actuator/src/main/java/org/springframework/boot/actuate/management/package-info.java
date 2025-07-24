@@ -17,4 +17,7 @@
 /**
  * Actuator support for JVM management.
  */
+@NullMarked
 package org.springframework.boot.actuate.management;
+
+import org.jspecify.annotations.NullMarked;

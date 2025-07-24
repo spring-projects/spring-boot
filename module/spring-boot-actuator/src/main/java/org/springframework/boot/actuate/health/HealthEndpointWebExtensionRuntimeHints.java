@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -31,7 +33,7 @@ class HealthEndpointWebExtensionRuntimeHints implements RuntimeHintsRegistrar {
 	private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 		this.bindingRegistrar.registerReflectionHints(hints.reflection(), IndicatedHealthDescriptor.class,
 				CompositeHealthDescriptor.class, SystemHealthDescriptor.class);
 	}

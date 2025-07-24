@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -72,8 +74,9 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	 * @since 3.4.0
 	 */
 	public WebEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
-			EndpointMediaTypes endpointMediaTypes, List<PathMapper> endpointPathMappers,
-			List<AdditionalPathsMapper> additionalPathsMappers, Collection<OperationInvokerAdvisor> invokerAdvisors,
+			EndpointMediaTypes endpointMediaTypes, @Nullable List<PathMapper> endpointPathMappers,
+			@Nullable List<AdditionalPathsMapper> additionalPathsMappers,
+			Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableWebEndpoint>> endpointFilters,
 			Collection<OperationFilter<WebOperation>> operationFilters) {
 		super(applicationContext, parameterValueMapper, invokerAdvisors, endpointFilters, operationFilters);
@@ -109,7 +112,7 @@ public class WebEndpointDiscoverer extends EndpointDiscoverer<ExposableWebEndpoi
 	static class WebEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.reflection().registerType(WebEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}
 

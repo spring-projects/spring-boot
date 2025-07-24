@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Maps an operation's response to a JMX-friendly form.
  *
@@ -36,6 +38,6 @@ public interface JmxOperationResponseMapper {
 	 * @param response the operation's response
 	 * @return the {@code response}, in a JMX compliant format
 	 */
-	Object mapResponse(Object response);
+	@Nullable Object mapResponse(@Nullable Object response);
 
 }

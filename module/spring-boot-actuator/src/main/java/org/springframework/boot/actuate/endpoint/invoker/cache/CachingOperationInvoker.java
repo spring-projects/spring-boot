@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -80,7 +81,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 	}
 
 	@Override
-	public Object invoke(InvocationContext context) {
+	public @Nullable Object invoke(InvocationContext context) {
 		if (hasInput(context)) {
 			return this.invoker.invoke(context);
 		}
@@ -102,6 +103,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 		ApiVersion contextApiVersion = context.resolveArgument(ApiVersion.class);
 		Principal principal = context.resolveArgument(Principal.class);
 		WebServerNamespace serverNamespace = context.resolveArgument(WebServerNamespace.class);
+		Assert.state(contextApiVersion != null, "'contextApiVersion' must not be null");
 		return new CacheKey(contextApiVersion, principal, serverNamespace);
 	}
 
@@ -122,7 +124,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 		return false;
 	}
 
-	private CachedResponse createCachedResponse(Object response, long accessTime) {
+	private CachedResponse createCachedResponse(@Nullable Object response, long accessTime) {
 		if (IS_REACTOR_PRESENT) {
 			return new ReactiveCachedResponse(response, accessTime, this.timeToLive);
 		}
@@ -144,11 +146,11 @@ public class CachingOperationInvoker implements OperationInvoker {
 	 */
 	static class CachedResponse {
 
-		private final Object response;
+		private final @Nullable Object response;
 
 		private final long creationTime;
 
-		CachedResponse(Object response, long creationTime) {
+		CachedResponse(@Nullable Object response, long creationTime) {
 			this.response = response;
 			this.creationTime = creationTime;
 		}
@@ -157,7 +159,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 			return (accessTime - this.creationTime) >= timeToLive;
 		}
 
-		Object getResponse() {
+		@Nullable Object getResponse() {
 			return this.response;
 		}
 
@@ -168,11 +170,11 @@ public class CachingOperationInvoker implements OperationInvoker {
 	 */
 	static class ReactiveCachedResponse extends CachedResponse {
 
-		ReactiveCachedResponse(Object response, long creationTime, long timeToLive) {
+		ReactiveCachedResponse(@Nullable Object response, long creationTime, long timeToLive) {
 			super(applyCaching(response, timeToLive), creationTime);
 		}
 
-		private static Object applyCaching(Object response, long timeToLive) {
+		private static @Nullable Object applyCaching(@Nullable Object response, long timeToLive) {
 			if (response instanceof Mono) {
 				return ((Mono<?>) response).cache(Duration.ofMillis(timeToLive));
 			}
@@ -191,11 +193,12 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 		private final ApiVersion apiVersion;
 
-		private final Principal principal;
+		private final @Nullable Principal principal;
 
-		private final WebServerNamespace serverNamespace;
+		private final @Nullable WebServerNamespace serverNamespace;
 
-		private CacheKey(ApiVersion apiVersion, Principal principal, WebServerNamespace serverNamespace) {
+		private CacheKey(ApiVersion apiVersion, @Nullable Principal principal,
+				@Nullable WebServerNamespace serverNamespace) {
 			this.principal = principal;
 			this.apiVersion = apiVersion;
 			this.serverNamespace = serverNamespace;

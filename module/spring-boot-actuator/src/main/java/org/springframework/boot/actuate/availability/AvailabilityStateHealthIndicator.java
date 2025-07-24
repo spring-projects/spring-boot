@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.health.contributor.AbstractHealthIndicator;
@@ -92,7 +94,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 	 * @param applicationAvailability the application availability
 	 * @return the current availability state
 	 */
-	protected AvailabilityState getState(ApplicationAvailability applicationAvailability) {
+	protected @Nullable AvailabilityState getState(ApplicationAvailability applicationAvailability) {
 		return applicationAvailability.getState(this.stateType);
 	}
 
@@ -116,7 +118,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 		 * @param availabilityState the availability state
 		 * @param status the mapped status
 		 */
-		void add(S availabilityState, Status status);
+		void add(@Nullable S availabilityState, Status status);
 
 	}
 

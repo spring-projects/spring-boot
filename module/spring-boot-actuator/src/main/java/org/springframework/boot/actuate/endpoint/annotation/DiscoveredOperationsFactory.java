@@ -24,6 +24,8 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -60,10 +62,10 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 
 	private final ParameterValueMapper parameterValueMapper;
 
-	private final Collection<OperationInvokerAdvisor> invokerAdvisors;
+	private final @Nullable Collection<OperationInvokerAdvisor> invokerAdvisors;
 
 	DiscoveredOperationsFactory(ParameterValueMapper parameterValueMapper,
-			Collection<OperationInvokerAdvisor> invokerAdvisors) {
+			@Nullable Collection<OperationInvokerAdvisor> invokerAdvisors) {
 		this.parameterValueMapper = parameterValueMapper;
 		this.invokerAdvisors = invokerAdvisors;
 	}
@@ -74,7 +76,7 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 			.values();
 	}
 
-	private O createOperation(EndpointId endpointId, Object target, Method method) {
+	private @Nullable O createOperation(EndpointId endpointId, Object target, Method method) {
 		return OPERATION_TYPES.entrySet()
 			.stream()
 			.map((entry) -> createOperation(endpointId, target, method, entry.getKey(), entry.getValue()))
@@ -83,8 +85,8 @@ abstract class DiscoveredOperationsFactory<O extends Operation> {
 			.orElse(null);
 	}
 
-	private O createOperation(EndpointId endpointId, Object target, Method method, OperationType operationType,
-			Class<? extends Annotation> annotationType) {
+	private @Nullable O createOperation(EndpointId endpointId, Object target, Method method,
+			OperationType operationType, Class<? extends Annotation> annotationType) {
 		MergedAnnotation<?> annotation = MergedAnnotations.from(method).get(annotationType);
 		if (!annotation.isPresent()) {
 			return null;

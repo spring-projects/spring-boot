@@ -34,6 +34,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
@@ -76,7 +77,7 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 		this.endpointAccessResolver = endpointAccessResolver;
 	}
 
-	private static String cleanBasePath(String basePath) {
+	private static String cleanBasePath(@Nullable String basePath) {
 		if (StringUtils.hasText(basePath) && basePath.endsWith("/")) {
 			return basePath.substring(0, basePath.length() - 1);
 		}

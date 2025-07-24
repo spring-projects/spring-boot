@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -61,8 +63,8 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, He
 	 * @since 4.0.0
 	 */
 	public HealthEndpointWebExtension(HealthContributorRegistry registry,
-			ReactiveHealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
-			Duration slowContributorLoggingThreshold) {
+			@Nullable ReactiveHealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
+			@Nullable Duration slowContributorLoggingThreshold) {
 		super(Contributor.blocking(registry, fallbackRegistry), groups, slowContributorLoggingThreshold);
 	}
 
@@ -94,7 +96,7 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, He
 
 	@Override
 	protected HealthDescriptor aggregateDescriptors(ApiVersion apiVersion, Map<String, HealthDescriptor> contributions,
-			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+			StatusAggregator statusAggregator, boolean showComponents, @Nullable Set<String> groupNames) {
 		return getCompositeDescriptor(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 

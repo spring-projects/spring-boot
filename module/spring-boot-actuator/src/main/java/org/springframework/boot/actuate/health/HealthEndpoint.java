@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -58,8 +60,9 @@ public class HealthEndpoint extends HealthEndpointSupport<Health, HealthDescript
 	 * logging should occur
 	 * @since 4.0.0
 	 */
-	public HealthEndpoint(HealthContributorRegistry registry, ReactiveHealthContributorRegistry fallbackRegistry,
-			HealthEndpointGroups groups, Duration slowContributorLoggingThreshold) {
+	public HealthEndpoint(HealthContributorRegistry registry,
+			@Nullable ReactiveHealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
+			Duration slowContributorLoggingThreshold) {
 		super(Contributor.blocking(registry, fallbackRegistry), groups, slowContributorLoggingThreshold);
 	}
 
@@ -70,18 +73,18 @@ public class HealthEndpoint extends HealthEndpointSupport<Health, HealthDescript
 	}
 
 	@ReadOperation
-	public HealthDescriptor healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
+	public @Nullable HealthDescriptor healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(ApiVersion.V3, path);
 	}
 
-	private HealthDescriptor health(ApiVersion apiVersion, String... path) {
+	private @Nullable HealthDescriptor health(ApiVersion apiVersion, String... path) {
 		Result<HealthDescriptor> result = getResult(apiVersion, null, SecurityContext.NONE, true, path);
 		return (result != null) ? result.descriptor() : null;
 	}
 
 	@Override
 	protected HealthDescriptor aggregateDescriptors(ApiVersion apiVersion, Map<String, HealthDescriptor> contributions,
-			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+			StatusAggregator statusAggregator, boolean showComponents, @Nullable Set<String> groupNames) {
 		return getCompositeDescriptor(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 

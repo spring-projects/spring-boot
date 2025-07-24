@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.invoke;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 
 /**
@@ -34,6 +36,6 @@ public interface OperationInvoker {
 	 * @return the result of the operation, may be {@code null}
 	 * @throws MissingParametersException if parameters are missing
 	 */
-	Object invoke(InvocationContext context) throws MissingParametersException;
+	@Nullable Object invoke(InvocationContext context) throws MissingParametersException;
 
 }

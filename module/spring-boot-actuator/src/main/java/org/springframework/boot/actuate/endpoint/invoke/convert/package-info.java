@@ -17,4 +17,7 @@
 /**
  * Converter support for actuator endpoints.
  */
+@NullMarked
 package org.springframework.boot.actuate.endpoint.invoke.convert;
+
+import org.jspecify.annotations.NullMarked;

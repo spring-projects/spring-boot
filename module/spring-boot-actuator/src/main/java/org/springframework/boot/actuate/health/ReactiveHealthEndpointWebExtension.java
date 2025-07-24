@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -61,8 +62,8 @@ public class ReactiveHealthEndpointWebExtension
 	 * @since 4.0.0
 	 */
 	public ReactiveHealthEndpointWebExtension(ReactiveHealthContributorRegistry registry,
-			HealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
-			Duration slowContributorLoggingThreshold) {
+			@Nullable HealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
+			@Nullable Duration slowContributorLoggingThreshold) {
 		super(Contributor.reactive(registry, fallbackRegistry), groups, slowContributorLoggingThreshold);
 	}
 
@@ -98,7 +99,7 @@ public class ReactiveHealthEndpointWebExtension
 	@Override
 	protected Mono<? extends HealthDescriptor> aggregateDescriptors(ApiVersion apiVersion,
 			Map<String, Mono<? extends HealthDescriptor>> contributions, StatusAggregator statusAggregator,
-			boolean showComponents, Set<String> groupNames) {
+			boolean showComponents, @Nullable Set<String> groupNames) {
 		return Flux.fromIterable(contributions.entrySet())
 			.flatMap(NamedHealthDescriptor::create)
 			.collectMap(NamedHealthDescriptor::name, NamedHealthDescriptor::descriptor)

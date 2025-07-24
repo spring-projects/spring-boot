@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.audit;
 import java.time.Instant;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Repository for {@link AuditEvent}s.
  *
@@ -44,6 +46,6 @@ public interface AuditEventRepository {
 	 * @return audit events of specified type relating to the principal
 	 * @since 1.4.0
 	 */
-	List<AuditEvent> find(String principal, Instant after, String type);
+	List<AuditEvent> find(@Nullable String principal, @Nullable Instant after, @Nullable String type);
 
 }

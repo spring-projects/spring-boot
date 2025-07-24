@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -86,14 +88,14 @@ public class MappingsEndpoint {
 
 		private final Map<String, Object> mappings;
 
-		private final String parentId;
+		private final @Nullable String parentId;
 
-		private ContextMappingsDescriptor(Map<String, Object> mappings, String parentId) {
+		private ContextMappingsDescriptor(Map<String, Object> mappings, @Nullable String parentId) {
 			this.mappings = mappings;
 			this.parentId = parentId;
 		}
 
-		public String getParentId() {
+		public @Nullable String getParentId() {
 			return this.parentId;
 		}
 

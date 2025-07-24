@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributor;
@@ -71,6 +73,6 @@ public interface HealthEndpointGroup {
 	 * @return the additional health path or {@code null}
 	 * @since 2.6.0
 	 */
-	AdditionalHealthEndpointPath getAdditionalPath();
+	@Nullable AdditionalHealthEndpointPath getAdditionalPath();
 
 }

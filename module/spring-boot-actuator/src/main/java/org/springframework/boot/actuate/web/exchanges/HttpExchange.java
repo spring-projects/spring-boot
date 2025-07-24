@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.HttpHeaders;
 
 /**
@@ -50,11 +52,11 @@ public final class HttpExchange {
 
 	private final Response response;
 
-	private final Principal principal;
+	private final @Nullable Principal principal;
 
-	private final Session session;
+	private final @Nullable Session session;
 
-	private final Duration timeTaken;
+	private final @Nullable Duration timeTaken;
 
 	/**
 	 * Primarily for use by {@link HttpExchangeRepository} implementations when recreating
@@ -66,8 +68,8 @@ public final class HttpExchange {
 	 * @param session the session
 	 * @param timeTaken the total time taken
 	 */
-	public HttpExchange(Instant timestamp, Request request, Response response, Principal principal, Session session,
-			Duration timeTaken) {
+	public HttpExchange(Instant timestamp, Request request, Response response, @Nullable Principal principal,
+			@Nullable Session session, @Nullable Duration timeTaken) {
 		this.timestamp = timestamp;
 		this.request = request;
 		this.response = response;
@@ -104,7 +106,7 @@ public final class HttpExchange {
 	 * Returns the principal.
 	 * @return the request
 	 */
-	public Principal getPrincipal() {
+	public @Nullable Principal getPrincipal() {
 		return this.principal;
 	}
 
@@ -112,7 +114,7 @@ public final class HttpExchange {
 	 * Returns the session details.
 	 * @return the session
 	 */
-	public Session getSession() {
+	public @Nullable Session getSession() {
 		return this.session;
 	}
 
@@ -120,7 +122,7 @@ public final class HttpExchange {
 	 * Returns the total time taken for the exchange.
 	 * @return the total time taken
 	 */
-	public Duration getTimeTaken() {
+	public @Nullable Duration getTimeTaken() {
 		return this.timeTaken;
 	}
 
@@ -166,8 +168,9 @@ public final class HttpExchange {
 		 * @param includes the options to include
 		 * @return a new {@link HttpExchange} instance
 		 */
-		public HttpExchange finish(RecordableHttpResponse response, Supplier<java.security.Principal> principalSupplier,
-				Supplier<String> sessionIdSupplier, Include... includes) {
+		public HttpExchange finish(RecordableHttpResponse response,
+				Supplier<java.security.@Nullable Principal> principalSupplier,
+				Supplier<@Nullable String> sessionIdSupplier, Include... includes) {
 			return finish(Clock.systemUTC(), response, principalSupplier, sessionIdSupplier, includes);
 		}
 
@@ -181,8 +184,8 @@ public final class HttpExchange {
 		 * @return a new {@link HttpExchange} instance
 		 */
 		public HttpExchange finish(Clock clock, RecordableHttpResponse response,
-				Supplier<java.security.Principal> principalSupplier, Supplier<String> sessionIdSupplier,
-				Include... includes) {
+				Supplier<java.security.@Nullable Principal> principalSupplier,
+				Supplier<@Nullable String> sessionIdSupplier, Include... includes) {
 			return finish(clock, response, principalSupplier, sessionIdSupplier,
 					new HashSet<>(Arrays.asList(includes)));
 		}
@@ -195,8 +198,9 @@ public final class HttpExchange {
 		 * @param includes the options to include
 		 * @return a new {@link HttpExchange} instance
 		 */
-		public HttpExchange finish(RecordableHttpResponse response, Supplier<java.security.Principal> principalSupplier,
-				Supplier<String> sessionIdSupplier, Set<Include> includes) {
+		public HttpExchange finish(RecordableHttpResponse response,
+				Supplier<java.security.@Nullable Principal> principalSupplier,
+				Supplier<@Nullable String> sessionIdSupplier, Set<Include> includes) {
 			return finish(Clock.systemUTC(), response, principalSupplier, sessionIdSupplier, includes);
 		}
 
@@ -210,19 +214,15 @@ public final class HttpExchange {
 		 * @return a new {@link HttpExchange} instance
 		 */
 		public HttpExchange finish(Clock clock, RecordableHttpResponse response,
-				Supplier<java.security.Principal> principalSupplier, Supplier<String> sessionIdSupplier,
-				Set<Include> includes) {
+				Supplier<java.security.@Nullable Principal> principalSupplier,
+				Supplier<@Nullable String> sessionIdSupplier, Set<Include> includes) {
 			Request exchangeRequest = new Request(this.request, includes);
 			Response exchangeResponse = new Response(response, includes);
-			Principal principal = getIfIncluded(includes, Include.PRINCIPAL, () -> Principal.from(principalSupplier));
-			Session session = getIfIncluded(includes, Include.SESSION_ID, () -> Session.from(sessionIdSupplier));
-			Duration duration = getIfIncluded(includes, Include.TIME_TAKEN,
-					() -> Duration.between(this.timestamp, Instant.now(clock)));
+			Principal principal = (includes.contains(Include.PRINCIPAL)) ? Principal.from(principalSupplier) : null;
+			Session session = (includes.contains(Include.SESSION_ID)) ? Session.from(sessionIdSupplier) : null;
+			Duration duration = (includes.contains(Include.TIME_TAKEN))
+					? Duration.between(this.timestamp, Instant.now(clock)) : null;
 			return new HttpExchange(this.timestamp, exchangeRequest, exchangeResponse, principal, session, duration);
-		}
-
-		private <T> T getIfIncluded(Set<Include> includes, Include include, Supplier<T> supplier) {
-			return (includes.contains(include)) ? supplier.get() : null;
 		}
 
 	}
@@ -234,7 +234,7 @@ public final class HttpExchange {
 
 		private final URI uri;
 
-		private final String remoteAddress;
+		private final @Nullable String remoteAddress;
 
 		private final String method;
 
@@ -298,7 +298,7 @@ public final class HttpExchange {
 		 * Return the remote address that made the request.
 		 * @return the remote address
 		 */
-		public String getRemoteAddress() {
+		public @Nullable String getRemoteAddress() {
 			return this.remoteAddress;
 		}
 
@@ -378,7 +378,7 @@ public final class HttpExchange {
 			return this.id;
 		}
 
-		static Session from(Supplier<String> sessionIdSupplier) {
+		static @Nullable Session from(Supplier<@Nullable String> sessionIdSupplier) {
 			String id = sessionIdSupplier.get();
 			return (id != null) ? new Session(id) : null;
 		}
@@ -409,7 +409,7 @@ public final class HttpExchange {
 			return this.name;
 		}
 
-		static Principal from(Supplier<java.security.Principal> principalSupplier) {
+		static @Nullable Principal from(Supplier<java.security.@Nullable Principal> principalSupplier) {
 			java.security.Principal principal = principalSupplier.get();
 			return (principal != null) ? new Principal(principal.getName()) : null;
 		}

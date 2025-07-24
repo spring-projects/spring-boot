@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
 
@@ -76,7 +78,7 @@ public class InvocationContext {
 	 * @since 2.5.0
 	 * @see #canResolve(Class)
 	 */
-	public <T> T resolveArgument(Class<T> argumentType) {
+	public <T> @Nullable T resolveArgument(Class<T> argumentType) {
 		for (OperationArgumentResolver argumentResolver : this.argumentResolvers) {
 			if (argumentResolver.canResolve(argumentType)) {
 				T result = argumentResolver.resolve(argumentType);

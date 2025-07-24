@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.invoke;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Maps parameter values to the required type when invoking an endpoint.
  *
@@ -37,6 +39,6 @@ public interface ParameterValueMapper {
 	 * @return a value suitable for that parameter
 	 * @throws ParameterMappingException when a mapping failure occurs
 	 */
-	Object mapParameterValue(OperationParameter parameter, Object value) throws ParameterMappingException;
+	@Nullable Object mapParameterValue(OperationParameter parameter, @Nullable Object value) throws ParameterMappingException;
 
 }

@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.sbom;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.MimeType;
 
@@ -58,26 +60,26 @@ public class SbomProperties {
 		/**
 		 * Location to the SBOM. If null, the location will be auto-detected.
 		 */
-		private String location;
+		private @Nullable String location;
 
 		/**
 		 * Media type of the SBOM. If null, the media type will be auto-detected.
 		 */
-		private MimeType mediaType;
+		private @Nullable MimeType mediaType;
 
-		public String getLocation() {
+		public @Nullable String getLocation() {
 			return this.location;
 		}
 
-		public void setLocation(String location) {
+		public void setLocation(@Nullable String location) {
 			this.location = location;
 		}
 
-		public MimeType getMediaType() {
+		public @Nullable MimeType getMediaType() {
 			return this.mediaType;
 		}
 
-		public void setMediaType(MimeType mediaType) {
+		public void setMediaType(@Nullable MimeType mediaType) {
 			this.mediaType = mediaType;
 		}
 
