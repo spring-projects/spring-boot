@@ -31,6 +31,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.cbor.JacksonCborHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.JacksonXmlHttpMessageConverter;
 
@@ -86,6 +87,25 @@ class HttpMessageConvertersTests {
 		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
 		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
 				JacksonJsonHttpMessageConverter.class);
+	}
+
+	@Test
+	void addBeforeExistingAnotherEquivalentConverter() {
+		KotlinSerializationJsonHttpMessageConverter converter1 = new KotlinSerializationJsonHttpMessageConverter();
+		HttpMessageConverters converters = new HttpMessageConverters(converter1);
+		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
+		assertThat(converterClasses).containsSequence(KotlinSerializationJsonHttpMessageConverter.class,
+				JacksonJsonHttpMessageConverter.class);
+	}
+
+	@Test
+	void addBeforeExistingMultipleEquivalentConverters() {
+		GsonHttpMessageConverter converter1 = new GsonHttpMessageConverter();
+		KotlinSerializationJsonHttpMessageConverter converter2 = new KotlinSerializationJsonHttpMessageConverter();
+		HttpMessageConverters converters = new HttpMessageConverters(converter1, converter2);
+		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
+		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
+				KotlinSerializationJsonHttpMessageConverter.class, JacksonJsonHttpMessageConverter.class);
 	}
 
 	@Test

@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -66,8 +67,32 @@ class JsonbHttpMessageConvertersConfiguration {
 
 		}
 
-		@ConditionalOnMissingBean({ JacksonJsonHttpMessageConverter.class, GsonHttpMessageConverter.class })
-		static class JacksonAndGsonMissing {
+		@Conditional(JacksonAndGsonAndKotlinSerializationMissingCondition.class)
+		static class JacksonAndGsonAndKotlinSerializationMissing {
+
+		}
+
+	}
+
+	private static class JacksonAndGsonAndKotlinSerializationMissingCondition extends NoneNestedConditions {
+
+		JacksonAndGsonAndKotlinSerializationMissingCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnBean(JacksonJsonHttpMessageConverter.class)
+		static class JacksonAvailable {
+
+		}
+
+		@ConditionalOnBean(GsonHttpMessageConverter.class)
+		static class GsonAvailable {
+
+		}
+
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+				havingValue = "kotlin-serialization")
+		static class KotlinxPreferred {
 
 		}
 

@@ -91,6 +91,12 @@ class GsonHttpMessageConvertersConfiguration {
 
 		}
 
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+				havingValue = "kotlin-serialization")
+		static class KotlinxSerialization {
+
+		}
+
 	}
 
 }
