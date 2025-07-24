@@ -22,7 +22,7 @@ description = "Starter for using Redis key-value data store with Spring Data Red
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
+	api(project(":starter:spring-boot-starter-reactor"))
 
 	api(project(":module:spring-boot-data-redis"))
-	api(project(":module:spring-boot-reactor"))
 }
