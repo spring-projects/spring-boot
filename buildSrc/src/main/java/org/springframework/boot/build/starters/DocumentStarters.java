@@ -121,7 +121,7 @@ public abstract class DocumentStarters extends DefaultTask {
 	}
 
 	private String addStarterCrossLinks(String input) {
-		return input.replaceAll("(spring-boot-starter[A-Za-z-]*)", "xref:#$1[`$1`]");
+		return input.replaceAll("(spring-boot-starter[A-Za-z0-9-]*)", "xref:#$1[`$1`]");
 	}
 
 	private static final class Starter implements Comparable<Starter> {
