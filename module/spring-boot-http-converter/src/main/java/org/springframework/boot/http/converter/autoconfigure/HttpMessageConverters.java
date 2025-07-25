@@ -21,9 +21,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
@@ -48,6 +50,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Dmitry Sulman
  * @since 4.0.0
  * @see #HttpMessageConverters(HttpMessageConverter...)
  * @see #HttpMessageConverters(Collection)
@@ -64,12 +67,14 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		NON_REPLACING_CONVERTERS = Collections.unmodifiableList(nonReplacingConverters);
 	}
 
-	private static final Map<Class<?>, Class<?>> EQUIVALENT_CONVERTERS;
+	private static final Map<Class<?>, Set<Class<?>>> EQUIVALENT_CONVERTERS;
 
 	static {
-		Map<Class<?>, Class<?>> equivalentConverters = new HashMap<>();
+		Map<Class<?>, Set<Class<?>>> equivalentConverters = new HashMap<>();
 		putIfExists(equivalentConverters, "org.springframework.http.converter.json.MappingJackson2HttpMessageConverter",
 				"org.springframework.http.converter.json.GsonHttpMessageConverter");
+		putIfExists(equivalentConverters, "org.springframework.http.converter.json.MappingJackson2HttpMessageConverter",
+				"org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter");
 		EQUIVALENT_CONVERTERS = Collections.unmodifiableMap(equivalentConverters);
 	}
 
@@ -146,8 +151,13 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		if (ClassUtils.isAssignableValue(converterClass, candidate)) {
 			return true;
 		}
-		Class<?> equivalentClass = EQUIVALENT_CONVERTERS.get(converterClass);
-		return equivalentClass != null && ClassUtils.isAssignableValue(equivalentClass, candidate);
+		Set<Class<?>> equivalentClasses = EQUIVALENT_CONVERTERS.getOrDefault(converterClass, Collections.emptySet());
+		for (Class<?> equivalentClass : equivalentClasses) {
+			if (ClassUtils.isAssignableValue(equivalentClass, candidate)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void configurePartConverters(AllEncompassingFormHttpMessageConverter formConverter,
@@ -236,9 +246,9 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		}
 	}
 
-	private static void putIfExists(Map<Class<?>, Class<?>> map, String keyClassName, String valueClassName) {
+	private static void putIfExists(Map<Class<?>, Set<Class<?>>> map, String keyClassName, String valueClassName) {
 		try {
-			map.put(Class.forName(keyClassName), Class.forName(valueClassName));
+			map.computeIfAbsent(Class.forName(keyClassName), (k) -> new HashSet<>()).add(Class.forName(valueClassName));
 		}
 		catch (ClassNotFoundException | NoClassDefFoundError ex) {
 			// Ignore

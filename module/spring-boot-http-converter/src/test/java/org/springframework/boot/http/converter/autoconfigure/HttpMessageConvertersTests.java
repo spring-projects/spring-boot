@@ -30,6 +30,7 @@ import org.springframework.http.converter.ResourceRegionHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Dmitry Sulman
  */
 @SuppressWarnings("removal")
 class HttpMessageConvertersTests {
@@ -87,6 +89,25 @@ class HttpMessageConvertersTests {
 		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
 		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class);
+	}
+
+	@Test
+	void addBeforeExistingAnotherEquivalentConverter() {
+		KotlinSerializationJsonHttpMessageConverter converter1 = new KotlinSerializationJsonHttpMessageConverter();
+		HttpMessageConverters converters = new HttpMessageConverters(converter1);
+		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
+		assertThat(converterClasses).containsSequence(KotlinSerializationJsonHttpMessageConverter.class,
+				MappingJackson2HttpMessageConverter.class);
+	}
+
+	@Test
+	void addBeforeExistingMultipleEquivalentConverters() {
+		GsonHttpMessageConverter converter1 = new GsonHttpMessageConverter();
+		KotlinSerializationJsonHttpMessageConverter converter2 = new KotlinSerializationJsonHttpMessageConverter();
+		HttpMessageConverters converters = new HttpMessageConverters(converter1, converter2);
+		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
+		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
+				KotlinSerializationJsonHttpMessageConverter.class, MappingJackson2HttpMessageConverter.class);
 	}
 
 	@Test
