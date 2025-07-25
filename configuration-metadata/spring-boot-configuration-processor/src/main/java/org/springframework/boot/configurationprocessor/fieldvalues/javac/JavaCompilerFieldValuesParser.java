@@ -209,7 +209,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 				}
 				return null;
 			}
-			return defaultValue;
+			return null;
 		}
 
 		private Object getFactoryValue(ExpressionTree expression, Object factoryValue) {

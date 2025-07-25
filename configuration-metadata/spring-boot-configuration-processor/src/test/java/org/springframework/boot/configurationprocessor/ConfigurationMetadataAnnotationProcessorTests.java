@@ -31,6 +31,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationprocessor.test.CompiledMetadataReader;
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
+import org.springframework.boot.configurationsample.arithmetic.ArithmeticExpressionProperties;
 import org.springframework.boot.configurationsample.deprecation.Dbcp2Configuration;
 import org.springframework.boot.configurationsample.method.NestedPropertiesMethod;
 import org.springframework.boot.configurationsample.record.ExampleRecord;
@@ -118,6 +119,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Pavel Anisimov
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Hyeon Jae Kim
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -625,6 +627,21 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("ignored.prop2", String.class));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("ignored.prop3", String.class));
 		assertThat(metadata.getIgnored()).containsExactly(ItemIgnore.forProperty("ignored.prop3"));
+	}
+
+	@Test
+	void arithmeticExpressionPropertiesShouldOmitUnknownDefaultValues(){
+		ConfigurationMetadata metadata = compile(ArithmeticExpressionProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("arithmetic.calculated", Integer.class)
+			.fromSource(ArithmeticExpressionProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("arithmetic.literal", Integer.class)
+			.fromSource(ArithmeticExpressionProperties.class)
+			.withDefaultValue(100));
+		assertThat(metadata).has(Metadata.withProperty("arithmetic.simple-flag", Boolean.class)
+			.fromSource(ArithmeticExpressionProperties.class)
+			.withDefaultValue(true));
+		assertThat(metadata).has(Metadata.withProperty("arithmetic.complex-flag", Boolean.class)
+			.fromSource(ArithmeticExpressionProperties.class));
 	}
 
 	@Nested
