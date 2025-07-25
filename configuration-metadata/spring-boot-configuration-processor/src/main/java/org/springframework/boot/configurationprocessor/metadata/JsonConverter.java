@@ -167,6 +167,9 @@ class JsonConverter {
 	}
 
 	private void putDefaultValue(JSONObject jsonObject, Object value) throws Exception {
+		if (value == null) {
+			return;
+		}
 		Object defaultValue = extractItemValue(value);
 		jsonObject.put("defaultValue", defaultValue);
 	}
