@@ -7,6 +7,9 @@
 		<property name="file" value="${config_loc}/checkstyle-suppressions.xml"/>
 	</module>
 	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
+	<module name="io.spring.javaformat.checkstyle.check.SpringHeaderCheck">
+		<property name="headerCopyrightPattern" value="2012-present" />
+	</module>
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
 		<module name="io.spring.javaformat.checkstyle.check.SpringDeprecatedCheck" />
 		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check" />
