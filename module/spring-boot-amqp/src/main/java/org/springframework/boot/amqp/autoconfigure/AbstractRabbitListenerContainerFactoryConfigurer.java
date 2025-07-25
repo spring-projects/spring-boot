@@ -19,6 +19,8 @@ package org.springframework.boot.amqp.autoconfigure;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -40,15 +42,15 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends AbstractRabbitListenerContainerFactory<?>> {
 
-	private MessageConverter messageConverter;
+	private @Nullable MessageConverter messageConverter;
 
-	private MessageRecoverer messageRecoverer;
+	private @Nullable MessageRecoverer messageRecoverer;
 
-	private List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
+	private @Nullable List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
 	private final RabbitProperties rabbitProperties;
 
-	private Executor taskExecutor;
+	private @Nullable Executor taskExecutor;
 
 	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.
@@ -63,7 +65,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
 	 */
-	protected void setMessageConverter(MessageConverter messageConverter) {
+	protected void setMessageConverter(@Nullable MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -71,7 +73,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 * Set the {@link MessageRecoverer} to use or {@code null} to rely on the default.
 	 * @param messageRecoverer the {@link MessageRecoverer}
 	 */
-	protected void setMessageRecoverer(MessageRecoverer messageRecoverer) {
+	protected void setMessageRecoverer(@Nullable MessageRecoverer messageRecoverer) {
 		this.messageRecoverer = messageRecoverer;
 	}
 
@@ -79,7 +81,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
 	 * @param retryTemplateCustomizers the retry template customizers
 	 */
-	protected void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+	protected void setRetryTemplateCustomizers(@Nullable List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
 	}
 
@@ -87,7 +89,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	 * Set the task executor to use.
 	 * @param taskExecutor the task executor
 	 */
-	public void setTaskExecutor(Executor taskExecutor) {
+	public void setTaskExecutor(@Nullable Executor taskExecutor) {
 		this.taskExecutor = taskExecutor;
 	}
 

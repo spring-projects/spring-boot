@@ -19,6 +19,8 @@ package org.springframework.boot.amqp.autoconfigure;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.amqp.autoconfigure.RabbitProperties.Ssl;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -36,9 +38,9 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 
 	private final RabbitProperties properties;
 
-	private final SslBundles sslBundles;
+	private final @Nullable SslBundles sslBundles;
 
-	PropertiesRabbitConnectionDetails(RabbitProperties properties, SslBundles sslBundles) {
+	PropertiesRabbitConnectionDetails(RabbitProperties properties, @Nullable SslBundles sslBundles) {
 		this.properties = properties;
 		this.sslBundles = sslBundles;
 	}
@@ -49,12 +51,12 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 	}
 
 	@Override
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.properties.determinePassword();
 	}
 
 	@Override
-	public String getVirtualHost() {
+	public @Nullable String getVirtualHost() {
 		return this.properties.determineVirtualHost();
 	}
 
@@ -71,7 +73,7 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 	}
 
 	@Override
-	public SslBundle getSslBundle() {
+	public @Nullable SslBundle getSslBundle() {
 		Ssl ssl = this.properties.getSsl();
 		if (!ssl.determineEnabled()) {
 			return null;

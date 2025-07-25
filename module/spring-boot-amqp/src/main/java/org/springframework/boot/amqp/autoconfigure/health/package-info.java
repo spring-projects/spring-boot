@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for RabbitMQ health.
  */
+@NullMarked
 package org.springframework.boot.amqp.autoconfigure.health;
+
+import org.jspecify.annotations.NullMarked;

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.boot.ssl.SslBundle;
 
@@ -27,7 +29,7 @@ import org.springframework.boot.ssl.SslBundle;
  */
 class SslBundleRabbitConnectionFactoryBean extends RabbitConnectionFactoryBean {
 
-	private SslBundle sslBundle;
+	private @Nullable SslBundle sslBundle;
 
 	private boolean enableHostnameVerification;
 
@@ -44,7 +46,7 @@ class SslBundleRabbitConnectionFactoryBean extends RabbitConnectionFactoryBean {
 		}
 	}
 
-	void setSslBundle(SslBundle sslBundle) {
+	void setSslBundle(@Nullable SslBundle sslBundle) {
 		this.sslBundle = sslBundle;
 	}
 

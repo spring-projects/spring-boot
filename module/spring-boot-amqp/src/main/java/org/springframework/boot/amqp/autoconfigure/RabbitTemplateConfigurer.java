@@ -19,6 +19,8 @@ package org.springframework.boot.amqp.autoconfigure;
 import java.time.Duration;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.AllowedListDeserializingMessageConverter;
@@ -42,9 +44,9 @@ import org.springframework.util.CollectionUtils;
  */
 public class RabbitTemplateConfigurer {
 
-	private MessageConverter messageConverter;
+	private @Nullable MessageConverter messageConverter;
 
-	private List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
+	private @Nullable List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
 	private final RabbitProperties rabbitProperties;
 
@@ -62,7 +64,7 @@ public class RabbitTemplateConfigurer {
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
 	 */
-	public void setMessageConverter(MessageConverter messageConverter) {
+	public void setMessageConverter(@Nullable MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -70,7 +72,7 @@ public class RabbitTemplateConfigurer {
 	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
 	 * @param retryTemplateCustomizers the retry template customizers
 	 */
-	public void setRetryTemplateCustomizers(List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+	public void setRetryTemplateCustomizers(@Nullable List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 		this.retryTemplateCustomizers = retryTemplateCustomizers;
 	}
 

@@ -18,6 +18,8 @@ package org.springframework.boot.amqp.autoconfigure;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.util.Assert;
@@ -36,7 +38,7 @@ public interface RabbitConnectionDetails extends ConnectionDetails {
 	 * Login user to authenticate to the broker.
 	 * @return the login user to authenticate to the broker or {@code null}
 	 */
-	default String getUsername() {
+	default @Nullable String getUsername() {
 		return null;
 	}
 
@@ -44,7 +46,7 @@ public interface RabbitConnectionDetails extends ConnectionDetails {
 	 * Login to authenticate against the broker.
 	 * @return the login to authenticate against the broker or {@code null}
 	 */
-	default String getPassword() {
+	default @Nullable String getPassword() {
 		return null;
 	}
 
@@ -52,7 +54,7 @@ public interface RabbitConnectionDetails extends ConnectionDetails {
 	 * Virtual host to use when connecting to the broker.
 	 * @return the virtual host to use when connecting to the broker or {@code null}
 	 */
-	default String getVirtualHost() {
+	default @Nullable String getVirtualHost() {
 		return null;
 	}
 
@@ -78,7 +80,7 @@ public interface RabbitConnectionDetails extends ConnectionDetails {
 	 * SSL bundle to use.
 	 * @return the SSL bundle to use
 	 */
-	default SslBundle getSslBundle() {
+	default @Nullable SslBundle getSslBundle() {
 		return null;
 	}
 

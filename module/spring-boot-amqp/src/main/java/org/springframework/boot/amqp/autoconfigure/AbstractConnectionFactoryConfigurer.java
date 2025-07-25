@@ -18,6 +18,8 @@ package org.springframework.boot.amqp.autoconfigure;
 
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -37,7 +39,7 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 
 	private final RabbitProperties rabbitProperties;
 
-	private ConnectionNameStrategy connectionNameStrategy;
+	private @Nullable ConnectionNameStrategy connectionNameStrategy;
 
 	private final RabbitConnectionDetails connectionDetails;
 
@@ -65,11 +67,11 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 		this.connectionDetails = connectionDetails;
 	}
 
-	protected final ConnectionNameStrategy getConnectionNameStrategy() {
+	protected final @Nullable ConnectionNameStrategy getConnectionNameStrategy() {
 		return this.connectionNameStrategy;
 	}
 
-	public final void setConnectionNameStrategy(ConnectionNameStrategy connectionNameStrategy) {
+	public final void setConnectionNameStrategy(@Nullable ConnectionNameStrategy connectionNameStrategy) {
 		this.connectionNameStrategy = connectionNameStrategy;
 	}
 

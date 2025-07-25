@@ -39,6 +39,7 @@ import org.springframework.rabbit.stream.producer.ProducerCustomizer;
 import org.springframework.rabbit.stream.producer.RabbitStreamOperations;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
 import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
+import org.springframework.util.Assert;
 
 /**
  * Configuration for Spring RabbitMQ Stream plugin support.
@@ -93,8 +94,9 @@ class RabbitStreamConfiguration {
 	@ConditionalOnProperty(name = "spring.rabbitmq.stream.name")
 	RabbitStreamTemplate rabbitStreamTemplate(Environment rabbitStreamEnvironment, RabbitProperties properties,
 			RabbitStreamTemplateConfigurer configurer) {
-		RabbitStreamTemplate template = new RabbitStreamTemplate(rabbitStreamEnvironment,
-				properties.getStream().getName());
+		String name = properties.getStream().getName();
+		Assert.state(name != null, "'name' must not be null");
+		RabbitStreamTemplate template = new RabbitStreamTemplate(rabbitStreamEnvironment, name);
 		configurer.configure(template);
 		return template;
 	}

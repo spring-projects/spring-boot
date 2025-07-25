@@ -16,6 +16,8 @@
 
 package org.springframework.boot.amqp.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.rabbit.stream.producer.ProducerCustomizer;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
@@ -33,18 +35,18 @@ import org.springframework.rabbit.stream.support.converter.StreamMessageConverte
  */
 public class RabbitStreamTemplateConfigurer {
 
-	private MessageConverter messageConverter;
+	private @Nullable MessageConverter messageConverter;
 
-	private StreamMessageConverter streamMessageConverter;
+	private @Nullable StreamMessageConverter streamMessageConverter;
 
-	private ProducerCustomizer producerCustomizer;
+	private @Nullable ProducerCustomizer producerCustomizer;
 
 	/**
 	 * Set the {@link MessageConverter} to use or {@code null} if the out-of-the-box
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
 	 */
-	public void setMessageConverter(MessageConverter messageConverter) {
+	public void setMessageConverter(@Nullable MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -53,7 +55,7 @@ public class RabbitStreamTemplateConfigurer {
 	 * stream message converter should be used.
 	 * @param streamMessageConverter the {@link StreamMessageConverter}
 	 */
-	public void setStreamMessageConverter(StreamMessageConverter streamMessageConverter) {
+	public void setStreamMessageConverter(@Nullable StreamMessageConverter streamMessageConverter) {
 		this.streamMessageConverter = streamMessageConverter;
 	}
 
@@ -61,7 +63,7 @@ public class RabbitStreamTemplateConfigurer {
 	 * Set the {@link ProducerCustomizer} instances to use.
 	 * @param producerCustomizer the producer customizer
 	 */
-	public void setProducerCustomizer(ProducerCustomizer producerCustomizer) {
+	public void setProducerCustomizer(@Nullable ProducerCustomizer producerCustomizer) {
 		this.producerCustomizer = producerCustomizer;
 	}
 

@@ -20,6 +20,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MetricsCollector;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -41,7 +42,7 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 
 	private final ApplicationContext context;
 
-	private volatile MeterRegistry meterRegistry;
+	private volatile @Nullable MeterRegistry meterRegistry;
 
 	RabbitConnectionFactoryMetricsPostProcessor(ApplicationContext context) {
 		this.context = context;

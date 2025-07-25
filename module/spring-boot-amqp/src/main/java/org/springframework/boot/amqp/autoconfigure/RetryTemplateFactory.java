@@ -19,6 +19,8 @@ package org.springframework.boot.amqp.autoconfigure;
 import java.time.Duration;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
@@ -32,9 +34,9 @@ import org.springframework.retry.support.RetryTemplate;
  */
 class RetryTemplateFactory {
 
-	private final List<RabbitRetryTemplateCustomizer> customizers;
+	private final @Nullable List<RabbitRetryTemplateCustomizer> customizers;
 
-	RetryTemplateFactory(List<RabbitRetryTemplateCustomizer> customizers) {
+	RetryTemplateFactory(@Nullable List<RabbitRetryTemplateCustomizer> customizers) {
 		this.customizers = customizers;
 	}
 

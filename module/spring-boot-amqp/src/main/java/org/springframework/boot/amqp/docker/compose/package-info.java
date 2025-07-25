@@ -17,4 +17,7 @@
 /**
  * Support for Docker Compose RabbitMQ service connections.
  */
+@NullMarked
 package org.springframework.boot.amqp.docker.compose;
+
+import org.jspecify.annotations.NullMarked;

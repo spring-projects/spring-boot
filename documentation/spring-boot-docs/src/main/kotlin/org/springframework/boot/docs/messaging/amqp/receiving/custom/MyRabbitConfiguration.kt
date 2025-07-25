@@ -17,6 +17,7 @@
 package org.springframework.boot.docs.messaging.amqp.receiving.custom
 
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.boot.amqp.autoconfigure.SimpleRabbitListenerContainerFactoryConfigurer
 import org.springframework.context.annotation.Bean
@@ -34,8 +35,8 @@ class MyRabbitConfiguration {
 		return factory
 	}
 
-	fun getCustomConnectionFactory() : ConnectionFactory? {
-		return /**/ null
+	fun getCustomConnectionFactory() : ConnectionFactory {
+		return /**/ CachingConnectionFactory()
 	}
 
 }

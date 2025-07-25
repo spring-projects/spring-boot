@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.amqp.rabbit.connection.RabbitConnectionFactoryBean;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
@@ -53,9 +54,9 @@ public class RabbitConnectionFactoryBeanConfigurer {
 
 	private final RabbitConnectionDetails connectionDetails;
 
-	private CredentialsProvider credentialsProvider;
+	private @Nullable CredentialsProvider credentialsProvider;
 
-	private CredentialsRefreshService credentialsRefreshService;
+	private @Nullable CredentialsRefreshService credentialsRefreshService;
 
 	/**
 	 * Creates a new configurer that will use the given {@code resourceLoader} and
@@ -90,7 +91,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	 * @param sslBundles the SSL bundles
 	 */
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties,
-			RabbitConnectionDetails connectionDetails, SslBundles sslBundles) {
+			RabbitConnectionDetails connectionDetails, @Nullable SslBundles sslBundles) {
 		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
 		Assert.notNull(properties, "'properties' must not be null");
 		Assert.notNull(connectionDetails, "'connectionDetails' must not be null");
@@ -99,11 +100,11 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		this.connectionDetails = connectionDetails;
 	}
 
-	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+	public void setCredentialsProvider(@Nullable CredentialsProvider credentialsProvider) {
 		this.credentialsProvider = credentialsProvider;
 	}
 
-	public void setCredentialsRefreshService(CredentialsRefreshService credentialsRefreshService) {
+	public void setCredentialsRefreshService(@Nullable CredentialsRefreshService credentialsRefreshService) {
 		this.credentialsRefreshService = credentialsRefreshService;
 	}
 

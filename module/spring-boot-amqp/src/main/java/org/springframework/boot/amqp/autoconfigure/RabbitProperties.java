@@ -21,6 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.AddressShuffleMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
@@ -68,7 +70,7 @@ public class RabbitProperties {
 	 * RabbitMQ port. Ignored if an address is set. Default to 5672, or 5671 if SSL is
 	 * enabled.
 	 */
-	private Integer port;
+	private @Nullable Integer port;
 
 	/**
 	 * Login user to authenticate to the broker.
@@ -88,13 +90,13 @@ public class RabbitProperties {
 	/**
 	 * Virtual host to use when connecting to the broker.
 	 */
-	private String virtualHost;
+	private @Nullable String virtualHost;
 
 	/**
 	 * List of addresses to which the client should connect. When set, the host and port
 	 * are ignored.
 	 */
-	private List<String> addresses;
+	private @Nullable List<String> addresses;
 
 	/**
 	 * Mode used to shuffle configured addresses.
@@ -106,7 +108,7 @@ public class RabbitProperties {
 	 * seconds will be used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration requestedHeartbeat;
+	private @Nullable Duration requestedHeartbeat;
 
 	/**
 	 * Number of channels per connection requested by the client. Use 0 for unlimited.
@@ -121,12 +123,12 @@ public class RabbitProperties {
 	/**
 	 * Type of publisher confirms to use.
 	 */
-	private ConfirmType publisherConfirmType;
+	private @Nullable ConfirmType publisherConfirmType;
 
 	/**
 	 * Connection timeout. Set it to zero to wait forever.
 	 */
-	private Duration connectionTimeout;
+	private @Nullable Duration connectionTimeout;
 
 	/**
 	 * Continuation timeout for RPC calls in channels. Set it to zero to wait forever.
@@ -152,7 +154,7 @@ public class RabbitProperties {
 
 	private final Stream stream = new Stream();
 
-	private List<Address> parsedAddresses;
+	private @Nullable List<Address> parsedAddresses;
 
 	public String getHost() {
 		return this.host;
@@ -176,7 +178,7 @@ public class RabbitProperties {
 		this.host = host;
 	}
 
-	public Integer getPort() {
+	public @Nullable Integer getPort() {
 		return this.port;
 	}
 
@@ -198,11 +200,11 @@ public class RabbitProperties {
 		return this.parsedAddresses.get(0).port;
 	}
 
-	public void setPort(Integer port) {
+	public void setPort(@Nullable Integer port) {
 		this.port = port;
 	}
 
-	public List<String> getAddresses() {
+	public @Nullable List<String> getAddresses() {
 		return this.addresses;
 	}
 
@@ -273,7 +275,7 @@ public class RabbitProperties {
 	 * @see #setAddresses(List)
 	 * @see #getPassword()
 	 */
-	public String determinePassword() {
+	public @Nullable String determinePassword() {
 		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
 			return getPassword();
 		}
@@ -289,7 +291,7 @@ public class RabbitProperties {
 		return this.ssl;
 	}
 
-	public String getVirtualHost() {
+	public @Nullable String getVirtualHost() {
 		return this.virtualHost;
 	}
 
@@ -300,7 +302,7 @@ public class RabbitProperties {
 	 * @see #setAddresses(List)
 	 * @see #getVirtualHost()
 	 */
-	public String determineVirtualHost() {
+	public @Nullable String determineVirtualHost() {
 		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
 			return getVirtualHost();
 		}
@@ -308,7 +310,7 @@ public class RabbitProperties {
 		return (address.virtualHost != null) ? address.virtualHost : getVirtualHost();
 	}
 
-	public void setVirtualHost(String virtualHost) {
+	public void setVirtualHost(@Nullable String virtualHost) {
 		this.virtualHost = StringUtils.hasText(virtualHost) ? virtualHost : "/";
 	}
 
@@ -320,11 +322,11 @@ public class RabbitProperties {
 		this.addressShuffleMode = addressShuffleMode;
 	}
 
-	public Duration getRequestedHeartbeat() {
+	public @Nullable Duration getRequestedHeartbeat() {
 		return this.requestedHeartbeat;
 	}
 
-	public void setRequestedHeartbeat(Duration requestedHeartbeat) {
+	public void setRequestedHeartbeat(@Nullable Duration requestedHeartbeat) {
 		this.requestedHeartbeat = requestedHeartbeat;
 	}
 
@@ -344,19 +346,19 @@ public class RabbitProperties {
 		this.publisherReturns = publisherReturns;
 	}
 
-	public Duration getConnectionTimeout() {
+	public @Nullable Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
-	public void setPublisherConfirmType(ConfirmType publisherConfirmType) {
+	public void setPublisherConfirmType(@Nullable ConfirmType publisherConfirmType) {
 		this.publisherConfirmType = publisherConfirmType;
 	}
 
-	public ConfirmType getPublisherConfirmType() {
+	public @Nullable ConfirmType getPublisherConfirmType() {
 		return this.publisherConfirmType;
 	}
 
-	public void setConnectionTimeout(Duration connectionTimeout) {
+	public void setConnectionTimeout(@Nullable Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
@@ -400,17 +402,17 @@ public class RabbitProperties {
 		 * Whether to enable SSL support. Determined automatically if an address is
 		 * provided with the protocol (amqp:// vs. amqps://).
 		 */
-		private Boolean enabled;
+		private @Nullable Boolean enabled;
 
 		/**
 		 * SSL bundle name.
 		 */
-		private String bundle;
+		private @Nullable String bundle;
 
 		/**
 		 * Path to the key store that holds the SSL certificate.
 		 */
-		private String keyStore;
+		private @Nullable String keyStore;
 
 		/**
 		 * Key store type.
@@ -420,7 +422,7 @@ public class RabbitProperties {
 		/**
 		 * Password used to access the key store.
 		 */
-		private String keyStorePassword;
+		private @Nullable String keyStorePassword;
 
 		/**
 		 * Key store algorithm.
@@ -430,7 +432,7 @@ public class RabbitProperties {
 		/**
 		 * Trust store that holds SSL certificates.
 		 */
-		private String trustStore;
+		private @Nullable String trustStore;
 
 		/**
 		 * Trust store type.
@@ -440,7 +442,7 @@ public class RabbitProperties {
 		/**
 		 * Password used to access the trust store.
 		 */
-		private String trustStorePassword;
+		private @Nullable String trustStorePassword;
 
 		/**
 		 * Trust store algorithm.
@@ -450,7 +452,7 @@ public class RabbitProperties {
 		/**
 		 * SSL algorithm to use. By default, configured by the Rabbit client library.
 		 */
-		private String algorithm;
+		private @Nullable String algorithm;
 
 		/**
 		 * Whether to enable server side certificate validation.
@@ -462,7 +464,7 @@ public class RabbitProperties {
 		 */
 		private boolean verifyHostname = true;
 
-		public Boolean getEnabled() {
+		public @Nullable Boolean getEnabled() {
 			return this.enabled;
 		}
 
@@ -482,23 +484,23 @@ public class RabbitProperties {
 			return address.determineSslEnabled(defaultEnabled);
 		}
 
-		public void setEnabled(Boolean enabled) {
+		public void setEnabled(@Nullable Boolean enabled) {
 			this.enabled = enabled;
 		}
 
-		public String getBundle() {
+		public @Nullable String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
 		}
 
-		public String getKeyStore() {
+		public @Nullable String getKeyStore() {
 			return this.keyStore;
 		}
 
-		public void setKeyStore(String keyStore) {
+		public void setKeyStore(@Nullable String keyStore) {
 			this.keyStore = keyStore;
 		}
 
@@ -510,11 +512,11 @@ public class RabbitProperties {
 			this.keyStoreType = keyStoreType;
 		}
 
-		public String getKeyStorePassword() {
+		public @Nullable String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
 
-		public void setKeyStorePassword(String keyStorePassword) {
+		public void setKeyStorePassword(@Nullable String keyStorePassword) {
 			this.keyStorePassword = keyStorePassword;
 		}
 
@@ -526,11 +528,11 @@ public class RabbitProperties {
 			this.keyStoreAlgorithm = keyStoreAlgorithm;
 		}
 
-		public String getTrustStore() {
+		public @Nullable String getTrustStore() {
 			return this.trustStore;
 		}
 
-		public void setTrustStore(String trustStore) {
+		public void setTrustStore(@Nullable String trustStore) {
 			this.trustStore = trustStore;
 		}
 
@@ -542,11 +544,11 @@ public class RabbitProperties {
 			this.trustStoreType = trustStoreType;
 		}
 
-		public String getTrustStorePassword() {
+		public @Nullable String getTrustStorePassword() {
 			return this.trustStorePassword;
 		}
 
-		public void setTrustStorePassword(String trustStorePassword) {
+		public void setTrustStorePassword(@Nullable String trustStorePassword) {
 			this.trustStorePassword = trustStorePassword;
 		}
 
@@ -558,11 +560,11 @@ public class RabbitProperties {
 			this.trustStoreAlgorithm = trustStoreAlgorithm;
 		}
 
-		public String getAlgorithm() {
+		public @Nullable String getAlgorithm() {
 			return this.algorithm;
 		}
 
-		public void setAlgorithm(String sslAlgorithm) {
+		public void setAlgorithm(@Nullable String sslAlgorithm) {
 			this.algorithm = sslAlgorithm;
 		}
 
@@ -604,27 +606,27 @@ public class RabbitProperties {
 			 * Number of channels to retain in the cache. When "check-timeout" > 0, max
 			 * channels per connection.
 			 */
-			private Integer size;
+			private @Nullable Integer size;
 
 			/**
 			 * Duration to wait to obtain a channel if the cache size has been reached. If
 			 * 0, always create a new channel.
 			 */
-			private Duration checkoutTimeout;
+			private @Nullable Duration checkoutTimeout;
 
-			public Integer getSize() {
+			public @Nullable Integer getSize() {
 				return this.size;
 			}
 
-			public void setSize(Integer size) {
+			public void setSize(@Nullable Integer size) {
 				this.size = size;
 			}
 
-			public Duration getCheckoutTimeout() {
+			public @Nullable Duration getCheckoutTimeout() {
 				return this.checkoutTimeout;
 			}
 
-			public void setCheckoutTimeout(Duration checkoutTimeout) {
+			public void setCheckoutTimeout(@Nullable Duration checkoutTimeout) {
 				this.checkoutTimeout = checkoutTimeout;
 			}
 
@@ -640,7 +642,7 @@ public class RabbitProperties {
 			/**
 			 * Number of connections to cache. Only applies when mode is CONNECTION.
 			 */
-			private Integer size;
+			private @Nullable Integer size;
 
 			public CacheMode getMode() {
 				return this.mode;
@@ -650,11 +652,11 @@ public class RabbitProperties {
 				this.mode = mode;
 			}
 
-			public Integer getSize() {
+			public @Nullable Integer getSize() {
 				return this.size;
 			}
 
-			public void setSize(Integer size) {
+			public void setSize(@Nullable Integer size) {
 				this.size = size;
 			}
 
@@ -744,23 +746,23 @@ public class RabbitProperties {
 		/**
 		 * Acknowledge mode of container.
 		 */
-		private AcknowledgeMode acknowledgeMode;
+		private @Nullable AcknowledgeMode acknowledgeMode;
 
 		/**
 		 * Maximum number of unacknowledged messages that can be outstanding at each
 		 * consumer.
 		 */
-		private Integer prefetch;
+		private @Nullable Integer prefetch;
 
 		/**
 		 * Whether rejected deliveries are re-queued by default.
 		 */
-		private Boolean defaultRequeueRejected;
+		private @Nullable Boolean defaultRequeueRejected;
 
 		/**
 		 * How often idle container events should be published.
 		 */
-		private Duration idleEventInterval;
+		private @Nullable Duration idleEventInterval;
 
 		/**
 		 * Whether the container should present batched messages as discrete messages or
@@ -787,35 +789,35 @@ public class RabbitProperties {
 			this.autoStartup = autoStartup;
 		}
 
-		public AcknowledgeMode getAcknowledgeMode() {
+		public @Nullable AcknowledgeMode getAcknowledgeMode() {
 			return this.acknowledgeMode;
 		}
 
-		public void setAcknowledgeMode(AcknowledgeMode acknowledgeMode) {
+		public void setAcknowledgeMode(@Nullable AcknowledgeMode acknowledgeMode) {
 			this.acknowledgeMode = acknowledgeMode;
 		}
 
-		public Integer getPrefetch() {
+		public @Nullable Integer getPrefetch() {
 			return this.prefetch;
 		}
 
-		public void setPrefetch(Integer prefetch) {
+		public void setPrefetch(@Nullable Integer prefetch) {
 			this.prefetch = prefetch;
 		}
 
-		public Boolean getDefaultRequeueRejected() {
+		public @Nullable Boolean getDefaultRequeueRejected() {
 			return this.defaultRequeueRejected;
 		}
 
-		public void setDefaultRequeueRejected(Boolean defaultRequeueRejected) {
+		public void setDefaultRequeueRejected(@Nullable Boolean defaultRequeueRejected) {
 			this.defaultRequeueRejected = defaultRequeueRejected;
 		}
 
-		public Duration getIdleEventInterval() {
+		public @Nullable Duration getIdleEventInterval() {
 			return this.idleEventInterval;
 		}
 
-		public void setIdleEventInterval(Duration idleEventInterval) {
+		public void setIdleEventInterval(@Nullable Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
 		}
 
@@ -851,18 +853,18 @@ public class RabbitProperties {
 		/**
 		 * Minimum number of listener invoker threads.
 		 */
-		private Integer concurrency;
+		private @Nullable Integer concurrency;
 
 		/**
 		 * Maximum number of listener invoker threads.
 		 */
-		private Integer maxConcurrency;
+		private @Nullable Integer maxConcurrency;
 
 		/**
 		 * Batch size, expressed as the number of physical messages, to be used by the
 		 * container.
 		 */
-		private Integer batchSize;
+		private @Nullable Integer batchSize;
 
 		/**
 		 * Whether to fail if the queues declared by the container are not available on
@@ -879,27 +881,27 @@ public class RabbitProperties {
 		 */
 		private boolean consumerBatchEnabled;
 
-		public Integer getConcurrency() {
+		public @Nullable Integer getConcurrency() {
 			return this.concurrency;
 		}
 
-		public void setConcurrency(Integer concurrency) {
+		public void setConcurrency(@Nullable Integer concurrency) {
 			this.concurrency = concurrency;
 		}
 
-		public Integer getMaxConcurrency() {
+		public @Nullable Integer getMaxConcurrency() {
 			return this.maxConcurrency;
 		}
 
-		public void setMaxConcurrency(Integer maxConcurrency) {
+		public void setMaxConcurrency(@Nullable Integer maxConcurrency) {
 			this.maxConcurrency = maxConcurrency;
 		}
 
-		public Integer getBatchSize() {
+		public @Nullable Integer getBatchSize() {
 			return this.batchSize;
 		}
 
-		public void setBatchSize(Integer batchSize) {
+		public void setBatchSize(@Nullable Integer batchSize) {
 			this.batchSize = batchSize;
 		}
 
@@ -930,7 +932,7 @@ public class RabbitProperties {
 		/**
 		 * Number of consumers per queue.
 		 */
-		private Integer consumersPerQueue;
+		private @Nullable Integer consumersPerQueue;
 
 		/**
 		 * Whether to fail if the queues declared by the container are not available on
@@ -938,11 +940,11 @@ public class RabbitProperties {
 		 */
 		private boolean missingQueuesFatal = false;
 
-		public Integer getConsumersPerQueue() {
+		public @Nullable Integer getConsumersPerQueue() {
 			return this.consumersPerQueue;
 		}
 
-		public void setConsumersPerQueue(Integer consumersPerQueue) {
+		public void setConsumersPerQueue(@Nullable Integer consumersPerQueue) {
 			this.consumersPerQueue = consumersPerQueue;
 		}
 
@@ -982,17 +984,17 @@ public class RabbitProperties {
 		/**
 		 * Whether to enable mandatory messages.
 		 */
-		private Boolean mandatory;
+		private @Nullable Boolean mandatory;
 
 		/**
 		 * Timeout for receive() operations.
 		 */
-		private Duration receiveTimeout;
+		private @Nullable Duration receiveTimeout;
 
 		/**
 		 * Timeout for sendAndReceive() operations.
 		 */
-		private Duration replyTimeout;
+		private @Nullable Duration replyTimeout;
 
 		/**
 		 * Name of the default exchange to use for send operations.
@@ -1008,7 +1010,7 @@ public class RabbitProperties {
 		 * Name of the default queue to receive messages from when none is specified
 		 * explicitly.
 		 */
-		private String defaultReceiveQueue;
+		private @Nullable String defaultReceiveQueue;
 
 		/**
 		 * Whether to enable observation.
@@ -1018,33 +1020,33 @@ public class RabbitProperties {
 		/**
 		 * Simple patterns for allowable packages/classes for deserialization.
 		 */
-		private List<String> allowedListPatterns;
+		private @Nullable List<String> allowedListPatterns;
 
 		public Retry getRetry() {
 			return this.retry;
 		}
 
-		public Boolean getMandatory() {
+		public @Nullable Boolean getMandatory() {
 			return this.mandatory;
 		}
 
-		public void setMandatory(Boolean mandatory) {
+		public void setMandatory(@Nullable Boolean mandatory) {
 			this.mandatory = mandatory;
 		}
 
-		public Duration getReceiveTimeout() {
+		public @Nullable Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
-		public void setReceiveTimeout(Duration receiveTimeout) {
+		public void setReceiveTimeout(@Nullable Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 
-		public Duration getReplyTimeout() {
+		public @Nullable Duration getReplyTimeout() {
 			return this.replyTimeout;
 		}
 
-		public void setReplyTimeout(Duration replyTimeout) {
+		public void setReplyTimeout(@Nullable Duration replyTimeout) {
 			this.replyTimeout = replyTimeout;
 		}
 
@@ -1064,11 +1066,11 @@ public class RabbitProperties {
 			this.routingKey = routingKey;
 		}
 
-		public String getDefaultReceiveQueue() {
+		public @Nullable String getDefaultReceiveQueue() {
 			return this.defaultReceiveQueue;
 		}
 
-		public void setDefaultReceiveQueue(String defaultReceiveQueue) {
+		public void setDefaultReceiveQueue(@Nullable String defaultReceiveQueue) {
 			this.defaultReceiveQueue = defaultReceiveQueue;
 		}
 
@@ -1080,11 +1082,11 @@ public class RabbitProperties {
 			this.observationEnabled = observationEnabled;
 		}
 
-		public List<String> getAllowedListPatterns() {
+		public @Nullable List<String> getAllowedListPatterns() {
 			return this.allowedListPatterns;
 		}
 
-		public void setAllowedListPatterns(List<String> allowedListPatterns) {
+		public void setAllowedListPatterns(@Nullable List<String> allowedListPatterns) {
 			this.allowedListPatterns = allowedListPatterns;
 		}
 
@@ -1186,13 +1188,13 @@ public class RabbitProperties {
 
 		private int port;
 
-		private String username;
+		private @Nullable String username;
 
-		private String password;
+		private @Nullable String password;
 
-		private String virtualHost;
+		private @Nullable String virtualHost;
 
-		private Boolean secureConnection;
+		private @Nullable Boolean secureConnection;
 
 		private Address(String input, boolean sslEnabled) {
 			input = input.trim();
@@ -1278,24 +1280,24 @@ public class RabbitProperties {
 		 * Virtual host of a RabbitMQ instance with the Stream plugin enabled. When not
 		 * set, spring.rabbitmq.virtual-host is used.
 		 */
-		private String virtualHost;
+		private @Nullable String virtualHost;
 
 		/**
 		 * Login user to authenticate to the broker. When not set,
 		 * spring.rabbitmq.username is used.
 		 */
-		private String username;
+		private @Nullable String username;
 
 		/**
 		 * Login password to authenticate to the broker. When not set
 		 * spring.rabbitmq.password is used.
 		 */
-		private String password;
+		private @Nullable String password;
 
 		/**
 		 * Name of the stream.
 		 */
-		private String name;
+		private @Nullable String name;
 
 		public String getHost() {
 			return this.host;
@@ -1313,35 +1315,35 @@ public class RabbitProperties {
 			this.port = port;
 		}
 
-		public String getVirtualHost() {
+		public @Nullable String getVirtualHost() {
 			return this.virtualHost;
 		}
 
-		public void setVirtualHost(String virtualHost) {
+		public void setVirtualHost(@Nullable String virtualHost) {
 			this.virtualHost = virtualHost;
 		}
 
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		public void setUsername(@Nullable String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		public void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 

@@ -17,4 +17,7 @@
 /**
  * Health integration for AMQP and RabbitMQ.
  */
+@NullMarked
 package org.springframework.boot.amqp.health;
+
+import org.jspecify.annotations.NullMarked;

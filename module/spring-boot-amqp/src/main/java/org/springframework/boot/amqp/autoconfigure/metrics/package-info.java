@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for RabbitMQ metrics.
  */
+@NullMarked
 package org.springframework.boot.amqp.autoconfigure.metrics;
+
+import org.jspecify.annotations.NullMarked;

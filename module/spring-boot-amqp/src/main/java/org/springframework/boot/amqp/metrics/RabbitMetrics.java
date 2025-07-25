@@ -23,6 +23,7 @@ import com.rabbitmq.client.impl.MicrometerMetricsCollector;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -44,7 +45,7 @@ public class RabbitMetrics implements MeterBinder {
 	 * @param connectionFactory the {@link ConnectionFactory} to instrument
 	 * @param tags tags to apply to all recorded metrics
 	 */
-	public RabbitMetrics(ConnectionFactory connectionFactory, Iterable<Tag> tags) {
+	public RabbitMetrics(ConnectionFactory connectionFactory, @Nullable Iterable<Tag> tags) {
 		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
 		this.connectionFactory = connectionFactory;
 		this.tags = (tags != null) ? tags : Collections.emptyList();
