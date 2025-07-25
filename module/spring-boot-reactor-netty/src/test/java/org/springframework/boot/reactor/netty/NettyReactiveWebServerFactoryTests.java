@@ -177,7 +177,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 
 	@Override
 	@Test
-	@Disabled("Reactor Netty does not support mutiple ports")
+	@Disabled("Reactor Netty does not support multiple ports")
 	protected void startedLogMessageWithMultiplePorts() {
 	}
 

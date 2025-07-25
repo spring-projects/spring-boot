@@ -436,7 +436,7 @@ class JsonWriterTests {
 		}
 
 		@Test
-		void usingMemebersWithoutNameAtAll() {
+		void usingMembersWithoutNameAtAll() {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
 			JsonWriter<Couple> writer = JsonWriter.of((members) -> members.from(Couple::person2)
 				.usingMembers((personMembers) -> personMembers.from(Person::toString)));
