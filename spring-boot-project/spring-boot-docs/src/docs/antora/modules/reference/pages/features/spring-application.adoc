@@ -402,8 +402,7 @@ Spring Boot can also be configured to expose a xref:api:rest/actuator/startup.ad
 
 If you're running on Java 21 or up, you can enable virtual threads by setting the property configprop:spring.threads.virtual.enabled[] to `true`.
 
-Before turning on this option for your application, you should consider https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html[reading the official Java virtual threads documentation].
-In some cases, applications can experience lower throughput because of "Pinned Virtual Threads"; this page also explains how to detect such cases with JDK Flight Recorder or the `jcmd` CLI.
+We recommend using Java 24 or later as Java 21 have a "Pinned Virtual Threads" issue that happens when entering a `synchronized` block or method; however, before turning on Virtual Threads option for your application, you should consider https://docs.oracle.com/en/java/javase/24/core/virtual-threads.html[reading the official Java virtual threads documentation] In case your code calls a native method or a foreign function inside Virtual Thread, applications can experience lower throughput because of "Pinned Virtual Threads"; this page also explains how to detect such cases with JDK Flight Recorder or the `jcmd` CLI.
 
 NOTE: If virtual threads are enabled, properties which configure thread pools don't have an effect anymore.
 That's because virtual threads are scheduled on a JVM wide platform thread pool and not on dedicated thread pools.
