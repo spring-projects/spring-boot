@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.autoconfigure.endpoint.PropertiesEndpointAccessResolver;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
@@ -135,7 +137,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 			.accessFor(endpointId, defaultAccess);
 	}
 
-	private ConditionOutcome getExposureOutcome(ConditionContext context,
+	private @Nullable ConditionOutcome getExposureOutcome(ConditionContext context,
 			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation,
 			MergedAnnotation<Endpoint> endpointAnnotation, EndpointId endpointId, Builder message) {
 		Set<EndpointExposure> exposures = getExposures(conditionAnnotation);
@@ -170,7 +172,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		return contributors;
 	}
 
-	private List<EndpointExposureOutcomeContributor> loadExposureOutcomeContributors(ClassLoader classLoader,
+	private List<EndpointExposureOutcomeContributor> loadExposureOutcomeContributors(@Nullable ClassLoader classLoader,
 			Environment environment) {
 		ArgumentResolver argumentResolver = ArgumentResolver.of(Environment.class, environment);
 		return SpringFactoriesLoader.forDefaultResourceLocation(classLoader)
@@ -198,7 +200,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		}
 
 		@Override
-		public ConditionOutcome getExposureOutcome(EndpointId endpointId, Set<EndpointExposure> exposures,
+		public @Nullable ConditionOutcome getExposureOutcome(EndpointId endpointId, Set<EndpointExposure> exposures,
 				ConditionMessage.Builder message) {
 			if (exposures.contains(this.exposure) && this.filter.match(endpointId)) {
 				return ConditionOutcome

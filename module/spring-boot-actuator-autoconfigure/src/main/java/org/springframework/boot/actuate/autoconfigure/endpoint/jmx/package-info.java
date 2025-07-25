@@ -17,4 +17,7 @@
 /**
  * Actuator JMX endpoint auto-configuration.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
+
+import org.jspecify.annotations.NullMarked;

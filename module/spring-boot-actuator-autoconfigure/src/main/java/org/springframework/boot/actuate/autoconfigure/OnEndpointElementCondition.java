@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.lang.annotation.Annotation;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * Base endpoint element condition. An element can be disabled globally through the
@@ -49,6 +52,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
+		Assert.state(annotationAttributes != null, "'annotationAttributes' must not be null");
 		String endpointName = annotationAttributes.getString("value");
 		ConditionOutcome outcome = getEndpointOutcome(context, endpointName);
 		if (outcome != null) {
@@ -57,7 +61,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		return getDefaultOutcome(context, annotationAttributes);
 	}
 
-	protected ConditionOutcome getEndpointOutcome(ConditionContext context, String endpointName) {
+	protected @Nullable ConditionOutcome getEndpointOutcome(ConditionContext context, String endpointName) {
 		Environment environment = context.getEnvironment();
 		String enabledProperty = this.prefix + endpointName + ".enabled";
 		if (environment.containsProperty(enabledProperty)) {

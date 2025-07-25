@@ -22,6 +22,10 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
+
 /**
  * Member predicate that matches based on {@code include} and {@code exclude} sets.
  *
@@ -34,7 +38,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 
 	private final Set<String> exclude;
 
-	IncludeExcludeGroupMemberPredicate(Set<String> include, Set<String> exclude) {
+	IncludeExcludeGroupMemberPredicate(@Nullable Set<String> include, @Nullable Set<String> exclude) {
 		this.include = clean(include);
 		this.exclude = clean(exclude);
 	}
@@ -75,7 +79,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 		return false;
 	}
 
-	private Set<String> clean(Set<String> names) {
+	private Set<String> clean(@Nullable Set<String> names) {
 		if (names == null) {
 			return Collections.emptySet();
 		}
@@ -83,7 +87,8 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 		return Collections.unmodifiableSet(cleaned);
 	}
 
-	private String clean(String name) {
+	@Contract("!null -> !null")
+	private @Nullable String clean(@Nullable String name) {
 		return (name != null) ? name.trim() : null;
 	}
 

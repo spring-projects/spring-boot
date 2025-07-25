@@ -17,4 +17,7 @@
 /**
  * Actuator endpoint auto-configuration conditions.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
+
+import org.jspecify.annotations.NullMarked;

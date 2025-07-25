@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.availability;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.availability.LivenessStateHealthIndicator;
 import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -99,7 +101,7 @@ public final class AvailabilityProbesAutoConfiguration {
 			return ConditionOutcome.noMatch(message.because("not running on a supported cloud platform"));
 		}
 
-		private ConditionOutcome onProperty(Environment environment, ConditionMessage.Builder message,
+		private @Nullable ConditionOutcome onProperty(Environment environment, ConditionMessage.Builder message,
 				String propertyName) {
 			String enabled = environment.getProperty(propertyName);
 			if (enabled != null) {

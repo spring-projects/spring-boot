@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.core.Ordered;
@@ -42,7 +44,7 @@ class MappingWebEndpointPathMapper implements PathMapper {
 	}
 
 	@Override
-	public String getRootPath(EndpointId endpointId) {
+	public @Nullable String getRootPath(EndpointId endpointId) {
 		String path = this.pathMapping.get(endpointId);
 		return StringUtils.hasText(path) ? path : null;
 	}

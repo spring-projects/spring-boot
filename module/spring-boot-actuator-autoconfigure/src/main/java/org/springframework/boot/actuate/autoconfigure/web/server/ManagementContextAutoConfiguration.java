@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -134,13 +136,13 @@ public final class ManagementContextAutoConfiguration {
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			String mapped = PROPERTY_MAPPINGS.get(name);
 			return (mapped != null) ? this.environment.getProperty(mapped) : null;
 		}
 
 		@Override
-		public Origin getOrigin(String key) {
+		public @Nullable Origin getOrigin(String key) {
 			return null;
 		}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.Environment;
 
 /**
@@ -60,7 +62,7 @@ public enum ManagementPortType {
 				|| (managementPort != 0 && managementPort.equals(serverPort))) ? SAME : DIFFERENT);
 	}
 
-	private static Integer getPortProperty(Environment environment, String prefix) {
+	private static @Nullable Integer getPortProperty(Environment environment, String prefix) {
 		return environment.getProperty(prefix + "port", Integer.class);
 	}
 

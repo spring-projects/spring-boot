@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.generate.GeneratedMethod;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.beans.factory.BeanFactory;
@@ -60,9 +62,9 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 
 	private final AbstractApplicationContext parentContext;
 
-	private final ApplicationContextInitializer<ConfigurableApplicationContext> applicationContextInitializer;
+	private final @Nullable ApplicationContextInitializer<ConfigurableApplicationContext> applicationContextInitializer;
 
-	private volatile ConfigurableApplicationContext managementContext;
+	private volatile @Nullable ConfigurableApplicationContext managementContext;
 
 	ChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
 			AbstractApplicationContext parentContext) {
@@ -72,7 +74,7 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	@SuppressWarnings("unchecked")
 	private ChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
 			AbstractApplicationContext parentContext,
-			ApplicationContextInitializer<? extends ConfigurableApplicationContext> applicationContextInitializer) {
+			@Nullable ApplicationContextInitializer<? extends ConfigurableApplicationContext> applicationContextInitializer) {
 		this.managementContextFactory = managementContextFactory;
 		this.parentContext = parentContext;
 		this.applicationContextInitializer = (ApplicationContextInitializer<ConfigurableApplicationContext>) applicationContextInitializer;
@@ -117,7 +119,7 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	}
 
 	@Override
-	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
+	public @Nullable BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		Assert.isInstanceOf(ConfigurableApplicationContext.class, this.parentContext);
 		BeanFactory parentBeanFactory = ((ConfigurableApplicationContext) this.parentContext).getBeanFactory();
 		if (registeredBean.getBeanClass().equals(getClass())
@@ -231,7 +233,7 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 			propagateCloseIfNecessary(event.getApplicationContext());
 		}
 
-		private void propagateCloseIfNecessary(ApplicationContext applicationContext) {
+		private void propagateCloseIfNecessary(@Nullable ApplicationContext applicationContext) {
 			if (applicationContext == this.parentContext) {
 				this.childContext.close();
 			}

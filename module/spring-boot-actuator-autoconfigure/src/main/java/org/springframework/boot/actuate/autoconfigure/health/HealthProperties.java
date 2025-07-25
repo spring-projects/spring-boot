@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.CollectionUtils;
@@ -42,7 +44,7 @@ public abstract class HealthProperties {
 	/**
 	 * When to show components. If not specified the 'show-details' setting will be used.
 	 */
-	private Show showComponents;
+	private @Nullable Show showComponents;
 
 	/**
 	 * Roles used to determine whether a user is authorized to be shown details. When
@@ -54,15 +56,15 @@ public abstract class HealthProperties {
 		return this.status;
 	}
 
-	public Show getShowComponents() {
+	public @Nullable Show getShowComponents() {
 		return this.showComponents;
 	}
 
-	public void setShowComponents(Show showComponents) {
+	public void setShowComponents(@Nullable Show showComponents) {
 		this.showComponents = showComponents;
 	}
 
-	public abstract Show getShowDetails();
+	public abstract @Nullable Show getShowDetails();
 
 	public Set<String> getRoles() {
 		return this.roles;

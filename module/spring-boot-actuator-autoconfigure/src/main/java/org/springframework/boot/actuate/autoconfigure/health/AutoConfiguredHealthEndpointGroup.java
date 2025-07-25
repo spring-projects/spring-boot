@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Collection;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
@@ -41,13 +43,13 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final HttpCodeStatusMapper httpCodeStatusMapper;
 
-	private final Show showComponents;
+	private final @Nullable Show showComponents;
 
 	private final Show showDetails;
 
 	private final Collection<String> roles;
 
-	private final AdditionalHealthEndpointPath additionalPath;
+	private final @Nullable AdditionalHealthEndpointPath additionalPath;
 
 	/**
 	 * Create a new {@link AutoConfiguredHealthEndpointGroup} instance.
@@ -60,8 +62,8 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	 * @param additionalPath the additional path to use for this group
 	 */
 	AutoConfiguredHealthEndpointGroup(Predicate<String> members, StatusAggregator statusAggregator,
-			HttpCodeStatusMapper httpCodeStatusMapper, Show showComponents, Show showDetails, Collection<String> roles,
-			AdditionalHealthEndpointPath additionalPath) {
+			HttpCodeStatusMapper httpCodeStatusMapper, @Nullable Show showComponents, Show showDetails,
+			Collection<String> roles, @Nullable AdditionalHealthEndpointPath additionalPath) {
 		this.members = members;
 		this.statusAggregator = statusAggregator;
 		this.httpCodeStatusMapper = httpCodeStatusMapper;
@@ -98,7 +100,7 @@ class AutoConfiguredHealthEndpointGroup implements HealthEndpointGroup {
 	}
 
 	@Override
-	public AdditionalHealthEndpointPath getAdditionalPath() {
+	public @Nullable AdditionalHealthEndpointPath getAdditionalPath() {
 		return this.additionalPath;
 	}
 

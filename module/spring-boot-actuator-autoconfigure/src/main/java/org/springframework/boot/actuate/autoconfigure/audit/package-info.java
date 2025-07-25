@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for actuator audit concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.audit;
+
+import org.jspecify.annotations.NullMarked;

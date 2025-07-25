@@ -20,6 +20,8 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -36,7 +38,7 @@ public class JmxEndpointProperties {
 	/**
 	 * Endpoints JMX domain name. Fallback to 'spring.jmx.default-domain' if set.
 	 */
-	private String domain;
+	private @Nullable String domain;
 
 	/**
 	 * Additional static properties to append to all ObjectNames of MBeans representing
@@ -48,11 +50,11 @@ public class JmxEndpointProperties {
 		return this.exposure;
 	}
 
-	public String getDomain() {
+	public @Nullable String getDomain() {
 		return this.domain;
 	}
 
-	public void setDomain(String domain) {
+	public void setDomain(@Nullable String domain) {
 		this.domain = domain;
 	}
 

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for actuator scheduling concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.scheduling;
+
+import org.jspecify.annotations.NullMarked;

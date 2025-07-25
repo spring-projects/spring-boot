@@ -27,6 +27,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -92,7 +94,7 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups, Additi
 
 	private Map<String, HealthEndpointGroup> createGroups(Map<String, Group> groupProperties, BeanFactory beanFactory,
 			StatusAggregator defaultStatusAggregator, HttpCodeStatusMapper defaultHttpCodeStatusMapper,
-			Show defaultShowComponents, Show defaultShowDetails, Set<String> defaultRoles) {
+			@Nullable Show defaultShowComponents, Show defaultShowDetails, Set<String> defaultRoles) {
 		Map<String, HealthEndpointGroup> groups = new TreeMap<>();
 		groupProperties.forEach((groupName, group) -> {
 			Status status = group.getStatus();
@@ -122,7 +124,7 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups, Additi
 		return Collections.unmodifiableMap(groups);
 	}
 
-	private <T> T getNonQualifiedBean(ListableBeanFactory beanFactory, Class<T> type) {
+	private <T> @Nullable T getNonQualifiedBean(ListableBeanFactory beanFactory, Class<T> type) {
 		List<String> candidates = new ArrayList<>();
 		for (String beanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, type)) {
 			String[] aliases = beanFactory.getAliases(beanName);
@@ -161,12 +163,12 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups, Additi
 	}
 
 	@Override
-	public HealthEndpointGroup get(String name) {
+	public @Nullable HealthEndpointGroup get(String name) {
 		return this.groups.get(name);
 	}
 
 	@Override
-	public List<String> getAdditionalPaths(EndpointId endpointId, WebServerNamespace webServerNamespace) {
+	public @Nullable List<String> getAdditionalPaths(EndpointId endpointId, WebServerNamespace webServerNamespace) {
 		if (!HealthEndpoint.ID.equals(endpointId)) {
 			return null;
 		}

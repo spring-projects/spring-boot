@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -76,18 +78,18 @@ public class HealthEndpointProperties extends HealthProperties {
 		/**
 		 * Health indicator IDs that should be included or '*' for all.
 		 */
-		private Set<String> include;
+		private @Nullable Set<String> include;
 
 		/**
 		 * Health indicator IDs that should be excluded or '*' for all.
 		 */
-		private Set<String> exclude;
+		private @Nullable Set<String> exclude;
 
 		/**
 		 * When to show full health details. Defaults to the value of
 		 * 'management.endpoint.health.show-details'.
 		 */
-		private Show showDetails;
+		private @Nullable Show showDetails;
 
 		/**
 		 * Additional path that this group can be made available on. The additional path
@@ -95,38 +97,38 @@ public class HealthEndpointProperties extends HealthProperties {
 		 * it will be available on the main port or the management port. For instance,
 		 * `server:/healthz` will configure the group on the main port at `/healthz`.
 		 */
-		private String additionalPath;
+		private @Nullable String additionalPath;
 
-		public Set<String> getInclude() {
+		public @Nullable Set<String> getInclude() {
 			return this.include;
 		}
 
-		public void setInclude(Set<String> include) {
+		public void setInclude(@Nullable Set<String> include) {
 			this.include = include;
 		}
 
-		public Set<String> getExclude() {
+		public @Nullable Set<String> getExclude() {
 			return this.exclude;
 		}
 
-		public void setExclude(Set<String> exclude) {
+		public void setExclude(@Nullable Set<String> exclude) {
 			this.exclude = exclude;
 		}
 
 		@Override
-		public Show getShowDetails() {
+		public @Nullable Show getShowDetails() {
 			return this.showDetails;
 		}
 
-		public void setShowDetails(Show showDetails) {
+		public void setShowDetails(@Nullable Show showDetails) {
 			this.showDetails = showDetails;
 		}
 
-		public String getAdditionalPath() {
+		public @Nullable String getAdditionalPath() {
 			return this.additionalPath;
 		}
 
-		public void setAdditionalPath(String additionalPath) {
+		public void setAdditionalPath(@Nullable String additionalPath) {
 			this.additionalPath = additionalPath;
 		}
 

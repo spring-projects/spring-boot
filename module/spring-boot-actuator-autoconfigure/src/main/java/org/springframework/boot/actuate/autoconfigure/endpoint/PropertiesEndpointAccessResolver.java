@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -47,7 +49,7 @@ public class PropertiesEndpointAccessResolver implements EndpointAccessResolver 
 
 	private final PropertyResolver properties;
 
-	private final Access endpointsDefaultAccess;
+	private final @Nullable Access endpointsDefaultAccess;
 
 	private final Access maxPermittedAccess;
 
@@ -60,7 +62,7 @@ public class PropertiesEndpointAccessResolver implements EndpointAccessResolver 
 				Access.UNRESTRICTED);
 	}
 
-	private static Access determineDefaultAccess(PropertyResolver properties) {
+	private static @Nullable Access determineDefaultAccess(PropertyResolver properties) {
 		Access defaultAccess = properties.getProperty(DEFAULT_ACCESS_KEY, Access.class);
 		Boolean endpointsEnabledByDefault = properties.getProperty(ENABLED_BY_DEFAULT_KEY, Boolean.class);
 		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {

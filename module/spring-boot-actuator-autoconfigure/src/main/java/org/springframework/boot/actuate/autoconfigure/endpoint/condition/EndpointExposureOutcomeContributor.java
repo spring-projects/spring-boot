@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -46,7 +48,7 @@ public interface EndpointExposureOutcomeContributor {
 	 * @return a {@link ConditionOutcome#isMatch() matching} {@link ConditionOutcome} if
 	 * the endpoint is exposed or {@code null} if the contributor should not apply
 	 */
-	ConditionOutcome getExposureOutcome(EndpointId endpointId, Set<EndpointExposure> exposures,
+	@Nullable ConditionOutcome getExposureOutcome(EndpointId endpointId, Set<EndpointExposure> exposures,
 			ConditionMessage.Builder message);
 
 }

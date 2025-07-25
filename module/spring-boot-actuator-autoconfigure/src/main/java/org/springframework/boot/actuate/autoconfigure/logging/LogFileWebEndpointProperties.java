@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.logging;
 
 import java.io.File;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -34,13 +36,13 @@ public class LogFileWebEndpointProperties {
 	 * External Logfile to be accessed. Can be used if the logfile is written by output
 	 * redirect and not by the logging system itself.
 	 */
-	private File externalFile;
+	private @Nullable File externalFile;
 
-	public File getExternalFile() {
+	public @Nullable File getExternalFile() {
 		return this.externalFile;
 	}
 
-	public void setExternalFile(File externalFile) {
+	public void setExternalFile(@Nullable File externalFile) {
 		this.externalFile = externalFile;
 	}
 

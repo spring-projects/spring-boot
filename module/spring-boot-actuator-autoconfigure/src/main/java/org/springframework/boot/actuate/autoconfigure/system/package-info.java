@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for actuator system concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.system;
+
+import org.jspecify.annotations.NullMarked;

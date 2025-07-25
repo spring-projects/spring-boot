@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
@@ -32,6 +34,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -50,13 +53,14 @@ import org.springframework.util.StringUtils;
 @Order(Ordered.LOWEST_PRECEDENCE)
 class ManagementContextConfigurationImportSelector implements DeferredImportSelector, BeanClassLoaderAware {
 
-	private ClassLoader classLoader;
+	private @Nullable ClassLoader classLoader;
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
-		ManagementContextType contextType = (ManagementContextType) metadata
-			.getAnnotationAttributes(EnableManagementContext.class.getName())
-			.get("value");
+		Map<String, @Nullable Object> attributes = metadata
+			.getAnnotationAttributes(EnableManagementContext.class.getName());
+		Assert.state(attributes != null, "'attributes' must not be null");
+		ManagementContextType contextType = (ManagementContextType) attributes.get("value");
 		// Find all management context configuration classes, filtering duplicates
 		List<ManagementConfiguration> configurations = getConfigurations();
 		OrderComparator.sort(configurations);
@@ -118,14 +122,19 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 		}
 
 		private ManagementContextType readContextType(AnnotationMetadata annotationMetadata) {
-			Map<String, Object> annotationAttributes = annotationMetadata
+			Map<String, @Nullable Object> annotationAttributes = annotationMetadata
 				.getAnnotationAttributes(ManagementContextConfiguration.class.getName());
-			return (annotationAttributes != null) ? (ManagementContextType) annotationAttributes.get("value")
-					: ManagementContextType.ANY;
+			if (annotationAttributes == null) {
+				return ManagementContextType.ANY;
+			}
+			ManagementContextType value = (ManagementContextType) annotationAttributes.get("value");
+			Assert.state(value != null, "'value' must not be null");
+			return value;
 		}
 
 		private int readOrder(AnnotationMetadata annotationMetadata) {
-			Map<String, Object> attributes = annotationMetadata.getAnnotationAttributes(Order.class.getName());
+			Map<String, @Nullable Object> attributes = annotationMetadata
+				.getAnnotationAttributes(Order.class.getName());
 			Integer order = (attributes != null) ? (Integer) attributes.get("value") : null;
 			return (order != null) ? order : Ordered.LOWEST_PRECEDENCE;
 		}

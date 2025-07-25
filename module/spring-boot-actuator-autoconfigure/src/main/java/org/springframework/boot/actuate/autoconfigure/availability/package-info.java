@@ -18,4 +18,7 @@
  * Auto-configuration that extends health endpoints so that they can be used as
  * availability probes.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.availability;
+
+import org.jspecify.annotations.NullMarked;

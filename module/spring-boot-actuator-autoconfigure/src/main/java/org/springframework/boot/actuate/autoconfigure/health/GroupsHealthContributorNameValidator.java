@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Collections;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.health.registry.HealthContributorNameValidator;
 import org.springframework.util.Assert;
@@ -32,7 +34,7 @@ class GroupsHealthContributorNameValidator implements HealthContributorNameValid
 
 	private final Set<String> groupNames;
 
-	GroupsHealthContributorNameValidator(HealthEndpointGroups groups) {
+	GroupsHealthContributorNameValidator(@Nullable HealthEndpointGroups groups) {
 		this.groupNames = (groups != null) ? groups.getNames() : Collections.emptySet();
 	}
 

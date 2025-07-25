@@ -24,6 +24,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
@@ -149,11 +151,11 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 
 		private final Set<EndpointId> endpointIds;
 
-		EndpointPatterns(String[] patterns) {
+		EndpointPatterns(String @Nullable [] patterns) {
 			this((patterns != null) ? Arrays.asList(patterns) : null);
 		}
 
-		EndpointPatterns(Collection<String> patterns) {
+		EndpointPatterns(@Nullable Collection<String> patterns) {
 			patterns = (patterns != null) ? patterns : Collections.emptySet();
 			boolean matchesAll = false;
 			Set<EndpointId> endpointIds = new LinkedHashSet<>();

@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -30,6 +32,7 @@ import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 
 /**
  * {@link WebServerFactoryCustomizer} that customizes the {@link WebServerFactory} used to
@@ -44,7 +47,7 @@ public class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServe
 
 	private final ListableBeanFactory beanFactory;
 
-	private final Class<? extends WebServerFactoryCustomizer<?>>[] customizerClasses;
+	private final Class<? extends WebServerFactoryCustomizer<?>> @Nullable [] customizerClasses;
 
 	/**
 	 * Creates a new customizer that will retrieve beans using the given
@@ -81,6 +84,7 @@ public class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServe
 
 	private void customizeSameAsParentContext(T factory) {
 		List<WebServerFactoryCustomizer<?>> customizers = new ArrayList<>();
+		Assert.state(this.customizerClasses != null, "'customizerClasses' must not be null");
 		for (Class<? extends WebServerFactoryCustomizer<?>> customizerClass : this.customizerClasses) {
 			try {
 				customizers.add(BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory, customizerClass));
@@ -100,7 +104,9 @@ public class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServe
 
 	protected void customize(T factory, ManagementServerProperties managementServerProperties,
 			ServerProperties serverProperties) {
-		factory.setPort(managementServerProperties.getPort());
+		Integer port = managementServerProperties.getPort();
+		Assert.state(port != null, "'port' must not be null");
+		factory.setPort(port);
 		Ssl ssl = managementServerProperties.getSsl();
 		if (ssl != null) {
 			factory.setSsl(ssl);

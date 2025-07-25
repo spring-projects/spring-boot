@@ -20,10 +20,13 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory;
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.boot.autoconfigure.jmx.JmxProperties;
 import org.springframework.jmx.support.ObjectNameManager;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -39,12 +42,12 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 	private final JmxProperties jmxProperties;
 
-	private final MBeanServer mBeanServer;
+	private final @Nullable MBeanServer mBeanServer;
 
 	private final String contextId;
 
 	DefaultEndpointObjectNameFactory(JmxEndpointProperties properties, JmxProperties jmxProperties,
-			MBeanServer mBeanServer, String contextId) {
+			@Nullable MBeanServer mBeanServer, String contextId) {
 		this.properties = properties;
 		this.jmxProperties = jmxProperties;
 		this.mBeanServer = mBeanServer;
@@ -80,6 +83,7 @@ class DefaultEndpointObjectNameFactory implements EndpointObjectNameFactory {
 
 	private boolean hasMBean(String baseObjectName) throws MalformedObjectNameException {
 		ObjectName query = new ObjectName(baseObjectName + ",*");
+		Assert.state(this.mBeanServer != null, "'mBeanServer' must not be null");
 		return !this.mBeanServer.queryNames(query, null).isEmpty();
 	}
 

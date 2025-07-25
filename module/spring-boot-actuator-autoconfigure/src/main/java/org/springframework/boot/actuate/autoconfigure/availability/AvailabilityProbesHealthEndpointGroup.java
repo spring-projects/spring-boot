@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
@@ -36,9 +38,9 @@ class AvailabilityProbesHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final Set<String> members;
 
-	private final AdditionalHealthEndpointPath additionalPath;
+	private final @Nullable AdditionalHealthEndpointPath additionalPath;
 
-	AvailabilityProbesHealthEndpointGroup(AdditionalHealthEndpointPath additionalPath, String... members) {
+	AvailabilityProbesHealthEndpointGroup(@Nullable AdditionalHealthEndpointPath additionalPath, String... members) {
 		this.members = new HashSet<>(Arrays.asList(members));
 		this.additionalPath = additionalPath;
 	}
@@ -69,7 +71,7 @@ class AvailabilityProbesHealthEndpointGroup implements HealthEndpointGroup {
 	}
 
 	@Override
-	public AdditionalHealthEndpointPath getAdditionalPath() {
+	public @Nullable AdditionalHealthEndpointPath getAdditionalPath() {
 		return this.additionalPath;
 	}
 

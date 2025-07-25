@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for actuator health concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.health;
+
+import org.jspecify.annotations.NullMarked;

@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.SmartInitializingSingleton;
@@ -154,7 +156,7 @@ class HealthEndpointConfiguration {
 			});
 		}
 
-		private void validate(Set<String> names, String type, String group) {
+		private void validate(@Nullable Set<String> names, String type, String group) {
 			if (CollectionUtils.isEmpty(names)) {
 				return;
 			}

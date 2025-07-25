@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for actuator property concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.context.properties;
+
+import org.jspecify.annotations.NullMarked;

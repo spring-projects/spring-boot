@@ -30,6 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
  * Factory for creating a separate management context when the management web server is
@@ -60,6 +61,7 @@ public final class ManagementContextFactory {
 		Environment parentEnvironment = parentContext.getEnvironment();
 		ConfigurableEnvironment childEnvironment = ApplicationContextFactory.DEFAULT
 			.createEnvironment(this.webApplicationType);
+		Assert.state(childEnvironment != null, "'childEnvironment' must not be null");
 		if (parentEnvironment instanceof ConfigurableEnvironment configurableEnvironment) {
 			childEnvironment.setConversionService((configurableEnvironment).getConversionService());
 		}

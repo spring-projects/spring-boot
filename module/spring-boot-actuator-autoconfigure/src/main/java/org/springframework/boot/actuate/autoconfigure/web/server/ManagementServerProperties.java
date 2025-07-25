@@ -18,10 +18,13 @@ package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.net.InetAddress;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.lang.Contract;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,13 +44,13 @@ public class ManagementServerProperties {
 	 * Management endpoint HTTP port (uses the same port as the application by default).
 	 * Configure a different port to use management-specific SSL.
 	 */
-	private Integer port;
+	private @Nullable Integer port;
 
 	/**
 	 * Network address to which the management endpoints should bind. Requires a custom
 	 * management.server.port.
 	 */
-	private InetAddress address;
+	private @Nullable InetAddress address;
 
 	/**
 	 * Management endpoint base path (for instance, '/management'). Requires a custom
@@ -56,7 +59,7 @@ public class ManagementServerProperties {
 	private String basePath = "";
 
 	@NestedConfigurationProperty
-	private Ssl ssl;
+	private @Nullable Ssl ssl;
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -64,7 +67,7 @@ public class ManagementServerProperties {
 	 * @return the port
 	 * @see #setPort(Integer)
 	 */
-	public Integer getPort() {
+	public @Nullable Integer getPort() {
 		return this.port;
 	}
 
@@ -74,15 +77,15 @@ public class ManagementServerProperties {
 	 * random port or set to -1 to disable.
 	 * @param port the port
 	 */
-	public void setPort(Integer port) {
+	public void setPort(@Nullable Integer port) {
 		this.port = port;
 	}
 
-	public InetAddress getAddress() {
+	public @Nullable InetAddress getAddress() {
 		return this.address;
 	}
 
-	public void setAddress(InetAddress address) {
+	public void setAddress(@Nullable InetAddress address) {
 		this.address = address;
 	}
 
@@ -94,15 +97,16 @@ public class ManagementServerProperties {
 		this.basePath = cleanBasePath(basePath);
 	}
 
-	public Ssl getSsl() {
+	public @Nullable Ssl getSsl() {
 		return this.ssl;
 	}
 
-	public void setSsl(Ssl ssl) {
+	public void setSsl(@Nullable Ssl ssl) {
 		this.ssl = ssl;
 	}
 
-	private String cleanBasePath(String basePath) {
+	@Contract("!null -> !null")
+	private @Nullable String cleanBasePath(@Nullable String basePath) {
 		String candidate = null;
 		if (StringUtils.hasLength(basePath)) {
 			candidate = basePath.strip();

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for actuator ssl concerns.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.ssl;
+
+import org.jspecify.annotations.NullMarked;

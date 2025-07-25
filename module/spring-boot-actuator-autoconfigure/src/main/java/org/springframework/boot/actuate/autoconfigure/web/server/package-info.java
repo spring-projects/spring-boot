@@ -17,4 +17,7 @@
 /**
  * Actuator web server support.
  */
+@NullMarked
 package org.springframework.boot.actuate.autoconfigure.web.server;
+
+import org.jspecify.annotations.NullMarked;

@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -25,6 +27,7 @@ import org.springframework.boot.web.context.reactive.ConfigurableReactiveWebAppl
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -44,7 +47,9 @@ class OnManagementPortCondition extends SpringBootCondition {
 		if (!isWebApplicationContext(context)) {
 			return ConditionOutcome.noMatch(message.because("non web application context"));
 		}
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnManagementPort.class.getName());
+		Map<String, @Nullable Object> attributes = metadata
+			.getAnnotationAttributes(ConditionalOnManagementPort.class.getName());
+		Assert.state(attributes != null, "'attributes' must not be null");
 		ManagementPortType requiredType = (ManagementPortType) attributes.get("value");
 		ManagementPortType actualType = ManagementPortType.get(context.getEnvironment());
 		if (actualType == requiredType) {
