@@ -24,4 +24,5 @@ dependencies {
 	api(project(":starter:spring-boot-starter"))
 
 	api(project(":module:spring-boot-r2dbc"))
+	api(project(":module:spring-boot-reactor"))
 }

@@ -15,14 +15,14 @@
  */
 
 plugins {
-	id "org.springframework.boot.starter"
+	id "java"
 }
 
-description = "Starter for using Spring Security's OAuth2 resource server features (deprecated in favor of spring-boot-starter-security-oauth2-resource-server)"
+description = "Spring Boot Auto-Configure Classic smoke test"
 
 dependencies {
-	api(project(":starter:spring-boot-starter"))
-	api(project(":starter:spring-boot-starter-security"))
+	implementation(project(":starter:spring-boot-starter"))
+	implementation(project(":module:spring-boot-autoconfigure-classic"))
 
-	api(project(":module:spring-boot-security-oauth2-resource-server"))
+	testImplementation(project(":starter:spring-boot-starter-test"))
 }

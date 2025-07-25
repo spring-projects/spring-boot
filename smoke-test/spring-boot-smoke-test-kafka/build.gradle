@@ -32,7 +32,7 @@ configurations.all {
 }
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-json"))
+	implementation(project(":starter:spring-boot-starter-jackson"))
 	implementation(project(":starter:spring-boot-starter-kafka"))
 
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))

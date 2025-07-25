@@ -21,7 +21,8 @@ plugins {
 description = "Starter for Apache Artemis and JMS"
 
 dependencies {
-	api(project(":starter:spring-boot-starter-jms"))
+	api(project(":starter:spring-boot-starter"))
 
 	api(project(":module:spring-boot-artemis"))
+	api(project(":module:spring-boot-jms"))
 }

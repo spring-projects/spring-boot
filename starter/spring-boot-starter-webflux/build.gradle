@@ -21,7 +21,8 @@ plugins {
 description = "Starter for building WebFlux applications using Spring Framework's Reactive Web support and Reactor Netty"
 
 dependencies {
-	api(project(":starter:spring-boot-starter-json"))
+	api(project(":starter:spring-boot-starter"))
+	api(project(":starter:spring-boot-starter-jackson"))
 	api(project(":starter:spring-boot-starter-reactor-netty"))
 
 	api(project(":module:spring-boot-webflux"))

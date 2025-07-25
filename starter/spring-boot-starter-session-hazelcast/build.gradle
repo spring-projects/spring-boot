@@ -21,7 +21,9 @@ plugins {
 description = "Starter for using Spring Session with Hazelcast"
 
 dependencies {
+	api(project(":starter:spring-boot-starter"))
 	api(project(":starter:spring-boot-starter-hazelcast"))
 
 	api(project(":module:spring-boot-session-hazelcast"))
+	api(project(":module:spring-boot-hazelcast"))
 }

@@ -21,7 +21,9 @@ plugins {
 description = "Starter for using Spring Session with Spring Data Redis"
 
 dependencies {
+	api(project(":starter:spring-boot-starter"))
 	api(project(":starter:spring-boot-starter-data-redis"))
 
+	api(project(":module:spring-boot-data-redis"))
 	api(project(":module:spring-boot-session-data-redis"))
 }

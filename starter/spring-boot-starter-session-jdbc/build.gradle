@@ -21,7 +21,9 @@ plugins {
 description = "Starter for using Spring Session with JDBC"
 
 dependencies {
+	api(project(":starter:spring-boot-starter"))
 	api(project(":starter:spring-boot-starter-jdbc"))
 
+	api(project(":module:spring-boot-jdbc"))
 	api(project(":module:spring-boot-session-jdbc"))
 }

@@ -24,6 +24,7 @@ dependencies {
 	api(project(":starter:spring-boot-starter"))
 
 	api(project(":module:spring-boot-pulsar"))
+	api(project(":module:spring-boot-reactor"))
 	api("org.springframework.pulsar:spring-pulsar-reactive")
 }
 

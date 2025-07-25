@@ -21,6 +21,7 @@ plugins {
 description = "Starter for using Spring Authorization Server features"
 
 dependencies {
+	api(project(":starter:spring-boot-starter"))
 	api(project(":starter:spring-boot-starter-security"))
 	api(project(":starter:spring-boot-starter-webmvc"))
 

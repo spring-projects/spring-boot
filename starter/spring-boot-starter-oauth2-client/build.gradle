@@ -21,5 +21,10 @@ plugins {
 description = "Starter for using Spring Security's OAuth2/OpenID Connect client features (deprecated in favor of spring-boot-starter-security-oauth2-client)"
 
 dependencies {
-	api(project(":starter:spring-boot-starter-security-oauth2-client"))
+	api(project(":starter:spring-boot-starter"))
+	api(project(":starter:spring-boot-starter-security"))
+
+	api(project(":module:spring-boot-security-oauth2-client"))
+
+	api("org.springframework.security:spring-security-oauth2-jose")
 }

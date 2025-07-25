@@ -21,5 +21,9 @@ plugins {
 description = "Starter for building web, including RESTful, applications using Spring MVC. Uses Tomcat as the default embedded container (deprecated in favor of spring-boot-starter-webmvc)"
 
 dependencies {
-	api(project(":starter:spring-boot-starter-webmvc"))
+	api(project(":starter:spring-boot-starter-jackson"))
+	api(project(":starter:spring-boot-starter-tomcat"))
+
+	api(project(":module:spring-boot-http-converter"))
+	api(project(":module:spring-boot-webmvc"))
 }

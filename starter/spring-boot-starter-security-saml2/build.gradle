@@ -29,6 +29,7 @@ configurations.all {
 }
 
 dependencies {
+	api(project(":starter:spring-boot-starter"))
 	api(project(":starter:spring-boot-starter-security"))
 
 	api(project(":module:spring-boot-security-saml2"))

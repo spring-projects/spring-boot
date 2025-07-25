@@ -21,5 +21,11 @@ plugins {
 description = "Starter for using Spring Web Services (deprecated in favor of spring-boot-starter-webservices)"
 
 dependencies {
-	api(project(":starter:spring-boot-starter-webservices"))
+	api(project(":starter:spring-boot-starter"))
+	api(project(":starter:spring-boot-starter-webmvc"))
+
+	api(project(":module:spring-boot-webservices"))
+
+	api("com.sun.xml.messaging.saaj:saaj-impl")
+	api("jakarta.xml.ws:jakarta.xml.ws-api")
 }

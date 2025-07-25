@@ -21,7 +21,9 @@ plugins {
 description = "Starter for using Flyway database migrations"
 
 dependencies {
+	api(project(":starter:spring-boot-starter"))
 	api(project(":starter:spring-boot-starter-jdbc"))
 
 	api(project(":module:spring-boot-flyway"))
+	api(project(":module:spring-boot-jdbc"))
 }
