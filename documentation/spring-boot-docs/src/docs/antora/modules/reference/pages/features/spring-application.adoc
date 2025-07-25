@@ -405,6 +405,8 @@ If you're running on Java 21 or up, you can enable virtual threads by setting th
 Before turning on this option for your application, you should consider https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html[reading the official Java virtual threads documentation].
 In some cases, applications can experience lower throughput because of "Pinned Virtual Threads"; this page also explains how to detect such cases with JDK Flight Recorder or the `jcmd` CLI.
 
+When utilizing virtual threads, we advise upgrading to Java 24 or later. According to https://openjdk.org/jeps/491[JEP 491], Java 24 allows synchronizing virtual threads without pinning; however, pinned virtual threads still occurs when a native method or a foreign function is called on.
+
 NOTE: If virtual threads are enabled, properties which configure thread pools don't have an effect anymore.
 That's because virtual threads are scheduled on a JVM wide platform thread pool and not on dedicated thread pools.
 
