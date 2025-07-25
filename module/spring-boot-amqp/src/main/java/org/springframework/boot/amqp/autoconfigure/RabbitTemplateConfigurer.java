@@ -33,7 +33,7 @@ import org.springframework.util.CollectionUtils;
  * properties.
  * <p>
  * Can be injected into application code and used to define a custom
- * {@code RabbitTemplateConfigurer} whose configuration is based upon that produced by
+ * {@code RabbitTemplate} whose configuration is based upon that produced by
  * auto-configuration.
  *
  * @author Stephane Nicoll
