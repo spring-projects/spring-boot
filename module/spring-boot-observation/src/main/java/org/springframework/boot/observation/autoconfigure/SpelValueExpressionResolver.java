@@ -30,12 +30,13 @@ import org.springframework.expression.spel.support.SimpleEvaluationContext;
  */
 class SpelValueExpressionResolver implements ValueExpressionResolver {
 
+	private final ExpressionParser expressionParser = new SpelExpressionParser();
+
 	@Override
 	public String resolve(String expression, Object parameter) {
 		try {
 			SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
-			ExpressionParser expressionParser = new SpelExpressionParser();
-			Expression expressionToEvaluate = expressionParser.parseExpression(expression);
+			Expression expressionToEvaluate = this.expressionParser.parseExpression(expression);
 			return expressionToEvaluate.getValue(context, parameter, String.class);
 		}
 		catch (Exception ex) {
