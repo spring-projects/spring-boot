@@ -1,0 +1,289 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java-library"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot AutoConfigure Classic Modules"
+
+// NOTE: This module is broken out so that direct starter dependencies are
+// closer and will be resolved by Maven without the exclusions
+
+dependencies {
+	api(project(":module:spring-boot-activemq")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-amqp")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-artemis")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-batch")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-cache")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-cassandra")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-cloudfoundry")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-couchbase")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-cassandra")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-commons")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-couchbase")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-elasticsearch")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-jdbc")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-jpa")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-ldap")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-mongodb")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-neo4j")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-r2dbc")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-redis")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-data-rest")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-elasticsearch")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-flyway")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-freemarker")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-graphql")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-groovy-templates")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-gson")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-h2console")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-hateoas")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-hazelcast")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-health")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-hibernate")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-http-client")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-http-codec")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-http-converter")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-integration")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-jackson")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-jdbc")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-jersey")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-jetty")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-jms")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-jooq")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-jpa")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-jsonb")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-kafka")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-ldap")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-liquibase")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-mail")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-metrics")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-mongodb")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-mustache")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-neo4j")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-netty")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-observation")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-opentelemetry")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-pulsar")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-quartz")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-r2dbc")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-reactor")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-reactor-netty")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-restclient")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-rsocket")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-security")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-security-oauth2-authorization-server")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-security-oauth2-client")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-security-oauth2-resource-server")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-security-saml2")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-sendgrid")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-servlet")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-session")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-session-data-mongodb")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-session-data-redis")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-session-hazelcast")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-session-jdbc")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-sql")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-thymeleaf")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-tomcat")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-tracing")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-tx")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-undertow")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-validation")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-webclient")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-webflux")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-webmvc")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-webservices")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-websocket")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-web-server")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-zipkin")) {
+		transitive = false
+	}
+}
