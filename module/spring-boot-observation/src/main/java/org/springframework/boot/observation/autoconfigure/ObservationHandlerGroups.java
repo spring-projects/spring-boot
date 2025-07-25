@@ -29,7 +29,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * A collection {@link ObservationHandlerGroup} instance and supporting registration
+ * A collection of {@link ObservationHandlerGroup} instances and supporting registration
  * logic.
  *
  * @author Andy Wilkinson

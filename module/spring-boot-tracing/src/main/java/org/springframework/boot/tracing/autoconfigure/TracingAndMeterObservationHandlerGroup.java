@@ -32,7 +32,7 @@ import org.springframework.boot.observation.autoconfigure.ObservationHandlerGrou
 /**
  * {@link ObservationHandlerGroup} that considers both {@link TracingObservationHandler}
  * and {@link MeterObservationHandler} types as members. This group takes precedence over
- * any regular {@link MeterObservationHandler} group in order to use ensure
+ * any regular {@link MeterObservationHandler} group in order to ensure
  * {@link TracingAwareMeterObservationHandler} wrapping is applied during registration.
  *
  * @author Phillip Webb
