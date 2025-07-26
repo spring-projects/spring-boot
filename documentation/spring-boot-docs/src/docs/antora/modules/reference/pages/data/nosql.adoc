@@ -18,7 +18,12 @@ You can make use of the other projects, but you must configure them yourself.
 See the appropriate reference documentation at {url-spring-data-site}.
 
 Spring Boot also provides auto-configuration for the InfluxDB client but it is deprecated in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
+[WARNING]
+====
+**Important:** While Spring Boot 4.0.0 introduced `management.influx.metrics.export.*` properties for *metrics export* (as seen in `InfluxProperties.java`), the **InfluxDB Health Indicator** and its associated configuration property, `management.health.influxdb.enabled`, were **deprecated in Spring Boot 3.2 and subsequently removed in Spring Boot 3.4**.
 
+If you are upgrading from Spring Boot 3.3 or an earlier version, ensure you remove any usage of `management.health.influxdb.enabled` from your configuration. For health checks with InfluxDB in Spring Boot 3.4 or later, consider implementing a custom `HealthIndicator` using the new InfluxDB Java client, or other monitoring solutions.
+====
 
 
 [[data.nosql.redis]]
