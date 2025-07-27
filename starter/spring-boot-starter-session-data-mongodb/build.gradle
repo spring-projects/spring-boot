@@ -21,9 +21,7 @@ plugins {
 description = "Starter for using Spring Session with Spring Data MongoDB"
 
 dependencies {
-	api(project(":starter:spring-boot-starter"))
 	api(project(":starter:spring-boot-starter-data-mongodb"))
 
 	api(project(":module:spring-boot-session-data-mongodb"))
-	api(project(":module:spring-boot-data-mongodb"))
 }
