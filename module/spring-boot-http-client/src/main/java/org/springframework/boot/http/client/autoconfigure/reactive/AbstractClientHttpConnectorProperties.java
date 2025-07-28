@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
@@ -33,6 +34,7 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
  * @since 3.5.0
  * @see ClientHttpConnectorSettings
  */
+@ConfigurationPropertiesSource
 public abstract class AbstractClientHttpConnectorProperties {
 
 	/**
@@ -99,6 +101,7 @@ public abstract class AbstractClientHttpConnectorProperties {
 	/**
 	 * SSL configuration.
 	 */
+	@ConfigurationPropertiesSource
 	public static class Ssl {
 
 		/**

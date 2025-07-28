@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpRedirects;
@@ -33,6 +34,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @since 4.0.0
  * @see ClientHttpRequestFactorySettings
  */
+@ConfigurationPropertiesSource
 public abstract class AbstractHttpRequestFactoryProperties {
 
 	/**
@@ -99,6 +101,7 @@ public abstract class AbstractHttpRequestFactoryProperties {
 	/**
 	 * SSL configuration.
 	 */
+	@ConfigurationPropertiesSource
 	public static class Ssl {
 
 		/**

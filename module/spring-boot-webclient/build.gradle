@@ -17,6 +17,7 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
