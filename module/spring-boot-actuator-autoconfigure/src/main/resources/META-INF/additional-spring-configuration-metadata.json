@@ -145,6 +145,14 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.influxdb.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "InfluxDB support has been removed."
+      }
+    },
+    {
       "name": "management.httpexchanges.recording.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response exchange recording.",
@@ -239,6 +247,198 @@
       "deprecation": {
         "replacement": "management.httpexchanges.recording.include",
         "level": "error"
+      }
+    },
+    {
+      "name": "management.wavefront.api-token",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.api-token-type",
+      "type": "org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties$TokenType",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.application.cluster-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.application.custom-tags",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.application.name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.application.service-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.application.shard-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.batch-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.connect-timeout",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.global-prefix",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.read-timeout",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.report-day-distribution",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.report-hour-distribution",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.report-minute-distribution",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.metrics.export.step",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.sender.batch-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.sender.flush-interval",
+      "type": "java.time.Duration",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.sender.max-queue-size",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.sender.message-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.source",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.trace-derived-custom-tag-keys",
+      "type": "java.util.Set<java.lang.String>",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.tracing.export.enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
+      }
+    },
+    {
+      "name": "management.wavefront.uri",
+      "type": "java.net.URI",
+      "deprecation": {
+        "level": "error",
+        "reason": "Wavefront is end-of-live."
       }
     }
   ],
