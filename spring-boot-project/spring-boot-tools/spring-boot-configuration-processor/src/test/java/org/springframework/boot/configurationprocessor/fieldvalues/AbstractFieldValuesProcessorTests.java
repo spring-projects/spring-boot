@@ -61,12 +61,15 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("bool")).isEqualTo(true);
 		assertThat(values.get("boolNone")).isEqualTo(false);
 		assertThat(values.get("boolConst")).isEqualTo(true);
+		assertThat(values.get("boolInverted")).isNull();
 		assertThat(values.get("boolObject")).isEqualTo(true);
 		assertThat(values.get("boolObjectNone")).isNull();
 		assertThat(values.get("boolObjectConst")).isEqualTo(true);
 		assertThat(values.get("integer")).isEqualTo(1);
 		assertThat(values.get("integerNone")).isEqualTo(0);
 		assertThat(values.get("integerConst")).isEqualTo(2);
+		assertThat(values.get("integerArithmetic")).isNull();
+		assertThat(values.get("integerMax")).isNull();
 		assertThat(values.get("integerObject")).isEqualTo(3);
 		assertThat(values.get("integerObjectNone")).isNull();
 		assertThat(values.get("integerObjectConst")).isEqualTo(4);
@@ -84,6 +87,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("stringArrayConst")).isEqualTo(new Object[] { "OK", "KO" });
 		assertThat(values.get("stringArrayConstElements")).isEqualTo(new Object[] { "c" });
 		assertThat(values.get("integerArray")).isEqualTo(new Object[] { 42, 24 });
+		assertThat(values.get("intArrayUnsupportedExpression")).isNull();
 		assertThat(values.get("unknownArray")).isNull();
 		assertThat(values.get("durationNone")).isNull();
 		assertThat(values.get("durationNanos")).isEqualTo("5ns");
