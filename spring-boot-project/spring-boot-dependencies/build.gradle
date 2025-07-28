@@ -220,7 +220,7 @@ bom {
 		}
 		links {
 			site("https://commons.apache.org/proper/commons-codec")
-			releaseNotes("https://commons.apache.org/proper/commons-codec/changes-report.html#a{version}")
+			releaseNotes("https://commons.apache.org/proper/commons-codec/changes.html#a{version}")
 		}
 	}
 	library("Commons DBCP2", "2.12.0") {
