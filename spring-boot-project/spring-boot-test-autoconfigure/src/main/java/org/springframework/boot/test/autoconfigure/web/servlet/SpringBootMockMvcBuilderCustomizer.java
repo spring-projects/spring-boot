@@ -20,10 +20,13 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 
 import jakarta.servlet.Filter;
+import jakarta.servlet.annotation.WebInitParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,11 +34,13 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.web.servlet.AbstractFilterRegistrationBean;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
+import org.springframework.boot.web.servlet.FilterRegistration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.RegistrationBean;
 import org.springframework.boot.web.servlet.ServletContextInitializerBeans;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.result.PrintingResultHandler;
@@ -330,16 +335,47 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 		@Override
 		protected void addAdaptableBeans(ListableBeanFactory beanFactory) {
-			addAsRegistrationBean(beanFactory, Filter.class, new FilterRegistrationBeanAdapter());
+			addAsRegistrationBean(beanFactory, Filter.class, new FilterRegistrationBeanAdapter(beanFactory));
 		}
 
 		private static final class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
 
+			private final ListableBeanFactory beanFactory;
+
+			private FilterRegistrationBeanAdapter(ListableBeanFactory beanFactory) {
+				this.beanFactory = beanFactory;
+			}
+
 			@Override
-			public RegistrationBean createRegistrationBean(String name, Filter source, int totalNumberOfSourceBeans) {
+			public RegistrationBean createRegistrationBean(String beanName, Filter source,
+					int totalNumberOfSourceBeans) {
 				FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(source);
-				bean.setName(name);
+				bean.setName(beanName);
+				FilterRegistration registrationAnnotation = this.beanFactory.findAnnotationOnBean(beanName,
+						FilterRegistration.class);
+				if (registrationAnnotation != null) {
+					// Supports @Order annotation on @Bean methods
+					Order orderAnnotation = this.beanFactory.findAnnotationOnBean(beanName, Order.class);
+					Assert.state(orderAnnotation != null, "'orderAnnotation' must not be null");
+					configureFromAnnotation(bean, registrationAnnotation, orderAnnotation);
+				}
 				return bean;
+			}
+
+			private void configureFromAnnotation(FilterRegistrationBean<Filter> bean,
+					FilterRegistration registrationAnnotation, Order orderAnnotation) {
+				bean.setEnabled(registrationAnnotation.enabled());
+				bean.setOrder(orderAnnotation.value());
+				if (StringUtils.hasText(registrationAnnotation.name())) {
+					bean.setName(registrationAnnotation.name());
+				}
+				if (registrationAnnotation.dispatcherTypes().length > 0) {
+					bean.setDispatcherTypes(EnumSet.copyOf(Arrays.asList(registrationAnnotation.dispatcherTypes())));
+				}
+				for (WebInitParam param : registrationAnnotation.initParameters()) {
+					bean.addInitParameter(param.name(), param.value());
+				}
+				bean.setUrlPatterns(Arrays.asList(registrationAnnotation.urlPatterns()));
 			}
 
 		}
