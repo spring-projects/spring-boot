@@ -786,23 +786,19 @@ public class SpringApplication {
 		if (exception instanceof AbandonedRunException abandonedRunException) {
 			return abandonedRunException;
 		}
-		try {
-			try {
-				handleExitCode(context, exception);
-				if (listeners != null) {
-					listeners.failed(context, exception);
-				}
-			}
-			finally {
-				reportFailure(getExceptionReporters(context), exception);
-				if (context != null) {
-					context.close();
-					shutdownHook.deregisterFailedApplicationContext(context);
-				}
-			}
+		handleExitCode(context, exception);
+		if (listeners != null) {
+			listeners.failed(context, exception);
 		}
-		catch (Exception ex) {
-			logger.warn("Unable to close ApplicationContext", ex);
+		reportFailure(getExceptionReporters(context), exception);
+		if (context != null) {
+			try {
+				context.close();
+				shutdownHook.deregisterFailedApplicationContext(context);
+			}
+			catch (Exception ex) {
+				logger.warn("Unable to close ApplicationContext", ex);
+			}
 		}
 		return (exception instanceof RuntimeException runtimeException) ? runtimeException
 				: new IllegalStateException(exception);
@@ -819,17 +815,25 @@ public class SpringApplication {
 	}
 
 	private void reportFailure(Collection<SpringBootExceptionReporter> exceptionReporters, Throwable failure) {
+		boolean reported = false;
 		try {
 			for (SpringBootExceptionReporter reporter : exceptionReporters) {
 				if (reporter.reportException(failure)) {
-					registerLoggedException(failure);
-					return;
+					reported = true;
+					break;
 				}
 			}
 		}
 		catch (Throwable ex) {
 			// Continue with normal handling of the original failure
 		}
+		if (!reported) {
+			logFailure(failure);
+		}
+		registerLoggedException(failure);
+	}
+
+	private void logFailure(Throwable failure) {
 		if (logger.isErrorEnabled()) {
 			if (NativeDetector.inNativeImage()) {
 				// Depending on how early the failure was, logging may not work in a
@@ -841,7 +845,6 @@ public class SpringApplication {
 			else {
 				logger.error("Application run failed", failure);
 			}
-			registerLoggedException(failure);
 		}
 	}
 
