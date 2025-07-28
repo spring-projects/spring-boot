@@ -41,16 +41,16 @@ import org.springframework.ldap.core.LdapOperations;
 @ConditionalOnClass({ LdapOperations.class, LdapHealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(LdapOperations.class)
 @ConditionalOnEnabledHealthIndicator("ldap")
-public class LdapHealthContributorAutoConfiguration
+public final class LdapHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<LdapHealthIndicator, LdapOperations> {
 
-	public LdapHealthContributorAutoConfiguration() {
+	LdapHealthContributorAutoConfiguration() {
 		super(LdapHealthIndicator::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "ldapHealthIndicator", "ldapHealthContributor" })
-	public HealthContributor ldapHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	HealthContributor ldapHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, LdapOperations.class);
 	}
 

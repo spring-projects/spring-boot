@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(MappingsEndpoint.class)
-public class MappingsEndpointAutoConfiguration {
+public final class MappingsEndpointAutoConfiguration {
 
 	@Bean
 	MappingsEndpoint mappingsEndpoint(ApplicationContext applicationContext,

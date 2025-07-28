@@ -45,12 +45,11 @@ import org.springframework.core.env.Environment;
  * @since 2.0.0
  */
 @AutoConfiguration
-public class EndpointAutoConfiguration {
+public final class EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ParameterValueMapper endpointOperationParameterMapper(
-			@EndpointConverter ObjectProvider<Converter<?, ?>> converters,
+	ParameterValueMapper endpointOperationParameterMapper(@EndpointConverter ObjectProvider<Converter<?, ?>> converters,
 			@EndpointConverter ObjectProvider<GenericConverter> genericConverters) {
 		ConversionService conversionService = createConversionService(converters.orderedStream().toList(),
 				genericConverters.orderedStream().toList());
@@ -70,7 +69,7 @@ public class EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CachingOperationInvokerAdvisor endpointCachingOperationInvokerAdvisor(Environment environment) {
+	CachingOperationInvokerAdvisor endpointCachingOperationInvokerAdvisor(Environment environment) {
 		return new CachingOperationInvokerAdvisor(new EndpointIdTimeToLivePropertyFunction(environment));
 	}
 

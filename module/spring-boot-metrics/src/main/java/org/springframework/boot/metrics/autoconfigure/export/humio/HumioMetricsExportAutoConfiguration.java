@@ -47,23 +47,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(HumioMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("humio")
 @EnableConfigurationProperties(HumioProperties.class)
-public class HumioMetricsExportAutoConfiguration {
+public final class HumioMetricsExportAutoConfiguration {
 
 	private final HumioProperties properties;
 
-	public HumioMetricsExportAutoConfiguration(HumioProperties properties) {
+	HumioMetricsExportAutoConfiguration(HumioProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HumioConfig humioConfig() {
+	HumioConfig humioConfig() {
 		return new HumioPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HumioMeterRegistry humioMeterRegistry(HumioConfig humioConfig, Clock clock) {
+	HumioMeterRegistry humioMeterRegistry(HumioConfig humioConfig, Clock clock) {
 		return HumioMeterRegistry.builder(humioConfig)
 			.clock(clock)
 			.httpClient(

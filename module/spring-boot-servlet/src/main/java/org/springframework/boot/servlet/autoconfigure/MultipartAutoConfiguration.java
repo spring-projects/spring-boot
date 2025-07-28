@@ -51,7 +51,7 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
 @ConditionalOnBooleanProperty(name = "spring.servlet.multipart.enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(MultipartProperties.class)
-public class MultipartAutoConfiguration {
+public final class MultipartAutoConfiguration {
 
 	/**
 	 * Well-known name for the MultipartResolver object in the bean factory for this
@@ -61,19 +61,19 @@ public class MultipartAutoConfiguration {
 
 	private final MultipartProperties multipartProperties;
 
-	public MultipartAutoConfiguration(MultipartProperties multipartProperties) {
+	MultipartAutoConfiguration(MultipartProperties multipartProperties) {
 		this.multipartProperties = multipartProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MultipartConfigElement multipartConfigElement() {
+	MultipartConfigElement multipartConfigElement() {
 		return this.multipartProperties.createMultipartConfig();
 	}
 
 	@Bean(name = MULTIPART_RESOLVER_BEAN_NAME)
 	@ConditionalOnMissingBean(MultipartResolver.class)
-	public StandardServletMultipartResolver multipartResolver() {
+	StandardServletMultipartResolver multipartResolver() {
 		StandardServletMultipartResolver multipartResolver = new StandardServletMultipartResolver();
 		multipartResolver.setResolveLazily(this.multipartProperties.isResolveLazily());
 		multipartResolver.setStrictServletCompliance(this.multipartProperties.isStrictServletCompliance());

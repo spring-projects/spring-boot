@@ -42,11 +42,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class, EnableWebSecurity.class })
 @ConditionalOnBean(GraphQlHttpHandler.class)
-public class GraphQlWebMvcSecurityAutoConfiguration {
+public final class GraphQlWebMvcSecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SecurityDataFetcherExceptionResolver securityDataFetcherExceptionResolver() {
+	SecurityDataFetcherExceptionResolver securityDataFetcherExceptionResolver() {
 		return new SecurityDataFetcherExceptionResolver();
 	}
 

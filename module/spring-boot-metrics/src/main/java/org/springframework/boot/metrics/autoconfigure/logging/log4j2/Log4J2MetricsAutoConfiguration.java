@@ -46,11 +46,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 		name = "org.apache.logging.log4j.core.LoggerContext")
 @ConditionalOnBean(MeterRegistry.class)
 @Conditional(Log4JCoreLoggerContextCondition.class)
-public class Log4J2MetricsAutoConfiguration {
+public final class Log4J2MetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Log4j2Metrics log4j2Metrics() {
+	Log4j2Metrics log4j2Metrics() {
 		return new Log4j2Metrics();
 	}
 

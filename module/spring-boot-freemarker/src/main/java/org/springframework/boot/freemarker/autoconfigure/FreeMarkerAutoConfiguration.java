@@ -44,7 +44,7 @@ import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 @EnableConfigurationProperties(FreeMarkerProperties.class)
 @Import({ FreeMarkerServletWebConfiguration.class, FreeMarkerReactiveWebConfiguration.class,
 		FreeMarkerNonWebConfiguration.class })
-public class FreeMarkerAutoConfiguration {
+public final class FreeMarkerAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(FreeMarkerAutoConfiguration.class);
 
@@ -52,13 +52,13 @@ public class FreeMarkerAutoConfiguration {
 
 	private final FreeMarkerProperties properties;
 
-	public FreeMarkerAutoConfiguration(ApplicationContext applicationContext, FreeMarkerProperties properties) {
+	FreeMarkerAutoConfiguration(ApplicationContext applicationContext, FreeMarkerProperties properties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 		checkTemplateLocationExists();
 	}
 
-	public void checkTemplateLocationExists() {
+	private void checkTemplateLocationExists() {
 		if (logger.isWarnEnabled() && this.properties.isCheckTemplateLocation()) {
 			List<TemplateLocation> locations = getLocations();
 			if (locations.stream().noneMatch(this::locationExists)) {

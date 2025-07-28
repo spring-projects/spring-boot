@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnClass(Tracer.class)
 @ConditionalOnMissingBean(Tracer.class)
-public class NoopTracerAutoConfiguration {
+public final class NoopTracerAutoConfiguration {
 
 	@Bean
 	Tracer noopTracer() {

@@ -72,7 +72,7 @@ import org.springframework.util.CollectionUtils;
 @Import({ OpenTelemetryPropagationConfigurations.PropagationWithoutBaggage.class,
 		OpenTelemetryPropagationConfigurations.PropagationWithBaggage.class,
 		OpenTelemetryPropagationConfigurations.NoPropagation.class })
-public class OpenTelemetryTracingAutoConfiguration {
+public final class OpenTelemetryTracingAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(OpenTelemetryTracingAutoConfiguration.class);
 

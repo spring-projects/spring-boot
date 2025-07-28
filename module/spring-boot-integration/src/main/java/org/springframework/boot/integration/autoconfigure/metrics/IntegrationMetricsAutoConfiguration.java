@@ -29,9 +29,10 @@ import org.springframework.boot.integration.autoconfigure.IntegrationAutoConfigu
  * for it.
  *
  * @author Andy Wilkinson
+ * @since 4.0.0
  */
 @AutoConfiguration(before = IntegrationAutoConfiguration.class,
 		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
-class IntegrationMetricsAutoConfiguration {
+public final class IntegrationMetricsAutoConfiguration {
 
 }

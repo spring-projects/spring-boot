@@ -31,7 +31,7 @@ import org.springframework.ws.test.server.MockWebServiceClient;
  */
 @AutoConfiguration
 @ConditionalOnClass(MockWebServiceClient.class)
-public class MockWebServiceClientAutoConfiguration {
+public final class MockWebServiceClientAutoConfiguration {
 
 	@Bean
 	MockWebServiceClient mockWebServiceClient(ApplicationContext applicationContext) {

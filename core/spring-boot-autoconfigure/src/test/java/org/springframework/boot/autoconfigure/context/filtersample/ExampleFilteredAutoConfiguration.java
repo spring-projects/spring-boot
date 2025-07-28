@@ -20,10 +20,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 @AutoConfiguration
-public class ExampleFilteredAutoConfiguration {
+public final class ExampleFilteredAutoConfiguration {
 
 	@Bean
-	public String anotherExample() {
+	String anotherExample() {
 		return "fail";
 	}
 

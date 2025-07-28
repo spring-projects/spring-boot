@@ -42,7 +42,7 @@ import org.springframework.web.reactive.DispatcherHandler;
 @ConditionalOnAvailableEndpoint(MappingsEndpoint.class)
 @ConditionalOnBean(DispatcherHandler.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-public class WebFluxMappingsAutoConfiguration {
+public final class WebFluxMappingsAutoConfiguration {
 
 	@Bean
 	DispatcherHandlersMappingDescriptionProvider dispatcherHandlersMappingDescriptionProvider() {

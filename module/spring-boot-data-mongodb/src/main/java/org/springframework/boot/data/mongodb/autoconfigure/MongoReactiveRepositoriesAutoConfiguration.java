@@ -54,6 +54,6 @@ import org.springframework.data.mongodb.repository.support.ReactiveMongoReposito
 		ReactiveMongoRepositoryConfigurationExtension.class })
 @ConditionalOnRepositoryType(store = "mongodb", type = RepositoryType.REACTIVE)
 @Import(MongoReactiveRepositoriesRegistrar.class)
-public class MongoReactiveRepositoriesAutoConfiguration {
+public final class MongoReactiveRepositoriesAutoConfiguration {
 
 }

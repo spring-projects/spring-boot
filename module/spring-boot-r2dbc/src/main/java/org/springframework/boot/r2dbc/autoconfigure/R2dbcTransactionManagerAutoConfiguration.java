@@ -40,11 +40,11 @@ import org.springframework.transaction.ReactiveTransactionManager;
 @ConditionalOnClass({ R2dbcTransactionManager.class, ReactiveTransactionManager.class })
 @ConditionalOnSingleCandidate(ConnectionFactory.class)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-public class R2dbcTransactionManagerAutoConfiguration {
+public final class R2dbcTransactionManagerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveTransactionManager.class)
-	public R2dbcTransactionManager connectionFactoryTransactionManager(ConnectionFactory connectionFactory) {
+	R2dbcTransactionManager connectionFactoryTransactionManager(ConnectionFactory connectionFactory) {
 		return new R2dbcTransactionManager(connectionFactory);
 	}
 

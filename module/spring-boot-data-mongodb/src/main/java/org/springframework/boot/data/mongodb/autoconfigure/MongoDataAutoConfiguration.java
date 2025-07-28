@@ -57,7 +57,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 @EnableConfigurationProperties(MongoProperties.class)
 @Import({ MongoDataConfiguration.class, MongoDatabaseFactoryConfiguration.class,
 		MongoDatabaseFactoryDependentConfiguration.class })
-public class MongoDataAutoConfiguration {
+public final class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConnectionDetails.class)

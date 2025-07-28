@@ -63,11 +63,11 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
 @EnableConfigurationProperties(WebServicesProperties.class)
-public class WebServicesAutoConfiguration {
+public final class WebServicesAutoConfiguration {
 
 	@Bean
-	public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-			ApplicationContext applicationContext, WebServicesProperties properties) {
+	ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext applicationContext,
+			WebServicesProperties properties) {
 		MessageDispatcherServlet servlet = new MessageDispatcherServlet();
 		servlet.setApplicationContext(applicationContext);
 		String path = properties.getPath();
@@ -83,7 +83,7 @@ public class WebServicesAutoConfiguration {
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@Conditional(OnWsdlLocationsCondition.class)
-	public static WsdlDefinitionBeanFactoryPostProcessor wsdlDefinitionBeanFactoryPostProcessor() {
+	static WsdlDefinitionBeanFactoryPostProcessor wsdlDefinitionBeanFactoryPostProcessor() {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
 	}
 

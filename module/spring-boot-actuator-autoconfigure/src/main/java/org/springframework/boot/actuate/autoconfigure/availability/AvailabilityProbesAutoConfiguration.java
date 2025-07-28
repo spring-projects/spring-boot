@@ -46,23 +46,22 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 		ApplicationAvailabilityAutoConfiguration.class })
 @ConditionalOnClass(Health.class)
 @Conditional(AvailabilityProbesAutoConfiguration.ProbesCondition.class)
-public class AvailabilityProbesAutoConfiguration {
+public final class AvailabilityProbesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "livenessStateHealthIndicator")
-	public LivenessStateHealthIndicator livenessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
+	LivenessStateHealthIndicator livenessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
 		return new LivenessStateHealthIndicator(applicationAvailability);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "readinessStateHealthIndicator")
-	public ReadinessStateHealthIndicator readinessStateHealthIndicator(
-			ApplicationAvailability applicationAvailability) {
+	ReadinessStateHealthIndicator readinessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
 		return new ReadinessStateHealthIndicator(applicationAvailability);
 	}
 
 	@Bean
-	public AvailabilityProbesHealthEndpointGroupsPostProcessor availabilityProbesHealthEndpointGroupsPostProcessor(
+	AvailabilityProbesHealthEndpointGroupsPostProcessor availabilityProbesHealthEndpointGroupsPostProcessor(
 			Environment environment) {
 		return new AvailabilityProbesHealthEndpointGroupsPostProcessor(environment);
 	}

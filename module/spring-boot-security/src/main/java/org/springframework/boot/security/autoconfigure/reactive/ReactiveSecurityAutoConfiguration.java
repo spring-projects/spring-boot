@@ -51,7 +51,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 @AutoConfiguration
 @EnableConfigurationProperties(SecurityProperties.class)
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, WebFilterChainProxy.class, WebFluxConfigurer.class })
-public class ReactiveSecurityAutoConfiguration {
+public final class ReactiveSecurityAutoConfiguration {
 
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
 	@Configuration(proxyBeanMethods = false)

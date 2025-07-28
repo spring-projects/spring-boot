@@ -36,11 +36,11 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(Jsonb.class)
 @ConditionalOnResource(resources = { "classpath:META-INF/services/jakarta.json.bind.spi.JsonbProvider",
 		"classpath:META-INF/services/jakarta.json.spi.JsonProvider" })
-public class JsonbAutoConfiguration {
+public final class JsonbAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Jsonb jsonb() {
+	Jsonb jsonb() {
 		return JsonbBuilder.create();
 	}
 

@@ -64,7 +64,7 @@ import org.springframework.util.ObjectUtils;
 @AutoConfiguration(after = { JmxAutoConfiguration.class, EndpointAutoConfiguration.class })
 @EnableConfigurationProperties({ JmxEndpointProperties.class, JmxProperties.class })
 @ConditionalOnBooleanProperty("spring.jmx.enabled")
-public class JmxEndpointAutoConfiguration {
+public final class JmxEndpointAutoConfiguration {
 
 	private final ApplicationContext applicationContext;
 
@@ -72,7 +72,7 @@ public class JmxEndpointAutoConfiguration {
 
 	private final JmxProperties jmxProperties;
 
-	public JmxEndpointAutoConfiguration(ApplicationContext applicationContext, JmxEndpointProperties properties,
+	JmxEndpointAutoConfiguration(ApplicationContext applicationContext, JmxEndpointProperties properties,
 			JmxProperties jmxProperties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
@@ -81,7 +81,7 @@ public class JmxEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(JmxEndpointsSupplier.class)
-	public JmxEndpointDiscoverer jmxAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
+	JmxEndpointDiscoverer jmxAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
 			ObjectProvider<EndpointFilter<ExposableJmxEndpoint>> endpointFilters,
 			ObjectProvider<OperationFilter<JmxOperation>> operationFilters) {
@@ -92,16 +92,15 @@ public class JmxEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(value = EndpointObjectNameFactory.class, search = SearchStrategy.CURRENT)
-	public DefaultEndpointObjectNameFactory endpointObjectNameFactory(MBeanServer mBeanServer) {
+	DefaultEndpointObjectNameFactory endpointObjectNameFactory(MBeanServer mBeanServer) {
 		String contextId = ObjectUtils.getIdentityHexString(this.applicationContext);
 		return new DefaultEndpointObjectNameFactory(this.properties, this.jmxProperties, mBeanServer, contextId);
 	}
 
 	@Bean
 	@ConditionalOnSingleCandidate(MBeanServer.class)
-	public JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer,
-			EndpointObjectNameFactory endpointObjectNameFactory, ObjectProvider<ObjectMapper> objectMapper,
-			JmxEndpointsSupplier jmxEndpointsSupplier) {
+	JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer, EndpointObjectNameFactory endpointObjectNameFactory,
+			ObjectProvider<ObjectMapper> objectMapper, JmxEndpointsSupplier jmxEndpointsSupplier) {
 		JmxOperationResponseMapper responseMapper = new JacksonJmxOperationResponseMapper(
 				objectMapper.getIfAvailable());
 		return new JmxEndpointExporter(mBeanServer, endpointObjectNameFactory, responseMapper,
@@ -110,7 +109,7 @@ public class JmxEndpointAutoConfiguration {
 	}
 
 	@Bean
-	public IncludeExcludeEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {
+	IncludeExcludeEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {
 		JmxEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(ExposableJmxEndpoint.class, exposure.getInclude(),
 				exposure.getExclude(), EndpointExposure.JMX.getDefaultIncludes());

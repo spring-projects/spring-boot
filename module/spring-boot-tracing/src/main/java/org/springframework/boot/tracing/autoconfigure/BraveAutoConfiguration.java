@@ -68,7 +68,7 @@ import org.springframework.core.env.Environment;
 @Import({ BravePropagationConfigurations.PropagationWithoutBaggage.class,
 		BravePropagationConfigurations.PropagationWithBaggage.class,
 		BravePropagationConfigurations.NoPropagation.class })
-public class BraveAutoConfiguration {
+public final class BraveAutoConfiguration {
 
 	/**
 	 * Default value for application name if {@code spring.application.name} is not set.

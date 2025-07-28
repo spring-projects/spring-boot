@@ -44,15 +44,15 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
 @EnableConfigurationProperties(CouchbaseDataProperties.class)
 @Import({ CouchbaseDataConfiguration.class, CouchbaseClientFactoryConfiguration.class,
 		CouchbaseClientFactoryDependentConfiguration.class })
-public class CouchbaseDataAutoConfiguration {
+public final class CouchbaseDataAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Validator.class)
-	public static class ValidationConfiguration {
+	static class ValidationConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(Validator.class)
-		public ValidatingCouchbaseEventListener validationEventListener(Validator validator) {
+		ValidatingCouchbaseEventListener validationEventListener(Validator validator) {
 			return new ValidatingCouchbaseEventListener(validator);
 		}
 

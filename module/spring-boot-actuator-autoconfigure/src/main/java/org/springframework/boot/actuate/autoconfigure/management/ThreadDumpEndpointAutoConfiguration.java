@@ -31,11 +31,11 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(ThreadDumpEndpoint.class)
-public class ThreadDumpEndpointAutoConfiguration {
+public final class ThreadDumpEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ThreadDumpEndpoint dumpEndpoint() {
+	ThreadDumpEndpoint dumpEndpoint() {
 		return new ThreadDumpEndpoint();
 	}
 

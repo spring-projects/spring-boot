@@ -34,15 +34,15 @@ import org.springframework.ws.test.client.MockWebServiceServer;
 @AutoConfiguration
 @ConditionalOnBooleanProperty("spring.test.webservice.client.mockserver.enabled")
 @ConditionalOnClass({ MockWebServiceServer.class, WebServiceTemplate.class })
-public class MockWebServiceServerAutoConfiguration {
+public final class MockWebServiceServerAutoConfiguration {
 
 	@Bean
-	public TestMockWebServiceServer mockWebServiceServer() {
+	TestMockWebServiceServer mockWebServiceServer() {
 		return new TestMockWebServiceServer(new MockWebServiceMessageSender());
 	}
 
 	@Bean
-	public MockWebServiceServerWebServiceTemplateCustomizer mockWebServiceServerWebServiceTemplateCustomizer(
+	MockWebServiceServerWebServiceTemplateCustomizer mockWebServiceServerWebServiceTemplateCustomizer(
 			TestMockWebServiceServer mockWebServiceServer) {
 		return new MockWebServiceServerWebServiceTemplateCustomizer(mockWebServiceServer);
 	}

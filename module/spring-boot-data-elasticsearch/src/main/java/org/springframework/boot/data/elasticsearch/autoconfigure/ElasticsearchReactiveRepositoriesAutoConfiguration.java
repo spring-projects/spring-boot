@@ -42,6 +42,6 @@ import org.springframework.data.elasticsearch.repository.support.ReactiveElastic
 @ConditionalOnBooleanProperty(name = "spring.data.elasticsearch.repositories.enabled", matchIfMissing = true)
 @ConditionalOnMissingBean(ReactiveElasticsearchRepositoryFactoryBean.class)
 @Import(ElasticsearchReactiveRepositoriesRegistrar.class)
-public class ElasticsearchReactiveRepositoriesAutoConfiguration {
+public final class ElasticsearchReactiveRepositoriesAutoConfiguration {
 
 }

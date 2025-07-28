@@ -47,13 +47,13 @@ import org.springframework.web.server.WebHandler;
 @ConditionalOnClass({ WebClient.class, WebTestClient.class })
 @Import(WebTestClientSecurityConfiguration.class)
 @EnableConfigurationProperties
-public class WebTestClientAutoConfiguration {
+public final class WebTestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(WebHandler.class)
-	public WebTestClient webTestClient(ApplicationContext applicationContext,
-			List<WebTestClientBuilderCustomizer> customizers, List<MockServerConfigurer> configurers) {
+	WebTestClient webTestClient(ApplicationContext applicationContext, List<WebTestClientBuilderCustomizer> customizers,
+			List<MockServerConfigurer> configurers) {
 		WebTestClient.MockServerSpec<?> mockServerSpec = WebTestClient.bindToApplicationContext(applicationContext);
 		for (MockServerConfigurer configurer : configurers) {
 			mockServerSpec.apply(configurer);
@@ -67,7 +67,7 @@ public class WebTestClientAutoConfiguration {
 
 	@Bean
 	@ConfigurationProperties("spring.test.webtestclient")
-	public SpringBootWebTestClientBuilderCustomizer springBootWebTestClientBuilderCustomizer(
+	SpringBootWebTestClientBuilderCustomizer springBootWebTestClientBuilderCustomizer(
 			ObjectProvider<CodecCustomizer> codecCustomizers) {
 		return new SpringBootWebTestClientBuilderCustomizer(codecCustomizers.orderedStream().toList());
 	}

@@ -47,10 +47,10 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 @AutoConfiguration(after = GraphQlAutoConfiguration.class)
 @ConditionalOnClass({ GraphQL.class, QueryByExampleDataFetcher.class, ReactiveQueryByExampleExecutor.class })
 @ConditionalOnBean(GraphQlSource.class)
-public class GraphQlReactiveQueryByExampleAutoConfiguration {
+public final class GraphQlReactiveQueryByExampleAutoConfiguration {
 
 	@Bean
-	public GraphQlSourceBuilderCustomizer reactiveQueryByExampleRegistrar(
+	GraphQlSourceBuilderCustomizer reactiveQueryByExampleRegistrar(
 			ObjectProvider<ReactiveQueryByExampleExecutor<?>> reactiveExecutors) {
 		RuntimeWiringConfigurer configurer = QueryByExampleDataFetcher
 			.autoRegistrationConfigurer(Collections.emptyList(), reactiveExecutors.orderedStream().toList());

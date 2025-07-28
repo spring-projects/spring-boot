@@ -50,7 +50,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @ConditionalOnClass({ Flux.class, EnableWebFluxSecurity.class, ServerOAuth2AuthorizedClientRepository.class })
 @ConditionalOnBean(ReactiveOAuth2AuthorizedClientService.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-public class ReactiveOAuth2ClientWebSecurityAutoConfiguration {
+public final class ReactiveOAuth2ClientWebSecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

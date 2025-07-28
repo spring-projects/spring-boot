@@ -27,6 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
  */
 @AutoConfiguration
 @ConditionalOnProperty("unique")
-public class UniqueShortNameAutoConfiguration {
+public final class UniqueShortNameAutoConfiguration {
 
 }

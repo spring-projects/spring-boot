@@ -45,17 +45,17 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(StatsdMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("statsd")
 @EnableConfigurationProperties(StatsdProperties.class)
-public class StatsdMetricsExportAutoConfiguration {
+public final class StatsdMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StatsdConfig statsdConfig(StatsdProperties statsdProperties) {
+	StatsdConfig statsdConfig(StatsdProperties statsdProperties) {
 		return new StatsdPropertiesConfigAdapter(statsdProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig, Clock clock) {
+	StatsdMeterRegistry statsdMeterRegistry(StatsdConfig statsdConfig, Clock clock) {
 		return new StatsdMeterRegistry(statsdConfig, clock);
 	}
 

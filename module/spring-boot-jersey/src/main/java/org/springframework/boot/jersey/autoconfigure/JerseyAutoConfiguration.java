@@ -78,7 +78,7 @@ import org.springframework.web.filter.RequestContextFilter;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @EnableConfigurationProperties(JerseyProperties.class)
-public class JerseyAutoConfiguration implements ServletContextAware {
+public final class JerseyAutoConfiguration implements ServletContextAware {
 
 	private static final Log logger = LogFactory.getLog(JerseyAutoConfiguration.class);
 
@@ -86,7 +86,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	private final ResourceConfig config;
 
-	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
+	JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
 			ObjectProvider<ResourceConfigCustomizer> customizers) {
 		this.jersey = jersey;
 		this.config = config;
@@ -95,7 +95,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingFilterBean
-	public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
+	FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
 		FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(new RequestContextFilter());
 		registration.setOrder(this.jersey.getFilter().getOrder() - 1);
@@ -105,14 +105,14 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JerseyApplicationPath jerseyApplicationPath() {
+	JerseyApplicationPath jerseyApplicationPath() {
 		return new DefaultJerseyApplicationPath(this.jersey.getApplicationPath(), this.config);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyFilterRegistration")
 	@ConditionalOnProperty(name = "spring.jersey.type", havingValue = "filter")
-	public FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(JerseyApplicationPath applicationPath) {
+	FilterRegistrationBean<ServletContainer> jerseyFilterRegistration(JerseyApplicationPath applicationPath) {
 		FilterRegistrationBean<ServletContainer> registration = new FilterRegistrationBean<>();
 		registration.setFilter(new ServletContainer(this.config));
 		registration.setUrlPatterns(Collections.singletonList(applicationPath.getUrlMapping()));
@@ -134,7 +134,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	@Bean
 	@ConditionalOnMissingBean(name = "jerseyServletRegistration")
 	@ConditionalOnProperty(name = "spring.jersey.type", havingValue = "servlet", matchIfMissing = true)
-	public ServletRegistrationBean<ServletContainer> jerseyServletRegistration(JerseyApplicationPath applicationPath) {
+	ServletRegistrationBean<ServletContainer> jerseyServletRegistration(JerseyApplicationPath applicationPath) {
 		ServletRegistrationBean<ServletContainer> registration = new ServletRegistrationBean<>(
 				new ServletContainer(this.config), applicationPath.getUrlMapping());
 		addInitParameters(registration);

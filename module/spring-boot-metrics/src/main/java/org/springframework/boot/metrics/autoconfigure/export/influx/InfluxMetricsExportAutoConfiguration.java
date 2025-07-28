@@ -47,23 +47,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(InfluxMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("influx")
 @EnableConfigurationProperties(InfluxProperties.class)
-public class InfluxMetricsExportAutoConfiguration {
+public final class InfluxMetricsExportAutoConfiguration {
 
 	private final InfluxProperties properties;
 
-	public InfluxMetricsExportAutoConfiguration(InfluxProperties properties) {
+	InfluxMetricsExportAutoConfiguration(InfluxProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InfluxConfig influxConfig() {
+	InfluxConfig influxConfig() {
 		return new InfluxPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig, Clock clock) {
+	InfluxMeterRegistry influxMeterRegistry(InfluxConfig influxConfig, Clock clock) {
 		return InfluxMeterRegistry.builder(influxConfig)
 			.clock(clock)
 			.httpClient(

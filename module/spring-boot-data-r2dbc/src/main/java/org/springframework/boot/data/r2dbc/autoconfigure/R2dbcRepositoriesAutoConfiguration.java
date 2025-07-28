@@ -43,6 +43,6 @@ import org.springframework.r2dbc.core.DatabaseClient;
 @ConditionalOnBooleanProperty(name = "spring.data.r2dbc.repositories.enabled", matchIfMissing = true)
 @ConditionalOnMissingBean(R2dbcRepositoryFactoryBean.class)
 @Import(R2dbcRepositoriesAutoConfigureRegistrar.class)
-public class R2dbcRepositoriesAutoConfiguration {
+public final class R2dbcRepositoriesAutoConfiguration {
 
 }

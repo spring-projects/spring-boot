@@ -48,13 +48,13 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @Conditional(JndiOrPropertyCondition.class)
 @EnableConfigurationProperties(JmsProperties.class)
-public class JndiConnectionFactoryAutoConfiguration {
+public final class JndiConnectionFactoryAutoConfiguration {
 
 	// Keep these in sync with the condition below
 	private static final String[] JNDI_LOCATIONS = { "java:/JmsXA", "java:/XAConnectionFactory" };
 
 	@Bean
-	public ConnectionFactory jmsConnectionFactory(JmsProperties properties) throws NamingException {
+	ConnectionFactory jmsConnectionFactory(JmsProperties properties) throws NamingException {
 		JndiLocatorDelegate jndiLocatorDelegate = JndiLocatorDelegate.createDefaultResourceRefLocator();
 		if (StringUtils.hasLength(properties.getJndiName())) {
 			return jndiLocatorDelegate.lookup(properties.getJndiName(), ConnectionFactory.class);

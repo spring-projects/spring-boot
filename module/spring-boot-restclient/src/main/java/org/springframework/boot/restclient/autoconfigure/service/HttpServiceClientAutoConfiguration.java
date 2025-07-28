@@ -51,7 +51,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @EnableConfigurationProperties(HttpClientServiceProperties.class)
-public class HttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
+public final class HttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader beanClassLoader;
 

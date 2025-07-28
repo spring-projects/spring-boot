@@ -49,7 +49,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
 @ConditionalOnClass(WebClientAdapter.class)
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
 @EnableConfigurationProperties(ReactiveHttpClientServiceProperties.class)
-public class ReactiveHttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
+public final class ReactiveHttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader beanClassLoader;
 

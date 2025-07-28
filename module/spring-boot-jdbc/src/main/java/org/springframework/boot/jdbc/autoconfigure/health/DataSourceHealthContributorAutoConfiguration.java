@@ -68,14 +68,13 @@ import org.springframework.util.Assert;
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnEnabledHealthIndicator("db")
 @EnableConfigurationProperties(DataSourceHealthIndicatorProperties.class)
-public class DataSourceHealthContributorAutoConfiguration implements InitializingBean {
+public final class DataSourceHealthContributorAutoConfiguration implements InitializingBean {
 
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
-	public DataSourceHealthContributorAutoConfiguration(
-			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
+	DataSourceHealthContributorAutoConfiguration(ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 		this.metadataProviders = metadataProviders.orderedStream().toList();
 	}
 
@@ -86,7 +85,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
-	public HealthContributor dbHealthContributor(ConfigurableListableBeanFactory beanFactory,
+	HealthContributor dbHealthContributor(ConfigurableListableBeanFactory beanFactory,
 			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
 		Map<String, DataSource> dataSources = SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory,
 				DataSource.class, false, true);

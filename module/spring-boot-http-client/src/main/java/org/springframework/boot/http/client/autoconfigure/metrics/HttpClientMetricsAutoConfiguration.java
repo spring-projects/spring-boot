@@ -46,7 +46,7 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnClass({ ObservationProperties.class, MeterRegistry.class, MetricsProperties.class })
 @ConditionalOnBean(MeterRegistry.class)
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
-public class HttpClientMetricsAutoConfiguration {
+public final class HttpClientMetricsAutoConfiguration {
 
 	@Bean
 	@Order(0)

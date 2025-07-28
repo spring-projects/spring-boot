@@ -52,23 +52,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(NewRelicMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("newrelic")
 @EnableConfigurationProperties(NewRelicProperties.class)
-public class NewRelicMetricsExportAutoConfiguration {
+public final class NewRelicMetricsExportAutoConfiguration {
 
 	private final NewRelicProperties properties;
 
-	public NewRelicMetricsExportAutoConfiguration(NewRelicProperties properties) {
+	NewRelicMetricsExportAutoConfiguration(NewRelicProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicConfig newRelicConfig() {
+	NewRelicConfig newRelicConfig() {
 		return new NewRelicPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicClientProvider newRelicClientProvider(NewRelicConfig newRelicConfig) {
+	NewRelicClientProvider newRelicClientProvider(NewRelicConfig newRelicConfig) {
 		if (newRelicConfig.clientProviderType() == ClientProviderType.INSIGHTS_AGENT) {
 			return new NewRelicInsightsAgentClientProvider(newRelicConfig);
 		}
@@ -79,7 +79,7 @@ public class NewRelicMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig, Clock clock,
+	NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig, Clock clock,
 			NewRelicClientProvider newRelicClientProvider) {
 		return NewRelicMeterRegistry.builder(newRelicConfig)
 			.clock(clock)

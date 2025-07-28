@@ -83,7 +83,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass(DispatcherServlet.class)
 @ConditionalOnBean(DispatcherServlet.class)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
-public class CloudFoundryActuatorAutoConfiguration {
+public final class CloudFoundryActuatorAutoConfiguration {
 
 	private static final String BASE_PATH = "/cloudfoundryapplication";
 
@@ -91,7 +91,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
 	@ConditionalOnBean({ HealthEndpoint.class, HealthEndpointWebExtension.class })
-	public CloudFoundryHealthEndpointWebExtension cloudFoundryHealthEndpointWebExtension(
+	CloudFoundryHealthEndpointWebExtension cloudFoundryHealthEndpointWebExtension(
 			HealthEndpointWebExtension healthEndpointWebExtension) {
 		return new CloudFoundryHealthEndpointWebExtension(healthEndpointWebExtension);
 	}
@@ -100,7 +100,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint
 	@ConditionalOnBean({ InfoEndpoint.class, GitProperties.class })
-	public CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(GitProperties properties,
+	CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(GitProperties properties,
 			ObjectProvider<InfoContributor> infoContributors) {
 		List<InfoContributor> contributors = infoContributors.orderedStream()
 			.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
@@ -111,7 +111,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 
 	@Bean
 	@SuppressWarnings("removal")
-	public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
+	CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
 			RestTemplateBuilder restTemplateBuilder,
 			org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
@@ -164,7 +164,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 	 */
 	@ConditionalOnClass({ WebSecurityCustomizer.class, WebSecurity.class })
 	@Configuration(proxyBeanMethods = false)
-	public static class IgnoredCloudFoundryPathsWebSecurityConfiguration {
+	static class IgnoredCloudFoundryPathsWebSecurityConfiguration {
 
 		private static final int FILTER_CHAIN_ORDER = -1;
 

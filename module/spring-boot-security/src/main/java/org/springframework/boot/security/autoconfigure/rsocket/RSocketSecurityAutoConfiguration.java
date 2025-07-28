@@ -39,7 +39,7 @@ import org.springframework.security.rsocket.core.SecuritySocketAcceptorIntercept
 @AutoConfiguration
 @EnableRSocketSecurity
 @ConditionalOnClass({ RSocketServerCustomizer.class, SecuritySocketAcceptorInterceptor.class })
-public class RSocketSecurityAutoConfiguration {
+public final class RSocketSecurityAutoConfiguration {
 
 	@Bean
 	RSocketServerCustomizer springSecurityRSocketSecurity(SecuritySocketAcceptorInterceptor interceptor) {

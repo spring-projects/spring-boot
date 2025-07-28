@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(Health.class)
 @ConditionalOnEnabledHealthIndicator("ssl")
 @EnableConfigurationProperties(SslHealthIndicatorProperties.class)
-public class SslHealthContributorAutoConfiguration {
+public final class SslHealthContributorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "sslHealthIndicator")

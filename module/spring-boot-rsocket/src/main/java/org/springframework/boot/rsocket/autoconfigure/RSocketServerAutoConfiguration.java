@@ -68,7 +68,7 @@ import org.springframework.util.unit.DataSize;
 @ConditionalOnClass({ RSocketServer.class, RSocketStrategies.class, HttpServer.class, TcpServerTransport.class })
 @ConditionalOnBean(RSocketMessageHandler.class)
 @EnableConfigurationProperties(RSocketProperties.class)
-public class RSocketServerAutoConfiguration {
+public final class RSocketServerAutoConfiguration {
 
 	@Conditional(OnRSocketWebServerCondition.class)
 	@Configuration(proxyBeanMethods = false)

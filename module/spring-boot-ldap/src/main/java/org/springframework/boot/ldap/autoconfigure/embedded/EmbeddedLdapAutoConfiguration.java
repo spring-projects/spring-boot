@@ -77,7 +77,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(InMemoryDirectoryServer.class)
 @Conditional(EmbeddedLdapAutoConfiguration.EmbeddedLdapCondition.class)
 @ImportRuntimeHints(EmbeddedLdapAutoConfigurationRuntimeHints.class)
-public class EmbeddedLdapAutoConfiguration implements DisposableBean {
+public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	private static final String PROPERTY_SOURCE_NAME = "ldap.ports";
 
@@ -85,12 +85,12 @@ public class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	private InMemoryDirectoryServer server;
 
-	public EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties) {
+	EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties) {
 		this.embeddedProperties = embeddedProperties;
 	}
 
 	@Bean
-	public InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
+	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
 		if (this.embeddedProperties.getCredential().isAvailable()) {

@@ -32,11 +32,11 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(afterName = "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration")
 @ConditionalOnClass({ EntityManagerFactory.class })
-public class TestEntityManagerAutoConfiguration {
+public final class TestEntityManagerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public TestEntityManager testEntityManager(EntityManagerFactory entityManagerFactory) {
+	TestEntityManager testEntityManager(EntityManagerFactory entityManagerFactory) {
 		return new TestEntityManager(entityManagerFactory);
 	}
 

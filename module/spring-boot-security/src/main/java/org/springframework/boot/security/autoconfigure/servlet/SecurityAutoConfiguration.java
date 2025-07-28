@@ -41,11 +41,11 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
 @EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class, SecurityDataConfiguration.class })
-public class SecurityAutoConfiguration {
+public final class SecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(AuthenticationEventPublisher.class)
-	public DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
+	DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher publisher) {
 		return new DefaultAuthenticationEventPublisher(publisher);
 	}
 

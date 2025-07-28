@@ -54,6 +54,6 @@ import org.springframework.data.neo4j.repository.support.Neo4jRepositoryFactoryB
 @ConditionalOnMissingBean({ Neo4jRepositoryFactoryBean.class, Neo4jRepositoryConfigurationExtension.class })
 @ConditionalOnRepositoryType(store = "neo4j", type = RepositoryType.IMPERATIVE)
 @Import(Neo4jRepositoriesRegistrar.class)
-public class Neo4jRepositoriesAutoConfiguration {
+public final class Neo4jRepositoriesAutoConfiguration {
 
 }

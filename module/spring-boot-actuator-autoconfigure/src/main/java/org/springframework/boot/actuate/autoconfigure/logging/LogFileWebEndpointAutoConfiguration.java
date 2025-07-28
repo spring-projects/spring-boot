@@ -44,13 +44,12 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(LogFileWebEndpoint.class)
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
-public class LogFileWebEndpointAutoConfiguration {
+public final class LogFileWebEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(LogFileCondition.class)
-	public LogFileWebEndpoint logFileWebEndpoint(ObjectProvider<LogFile> logFile,
-			LogFileWebEndpointProperties properties) {
+	LogFileWebEndpoint logFileWebEndpoint(ObjectProvider<LogFile> logFile, LogFileWebEndpointProperties properties) {
 		return new LogFileWebEndpoint(logFile.getIfAvailable(), properties.getExternalFile());
 	}
 

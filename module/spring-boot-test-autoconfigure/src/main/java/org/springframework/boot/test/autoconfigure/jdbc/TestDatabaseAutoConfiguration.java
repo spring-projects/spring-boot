@@ -75,7 +75,7 @@ import org.springframework.util.ObjectUtils;
  * @see AutoConfigureTestDatabase
  */
 @AutoConfiguration(before = DataSourceAutoConfiguration.class)
-public class TestDatabaseAutoConfiguration {
+public final class TestDatabaseAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -96,7 +96,7 @@ public class TestDatabaseAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "spring.test.database.replace", havingValue = "AUTO_CONFIGURED")
 	@ConditionalOnMissingBean
-	public DataSource dataSource(Environment environment) {
+	DataSource dataSource(Environment environment) {
 		return new EmbeddedDataSourceFactory(environment).getEmbeddedDatabase();
 	}
 

@@ -39,7 +39,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 		TaskExecutorConfigurations.SimpleAsyncTaskExecutorBuilderConfiguration.class,
 		TaskExecutorConfigurations.TaskExecutorConfiguration.class,
 		TaskExecutorConfigurations.BootstrapExecutorConfiguration.class })
-public class TaskExecutionAutoConfiguration {
+public final class TaskExecutionAutoConfiguration {
 
 	/**
 	 * Bean name of the application {@link TaskExecutor}.

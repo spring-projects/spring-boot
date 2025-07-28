@@ -50,7 +50,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @ConditionalOnClass({ EnableWebSecurity.class, OAuth2AuthorizedClientRepository.class })
 @ConditionalOnBean(OAuth2AuthorizedClientService.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-public class OAuth2ClientWebSecurityAutoConfiguration {
+public final class OAuth2ClientWebSecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

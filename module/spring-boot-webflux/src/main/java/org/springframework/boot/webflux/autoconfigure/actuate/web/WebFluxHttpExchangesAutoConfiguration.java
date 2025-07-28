@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBooleanProperty(name = "management.httpexchanges.recording.enabled", matchIfMissing = true)
 @ConditionalOnBean(HttpExchangeRepository.class)
 @EnableConfigurationProperties(HttpExchangesProperties.class)
-public class WebFluxHttpExchangesAutoConfiguration {
+public final class WebFluxHttpExchangesAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

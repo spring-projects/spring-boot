@@ -35,11 +35,11 @@ import org.springframework.core.Ordered;
  */
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-public class PropertyPlaceholderAutoConfiguration {
+public final class PropertyPlaceholderAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+	static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 

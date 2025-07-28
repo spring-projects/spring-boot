@@ -38,20 +38,19 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = ApplicationAvailabilityAutoConfiguration.class)
 @ConditionalOnClass(Health.class)
-public class AvailabilityHealthContributorAutoConfiguration {
+public final class AvailabilityHealthContributorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "livenessStateHealthIndicator")
 	@ConditionalOnBooleanProperty("management.health.livenessstate.enabled")
-	public LivenessStateHealthIndicator livenessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
+	LivenessStateHealthIndicator livenessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
 		return new LivenessStateHealthIndicator(applicationAvailability);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "readinessStateHealthIndicator")
 	@ConditionalOnBooleanProperty("management.health.readinessstate.enabled")
-	public ReadinessStateHealthIndicator readinessStateHealthIndicator(
-			ApplicationAvailability applicationAvailability) {
+	ReadinessStateHealthIndicator readinessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
 		return new ReadinessStateHealthIndicator(applicationAvailability);
 	}
 

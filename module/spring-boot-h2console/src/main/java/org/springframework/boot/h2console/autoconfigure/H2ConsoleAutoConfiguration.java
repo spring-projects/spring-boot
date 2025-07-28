@@ -53,7 +53,7 @@ import org.springframework.core.log.LogMessage;
 @ConditionalOnClass(JakartaWebServlet.class)
 @ConditionalOnBooleanProperty("spring.h2.console.enabled")
 @EnableConfigurationProperties(H2ConsoleProperties.class)
-public class H2ConsoleAutoConfiguration {
+public final class H2ConsoleAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(H2ConsoleAutoConfiguration.class);
 
@@ -64,7 +64,7 @@ public class H2ConsoleAutoConfiguration {
 	}
 
 	@Bean
-	public ServletRegistrationBean<JakartaWebServlet> h2Console() {
+	ServletRegistrationBean<JakartaWebServlet> h2Console() {
 		String path = this.properties.getPath();
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
 		ServletRegistrationBean<JakartaWebServlet> registration = new ServletRegistrationBean<>(new JakartaWebServlet(),

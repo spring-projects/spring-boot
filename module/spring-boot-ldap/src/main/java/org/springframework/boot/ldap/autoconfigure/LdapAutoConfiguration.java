@@ -49,7 +49,7 @@ import org.springframework.ldap.odm.core.impl.DefaultObjectDirectoryMapper;
 @AutoConfiguration
 @ConditionalOnClass(ContextSource.class)
 @EnableConfigurationProperties(LdapProperties.class)
-public class LdapAutoConfiguration {
+public final class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(LdapConnectionDetails.class)
@@ -60,7 +60,7 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource(LdapConnectionDetails connectionDetails, LdapProperties properties,
+	LdapContextSource ldapContextSource(LdapConnectionDetails connectionDetails, LdapProperties properties,
 			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
 		LdapContextSource source = new LdapContextSource();
 		dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
@@ -80,7 +80,7 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ObjectDirectoryMapper objectDirectoryMapper() {
+	ObjectDirectoryMapper objectDirectoryMapper() {
 		ApplicationConversionService conversionService = new ApplicationConversionService();
 		ConverterUtils.addDefaultConverters(conversionService);
 		DefaultObjectDirectoryMapper objectDirectoryMapper = new DefaultObjectDirectoryMapper();
@@ -90,7 +90,7 @@ public class LdapAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(LdapOperations.class)
-	public LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource,
+	LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource,
 			ObjectDirectoryMapper objectDirectoryMapper) {
 		Template template = properties.getTemplate();
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();

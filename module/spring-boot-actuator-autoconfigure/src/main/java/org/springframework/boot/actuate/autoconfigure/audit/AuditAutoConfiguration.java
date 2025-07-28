@@ -42,25 +42,25 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnBean(AuditEventRepository.class)
 @ConditionalOnBooleanProperty(name = "management.auditevents.enabled", matchIfMissing = true)
-public class AuditAutoConfiguration {
+public final class AuditAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(AbstractAuditListener.class)
-	public AuditListener auditListener(AuditEventRepository auditEventRepository) {
+	AuditListener auditListener(AuditEventRepository auditEventRepository) {
 		return new AuditListener(auditEventRepository);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
 	@ConditionalOnMissingBean(AbstractAuthenticationAuditListener.class)
-	public AuthenticationAuditListener authenticationAuditListener() {
+	AuthenticationAuditListener authenticationAuditListener() {
 		return new AuthenticationAuditListener();
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
 	@ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
-	public AuthorizationAuditListener authorizationAuditListener() {
+	AuthorizationAuditListener authorizationAuditListener() {
 		return new AuthorizationAuditListener();
 	}
 

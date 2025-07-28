@@ -33,6 +33,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  */
 @AutoConfiguration
 @EnableConfigurationProperties
-public class ConfigurationPropertiesAutoConfiguration {
+public final class ConfigurationPropertiesAutoConfiguration {
 
 }

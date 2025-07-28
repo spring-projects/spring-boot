@@ -40,6 +40,6 @@ import org.springframework.data.elasticsearch.repository.support.ElasticsearchRe
 @ConditionalOnBooleanProperty(name = "spring.data.elasticsearch.repositories.enabled", matchIfMissing = true)
 @ConditionalOnMissingBean(ElasticsearchRepositoryFactoryBean.class)
 @Import(ElasticsearchRepositoriesRegistrar.class)
-public class ElasticsearchRepositoriesAutoConfiguration {
+public final class ElasticsearchRepositoriesAutoConfiguration {
 
 }

@@ -87,7 +87,7 @@ import org.springframework.util.ReflectionUtils;
 @AutoConfiguration
 @ConditionalOnClass(ObjectMapper.class)
 @SuppressWarnings("removal")
-public class JacksonAutoConfiguration {
+public final class JacksonAutoConfiguration {
 
 	private static final Map<?, Boolean> FEATURE_DEFAULTS;
 
@@ -99,7 +99,7 @@ public class JacksonAutoConfiguration {
 	}
 
 	@Bean
-	public JsonComponentModule jsonComponentModule() {
+	JsonComponentModule jsonComponentModule() {
 		return new JsonComponentModule();
 	}
 

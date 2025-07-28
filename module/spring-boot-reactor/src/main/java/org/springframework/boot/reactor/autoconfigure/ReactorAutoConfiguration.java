@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnClass(Hooks.class)
 @EnableConfigurationProperties(ReactorProperties.class)
-public class ReactorAutoConfiguration {
+public final class ReactorAutoConfiguration {
 
 	ReactorAutoConfiguration(ReactorProperties properties) {
 		if (properties.getContextPropagation() == ReactorProperties.ContextPropagationMode.AUTO) {

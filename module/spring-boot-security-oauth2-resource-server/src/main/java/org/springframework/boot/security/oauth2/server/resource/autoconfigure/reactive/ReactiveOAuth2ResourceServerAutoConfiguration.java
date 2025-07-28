@@ -43,6 +43,6 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @Import({ ReactiveOAuth2ResourceServerConfiguration.JwtConfiguration.class,
 		ReactiveOAuth2ResourceServerConfiguration.OpaqueTokenConfiguration.class })
-public class ReactiveOAuth2ResourceServerAutoConfiguration {
+public final class ReactiveOAuth2ResourceServerAutoConfiguration {
 
 }

@@ -45,17 +45,17 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(JmxMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("jmx")
 @EnableConfigurationProperties(JmxProperties.class)
-public class JmxMetricsExportAutoConfiguration {
+public final class JmxMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JmxConfig jmxConfig(JmxProperties jmxProperties) {
+	JmxConfig jmxConfig(JmxProperties jmxProperties) {
 		return new JmxPropertiesConfigAdapter(jmxProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JmxMeterRegistry jmxMeterRegistry(JmxConfig jmxConfig, Clock clock) {
+	JmxMeterRegistry jmxMeterRegistry(JmxConfig jmxConfig, Clock clock) {
 		return new JmxMeterRegistry(jmxConfig, clock);
 	}
 

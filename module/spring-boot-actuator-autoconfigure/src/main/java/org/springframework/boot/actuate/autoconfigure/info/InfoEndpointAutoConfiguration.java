@@ -33,11 +33,11 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = InfoContributorAutoConfiguration.class)
 @ConditionalOnAvailableEndpoint(InfoEndpoint.class)
-public class InfoEndpointAutoConfiguration {
+public final class InfoEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InfoEndpoint infoEndpoint(ObjectProvider<InfoContributor> infoContributors) {
+	InfoEndpoint infoEndpoint(ObjectProvider<InfoContributor> infoContributors) {
 		return new InfoEndpoint(infoContributors.orderedStream().toList());
 	}
 

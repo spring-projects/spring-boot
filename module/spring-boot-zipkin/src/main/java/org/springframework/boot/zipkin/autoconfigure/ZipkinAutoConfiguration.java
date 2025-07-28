@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnClass(Encoding.class)
 @EnableConfigurationProperties(ZipkinProperties.class)
-public class ZipkinAutoConfiguration {
+public final class ZipkinAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ZipkinConnectionDetails.class)

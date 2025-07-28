@@ -32,11 +32,11 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(BeansEndpoint.class)
-public class BeansEndpointAutoConfiguration {
+public final class BeansEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public BeansEndpoint beansEndpoint(ConfigurableApplicationContext applicationContext) {
+	BeansEndpoint beansEndpoint(ConfigurableApplicationContext applicationContext) {
 		return new BeansEndpoint(applicationContext);
 	}
 

@@ -54,7 +54,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ RequestMatcher.class, WebEndpointAutoConfiguration.class })
 @ConditionalOnDefaultWebSecurity
-public class ManagementWebSecurityAutoConfiguration {
+public final class ManagementWebSecurityAutoConfiguration {
 
 	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)

@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(ManagementContextFactory.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class TomcatServletManagementContextAutoConfiguration {
+public final class TomcatServletManagementContextAutoConfiguration {
 
 	@Bean
 	static ManagementContextFactory servletWebChildContextFactory() {

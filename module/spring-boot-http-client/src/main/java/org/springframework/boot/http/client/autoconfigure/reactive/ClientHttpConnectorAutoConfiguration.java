@@ -51,7 +51,7 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
 @ConditionalOnClass({ ClientHttpConnector.class, Mono.class })
 @Conditional(ConditionalOnClientHttpConnectorBuilderDetection.class)
 @EnableConfigurationProperties(HttpReactiveClientProperties.class)
-public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAware {
+public final class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAware {
 
 	private final ClientHttpConnectors connectors;
 

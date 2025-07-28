@@ -44,11 +44,11 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfiguration(after = HttpClientAutoConfiguration.class)
 @ConditionalOnClass({ RestTemplate.class, HttpMessageConverters.class })
 @Conditional(NotReactiveWebApplicationCondition.class)
-public class RestTemplateAutoConfiguration {
+public final class RestTemplateAutoConfiguration {
 
 	@Bean
 	@Lazy
-	public RestTemplateBuilderConfigurer restTemplateBuilderConfigurer(
+	RestTemplateBuilderConfigurer restTemplateBuilderConfigurer(
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings,
 			ObjectProvider<HttpMessageConverters> messageConverters,
@@ -66,7 +66,7 @@ public class RestTemplateAutoConfiguration {
 	@Bean
 	@Lazy
 	@ConditionalOnMissingBean
-	public RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer restTemplateBuilderConfigurer) {
+	RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer restTemplateBuilderConfigurer) {
 		return restTemplateBuilderConfigurer.configure(new RestTemplateBuilder());
 	}
 

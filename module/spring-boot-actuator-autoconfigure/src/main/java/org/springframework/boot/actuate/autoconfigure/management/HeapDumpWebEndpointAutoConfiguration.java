@@ -31,11 +31,11 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(HeapDumpWebEndpoint.class)
-public class HeapDumpWebEndpointAutoConfiguration {
+public final class HeapDumpWebEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HeapDumpWebEndpoint heapDumpWebEndpoint() {
+	HeapDumpWebEndpoint heapDumpWebEndpoint() {
 		return new HeapDumpWebEndpoint();
 	}
 

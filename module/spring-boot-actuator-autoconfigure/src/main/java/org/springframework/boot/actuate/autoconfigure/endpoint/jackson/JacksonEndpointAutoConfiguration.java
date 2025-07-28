@@ -41,14 +41,14 @@ import org.springframework.util.ClassUtils;
  */
 @AutoConfiguration
 @SuppressWarnings("removal")
-public class JacksonEndpointAutoConfiguration {
+public final class JacksonEndpointAutoConfiguration {
 
 	private static final String CONTRIBUTED_HEALTH = "org.springframework.boot.health.contributor.ContributedHealth";
 
 	@Bean
 	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
-	public EndpointObjectMapper endpointObjectMapper() {
+	EndpointObjectMapper endpointObjectMapper() {
 		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
 			.featuresToEnable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
 			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,

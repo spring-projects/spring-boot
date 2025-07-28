@@ -62,7 +62,7 @@ import org.springframework.session.data.mongo.config.annotation.web.reactive.Rea
 		afterName = "org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration")
 @ConditionalOnClass(Session.class)
 @EnableConfigurationProperties(MongoSessionProperties.class)
-public class MongoSessionAutoConfiguration {
+public final class MongoSessionAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ MongoOperations.class, MongoIndexedSessionRepository.class })

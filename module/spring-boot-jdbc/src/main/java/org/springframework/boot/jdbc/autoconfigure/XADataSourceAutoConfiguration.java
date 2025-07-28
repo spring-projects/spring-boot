@@ -63,7 +63,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ DataSource.class, TransactionManager.class, EmbeddedDatabaseType.class })
 @ConditionalOnBean(XADataSourceWrapper.class)
 @ConditionalOnMissingBean(DataSource.class)
-public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
+public final class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader classLoader;
 
@@ -74,7 +74,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	@Bean
-	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
+	DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
 			JdbcConnectionDetails connectionDetails, ObjectProvider<XADataSource> xaDataSource) throws Exception {
 		return wrapper
 			.wrapDataSource(xaDataSource.getIfAvailable(() -> createXaDataSource(properties, connectionDetails)));

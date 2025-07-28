@@ -135,13 +135,13 @@ class ConditionEvaluationReportLoggerTests {
 
 	@AutoConfiguration
 	@ConditionalOnProperty(name = "com.example.property", matchIfMissing = true)
-	static class MatchingAutoConfiguration {
+	public static final class MatchingAutoConfiguration {
 
 	}
 
 	@AutoConfiguration
 	@ConditionalOnBean(Duration.class)
-	static class NonMatchingAutoConfiguration {
+	public static final class NonMatchingAutoConfiguration {
 
 	}
 

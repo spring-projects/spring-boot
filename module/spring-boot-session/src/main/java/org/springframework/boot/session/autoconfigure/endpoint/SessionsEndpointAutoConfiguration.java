@@ -45,7 +45,7 @@ import org.springframework.session.SessionRepository;
 @AutoConfiguration(after = SessionAutoConfiguration.class)
 @ConditionalOnClass({ Session.class, SessionsEndpoint.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(SessionsEndpoint.class)
-public class SessionsEndpointAutoConfiguration {
+public final class SessionsEndpointAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)

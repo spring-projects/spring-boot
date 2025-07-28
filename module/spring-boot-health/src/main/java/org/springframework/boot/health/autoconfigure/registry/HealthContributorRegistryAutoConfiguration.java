@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Bean;
  * @since 4.0.0
  */
 @AutoConfiguration
-public class HealthContributorRegistryAutoConfiguration {
+public final class HealthContributorRegistryAutoConfiguration {
 
 	HealthContributorRegistryAutoConfiguration() {
 	}

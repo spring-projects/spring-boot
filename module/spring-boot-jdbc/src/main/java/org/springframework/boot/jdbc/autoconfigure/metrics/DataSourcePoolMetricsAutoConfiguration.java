@@ -59,7 +59,7 @@ import org.springframework.util.StringUtils;
 		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ DataSource.class, MeterRegistry.class })
 @ConditionalOnBean({ DataSource.class, MeterRegistry.class })
-public class DataSourcePoolMetricsAutoConfiguration {
+public final class DataSourcePoolMetricsAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(DataSourcePoolMetadataProvider.class)

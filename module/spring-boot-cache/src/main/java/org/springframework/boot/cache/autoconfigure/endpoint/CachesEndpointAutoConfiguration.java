@@ -41,11 +41,11 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = CacheAutoConfiguration.class)
 @ConditionalOnClass({ CacheManager.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(CachesEndpoint.class)
-public class CachesEndpointAutoConfiguration {
+public final class CachesEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CachesEndpoint cachesEndpoint(ConfigurableListableBeanFactory beanFactory) {
+	CachesEndpoint cachesEndpoint(ConfigurableListableBeanFactory beanFactory) {
 		return new CachesEndpoint(
 				SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, CacheManager.class));
 	}
@@ -54,7 +54,7 @@ public class CachesEndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(CachesEndpoint.class)
 	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
-	public CachesEndpointWebExtension cachesEndpointWebExtension(CachesEndpoint cachesEndpoint) {
+	CachesEndpointWebExtension cachesEndpointWebExtension(CachesEndpoint cachesEndpoint) {
 		return new CachesEndpointWebExtension(cachesEndpoint);
 	}
 

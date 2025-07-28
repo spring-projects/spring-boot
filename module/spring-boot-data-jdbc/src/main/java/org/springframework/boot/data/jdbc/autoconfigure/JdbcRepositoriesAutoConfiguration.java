@@ -69,7 +69,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @ConditionalOnClass({ NamedParameterJdbcOperations.class, AbstractJdbcConfiguration.class })
 @ConditionalOnBooleanProperty(name = "spring.data.jdbc.repositories.enabled", matchIfMissing = true)
 @EnableConfigurationProperties(JdbcDataProperties.class)
-public class JdbcRepositoriesAutoConfiguration {
+public final class JdbcRepositoriesAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(JdbcRepositoryConfigExtension.class)

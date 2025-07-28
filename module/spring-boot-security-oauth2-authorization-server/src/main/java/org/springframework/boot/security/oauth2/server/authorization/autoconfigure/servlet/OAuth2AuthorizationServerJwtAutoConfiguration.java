@@ -53,7 +53,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 @AutoConfiguration(after = UserDetailsServiceAutoConfiguration.class)
 @ConditionalOnClass({ OAuth2Authorization.class, JWKSource.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
-public class OAuth2AuthorizationServerJwtAutoConfiguration {
+public final class OAuth2AuthorizationServerJwtAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)

@@ -60,7 +60,7 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration
 @ConditionalOnClass(Driver.class)
 @EnableConfigurationProperties(Neo4jProperties.class)
-public class Neo4jAutoConfiguration {
+public final class Neo4jAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(Neo4jConnectionDetails.class)
@@ -71,8 +71,7 @@ public class Neo4jAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
-			Neo4jConnectionDetails connectionDetails,
+	Driver neo4jDriver(Neo4jProperties properties, Environment environment, Neo4jConnectionDetails connectionDetails,
 			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
 
 		Config config = mapDriverConfig(properties, connectionDetails,

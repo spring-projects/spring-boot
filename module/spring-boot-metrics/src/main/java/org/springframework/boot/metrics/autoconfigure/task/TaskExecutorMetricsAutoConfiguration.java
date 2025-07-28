@@ -53,10 +53,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 		TaskExecutionAutoConfiguration.class, TaskSchedulingAutoConfiguration.class })
 @ConditionalOnClass(ExecutorServiceMetrics.class)
 @ConditionalOnBean({ Executor.class, MeterRegistry.class })
-public class TaskExecutorMetricsAutoConfiguration {
+public final class TaskExecutorMetricsAutoConfiguration {
 
 	@Autowired
-	public void bindTaskExecutorsToRegistry(ConfigurableListableBeanFactory beanFactory, MeterRegistry registry) {
+	void bindTaskExecutorsToRegistry(ConfigurableListableBeanFactory beanFactory, MeterRegistry registry) {
 		SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, TaskExecutor.class)
 			.forEach((beanName, executor) -> {
 				if (executor instanceof ThreadPoolTaskExecutor threadPoolTaskExecutor) {

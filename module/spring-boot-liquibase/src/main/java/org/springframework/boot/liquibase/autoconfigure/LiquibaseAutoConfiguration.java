@@ -78,7 +78,7 @@ import org.springframework.util.StringUtils;
 @Conditional(LiquibaseDataSourceCondition.class)
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @ImportRuntimeHints(LiquibaseAutoConfigurationRuntimeHints.class)
-public class LiquibaseAutoConfiguration {
+public final class LiquibaseAutoConfiguration {
 
 	@Bean
 	LiquibaseSchemaManagementProvider liquibaseDefaultDdlModeProvider(ObjectProvider<SpringLiquibase> liquibases) {

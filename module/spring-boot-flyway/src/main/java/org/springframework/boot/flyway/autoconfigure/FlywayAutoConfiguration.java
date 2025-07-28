@@ -106,16 +106,16 @@ import org.springframework.util.function.SingletonSupplier;
 @ConditionalOnBooleanProperty(name = "spring.flyway.enabled", matchIfMissing = true)
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @ImportRuntimeHints(FlywayAutoConfigurationRuntimeHints.class)
-public class FlywayAutoConfiguration {
+public final class FlywayAutoConfiguration {
 
 	@Bean
 	@ConfigurationPropertiesBinding
-	public static StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
+	static StringOrNumberToMigrationVersionConverter stringOrNumberMigrationVersionConverter() {
 		return new StringOrNumberToMigrationVersionConverter();
 	}
 
 	@Bean
-	public FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(ObjectProvider<Flyway> flyways) {
+	FlywaySchemaManagementProvider flywayDefaultDdlModeProvider(ObjectProvider<Flyway> flyways) {
 		return new FlywaySchemaManagementProvider(flyways);
 	}
 
@@ -123,7 +123,7 @@ public class FlywayAutoConfiguration {
 	@ConditionalOnClass(JdbcUtils.class)
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties(FlywayProperties.class)
-	public static class FlywayConfiguration {
+	static class FlywayConfiguration {
 
 		private final FlywayProperties properties;
 
@@ -349,7 +349,7 @@ public class FlywayAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public FlywayMigrationInitializer flywayInitializer(Flyway flyway,
+		FlywayMigrationInitializer flywayInitializer(Flyway flyway,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
 			return new FlywayMigrationInitializer(flyway, migrationStrategy.getIfAvailable());
 		}

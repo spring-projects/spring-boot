@@ -45,16 +45,16 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
 		ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(ReactiveElasticsearchClient.class)
 @ConditionalOnEnabledHealthIndicator("elasticsearch")
-public class ElasticsearchReactiveHealthContributorAutoConfiguration extends
+public final class ElasticsearchReactiveHealthContributorAutoConfiguration extends
 		CompositeReactiveHealthContributorConfiguration<ElasticsearchReactiveHealthIndicator, ReactiveElasticsearchClient> {
 
-	public ElasticsearchReactiveHealthContributorAutoConfiguration() {
+	ElasticsearchReactiveHealthContributorAutoConfiguration() {
 		super(ElasticsearchReactiveHealthIndicator::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
-	public ReactiveHealthContributor elasticsearchHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	ReactiveHealthContributor elasticsearchHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, ReactiveElasticsearchClient.class);
 	}
 

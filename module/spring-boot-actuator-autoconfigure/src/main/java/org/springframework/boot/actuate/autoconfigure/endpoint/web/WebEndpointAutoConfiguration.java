@@ -65,31 +65,31 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration(after = EndpointAutoConfiguration.class)
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(WebEndpointProperties.class)
-public class WebEndpointAutoConfiguration {
+public final class WebEndpointAutoConfiguration {
 
 	private final ApplicationContext applicationContext;
 
 	private final WebEndpointProperties properties;
 
-	public WebEndpointAutoConfiguration(ApplicationContext applicationContext, WebEndpointProperties properties) {
+	WebEndpointAutoConfiguration(ApplicationContext applicationContext, WebEndpointProperties properties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
 	}
 
 	@Bean
-	public PathMapper webEndpointPathMapper() {
+	PathMapper webEndpointPathMapper() {
 		return new MappingWebEndpointPathMapper(this.properties.getPathMapping());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public EndpointMediaTypes endpointMediaTypes() {
+	EndpointMediaTypes endpointMediaTypes() {
 		return EndpointMediaTypes.DEFAULT;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(WebEndpointsSupplier.class)
-	public WebEndpointDiscoverer webEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
+	WebEndpointDiscoverer webEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			EndpointMediaTypes endpointMediaTypes, ObjectProvider<PathMapper> endpointPathMappers,
 			ObjectProvider<AdditionalPathsMapper> additionalPathsMappers,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
@@ -104,7 +104,7 @@ public class WebEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier.class)
 	@SuppressWarnings({ "deprecation", "removal" })
-	public org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer controllerEndpointDiscoverer(
+	org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer controllerEndpointDiscoverer(
 			ObjectProvider<PathMapper> endpointPathMappers,
 			ObjectProvider<Collection<EndpointFilter<org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint>>> filters) {
 		return new org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer(
@@ -114,7 +114,7 @@ public class WebEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PathMappedEndpoints pathMappedEndpoints(Collection<EndpointsSupplier<?>> endpointSuppliers) {
+	PathMappedEndpoints pathMappedEndpoints(Collection<EndpointsSupplier<?>> endpointSuppliers) {
 		String basePath = this.properties.getBasePath();
 		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints(basePath, endpointSuppliers);
 		if ((!StringUtils.hasText(basePath) || "/".equals(basePath))
@@ -144,7 +144,7 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
-	public IncludeExcludeEndpointFilter<ExposableWebEndpoint> webExposeExcludePropertyEndpointFilter() {
+	IncludeExcludeEndpointFilter<ExposableWebEndpoint> webExposeExcludePropertyEndpointFilter() {
 		WebEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(ExposableWebEndpoint.class, exposure.getInclude(),
 				exposure.getExclude(), EndpointExposure.WEB.getDefaultIncludes());
@@ -152,7 +152,7 @@ public class WebEndpointAutoConfiguration {
 
 	@Bean
 	@SuppressWarnings("removal")
-	public IncludeExcludeEndpointFilter<org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
+	IncludeExcludeEndpointFilter<org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
 		WebEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(
 				org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint.class,

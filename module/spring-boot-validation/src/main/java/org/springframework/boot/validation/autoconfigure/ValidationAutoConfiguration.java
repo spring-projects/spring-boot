@@ -51,12 +51,12 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @ConditionalOnClass(ExecutableValidator.class)
 @ConditionalOnResource(resources = "classpath:META-INF/services/jakarta.validation.spi.ValidationProvider")
 @Import(PrimaryDefaultValidatorPostProcessor.class)
-public class ValidationAutoConfiguration {
+public final class ValidationAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@ConditionalOnMissingBean(Validator.class)
-	public static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext,
+	static LocalValidatorFactoryBean defaultValidator(ApplicationContext applicationContext,
 			ObjectProvider<ValidationConfigurationCustomizer> customizers) {
 		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
 		factoryBean.setConfigurationInitializer((configuration) -> customizers.orderedStream()
@@ -68,7 +68,7 @@ public class ValidationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public static MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
+	static MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
 			ObjectProvider<Validator> validator, ObjectProvider<MethodValidationExcludeFilter> excludeFilters) {
 		FilteredMethodValidationPostProcessor processor = new FilteredMethodValidationPostProcessor(
 				excludeFilters.orderedStream());

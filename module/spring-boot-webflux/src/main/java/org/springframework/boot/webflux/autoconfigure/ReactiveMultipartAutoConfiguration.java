@@ -47,7 +47,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 @ConditionalOnClass({ DefaultPartHttpMessageReader.class, WebFluxConfigurer.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(ReactiveMultipartProperties.class)
-public class ReactiveMultipartAutoConfiguration {
+public final class ReactiveMultipartAutoConfiguration {
 
 	@Bean
 	@Order(0)

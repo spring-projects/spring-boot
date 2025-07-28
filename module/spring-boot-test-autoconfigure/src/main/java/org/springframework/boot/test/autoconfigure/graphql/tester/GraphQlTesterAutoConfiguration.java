@@ -39,7 +39,7 @@ import org.springframework.http.MediaType;
  */
 @AutoConfiguration(after = GraphQlAutoConfiguration.class)
 @ConditionalOnClass({ GraphQL.class, GraphQlTester.class })
-public class GraphQlTesterAutoConfiguration {
+public final class GraphQlTesterAutoConfiguration {
 
 	private static final MediaType APPLICATION_GRAPHQL = new MediaType("application", "graphql+json");
 
@@ -47,7 +47,7 @@ public class GraphQlTesterAutoConfiguration {
 	@ConditionalOnBean(ExecutionGraphQlService.class)
 	@ConditionalOnMissingBean
 	@SuppressWarnings({ "removal", "deprecation" })
-	public ExecutionGraphQlServiceTester graphQlTester(ExecutionGraphQlService graphQlService,
+	ExecutionGraphQlServiceTester graphQlTester(ExecutionGraphQlService graphQlService,
 			ObjectProvider<ObjectMapper> objectMapperProvider) {
 		ExecutionGraphQlServiceTester.Builder<?> builder = ExecutionGraphQlServiceTester.builder(graphQlService);
 		objectMapperProvider.ifAvailable((objectMapper) -> {

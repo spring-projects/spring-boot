@@ -37,12 +37,12 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @AutoConfiguration(after = { WebTestClientAutoConfiguration.class, MockMvcAutoConfiguration.class })
 @ConditionalOnClass({ WebClient.class, WebTestClient.class, WebGraphQlTester.class })
-public class HttpGraphQlTesterAutoConfiguration {
+public final class HttpGraphQlTesterAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(WebTestClient.class)
 	@ConditionalOnMissingBean
-	public HttpGraphQlTester webTestClientGraphQlTester(WebTestClient webTestClient, GraphQlProperties properties) {
+	HttpGraphQlTester webTestClientGraphQlTester(WebTestClient webTestClient, GraphQlProperties properties) {
 		WebTestClient mutatedWebTestClient = webTestClient.mutate().baseUrl(properties.getHttp().getPath()).build();
 		return HttpGraphQlTester.create(mutatedWebTestClient);
 	}

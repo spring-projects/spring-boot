@@ -54,7 +54,7 @@ import org.springframework.web.client.RestClient.Builder;
 		after = { HttpClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class, SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition.class)
-public class RestClientAutoConfiguration {
+public final class RestClientAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RestClientSsl.class)

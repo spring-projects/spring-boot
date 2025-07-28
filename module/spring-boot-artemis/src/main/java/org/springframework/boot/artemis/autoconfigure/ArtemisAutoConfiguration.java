@@ -49,7 +49,7 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties({ ArtemisProperties.class, JmsProperties.class })
 @Import({ ArtemisEmbeddedServerConfiguration.class, ArtemisXAConnectionFactoryConfiguration.class,
 		ArtemisConnectionFactoryConfiguration.class })
-public class ArtemisAutoConfiguration {
+public final class ArtemisAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

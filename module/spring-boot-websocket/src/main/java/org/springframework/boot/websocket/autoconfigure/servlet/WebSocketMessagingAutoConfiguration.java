@@ -54,7 +54,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(WebSocketMessageBrokerConfigurer.class)
-public class WebSocketMessagingAutoConfiguration {
+public final class WebSocketMessagingAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, ObjectMapper.class })

@@ -52,7 +52,7 @@ import org.springframework.core.type.MethodMetadata;
 @ConditionalOnEnabledDevTools
 @Conditional(DevToolsConnectionFactoryCondition.class)
 @AutoConfiguration(afterName = "org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration")
-public class DevToolsR2dbcAutoConfiguration {
+public final class DevToolsR2dbcAutoConfiguration {
 
 	@Bean
 	InMemoryR2dbcDatabaseShutdownExecutor inMemoryR2dbcDatabaseShutdownExecutor(

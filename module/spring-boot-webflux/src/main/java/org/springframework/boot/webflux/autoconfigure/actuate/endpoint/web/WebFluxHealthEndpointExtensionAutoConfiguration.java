@@ -48,7 +48,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ HealthEndpoint.class, Health.class })
 @ConditionalOnBean({ WebEndpointsSupplier.class, HealthEndpointGroups.class })
 @ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
-public class WebFluxHealthEndpointExtensionAutoConfiguration {
+public final class WebFluxHealthEndpointExtensionAutoConfiguration {
 
 	@Bean
 	AdditionalHealthEndpointPathsWebFluxHandlerMapping healthEndpointWebFluxHandlerMapping(

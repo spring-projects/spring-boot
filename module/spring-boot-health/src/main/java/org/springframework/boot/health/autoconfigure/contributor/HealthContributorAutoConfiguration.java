@@ -30,11 +30,11 @@ import org.springframework.context.annotation.Bean;
  * @since 4.0.0
  */
 @AutoConfiguration
-public class HealthContributorAutoConfiguration {
+public final class HealthContributorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnEnabledHealthIndicator("ping")
-	public PingHealthIndicator pingHealthContributor() {
+	PingHealthIndicator pingHealthContributor() {
 		return new PingHealthIndicator();
 	}
 

@@ -43,6 +43,6 @@ import org.springframework.data.elasticsearch.repository.config.EnableReactiveEl
 @Import({ ElasticsearchDataConfiguration.BaseConfiguration.class,
 		ElasticsearchDataConfiguration.JavaClientConfiguration.class,
 		ElasticsearchDataConfiguration.ReactiveRestClientConfiguration.class })
-public class ElasticsearchDataAutoConfiguration {
+public final class ElasticsearchDataAutoConfiguration {
 
 }

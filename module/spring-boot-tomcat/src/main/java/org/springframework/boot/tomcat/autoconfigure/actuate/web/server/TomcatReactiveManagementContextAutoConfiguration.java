@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ Tomcat.class, ManagementContextFactory.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class TomcatReactiveManagementContextAutoConfiguration {
+public final class TomcatReactiveManagementContextAutoConfiguration {
 
 	@Bean
 	static ManagementContextFactory reactiveWebChildContextFactory() {

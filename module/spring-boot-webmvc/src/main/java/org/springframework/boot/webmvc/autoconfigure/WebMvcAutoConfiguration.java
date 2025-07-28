@@ -143,7 +143,7 @@ import org.springframework.web.util.UrlPathHelper;
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @ImportRuntimeHints(WebResourcesRuntimeHints.class)
-public class WebMvcAutoConfiguration {
+public final class WebMvcAutoConfiguration {
 
 	/**
 	 * The default Spring MVC view prefix.
@@ -160,14 +160,14 @@ public class WebMvcAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	@ConditionalOnBooleanProperty("spring.mvc.hiddenmethod.filter.enabled")
-	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+	OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(FormContentFilter.class)
 	@ConditionalOnBooleanProperty(name = "spring.mvc.formcontent.filter.enabled", matchIfMissing = true)
-	public OrderedFormContentFilter formContentFilter() {
+	OrderedFormContentFilter formContentFilter() {
 		return new OrderedFormContentFilter();
 	}
 
@@ -177,7 +177,7 @@ public class WebMvcAutoConfiguration {
 	@Import(EnableWebMvcConfiguration.class)
 	@EnableConfigurationProperties({ WebMvcProperties.class, WebProperties.class })
 	@Order(0)
-	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer, ServletContextAware {
+	static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer, ServletContextAware {
 
 		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
 
@@ -197,7 +197,7 @@ public class WebMvcAutoConfiguration {
 
 		private ServletContext servletContext;
 
-		public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
+		WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
@@ -279,7 +279,7 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public InternalResourceViewResolver defaultViewResolver() {
+		InternalResourceViewResolver defaultViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 			resolver.setPrefix(this.mvcProperties.getView().getPrefix());
 			resolver.setSuffix(this.mvcProperties.getView().getSuffix());
@@ -289,7 +289,7 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@ConditionalOnBean(View.class)
 		@ConditionalOnMissingBean
-		public BeanNameViewResolver beanNameViewResolver() {
+		BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 			return resolver;
@@ -298,7 +298,7 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@ConditionalOnBean(ViewResolver.class)
 		@ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)
-		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
+		ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
 			resolver.setContentNegotiationManager(beanFactory.getBean(ContentNegotiationManager.class));
 			// ContentNegotiatingViewResolver uses all the other view resolvers to locate
@@ -369,7 +369,7 @@ public class WebMvcAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 		@ConditionalOnMissingFilterBean
-		public static RequestContextFilter requestContextFilter() {
+		static RequestContextFilter requestContextFilter() {
 			return new OrderedRequestContextFilter();
 		}
 
@@ -380,7 +380,7 @@ public class WebMvcAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WebProperties.class)
-	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
+	static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
 
 		private final Resources resourceProperties;
 
@@ -394,7 +394,7 @@ public class WebMvcAutoConfiguration {
 
 		private ResourceLoader resourceLoader;
 
-		public EnableWebMvcConfiguration(WebMvcProperties mvcProperties, WebProperties webProperties,
+		EnableWebMvcConfiguration(WebMvcProperties mvcProperties, WebProperties webProperties,
 				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ListableBeanFactory beanFactory) {
@@ -417,14 +417,14 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext,
+		WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext,
 				FormattingConversionService mvcConversionService, ResourceUrlProvider mvcResourceUrlProvider) {
 			return createWelcomePageHandlerMapping(applicationContext, mvcConversionService, mvcResourceUrlProvider,
 					WelcomePageHandlerMapping::new);
 		}
 
 		@Bean
-		public WelcomePageNotAcceptableHandlerMapping welcomePageNotAcceptableHandlerMapping(
+		WelcomePageNotAcceptableHandlerMapping welcomePageNotAcceptableHandlerMapping(
 				ApplicationContext applicationContext, FormattingConversionService mvcConversionService,
 				ResourceUrlProvider mvcResourceUrlProvider) {
 			return createWelcomePageHandlerMapping(applicationContext, mvcConversionService, mvcResourceUrlProvider,

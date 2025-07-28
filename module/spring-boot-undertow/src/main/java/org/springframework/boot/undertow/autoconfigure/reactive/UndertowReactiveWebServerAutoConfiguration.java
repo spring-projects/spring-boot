@@ -48,7 +48,7 @@ import org.springframework.http.ReactiveHttpInputMessage;
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(UndertowServerProperties.class)
 @Import({ UndertowWebServerConfiguration.class, ReactiveWebServerConfiguration.class })
-public class UndertowReactiveWebServerAutoConfiguration {
+public final class UndertowReactiveWebServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)

@@ -37,10 +37,10 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @ConditionalOnBooleanProperty("spring.test.webservice.client.register-web-service-template")
 @ConditionalOnClass(WebServiceTemplate.class)
 @ConditionalOnBean(WebServiceTemplateBuilder.class)
-public class WebServiceClientTemplateAutoConfiguration {
+public final class WebServiceClientTemplateAutoConfiguration {
 
 	@Bean
-	public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
+	WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
 		return builder.build();
 	}
 

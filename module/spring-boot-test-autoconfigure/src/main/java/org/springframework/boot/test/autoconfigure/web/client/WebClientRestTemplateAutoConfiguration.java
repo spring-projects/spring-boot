@@ -34,10 +34,10 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfiguration(afterName = "org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration")
 @ConditionalOnBooleanProperty("spring.test.webclient.register-rest-template")
 @ConditionalOnClass(RestTemplateBuilder.class)
-public class WebClientRestTemplateAutoConfiguration {
+public final class WebClientRestTemplateAutoConfiguration {
 
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+	RestTemplate restTemplate(RestTemplateBuilder builder) {
 		return builder.build();
 	}
 

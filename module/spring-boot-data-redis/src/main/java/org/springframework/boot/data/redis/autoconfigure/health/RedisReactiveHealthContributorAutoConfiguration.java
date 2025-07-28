@@ -48,7 +48,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 		ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("redis")
-public class RedisReactiveHealthContributorAutoConfiguration extends
+public final class RedisReactiveHealthContributorAutoConfiguration extends
 		CompositeReactiveHealthContributorConfiguration<RedisReactiveHealthIndicator, ReactiveRedisConnectionFactory> {
 
 	RedisReactiveHealthContributorAutoConfiguration() {
@@ -57,7 +57,7 @@ public class RedisReactiveHealthContributorAutoConfiguration extends
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "redisHealthIndicator", "redisHealthContributor" })
-	public ReactiveHealthContributor redisHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	ReactiveHealthContributor redisHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, ReactiveRedisConnectionFactory.class);
 	}
 

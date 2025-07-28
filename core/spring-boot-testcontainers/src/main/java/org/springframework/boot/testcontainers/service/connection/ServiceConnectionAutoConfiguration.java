@@ -34,9 +34,6 @@ import org.springframework.core.Ordered;
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @Import(ServiceConnectionAutoConfigurationRegistrar.class)
-public class ServiceConnectionAutoConfiguration {
-
-	ServiceConnectionAutoConfiguration() {
-	}
+public final class ServiceConnectionAutoConfiguration {
 
 }

@@ -35,7 +35,7 @@ import org.springframework.transaction.TransactionManager;
 @ConditionalOnClass(PlatformTransactionManager.class)
 @AutoConfiguration(before = TransactionAutoConfiguration.class)
 @EnableConfigurationProperties(TransactionProperties.class)
-public class TransactionManagerCustomizationAutoConfiguration {
+public final class TransactionManagerCustomizationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

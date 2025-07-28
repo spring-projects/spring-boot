@@ -48,17 +48,17 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(ElasticMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("elastic")
 @EnableConfigurationProperties(ElasticProperties.class)
-public class ElasticMetricsExportAutoConfiguration {
+public final class ElasticMetricsExportAutoConfiguration {
 
 	private final ElasticProperties properties;
 
-	public ElasticMetricsExportAutoConfiguration(ElasticProperties properties) {
+	ElasticMetricsExportAutoConfiguration(ElasticProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ElasticConfig elasticConfig() {
+	ElasticConfig elasticConfig() {
 		MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
 			entries.put("api-key-credentials", this.properties.getApiKeyCredentials());
 			entries.put("user-name", this.properties.getUserName());
@@ -72,7 +72,7 @@ public class ElasticMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ElasticMeterRegistry elasticMeterRegistry(ElasticConfig elasticConfig, Clock clock) {
+	ElasticMeterRegistry elasticMeterRegistry(ElasticConfig elasticConfig, Clock clock) {
 		return ElasticMeterRegistry.builder(elasticConfig)
 			.clock(clock)
 			.httpClient(

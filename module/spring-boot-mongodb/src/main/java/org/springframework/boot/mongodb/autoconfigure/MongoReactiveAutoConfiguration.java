@@ -50,7 +50,7 @@ import org.springframework.core.annotation.Order;
 @AutoConfiguration
 @ConditionalOnClass({ MongoClient.class, Flux.class })
 @EnableConfigurationProperties(MongoProperties.class)
-public class MongoReactiveAutoConfiguration {
+public final class MongoReactiveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConnectionDetails.class)
@@ -61,8 +61,8 @@ public class MongoReactiveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoClient reactiveStreamsMongoClient(
-			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers, MongoClientSettings settings) {
+	MongoClient reactiveStreamsMongoClient(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
+			MongoClientSettings settings) {
 		ReactiveMongoClientFactory factory = new ReactiveMongoClientFactory(
 				builderCustomizers.orderedStream().toList());
 		return factory.createMongoClient(settings);

@@ -79,7 +79,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(Cluster.class)
 @Conditional(CouchbaseCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)
-public class CouchbaseAutoConfiguration {
+public final class CouchbaseAutoConfiguration {
 
 	private final ResourceLoader resourceLoader;
 
@@ -98,8 +98,7 @@ public class CouchbaseAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ClusterEnvironment couchbaseClusterEnvironment(
-			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers,
+	ClusterEnvironment couchbaseClusterEnvironment(ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers,
 			CouchbaseConnectionDetails connectionDetails) {
 		Builder builder = initializeEnvironmentBuilder(connectionDetails);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
@@ -108,7 +107,7 @@ public class CouchbaseAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Authenticator couchbaseAuthenticator(CouchbaseConnectionDetails connectionDetails) throws IOException {
+	Authenticator couchbaseAuthenticator(CouchbaseConnectionDetails connectionDetails) throws IOException {
 		if (connectionDetails.getUsername() != null && connectionDetails.getPassword() != null) {
 			return PasswordAuthenticator.create(connectionDetails.getUsername(), connectionDetails.getPassword());
 		}
@@ -137,7 +136,7 @@ public class CouchbaseAutoConfiguration {
 
 	@Bean(destroyMethod = "disconnect")
 	@ConditionalOnMissingBean
-	public Cluster couchbaseCluster(ClusterEnvironment couchbaseClusterEnvironment, Authenticator authenticator,
+	Cluster couchbaseCluster(ClusterEnvironment couchbaseClusterEnvironment, Authenticator authenticator,
 			CouchbaseConnectionDetails connectionDetails) {
 		ClusterOptions options = ClusterOptions.clusterOptions(authenticator).environment(couchbaseClusterEnvironment);
 		return Cluster.connect(connectionDetails.getConnectionString(), options);

@@ -37,6 +37,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(jakarta.transaction.Transaction.class)
 @ConditionalOnBooleanProperty(name = "spring.jta.enabled", matchIfMissing = true)
 @Import(JndiJtaConfiguration.class)
-public class JtaAutoConfiguration {
+public final class JtaAutoConfiguration {
 
 }

@@ -43,13 +43,13 @@ import org.springframework.web.util.pattern.PathPatternRouteMatcher;
  */
 @AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnClass({ io.rsocket.RSocket.class, RSocketStrategies.class, PooledByteBufAllocator.class })
-public class RSocketStrategiesAutoConfiguration {
+public final class RSocketStrategiesAutoConfiguration {
 
 	private static final String PATHPATTERN_ROUTEMATCHER_CLASS = "org.springframework.web.util.pattern.PathPatternRouteMatcher";
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RSocketStrategies rSocketStrategies(ObjectProvider<RSocketStrategiesCustomizer> customizers) {
+	RSocketStrategies rSocketStrategies(ObjectProvider<RSocketStrategiesCustomizer> customizers) {
 		RSocketStrategies.Builder builder = RSocketStrategies.builder();
 		if (ClassUtils.isPresent(PATHPATTERN_ROUTEMATCHER_CLASS, null)) {
 			builder.routeMatcher(new PathPatternRouteMatcher());
@@ -68,7 +68,7 @@ public class RSocketStrategiesAutoConfiguration {
 		@Bean
 		@Order(0)
 		@ConditionalOnBean(org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.class)
-		public RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(
+		RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(
 				org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder) {
 			return (strategy) -> {
 				ObjectMapper objectMapper = builder.createXmlMapper(false).factory(new CBORFactory()).build();
@@ -92,7 +92,7 @@ public class RSocketStrategiesAutoConfiguration {
 		@Bean
 		@Order(1)
 		@ConditionalOnBean(ObjectMapper.class)
-		public RSocketStrategiesCustomizer jacksonJsonRSocketStrategyCustomizer(ObjectMapper objectMapper) {
+		RSocketStrategiesCustomizer jacksonJsonRSocketStrategyCustomizer(ObjectMapper objectMapper) {
 			return (strategy) -> {
 				strategy.decoder(
 						new org.springframework.http.codec.json.Jackson2JsonDecoder(objectMapper, SUPPORTED_TYPES));

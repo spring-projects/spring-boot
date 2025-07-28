@@ -369,12 +369,12 @@ class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@AutoConfiguration
-	static class ImportedAutoConfiguration {
+	public static final class ImportedAutoConfiguration {
 
 	}
 
 	@AutoConfiguration
-	static class AnotherImportedAutoConfiguration {
+	public static final class AnotherImportedAutoConfiguration {
 
 	}
 

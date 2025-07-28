@@ -74,7 +74,7 @@ import org.springframework.pulsar.transaction.PulsarTransactionManager;
 @AutoConfiguration
 @ConditionalOnClass({ PulsarClient.class, PulsarTemplate.class })
 @Import(PulsarConfiguration.class)
-public class PulsarAutoConfiguration {
+public final class PulsarAutoConfiguration {
 
 	private final PulsarProperties properties;
 
@@ -162,7 +162,7 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PulsarAwareTransactionManager.class)
 	@ConditionalOnBooleanProperty("spring.pulsar.transaction.enabled")
-	public PulsarTransactionManager pulsarTransactionManager(PulsarClient pulsarClient) {
+	PulsarTransactionManager pulsarTransactionManager(PulsarClient pulsarClient) {
 		return new PulsarTransactionManager(pulsarClient);
 	}
 

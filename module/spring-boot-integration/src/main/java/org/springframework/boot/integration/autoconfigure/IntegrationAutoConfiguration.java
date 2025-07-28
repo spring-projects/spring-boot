@@ -92,11 +92,11 @@ import org.springframework.util.StringUtils;
 		afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties({ IntegrationProperties.class, JmxProperties.class })
-public class IntegrationAutoConfiguration {
+public final class IntegrationAutoConfiguration {
 
 	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
-	public static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
+	static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
 			IntegrationProperties properties) {
 		org.springframework.integration.context.IntegrationProperties integrationProperties = new org.springframework.integration.context.IntegrationProperties();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -131,7 +131,7 @@ public class IntegrationAutoConfiguration {
 
 		@Bean(PollerMetadata.DEFAULT_POLLER)
 		@ConditionalOnMissingBean(name = PollerMetadata.DEFAULT_POLLER)
-		public PollerMetadata defaultPollerMetadata(IntegrationProperties integrationProperties,
+		PollerMetadata defaultPollerMetadata(IntegrationProperties integrationProperties,
 				ObjectProvider<PollerMetadataCustomizer> customizers) {
 			IntegrationProperties.Poller poller = integrationProperties.getPoller();
 			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
@@ -187,14 +187,14 @@ public class IntegrationAutoConfiguration {
 		@Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
 		@ConditionalOnBean(ThreadPoolTaskSchedulerBuilder.class)
 		@ConditionalOnThreading(Threading.PLATFORM)
-		public ThreadPoolTaskScheduler taskScheduler(ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder) {
+		ThreadPoolTaskScheduler taskScheduler(ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder) {
 			return threadPoolTaskSchedulerBuilder.build();
 		}
 
 		@Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
 		@ConditionalOnBean(SimpleAsyncTaskSchedulerBuilder.class)
 		@ConditionalOnThreading(Threading.VIRTUAL)
-		public SimpleAsyncTaskScheduler taskSchedulerVirtualThreads(
+		SimpleAsyncTaskScheduler taskSchedulerVirtualThreads(
 				SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilder) {
 			return simpleAsyncTaskSchedulerBuilder.build();
 		}
@@ -212,7 +212,7 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJmxConfiguration {
 
 		@Bean
-		public static IntegrationMBeanExporter integrationMbeanExporter(ApplicationContext applicationContext) {
+		static IntegrationMBeanExporter integrationMbeanExporter(ApplicationContext applicationContext) {
 			return new IntegrationMBeanExporter() {
 
 				@Override
@@ -323,7 +323,7 @@ public class IntegrationAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean(ServerRSocketMessageHandler.class)
-			public RSocketMessageHandler serverRSocketMessageHandler(RSocketStrategies rSocketStrategies,
+			RSocketMessageHandler serverRSocketMessageHandler(RSocketStrategies rSocketStrategies,
 					IntegrationProperties integrationProperties) {
 
 				RSocketMessageHandler messageHandler = new ServerRSocketMessageHandler(
@@ -334,7 +334,7 @@ public class IntegrationAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
-			public ServerRSocketConnector serverRSocketConnector(ServerRSocketMessageHandler messageHandler) {
+			ServerRSocketConnector serverRSocketConnector(ServerRSocketMessageHandler messageHandler) {
 				return new ServerRSocketConnector(messageHandler);
 			}
 
@@ -346,7 +346,7 @@ public class IntegrationAutoConfiguration {
 			@Bean
 			@ConditionalOnMissingBean
 			@Conditional(RemoteRSocketServerAddressConfigured.class)
-			public ClientRSocketConnector clientRSocketConnector(IntegrationProperties integrationProperties,
+			ClientRSocketConnector clientRSocketConnector(IntegrationProperties integrationProperties,
 					RSocketStrategies rSocketStrategies) {
 
 				IntegrationProperties.RSocket.Client client = integrationProperties.getRsocket().getClient();

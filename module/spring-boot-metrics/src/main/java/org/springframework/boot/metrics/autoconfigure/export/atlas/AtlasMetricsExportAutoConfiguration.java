@@ -46,17 +46,17 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(AtlasMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("atlas")
 @EnableConfigurationProperties(AtlasProperties.class)
-public class AtlasMetricsExportAutoConfiguration {
+public final class AtlasMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AtlasConfig atlasConfig(AtlasProperties atlasProperties) {
+	AtlasConfig atlasConfig(AtlasProperties atlasProperties) {
 		return new AtlasPropertiesConfigAdapter(atlasProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AtlasMeterRegistry atlasMeterRegistry(AtlasConfig atlasConfig, Clock clock) {
+	AtlasMeterRegistry atlasMeterRegistry(AtlasConfig atlasConfig, Clock clock) {
 		return new AtlasMeterRegistry(atlasConfig, clock);
 	}
 

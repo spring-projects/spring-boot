@@ -44,6 +44,6 @@ import org.springframework.data.couchbase.repository.support.CouchbaseRepository
 @ConditionalOnRepositoryType(store = "couchbase", type = RepositoryType.IMPERATIVE)
 @ConditionalOnMissingBean(CouchbaseRepositoryFactoryBean.class)
 @Import(CouchbaseRepositoriesRegistrar.class)
-public class CouchbaseRepositoriesAutoConfiguration {
+public final class CouchbaseRepositoriesAutoConfiguration {
 
 }

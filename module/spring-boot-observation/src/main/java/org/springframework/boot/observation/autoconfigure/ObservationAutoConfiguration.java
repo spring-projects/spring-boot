@@ -48,7 +48,7 @@ import org.springframework.core.annotation.Order;
 @AutoConfiguration
 @ConditionalOnClass(ObservationRegistry.class)
 @EnableConfigurationProperties(ObservationProperties.class)
-public class ObservationAutoConfiguration {
+public final class ObservationAutoConfiguration {
 
 	@Bean
 	static ObservationRegistryPostProcessor observationRegistryPostProcessor(

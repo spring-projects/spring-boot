@@ -47,23 +47,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(AppOpticsMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("appoptics")
 @EnableConfigurationProperties(AppOpticsProperties.class)
-public class AppOpticsMetricsExportAutoConfiguration {
+public final class AppOpticsMetricsExportAutoConfiguration {
 
 	private final AppOpticsProperties properties;
 
-	public AppOpticsMetricsExportAutoConfiguration(AppOpticsProperties properties) {
+	AppOpticsMetricsExportAutoConfiguration(AppOpticsProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AppOpticsConfig appOpticsConfig() {
+	AppOpticsConfig appOpticsConfig() {
 		return new AppOpticsPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AppOpticsMeterRegistry appOpticsMeterRegistry(AppOpticsConfig config, Clock clock) {
+	AppOpticsMeterRegistry appOpticsMeterRegistry(AppOpticsConfig config, Clock clock) {
 		return AppOpticsMeterRegistry.builder(config)
 			.clock(clock)
 			.httpClient(

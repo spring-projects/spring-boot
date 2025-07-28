@@ -66,7 +66,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @AutoConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
-public class DispatcherServletAutoConfiguration {
+public final class DispatcherServletAutoConfiguration {
 
 	/**
 	 * The bean name for a DispatcherServlet that will be mapped to the root URL "/".
@@ -85,7 +85,7 @@ public class DispatcherServletAutoConfiguration {
 	protected static class DispatcherServletConfiguration {
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		public DispatcherServlet dispatcherServlet(WebMvcProperties webMvcProperties) {
+		DispatcherServlet dispatcherServlet(WebMvcProperties webMvcProperties) {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			dispatcherServlet.setDispatchOptionsRequest(webMvcProperties.isDispatchOptionsRequest());
 			dispatcherServlet.setDispatchTraceRequest(webMvcProperties.isDispatchTraceRequest());
@@ -97,7 +97,7 @@ public class DispatcherServletAutoConfiguration {
 		@Bean
 		@ConditionalOnBean(MultipartResolver.class)
 		@ConditionalOnMissingBean(name = DispatcherServlet.MULTIPART_RESOLVER_BEAN_NAME)
-		public MultipartResolver multipartResolver(MultipartResolver resolver) {
+		MultipartResolver multipartResolver(MultipartResolver resolver) {
 			// Detect if the user has created a MultipartResolver but named it incorrectly
 			return resolver;
 		}
@@ -113,7 +113,7 @@ public class DispatcherServletAutoConfiguration {
 
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		@ConditionalOnBean(value = DispatcherServlet.class, name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		public DispatcherServletRegistrationBean dispatcherServletRegistration(DispatcherServlet dispatcherServlet,
+		DispatcherServletRegistrationBean dispatcherServletRegistration(DispatcherServlet dispatcherServlet,
 				WebMvcProperties webMvcProperties, ObjectProvider<MultipartConfigElement> multipartConfig) {
 			DispatcherServletRegistrationBean registration = new DispatcherServletRegistrationBean(dispatcherServlet,
 					webMvcProperties.getServlet().getPath());

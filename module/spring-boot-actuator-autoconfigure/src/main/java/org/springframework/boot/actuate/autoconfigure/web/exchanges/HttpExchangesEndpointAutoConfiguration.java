@@ -34,12 +34,12 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(HttpExchangesEndpoint.class)
-public class HttpExchangesEndpointAutoConfiguration {
+public final class HttpExchangesEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(HttpExchangeRepository.class)
 	@ConditionalOnMissingBean
-	public HttpExchangesEndpoint httpExchangesEndpoint(HttpExchangeRepository exchangeRepository) {
+	HttpExchangesEndpoint httpExchangesEndpoint(HttpExchangeRepository exchangeRepository) {
 		return new HttpExchangesEndpoint(exchangeRepository);
 	}
 

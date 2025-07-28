@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Bean;
 		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ MongoClientSettings.class, MeterRegistry.class })
 @ConditionalOnBean(MeterRegistry.class)
-public class MongoMetricsAutoConfiguration {
+public final class MongoMetricsAutoConfiguration {
 
 	@ConditionalOnClass(MongoMetricsCommandListener.class)
 	@ConditionalOnBooleanProperty(name = "management.metrics.mongo.command.enabled", matchIfMissing = true)

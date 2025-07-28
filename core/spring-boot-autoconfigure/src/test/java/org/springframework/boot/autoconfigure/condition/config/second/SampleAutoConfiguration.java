@@ -28,10 +28,10 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration("autoConfigTwo")
 @ConditionalOnProperty("sample.second")
-public class SampleAutoConfiguration {
+public final class SampleAutoConfiguration {
 
 	@Bean
-	public String two() {
+	String two() {
 		return "two";
 	}
 

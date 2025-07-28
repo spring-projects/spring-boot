@@ -39,6 +39,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnBean(CacheManager.class)
 @ConditionalOnClass(MeterRegistry.class)
 @Import({ CacheMeterBinderProvidersConfiguration.class, CacheMetricsRegistrarConfiguration.class })
-public class CacheMetricsAutoConfiguration {
+public final class CacheMetricsAutoConfiguration {
 
 }

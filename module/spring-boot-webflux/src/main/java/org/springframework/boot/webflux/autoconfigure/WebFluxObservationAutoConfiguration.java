@@ -54,7 +54,7 @@ import org.springframework.http.server.reactive.observation.ServerRequestObserva
 @ConditionalOnBean({ ObservationRegistry.class, MeterRegistry.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
-public class WebFluxObservationAutoConfiguration {
+public final class WebFluxObservationAutoConfiguration {
 
 	private final ObservationProperties observationProperties;
 

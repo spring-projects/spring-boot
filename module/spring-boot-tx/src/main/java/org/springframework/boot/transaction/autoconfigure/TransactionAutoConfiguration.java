@@ -44,22 +44,22 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 @AutoConfiguration
 @ConditionalOnClass(PlatformTransactionManager.class)
-public class TransactionAutoConfiguration {
+public final class TransactionAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnSingleCandidate(ReactiveTransactionManager.class)
-	public TransactionalOperator transactionalOperator(ReactiveTransactionManager transactionManager) {
+	TransactionalOperator transactionalOperator(ReactiveTransactionManager transactionManager) {
 		return TransactionalOperator.create(transactionManager);
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(PlatformTransactionManager.class)
-	public static class TransactionTemplateConfiguration {
+	static class TransactionTemplateConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(TransactionOperations.class)
-		public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
+		TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
 			return new TransactionTemplate(transactionManager);
 		}
 
@@ -68,19 +68,19 @@ public class TransactionAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(TransactionManager.class)
 	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
-	public static class EnableTransactionManagementConfiguration {
+	static class EnableTransactionManagementConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = false)
 		@ConditionalOnBooleanProperty(name = "spring.aop.proxy-target-class", havingValue = false)
-		public static class JdkDynamicAutoProxyConfiguration {
+		static class JdkDynamicAutoProxyConfiguration {
 
 		}
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = true)
 		@ConditionalOnBooleanProperty(name = "spring.aop.proxy-target-class", matchIfMissing = true)
-		public static class CglibAutoProxyConfiguration {
+		static class CglibAutoProxyConfiguration {
 
 		}
 

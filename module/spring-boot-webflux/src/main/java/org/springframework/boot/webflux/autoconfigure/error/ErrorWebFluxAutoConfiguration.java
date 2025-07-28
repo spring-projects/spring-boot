@@ -50,20 +50,20 @@ import org.springframework.web.reactive.result.view.ViewResolver;
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @EnableConfigurationProperties({ ServerProperties.class, WebProperties.class })
-public class ErrorWebFluxAutoConfiguration {
+public final class ErrorWebFluxAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
-	public ErrorWebFluxAutoConfiguration(ServerProperties serverProperties) {
+	ErrorWebFluxAutoConfiguration(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	@Order(-1)
-	public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes,
-			WebProperties webProperties, ObjectProvider<ViewResolver> viewResolvers,
-			ServerCodecConfigurer serverCodecConfigurer, ApplicationContext applicationContext) {
+	ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties webProperties,
+			ObjectProvider<ViewResolver> viewResolvers, ServerCodecConfigurer serverCodecConfigurer,
+			ApplicationContext applicationContext) {
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
 				webProperties.getResources(), this.serverProperties.getError(), applicationContext);
 		exceptionHandler.setViewResolvers(viewResolvers.orderedStream().toList());
@@ -74,7 +74,7 @@ public class ErrorWebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
-	public DefaultErrorAttributes errorAttributes() {
+	DefaultErrorAttributes errorAttributes() {
 		return new DefaultErrorAttributes();
 	}
 

@@ -67,7 +67,7 @@ import org.springframework.util.StringUtils;
 @Conditional({ ReactiveUserDetailsServiceAutoConfiguration.RSocketEnabledOrReactiveWebApplication.class,
 		ReactiveUserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.class })
 @EnableConfigurationProperties(SecurityProperties.class)
-public class ReactiveUserDetailsServiceAutoConfiguration {
+public final class ReactiveUserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
 
@@ -76,7 +76,7 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(ReactiveUserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	public MapReactiveUserDetailsService reactiveUserDetailsService(SecurityProperties properties,
+	MapReactiveUserDetailsService reactiveUserDetailsService(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
 		UserDetails userDetails = getUserDetails(user, getOrDeducePassword(user, passwordEncoder.getIfAvailable()));

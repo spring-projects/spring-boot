@@ -51,7 +51,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 		ObjectMapper.class })
 @ConditionalOnWebApplication
 @EnableConfigurationProperties(HateoasProperties.class)
-public class HypermediaAutoConfiguration {
+public final class HypermediaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

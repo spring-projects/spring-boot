@@ -50,19 +50,19 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnMissingBean(HttpHandler.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
-public class HttpHandlerAutoConfiguration {
+public final class HttpHandlerAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	public static class AnnotationConfig {
+	static class AnnotationConfig {
 
 		private final ApplicationContext applicationContext;
 
-		public AnnotationConfig(ApplicationContext applicationContext) {
+		AnnotationConfig(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
 		@Bean
-		public HttpHandler httpHandler(ObjectProvider<WebFluxProperties> propsProvider,
+		HttpHandler httpHandler(ObjectProvider<WebFluxProperties> propsProvider,
 				ObjectProvider<WebHttpHandlerBuilderCustomizer> handlerBuilderCustomizers) {
 			WebHttpHandlerBuilder handlerBuilder = WebHttpHandlerBuilder.applicationContext(this.applicationContext);
 			handlerBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(handlerBuilder));

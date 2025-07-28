@@ -77,11 +77,11 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class, JpaRepositoryConfigExtension.class })
 @ConditionalOnBooleanProperty(name = "spring.data.jpa.repositories.enabled", matchIfMissing = true)
 @Import(JpaRepositoriesImportSelector.class)
-public class JpaRepositoriesAutoConfiguration {
+public final class JpaRepositoriesAutoConfiguration {
 
 	@Bean
 	@Conditional(BootstrapExecutorCondition.class)
-	public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
+	EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {
 		return (builder) -> {
 			AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);

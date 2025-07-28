@@ -52,12 +52,12 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @AutoConfiguration(after = { ClientHttpConnectorAutoConfiguration.class, CodecsAutoConfiguration.class })
 @ConditionalOnClass(WebClient.class)
-public class WebClientAutoConfiguration {
+public final class WebClientAutoConfiguration {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	public WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider) {
+	WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider) {
 		WebClient.Builder builder = WebClient.builder();
 		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
@@ -67,7 +67,7 @@ public class WebClientAutoConfiguration {
 	@Lazy
 	@Order(0)
 	@ConditionalOnBean(ClientHttpConnector.class)
-	public WebClientCustomizer webClientHttpConnectorCustomizer(ClientHttpConnector clientHttpConnector) {
+	WebClientCustomizer webClientHttpConnectorCustomizer(ClientHttpConnector clientHttpConnector) {
 		return (builder) -> builder.clientConnector(clientHttpConnector);
 	}
 
@@ -86,7 +86,7 @@ public class WebClientAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@Order(0)
-		public WebClientCodecCustomizer exchangeStrategiesCustomizer(ObjectProvider<CodecCustomizer> codecCustomizers) {
+		WebClientCodecCustomizer exchangeStrategiesCustomizer(ObjectProvider<CodecCustomizer> codecCustomizers) {
 			return new WebClientCodecCustomizer(codecCustomizers.orderedStream().toList());
 		}
 

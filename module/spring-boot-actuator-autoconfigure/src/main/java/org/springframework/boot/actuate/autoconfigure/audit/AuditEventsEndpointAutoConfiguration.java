@@ -35,12 +35,12 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = AuditAutoConfiguration.class)
 @ConditionalOnAvailableEndpoint(AuditEventsEndpoint.class)
-public class AuditEventsEndpointAutoConfiguration {
+public final class AuditEventsEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(AuditEventRepository.class)
-	public AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository auditEventRepository) {
+	AuditEventsEndpoint auditEventsEndpoint(AuditEventRepository auditEventRepository) {
 		return new AuditEventsEndpoint(auditEventRepository);
 	}
 

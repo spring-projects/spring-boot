@@ -31,11 +31,11 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(ShutdownEndpoint.class)
-public class ShutdownEndpointAutoConfiguration {
+public final class ShutdownEndpointAutoConfiguration {
 
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
-	public ShutdownEndpoint shutdownEndpoint() {
+	ShutdownEndpoint shutdownEndpoint() {
 		return new ShutdownEndpoint();
 	}
 

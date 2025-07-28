@@ -41,12 +41,12 @@ import org.springframework.data.redis.serializer.RedisSerializer;
  */
 @AutoConfiguration(after = RedisAutoConfiguration.class)
 @ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisTemplate.class, Flux.class })
-public class RedisReactiveAutoConfiguration {
+public final class RedisReactiveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "reactiveRedisTemplate")
 	@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
-	public ReactiveRedisTemplate<Object, Object> reactiveRedisTemplate(
+	ReactiveRedisTemplate<Object, Object> reactiveRedisTemplate(
 			ReactiveRedisConnectionFactory reactiveRedisConnectionFactory, ResourceLoader resourceLoader) {
 		RedisSerializer<Object> javaSerializer = RedisSerializer.java(resourceLoader.getClassLoader());
 		RedisSerializationContext<Object, Object> serializationContext = RedisSerializationContext
@@ -62,7 +62,7 @@ public class RedisReactiveAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "reactiveStringRedisTemplate")
 	@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
-	public ReactiveStringRedisTemplate reactiveStringRedisTemplate(
+	ReactiveStringRedisTemplate reactiveStringRedisTemplate(
 			ReactiveRedisConnectionFactory reactiveRedisConnectionFactory) {
 		return new ReactiveStringRedisTemplate(reactiveRedisConnectionFactory);
 	}

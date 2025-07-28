@@ -53,7 +53,7 @@ import org.springframework.core.task.VirtualThreadTaskExecutor;
 @ConditionalOnClass(OtlpMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("otlp")
 @EnableConfigurationProperties({ OtlpMetricsProperties.class, OpenTelemetryProperties.class })
-public class OtlpMetricsExportAutoConfiguration {
+public final class OtlpMetricsExportAutoConfiguration {
 
 	private final OtlpMetricsProperties properties;
 
@@ -78,7 +78,7 @@ public class OtlpMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
-	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock,
+	OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock,
 			ObjectProvider<OtlpMetricsSender> metricsSender) {
 		return builder(otlpConfig, clock, metricsSender).build();
 	}
@@ -86,7 +86,7 @@ public class OtlpMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
-	public OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock,
+	OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock,
 			ObjectProvider<OtlpMetricsSender> metricsSender) {
 		VirtualThreadTaskExecutor executor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
 		return builder(otlpConfig, clock, metricsSender).threadFactory(executor.getVirtualThreadFactory()).build();

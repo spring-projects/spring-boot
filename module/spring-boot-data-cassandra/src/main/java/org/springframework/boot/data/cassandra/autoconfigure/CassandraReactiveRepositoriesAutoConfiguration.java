@@ -42,6 +42,6 @@ import org.springframework.data.cassandra.repository.support.ReactiveCassandraRe
 @ConditionalOnRepositoryType(store = "cassandra", type = RepositoryType.REACTIVE)
 @ConditionalOnMissingBean(ReactiveCassandraRepositoryFactoryBean.class)
 @Import(CassandraReactiveRepositoriesRegistrar.class)
-public class CassandraReactiveRepositoriesAutoConfiguration {
+public final class CassandraReactiveRepositoriesAutoConfiguration {
 
 }

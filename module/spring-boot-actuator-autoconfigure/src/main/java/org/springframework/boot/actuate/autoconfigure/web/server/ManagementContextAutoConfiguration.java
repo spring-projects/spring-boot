@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
  */
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
-public class ManagementContextAutoConfiguration {
+public final class ManagementContextAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnManagementPort(ManagementPortType.SAME)

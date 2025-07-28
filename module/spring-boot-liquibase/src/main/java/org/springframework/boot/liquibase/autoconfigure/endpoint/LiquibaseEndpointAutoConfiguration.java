@@ -41,18 +41,18 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = LiquibaseAutoConfiguration.class)
 @ConditionalOnClass({ SpringLiquibase.class, LiquibaseEndpoint.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(LiquibaseEndpoint.class)
-public class LiquibaseEndpointAutoConfiguration {
+public final class LiquibaseEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(SpringLiquibase.class)
 	@ConditionalOnMissingBean
-	public LiquibaseEndpoint liquibaseEndpoint(ApplicationContext context) {
+	LiquibaseEndpoint liquibaseEndpoint(ApplicationContext context) {
 		return new LiquibaseEndpoint(context);
 	}
 
 	@Bean
 	@ConditionalOnBean(SpringLiquibase.class)
-	public static BeanPostProcessor preventDataSourceCloseBeanPostProcessor() {
+	static BeanPostProcessor preventDataSourceCloseBeanPostProcessor() {
 		return new BeanPostProcessor() {
 
 			@Override

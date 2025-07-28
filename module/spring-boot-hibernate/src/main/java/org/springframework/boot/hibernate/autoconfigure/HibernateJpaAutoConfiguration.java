@@ -48,6 +48,6 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManager.class, SessionImplementor.class })
 @EnableConfigurationProperties(JpaProperties.class)
 @Import(HibernateJpaConfiguration.class)
-public class HibernateJpaAutoConfiguration {
+public final class HibernateJpaAutoConfiguration {
 
 }

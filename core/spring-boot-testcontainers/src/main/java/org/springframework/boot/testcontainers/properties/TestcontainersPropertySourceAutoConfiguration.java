@@ -41,7 +41,7 @@ import org.springframework.test.context.support.DynamicPropertyRegistrarBeanInit
 @AutoConfiguration
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnClass(DynamicPropertyRegistry.class)
-public class TestcontainersPropertySourceAutoConfiguration {
+public final class TestcontainersPropertySourceAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

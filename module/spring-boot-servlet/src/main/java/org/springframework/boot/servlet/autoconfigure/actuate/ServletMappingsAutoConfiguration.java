@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ ConditionalOnAvailableEndpoint.class, MappingsEndpoint.class })
 @ConditionalOnAvailableEndpoint(MappingsEndpoint.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-public class ServletMappingsAutoConfiguration {
+public final class ServletMappingsAutoConfiguration {
 
 	@Bean
 	ServletsMappingDescriptionProvider servletMappingDescriptionProvider() {

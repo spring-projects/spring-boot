@@ -24,10 +24,10 @@ import org.springframework.context.annotation.Bean;
 
 @ConditionalOnWarDeployment
 @AutoConfiguration
-public class ExampleAutoConfiguration {
+public final class ExampleAutoConfiguration {
 
 	@Bean
-	public TestEndpoint testEndpoint() {
+	TestEndpoint testEndpoint() {
 		return new TestEndpoint();
 	}
 

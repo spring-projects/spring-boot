@@ -61,25 +61,25 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 @AutoConfiguration
 @ConditionalOnClass(MarkupTemplateEngine.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
-public class GroovyTemplateAutoConfiguration {
+public final class GroovyTemplateAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GroovyTemplateAutoConfiguration.class);
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(GroovyMarkupConfigurer.class)
-	public static class GroovyMarkupConfiguration {
+	static class GroovyMarkupConfiguration {
 
 		private final ApplicationContext applicationContext;
 
 		private final GroovyTemplateProperties properties;
 
-		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties) {
+		GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
 			checkTemplateLocationExists();
 		}
 
-		public void checkTemplateLocationExists() {
+		private void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(this.properties.getResourceLoaderPath());
 				if (!location.exists(this.applicationContext)) {
@@ -138,11 +138,11 @@ public class GroovyTemplateAutoConfiguration {
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class, UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@ConditionalOnBooleanProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
-	public static class GroovyWebConfiguration {
+	static class GroovyWebConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "groovyMarkupViewResolver")
-		public GroovyMarkupViewResolver groovyMarkupViewResolver(GroovyTemplateProperties properties) {
+		GroovyMarkupViewResolver groovyMarkupViewResolver(GroovyTemplateProperties properties) {
 			GroovyMarkupViewResolver resolver = new GroovyMarkupViewResolver();
 			properties.applyToMvcViewResolver(resolver);
 			return resolver;

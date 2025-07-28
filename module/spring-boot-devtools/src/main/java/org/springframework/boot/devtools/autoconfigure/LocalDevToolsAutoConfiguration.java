@@ -62,7 +62,7 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration
 @ConditionalOnInitializedRestarter
 @EnableConfigurationProperties(DevToolsProperties.class)
-public class LocalDevToolsAutoConfiguration {
+public final class LocalDevToolsAutoConfiguration {
 
 	/**
 	 * Local LiveReload configuration.

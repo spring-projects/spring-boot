@@ -44,6 +44,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @EnableConfigurationProperties(JdbcProperties.class)
 @Import({ DatabaseInitializationDependencyConfigurer.class, JdbcTemplateConfiguration.class,
 		NamedParameterJdbcTemplateConfiguration.class })
-public class JdbcTemplateAutoConfiguration {
+public final class JdbcTemplateAutoConfiguration {
 
 }

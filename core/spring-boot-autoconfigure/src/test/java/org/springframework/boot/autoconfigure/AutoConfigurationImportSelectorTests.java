@@ -397,7 +397,7 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	@AutoConfiguration
-	static class SeventhAutoConfiguration {
+	public static final class SeventhAutoConfiguration {
 
 	}
 

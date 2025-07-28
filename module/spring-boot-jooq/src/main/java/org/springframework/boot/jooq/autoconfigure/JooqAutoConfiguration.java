@@ -74,37 +74,37 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnBean(DataSource.class)
 @EnableConfigurationProperties(JooqProperties.class)
-public class JooqAutoConfiguration {
+public final class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ConnectionProvider.class)
-	public DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
+	DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
 		return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(dataSource));
 	}
 
 	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
 	@ConditionalOnMissingBean(TransactionProvider.class)
-	public SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
+	SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
 		return new SpringTransactionProvider(txManager);
 	}
 
 	@Bean
 	@Order(0)
-	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider(
+	DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider(
 			ExceptionTranslatorExecuteListener exceptionTranslatorExecuteListener) {
 		return new DefaultExecuteListenerProvider(exceptionTranslatorExecuteListener);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ExceptionTranslatorExecuteListener jooqExceptionTranslator() {
+	ExceptionTranslatorExecuteListener jooqExceptionTranslator() {
 		return ExceptionTranslatorExecuteListener.DEFAULT;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(DSLContext.class)
-	public DefaultDSLContext dslContext(org.jooq.Configuration configuration) {
+	DefaultDSLContext dslContext(org.jooq.Configuration configuration) {
 		return new DefaultDSLContext(configuration);
 	}
 

@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.AccessTarget.CodeUnitCallTarget;
@@ -33,6 +35,9 @@ import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaCall;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
+import com.tngtech.archunit.core.domain.JavaConstructor;
+import com.tngtech.archunit.core.domain.JavaField;
+import com.tngtech.archunit.core.domain.JavaMember;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.domain.JavaParameter;
@@ -68,6 +73,8 @@ import org.springframework.util.ResourceUtils;
  */
 final class ArchitectureRules {
 
+	private static final String AUTOCONFIGURATION_ANNOTATION = "org.springframework.boot.autoconfigure.AutoConfiguration";
+
 	private ArchitectureRules() {
 	}
 
@@ -98,6 +105,8 @@ final class ArchitectureRules {
 		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(conditionsShouldNotBePublic());
 		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
+		rules.add(autoConfigurationClassesShouldBePublicAndFinal());
+		rules.add(autoConfigurationClassesShouldHaveNoPublicMembers());
 		return List.copyOf(rules);
 	}
 
@@ -319,6 +328,63 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
+	private static ArchRule autoConfigurationClassesShouldBePublicAndFinal() {
+		return ArchRuleDefinition.classes()
+			.that()
+			.areAnnotatedWith(AUTOCONFIGURATION_ANNOTATION)
+			.should()
+			.bePublic()
+			.andShould()
+			.haveModifier(JavaModifier.FINAL)
+			.allowEmptyShould(true);
+	}
+
+	private static ArchRule autoConfigurationClassesShouldHaveNoPublicMembers() {
+		return ArchRuleDefinition.members()
+			.that()
+			.areDeclaredInClassesThat()
+			.areAnnotatedWith(AUTOCONFIGURATION_ANNOTATION)
+			.and(areNotDefaultConstructors())
+			.and(areNotConstants())
+			.and(dontOverridePublicMethods())
+			.should()
+			.notBePublic()
+			.allowEmptyShould(true);
+	}
+
+	private static DescribedPredicate<? super JavaMember> dontOverridePublicMethods() {
+		OverridesPublicMethod<JavaMember> predicate = new OverridesPublicMethod<>();
+		return DescribedPredicate.describe("don't override public methods", (member) -> !predicate.test(member));
+	}
+
+	private static DescribedPredicate<JavaMember> areNotDefaultConstructors() {
+		return DescribedPredicate.describe("aren't default constructors",
+				(member) -> !areDefaultConstructors().test(member));
+	}
+
+	private static DescribedPredicate<JavaMember> areDefaultConstructors() {
+		return DescribedPredicate.describe("are default constructors", (member) -> {
+			if (!(member instanceof JavaConstructor constructor)) {
+				return false;
+			}
+			return constructor.getParameters().isEmpty();
+		});
+	}
+
+	private static DescribedPredicate<JavaMember> areNotConstants() {
+		return DescribedPredicate.describe("aren't constants", (member) -> !areConstants().test(member));
+	}
+
+	private static DescribedPredicate<JavaMember> areConstants() {
+		return DescribedPredicate.describe("are constants", (member) -> {
+			if (member instanceof JavaField field) {
+				Set<JavaModifier> modifiers = field.getModifiers();
+				return modifiers.contains(JavaModifier.STATIC) && modifiers.contains(JavaModifier.FINAL);
+			}
+			return false;
+		});
+	}
+
 	private static boolean containsOnlySingleType(JavaType[] types, JavaType type) {
 		return types.length == 1 && type.equals(types[0]);
 	}
@@ -389,6 +455,41 @@ final class ArchitectureRules {
 
 	private static String shouldUse(String string) {
 		return string + " should be used instead";
+	}
+
+	private static class OverridesPublicMethod<T extends JavaMember> extends DescribedPredicate<T> {
+
+		OverridesPublicMethod() {
+			super("overrides public method");
+		}
+
+		@Override
+		public boolean test(T member) {
+			if (!(member instanceof JavaMethod javaMethod)) {
+				return false;
+			}
+			Stream<JavaMethod> superClassMethods = member.getOwner()
+				.getAllRawSuperclasses()
+				.stream()
+				.flatMap((superClass) -> superClass.getMethods().stream());
+			Stream<JavaMethod> interfaceMethods = member.getOwner()
+				.getAllRawInterfaces()
+				.stream()
+				.flatMap((iface) -> iface.getMethods().stream());
+			return Stream.concat(superClassMethods, interfaceMethods)
+				.anyMatch((superMethod) -> isPublic(superMethod) && isOverridden(superMethod, javaMethod));
+		}
+
+		private boolean isPublic(JavaMethod method) {
+			return method.getModifiers().contains(JavaModifier.PUBLIC);
+		}
+
+		private boolean isOverridden(JavaMethod superMethod, JavaMethod method) {
+			return superMethod.getName().equals(method.getName())
+					&& superMethod.getRawParameterTypes().size() == method.getRawParameterTypes().size()
+					&& superMethod.getDescriptor().equals(method.getDescriptor());
+		}
+
 	}
 
 }

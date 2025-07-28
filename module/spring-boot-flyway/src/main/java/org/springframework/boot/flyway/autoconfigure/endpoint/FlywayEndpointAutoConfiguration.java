@@ -38,12 +38,12 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = FlywayAutoConfiguration.class)
 @ConditionalOnClass({ Flyway.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(FlywayEndpoint.class)
-public class FlywayEndpointAutoConfiguration {
+public final class FlywayEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(Flyway.class)
 	@ConditionalOnMissingBean
-	public FlywayEndpoint flywayEndpoint(ApplicationContext context) {
+	FlywayEndpoint flywayEndpoint(ApplicationContext context) {
 		return new FlywayEndpoint(context);
 	}
 

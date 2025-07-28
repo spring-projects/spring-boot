@@ -48,29 +48,29 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
 @EnableConfigurationProperties(MetricsProperties.class)
-public class SystemMetricsAutoConfiguration {
+public final class SystemMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public UptimeMetrics uptimeMetrics() {
+	UptimeMetrics uptimeMetrics() {
 		return new UptimeMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ProcessorMetrics processorMetrics() {
+	ProcessorMetrics processorMetrics() {
 		return new ProcessorMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public FileDescriptorMetrics fileDescriptorMetrics() {
+	FileDescriptorMetrics fileDescriptorMetrics() {
 		return new FileDescriptorMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DiskSpaceMetricsBinder diskSpaceMetrics(MetricsProperties properties) {
+	DiskSpaceMetricsBinder diskSpaceMetrics(MetricsProperties properties) {
 		List<File> paths = properties.getSystem().getDiskspace().getPaths();
 		return new DiskSpaceMetricsBinder(paths, Tags.empty());
 	}

@@ -53,7 +53,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration(afterName = "org.springframework.boot.zipkin.autoconfigure.ZipkinAutoConfiguration")
 @ConditionalOnClass(Encoding.class)
 @Import({ BraveConfiguration.class, OpenTelemetryConfiguration.class })
-public class ZipkinTracingAutoConfiguration {
+public final class ZipkinTracingAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(AsyncZipkinSpanHandler.class)

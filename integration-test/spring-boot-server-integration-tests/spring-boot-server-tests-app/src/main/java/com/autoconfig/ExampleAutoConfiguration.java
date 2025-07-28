@@ -31,18 +31,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 
 @AutoConfiguration
-public class ExampleAutoConfiguration {
+public final class ExampleAutoConfiguration {
 
 	@Bean
 	@ConditionalOnWarDeployment
-	public ServletRegistrationBean<TestServlet> onWarTestServlet() {
+	ServletRegistrationBean<TestServlet> onWarTestServlet() {
 		ServletRegistrationBean<TestServlet> registration = new ServletRegistrationBean<>(new TestServlet());
 		registration.addUrlMappings("/conditionalOnWar");
 		return registration;
 	}
 
 	@Bean
-	public ServletRegistrationBean<TestServlet> testServlet() {
+	ServletRegistrationBean<TestServlet> testServlet() {
 		ServletRegistrationBean<TestServlet> registration = new ServletRegistrationBean<>(new TestServlet());
 		registration.addUrlMappings("/always");
 		return registration;

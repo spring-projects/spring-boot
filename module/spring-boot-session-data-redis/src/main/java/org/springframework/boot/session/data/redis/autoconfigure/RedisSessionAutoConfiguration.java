@@ -75,7 +75,7 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
 		afterName = "org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration")
 @ConditionalOnClass(Session.class)
 @EnableConfigurationProperties({ RedisSessionProperties.class, ServerProperties.class, SessionProperties.class })
-public class RedisSessionAutoConfiguration {
+public final class RedisSessionAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ RedisTemplate.class, RedisIndexedSessionRepository.class })

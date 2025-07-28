@@ -42,16 +42,16 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ HazelcastInstance.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(HazelcastInstance.class)
 @ConditionalOnEnabledHealthIndicator("hazelcast")
-public class HazelcastHealthContributorAutoConfiguration
+public final class HazelcastHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<HazelcastHealthIndicator, HazelcastInstance> {
 
-	public HazelcastHealthContributorAutoConfiguration() {
+	HazelcastHealthContributorAutoConfiguration() {
 		super(HazelcastHealthIndicator::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "hazelcastHealthIndicator", "hazelcastHealthContributor" })
-	public HealthContributor hazelcastHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	HealthContributor hazelcastHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, HazelcastInstance.class);
 	}
 

@@ -41,16 +41,16 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ ConnectionFactory.class, JmsHealthIndicator.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @ConditionalOnEnabledHealthIndicator("jms")
-public class JmsHealthContributorAutoConfiguration
+public final class JmsHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<JmsHealthIndicator, ConnectionFactory> {
 
-	public JmsHealthContributorAutoConfiguration() {
+	JmsHealthContributorAutoConfiguration() {
 		super(JmsHealthIndicator::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "jmsHealthIndicator", "jmsHealthContributor" })
-	public HealthContributor jmsHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	HealthContributor jmsHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, ConnectionFactory.class);
 	}
 

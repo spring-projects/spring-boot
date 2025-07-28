@@ -33,11 +33,11 @@ import org.springframework.scheduling.config.ScheduledTaskHolder;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(ScheduledTasksEndpoint.class)
-public class ScheduledTasksEndpointAutoConfiguration {
+public final class ScheduledTasksEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ScheduledTasksEndpoint scheduledTasksEndpoint(ObjectProvider<ScheduledTaskHolder> holders) {
+	ScheduledTasksEndpoint scheduledTasksEndpoint(ObjectProvider<ScheduledTaskHolder> holders) {
 		return new ScheduledTasksEndpoint(holders.orderedStream().toList());
 	}
 

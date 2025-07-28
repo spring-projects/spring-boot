@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @EnableConfigurationProperties({ ActiveMQProperties.class, JmsProperties.class })
 @Import({ ActiveMQXAConnectionFactoryConfiguration.class, ActiveMQConnectionFactoryConfiguration.class })
-public class ActiveMQAutoConfiguration {
+public final class ActiveMQAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

@@ -49,10 +49,10 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 @AutoConfiguration(after = GraphQlAutoConfiguration.class)
 @ConditionalOnClass({ GraphQL.class, Query.class, QuerydslDataFetcher.class, QuerydslPredicateExecutor.class })
 @ConditionalOnBean(GraphQlSource.class)
-public class GraphQlQuerydslAutoConfiguration {
+public final class GraphQlQuerydslAutoConfiguration {
 
 	@Bean
-	public GraphQlSourceBuilderCustomizer querydslRegistrar(ObjectProvider<QuerydslPredicateExecutor<?>> executors) {
+	GraphQlSourceBuilderCustomizer querydslRegistrar(ObjectProvider<QuerydslPredicateExecutor<?>> executors) {
 		RuntimeWiringConfigurer configurer = QuerydslDataFetcher
 			.autoRegistrationConfigurer(executors.orderedStream().toList(), Collections.emptyList());
 		return (builder) -> builder.configureRuntimeWiring(configurer);

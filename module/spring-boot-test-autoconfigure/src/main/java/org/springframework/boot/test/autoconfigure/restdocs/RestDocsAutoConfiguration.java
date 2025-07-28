@@ -48,7 +48,7 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
  */
 @AutoConfiguration
 @ConditionalOnWebApplication
-public class RestDocsAutoConfiguration {
+public final class RestDocsAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MockMvcRestDocumentation.class)

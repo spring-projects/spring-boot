@@ -38,6 +38,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(HazelcastInstance.class)
 @EnableConfigurationProperties(HazelcastProperties.class)
 @Import({ HazelcastClientConfiguration.class, HazelcastServerConfiguration.class })
-public class HazelcastAutoConfiguration {
+public final class HazelcastAutoConfiguration {
 
 }

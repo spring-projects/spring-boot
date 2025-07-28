@@ -44,12 +44,12 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  */
 @AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
 @ConditionalOnClass({ RSocketRequester.class, io.rsocket.RSocket.class, HttpServer.class, TcpServerTransport.class })
-public class RSocketRequesterAutoConfiguration {
+public final class RSocketRequesterAutoConfiguration {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies,
+	RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies,
 			ObjectProvider<RSocketConnectorConfigurer> connectorConfigurers) {
 		Builder builder = RSocketRequester.builder().rsocketStrategies(strategies);
 		connectorConfigurers.orderedStream().forEach(builder::rsocketConnector);

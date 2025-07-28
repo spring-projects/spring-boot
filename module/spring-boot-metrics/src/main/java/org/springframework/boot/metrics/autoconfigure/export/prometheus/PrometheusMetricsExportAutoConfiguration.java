@@ -62,7 +62,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(PrometheusMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("prometheus")
 @EnableConfigurationProperties(PrometheusProperties.class)
-public class PrometheusMetricsExportAutoConfiguration {
+public final class PrometheusMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

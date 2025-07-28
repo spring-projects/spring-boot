@@ -48,11 +48,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @ConditionalOnClass({ MeterRegistry.class, LoggerContext.class, LoggerFactory.class })
 @ConditionalOnBean(MeterRegistry.class)
 @Conditional(LogbackLoggingCondition.class)
-public class LogbackMetricsAutoConfiguration {
+public final class LogbackMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public LogbackMetrics logbackMetrics() {
+	LogbackMetrics logbackMetrics() {
 		return new LogbackMetrics();
 	}
 

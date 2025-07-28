@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(R2dbcProperties.class)
 @Import({ ConnectionFactoryConfigurations.PoolConfiguration.class,
 		ConnectionFactoryConfigurations.GenericConfiguration.class, ConnectionFactoryDependentConfiguration.class })
-public class R2dbcAutoConfiguration {
+public final class R2dbcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(R2dbcConnectionDetails.class)

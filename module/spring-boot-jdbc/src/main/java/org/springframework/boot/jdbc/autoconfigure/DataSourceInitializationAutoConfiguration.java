@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @EnableConfigurationProperties(SqlInitializationProperties.class)
 @ConditionalOnSqlInitialization
-public class DataSourceInitializationAutoConfiguration {
+public final class DataSourceInitializationAutoConfiguration {
 
 	@Bean
 	ApplicationDataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,

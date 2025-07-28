@@ -40,7 +40,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 @ConditionalOnClass({ Flux.class, ClientRegistration.class })
 @Import({ ReactiveOAuth2ClientConfigurations.ReactiveClientRegistrationRepositoryConfiguration.class,
 		ReactiveOAuth2ClientConfigurations.ReactiveOAuth2AuthorizedClientServiceConfiguration.class })
-public class ReactiveOAuth2ClientAutoConfiguration {
+public final class ReactiveOAuth2ClientAutoConfiguration {
 
 	static class NonServletApplicationCondition extends NoneNestedConditions {
 

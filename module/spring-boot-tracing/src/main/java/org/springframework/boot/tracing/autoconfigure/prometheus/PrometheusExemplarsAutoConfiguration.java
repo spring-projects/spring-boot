@@ -42,7 +42,7 @@ import org.springframework.util.function.SingletonSupplier;
 		after = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnBean(Tracer.class)
 @ConditionalOnClass({ Tracer.class, SpanContext.class })
-public class PrometheusExemplarsAutoConfiguration {
+public final class PrometheusExemplarsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

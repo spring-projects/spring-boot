@@ -41,17 +41,17 @@ import org.springframework.integration.graph.IntegrationGraphServer;
 		ConditionalOnAvailableEndpoint.class })
 @ConditionalOnBean(IntegrationConfigurationBeanFactoryPostProcessor.class)
 @ConditionalOnAvailableEndpoint(IntegrationGraphEndpoint.class)
-public class IntegrationGraphEndpointAutoConfiguration {
+public final class IntegrationGraphEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public IntegrationGraphEndpoint integrationGraphEndpoint(IntegrationGraphServer integrationGraphServer) {
+	IntegrationGraphEndpoint integrationGraphEndpoint(IntegrationGraphServer integrationGraphServer) {
 		return new IntegrationGraphEndpoint(integrationGraphServer);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public IntegrationGraphServer integrationGraphServer() {
+	IntegrationGraphServer integrationGraphServer() {
 		return new IntegrationGraphServer();
 	}
 

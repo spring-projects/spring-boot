@@ -59,7 +59,7 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
 @EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
-public class SessionAutoConfiguration {
+public final class SessionAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)

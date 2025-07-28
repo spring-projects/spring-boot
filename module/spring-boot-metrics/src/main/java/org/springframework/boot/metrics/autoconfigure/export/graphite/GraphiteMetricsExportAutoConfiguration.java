@@ -45,17 +45,17 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(GraphiteMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("graphite")
 @EnableConfigurationProperties(GraphiteProperties.class)
-public class GraphiteMetricsExportAutoConfiguration {
+public final class GraphiteMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphiteConfig graphiteConfig(GraphiteProperties graphiteProperties) {
+	GraphiteConfig graphiteConfig(GraphiteProperties graphiteProperties) {
 		return new GraphitePropertiesConfigAdapter(graphiteProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig graphiteConfig, Clock clock) {
+	GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig graphiteConfig, Clock clock) {
 		return new GraphiteMeterRegistry(graphiteConfig, clock);
 	}
 

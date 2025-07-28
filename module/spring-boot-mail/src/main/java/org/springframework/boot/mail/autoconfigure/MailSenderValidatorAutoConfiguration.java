@@ -35,16 +35,16 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @AutoConfiguration(after = MailSenderAutoConfiguration.class)
 @ConditionalOnBooleanProperty("spring.mail.test-connection")
 @ConditionalOnSingleCandidate(JavaMailSenderImpl.class)
-public class MailSenderValidatorAutoConfiguration {
+public final class MailSenderValidatorAutoConfiguration {
 
 	private final JavaMailSenderImpl mailSender;
 
-	public MailSenderValidatorAutoConfiguration(JavaMailSenderImpl mailSender) {
+	MailSenderValidatorAutoConfiguration(JavaMailSenderImpl mailSender) {
 		this.mailSender = mailSender;
 		validateConnection();
 	}
 
-	public void validateConnection() {
+	private void validateConnection() {
 		try {
 			this.mailSender.testConnection();
 		}

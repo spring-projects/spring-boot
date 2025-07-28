@@ -49,12 +49,12 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, RSocketServer.class, HttpServer.class })
 @ConditionalOnBean({ RSocketMessageHandler.class, AnnotatedControllerConfigurer.class })
 @ConditionalOnProperty("spring.graphql.rsocket.mapping")
-public class GraphQlRSocketAutoConfiguration {
+public final class GraphQlRSocketAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings({ "removal", "deprecation" })
-	public GraphQlRSocketHandler graphQlRSocketHandler(ExecutionGraphQlService graphQlService,
+	GraphQlRSocketHandler graphQlRSocketHandler(ExecutionGraphQlService graphQlService,
 			ObjectProvider<RSocketGraphQlInterceptor> interceptors, ObjectMapper objectMapper) {
 		return new GraphQlRSocketHandler(graphQlService, interceptors.orderedStream().toList(),
 				new org.springframework.http.codec.json.Jackson2JsonEncoder(objectMapper));
@@ -62,7 +62,7 @@ public class GraphQlRSocketAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlRSocketController graphQlRSocketController(GraphQlRSocketHandler handler) {
+	GraphQlRSocketController graphQlRSocketController(GraphQlRSocketHandler handler) {
 		return new GraphQlRSocketController(handler);
 	}
 

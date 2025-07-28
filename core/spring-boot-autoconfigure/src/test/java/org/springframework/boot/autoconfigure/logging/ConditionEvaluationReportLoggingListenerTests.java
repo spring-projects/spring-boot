@@ -148,18 +148,18 @@ class ConditionEvaluationReportLoggingListenerTests {
 
 	@AutoConfiguration
 	@ConditionalOnProperty(name = "com.example.property", matchIfMissing = true)
-	static class MatchingAutoConfiguration {
+	public static final class MatchingAutoConfiguration {
 
 	}
 
 	@AutoConfiguration
 	@ConditionalOnBean(Duration.class)
-	static class NonMatchingAutoConfiguration {
+	public static final class NonMatchingAutoConfiguration {
 
 	}
 
 	@AutoConfiguration
-	static class UnconditionalAutoConfiguration {
+	public static final class UnconditionalAutoConfiguration {
 
 		@Bean
 		String example() {

@@ -50,7 +50,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  */
 @AutoConfiguration(after = ProjectInfoAutoConfiguration.class)
 @EnableConfigurationProperties(InfoContributorProperties.class)
-public class InfoContributorAutoConfiguration {
+public final class InfoContributorAutoConfiguration {
 
 	/**
 	 * The default order for the core {@link InfoContributor} beans.
@@ -60,7 +60,7 @@ public class InfoContributorAutoConfiguration {
 	@Bean
 	@ConditionalOnEnabledInfoContributor(value = "env", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
-	public EnvironmentInfoContributor envInfoContributor(ConfigurableEnvironment environment) {
+	EnvironmentInfoContributor envInfoContributor(ConfigurableEnvironment environment) {
 		return new EnvironmentInfoContributor(environment);
 	}
 
@@ -69,7 +69,7 @@ public class InfoContributorAutoConfiguration {
 	@ConditionalOnSingleCandidate(GitProperties.class)
 	@ConditionalOnMissingBean
 	@Order(DEFAULT_ORDER)
-	public GitInfoContributor gitInfoContributor(GitProperties gitProperties,
+	GitInfoContributor gitInfoContributor(GitProperties gitProperties,
 			InfoContributorProperties infoContributorProperties) {
 		return new GitInfoContributor(gitProperties, infoContributorProperties.getGit().getMode());
 	}
@@ -78,28 +78,28 @@ public class InfoContributorAutoConfiguration {
 	@ConditionalOnEnabledInfoContributor("build")
 	@ConditionalOnSingleCandidate(BuildProperties.class)
 	@Order(DEFAULT_ORDER)
-	public InfoContributor buildInfoContributor(BuildProperties buildProperties) {
+	InfoContributor buildInfoContributor(BuildProperties buildProperties) {
 		return new BuildInfoContributor(buildProperties);
 	}
 
 	@Bean
 	@ConditionalOnEnabledInfoContributor(value = "java", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
-	public JavaInfoContributor javaInfoContributor() {
+	JavaInfoContributor javaInfoContributor() {
 		return new JavaInfoContributor();
 	}
 
 	@Bean
 	@ConditionalOnEnabledInfoContributor(value = "os", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
-	public OsInfoContributor osInfoContributor() {
+	OsInfoContributor osInfoContributor() {
 		return new OsInfoContributor();
 	}
 
 	@Bean
 	@ConditionalOnEnabledInfoContributor(value = "process", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
-	public ProcessInfoContributor processInfoContributor() {
+	ProcessInfoContributor processInfoContributor() {
 		return new ProcessInfoContributor();
 	}
 

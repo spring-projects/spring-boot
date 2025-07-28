@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(Mustache.class)
 @EnableConfigurationProperties(MustacheProperties.class)
 @Import({ MustacheServletWebConfiguration.class, MustacheReactiveWebConfiguration.class })
-public class MustacheAutoConfiguration {
+public final class MustacheAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(MustacheAutoConfiguration.class);
 
@@ -50,13 +50,13 @@ public class MustacheAutoConfiguration {
 
 	private final ApplicationContext applicationContext;
 
-	public MustacheAutoConfiguration(MustacheProperties mustache, ApplicationContext applicationContext) {
+	MustacheAutoConfiguration(MustacheProperties mustache, ApplicationContext applicationContext) {
 		this.mustache = mustache;
 		this.applicationContext = applicationContext;
 		checkTemplateLocationExists();
 	}
 
-	public void checkTemplateLocationExists() {
+	private void checkTemplateLocationExists() {
 		if (this.mustache.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(this.mustache.getPrefix());
 			if (!location.exists(this.applicationContext) && logger.isWarnEnabled()) {
@@ -69,13 +69,13 @@ public class MustacheAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader) {
+	Mustache.Compiler mustacheCompiler(TemplateLoader mustacheTemplateLoader) {
 		return Mustache.compiler().withLoader(mustacheTemplateLoader);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(TemplateLoader.class)
-	public MustacheResourceTemplateLoader mustacheTemplateLoader() {
+	MustacheResourceTemplateLoader mustacheTemplateLoader() {
 		MustacheResourceTemplateLoader loader = new MustacheResourceTemplateLoader(this.mustache.getPrefix(),
 				this.mustache.getSuffix());
 		loader.setCharset(this.mustache.getCharsetName());

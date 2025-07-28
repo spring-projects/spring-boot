@@ -54,13 +54,13 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 @Conditional(NotReactiveWebApplicationCondition.class)
 @Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
 		JsonbHttpMessageConvertersConfiguration.class })
-public class HttpMessageConvertersAutoConfiguration {
+public final class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+	HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
 		return new HttpMessageConverters(converters.orderedStream().toList());
 	}
 
@@ -71,7 +71,7 @@ public class HttpMessageConvertersAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public StringHttpMessageConverter stringHttpMessageConverter(HttpMessageConvertersProperties properties) {
+		StringHttpMessageConverter stringHttpMessageConverter(HttpMessageConvertersProperties properties) {
 			StringHttpMessageConverter converter = new StringHttpMessageConverter(
 					properties.getStringEncodingCharset());
 			converter.setWriteAcceptCharset(false);

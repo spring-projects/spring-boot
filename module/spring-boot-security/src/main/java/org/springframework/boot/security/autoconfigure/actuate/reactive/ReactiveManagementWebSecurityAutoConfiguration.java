@@ -60,10 +60,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class, WebEndpointAutoConfiguration.class })
 @ConditionalOnMissingBean({ SecurityWebFilterChain.class, WebFilterChainProxy.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-public class ReactiveManagementWebSecurityAutoConfiguration {
+public final class ReactiveManagementWebSecurityAutoConfiguration {
 
 	@Bean
-	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, PreFlightRequestHandler handler) {
+	SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, PreFlightRequestHandler handler) {
 		http.authorizeExchange((exchanges) -> {
 			exchanges.matchers(healthMatcher(), additionalHealthPathsMatcher()).permitAll();
 			exchanges.anyExchange().authenticated();

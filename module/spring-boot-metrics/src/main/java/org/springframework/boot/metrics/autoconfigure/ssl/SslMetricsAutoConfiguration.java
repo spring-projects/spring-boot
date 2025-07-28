@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Bean;
 		SslAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean({ MeterRegistry.class, SslBundles.class })
-public class SslMetricsAutoConfiguration {
+public final class SslMetricsAutoConfiguration {
 
 	@Bean
 	SslMeterBinder sslMeterBinder(SslBundles sslBundles, ObjectProvider<SslInfo> sslInfo) {

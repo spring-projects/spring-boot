@@ -31,11 +31,11 @@ import org.springframework.context.annotation.Bean;
  * @since 2.3.0
  */
 @AutoConfiguration
-public class ApplicationAvailabilityAutoConfiguration {
+public final class ApplicationAvailabilityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ApplicationAvailability.class)
-	public ApplicationAvailabilityBean applicationAvailability() {
+	ApplicationAvailabilityBean applicationAvailability() {
 		return new ApplicationAvailabilityBean();
 	}
 

@@ -47,6 +47,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 @ConditionalOnClass(OAuth2Authorization.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @Import({ OAuth2AuthorizationServerConfiguration.class, OAuth2AuthorizationServerWebSecurityConfiguration.class })
-public class OAuth2AuthorizationServerAutoConfiguration {
+public final class OAuth2AuthorizationServerAutoConfiguration {
 
 }

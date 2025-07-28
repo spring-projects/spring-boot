@@ -75,7 +75,7 @@ import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 @ConditionalOnClass({ TemplateMode.class, SpringTemplateEngine.class })
 @Import({ TemplateEngineConfigurations.ReactiveTemplateEngineConfiguration.class,
 		TemplateEngineConfigurations.DefaultTemplateEngineConfiguration.class })
-public class ThymeleafAutoConfiguration {
+public final class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")

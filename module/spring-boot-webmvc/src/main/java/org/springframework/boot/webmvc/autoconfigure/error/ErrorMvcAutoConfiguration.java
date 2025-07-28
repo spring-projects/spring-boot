@@ -86,35 +86,35 @@ import org.springframework.web.util.HtmlUtils;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServerProperties.class })
 @EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })
-public class ErrorMvcAutoConfiguration {
+public final class ErrorMvcAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
-	public ErrorMvcAutoConfiguration(ServerProperties serverProperties) {
+	ErrorMvcAutoConfiguration(ServerProperties serverProperties) {
 		this.serverProperties = serverProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
-	public DefaultErrorAttributes errorAttributes() {
+	DefaultErrorAttributes errorAttributes() {
 		return new DefaultErrorAttributes();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
-	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes,
+	BasicErrorController basicErrorController(ErrorAttributes errorAttributes,
 			ObjectProvider<ErrorViewResolver> errorViewResolvers) {
 		return new BasicErrorController(errorAttributes, this.serverProperties.getError(),
 				errorViewResolvers.orderedStream().toList());
 	}
 
 	@Bean
-	public ErrorPageCustomizer errorPageCustomizer(DispatcherServletPath dispatcherServletPath) {
+	ErrorPageCustomizer errorPageCustomizer(DispatcherServletPath dispatcherServletPath) {
 		return new ErrorPageCustomizer(this.serverProperties, dispatcherServletPath);
 	}
 
 	@Bean
-	public static PreserveErrorControllerTargetClassPostProcessor preserveErrorControllerTargetClassPostProcessor() {
+	static PreserveErrorControllerTargetClassPostProcessor preserveErrorControllerTargetClassPostProcessor() {
 		return new PreserveErrorControllerTargetClassPostProcessor();
 	}
 
@@ -149,7 +149,7 @@ public class ErrorMvcAutoConfiguration {
 
 		@Bean(name = "error")
 		@ConditionalOnMissingBean(name = "error")
-		public View defaultErrorView() {
+		View defaultErrorView() {
 			return this.defaultErrorView;
 		}
 
@@ -157,7 +157,7 @@ public class ErrorMvcAutoConfiguration {
 		// WebMvcAutoConfiguration disappears, so add it back in to avoid disappointment.
 		@Bean
 		@ConditionalOnMissingBean
-		public BeanNameViewResolver beanNameViewResolver() {
+		BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 			return resolver;

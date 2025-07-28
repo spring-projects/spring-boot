@@ -50,20 +50,20 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfiguration
 @ConditionalOnClass(MockServerRestTemplateCustomizer.class)
 @ConditionalOnBooleanProperty("spring.test.webclient.mockrestserviceserver.enabled")
-public class MockRestServiceServerAutoConfiguration {
+public final class MockRestServiceServerAutoConfiguration {
 
 	@Bean
-	public MockServerRestTemplateCustomizer mockServerRestTemplateCustomizer() {
+	MockServerRestTemplateCustomizer mockServerRestTemplateCustomizer() {
 		return new MockServerRestTemplateCustomizer();
 	}
 
 	@Bean
-	public MockServerRestClientCustomizer mockServerRestClientCustomizer() {
+	MockServerRestClientCustomizer mockServerRestClientCustomizer() {
 		return new MockServerRestClientCustomizer();
 	}
 
 	@Bean
-	public MockRestServiceServer mockRestServiceServer(MockServerRestTemplateCustomizer restTemplateCustomizer,
+	MockRestServiceServer mockRestServiceServer(MockServerRestTemplateCustomizer restTemplateCustomizer,
 			MockServerRestClientCustomizer restClientCustomizer) {
 		try {
 			return createDeferredMockRestServiceServer(restTemplateCustomizer, restClientCustomizer);

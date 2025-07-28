@@ -33,6 +33,6 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @Import({ NoOpMeterRegistryConfiguration.class, CompositeMeterRegistryConfiguration.class })
 @ConditionalOnClass(CompositeMeterRegistry.class)
-public class CompositeMeterRegistryAutoConfiguration {
+public final class CompositeMeterRegistryAutoConfiguration {
 
 }

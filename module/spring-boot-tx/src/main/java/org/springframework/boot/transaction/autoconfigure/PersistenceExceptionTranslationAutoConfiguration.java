@@ -36,12 +36,12 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
  */
 @AutoConfiguration
 @ConditionalOnClass(PersistenceExceptionTranslationPostProcessor.class)
-public class PersistenceExceptionTranslationAutoConfiguration {
+public final class PersistenceExceptionTranslationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(name = "spring.dao.exceptiontranslation.enabled", matchIfMissing = true)
-	public static PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor(
+	static PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor(
 			Environment environment) {
 		PersistenceExceptionTranslationPostProcessor postProcessor = new PersistenceExceptionTranslationPostProcessor();
 		boolean proxyTargetClass = environment.getProperty("spring.aop.proxy-target-class", Boolean.class,

@@ -76,13 +76,12 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(value = DefaultBatchConfiguration.class, annotation = EnableBatchProcessing.class)
 @EnableConfigurationProperties(BatchProperties.class)
 @Import(DatabaseInitializationDependencyConfigurer.class)
-public class BatchAutoConfiguration {
+public final class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBooleanProperty(name = "spring.batch.job.enabled", matchIfMissing = true)
-	public JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator,
-			BatchProperties properties) {
+	JobLauncherApplicationRunner jobLauncherApplicationRunner(JobOperator jobOperator, BatchProperties properties) {
 		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(jobOperator);
 		String jobName = properties.getJob().getName();
 		if (StringUtils.hasText(jobName)) {
@@ -93,7 +92,7 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ExitCodeGenerator.class)
-	public JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
+	JobExecutionExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}
 

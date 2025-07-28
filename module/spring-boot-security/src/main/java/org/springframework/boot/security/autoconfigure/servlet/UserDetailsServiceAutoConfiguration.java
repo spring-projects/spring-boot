@@ -65,7 +65,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
 		AuthenticationManagerResolver.class }, type = "org.springframework.security.oauth2.jwt.JwtDecoder")
 @ConditionalOnWebApplication(type = Type.SERVLET)
-public class UserDetailsServiceAutoConfiguration {
+public final class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
 
@@ -74,7 +74,7 @@ public class UserDetailsServiceAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(UserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
+	InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
 		List<String> roles = user.getRoles();

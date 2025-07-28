@@ -40,16 +40,16 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ RabbitHealthIndicator.class, RabbitTemplate.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(RabbitTemplate.class)
 @ConditionalOnEnabledHealthIndicator("rabbit")
-public class RabbitHealthContributorAutoConfiguration
+public final class RabbitHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<RabbitHealthIndicator, RabbitTemplate> {
 
-	public RabbitHealthContributorAutoConfiguration() {
+	RabbitHealthContributorAutoConfiguration() {
 		super(RabbitHealthIndicator::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "rabbitHealthIndicator", "rabbitHealthContributor" })
-	public HealthContributor rabbitHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	HealthContributor rabbitHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, RabbitTemplate.class);
 	}
 

@@ -41,6 +41,6 @@ import org.springframework.context.annotation.Import;
 		ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @Import(CassandraReactiveDriverConfiguration.class)
-public class CassandraReactiveHealthContributorAutoConfiguration {
+public final class CassandraReactiveHealthContributorAutoConfiguration {
 
 }

@@ -42,6 +42,6 @@ import org.springframework.security.oauth2.server.resource.authentication.Bearer
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @Import({ Oauth2ResourceServerConfiguration.JwtConfiguration.class,
 		Oauth2ResourceServerConfiguration.OpaqueTokenConfiguration.class })
-public class OAuth2ResourceServerAutoConfiguration {
+public final class OAuth2ResourceServerAutoConfiguration {
 
 }

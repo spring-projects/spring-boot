@@ -49,7 +49,7 @@ import org.springframework.core.env.Environment;
 @AutoConfiguration
 @ConditionalOnClass({ OpenTelemetry.class, OpenTelemetrySdk.class })
 @EnableConfigurationProperties(OpenTelemetryProperties.class)
-public class OpenTelemetrySdkAutoConfiguration {
+public final class OpenTelemetrySdkAutoConfiguration {
 
 	OpenTelemetrySdkAutoConfiguration() {
 	}

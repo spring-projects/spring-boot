@@ -41,11 +41,11 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  */
 @AutoConfiguration
 @ConditionalOnClass({ WebServiceTemplate.class, Unmarshaller.class, Marshaller.class })
-public class WebServiceTemplateAutoConfiguration {
+public final class WebServiceTemplateAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebServiceMessageSenderFactory webServiceHttpMessageSenderFactory(
+	WebServiceMessageSenderFactory webServiceHttpMessageSenderFactory(
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings) {
 		return WebServiceMessageSenderFactory.http(
@@ -55,7 +55,7 @@ public class WebServiceTemplateAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebServiceTemplateBuilder webServiceTemplateBuilder(
+	WebServiceTemplateBuilder webServiceTemplateBuilder(
 			ObjectProvider<WebServiceMessageSenderFactory> httpWebServiceMessageSenderBuilder,
 			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
 		WebServiceTemplateBuilder templateBuilder = new WebServiceTemplateBuilder();

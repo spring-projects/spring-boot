@@ -37,11 +37,11 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
-public class StartupTimeMetricsListenerAutoConfiguration {
+public final class StartupTimeMetricsListenerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StartupTimeMetricsListener startupTimeMetrics(MeterRegistry meterRegistry) {
+	StartupTimeMetricsListener startupTimeMetrics(MeterRegistry meterRegistry) {
 		return new StartupTimeMetricsListener(meterRegistry);
 	}
 

@@ -59,7 +59,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(type = "io.r2dbc.spi.ConnectionFactory")
 @EnableConfigurationProperties(DataSourceProperties.class)
 @Import({ DataSourcePoolMetadataProvidersConfiguration.class, DataSourceCheckpointRestoreConfiguration.class })
-public class DataSourceAutoConfiguration {
+public final class DataSourceAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(EmbeddedDatabaseCondition.class)

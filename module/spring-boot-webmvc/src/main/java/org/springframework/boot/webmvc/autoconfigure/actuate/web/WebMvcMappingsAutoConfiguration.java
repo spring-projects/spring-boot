@@ -42,7 +42,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnAvailableEndpoint(MappingsEndpoint.class)
 @ConditionalOnBean(DispatcherServlet.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-public class WebMvcMappingsAutoConfiguration {
+public final class WebMvcMappingsAutoConfiguration {
 
 	@Bean
 	DispatcherServletsMappingDescriptionProvider dispatcherServletMappingDescriptionProvider() {

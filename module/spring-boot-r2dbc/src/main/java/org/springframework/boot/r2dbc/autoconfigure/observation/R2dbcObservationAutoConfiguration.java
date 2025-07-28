@@ -46,7 +46,7 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnClass({ ConnectionFactory.class, ProxyConnectionFactory.class, ObservationRegistry.class })
 @ConditionalOnBean(ObservationRegistry.class)
 @EnableConfigurationProperties(R2dbcObservationProperties.class)
-public class R2dbcObservationAutoConfiguration {
+public final class R2dbcObservationAutoConfiguration {
 
 	/**
 	 * {@code @Order} value of the observation customizer.

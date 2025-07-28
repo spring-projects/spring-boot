@@ -51,7 +51,7 @@ import org.springframework.jms.core.JmsTemplate;
 		JmsClientConfigurations.MessagingTemplateConfiguration.class,
 		JmsClientConfigurations.JmsClientConfiguration.class, JmsAnnotationDrivenConfiguration.class })
 @ImportRuntimeHints(JmsRuntimeHints.class)
-public class JmsAutoConfiguration {
+public final class JmsAutoConfiguration {
 
 	static class JmsRuntimeHints implements RuntimeHintsRegistrar {
 

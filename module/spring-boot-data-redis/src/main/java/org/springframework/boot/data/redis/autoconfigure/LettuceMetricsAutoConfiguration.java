@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Bean;
 		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ RedisClient.class, MicrometerCommandLatencyRecorder.class, MeterRegistry.class })
 @ConditionalOnBean(MeterRegistry.class)
-public class LettuceMetricsAutoConfiguration {
+public final class LettuceMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

@@ -53,17 +53,17 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })
 @Import({ MockMvcConfiguration.class, MockMvcTesterConfiguration.class })
-public class MockMvcAutoConfiguration {
+public final class MockMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DispatcherServletPath dispatcherServletPath(WebMvcProperties webMvcProperties) {
+	DispatcherServletPath dispatcherServletPath(WebMvcProperties webMvcProperties) {
 		return () -> webMvcProperties.getServlet().getPath();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DispatcherServlet dispatcherServlet(MockMvc mockMvc) {
+	DispatcherServlet dispatcherServlet(MockMvc mockMvc) {
 		return mockMvc.getDispatcherServlet();
 	}
 

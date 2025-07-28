@@ -42,16 +42,16 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @ConditionalOnClass({ MongoTemplate.class, MongoHealthIndicator.class, ConditionalOnEnabledHealthIndicator.class })
 @ConditionalOnBean(MongoTemplate.class)
 @ConditionalOnEnabledHealthIndicator("mongo")
-public class MongoHealthContributorAutoConfiguration
+public final class MongoHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
-	public MongoHealthContributorAutoConfiguration() {
+	MongoHealthContributorAutoConfiguration() {
 		super(MongoHealthIndicator::new);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "mongoHealthIndicator", "mongoHealthContributor" })
-	public HealthContributor mongoHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+	HealthContributor mongoHealthContributor(ConfigurableListableBeanFactory beanFactory) {
 		return createContributor(beanFactory, MongoTemplate.class);
 	}
 

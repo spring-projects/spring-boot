@@ -63,17 +63,17 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 @AutoConfiguration(after = CassandraAutoConfiguration.class)
 @ConditionalOnClass({ CqlSession.class, CassandraAdminOperations.class })
 @ConditionalOnBean(CqlSession.class)
-public class CassandraDataAutoConfiguration {
+public final class CassandraDataAutoConfiguration {
 
 	private final CqlSession session;
 
-	public CassandraDataAutoConfiguration(@Lazy CqlSession session) {
+	CassandraDataAutoConfiguration(@Lazy CqlSession session) {
 		this.session = session;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public static CassandraManagedTypes cassandraManagedTypes(BeanFactory beanFactory) throws ClassNotFoundException {
+	static CassandraManagedTypes cassandraManagedTypes(BeanFactory beanFactory) throws ClassNotFoundException {
 		List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(beanFactory)) {
 			packages = AutoConfigurationPackages.get(beanFactory);
@@ -86,7 +86,7 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraMappingContext cassandraMappingContext(CassandraManagedTypes cassandraManagedTypes,
+	CassandraMappingContext cassandraMappingContext(CassandraManagedTypes cassandraManagedTypes,
 			CassandraCustomConversions conversions) {
 		CassandraMappingContext context = new CassandraMappingContext();
 		context.setManagedTypes(cassandraManagedTypes);
@@ -96,8 +96,7 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraConverter cassandraConverter(CassandraMappingContext mapping,
-			CassandraCustomConversions conversions) {
+	CassandraConverter cassandraConverter(CassandraMappingContext mapping, CassandraCustomConversions conversions) {
 		MappingCassandraConverter converter = new MappingCassandraConverter(mapping);
 		converter.setCodecRegistry(() -> this.session.getContext().getCodecRegistry());
 		converter.setCustomConversions(conversions);
@@ -107,7 +106,7 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(SessionFactory.class)
-	public SessionFactoryFactoryBean cassandraSessionFactory(Environment environment, CassandraConverter converter) {
+	SessionFactoryFactoryBean cassandraSessionFactory(Environment environment, CassandraConverter converter) {
 		SessionFactoryFactoryBean session = new SessionFactoryFactoryBean();
 		session.setSession(this.session);
 		session.setConverter(converter);
@@ -118,19 +117,19 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(CqlOperations.class)
-	public CqlTemplate cqlTemplate(SessionFactory sessionFactory) {
+	CqlTemplate cqlTemplate(SessionFactory sessionFactory) {
 		return new CqlTemplate(sessionFactory);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(CassandraOperations.class)
-	public CassandraTemplate cassandraTemplate(CqlTemplate cqlTemplate, CassandraConverter converter) {
+	CassandraTemplate cassandraTemplate(CqlTemplate cqlTemplate, CassandraConverter converter) {
 		return new CassandraTemplate(cqlTemplate, converter);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraCustomConversions cassandraCustomConversions() {
+	CassandraCustomConversions cassandraCustomConversions() {
 		return new CassandraCustomConversions(Collections.emptyList());
 	}
 

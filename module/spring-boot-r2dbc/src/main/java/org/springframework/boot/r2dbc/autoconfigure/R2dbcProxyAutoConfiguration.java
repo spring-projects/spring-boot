@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnClass({ ConnectionFactory.class, ProxyConnectionFactory.class })
-public class R2dbcProxyAutoConfiguration {
+public final class R2dbcProxyAutoConfiguration {
 
 	@Bean
 	ConnectionFactoryDecorator connectionFactoryDecorator(

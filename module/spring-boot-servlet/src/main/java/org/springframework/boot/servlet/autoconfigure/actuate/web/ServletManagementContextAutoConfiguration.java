@@ -42,10 +42,10 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass({ Servlet.class, WebEndpointProperties.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(WebEndpointProperties.class)
-public class ServletManagementContextAutoConfiguration {
+public final class ServletManagementContextAutoConfiguration {
 
 	@Bean
-	public ManagementServletContext managementServletContext(WebEndpointProperties properties) {
+	ManagementServletContext managementServletContext(WebEndpointProperties properties) {
 		return properties::getBasePath;
 	}
 
@@ -56,7 +56,7 @@ public class ServletManagementContextAutoConfiguration {
 	protected static class ApplicationContextFilterConfiguration {
 
 		@Bean
-		public ApplicationContextHeaderFilter applicationContextIdFilter(ApplicationContext context) {
+		ApplicationContextHeaderFilter applicationContextIdFilter(ApplicationContext context) {
 			return new ApplicationContextHeaderFilter(context);
 		}
 

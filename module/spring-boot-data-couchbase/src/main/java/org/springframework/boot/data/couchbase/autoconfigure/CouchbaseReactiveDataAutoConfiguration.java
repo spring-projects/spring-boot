@@ -35,6 +35,6 @@ import org.springframework.data.couchbase.repository.ReactiveCouchbaseRepository
 @AutoConfiguration(after = CouchbaseDataAutoConfiguration.class)
 @ConditionalOnClass({ Cluster.class, ReactiveCouchbaseRepository.class, Flux.class })
 @Import(CouchbaseReactiveDataConfiguration.class)
-public class CouchbaseReactiveDataAutoConfiguration {
+public final class CouchbaseReactiveDataAutoConfiguration {
 
 }

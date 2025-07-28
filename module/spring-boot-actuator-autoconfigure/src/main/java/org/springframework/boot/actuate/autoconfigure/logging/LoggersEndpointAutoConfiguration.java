@@ -41,14 +41,13 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(LoggersEndpoint.class)
-public class LoggersEndpointAutoConfiguration {
+public final class LoggersEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(LoggingSystem.class)
 	@Conditional(OnEnabledLoggingSystemCondition.class)
 	@ConditionalOnMissingBean
-	public LoggersEndpoint loggersEndpoint(LoggingSystem loggingSystem,
-			ObjectProvider<LoggerGroups> springBootLoggerGroups) {
+	LoggersEndpoint loggersEndpoint(LoggingSystem loggingSystem, ObjectProvider<LoggerGroups> springBootLoggerGroups) {
 		return new LoggersEndpoint(loggingSystem, springBootLoggerGroups.getIfAvailable(LoggerGroups::new));
 	}
 

@@ -44,13 +44,12 @@ import org.springframework.util.MimeTypeUtils;
 @AutoConfiguration(afterName = "org.springframework.boot.rsocket.autoconfigure.RSocketRequesterAutoConfiguration")
 @ConditionalOnClass({ GraphQL.class, RSocketGraphQlClient.class, RSocketRequester.class, RSocket.class,
 		TcpClientTransport.class })
-public class RSocketGraphQlClientAutoConfiguration {
+public final class RSocketGraphQlClientAutoConfiguration {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	public RSocketGraphQlClient.Builder<?> rsocketGraphQlClientBuilder(
-			RSocketRequester.Builder rsocketRequesterBuilder) {
+	RSocketGraphQlClient.Builder<?> rsocketGraphQlClientBuilder(RSocketRequester.Builder rsocketRequesterBuilder) {
 		return RSocketGraphQlClient.builder(rsocketRequesterBuilder.dataMimeType(MimeTypeUtils.APPLICATION_JSON));
 	}
 

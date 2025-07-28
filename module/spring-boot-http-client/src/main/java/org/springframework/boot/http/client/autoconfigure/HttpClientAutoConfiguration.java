@@ -46,7 +46,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 @ConditionalOnClass(ClientHttpRequestFactory.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @EnableConfigurationProperties(HttpClientProperties.class)
-public class HttpClientAutoConfiguration implements BeanClassLoaderAware {
+public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	private final ClientHttpRequestFactories factories;
 

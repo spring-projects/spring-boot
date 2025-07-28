@@ -47,23 +47,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(KairosMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("kairos")
 @EnableConfigurationProperties(KairosProperties.class)
-public class KairosMetricsExportAutoConfiguration {
+public final class KairosMetricsExportAutoConfiguration {
 
 	private final KairosProperties properties;
 
-	public KairosMetricsExportAutoConfiguration(KairosProperties properties) {
+	KairosMetricsExportAutoConfiguration(KairosProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public KairosConfig kairosConfig() {
+	KairosConfig kairosConfig() {
 		return new KairosPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public KairosMeterRegistry kairosMeterRegistry(KairosConfig kairosConfig, Clock clock) {
+	KairosMeterRegistry kairosMeterRegistry(KairosConfig kairosConfig, Clock clock) {
 		return KairosMeterRegistry.builder(kairosConfig)
 			.clock(clock)
 			.httpClient(

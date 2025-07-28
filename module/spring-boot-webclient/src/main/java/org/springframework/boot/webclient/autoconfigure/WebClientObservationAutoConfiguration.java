@@ -39,7 +39,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @ConditionalOnClass({ WebClient.class, ObservationWebClientCustomizer.class, ObservationRegistry.class,
 		ObservationProperties.class })
 @EnableConfigurationProperties(ObservationProperties.class)
-public class WebClientObservationAutoConfiguration {
+public final class WebClientObservationAutoConfiguration {
 
 	@Bean
 	ObservationWebClientCustomizer observationWebClientCustomizer(ObservationRegistry observationRegistry,

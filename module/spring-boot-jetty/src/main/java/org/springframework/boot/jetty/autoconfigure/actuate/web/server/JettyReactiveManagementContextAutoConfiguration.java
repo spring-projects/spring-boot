@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ Server.class, ManagementContextFactory.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
-public class JettyReactiveManagementContextAutoConfiguration {
+public final class JettyReactiveManagementContextAutoConfiguration {
 
 	@Bean
 	static ManagementContextFactory reactiveWebChildContextFactory() {

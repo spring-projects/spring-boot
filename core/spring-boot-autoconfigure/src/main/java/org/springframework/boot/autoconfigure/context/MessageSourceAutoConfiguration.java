@@ -68,12 +68,12 @@ import org.springframework.util.StringUtils;
 @Conditional(ResourceBundleCondition.class)
 @EnableConfigurationProperties(MessageSourceProperties.class)
 @ImportRuntimeHints(MessageSourceRuntimeHints.class)
-public class MessageSourceAutoConfiguration {
+public final class MessageSourceAutoConfiguration {
 
 	private static final Resource[] NO_RESOURCES = {};
 
 	@Bean
-	public MessageSource messageSource(MessageSourceProperties properties) {
+	MessageSource messageSource(MessageSourceProperties properties) {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		if (!CollectionUtils.isEmpty(properties.getBasename())) {
 			messageSource.setBasenames(properties.getBasename().toArray(new String[0]));

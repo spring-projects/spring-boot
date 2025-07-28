@@ -54,20 +54,20 @@ import org.springframework.r2dbc.core.DatabaseClient;
 @AutoConfiguration(after = R2dbcAutoConfiguration.class)
 @ConditionalOnClass({ DatabaseClient.class, R2dbcEntityTemplate.class })
 @ConditionalOnSingleCandidate(DatabaseClient.class)
-public class R2dbcDataAutoConfiguration {
+public final class R2dbcDataAutoConfiguration {
 
 	private final DatabaseClient databaseClient;
 
 	private final R2dbcDialect dialect;
 
-	public R2dbcDataAutoConfiguration(DatabaseClient databaseClient) {
+	R2dbcDataAutoConfiguration(DatabaseClient databaseClient) {
 		this.databaseClient = databaseClient;
 		this.dialect = DialectResolver.getDialect(this.databaseClient.getConnectionFactory());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public R2dbcEntityTemplate r2dbcEntityTemplate(R2dbcConverter r2dbcConverter) {
+	R2dbcEntityTemplate r2dbcEntityTemplate(R2dbcConverter r2dbcConverter) {
 		return new R2dbcEntityTemplate(this.databaseClient, this.dialect, r2dbcConverter);
 	}
 
@@ -80,7 +80,7 @@ public class R2dbcDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public R2dbcMappingContext r2dbcMappingContext(ObjectProvider<NamingStrategy> namingStrategy,
+	R2dbcMappingContext r2dbcMappingContext(ObjectProvider<NamingStrategy> namingStrategy,
 			R2dbcCustomConversions r2dbcCustomConversions, RelationalManagedTypes r2dbcManagedTypes) {
 		R2dbcMappingContext relationalMappingContext = new R2dbcMappingContext(
 				namingStrategy.getIfAvailable(() -> DefaultNamingStrategy.INSTANCE));
@@ -91,14 +91,14 @@ public class R2dbcDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MappingR2dbcConverter r2dbcConverter(R2dbcMappingContext mappingContext,
+	MappingR2dbcConverter r2dbcConverter(R2dbcMappingContext mappingContext,
 			R2dbcCustomConversions r2dbcCustomConversions) {
 		return new MappingR2dbcConverter(mappingContext, r2dbcCustomConversions);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public R2dbcCustomConversions r2dbcCustomConversions() {
+	R2dbcCustomConversions r2dbcCustomConversions() {
 		List<Object> converters = new ArrayList<>(this.dialect.getConverters());
 		converters.addAll(R2dbcCustomConversions.STORE_CONVERTERS);
 		return new R2dbcCustomConversions(

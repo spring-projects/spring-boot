@@ -79,19 +79,19 @@ import org.springframework.graphql.execution.SubscriptionExceptionResolver;
 @ConditionalOnGraphQlSchema
 @EnableConfigurationProperties(GraphQlProperties.class)
 @ImportRuntimeHints(GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints.class)
-public class GraphQlAutoConfiguration {
+public final class GraphQlAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlAutoConfiguration.class);
 
 	private final ListableBeanFactory beanFactory;
 
-	public GraphQlAutoConfiguration(ListableBeanFactory beanFactory) {
+	GraphQlAutoConfiguration(ListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlSource graphQlSource(ResourcePatternResolver resourcePatternResolver, GraphQlProperties properties,
+	GraphQlSource graphQlSource(ResourcePatternResolver resourcePatternResolver, GraphQlProperties properties,
 			ObjectProvider<DataFetcherExceptionResolver> exceptionResolvers,
 			ObjectProvider<SubscriptionExceptionResolver> subscriptionExceptionResolvers,
 			ObjectProvider<Instrumentation> instrumentations, ObjectProvider<RuntimeWiringConfigurer> wiringConfigurers,
@@ -143,13 +143,13 @@ public class GraphQlAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public BatchLoaderRegistry batchLoaderRegistry() {
+	BatchLoaderRegistry batchLoaderRegistry() {
 		return new DefaultBatchLoaderRegistry();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ExecutionGraphQlService executionGraphQlService(GraphQlSource graphQlSource,
+	ExecutionGraphQlService executionGraphQlService(GraphQlSource graphQlSource,
 			BatchLoaderRegistry batchLoaderRegistry) {
 		DefaultExecutionGraphQlService service = new DefaultExecutionGraphQlService(graphQlSource);
 		service.addDataLoaderRegistrar(batchLoaderRegistry);
@@ -158,7 +158,7 @@ public class GraphQlAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AnnotatedControllerConfigurer annotatedControllerConfigurer(
+	AnnotatedControllerConfigurer annotatedControllerConfigurer(
 			@Qualifier(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) ObjectProvider<Executor> executorProvider,
 			ObjectProvider<HandlerMethodArgumentResolver> argumentResolvers) {
 		AnnotatedControllerConfigurer controllerConfigurer = new AnnotatedControllerConfigurer();

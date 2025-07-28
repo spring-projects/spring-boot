@@ -45,7 +45,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
 @ConditionalOnClass({ CodecConfigurer.class, WebClient.class })
-public class CodecsAutoConfiguration {
+public final class CodecsAutoConfiguration {
 
 	private static final MimeType[] EMPTY_MIME_TYPES = {};
 

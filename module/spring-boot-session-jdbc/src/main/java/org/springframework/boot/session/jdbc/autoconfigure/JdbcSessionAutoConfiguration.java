@@ -61,7 +61,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
 @ConditionalOnBean(DataSource.class)
 @EnableConfigurationProperties({ JdbcSessionProperties.class, SessionProperties.class })
 @Import({ DatabaseInitializationDependencyConfigurer.class, JdbcHttpSessionConfiguration.class })
-public class JdbcSessionAutoConfiguration {
+public final class JdbcSessionAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
 		ObservationProperties.class })
 @ConditionalOnBean({ ObservationRegistry.class, RestTemplateBuilder.class })
 @EnableConfigurationProperties(ObservationProperties.class)
-public class RestTemplateObservationAutoConfiguration {
+public final class RestTemplateObservationAutoConfiguration {
 
 	@Bean
 	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,

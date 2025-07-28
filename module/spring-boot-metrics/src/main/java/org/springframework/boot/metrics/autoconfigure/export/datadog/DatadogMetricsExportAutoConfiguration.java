@@ -47,23 +47,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(DatadogMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("datadog")
 @EnableConfigurationProperties(DatadogProperties.class)
-public class DatadogMetricsExportAutoConfiguration {
+public final class DatadogMetricsExportAutoConfiguration {
 
 	private final DatadogProperties properties;
 
-	public DatadogMetricsExportAutoConfiguration(DatadogProperties properties) {
+	DatadogMetricsExportAutoConfiguration(DatadogProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DatadogConfig datadogConfig() {
+	DatadogConfig datadogConfig() {
 		return new DatadogPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig, Clock clock) {
+	DatadogMeterRegistry datadogMeterRegistry(DatadogConfig datadogConfig, Clock clock) {
 		return DatadogMeterRegistry.builder(datadogConfig)
 			.clock(clock)
 			.httpClient(

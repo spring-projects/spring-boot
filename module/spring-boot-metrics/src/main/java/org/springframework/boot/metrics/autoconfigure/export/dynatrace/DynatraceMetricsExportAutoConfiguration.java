@@ -47,23 +47,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(DynatraceMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("dynatrace")
 @EnableConfigurationProperties(DynatraceProperties.class)
-public class DynatraceMetricsExportAutoConfiguration {
+public final class DynatraceMetricsExportAutoConfiguration {
 
 	private final DynatraceProperties properties;
 
-	public DynatraceMetricsExportAutoConfiguration(DynatraceProperties properties) {
+	DynatraceMetricsExportAutoConfiguration(DynatraceProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DynatraceConfig dynatraceConfig() {
+	DynatraceConfig dynatraceConfig() {
 		return new DynatracePropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DynatraceMeterRegistry dynatraceMeterRegistry(DynatraceConfig dynatraceConfig, Clock clock) {
+	DynatraceMeterRegistry dynatraceMeterRegistry(DynatraceConfig dynatraceConfig, Clock clock) {
 		return DynatraceMeterRegistry.builder(dynatraceConfig)
 			.clock(clock)
 			.httpClient(

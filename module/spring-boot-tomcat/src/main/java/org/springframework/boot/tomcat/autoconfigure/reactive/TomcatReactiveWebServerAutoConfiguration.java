@@ -50,7 +50,7 @@ import org.springframework.http.ReactiveHttpInputMessage;
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(TomcatServerProperties.class)
 @Import({ TomcatWebServerConfiguration.class, ReactiveWebServerConfiguration.class })
-public class TomcatReactiveWebServerAutoConfiguration {
+public final class TomcatReactiveWebServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)

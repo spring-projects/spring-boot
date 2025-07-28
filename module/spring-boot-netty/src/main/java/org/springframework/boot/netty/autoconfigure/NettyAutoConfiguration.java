@@ -35,9 +35,9 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnClass(NettyRuntime.class)
 @EnableConfigurationProperties(NettyProperties.class)
-public class NettyAutoConfiguration {
+public final class NettyAutoConfiguration {
 
-	public NettyAutoConfiguration(NettyProperties properties) {
+	NettyAutoConfiguration(NettyProperties properties) {
 		if (properties.getLeakDetection() != null) {
 			NettyProperties.LeakDetection leakDetection = properties.getLeakDetection();
 			ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.valueOf(leakDetection.name()));

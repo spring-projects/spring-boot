@@ -41,11 +41,11 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
 @Import({ TaskSchedulingConfigurations.ThreadPoolTaskSchedulerBuilderConfiguration.class,
 		TaskSchedulingConfigurations.SimpleAsyncTaskSchedulerBuilderConfiguration.class,
 		TaskSchedulingConfigurations.TaskSchedulerConfiguration.class })
-public class TaskSchedulingAutoConfiguration {
+public final class TaskSchedulingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
-	public static LazyInitializationExcludeFilter scheduledBeanLazyInitializationExcludeFilter() {
+	static LazyInitializationExcludeFilter scheduledBeanLazyInitializationExcludeFilter() {
 		return new ScheduledBeanLazyInitializationExcludeFilter();
 	}
 

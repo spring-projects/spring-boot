@@ -55,11 +55,11 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(TomcatServerProperties.class)
 @Import({ ServletWebServerConfiguration.class, TomcatWebServerConfiguration.class })
-public class TomcatServletWebServerAutoConfiguration {
+public final class TomcatServletWebServerAutoConfiguration {
 
 	private final TomcatServerProperties tomcatProperties;
 
-	public TomcatServletWebServerAutoConfiguration(TomcatServerProperties tomcatProperties) {
+	TomcatServletWebServerAutoConfiguration(TomcatServerProperties tomcatProperties) {
 		this.tomcatProperties = tomcatProperties;
 	}
 

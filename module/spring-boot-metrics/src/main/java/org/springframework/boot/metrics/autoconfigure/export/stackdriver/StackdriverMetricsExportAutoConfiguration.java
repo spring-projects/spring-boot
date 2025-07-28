@@ -47,23 +47,23 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(StackdriverMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("stackdriver")
 @EnableConfigurationProperties(StackdriverProperties.class)
-public class StackdriverMetricsExportAutoConfiguration {
+public final class StackdriverMetricsExportAutoConfiguration {
 
 	private final StackdriverProperties properties;
 
-	public StackdriverMetricsExportAutoConfiguration(StackdriverProperties stackdriverProperties) {
+	StackdriverMetricsExportAutoConfiguration(StackdriverProperties stackdriverProperties) {
 		this.properties = stackdriverProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StackdriverConfig stackdriverConfig() {
+	StackdriverConfig stackdriverConfig() {
 		return new StackdriverPropertiesConfigAdapter(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StackdriverMeterRegistry stackdriverMeterRegistry(StackdriverConfig stackdriverConfig, Clock clock) {
+	StackdriverMeterRegistry stackdriverMeterRegistry(StackdriverConfig stackdriverConfig, Clock clock) {
 		return StackdriverMeterRegistry.builder(stackdriverConfig).clock(clock).build();
 	}
 

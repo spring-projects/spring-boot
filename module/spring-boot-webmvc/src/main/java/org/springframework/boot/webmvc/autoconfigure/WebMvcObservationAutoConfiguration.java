@@ -62,11 +62,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ DispatcherServlet.class, Observation.class })
 @ConditionalOnBean(ObservationRegistry.class)
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
-public class WebMvcObservationAutoConfiguration {
+public final class WebMvcObservationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingFilterBean
-	public FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
+	FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
 			ObjectProvider<ServerRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties) {
 		String name = observationProperties.getHttp().getServer().getRequests().getName();

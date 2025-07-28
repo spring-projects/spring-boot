@@ -43,11 +43,11 @@ import org.springframework.jmx.support.JmxUtils;
 @ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 @ConditionalOnProperty("spring.datasource.jndi-name")
 @EnableConfigurationProperties(DataSourceProperties.class)
-public class JndiDataSourceAutoConfiguration {
+public final class JndiDataSourceAutoConfiguration {
 
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
-	public DataSource dataSource(DataSourceProperties properties, ApplicationContext context) {
+	DataSource dataSource(DataSourceProperties properties, ApplicationContext context) {
 		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
 		DataSource dataSource = dataSourceLookup.getDataSource(properties.getJndiName());
 		excludeMBeanIfNecessary(dataSource, "dataSource", context);

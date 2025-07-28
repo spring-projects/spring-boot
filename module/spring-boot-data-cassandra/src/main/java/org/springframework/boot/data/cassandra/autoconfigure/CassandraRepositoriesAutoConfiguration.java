@@ -42,6 +42,6 @@ import org.springframework.data.cassandra.repository.support.CassandraRepository
 @ConditionalOnRepositoryType(store = "cassandra", type = RepositoryType.IMPERATIVE)
 @ConditionalOnMissingBean(CassandraRepositoryFactoryBean.class)
 @Import(CassandraRepositoriesRegistrar.class)
-public class CassandraRepositoriesAutoConfiguration {
+public final class CassandraRepositoriesAutoConfiguration {
 
 }

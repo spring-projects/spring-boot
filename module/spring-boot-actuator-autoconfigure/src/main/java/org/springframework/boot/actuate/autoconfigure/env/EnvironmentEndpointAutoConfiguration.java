@@ -40,11 +40,11 @@ import org.springframework.core.env.Environment;
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(EnvironmentEndpoint.class)
 @EnableConfigurationProperties(EnvironmentEndpointProperties.class)
-public class EnvironmentEndpointAutoConfiguration {
+public final class EnvironmentEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public EnvironmentEndpoint environmentEndpoint(Environment environment, EnvironmentEndpointProperties properties,
+	EnvironmentEndpoint environmentEndpoint(Environment environment, EnvironmentEndpointProperties properties,
 			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
 		return new EnvironmentEndpoint(environment, sanitizingFunctions.orderedStream().toList(),
 				properties.getShowValues());
@@ -54,7 +54,7 @@ public class EnvironmentEndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(EnvironmentEndpoint.class)
 	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
-	public EnvironmentEndpointWebExtension environmentEndpointWebExtension(EnvironmentEndpoint environmentEndpoint,
+	EnvironmentEndpointWebExtension environmentEndpointWebExtension(EnvironmentEndpoint environmentEndpoint,
 			EnvironmentEndpointProperties properties) {
 		return new EnvironmentEndpointWebExtension(environmentEndpoint, properties.getShowValues(),
 				properties.getRoles());

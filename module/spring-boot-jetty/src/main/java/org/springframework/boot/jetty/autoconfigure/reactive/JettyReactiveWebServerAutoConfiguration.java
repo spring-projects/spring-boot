@@ -51,7 +51,7 @@ import org.springframework.http.ReactiveHttpInputMessage;
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(JettyServerProperties.class)
 @Import({ JettyWebServerConfiguration.class, ReactiveWebServerConfiguration.class })
-public class JettyReactiveWebServerAutoConfiguration {
+public final class JettyReactiveWebServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)

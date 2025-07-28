@@ -41,11 +41,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(CharacterEncodingFilter.class)
 @ConditionalOnBooleanProperty(name = "spring.servlet.encoding.enabled", matchIfMissing = true)
-public class HttpEncodingAutoConfiguration {
+public final class HttpEncodingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CharacterEncodingFilter characterEncodingFilter(ServletEncodingProperties properties) {
+	CharacterEncodingFilter characterEncodingFilter(ServletEncodingProperties properties) {
 		CharacterEncodingFilter filter = new OrderedCharacterEncodingFilter();
 		filter.setEncoding(properties.getCharset().name());
 		filter.setForceRequestEncoding(properties.shouldForce(ServletEncodingProperties.HttpMessageType.REQUEST));

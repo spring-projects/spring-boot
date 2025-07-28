@@ -51,11 +51,11 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnClass({ ResourceConfig.class, ObservationApplicationEventListener.class })
 @ConditionalOnBean({ ResourceConfig.class, ObservationRegistry.class })
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
-public class JerseyServerMetricsAutoConfiguration {
+public final class JerseyServerMetricsAutoConfiguration {
 
 	private final ObservationProperties observationProperties;
 
-	public JerseyServerMetricsAutoConfiguration(ObservationProperties observationProperties) {
+	JerseyServerMetricsAutoConfiguration(ObservationProperties observationProperties) {
 		this.observationProperties = observationProperties;
 	}
 
@@ -69,7 +69,7 @@ public class JerseyServerMetricsAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	public MeterFilter jerseyMetricsUriTagFilter(MetricsProperties metricsProperties) {
+	MeterFilter jerseyMetricsUriTagFilter(MetricsProperties metricsProperties) {
 		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();
 		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
 				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));

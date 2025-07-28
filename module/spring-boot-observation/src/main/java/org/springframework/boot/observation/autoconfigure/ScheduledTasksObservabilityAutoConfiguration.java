@@ -37,7 +37,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @AutoConfiguration(after = ObservationAutoConfiguration.class)
 @ConditionalOnBean(ObservationRegistry.class)
 @ConditionalOnClass(ThreadPoolTaskScheduler.class)
-public class ScheduledTasksObservabilityAutoConfiguration {
+public final class ScheduledTasksObservabilityAutoConfiguration {
 
 	@Bean
 	ObservabilitySchedulingConfigurer observabilitySchedulingConfigurer(ObservationRegistry observationRegistry) {

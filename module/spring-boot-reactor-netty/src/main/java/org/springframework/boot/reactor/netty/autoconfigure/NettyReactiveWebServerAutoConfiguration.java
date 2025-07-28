@@ -48,7 +48,7 @@ import org.springframework.http.client.ReactorResourceFactory;
 @ConditionalOnClass({ ReactiveHttpInputMessage.class, HttpServer.class })
 @EnableConfigurationProperties(NettyServerProperties.class)
 @Import({ ReactiveWebServerConfiguration.class, ReactorResourceFactoryConfiguration.class })
-public class NettyReactiveWebServerAutoConfiguration {
+public final class NettyReactiveWebServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)

@@ -64,7 +64,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnBean(HealthEndpoint.class)
 @ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class, exposure = EndpointExposure.WEB)
 @ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
-public class HealthEndpointJerseyExtensionAutoConfiguration {
+public final class HealthEndpointJerseyExtensionAutoConfiguration {
 
 	@Bean
 	JerseyAdditionalHealthEndpointPathsResourcesRegistrar jerseyAdditionalHealthEndpointPathsResourcesRegistrar(

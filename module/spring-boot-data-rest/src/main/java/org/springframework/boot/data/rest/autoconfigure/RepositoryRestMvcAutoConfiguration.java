@@ -54,10 +54,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @EnableConfigurationProperties(RepositoryRestProperties.class)
 @Import(RepositoryRestMvcConfiguration.class)
 @SuppressWarnings("removal")
-public class RepositoryRestMvcAutoConfiguration {
+public final class RepositoryRestMvcAutoConfiguration {
 
 	@Bean
-	public SpringBootRepositoryRestConfigurer springBootRepositoryRestConfigurer(
+	SpringBootRepositoryRestConfigurer springBootRepositoryRestConfigurer(
 			ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilder, RepositoryRestProperties properties) {
 		return new SpringBootRepositoryRestConfigurer(objectMapperBuilder.getIfAvailable(), properties);
 	}

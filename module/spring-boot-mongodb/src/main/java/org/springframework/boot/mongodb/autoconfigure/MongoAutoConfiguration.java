@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDatabaseFactory")
-public class MongoAutoConfiguration {
+public final class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoConnectionDetails.class)
@@ -55,7 +55,7 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
+	MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
 			MongoClientSettings settings) {
 		return new MongoClientFactory(builderCustomizers.orderedStream().toList()).createMongoClient(settings);
 	}

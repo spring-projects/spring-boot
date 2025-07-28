@@ -70,7 +70,7 @@ import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerPrope
 @AutoConfiguration(after = PulsarAutoConfiguration.class)
 @ConditionalOnClass({ PulsarClient.class, ReactivePulsarClient.class, ReactivePulsarTemplate.class })
 @Import(PulsarConfiguration.class)
-public class PulsarReactiveAutoConfiguration {
+public final class PulsarReactiveAutoConfiguration {
 
 	private final PulsarProperties properties;
 

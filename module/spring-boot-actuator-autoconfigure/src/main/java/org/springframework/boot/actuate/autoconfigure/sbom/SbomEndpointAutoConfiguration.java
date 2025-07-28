@@ -38,7 +38,7 @@ import org.springframework.core.io.ResourceLoader;
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(SbomEndpoint.class)
 @EnableConfigurationProperties(SbomProperties.class)
-public class SbomEndpointAutoConfiguration {
+public final class SbomEndpointAutoConfiguration {
 
 	private final SbomProperties properties;
 

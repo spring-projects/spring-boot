@@ -46,29 +46,29 @@ import org.springframework.data.cassandra.core.cql.session.DefaultReactiveSessio
 @AutoConfiguration(after = CassandraDataAutoConfiguration.class)
 @ConditionalOnClass({ CqlSession.class, ReactiveCassandraTemplate.class, Flux.class })
 @ConditionalOnBean(CqlSession.class)
-public class CassandraReactiveDataAutoConfiguration {
+public final class CassandraReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveSession reactiveCassandraSession(CqlSession session) {
+	ReactiveSession reactiveCassandraSession(CqlSession session) {
 		return new DefaultBridgedReactiveSession(session);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveSessionFactory reactiveCassandraSessionFactory(ReactiveSession reactiveCassandraSession) {
+	ReactiveSessionFactory reactiveCassandraSessionFactory(ReactiveSession reactiveCassandraSession) {
 		return new DefaultReactiveSessionFactory(reactiveCassandraSession);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveCqlOperations.class)
-	public ReactiveCqlTemplate reactiveCqlTemplate(ReactiveSessionFactory reactiveCassandraSessionFactory) {
+	ReactiveCqlTemplate reactiveCqlTemplate(ReactiveSessionFactory reactiveCassandraSessionFactory) {
 		return new ReactiveCqlTemplate(reactiveCassandraSessionFactory);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveCassandraOperations.class)
-	public ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveCqlTemplate reactiveCqlTemplate,
+	ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveCqlTemplate reactiveCqlTemplate,
 			CassandraConverter converter) {
 		return new ReactiveCassandraTemplate(reactiveCqlTemplate, converter);
 	}

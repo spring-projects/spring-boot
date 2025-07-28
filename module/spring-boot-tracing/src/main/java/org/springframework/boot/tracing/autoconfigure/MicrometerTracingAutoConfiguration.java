@@ -56,7 +56,7 @@ import org.springframework.util.ClassUtils;
  */
 @AutoConfiguration(after = ObservationAutoConfiguration.class)
 @ConditionalOnBean(Tracer.class)
-public class MicrometerTracingAutoConfiguration {
+public final class MicrometerTracingAutoConfiguration {
 
 	/**
 	 * {@code @Order} value of {@link #defaultTracingObservationHandler(Tracer)}.
@@ -76,7 +76,7 @@ public class MicrometerTracingAutoConfiguration {
 	public static final int SENDER_TRACING_OBSERVATION_HANDLER_ORDER = 2000;
 
 	@Bean
-	public ObservationHandlerGroup tracingObservationHandlerGroup(Tracer tracer) {
+	ObservationHandlerGroup tracingObservationHandlerGroup(Tracer tracer) {
 		return ClassUtils.isPresent("io.micrometer.core.instrument.MeterRegistry", null)
 				? new TracingAndMeterObservationHandlerGroup(tracer)
 				: ObservationHandlerGroup.of(TracingObservationHandler.class);
@@ -85,7 +85,7 @@ public class MicrometerTracingAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Order(DEFAULT_TRACING_OBSERVATION_HANDLER_ORDER)
-	public DefaultTracingObservationHandler defaultTracingObservationHandler(Tracer tracer) {
+	DefaultTracingObservationHandler defaultTracingObservationHandler(Tracer tracer) {
 		return new DefaultTracingObservationHandler(tracer);
 	}
 
@@ -93,7 +93,7 @@ public class MicrometerTracingAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(Propagator.class)
 	@Order(SENDER_TRACING_OBSERVATION_HANDLER_ORDER)
-	public PropagatingSenderTracingObservationHandler<?> propagatingSenderTracingObservationHandler(Tracer tracer,
+	PropagatingSenderTracingObservationHandler<?> propagatingSenderTracingObservationHandler(Tracer tracer,
 			Propagator propagator) {
 		return new PropagatingSenderTracingObservationHandler<>(tracer, propagator);
 	}
@@ -102,7 +102,7 @@ public class MicrometerTracingAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(Propagator.class)
 	@Order(RECEIVER_TRACING_OBSERVATION_HANDLER_ORDER)
-	public PropagatingReceiverTracingObservationHandler<?> propagatingReceiverTracingObservationHandler(Tracer tracer,
+	PropagatingReceiverTracingObservationHandler<?> propagatingReceiverTracingObservationHandler(Tracer tracer,
 			Propagator propagator) {
 		return new PropagatingReceiverTracingObservationHandler<>(tracer, propagator);
 	}

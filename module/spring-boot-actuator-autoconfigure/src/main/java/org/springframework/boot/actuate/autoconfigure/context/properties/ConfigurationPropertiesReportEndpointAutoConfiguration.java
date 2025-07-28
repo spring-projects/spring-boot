@@ -41,11 +41,11 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(ConfigurationPropertiesReportEndpoint.class)
 @EnableConfigurationProperties(ConfigurationPropertiesReportEndpointProperties.class)
-public class ConfigurationPropertiesReportEndpointAutoConfiguration {
+public final class ConfigurationPropertiesReportEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint(
+	ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint(
 			ConfigurationPropertiesReportEndpointProperties properties,
 			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
 		return new ConfigurationPropertiesReportEndpoint(sanitizingFunctions.orderedStream().toList(),
@@ -56,7 +56,7 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(ConfigurationPropertiesReportEndpoint.class)
 	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
-	public ConfigurationPropertiesReportEndpointWebExtension configurationPropertiesReportEndpointWebExtension(
+	ConfigurationPropertiesReportEndpointWebExtension configurationPropertiesReportEndpointWebExtension(
 			ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint,
 			ConfigurationPropertiesReportEndpointProperties properties) {
 		return new ConfigurationPropertiesReportEndpointWebExtension(configurationPropertiesReportEndpoint,

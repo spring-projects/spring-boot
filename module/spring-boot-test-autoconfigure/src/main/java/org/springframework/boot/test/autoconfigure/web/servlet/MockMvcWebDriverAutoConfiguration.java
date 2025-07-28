@@ -44,14 +44,14 @@ import org.springframework.util.ClassUtils;
 @AutoConfiguration(after = MockMvcAutoConfiguration.class)
 @ConditionalOnClass(HtmlUnitDriver.class)
 @ConditionalOnBooleanProperty(name = "spring.test.mockmvc.webdriver.enabled", matchIfMissing = true)
-public class MockMvcWebDriverAutoConfiguration {
+public final class MockMvcWebDriverAutoConfiguration {
 
 	private static final String SECURITY_CONTEXT_EXECUTOR = "org.springframework.security.concurrent.DelegatingSecurityContextExecutor";
 
 	@Bean
 	@ConditionalOnMissingBean({ WebDriver.class, MockMvcHtmlUnitDriverBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
-	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc, Environment environment) {
+	MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc, Environment environment) {
 		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
 			.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(environment, BrowserVersion.CHROME));
 	}
@@ -59,7 +59,7 @@ public class MockMvcWebDriverAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(WebDriver.class)
 	@ConditionalOnBean(MockMvcHtmlUnitDriverBuilder.class)
-	public HtmlUnitDriver htmlUnitDriver(MockMvcHtmlUnitDriverBuilder builder) {
+	HtmlUnitDriver htmlUnitDriver(MockMvcHtmlUnitDriverBuilder builder) {
 		HtmlUnitDriver driver = builder.build();
 		if (ClassUtils.isPresent(SECURITY_CONTEXT_EXECUTOR, getClass().getClassLoader())) {
 			driver.setExecutor(new DelegatingSecurityContextExecutor(Executors.newSingleThreadExecutor()));

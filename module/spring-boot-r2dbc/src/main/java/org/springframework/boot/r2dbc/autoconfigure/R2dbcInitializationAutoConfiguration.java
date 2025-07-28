@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnSqlInitialization
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @EnableConfigurationProperties(SqlInitializationProperties.class)
-public class R2dbcInitializationAutoConfiguration {
+public final class R2dbcInitializationAutoConfiguration {
 
 	@Bean
 	ApplicationR2dbcScriptDatabaseInitializer r2dbcScriptDatabaseInitializer(ConnectionFactory connectionFactory,

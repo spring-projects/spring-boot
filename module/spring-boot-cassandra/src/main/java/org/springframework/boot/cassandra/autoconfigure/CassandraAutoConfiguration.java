@@ -77,7 +77,7 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration
 @ConditionalOnClass(CqlSession.class)
 @EnableConfigurationProperties(CassandraProperties.class)
-public class CassandraAutoConfiguration {
+public final class CassandraAutoConfiguration {
 
 	private static final Config SPRING_BOOT_DEFAULTS;
 	static {
@@ -103,14 +103,14 @@ public class CassandraAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Lazy
-	public CqlSession cassandraSession(CqlSessionBuilder cqlSessionBuilder) {
+	CqlSession cassandraSession(CqlSessionBuilder cqlSessionBuilder) {
 		return cqlSessionBuilder.build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	public CqlSessionBuilder cassandraSessionBuilder(DriverConfigLoader driverConfigLoader,
+	CqlSessionBuilder cassandraSessionBuilder(DriverConfigLoader driverConfigLoader,
 			CassandraConnectionDetails connectionDetails,
 			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
@@ -141,7 +141,7 @@ public class CassandraAutoConfiguration {
 
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
-	public DriverConfigLoader cassandraDriverConfigLoader(CassandraConnectionDetails connectionDetails,
+	DriverConfigLoader cassandraDriverConfigLoader(CassandraConnectionDetails connectionDetails,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers) {
 		ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
 				() -> cassandraConfiguration(connectionDetails), DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);

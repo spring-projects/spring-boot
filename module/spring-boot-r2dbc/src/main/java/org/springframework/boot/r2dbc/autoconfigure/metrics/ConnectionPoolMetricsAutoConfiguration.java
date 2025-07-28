@@ -44,10 +44,10 @@ import org.springframework.boot.r2dbc.metrics.ConnectionPoolMetrics;
 		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ ConnectionPool.class, MeterRegistry.class })
 @ConditionalOnBean({ ConnectionFactory.class, MeterRegistry.class })
-public class ConnectionPoolMetricsAutoConfiguration {
+public final class ConnectionPoolMetricsAutoConfiguration {
 
 	@Autowired
-	public void bindConnectionPoolsToRegistry(ConfigurableListableBeanFactory beanFactory, MeterRegistry registry) {
+	void bindConnectionPoolsToRegistry(ConfigurableListableBeanFactory beanFactory, MeterRegistry registry) {
 		SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, ConnectionFactory.class)
 			.forEach((beanName, connectionFactory) -> {
 				ConnectionPool pool = extractPool(connectionFactory);

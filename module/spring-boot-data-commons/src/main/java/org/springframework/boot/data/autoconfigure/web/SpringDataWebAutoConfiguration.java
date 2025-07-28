@@ -51,17 +51,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConditionalOnClass({ PageableHandlerMethodArgumentResolver.class, WebMvcConfigurer.class })
 @ConditionalOnMissingBean(PageableHandlerMethodArgumentResolver.class)
 @EnableConfigurationProperties(SpringDataWebProperties.class)
-public class SpringDataWebAutoConfiguration {
+public final class SpringDataWebAutoConfiguration {
 
 	private final SpringDataWebProperties properties;
 
-	public SpringDataWebAutoConfiguration(SpringDataWebProperties properties) {
+	SpringDataWebAutoConfiguration(SpringDataWebProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
+	PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer() {
 		return (resolver) -> {
 			Pageable pageable = this.properties.getPageable();
 			resolver.setPageParameterName(pageable.getPageParameter());
@@ -76,13 +76,13 @@ public class SpringDataWebAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SortHandlerMethodArgumentResolverCustomizer sortCustomizer() {
+	SortHandlerMethodArgumentResolverCustomizer sortCustomizer() {
 		return (resolver) -> resolver.setSortParameter(this.properties.getSort().getSortParameter());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SpringDataWebSettings springDataWebSettings() {
+	SpringDataWebSettings springDataWebSettings() {
 		return new SpringDataWebSettings(this.properties.getPageable().getSerializationMode());
 	}
 

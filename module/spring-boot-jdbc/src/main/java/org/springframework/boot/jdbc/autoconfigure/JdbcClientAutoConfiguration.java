@@ -36,7 +36,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 @ConditionalOnSingleCandidate(NamedParameterJdbcTemplate.class)
 @ConditionalOnMissingBean(JdbcClient.class)
 @Import(DatabaseInitializationDependencyConfigurer.class)
-public class JdbcClientAutoConfiguration {
+public final class JdbcClientAutoConfiguration {
 
 	@Bean
 	JdbcClient jdbcClient(NamedParameterJdbcTemplate jdbcTemplate) {

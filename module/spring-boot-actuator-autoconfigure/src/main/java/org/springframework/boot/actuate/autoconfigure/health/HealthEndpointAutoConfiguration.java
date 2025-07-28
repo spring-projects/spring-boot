@@ -43,6 +43,6 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(HealthEndpointProperties.class)
 @Import({ HealthEndpointConfiguration.class, HealthEndpointWebExtensionConfiguration.class,
 		HealthEndpointReactiveWebExtensionConfiguration.class })
-public class HealthEndpointAutoConfiguration {
+public final class HealthEndpointAutoConfiguration {
 
 }

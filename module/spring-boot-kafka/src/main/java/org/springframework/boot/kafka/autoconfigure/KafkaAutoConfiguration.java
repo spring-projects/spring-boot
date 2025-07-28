@@ -83,7 +83,7 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(KafkaProperties.class)
 @Import({ KafkaAnnotationDrivenConfiguration.class, KafkaStreamsAnnotationDrivenConfiguration.class })
 @ImportRuntimeHints(KafkaAutoConfiguration.KafkaRuntimeHints.class)
-public class KafkaAutoConfiguration {
+public final class KafkaAutoConfiguration {
 
 	private final KafkaProperties properties;
 
@@ -99,7 +99,7 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(KafkaTemplate.class)
-	public KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
+	KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener,
 			ObjectProvider<RecordMessageConverter> messageConverter) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -114,7 +114,7 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ProducerListener.class)
-	public LoggingProducerListener<Object, Object> kafkaProducerListener() {
+	LoggingProducerListener<Object, Object> kafkaProducerListener() {
 		return new LoggingProducerListener<>();
 	}
 
@@ -147,14 +147,14 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(name = "spring.kafka.producer.transaction-id-prefix")
 	@ConditionalOnMissingBean
-	public KafkaTransactionManager<?, ?> kafkaTransactionManager(ProducerFactory<?, ?> producerFactory) {
+	KafkaTransactionManager<?, ?> kafkaTransactionManager(ProducerFactory<?, ?> producerFactory) {
 		return new KafkaTransactionManager<>(producerFactory);
 	}
 
 	@Bean
 	@ConditionalOnBooleanProperty("spring.kafka.jaas.enabled")
 	@ConditionalOnMissingBean
-	public KafkaJaasLoginModuleInitializer kafkaJaasInitializer() throws IOException {
+	KafkaJaasLoginModuleInitializer kafkaJaasInitializer() throws IOException {
 		KafkaJaasLoginModuleInitializer jaas = new KafkaJaasLoginModuleInitializer();
 		Jaas jaasProperties = this.properties.getJaas();
 		if (jaasProperties.getControlFlag() != null) {
@@ -189,7 +189,7 @@ public class KafkaAutoConfiguration {
 	@Bean
 	@ConditionalOnBooleanProperty("spring.kafka.retry.topic.enabled")
 	@ConditionalOnSingleCandidate(KafkaTemplate.class)
-	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaTemplate<?, ?> kafkaTemplate) {
+	RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaTemplate<?, ?> kafkaTemplate) {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
 		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
 			.maxAttempts(retryTopic.getAttempts())

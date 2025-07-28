@@ -42,11 +42,11 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class, EnableWebFluxSecurity.class })
 @ConditionalOnBean(GraphQlHttpHandler.class)
-public class GraphQlWebFluxSecurityAutoConfiguration {
+public final class GraphQlWebFluxSecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveSecurityDataFetcherExceptionResolver reactiveSecurityDataFetcherExceptionResolver() {
+	ReactiveSecurityDataFetcherExceptionResolver reactiveSecurityDataFetcherExceptionResolver() {
 		return new ReactiveSecurityDataFetcherExceptionResolver();
 	}
 

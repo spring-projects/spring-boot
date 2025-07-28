@@ -62,7 +62,7 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(JettyServerProperties.class)
 @Import({ JettyWebServerConfiguration.class, ServletWebServerConfiguration.class })
-public class JettyServletWebServerAutoConfiguration {
+public final class JettyServletWebServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)

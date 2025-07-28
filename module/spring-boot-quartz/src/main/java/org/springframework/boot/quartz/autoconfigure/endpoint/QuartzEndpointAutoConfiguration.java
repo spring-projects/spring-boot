@@ -44,12 +44,12 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ Scheduler.class, QuartzEndpoint.class, ConditionalOnAvailableEndpoint.class })
 @ConditionalOnAvailableEndpoint(QuartzEndpoint.class)
 @EnableConfigurationProperties(QuartzEndpointProperties.class)
-public class QuartzEndpointAutoConfiguration {
+public final class QuartzEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(Scheduler.class)
 	@ConditionalOnMissingBean
-	public QuartzEndpoint quartzEndpoint(Scheduler scheduler, ObjectProvider<SanitizingFunction> sanitizingFunctions) {
+	QuartzEndpoint quartzEndpoint(Scheduler scheduler, ObjectProvider<SanitizingFunction> sanitizingFunctions) {
 		return new QuartzEndpoint(scheduler, sanitizingFunctions.orderedStream().toList());
 	}
 
@@ -57,7 +57,7 @@ public class QuartzEndpointAutoConfiguration {
 	@ConditionalOnBean(QuartzEndpoint.class)
 	@ConditionalOnMissingBean
 	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
-	public QuartzEndpointWebExtension quartzEndpointWebExtension(QuartzEndpoint endpoint,
+	QuartzEndpointWebExtension quartzEndpointWebExtension(QuartzEndpoint endpoint,
 			QuartzEndpointProperties properties) {
 		return new QuartzEndpointWebExtension(endpoint, properties.getShowValues(), properties.getRoles());
 	}

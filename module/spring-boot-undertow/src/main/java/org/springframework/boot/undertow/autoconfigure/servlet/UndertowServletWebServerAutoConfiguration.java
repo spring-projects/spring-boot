@@ -57,7 +57,7 @@ import org.springframework.core.task.VirtualThreadTaskExecutor;
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(UndertowServerProperties.class)
 @Import({ UndertowWebServerConfiguration.class, ServletWebServerConfiguration.class })
-public class UndertowServletWebServerAutoConfiguration {
+public final class UndertowServletWebServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)

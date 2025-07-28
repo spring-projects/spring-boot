@@ -47,18 +47,17 @@ import org.springframework.web.server.session.WebSessionManager;
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({ WebSessionManager.class, Mono.class })
 @EnableConfigurationProperties({ WebFluxProperties.class, ServerProperties.class })
-public class WebSessionIdResolverAutoConfiguration {
+public final class WebSessionIdResolverAutoConfiguration {
 
 	private final ServerProperties serverProperties;
 
-	public WebSessionIdResolverAutoConfiguration(ServerProperties serverProperties,
-			WebFluxProperties webFluxProperties) {
+	WebSessionIdResolverAutoConfiguration(ServerProperties serverProperties, WebFluxProperties webFluxProperties) {
 		this.serverProperties = serverProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebSessionIdResolver webSessionIdResolver() {
+	WebSessionIdResolver webSessionIdResolver() {
 		CookieWebSessionIdResolver resolver = new CookieWebSessionIdResolver();
 		String cookieName = this.serverProperties.getReactive().getSession().getCookie().getName();
 		if (StringUtils.hasText(cookieName)) {

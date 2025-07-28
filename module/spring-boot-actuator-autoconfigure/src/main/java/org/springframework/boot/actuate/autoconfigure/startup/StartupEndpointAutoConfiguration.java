@@ -40,11 +40,11 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(StartupEndpoint.class)
 @Conditional(StartupEndpointAutoConfiguration.ApplicationStartupCondition.class)
-public class StartupEndpointAutoConfiguration {
+public final class StartupEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StartupEndpoint startupEndpoint(BufferingApplicationStartup applicationStartup) {
+	StartupEndpoint startupEndpoint(BufferingApplicationStartup applicationStartup) {
 		return new StartupEndpoint(applicationStartup);
 	}
 

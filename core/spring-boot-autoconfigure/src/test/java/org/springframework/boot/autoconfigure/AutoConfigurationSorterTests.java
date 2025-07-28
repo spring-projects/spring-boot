@@ -318,7 +318,7 @@ class AutoConfigurationSorterTests {
 	}
 
 	@AutoConfiguration(after = AutoConfigureB2.class)
-	static class AutoConfigureA3 {
+	public static final class AutoConfigureA3 {
 
 	}
 
@@ -333,7 +333,7 @@ class AutoConfigurationSorterTests {
 	}
 
 	@AutoConfiguration(after = { AutoConfigureC.class })
-	static class AutoConfigureB2 {
+	public static final class AutoConfigureB2 {
 
 	}
 
@@ -381,7 +381,7 @@ class AutoConfigurationSorterTests {
 	}
 
 	@AutoConfiguration(before = AutoConfigureX.class)
-	static class AutoConfigureY2 {
+	public static final class AutoConfigureY2 {
 
 	}
 
@@ -397,7 +397,7 @@ class AutoConfigurationSorterTests {
 	}
 
 	@AutoConfiguration(before = AutoConfigureY2.class)
-	static class AutoConfigureZ2 {
+	public static final class AutoConfigureZ2 {
 
 	}
 

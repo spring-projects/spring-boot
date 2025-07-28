@@ -50,14 +50,13 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(SecurityProperties.class)
 @ConditionalOnClass({ AbstractSecurityWebApplicationInitializer.class, SessionCreationPolicy.class })
-public class SecurityFilterAutoConfiguration {
+public final class SecurityFilterAutoConfiguration {
 
 	private static final String DEFAULT_FILTER_NAME = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME;
 
 	@Bean
 	@ConditionalOnBean(name = DEFAULT_FILTER_NAME)
-	public DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(
-			SecurityProperties securityProperties) {
+	DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(SecurityProperties securityProperties) {
 		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean(
 				DEFAULT_FILTER_NAME);
 		registration.setOrder(securityProperties.getFilter().getOrder());

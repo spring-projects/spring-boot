@@ -51,49 +51,49 @@ import org.springframework.util.ClassUtils;
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
-public class JvmMetricsAutoConfiguration {
+public final class JvmMetricsAutoConfiguration {
 
 	private static final String VIRTUAL_THREAD_METRICS_CLASS = "io.micrometer.java21.instrument.binder.jdk.VirtualThreadMetrics";
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JvmGcMetrics jvmGcMetrics() {
+	JvmGcMetrics jvmGcMetrics() {
 		return new JvmGcMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JvmHeapPressureMetrics jvmHeapPressureMetrics() {
+	JvmHeapPressureMetrics jvmHeapPressureMetrics() {
 		return new JvmHeapPressureMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JvmMemoryMetrics jvmMemoryMetrics() {
+	JvmMemoryMetrics jvmMemoryMetrics() {
 		return new JvmMemoryMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JvmThreadMetrics jvmThreadMetrics() {
+	JvmThreadMetrics jvmThreadMetrics() {
 		return new JvmThreadMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ClassLoaderMetrics classLoaderMetrics() {
+	ClassLoaderMetrics classLoaderMetrics() {
 		return new ClassLoaderMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JvmInfoMetrics jvmInfoMetrics() {
+	JvmInfoMetrics jvmInfoMetrics() {
 		return new JvmInfoMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JvmCompilationMetrics jvmCompilationMetrics() {
+	JvmCompilationMetrics jvmCompilationMetrics() {
 		return new JvmCompilationMetrics();
 	}
 

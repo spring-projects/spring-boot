@@ -42,7 +42,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 		afterName = "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration")
 @ConditionalOnClass({ HazelcastInstance.class, LocalContainerEntityManagerFactoryBean.class })
 @Import(HazelcastInstanceEntityManagerFactoryDependsOnConfiguration.class)
-public class HazelcastJpaDependencyAutoConfiguration {
+public final class HazelcastJpaDependencyAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(EntityManagerFactoryDependsOnPostProcessor.class)

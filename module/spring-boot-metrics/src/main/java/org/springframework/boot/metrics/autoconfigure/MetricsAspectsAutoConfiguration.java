@@ -48,7 +48,7 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass({ MeterRegistry.class, Advice.class })
 @ConditionalOnBooleanProperty("management.observations.annotations.enabled")
 @ConditionalOnBean(MeterRegistry.class)
-public class MetricsAspectsAutoConfiguration {
+public final class MetricsAspectsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

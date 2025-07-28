@@ -50,6 +50,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class, OtlpHttpSpanExporter.class })
 @EnableConfigurationProperties(OtlpTracingProperties.class)
 @Import({ OtlpTracingConfigurations.ConnectionDetails.class, OtlpTracingConfigurations.Exporters.class })
-public class OtlpTracingAutoConfiguration {
+public final class OtlpTracingAutoConfiguration {
 
 }

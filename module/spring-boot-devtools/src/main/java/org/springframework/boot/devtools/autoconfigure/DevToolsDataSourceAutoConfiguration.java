@@ -63,7 +63,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @Conditional(DevToolsDataSourceCondition.class)
 @AutoConfiguration(afterName = "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration")
 @Import(DatabaseShutdownExecutorEntityManagerFactoryDependsOnConfiguration.class)
-public class DevToolsDataSourceAutoConfiguration {
+public final class DevToolsDataSourceAutoConfiguration {
 
 	@Bean
 	NonEmbeddedInMemoryDatabaseShutdownExecutor inMemoryDatabaseShutdownExecutor(DataSource dataSource,

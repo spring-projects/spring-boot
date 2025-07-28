@@ -45,7 +45,7 @@ import org.springframework.mail.MailSender;
 @Conditional(MailSenderCondition.class)
 @EnableConfigurationProperties(MailProperties.class)
 @Import({ MailSenderJndiConfiguration.class, MailSenderPropertiesConfiguration.class })
-public class MailSenderAutoConfiguration {
+public final class MailSenderAutoConfiguration {
 
 	/**
 	 * Condition to trigger the creation of a {@link MailSender}. This kicks in if either

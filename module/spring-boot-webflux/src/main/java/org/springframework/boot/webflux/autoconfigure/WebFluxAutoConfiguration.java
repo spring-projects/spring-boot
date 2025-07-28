@@ -115,20 +115,20 @@ import org.springframework.web.server.session.WebSessionManager;
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @ImportRuntimeHints(WebResourcesRuntimeHints.class)
-public class WebFluxAutoConfiguration {
+public final class WebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	@ConditionalOnBooleanProperty("spring.webflux.hiddenmethod.filter.enabled")
-	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
+	OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class WelcomePageConfiguration {
+	static class WelcomePageConfiguration {
 
 		@Bean
-		public RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
+		RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
 				WebFluxProperties webFluxProperties, WebProperties webProperties) {
 			String[] staticLocations = webProperties.getResources().getStaticLocations();
 			WelcomePageRouterFunctionFactory factory = new WelcomePageRouterFunctionFactory(
@@ -149,7 +149,7 @@ public class WebFluxAutoConfiguration {
 	@EnableConfigurationProperties({ WebProperties.class, WebFluxProperties.class })
 	@Import({ EnableWebFluxConfiguration.class })
 	@Order(0)
-	public static class WebFluxConfig implements WebFluxConfigurer {
+	static class WebFluxConfig implements WebFluxConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebFluxConfig.class);
 
@@ -169,7 +169,7 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
-		public WebFluxConfig(Environment environment, WebProperties webProperties, WebFluxProperties webFluxProperties,
+		WebFluxConfig(Environment environment, WebProperties webProperties, WebFluxProperties webFluxProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizers,
@@ -259,7 +259,7 @@ public class WebFluxAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ WebProperties.class, ServerProperties.class })
-	public static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
+	static class EnableWebFluxConfiguration extends DelegatingWebFluxConfiguration {
 
 		private final WebFluxProperties webFluxProperties;
 
@@ -269,7 +269,7 @@ public class WebFluxAutoConfiguration {
 
 		private final WebFluxRegistrations webFluxRegistrations;
 
-		public EnableWebFluxConfiguration(WebFluxProperties webFluxProperties, WebProperties webProperties,
+		EnableWebFluxConfiguration(WebFluxProperties webFluxProperties, WebProperties webProperties,
 				ServerProperties serverProperties, ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
 			this.webFluxProperties = webFluxProperties;
 			this.webProperties = webProperties;
@@ -336,7 +336,7 @@ public class WebFluxAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME)
-		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolver) {
+		WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolver) {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
 			Duration timeout = this.serverProperties.getReactive().getSession().getTimeout();
 			int maxSessions = this.serverProperties.getReactive().getSession().getMaxSessions();

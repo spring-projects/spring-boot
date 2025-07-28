@@ -53,11 +53,11 @@ import org.springframework.core.annotation.Order;
 @AutoConfiguration(before = CompositeMeterRegistryAutoConfiguration.class)
 @ConditionalOnClass(Timed.class)
 @EnableConfigurationProperties(MetricsProperties.class)
-public class MetricsAutoConfiguration {
+public final class MetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Clock micrometerClock() {
+	Clock micrometerClock() {
 		return Clock.SYSTEM;
 	}
 
@@ -72,7 +72,7 @@ public class MetricsAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	public PropertiesMeterFilter propertiesMeterFilter(MetricsProperties properties) {
+	PropertiesMeterFilter propertiesMeterFilter(MetricsProperties properties) {
 		return new PropertiesMeterFilter(properties);
 	}
 

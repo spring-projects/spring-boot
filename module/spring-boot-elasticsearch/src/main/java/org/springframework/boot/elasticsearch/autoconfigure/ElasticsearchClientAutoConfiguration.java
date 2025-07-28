@@ -40,6 +40,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass(ElasticsearchClient.class)
 @Import({ JsonpMapperConfiguration.class, ElasticsearchTransportConfiguration.class,
 		ElasticsearchClientConfiguration.class })
-public class ElasticsearchClientAutoConfiguration {
+public final class ElasticsearchClientAutoConfiguration {
 
 }

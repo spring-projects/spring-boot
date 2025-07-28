@@ -33,11 +33,11 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnAvailableEndpoint(ConditionsReportEndpoint.class)
-public class ConditionsReportEndpointAutoConfiguration {
+public final class ConditionsReportEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
-	public ConditionsReportEndpoint conditionsReportEndpoint(ConfigurableApplicationContext context) {
+	ConditionsReportEndpoint conditionsReportEndpoint(ConfigurableApplicationContext context) {
 		return new ConditionsReportEndpoint(context);
 	}
 

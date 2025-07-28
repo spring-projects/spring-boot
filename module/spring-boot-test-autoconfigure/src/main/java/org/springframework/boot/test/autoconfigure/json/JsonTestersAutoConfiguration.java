@@ -64,17 +64,17 @@ import org.springframework.util.ReflectionUtils;
 		"org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration" })
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")
 @ConditionalOnBooleanProperty("spring.test.jsontesters.enabled")
-public class JsonTestersAutoConfiguration {
+public final class JsonTestersAutoConfiguration {
 
 	@Bean
-	public static JsonMarshalTestersBeanPostProcessor jsonMarshalTestersBeanPostProcessor() {
+	static JsonMarshalTestersBeanPostProcessor jsonMarshalTestersBeanPostProcessor() {
 		return new JsonMarshalTestersBeanPostProcessor();
 	}
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ImportRuntimeHints(BasicJsonTesterRuntimeHints.class)
-	public FactoryBean<BasicJsonTester> basicJsonTesterFactoryBean() {
+	FactoryBean<BasicJsonTester> basicJsonTesterFactoryBean() {
 		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class, null);
 	}
 

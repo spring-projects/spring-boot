@@ -55,6 +55,6 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
 @ConditionalOnMissingBean({ MongoRepositoryFactoryBean.class, MongoRepositoryConfigurationExtension.class })
 @ConditionalOnRepositoryType(store = "mongodb", type = RepositoryType.IMPERATIVE)
 @Import(MongoRepositoriesRegistrar.class)
-public class MongoRepositoriesAutoConfiguration {
+public final class MongoRepositoriesAutoConfiguration {
 
 }

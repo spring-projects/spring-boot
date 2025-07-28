@@ -72,7 +72,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnBean(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
 @Import(MongoDataConfiguration.class)
-public class MongoReactiveDataAutoConfiguration {
+public final class MongoReactiveDataAutoConfiguration {
 
 	private final MongoConnectionDetails connectionDetails;
 
@@ -82,8 +82,7 @@ public class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
-	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongo,
-			MongoProperties properties) {
+	SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongo, MongoProperties properties) {
 		String database = properties.getDatabase();
 		if (database == null) {
 			database = this.connectionDetails.getConnectionString().getDatabase();
@@ -93,20 +92,20 @@ public class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoOperations.class)
-	public ReactiveMongoTemplate reactiveMongoTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
+	ReactiveMongoTemplate reactiveMongoTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MongoConverter converter) {
 		return new ReactiveMongoTemplate(reactiveMongoDatabaseFactory, converter);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(DataBufferFactory.class)
-	public DefaultDataBufferFactory dataBufferFactory() {
+	DefaultDataBufferFactory dataBufferFactory() {
 		return new DefaultDataBufferFactory();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
-	public ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
+	ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
 			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory) {
 		return new ReactiveGridFsTemplate(dataBufferFactory,
 				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, this.connectionDetails),

@@ -39,7 +39,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 @ConditionalOnClass(ClientRegistration.class)
 @Import({ OAuth2ClientConfigurations.ClientRegistrationRepositoryConfiguration.class,
 		OAuth2ClientConfigurations.OAuth2AuthorizedClientServiceConfiguration.class })
-public class OAuth2ClientAutoConfiguration {
+public final class OAuth2ClientAutoConfiguration {
 
 	static class NonReactiveWebApplicationCondition extends NoneNestedConditions {
 

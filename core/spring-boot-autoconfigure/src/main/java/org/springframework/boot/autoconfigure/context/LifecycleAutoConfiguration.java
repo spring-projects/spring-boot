@@ -34,12 +34,12 @@ import org.springframework.context.support.DefaultLifecycleProcessor;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(LifecycleProperties.class)
-public class LifecycleAutoConfiguration {
+public final class LifecycleAutoConfiguration {
 
 	@Bean(name = AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME)
 	@ConditionalOnMissingBean(name = AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME,
 			search = SearchStrategy.CURRENT)
-	public DefaultLifecycleProcessor defaultLifecycleProcessor(LifecycleProperties properties) {
+	DefaultLifecycleProcessor defaultLifecycleProcessor(LifecycleProperties properties) {
 		DefaultLifecycleProcessor lifecycleProcessor = new DefaultLifecycleProcessor();
 		lifecycleProcessor.setTimeoutPerShutdownPhase(properties.getTimeoutPerShutdownPhase().toMillis());
 		return lifecycleProcessor;

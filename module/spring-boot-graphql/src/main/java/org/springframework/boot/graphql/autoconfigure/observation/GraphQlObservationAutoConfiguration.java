@@ -43,7 +43,7 @@ import org.springframework.graphql.observation.GraphQlObservationInstrumentation
 @AutoConfiguration(afterName = "org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnBean(ObservationRegistry.class)
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class, Observation.class })
-public class GraphQlObservationAutoConfiguration {
+public final class GraphQlObservationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
