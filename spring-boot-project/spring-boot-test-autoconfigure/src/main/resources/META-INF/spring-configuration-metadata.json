@@ -7,22 +7,34 @@
       "defaultValue": "any"
     },
     {
+      "name": "spring.test.mockmvc.add-filters",
+      "type": "java.lang.Boolean",
+      "description": "Whether to add servlet filters.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.test.mockmvc.print",
       "type": "org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint",
       "description": "MVC Print option.",
       "defaultValue": "default"
     },
     {
+      "name": "spring.test.mockmvc.print-only-on-failures",
+      "type": "java.lang.Boolean",
+      "description": "Whether to only print failed exchanges.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.test.observability.auto-configure",
       "type": "java.lang.Boolean",
       "description": "Whether observability should be auto-configured in tests.",
-      "defaultValue": "false"
+      "defaultValue": false
     },
     {
       "name": "spring.test.print-condition-evaluation-report",
       "type": "java.lang.Boolean",
       "description": "Whether the condition evaluation report should be printed when the ApplicationContext fails to start.",
-      "defaultValue": "true"
+      "defaultValue": true
     }
   ]
 }
