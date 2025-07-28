@@ -112,6 +112,15 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.influxdb.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable InfluxDB health check.",
+      "deprecation": {
+        "level": "error",
+        "reason": "The InfluxDB HealthIndicator has been removed in Spring Boot 3.4. This property is no longer supported."
+      }
+    },
+    {
       "name": "management.health.livenessstate.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable liveness state health check.",
