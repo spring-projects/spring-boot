@@ -18,17 +18,13 @@ package org.springframework.boot.configurationprocessor;
 
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
-import org.springframework.boot.configurationprocessor.test.CompiledMetadataReader;
-import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
 import org.springframework.boot.configurationsample.deprecation.Dbcp2Configuration;
-import org.springframework.boot.configurationsample.fieldvalues.ArithmeticExpressionProperties;
 import org.springframework.boot.configurationsample.method.NestedPropertiesMethod;
 import org.springframework.boot.configurationsample.record.ExampleRecord;
 import org.springframework.boot.configurationsample.record.NestedPropertiesRecord;
@@ -71,9 +67,6 @@ import org.springframework.boot.configurationsample.specific.InvalidDoubleRegist
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 import org.springframework.boot.configurationsample.specific.StaticAccessor;
 import org.springframework.core.test.tools.CompilationException;
-import org.springframework.core.test.tools.ResourceFile;
-import org.springframework.core.test.tools.SourceFile;
-import org.springframework.core.test.tools.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -89,7 +82,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Pavel Anisimov
  * @author Scott Frederick
  * @author Moritz Halbritter
- * @author Hyeon Jae Kim
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -576,21 +568,6 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.withDescription("description without space after asterisk"));
 		assertThat(metadata).has(Metadata.withProperty("record.descriptions.some-byte", Byte.class)
 			.withDescription("last description in Javadoc"));
-	}
-
-	@Test
-	void arithmeticExpressionPropertiesShouldOmitUnknownDefaultValues(){
-		ConfigurationMetadata metadata = compile(ArithmeticExpressionProperties.class);
-		assertThat(metadata).has(Metadata.withProperty("arithmetic.calculated", Integer.class)
-				.fromSource(ArithmeticExpressionProperties.class));
-		assertThat(metadata).has(Metadata.withProperty("arithmetic.literal", Integer.class)
-				.fromSource(ArithmeticExpressionProperties.class)
-				.withDefaultValue(100));
-		assertThat(metadata).has(Metadata.withProperty("arithmetic.simple-flag", Boolean.class)
-				.fromSource(ArithmeticExpressionProperties.class)
-				.withDefaultValue(true));
-		assertThat(metadata).has(Metadata.withProperty("arithmetic.complex-flag", Boolean.class)
-				.fromSource(ArithmeticExpressionProperties.class));
 	}
 
 }

@@ -85,4 +85,5 @@
 	<suppress files="MyInterface\.java" checks="InterfaceIsType" />
 	<suppress files="SpringBootBanner\.java" checks="SpringLeadingWhitespace" />
 	<suppress files="LoadTimeWeaverAwareConsumerContainers\.java" checks="InterfaceIsType" />
+	<suppress files="FieldValues\.java" checks="SimplifyBooleanExpression" />
 </suppressions>
