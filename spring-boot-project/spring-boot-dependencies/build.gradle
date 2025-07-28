@@ -916,7 +916,6 @@ bom {
 			]
 		}
 		links {
-			releaseNotes("https://github.com/jakartaee/rest/releases/tag/{version}")
 			javadoc(version -> "https://jakarta.ee/specifications/restful-ws/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()), "jakarta.ws.rs")
 		}
