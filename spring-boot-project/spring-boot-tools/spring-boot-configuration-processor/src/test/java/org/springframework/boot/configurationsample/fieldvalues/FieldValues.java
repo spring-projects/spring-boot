@@ -64,6 +64,8 @@ public class FieldValues {
 
 	private boolean boolConst = BOOLEAN_CONST;
 
+	private boolean boolInverted = !false;
+
 	private Boolean boolObject = Boolean.TRUE;
 
 	private Boolean boolObjectNone;
@@ -75,6 +77,10 @@ public class FieldValues {
 	private int integerNone;
 
 	private int integerConst = INTEGER_CONST;
+
+	private int integerArithmetic = 10 * 10;
+
+	private int integerMax = Math.max(10, 20);
 
 	private Integer integerObject = 3;
 
@@ -109,6 +115,8 @@ public class FieldValues {
 	private String[] stringArrayConstElements = new String[] { STRING_CONST };
 
 	private Integer[] integerArray = new Integer[] { 42, 24 };
+
+	private int[] intArrayUnsupportedExpression = new int[] { 10 + 10 };
 
 	private UnknownElementType[] unknownArray = new UnknownElementType[] { new UnknownElementType() };
 
