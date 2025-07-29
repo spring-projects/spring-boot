@@ -16,6 +16,8 @@
 
 package org.springframework.boot.batch.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.transaction.annotation.Isolation;
@@ -76,7 +78,7 @@ public class BatchProperties {
 		/**
 		 * Transaction isolation level to use when creating job meta-data for new jobs.
 		 */
-		private Isolation isolationLevelForCreate;
+		private @Nullable Isolation isolationLevelForCreate;
 
 		/**
 		 * Path to the SQL file to use to initialize the database schema.
@@ -87,12 +89,12 @@ public class BatchProperties {
 		 * Platform to use in initialization scripts if the @@platform@@ placeholder is
 		 * used. Auto-detected by default.
 		 */
-		private String platform;
+		private @Nullable String platform;
 
 		/**
 		 * Table prefix for all the batch meta-data tables.
 		 */
-		private String tablePrefix;
+		private @Nullable String tablePrefix;
 
 		/**
 		 * Database schema initialization mode.
@@ -107,11 +109,11 @@ public class BatchProperties {
 			this.validateTransactionState = validateTransactionState;
 		}
 
-		public Isolation getIsolationLevelForCreate() {
+		public @Nullable Isolation getIsolationLevelForCreate() {
 			return this.isolationLevelForCreate;
 		}
 
-		public void setIsolationLevelForCreate(Isolation isolationLevelForCreate) {
+		public void setIsolationLevelForCreate(@Nullable Isolation isolationLevelForCreate) {
 			this.isolationLevelForCreate = isolationLevelForCreate;
 		}
 
@@ -123,19 +125,19 @@ public class BatchProperties {
 			this.schema = schema;
 		}
 
-		public String getPlatform() {
+		public @Nullable String getPlatform() {
 			return this.platform;
 		}
 
-		public void setPlatform(String platform) {
+		public void setPlatform(@Nullable String platform) {
 			this.platform = platform;
 		}
 
-		public String getTablePrefix() {
+		public @Nullable String getTablePrefix() {
 			return this.tablePrefix;
 		}
 
-		public void setTablePrefix(String tablePrefix) {
+		public void setTablePrefix(@Nullable String tablePrefix) {
 			this.tablePrefix = tablePrefix;
 		}
 

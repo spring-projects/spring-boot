@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
@@ -74,14 +75,15 @@ public class JobLauncherApplicationRunner
 
 	private final JobOperator jobOperator;
 
-	private JobRegistry jobRegistry;
+	private @Nullable JobRegistry jobRegistry;
 
-	private String jobName;
+	private @Nullable String jobName;
 
 	private Collection<Job> jobs = Collections.emptySet();
 
 	private int order = DEFAULT_ORDER;
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationEventPublisher publisher;
 
 	/**
@@ -147,7 +149,7 @@ public class JobLauncherApplicationRunner
 		launchJobFromProperties(StringUtils.splitArrayElementsIntoProperties(args, "="));
 	}
 
-	protected void launchJobFromProperties(Properties properties) throws JobExecutionException {
+	protected void launchJobFromProperties(@Nullable Properties properties) throws JobExecutionException {
 		JobParameters jobParameters = this.converter.getJobParameters(properties);
 		executeLocalJobs(jobParameters);
 		executeRegisteredJobs(jobParameters);

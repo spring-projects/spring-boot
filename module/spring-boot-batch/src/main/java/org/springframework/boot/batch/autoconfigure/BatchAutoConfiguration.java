@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConfiguration;
@@ -103,15 +105,15 @@ public final class BatchAutoConfiguration {
 
 		private final PlatformTransactionManager transactionManager;
 
-		private final TaskExecutor taskExecutor;
+		private final @Nullable TaskExecutor taskExecutor;
 
 		private final BatchProperties properties;
 
 		private final List<BatchConversionServiceCustomizer> batchConversionServiceCustomizers;
 
-		private final ExecutionContextSerializer executionContextSerializer;
+		private final @Nullable ExecutionContextSerializer executionContextSerializer;
 
-		private final JobParametersConverter jobParametersConverter;
+		private final @Nullable JobParametersConverter jobParametersConverter;
 
 		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager,
