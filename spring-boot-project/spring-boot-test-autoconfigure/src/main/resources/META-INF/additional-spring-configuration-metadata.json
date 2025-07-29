@@ -11,6 +11,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether observability should be auto-configured in tests.",
       "defaultValue": false
+    },
+    {
+      "name": "spring.test.webtestclient.timeout",
+      "type": "java.time.Duration",
+      "description": "Maximum amount of time to wait for responses.",
+      "defaultValue": "5s"
     }
   ]
 }
