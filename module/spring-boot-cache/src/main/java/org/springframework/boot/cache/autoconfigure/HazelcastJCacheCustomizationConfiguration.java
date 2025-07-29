@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.Properties;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -45,11 +46,11 @@ class HazelcastJCacheCustomizationConfiguration {
 
 	static class HazelcastPropertiesCustomizer implements JCachePropertiesCustomizer {
 
-		private final HazelcastInstance hazelcastInstance;
+		private final @Nullable HazelcastInstance hazelcastInstance;
 
 		private final CacheProperties cacheProperties;
 
-		HazelcastPropertiesCustomizer(HazelcastInstance hazelcastInstance, CacheProperties cacheProperties) {
+		HazelcastPropertiesCustomizer(@Nullable HazelcastInstance hazelcastInstance, CacheProperties cacheProperties) {
 			this.hazelcastInstance = hazelcastInstance;
 			this.cacheProperties = cacheProperties;
 		}

@@ -23,6 +23,7 @@ import com.hazelcast.spring.cache.HazelcastCache;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
@@ -55,6 +56,7 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 	private MeterBinder createHazelcast4CacheMetrics(HazelcastCache cache, Iterable<Tag> tags) {
 		try {
 			Method nativeCacheAccessor = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
+			Assert.state(nativeCacheAccessor != null, "'nativeCacheAccessor' must not be null");
 			Object nativeCache = ReflectionUtils.invokeMethod(nativeCacheAccessor, cache);
 			return HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class)
 				.newInstance(nativeCache, tags);
@@ -67,7 +69,7 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 	static class HazelcastCacheMeterBinderProviderRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			try {
 				Method getNativeCacheMethod = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
 				Assert.state(getNativeCacheMethod != null, "Unable to find 'getNativeCache' method");

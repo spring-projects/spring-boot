@@ -17,4 +17,7 @@
 /**
  * Metrics for caches.
  */
+@NullMarked
 package org.springframework.boot.cache.metrics;
+
+import org.jspecify.annotations.NullMarked;

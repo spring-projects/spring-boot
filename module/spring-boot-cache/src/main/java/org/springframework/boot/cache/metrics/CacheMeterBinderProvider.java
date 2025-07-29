@@ -18,6 +18,7 @@ package org.springframework.boot.cache.metrics;
 
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.cache.Cache;
 
@@ -38,6 +39,6 @@ public interface CacheMeterBinderProvider<C extends Cache> {
 	 * @param tags tags to apply to all recorded metrics
 	 * @return a {@link MeterBinder} handling the specified {@link Cache} or {@code null}
 	 */
-	MeterBinder getMeterBinder(C cache, Iterable<Tag> tags);
+	@Nullable MeterBinder getMeterBinder(C cache, Iterable<Tag> tags);
 
 }

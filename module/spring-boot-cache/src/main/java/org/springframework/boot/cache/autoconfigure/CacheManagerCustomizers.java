@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.cache.CacheManager;
 
@@ -34,7 +36,7 @@ public class CacheManagerCustomizers {
 
 	private final List<CacheManagerCustomizer<?>> customizers;
 
-	public CacheManagerCustomizers(List<? extends CacheManagerCustomizer<?>> customizers) {
+	public CacheManagerCustomizers(@Nullable List<? extends CacheManagerCustomizer<?>> customizers) {
 		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
 	}
 

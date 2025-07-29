@@ -21,6 +21,7 @@ import java.util.List;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -65,8 +66,8 @@ class CaffeineCacheConfiguration {
 		return cacheManager;
 	}
 
-	private void setCacheBuilder(CacheProperties cacheProperties, CaffeineSpec caffeineSpec,
-			Caffeine<Object, Object> caffeine, CaffeineCacheManager cacheManager) {
+	private void setCacheBuilder(CacheProperties cacheProperties, @Nullable CaffeineSpec caffeineSpec,
+			@Nullable Caffeine<Object, Object> caffeine, CaffeineCacheManager cacheManager) {
 		String specification = cacheProperties.getCaffeine().getSpec();
 		if (StringUtils.hasText(specification)) {
 			cacheManager.setCacheSpecification(specification);

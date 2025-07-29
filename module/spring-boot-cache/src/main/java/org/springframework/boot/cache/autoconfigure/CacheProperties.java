@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.cache.CacheType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -39,7 +41,7 @@ public class CacheProperties {
 	/**
 	 * Cache type. By default, auto-detected according to the environment.
 	 */
-	private CacheType type;
+	private @Nullable CacheType type;
 
 	/**
 	 * List of cache names to create if supported by the underlying cache manager.
@@ -57,11 +59,11 @@ public class CacheProperties {
 
 	private final Redis redis = new Redis();
 
-	public CacheType getType() {
+	public @Nullable CacheType getType() {
 		return this.type;
 	}
 
-	public void setType(CacheType mode) {
+	public void setType(@Nullable CacheType mode) {
 		this.type = mode;
 	}
 
@@ -100,7 +102,7 @@ public class CacheProperties {
 	 * @throws IllegalArgumentException if the config attribute is set to an unknown
 	 * location
 	 */
-	public Resource resolveConfigLocation(Resource config) {
+	public @Nullable Resource resolveConfigLocation(@Nullable Resource config) {
 		if (config != null) {
 			Assert.isTrue(config.exists(),
 					() -> "'config' resource [%s] must exist".formatted(config.getDescription()));
@@ -118,13 +120,13 @@ public class CacheProperties {
 		 * The spec to use to create caches. See CaffeineSpec for more details on the spec
 		 * format.
 		 */
-		private String spec;
+		private @Nullable String spec;
 
-		public String getSpec() {
+		public @Nullable String getSpec() {
 			return this.spec;
 		}
 
-		public void setSpec(String spec) {
+		public void setSpec(@Nullable String spec) {
 			this.spec = spec;
 		}
 
@@ -139,13 +141,13 @@ public class CacheProperties {
 		 * Entry expiration. By default the entries never expire. Note that this value is
 		 * ultimately converted to seconds.
 		 */
-		private Duration expiration;
+		private @Nullable Duration expiration;
 
-		public Duration getExpiration() {
+		public @Nullable Duration getExpiration() {
 			return this.expiration;
 		}
 
-		public void setExpiration(Duration expiration) {
+		public void setExpiration(@Nullable Duration expiration) {
 			this.expiration = expiration;
 		}
 
@@ -159,13 +161,13 @@ public class CacheProperties {
 		/**
 		 * The location of the configuration file to use to initialize Infinispan.
 		 */
-		private Resource config;
+		private @Nullable Resource config;
 
-		public Resource getConfig() {
+		public @Nullable Resource getConfig() {
 			return this.config;
 		}
 
-		public void setConfig(Resource config) {
+		public void setConfig(@Nullable Resource config) {
 			this.config = config;
 		}
 
@@ -180,28 +182,28 @@ public class CacheProperties {
 		 * The location of the configuration file to use to initialize the cache manager.
 		 * The configuration file is dependent of the underlying cache implementation.
 		 */
-		private Resource config;
+		private @Nullable Resource config;
 
 		/**
 		 * Fully qualified name of the CachingProvider implementation to use to retrieve
 		 * the JSR-107 compliant cache manager. Needed only if more than one JSR-107
 		 * implementation is available on the classpath.
 		 */
-		private String provider;
+		private @Nullable String provider;
 
-		public String getProvider() {
+		public @Nullable String getProvider() {
 			return this.provider;
 		}
 
-		public void setProvider(String provider) {
+		public void setProvider(@Nullable String provider) {
 			this.provider = provider;
 		}
 
-		public Resource getConfig() {
+		public @Nullable Resource getConfig() {
 			return this.config;
 		}
 
-		public void setConfig(Resource config) {
+		public void setConfig(@Nullable Resource config) {
 			this.config = config;
 		}
 
@@ -215,7 +217,7 @@ public class CacheProperties {
 		/**
 		 * Entry expiration. By default the entries never expire.
 		 */
-		private Duration timeToLive;
+		private @Nullable Duration timeToLive;
 
 		/**
 		 * Allow caching null values.
@@ -225,7 +227,7 @@ public class CacheProperties {
 		/**
 		 * Key prefix.
 		 */
-		private String keyPrefix;
+		private @Nullable String keyPrefix;
 
 		/**
 		 * Whether to use the key prefix when writing to Redis.
@@ -237,11 +239,11 @@ public class CacheProperties {
 		 */
 		private boolean enableStatistics;
 
-		public Duration getTimeToLive() {
+		public @Nullable Duration getTimeToLive() {
 			return this.timeToLive;
 		}
 
-		public void setTimeToLive(Duration timeToLive) {
+		public void setTimeToLive(@Nullable Duration timeToLive) {
 			this.timeToLive = timeToLive;
 		}
 
@@ -253,11 +255,11 @@ public class CacheProperties {
 			this.cacheNullValues = cacheNullValues;
 		}
 
-		public String getKeyPrefix() {
+		public @Nullable String getKeyPrefix() {
 			return this.keyPrefix;
 		}
 
-		public void setKeyPrefix(String keyPrefix) {
+		public void setKeyPrefix(@Nullable String keyPrefix) {
 			this.keyPrefix = keyPrefix;
 		}
 

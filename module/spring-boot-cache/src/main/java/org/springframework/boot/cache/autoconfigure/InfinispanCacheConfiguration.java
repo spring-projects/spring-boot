@@ -24,6 +24,7 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -80,7 +81,7 @@ public class InfinispanCacheConfiguration {
 	}
 
 	private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration(
-			ConfigurationBuilder defaultConfigurationBuilder) {
+			@Nullable ConfigurationBuilder defaultConfigurationBuilder) {
 		if (defaultConfigurationBuilder != null) {
 			return defaultConfigurationBuilder.build();
 		}

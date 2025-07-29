@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for the cache abstraction metrics.
  */
+@NullMarked
 package org.springframework.boot.cache.autoconfigure.metrics;
+
+import org.jspecify.annotations.NullMarked;

@@ -26,6 +26,8 @@ import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -61,6 +63,7 @@ import org.springframework.util.StringUtils;
 @Import(HazelcastJCacheCustomizationConfiguration.class)
 class JCacheCacheConfiguration implements BeanClassLoaderAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
 	@Override
@@ -103,7 +106,7 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 		return cachingProvider.getCacheManager(null, this.beanClassLoader, properties);
 	}
 
-	private CachingProvider getCachingProvider(String cachingProviderFqn) {
+	private CachingProvider getCachingProvider(@Nullable String cachingProviderFqn) {
 		if (StringUtils.hasText(cachingProviderFqn)) {
 			return Caching.getCachingProvider(cachingProviderFqn);
 		}

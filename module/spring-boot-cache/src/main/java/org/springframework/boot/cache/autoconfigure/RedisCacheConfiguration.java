@@ -19,6 +19,8 @@ package org.springframework.boot.cache.autoconfigure;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -73,12 +75,12 @@ class RedisCacheConfiguration {
 	private org.springframework.data.redis.cache.RedisCacheConfiguration determineConfiguration(
 			CacheProperties cacheProperties,
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
-			ClassLoader classLoader) {
+			@Nullable ClassLoader classLoader) {
 		return redisCacheConfiguration.getIfAvailable(() -> createConfiguration(cacheProperties, classLoader));
 	}
 
 	private org.springframework.data.redis.cache.RedisCacheConfiguration createConfiguration(
-			CacheProperties cacheProperties, ClassLoader classLoader) {
+			CacheProperties cacheProperties, @Nullable ClassLoader classLoader) {
 		Redis redisProperties = cacheProperties.getRedis();
 		org.springframework.data.redis.cache.RedisCacheConfiguration config = org.springframework.data.redis.cache.RedisCacheConfiguration
 			.defaultCacheConfig();

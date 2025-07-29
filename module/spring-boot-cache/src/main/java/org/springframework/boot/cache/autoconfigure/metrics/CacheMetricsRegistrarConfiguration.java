@@ -31,6 +31,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -69,8 +70,11 @@ class CacheMetricsRegistrarConfiguration {
 	}
 
 	private void bindCacheManagerToRegistry(String beanName, CacheManager cacheManager) {
-		cacheManager.getCacheNames()
-			.forEach((cacheName) -> bindCacheToRegistry(beanName, cacheManager.getCache(cacheName)));
+		cacheManager.getCacheNames().forEach((cacheName) -> {
+			Cache cache = cacheManager.getCache(cacheName);
+			Assert.state(cache != null, () -> "'cache' must not be null. 'cacheName' is '%s'".formatted(cacheName));
+			bindCacheToRegistry(beanName, cache);
+		});
 	}
 
 	private void bindCacheToRegistry(String beanName, Cache cache) {

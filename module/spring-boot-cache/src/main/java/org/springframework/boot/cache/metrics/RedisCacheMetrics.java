@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.TimeGauge;
 import io.micrometer.core.instrument.binder.cache.CacheMeterBinder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.data.redis.cache.RedisCache;
 
@@ -42,7 +43,7 @@ public class RedisCacheMetrics extends CacheMeterBinder<RedisCache> {
 	}
 
 	@Override
-	protected Long size() {
+	protected @Nullable Long size() {
 		return null;
 	}
 
@@ -57,7 +58,7 @@ public class RedisCacheMetrics extends CacheMeterBinder<RedisCache> {
 	}
 
 	@Override
-	protected Long evictionCount() {
+	protected @Nullable Long evictionCount() {
 		return null;
 	}
 

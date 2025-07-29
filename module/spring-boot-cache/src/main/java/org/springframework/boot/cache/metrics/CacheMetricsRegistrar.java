@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.cache.Cache;
@@ -68,8 +69,9 @@ public class CacheMetricsRegistrar {
 		return false;
 	}
 
-	@SuppressWarnings({ "unchecked" })
-	private MeterBinder getMeterBinder(Cache cache, Tags tags) {
+	// Lambda isn't detected with the correct nullability
+	@SuppressWarnings({ "unchecked", "NullAway" })
+	private @Nullable MeterBinder getMeterBinder(Cache cache, Tags tags) {
 		Tags cacheTags = tags.and(getAdditionalTags(cache));
 		return LambdaSafe.callbacks(CacheMeterBinderProvider.class, this.binderProviders, cache)
 			.withLogger(CacheMetricsRegistrar.class)

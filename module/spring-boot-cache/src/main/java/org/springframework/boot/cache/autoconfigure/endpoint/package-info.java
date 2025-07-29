@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for the cache abstraction endpoints.
  */
+@NullMarked
 package org.springframework.boot.cache.autoconfigure.endpoint;
+
+import org.jspecify.annotations.NullMarked;

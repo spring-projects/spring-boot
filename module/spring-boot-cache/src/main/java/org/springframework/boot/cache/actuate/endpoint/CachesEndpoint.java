@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -30,6 +32,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint @Endpoint} to expose available {@link Cache caches}.
@@ -79,7 +82,8 @@ public class CachesEndpoint {
 	 * {@code cacheManager} was provided to identify a unique candidate
 	 */
 	@ReadOperation
-	public CacheEntryDescriptor cache(@Selector String cache, @OptionalParameter String cacheManager) {
+	public @Nullable CacheEntryDescriptor cache(@Selector String cache,
+			@OptionalParameter @Nullable String cacheManager) {
 		return extractUniqueCacheEntry(cache, getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
 	}
 
@@ -101,7 +105,7 @@ public class CachesEndpoint {
 	 * {@code cacheManager} was provided to identify a unique candidate
 	 */
 	@DeleteOperation
-	public boolean clearCache(@Selector String cache, @OptionalParameter String cacheManager) {
+	public boolean clearCache(@Selector String cache, @OptionalParameter @Nullable String cacheManager) {
 		CacheEntryDescriptor entry = extractUniqueCacheEntry(cache,
 				getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
 		return (entry != null && clearCache(entry));
@@ -118,6 +122,7 @@ public class CachesEndpoint {
 
 	private List<CacheEntryDescriptor> getCacheEntries(String cacheManagerName, Predicate<String> cacheNamePredicate) {
 		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
+		Assert.state(cacheManager != null, "'cacheManager' must not be null");
 		return cacheManager.getCacheNames()
 			.stream()
 			.filter(cacheNamePredicate)
@@ -127,7 +132,7 @@ public class CachesEndpoint {
 			.toList();
 	}
 
-	private CacheEntryDescriptor extractUniqueCacheEntry(String cache, List<CacheEntryDescriptor> entries) {
+	private @Nullable CacheEntryDescriptor extractUniqueCacheEntry(String cache, List<CacheEntryDescriptor> entries) {
 		if (entries.size() > 1) {
 			throw new NonUniqueCacheException(cache,
 					entries.stream().map(CacheEntryDescriptor::getCacheManager).distinct().toList());
@@ -137,8 +142,10 @@ public class CachesEndpoint {
 
 	private boolean clearCache(CacheEntryDescriptor entry) {
 		String cacheName = entry.getName();
-		String cacheManager = entry.getCacheManager();
-		Cache cache = this.cacheManagers.get(cacheManager).getCache(cacheName);
+		String cacheManagerName = entry.getCacheManager();
+		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
+		Assert.state(cacheManager != null, "'cacheManager' must not be null");
+		Cache cache = cacheManager.getCache(cacheName);
 		if (cache != null) {
 			cache.clear();
 			return true;
@@ -146,7 +153,7 @@ public class CachesEndpoint {
 		return false;
 	}
 
-	private Predicate<String> isNameMatch(String name) {
+	private Predicate<String> isNameMatch(@Nullable String name) {
 		return (name != null) ? ((requested) -> requested.equals(name)) : matchAll();
 	}
 

@@ -17,4 +17,7 @@
 /**
  * Actuator endpoint for caches.
  */
+@NullMarked
 package org.springframework.boot.cache.actuate.endpoint;
+
+import org.jspecify.annotations.NullMarked;
