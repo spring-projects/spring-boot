@@ -19,7 +19,7 @@
       "defaultValue": "default"
     },
     {
-      "name": "spring.test.mockmvc.print-only-on-failures",
+      "name": "spring.test.mockmvc.print-only-on-failure",
       "type": "java.lang.Boolean",
       "description": "Whether to only print failed exchanges.",
       "defaultValue": true
