@@ -61,6 +61,9 @@ class OperationMethodParameterTests {
 
 	private Method exampleAnnotation = ReflectionUtils.findMethod(getClass(), "exampleAnnotation", String.class);
 
+	private final Method exampleJSpecifyNullable = ReflectionUtils.findMethod(getClass(), "exampleJSpecifyNullable",
+			String.class, String.class);
+
 	@Test
 	void getNameShouldReturnName() {
 		OperationMethodParameter parameter = new OperationMethodParameter("name", this.example.getParameters()[0],
@@ -126,6 +129,13 @@ class OperationMethodParameterTests {
 		assertThat(annotation.match()).isEqualTo(Match.ALL_REMAINING);
 	}
 
+	@Test
+	void isMandatoryWhenJSpecifyNullableAnnotationShouldReturnFalse() {
+		OperationMethodParameter parameter = new OperationMethodParameter("name",
+				this.exampleJSpecifyNullable.getParameters()[1], this::isOptionalParameter);
+		assertThat(parameter.isMandatory()).isFalse();
+	}
+
 	private boolean isOptionalParameter(Parameter parameter) {
 		return MergedAnnotations.from(parameter).isPresent(TestOptional.class);
 	}
@@ -147,6 +157,9 @@ class OperationMethodParameterTests {
 	}
 
 	void exampleAnnotation(@Selector(match = Match.ALL_REMAINING) String allRemaining) {
+	}
+
+	void exampleJSpecifyNullable(String one, @org.jspecify.annotations.Nullable String two) {
 	}
 
 	@TypeQualifier
