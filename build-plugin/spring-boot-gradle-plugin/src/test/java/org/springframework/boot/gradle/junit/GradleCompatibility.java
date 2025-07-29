@@ -48,6 +48,10 @@ public @interface GradleCompatibility {
 	 */
 	boolean configurationCache() default false;
 
-	String versionsLessThan() default "";
+	/**
+	 * Minimum version of Gradle against which compatibility should be tested.
+	 * @return minimum version
+	 */
+	String minimumVersion() default "";
 
 }

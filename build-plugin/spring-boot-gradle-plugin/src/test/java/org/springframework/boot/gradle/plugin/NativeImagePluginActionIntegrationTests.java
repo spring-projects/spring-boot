@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
-@GradleCompatibility
+@GradleCompatibility(minimumVersion = "8.3")
 class NativeImagePluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
@@ -111,7 +111,9 @@ class NativeImagePluginActionIntegrationTests {
 
 	@TestTemplate
 	void classesGeneratedDuringAotTestProcessingAreOnTheTestNativeImageClasspath() {
-		BuildResult result = this.gradleBuild.build("checkTestNativeImageClasspath");
+		BuildResult result = this.gradleBuild
+			.scriptProperty("junitVersion", TestTemplate.class.getPackage().getImplementationVersion())
+			.build("checkTestNativeImageClasspath");
 		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aotTest"),
 				projectPath("build/resources/aotTest"), projectPath("build/generated/aotTestClasses"));
 	}

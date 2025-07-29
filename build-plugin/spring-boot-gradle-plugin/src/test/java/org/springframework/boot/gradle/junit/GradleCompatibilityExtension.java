@@ -59,10 +59,10 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 		GradleCompatibility gradleCompatibility = AnnotationUtils.findAnnotation(testClass, GradleCompatibility.class)
 			.get();
 		Stream<String> gradleVersions = GRADLE_VERSIONS.stream();
-		if (StringUtils.hasText(gradleCompatibility.versionsLessThan())) {
-			GradleVersion upperExclusive = GradleVersion.version(gradleCompatibility.versionsLessThan());
+		if (StringUtils.hasText(gradleCompatibility.minimumVersion())) {
+			GradleVersion lowerInclusive = GradleVersion.version(gradleCompatibility.minimumVersion());
 			gradleVersions = gradleVersions
-				.filter((version) -> GradleVersion.version(version).compareTo(upperExclusive) < 0);
+				.filter((version) -> GradleVersion.version(version).compareTo(lowerInclusive) >= 0);
 		}
 		return gradleVersions.flatMap((version) -> {
 			List<TestTemplateInvocationContext> invocationContexts = new ArrayList<>();
