@@ -59,10 +59,19 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 	private final WebApplicationContext context;
 
+	/**
+	 * Whether to add servlet filters.
+	 */
 	private boolean addFilters = true;
 
+	/**
+	 * MVC Print option.
+	 */
 	private MockMvcPrint print = MockMvcPrint.DEFAULT;
 
+	/**
+	 * Whether to only print failed exchanges.
+	 */
 	private boolean printOnlyOnFailure = true;
 
 	/**

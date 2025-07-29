@@ -16,6 +16,7 @@
 
 plugins {
 	id "java-library"
+	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
@@ -144,16 +145,6 @@ dependencies {
 		exclude group: "org.opensaml", module: "opensaml-saml-impl"
 	}
 	testImplementation("org.thymeleaf:thymeleaf")
-}
-
-configurations {
-	configurationPropertiesMetadata
-}
-
-artifacts {
-	configurationPropertiesMetadata new File(sourceSets.main.output.resourcesDir, "META-INF/spring-configuration-metadata.json"), { artifact ->
-		artifact.builtBy sourceSets.main.processResourcesTaskName
-	}
 }
 
 test {

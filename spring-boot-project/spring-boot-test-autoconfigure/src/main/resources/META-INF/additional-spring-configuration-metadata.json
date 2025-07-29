@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {
+      "name": "spring.test.database.replace",
+      "type": "org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase$Replace",
+      "description": "Type of existing DataSource to replace.",
+      "defaultValue": "any"
+    },
+    {
+      "name": "spring.test.observability.auto-configure",
+      "type": "java.lang.Boolean",
+      "description": "Whether observability should be auto-configured in tests.",
+      "defaultValue": false
+    }
+  ]
+}
