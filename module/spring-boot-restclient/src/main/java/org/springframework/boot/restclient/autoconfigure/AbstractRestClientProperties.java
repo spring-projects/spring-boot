@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.restclient.autoconfigure.service;
+package org.springframework.boot.restclient.autoconfigure;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.http.client.autoconfigure.AbstractHttpRequestFactoryProperties;
+import org.springframework.boot.http.client.autoconfigure.ApiversionProperties;
+import org.springframework.web.client.RestClient;
 
 /**
- * {@link AbstractHttpRequestFactoryProperties} for HTTP Service clients.
+ * {@link AbstractHttpRequestFactoryProperties} for properties to configure technologies
+ * built on {@link RestClient}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Rossen Stoyanchev
  * @author Phillip Webb
  * @since 4.0.0
  */
-public abstract class AbstractHttpClientServiceProperties extends AbstractHttpRequestFactoryProperties {
+public abstract class AbstractRestClientProperties extends AbstractHttpRequestFactoryProperties {
 
 	/**
 	 * Base url to set in the underlying HTTP client group. By default, set to
@@ -43,6 +47,12 @@ public abstract class AbstractHttpClientServiceProperties extends AbstractHttpRe
 	 * {@link Map}.
 	 */
 	private Map<String, List<String>> defaultHeader = new LinkedHashMap<>();
+
+	/**
+	 * API version properties.
+	 */
+	@NestedConfigurationProperty
+	private final ApiversionProperties apiversion = new ApiversionProperties();
 
 	public String getBaseUrl() {
 		return this.baseUrl;
@@ -58,6 +68,10 @@ public abstract class AbstractHttpClientServiceProperties extends AbstractHttpRe
 
 	public void setDefaultHeader(Map<String, List<String>> defaultHeaders) {
 		this.defaultHeader = defaultHeaders;
+	}
+
+	public ApiversionProperties getApiversion() {
+		return this.apiversion;
 	}
 
 }

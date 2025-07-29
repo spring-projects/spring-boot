@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -96,6 +97,8 @@ public class WebMvcProperties {
 	private final Pathmatch pathmatch = new Pathmatch();
 
 	private final Problemdetails problemdetails = new Problemdetails();
+
+	private final Apiversion apiversion = new Apiversion();
 
 	public DefaultMessageCodesResolver.Format getMessageCodesResolverFormat() {
 		return this.messageCodesResolverFormat;
@@ -187,6 +190,10 @@ public class WebMvcProperties {
 
 	public Problemdetails getProblemdetails() {
 		return this.problemdetails;
+	}
+
+	public Apiversion getApiversion() {
+		return this.apiversion;
 	}
 
 	public static class Async {
@@ -442,6 +449,9 @@ public class WebMvcProperties {
 
 	}
 
+	/**
+	 * Problem Details.
+	 */
 	public static class Problemdetails {
 
 		/**
@@ -455,6 +465,131 @@ public class WebMvcProperties {
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
+		}
+
+	}
+
+	/**
+	 * API Version.
+	 */
+	public static class Apiversion {
+
+		/**
+		 * Whether the API version is required with each request.
+		 */
+		private boolean required = false;
+
+		/**
+		 * Default version that should be used for each request.
+		 */
+		@Name("default")
+		private String defaultVersion;
+
+		/**
+		 * Supported versions.
+		 */
+		private List<String> supported;
+
+		/**
+		 * Whether supported versions should be detected from controllers.
+		 */
+		private boolean detectSupported = true;
+
+		/**
+		 * How version details should be inserted into requests.
+		 */
+		private final Use use = new Use();
+
+		public boolean isRequired() {
+			return this.required;
+		}
+
+		public void setRequired(boolean required) {
+			this.required = required;
+		}
+
+		public String getDefaultVersion() {
+			return this.defaultVersion;
+		}
+
+		public void setDefaultVersion(String defaultVersion) {
+			this.defaultVersion = defaultVersion;
+		}
+
+		public List<String> getSupported() {
+			return this.supported;
+		}
+
+		public void setSupported(List<String> supported) {
+			this.supported = supported;
+		}
+
+		public Use getUse() {
+			return this.use;
+		}
+
+		public boolean isDetectSupported() {
+			return this.detectSupported;
+		}
+
+		public void setDetectSupported(boolean detectSupported) {
+			this.detectSupported = detectSupported;
+		}
+
+		public static class Use {
+
+			/**
+			 * Use the HTTP header with the given name to obtain the version.
+			 */
+			private String header;
+
+			/**
+			 * Use the query parameter with the given name to obtain the version.
+			 */
+			private String requestParameter;
+
+			/**
+			 * Use the path segment at the given index to obtain the version.
+			 */
+			private Integer pathSegment;
+
+			/**
+			 * Use the media type parameter with the given name to obtain the version.
+			 */
+			private Map<MediaType, String> mediaTypeParameter = new LinkedHashMap<>();
+
+			public String getHeader() {
+				return this.header;
+			}
+
+			public void setHeader(String header) {
+				this.header = header;
+			}
+
+			public String getRequestParameter() {
+				return this.requestParameter;
+			}
+
+			public void setRequestParameter(String queryParameter) {
+				this.requestParameter = queryParameter;
+			}
+
+			public Integer getPathSegment() {
+				return this.pathSegment;
+			}
+
+			public void setPathSegment(Integer pathSegment) {
+				this.pathSegment = pathSegment;
+			}
+
+			public Map<MediaType, String> getMediaTypeParameter() {
+				return this.mediaTypeParameter;
+			}
+
+			public void setMediaTypeParameter(Map<MediaType, String> mediaTypeParameter) {
+				this.mediaTypeParameter = mediaTypeParameter;
+			}
+
 		}
 
 	}

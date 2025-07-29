@@ -277,3 +277,32 @@ For example, the following will use a JDK client configured with a specific java
 
 include-code::MyClientHttpConfiguration[]
 
+
+
+[[io.rest-client.apiversioning]]
+== API Versioning
+
+Both `WebClient` and `RestClient` support making versioned remote HTTP calls so that APIs can be evolved over time.
+Commonly this involves sending an HTTP header, a query parameter or URL path segment that indicates the version of the API that should be used.
+
+You can configure API versioning using methods on `WebClient.Builder` or `RestClient.Builder`.
+You can also the `spring.http.reactiveclient.webclient.apiversion` or `spring.http.client.restclient.apiversion` properties if you want to apply the same configuration to all builders.
+
+For example, the following adds an `X-Version` HTTP header to all calls from the `RestClient` and uses the version `1.0.0` unless overridden for specific requests:
+
+[configprops,yaml]
+----
+spring:
+  http:
+    client:
+      restclient:
+        apiversion:
+          default: 1.0.0
+          insert:
+            header: X-Version
+----
+
+You can also defined javadoc:org.springframework.web.client.ApiVersionInserter[] and javadoc:org.springframework.web.client.ApiVersionFormatter[] beans if you need more control of the way that version information should be inserted and formatted.
+
+TIP: API versioning is also supported on the server-side.
+See the xref:web/servlet.adoc#web.servlet.spring-mvc.api-versioning[Spring MVC] and xref:web/reactive.adoc#web.reactive.webflux.api-versioning[Spring WebFlux] sections for details.

@@ -43,15 +43,19 @@ public class RestClientBuilderConfigurer {
 
 	private final List<RestClientCustomizer> customizers;
 
+	private final PropertiesRestClientCustomizer propertiesCustomizer;
+
 	public RestClientBuilderConfigurer() {
-		this(ClientHttpRequestFactoryBuilder.detect(), ClientHttpRequestFactorySettings.defaults(),
+		this(ClientHttpRequestFactoryBuilder.detect(), ClientHttpRequestFactorySettings.defaults(), null,
 				Collections.emptyList());
 	}
 
 	RestClientBuilderConfigurer(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
-			ClientHttpRequestFactorySettings requestFactorySettings, List<RestClientCustomizer> customizers) {
+			ClientHttpRequestFactorySettings requestFactorySettings,
+			PropertiesRestClientCustomizer propertiesCustomizer, List<RestClientCustomizer> customizers) {
 		this.requestFactoryBuilder = requestFactoryBuilder;
 		this.requestFactorySettings = requestFactorySettings;
+		this.propertiesCustomizer = propertiesCustomizer;
 		this.customizers = customizers;
 	}
 
@@ -67,7 +71,10 @@ public class RestClientBuilderConfigurer {
 		return builder;
 	}
 
-	private void applyCustomizers(Builder builder) {
+	private void applyCustomizers(RestClient.Builder builder) {
+		if (this.propertiesCustomizer != null) {
+			this.propertiesCustomizer.customize(builder);
+		}
 		for (RestClientCustomizer customizer : this.customizers) {
 			customizer.customize(builder);
 		}

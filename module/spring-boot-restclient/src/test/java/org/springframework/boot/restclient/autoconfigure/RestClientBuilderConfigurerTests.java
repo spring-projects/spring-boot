@@ -55,9 +55,8 @@ class RestClientBuilderConfigurerTests {
 		RestClientCustomizer customizer = mock(RestClientCustomizer.class);
 		RestClientCustomizer customizer1 = mock(RestClientCustomizer.class);
 		RestClientBuilderConfigurer configurer = new RestClientBuilderConfigurer(this.clientHttpRequestFactoryBuilder,
-				settings, List.of(customizer, customizer1));
+				settings, null, List.of(customizer, customizer1));
 		given(this.clientHttpRequestFactoryBuilder.build(settings)).willReturn(this.clientHttpRequestFactory);
-
 		RestClient.Builder builder = RestClient.builder();
 		configurer.configure(builder);
 		assertThat(builder.build()).hasFieldOrPropertyWithValue("clientRequestFactory", this.clientHttpRequestFactory);

@@ -31,6 +31,8 @@ import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfigura
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.web.client.ApiVersionFormatter;
+import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
@@ -68,10 +70,12 @@ public final class HttpServiceClientAutoConfiguration implements BeanClassLoader
 			ObjectProvider<SslBundles> sslBundles, ObjectProvider<HttpClientProperties> httpClientProperties,
 			HttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientFactoryBuilder,
-			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings) {
+			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings,
+			ObjectProvider<ApiVersionInserter> apiVersionInserter,
+			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
 		return new RestClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles,
 				httpClientProperties.getIfAvailable(), serviceProperties, clientFactoryBuilder,
-				clientHttpRequestFactorySettings);
+				clientHttpRequestFactorySettings, apiVersionInserter, apiVersionFormatter);
 	}
 
 	@Bean

@@ -30,6 +30,8 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.webclient.WebClientCustomizer;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.ApiVersionFormatter;
+import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
@@ -66,9 +68,12 @@ public final class ReactiveHttpServiceClientAutoConfiguration implements BeanCla
 			ObjectProvider<SslBundles> sslBundles, HttpReactiveClientProperties httpReactiveClientProperties,
 			ReactiveHttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpConnectorBuilder<?>> clientConnectorBuilder,
-			ObjectProvider<ClientHttpConnectorSettings> clientConnectorSettings) {
+			ObjectProvider<ClientHttpConnectorSettings> clientConnectorSettings,
+			ObjectProvider<ApiVersionInserter> apiVersionInserter,
+			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
 		return new WebClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles,
-				httpReactiveClientProperties, serviceProperties, clientConnectorBuilder, clientConnectorSettings);
+				httpReactiveClientProperties, serviceProperties, clientConnectorBuilder, clientConnectorSettings,
+				apiVersionInserter, apiVersionFormatter);
 	}
 
 	@Bean

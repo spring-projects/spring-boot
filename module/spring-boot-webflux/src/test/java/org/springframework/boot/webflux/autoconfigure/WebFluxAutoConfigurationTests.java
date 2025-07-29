@@ -85,11 +85,18 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.accept.ApiVersionParser;
+import org.springframework.web.accept.InvalidApiVersionException;
+import org.springframework.web.accept.MissingApiVersionException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
 import org.springframework.web.method.ControllerAdviceBean;
 import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.reactive.accept.ApiVersionDeprecationHandler;
+import org.springframework.web.reactive.accept.ApiVersionResolver;
+import org.springframework.web.reactive.accept.DefaultApiVersionStrategy;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
+import org.springframework.web.reactive.accept.StandardApiVersionDeprecationHandler;
 import org.springframework.web.reactive.config.BlockingExecutionConfigurer;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.ResourceHandlerRegistration;
@@ -122,6 +129,7 @@ import org.springframework.web.server.session.WebSessionStore;
 import org.springframework.web.util.pattern.PathPattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -792,6 +800,105 @@ class WebFluxAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void apiVersionPropertiesAreApplied() {
+		this.contextRunner
+			.withPropertyValues("spring.webflux.apiversion.use.header=version",
+					"spring.webflux.apiversion.required=true", "spring.webflux.apiversion.supported=123,456",
+					"spring.webflux.apiversion.detect-supported=false")
+			.run((context) -> {
+				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+						DefaultApiVersionStrategy.class);
+				MockServerWebExchange request = MockServerWebExchange
+					.from(MockServerHttpRequest.get("https://example.com"));
+				assertThatExceptionOfType(MissingApiVersionException.class)
+					.isThrownBy(() -> versionStrategy.validateVersion(null, request));
+				assertThatExceptionOfType(InvalidApiVersionException.class)
+					.isThrownBy(() -> versionStrategy.validateVersion(versionStrategy.parseVersion("789"),
+							MockServerWebExchange.from(MockServerHttpRequest.get("https://example.com"))));
+				assertThat(versionStrategy.detectSupportedVersions()).isFalse();
+			});
+	}
+
+	@Test
+	void apiVersionDefaultVersionPropertyIsApplied() {
+		this.contextRunner
+			.withPropertyValues("spring.webflux.apiversion.use.header=version",
+					"spring.webflux.apiversion.default=1.0.0")
+			.run((context) -> {
+				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+						DefaultApiVersionStrategy.class);
+				MockServerWebExchange request = MockServerWebExchange
+					.from(MockServerHttpRequest.get("https://example.com"));
+				versionStrategy.addSupportedVersion("1.0.0");
+				Comparable<?> version = versionStrategy.parseVersion("1.0.0");
+				assertThat(versionStrategy.getDefaultVersion()).isEqualTo(version);
+				versionStrategy.validateVersion(version, request);
+				versionStrategy.validateVersion(null, request);
+			});
+	}
+
+	@Test
+	void apiVersionUseHeaderPropertyIsApplied() {
+		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.header=hv").run((context) -> {
+			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+					DefaultApiVersionStrategy.class);
+			MockServerWebExchange request = MockServerWebExchange
+				.from(MockServerHttpRequest.get("https://example.com").header("hv", "123"));
+			assertThat(versionStrategy.resolveVersion(request)).isEqualTo("123");
+		});
+	}
+
+	@Test
+	void apiVersionUseRequestParameterPropertyIsApplied() {
+		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.request-parameter=rpv").run((context) -> {
+			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+					DefaultApiVersionStrategy.class);
+			MockServerWebExchange request = MockServerWebExchange
+				.from(MockServerHttpRequest.get("https://example.com?rpv=123"));
+			assertThat(versionStrategy.resolveVersion(request)).isEqualTo("123");
+		});
+	}
+
+	@Test
+	void apiVersionUsePathSegmentPropertyIsApplied() {
+		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.path-segment=1").run((context) -> {
+			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+					DefaultApiVersionStrategy.class);
+			MockServerWebExchange request = MockServerWebExchange
+				.from(MockServerHttpRequest.get("https://example.com/test/123"));
+			assertThat(versionStrategy.resolveVersion(request)).isEqualTo("123");
+		});
+	}
+
+	@Test
+	void apiVersionUseMediaTypeParameterPropertyIsApplied() {
+		this.contextRunner
+			.withPropertyValues("spring.webflux.apiversion.use.media-type-parameter[application/json]=mtpv")
+			.run((context) -> {
+				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+						DefaultApiVersionStrategy.class);
+				MockServerWebExchange request = MockServerWebExchange
+					.from(MockServerHttpRequest.get("https://example.com")
+						.header("content-type", "application/json;mtpv=123"));
+				assertThat(versionStrategy.resolveVersion(request)).isEqualTo("123");
+			});
+	}
+
+	@Test
+	void apiVersionBeansAreInjected() {
+		this.contextRunner.withUserConfiguration(ApiVersionConfiguration.class).run((context) -> {
+			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+					DefaultApiVersionStrategy.class);
+			assertThat(versionStrategy).extracting("versionResolvers")
+				.asInstanceOf(InstanceOfAssertFactories.LIST)
+				.containsExactly(context.getBean(ApiVersionResolver.class));
+			assertThat(versionStrategy).extracting("deprecationHandler")
+				.isEqualTo(context.getBean(ApiVersionDeprecationHandler.class));
+			assertThat(versionStrategy).extracting("versionParser").isEqualTo(context.getBean(ApiVersionParser.class));
+		});
+	}
+
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
 			Consumer<MockServerWebExchange> exchange) {
 		return (context) -> {
@@ -1183,6 +1290,26 @@ class WebFluxAutoConfigurationTests {
 		@Override
 		public void configureBlockingExecution(BlockingExecutionConfigurer configurer) {
 			configurer.setExecutor(this.taskExecutor);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ApiVersionConfiguration {
+
+		@Bean
+		ApiVersionResolver apiVersionResolver() {
+			return (request) -> "latest";
+		}
+
+		@Bean
+		ApiVersionDeprecationHandler apiVersionDeprecationHandler(ApiVersionParser<?> apiVersionParser) {
+			return new StandardApiVersionDeprecationHandler(apiVersionParser);
+		}
+
+		@Bean
+		ApiVersionParser<String> apiVersionParser() {
+			return (version) -> String.valueOf(version);
 		}
 
 	}

@@ -275,6 +275,38 @@ When it does so, the orders shown in the following table will be used:
 
 
 
+[[web.reactive.webflux.api-versioning]]
+=== API Versioning
+
+Spring WebFlux supports API versioning which can be used to evolve an HTTP API over time.
+The same `@Controller` path can be mapped multiple times to support different versions of the API.
+
+For more details see {url-spring-framework-docs}/web/webflux/controller/ann-requestmapping.html#webflux-ann-requestmapping-version[Spring Framework's reference documentation].
+
+One mappings have been added, you additionally need to configure Spring WebFlux so that it is able to use any version information sent with a request.
+Typically, versions are sent as HTTP headers, query parameters or as part of the path.
+
+To configure Spring WebFlux, you can either use a javadoc:org.springframework.web.reactive.config.WebFluxConfigurer[] bean and override the `configureApiVersioning(...)` method, or you can use properties.
+
+For example, the following will use an `X-Version` HTTP header to obtain version information and default to `1.0.0` when no header is sent.
+
+[configprops,yaml]
+----
+spring:
+  webflux:
+    apiversion:
+      default: 1.0.0
+      use:
+        header: X-Version
+----
+
+For more complete control, you can also define javadoc:org.springframework.web.reactive.accept.ApiVersionResolver[], javadoc:org.springframework.web.reactive.accept.ApiVersionParser[] and javadoc:org.springframework.web.reactive.accept.ApiVersionDeprecationHandler[] beans which will be injected into the auto-configured Spring MVC configuration.
+
+TIP: API versioning is also supported on the client-side with both `WebClient` and `RestClient`.
+See xref:io/rest-client.adoc#io.rest-client.apiversioning[] for details.
+
+
+
 [[web.reactive.reactive-server]]
 == Embedded Reactive Server Support
 

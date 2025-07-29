@@ -465,6 +465,38 @@ include-code::MyCorsConfiguration[]
 
 
 
+[[web.servlet.spring-mvc.api-versioning]]
+=== API Versioning
+
+Spring MVC supports API versioning which can be used to evolve an HTTP API over time.
+The same `@Controller` path can be mapped multiple times to support different versions of the API.
+
+For more details see {url-spring-framework-docs}/web/webmvc/mvc-controller/ann-requestmapping.html#mvc-ann-requestmapping-version[Spring Framework's reference documentation].
+
+One mappings have been added, you additionally need to configure Spring MVC so that it is able to use any version information sent with a request.
+Typically, versions are sent as HTTP headers, query parameters or as part of the path.
+
+To configure Spring MVC, you can either use a javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[] bean and override the `configureApiVersioning(...)` method, or you can use properties.
+
+For example, the following will use an `X-Version` HTTP header to obtain version information and default to `1.0.0` when no header is sent.
+
+[configprops,yaml]
+----
+spring:
+  mvc:
+    apiversion:
+      default: 1.0.0
+      use:
+        header: X-Version
+----
+
+For more complete control, you can also define javadoc:org.springframework.web.accept.ApiVersionResolver[], javadoc:org.springframework.web.accept.ApiVersionParser[] and javadoc:org.springframework.web.accept.ApiVersionDeprecationHandler[] beans which will be injected into the auto-configured Spring MVC configuration.
+
+TIP: API versioning is also supported with both `WebClient` and `RestClient`.
+See xref:io/rest-client.adoc#io.rest-client.apiversioning[] for details.
+
+
+
 [[web.servlet.jersey]]
 == JAX-RS and Jersey
 

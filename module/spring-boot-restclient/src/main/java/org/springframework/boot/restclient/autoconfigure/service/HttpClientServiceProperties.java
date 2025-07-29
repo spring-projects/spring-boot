@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.restclient.autoconfigure.AbstractRestClientProperties;
 
 /**
  * Properties for HTTP Service clients.
@@ -30,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.http.client.service")
-public class HttpClientServiceProperties extends AbstractHttpClientServiceProperties {
+public class HttpClientServiceProperties extends AbstractRestClientProperties {
 
 	/**
 	 * Group settings.
@@ -48,7 +49,7 @@ public class HttpClientServiceProperties extends AbstractHttpClientServiceProper
 	/**
 	 * Properties for a single HTTP Service client group.
 	 */
-	public static class Group extends AbstractHttpClientServiceProperties {
+	public static class Group extends AbstractRestClientProperties {
 
 	}
 

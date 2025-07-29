@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.webclient.autoconfigure.AbstractWebClientProperties;
 
 /**
  * Properties for Reactive HTTP Service clients.
@@ -30,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.http.reactiveclient.service")
-public class ReactiveHttpClientServiceProperties extends AbstractHttpReactiveClientServiceProperties {
+public class ReactiveHttpClientServiceProperties extends AbstractWebClientProperties {
 
 	/**
 	 * Group settings.
@@ -48,7 +49,7 @@ public class ReactiveHttpClientServiceProperties extends AbstractHttpReactiveCli
 	/**
 	 * Properties for a single HTTP Service client group.
 	 */
-	public static class Group extends AbstractHttpReactiveClientServiceProperties {
+	public static class Group extends AbstractWebClientProperties {
 
 	}
 

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -42,12 +43,15 @@ import org.springframework.boot.autoconfigure.web.WebResourcesRuntimeHints;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.thread.Threading;
 import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Apiversion;
+import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Apiversion.Use;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties.Format;
 import org.springframework.boot.webflux.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ApplicationContext;
@@ -64,7 +68,12 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
+import org.springframework.web.accept.ApiVersionParser;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
+import org.springframework.web.reactive.accept.ApiVersionDeprecationHandler;
+import org.springframework.web.reactive.accept.ApiVersionResolver;
+import org.springframework.web.reactive.accept.ApiVersionStrategy;
+import org.springframework.web.reactive.config.ApiVersionConfigurer;
 import org.springframework.web.reactive.config.BlockingExecutionConfigurer;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.EnableWebFlux;
@@ -169,11 +178,19 @@ public final class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
+		private final ObjectProvider<ApiVersionResolver> apiVersionResolvers;
+
+		private final ObjectProvider<ApiVersionParser<?>> apiVersionParser;
+
+		private final ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler;
+
 		WebFluxConfig(Environment environment, WebProperties webProperties, WebFluxProperties webFluxProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizers,
-				ObjectProvider<ViewResolver> viewResolvers) {
+				ObjectProvider<ViewResolver> viewResolvers, ObjectProvider<ApiVersionResolver> apiVersionResolvers,
+				ObjectProvider<ApiVersionParser<?>> apiVersionParser,
+				ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler) {
 			this.environment = environment;
 			this.resourceProperties = webProperties.getResources();
 			this.webFluxProperties = webFluxProperties;
@@ -182,6 +199,9 @@ public final class WebFluxAutoConfiguration {
 			this.codecCustomizers = codecCustomizers;
 			this.resourceHandlerRegistrationCustomizers = resourceHandlerRegistrationCustomizers;
 			this.viewResolvers = viewResolvers;
+			this.apiVersionResolvers = apiVersionResolvers;
+			this.apiVersionParser = apiVersionParser;
+			this.apiVersionDeprecationHandler = apiVersionDeprecationHandler;
 		}
 
 		@Override
@@ -250,6 +270,29 @@ public final class WebFluxAutoConfiguration {
 		@Override
 		public void addFormatters(FormatterRegistry registry) {
 			ApplicationConversionService.addBeans(registry, this.beanFactory);
+		}
+
+		@Override
+		public void configureApiVersioning(ApiVersionConfigurer configurer) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			Apiversion properties = this.webFluxProperties.getApiversion();
+			map.from(properties::isRequired).to(configurer::setVersionRequired);
+			map.from(properties::getDefaultVersion).to(configurer::setDefaultVersion);
+			map.from(properties::getSupported).to((supported) -> supported.forEach(configurer::addSupportedVersions));
+			map.from(properties::isDetectSupported).to(configurer::detectSupportedVersions);
+			configureApiVersioningUse(configurer, properties.getUse());
+			this.apiVersionResolvers.orderedStream().forEach(configurer::useVersionResolver);
+			this.apiVersionParser.ifAvailable(configurer::setVersionParser);
+			this.apiVersionDeprecationHandler.ifAvailable(configurer::setDeprecationHandler);
+		}
+
+		private void configureApiVersioningUse(ApiVersionConfigurer configurer, Use use) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(use::getHeader).whenHasText().to(configurer::useRequestHeader);
+			map.from(use::getRequestParameter).whenHasText().to(configurer::useRequestParam);
+			map.from(use::getPathSegment).to(configurer::usePathSegment);
+			use.getMediaTypeParameter()
+				.forEach((mediaType, parameterName) -> configurer.useMediaTypeParameter(mediaType, parameterName));
 		}
 
 	}
@@ -345,6 +388,12 @@ public final class WebFluxAutoConfiguration {
 			webSessionManager.setSessionStore(sessionStore);
 			webSessionIdResolver.ifAvailable(webSessionManager::setSessionIdResolver);
 			return webSessionManager;
+		}
+
+		@Override
+		@ConditionalOnMissingBean(name = "mvcApiVersionStrategy")
+		public @Nullable ApiVersionStrategy mvcApiVersionStrategy() {
+			return super.mvcApiVersionStrategy();
 		}
 
 	}

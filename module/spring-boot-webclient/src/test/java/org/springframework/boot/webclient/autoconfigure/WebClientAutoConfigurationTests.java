@@ -16,6 +16,9 @@
 
 package org.springframework.boot.webclient.autoconfigure;
 
+import java.net.URI;
+import java.util.Locale;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -26,6 +29,9 @@ import org.springframework.boot.webclient.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.ApiVersionFormatter;
+import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +43,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link WebClientAutoConfiguration}
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  */
 class WebClientAutoConfigurationTests {
 
@@ -102,6 +109,46 @@ class WebClientAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void whenHasApiVersionProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.http.reactiveclient.webclient.apiversion.default=123",
+					"spring.http.reactiveclient.webclient.apiversion.insert.query-parameter=version")
+			.run((context) -> {
+				WebClient webClient = context.getBean(WebClient.Builder.class).build();
+				assertThat(webClient).extracting("defaultApiVersion").isEqualTo("123");
+				ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(webClient,
+						"apiVersionInserter");
+				assertThat(apiVersionInserter.insertVersion("123", new URI("https://example.com")))
+					.hasToString("https://example.com?version=123");
+			});
+	}
+
+	@Test
+	void whenHasCustomApiVersionInserter() {
+		this.contextRunner.withUserConfiguration(ApiVersionInserterConfig.class).run((context) -> {
+			WebClient webClient = context.getBean(WebClient.Builder.class).build();
+			ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(webClient,
+					"apiVersionInserter");
+			assertThat(apiVersionInserter.insertVersion("123", new URI("https://example.com")))
+				.hasToString("https://example.com?version=123");
+		});
+	}
+
+	@Test
+	void whenHasCustomApiVersionFormatter() {
+		this.contextRunner
+			.withPropertyValues("spring.http.reactiveclient.webclient.apiversion.insert.query-parameter=version")
+			.withUserConfiguration(ApiVersionFormatterConfig.class)
+			.run((context) -> {
+				WebClient webClient = context.getBean(WebClient.Builder.class).build();
+				ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(webClient,
+						"apiVersionInserter");
+				assertThat(apiVersionInserter.insertVersion("best", new URI("https://example.com")))
+					.hasToString("https://example.com?version=BEST");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CodecConfiguration {
 
@@ -133,6 +180,26 @@ class WebClientAutoConfigurationTests {
 	}
 
 	interface MyWebClientBuilder extends WebClient.Builder {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ApiVersionInserterConfig {
+
+		@Bean
+		ApiVersionInserter apiVersionInserter() {
+			return ApiVersionInserter.useQueryParam("version");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ApiVersionFormatterConfig {
+
+		@Bean
+		ApiVersionFormatter apiVersionFormatter() {
+			return (version) -> String.valueOf(version).toUpperCase(Locale.ROOT);
+		}
 
 	}
 

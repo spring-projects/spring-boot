@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
@@ -36,6 +37,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.web.client.ApiVersionFormatter;
+import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
@@ -48,12 +51,14 @@ import org.springframework.web.client.RestClient.Builder;
  *
  * @author Arjen Poutsma
  * @author Moritz Halbritter
+ * @author Phillip Webb
  * @since 4.0.0
  */
 @AutoConfiguration(
 		after = { HttpClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class, SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition.class)
+@EnableConfigurationProperties(RestClientProperties.class)
 public final class RestClientAutoConfiguration {
 
 	@Bean
@@ -73,11 +78,15 @@ public final class RestClientAutoConfiguration {
 	RestClientBuilderConfigurer restClientBuilderConfigurer(
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings,
-			ObjectProvider<RestClientCustomizer> customizerProvider) {
+			ObjectProvider<RestClientCustomizer> customizerProvider,
+			ObjectProvider<ApiVersionInserter> apiVersionInserter,
+			ObjectProvider<ApiVersionFormatter> apiVersionFormatter, RestClientProperties restClientProperties) {
+		PropertiesRestClientCustomizer propertiesCustomizer = new PropertiesRestClientCustomizer(
+				apiVersionInserter.getIfAvailable(), apiVersionFormatter.getIfAvailable(), restClientProperties);
 		return new RestClientBuilderConfigurer(
 				clientHttpRequestFactoryBuilder.getIfAvailable(ClientHttpRequestFactoryBuilder::detect),
 				clientHttpRequestFactorySettings.getIfAvailable(ClientHttpRequestFactorySettings::defaults),
-				customizerProvider.orderedStream().toList());
+				propertiesCustomizer, customizerProvider.orderedStream().toList());
 	}
 
 	@Bean

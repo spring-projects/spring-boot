@@ -50,6 +50,7 @@ import org.springframework.boot.autoconfigure.web.WebResourcesRuntimeHints;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.servlet.filter.OrderedFormContentFilter;
@@ -57,6 +58,8 @@ import org.springframework.boot.servlet.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.boot.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.validation.autoconfigure.ValidatorAdapter;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Apiversion.Use;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcProperties.Format;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ResourceLoaderAware;
@@ -79,6 +82,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
+import org.springframework.web.accept.ApiVersionDeprecationHandler;
+import org.springframework.web.accept.ApiVersionParser;
+import org.springframework.web.accept.ApiVersionResolver;
+import org.springframework.web.accept.ApiVersionStrategy;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.ServletContextAware;
@@ -94,6 +101,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.RequestToViewNameTranslator;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.ApiVersionConfigurer;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
@@ -197,11 +205,20 @@ public final class WebMvcAutoConfiguration {
 
 		private ServletContext servletContext;
 
+		private final ObjectProvider<ApiVersionResolver> apiVersionResolvers;
+
+		private final ObjectProvider<ApiVersionParser<?>> apiVersionParser;
+
+		private final ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler;
+
 		WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
-				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations) {
+				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations,
+				ObjectProvider<ApiVersionResolver> apiVersionResolvers,
+				ObjectProvider<ApiVersionParser<?>> apiVersionParser,
+				ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler) {
 			this.resourceProperties = webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
@@ -209,6 +226,9 @@ public final class WebMvcAutoConfiguration {
 			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
 			this.dispatcherServletPath = dispatcherServletPath;
 			this.servletRegistrations = servletRegistrations;
+			this.apiVersionResolvers = apiVersionResolvers;
+			this.apiVersionParser = apiVersionParser;
+			this.apiVersionDeprecationHandler = apiVersionDeprecationHandler;
 		}
 
 		@Override
@@ -364,6 +384,29 @@ public final class WebMvcAutoConfiguration {
 			if (this.resourceHandlerRegistrationCustomizer != null) {
 				this.resourceHandlerRegistrationCustomizer.customize(registration);
 			}
+		}
+
+		@Override
+		public void configureApiVersioning(ApiVersionConfigurer configurer) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			Apiversion properties = this.mvcProperties.getApiversion();
+			map.from(properties::isRequired).to(configurer::setVersionRequired);
+			map.from(properties::getDefaultVersion).to(configurer::setDefaultVersion);
+			map.from(properties::getSupported).to((supported) -> supported.forEach(configurer::addSupportedVersions));
+			map.from(properties::isDetectSupported).to(configurer::detectSupportedVersions);
+			configureApiVersioningUse(configurer, properties.getUse());
+			this.apiVersionResolvers.orderedStream().forEach(configurer::useVersionResolver);
+			this.apiVersionParser.ifAvailable(configurer::setVersionParser);
+			this.apiVersionDeprecationHandler.ifAvailable(configurer::setDeprecationHandler);
+		}
+
+		private void configureApiVersioningUse(ApiVersionConfigurer configurer, Use use) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(use::getHeader).whenHasText().to(configurer::useRequestHeader);
+			map.from(use::getRequestParameter).whenHasText().to(configurer::useRequestParam);
+			map.from(use::getPathSegment).to(configurer::usePathSegment);
+			use.getMediaTypeParameter()
+				.forEach((mediaType, parameterName) -> configurer.useMediaTypeParameter(mediaType, parameterName));
 		}
 
 		@Bean
@@ -573,6 +616,12 @@ public final class WebMvcAutoConfiguration {
 		@Override
 		public void setResourceLoader(ResourceLoader resourceLoader) {
 			this.resourceLoader = resourceLoader;
+		}
+
+		@Override
+		@ConditionalOnMissingBean(name = "mvcApiVersionStrategy")
+		public ApiVersionStrategy mvcApiVersionStrategy() {
+			return super.mvcApiVersionStrategy();
 		}
 
 	}
