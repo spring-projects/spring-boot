@@ -16,6 +16,8 @@
 
 package org.springframework.boot.artemis.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
@@ -30,24 +32,24 @@ public interface ArtemisConnectionDetails extends ConnectionDetails {
 	 * Artemis deployment mode, auto-detected by default.
 	 * @return the Artemis deployment mode, auto-detected by default
 	 */
-	ArtemisMode getMode();
+	@Nullable ArtemisMode getMode();
 
 	/**
 	 * Artemis broker url.
 	 * @return the Artemis broker url
 	 */
-	String getBrokerUrl();
+	@Nullable String getBrokerUrl();
 
 	/**
 	 * Login user of the broker.
 	 * @return the login user of the broker
 	 */
-	String getUser();
+	@Nullable String getUser();
 
 	/**
 	 * Login password of the broker.
 	 * @return the login password of the broker
 	 */
-	String getPassword();
+	@Nullable String getPassword();
 
 }

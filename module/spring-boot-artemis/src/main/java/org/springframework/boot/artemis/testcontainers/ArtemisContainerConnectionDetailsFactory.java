@@ -16,6 +16,7 @@
 
 package org.springframework.boot.artemis.testcontainers;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.activemq.ArtemisContainer;
 
 import org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails;
@@ -57,12 +58,12 @@ class ArtemisContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getUser() {
+		public @Nullable String getUser() {
 			return getContainer().getUser();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return getContainer().getPassword();
 		}
 

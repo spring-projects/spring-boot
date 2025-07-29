@@ -18,6 +18,7 @@ package org.springframework.boot.artemis.autoconfigure;
 
 import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -69,22 +70,22 @@ public final class ArtemisAutoConfiguration {
 		}
 
 		@Override
-		public ArtemisMode getMode() {
+		public @Nullable ArtemisMode getMode() {
 			return this.properties.getMode();
 		}
 
 		@Override
-		public String getBrokerUrl() {
+		public @Nullable String getBrokerUrl() {
 			return this.properties.getBrokerUrl();
 		}
 
 		@Override
-		public String getUser() {
+		public @Nullable String getUser() {
 			return this.properties.getUser();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.properties.getPassword();
 		}
 

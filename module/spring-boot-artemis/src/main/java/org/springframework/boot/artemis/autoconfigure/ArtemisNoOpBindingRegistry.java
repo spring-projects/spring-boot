@@ -17,6 +17,7 @@
 package org.springframework.boot.artemis.autoconfigure;
 
 import org.apache.activemq.artemis.spi.core.naming.BindingRegistry;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A no-op implementation of the {@link BindingRegistry}.
@@ -28,7 +29,7 @@ import org.apache.activemq.artemis.spi.core.naming.BindingRegistry;
 public class ArtemisNoOpBindingRegistry implements BindingRegistry {
 
 	@Override
-	public Object lookup(String s) {
+	public @Nullable Object lookup(String s) {
 		return null;
 	}
 

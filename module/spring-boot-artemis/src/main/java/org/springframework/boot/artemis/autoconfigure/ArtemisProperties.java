@@ -22,6 +22,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.activemq.artemis.core.remoting.impl.invm.TransportConstants;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -41,57 +42,57 @@ public class ArtemisProperties {
 	/**
 	 * Artemis deployment mode, auto-detected by default.
 	 */
-	private ArtemisMode mode;
+	private @Nullable ArtemisMode mode;
 
 	/**
 	 * Artemis broker url.
 	 */
-	private String brokerUrl;
+	private @Nullable String brokerUrl;
 
 	/**
 	 * Login user of the broker.
 	 */
-	private String user;
+	private @Nullable String user;
 
 	/**
 	 * Login password of the broker.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	private final Embedded embedded = new Embedded();
 
 	@NestedConfigurationProperty
 	private final JmsPoolConnectionFactoryProperties pool = new JmsPoolConnectionFactoryProperties();
 
-	public ArtemisMode getMode() {
+	public @Nullable ArtemisMode getMode() {
 		return this.mode;
 	}
 
-	public void setMode(ArtemisMode mode) {
+	public void setMode(@Nullable ArtemisMode mode) {
 		this.mode = mode;
 	}
 
-	public String getBrokerUrl() {
+	public @Nullable String getBrokerUrl() {
 		return this.brokerUrl;
 	}
 
-	public void setBrokerUrl(String brokerUrl) {
+	public void setBrokerUrl(@Nullable String brokerUrl) {
 		this.brokerUrl = brokerUrl;
 	}
 
-	public String getUser() {
+	public @Nullable String getUser() {
 		return this.user;
 	}
 
-	public void setUser(String user) {
+	public void setUser(@Nullable String user) {
 		this.user = user;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
@@ -128,7 +129,7 @@ public class ArtemisProperties {
 		/**
 		 * Journal file directory. Not necessary if persistence is turned off.
 		 */
-		private String dataDirectory;
+		private @Nullable String dataDirectory;
 
 		/**
 		 * List of queues to create on startup.
@@ -171,11 +172,11 @@ public class ArtemisProperties {
 			this.persistent = persistent;
 		}
 
-		public String getDataDirectory() {
+		public @Nullable String getDataDirectory() {
 			return this.dataDirectory;
 		}
 
-		public void setDataDirectory(String dataDirectory) {
+		public void setDataDirectory(@Nullable String dataDirectory) {
 			this.dataDirectory = dataDirectory;
 		}
 

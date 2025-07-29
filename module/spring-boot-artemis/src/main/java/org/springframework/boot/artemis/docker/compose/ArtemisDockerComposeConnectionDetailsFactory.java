@@ -16,6 +16,8 @@
 
 package org.springframework.boot.artemis.docker.compose;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails;
 import org.springframework.boot.artemis.autoconfigure.ArtemisMode;
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -71,12 +73,12 @@ class ArtemisDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getUser() {
+		public @Nullable String getUser() {
 			return this.environment.getUser();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.environment.getPassword();
 		}
 

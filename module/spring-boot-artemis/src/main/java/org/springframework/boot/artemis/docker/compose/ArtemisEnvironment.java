@@ -18,6 +18,8 @@ package org.springframework.boot.artemis.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Artemis environment details.
  *
@@ -26,20 +28,20 @@ import java.util.Map;
  */
 class ArtemisEnvironment {
 
-	private final String user;
+	private final @Nullable String user;
 
-	private final String password;
+	private final @Nullable String password;
 
 	ArtemisEnvironment(Map<String, String> env) {
 		this.user = env.get("ARTEMIS_USER");
 		this.password = env.get("ARTEMIS_PASSWORD");
 	}
 
-	String getUser() {
+	@Nullable String getUser() {
 		return this.user;
 	}
 
-	String getPassword() {
+	@Nullable String getPassword() {
 		return this.password;
 	}
 
