@@ -155,7 +155,7 @@ public final class LambdaSafe {
 			return self();
 		}
 
-		protected final <R> InvocationResult<R> invoke(C callbackInstance, Supplier<R> supplier) {
+		protected final <R> InvocationResult<R> invoke(C callbackInstance, Supplier<@Nullable R> supplier) {
 			if (this.filter.match(this.callbackType, callbackInstance, this.argument, this.additionalArguments)) {
 				try {
 					return InvocationResult.of(supplier.get());
@@ -245,6 +245,8 @@ public final class LambdaSafe {
 		 * Invoke the callback instance where the callback method returns void.
 		 * @param invoker the invoker used to invoke the callback
 		 */
+		// Lambda isn't detected with the correct nullability
+		@SuppressWarnings("NullAway")
 		public void invoke(Consumer<C> invoker) {
 			invoke(this.callbackInstance, () -> {
 				invoker.accept(this.callbackInstance);
@@ -259,7 +261,9 @@ public final class LambdaSafe {
 		 * @return the result of the invocation (may be {@link InvocationResult#noResult}
 		 * if the callback was not invoked)
 		 */
-		public <R> InvocationResult<R> invokeAnd(Function<C, R> invoker) {
+		// Lambda isn't detected with the correct nullability
+		@SuppressWarnings("NullAway")
+		public <R> InvocationResult<R> invokeAnd(Function<C, @Nullable R> invoker) {
 			return invoke(this.callbackInstance, () -> invoker.apply(this.callbackInstance));
 		}
 
@@ -285,6 +289,8 @@ public final class LambdaSafe {
 		 * Invoke the callback instances where the callback method returns void.
 		 * @param invoker the invoker used to invoke the callback
 		 */
+		// Lambda isn't detected with the correct nullability
+		@SuppressWarnings("NullAway")
 		public void invoke(Consumer<C> invoker) {
 			this.callbackInstances.forEach((callbackInstance) -> invoke(callbackInstance, () -> {
 				invoker.accept(callbackInstance);
@@ -299,7 +305,9 @@ public final class LambdaSafe {
 		 * @return the results of the invocation (may be an empty stream if no callbacks
 		 * could be called)
 		 */
-		public <R> Stream<R> invokeAnd(Function<C, R> invoker) {
+		// Lambda isn't detected with the correct nullability
+		@SuppressWarnings("NullAway")
+		public <R> Stream<R> invokeAnd(Function<C, @Nullable R> invoker) {
 			Function<C, InvocationResult<R>> mapper = (callbackInstance) -> invoke(callbackInstance,
 					() -> invoker.apply(callbackInstance));
 			return this.callbackInstances.stream()
