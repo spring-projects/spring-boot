@@ -17,4 +17,7 @@
 /**
  * Support for Docker Compose MongoDB service connections.
  */
+@NullMarked
 package org.springframework.boot.mongodb.docker.compose;
+
+import org.jspecify.annotations.NullMarked;

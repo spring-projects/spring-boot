@@ -28,6 +28,8 @@ description = "Spring Boot MongoDB"
 dependencies {
 	api(project(":core:spring-boot"))
 
+	compileOnly("com.google.code.findbugs:jsr305")
+
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))

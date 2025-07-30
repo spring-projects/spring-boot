@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.MongoDriverInformation;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base class for setup that is common to MongoDB client factories.
@@ -38,7 +39,7 @@ public abstract class MongoClientFactorySupport<T> {
 
 	private final BiFunction<MongoClientSettings, MongoDriverInformation, T> clientCreator;
 
-	protected MongoClientFactorySupport(List<MongoClientSettingsBuilderCustomizer> builderCustomizers,
+	protected MongoClientFactorySupport(@Nullable List<MongoClientSettingsBuilderCustomizer> builderCustomizers,
 			BiFunction<MongoClientSettings, MongoDriverInformation, T> clientCreator) {
 		this.builderCustomizers = (builderCustomizers != null) ? builderCustomizers : Collections.emptyList();
 		this.clientCreator = clientCreator;

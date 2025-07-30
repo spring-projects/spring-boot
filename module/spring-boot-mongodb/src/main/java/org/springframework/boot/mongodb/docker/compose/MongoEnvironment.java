@@ -18,6 +18,8 @@ package org.springframework.boot.mongodb.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -30,11 +32,11 @@ import org.springframework.util.Assert;
  */
 class MongoEnvironment {
 
-	private final String username;
+	private final @Nullable String username;
 
-	private final String password;
+	private final @Nullable String password;
 
-	private final String database;
+	private final @Nullable String database;
 
 	MongoEnvironment(Map<String, String> env) {
 		Assert.state(!env.containsKey("MONGO_INITDB_ROOT_USERNAME_FILE"),
@@ -46,15 +48,15 @@ class MongoEnvironment {
 		this.database = env.getOrDefault("MONGO_INITDB_DATABASE", env.get("MONGODB_DATABASE"));
 	}
 
-	String getUsername() {
+	@Nullable String getUsername() {
 		return this.username;
 	}
 
-	String getPassword() {
+	@Nullable String getPassword() {
 		return this.password;
 	}
 
-	String getDatabase() {
+	@Nullable String getDatabase() {
 		return this.database;
 	}
 

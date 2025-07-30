@@ -19,6 +19,7 @@ package org.springframework.boot.mongodb.testcontainers;
 import java.util.function.Function;
 
 import com.mongodb.ConnectionString;
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
@@ -73,7 +74,7 @@ abstract class AbstractMongoContainerConnectionDetailsFactory<T extends GenericC
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			return super.getSslBundle();
 		}
 

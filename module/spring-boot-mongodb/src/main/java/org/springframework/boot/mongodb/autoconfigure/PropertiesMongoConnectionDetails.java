@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mongodb.ConnectionString;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.mongodb.autoconfigure.MongoProperties.Ssl;
 import org.springframework.boot.ssl.SslBundle;
@@ -42,9 +43,9 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 
 	private final MongoProperties properties;
 
-	private final SslBundles sslBundles;
+	private final @Nullable SslBundles sslBundles;
 
-	public PropertiesMongoConnectionDetails(MongoProperties properties, SslBundles sslBundles) {
+	public PropertiesMongoConnectionDetails(MongoProperties properties, @Nullable SslBundles sslBundles) {
 		this.properties = properties;
 		this.sslBundles = sslBundles;
 	}
@@ -106,7 +107,7 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	}
 
 	@Override
-	public SslBundle getSslBundle() {
+	public @Nullable SslBundle getSslBundle() {
 		Ssl ssl = this.properties.getSsl();
 		if (!ssl.isEnabled()) {
 			return null;

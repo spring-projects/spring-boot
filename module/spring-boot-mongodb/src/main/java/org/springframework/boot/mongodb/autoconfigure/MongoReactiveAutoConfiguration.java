@@ -24,6 +24,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -107,7 +108,7 @@ public final class MongoReactiveAutoConfiguration {
 
 		private final ObjectProvider<MongoClientSettings> settings;
 
-		private volatile EventLoopGroup eventLoopGroup;
+		private volatile @Nullable EventLoopGroup eventLoopGroup;
 
 		NettyDriverMongoClientSettingsBuilderCustomizer(ObjectProvider<MongoClientSettings> settings) {
 			this.settings = settings;
@@ -130,7 +131,7 @@ public final class MongoReactiveAutoConfiguration {
 			}
 		}
 
-		private boolean isCustomTransportConfiguration(MongoClientSettings settings) {
+		private boolean isCustomTransportConfiguration(@Nullable MongoClientSettings settings) {
 			return settings != null && settings.getTransportSettings() != null;
 		}
 
