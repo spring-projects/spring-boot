@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Couchbase health.
  */
+@NullMarked
 package org.springframework.boot.couchbase.autoconfigure.health;
+
+import org.jspecify.annotations.NullMarked;

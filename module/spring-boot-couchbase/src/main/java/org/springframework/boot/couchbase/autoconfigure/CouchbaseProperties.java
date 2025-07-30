@@ -18,6 +18,8 @@ package org.springframework.boot.couchbase.autoconfigure;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -38,43 +40,43 @@ public class CouchbaseProperties {
 	/**
 	 * Connection string used to locate the Couchbase cluster.
 	 */
-	private String connectionString;
+	private @Nullable String connectionString;
 
 	/**
 	 * Cluster username.
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Cluster password.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	private final Authentication authentication = new Authentication();
 
 	private final Env env = new Env();
 
-	public String getConnectionString() {
+	public @Nullable String getConnectionString() {
 		return this.connectionString;
 	}
 
-	public void setConnectionString(String connectionString) {
+	public void setConnectionString(@Nullable String connectionString) {
 		this.connectionString = connectionString;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
@@ -105,39 +107,39 @@ public class CouchbaseProperties {
 			/**
 			 * PEM-formatted certificates for certificate-based cluster authentication.
 			 */
-			private String certificates;
+			private @Nullable String certificates;
 
 			/**
 			 * PEM-formatted private key for certificate-based cluster authentication.
 			 */
-			private String privateKey;
+			private @Nullable String privateKey;
 
 			/**
 			 * Private key password for certificate-based cluster authentication.
 			 */
-			private String privateKeyPassword;
+			private @Nullable String privateKeyPassword;
 
-			public String getCertificates() {
+			public @Nullable String getCertificates() {
 				return this.certificates;
 			}
 
-			public void setCertificates(String certificates) {
+			public void setCertificates(@Nullable String certificates) {
 				this.certificates = certificates;
 			}
 
-			public String getPrivateKey() {
+			public @Nullable String getPrivateKey() {
 				return this.privateKey;
 			}
 
-			public void setPrivateKey(String privateKey) {
+			public void setPrivateKey(@Nullable String privateKey) {
 				this.privateKey = privateKey;
 			}
 
-			public String getPrivateKeyPassword() {
+			public @Nullable String getPrivateKeyPassword() {
 				return this.privateKeyPassword;
 			}
 
-			public void setPrivateKeyPassword(String privateKeyPassword) {
+			public void setPrivateKeyPassword(@Nullable String privateKeyPassword) {
 				this.privateKeyPassword = privateKeyPassword;
 			}
 
@@ -148,26 +150,26 @@ public class CouchbaseProperties {
 			/**
 			 * Java KeyStore location for certificate-based cluster authentication.
 			 */
-			private String location;
+			private @Nullable String location;
 
 			/**
 			 * Java KeyStore password for certificate-based cluster authentication.
 			 */
-			private String password;
+			private @Nullable String password;
 
-			public String getLocation() {
+			public @Nullable String getLocation() {
 				return this.location;
 			}
 
-			public void setLocation(String location) {
+			public void setLocation(@Nullable String location) {
 				this.location = location;
 			}
 
-			public String getPassword() {
+			public @Nullable String getPassword() {
 				return this.password;
 			}
 
-			public void setPassword(String password) {
+			public void setPassword(@Nullable String password) {
 				this.password = password;
 			}
 
@@ -247,12 +249,12 @@ public class CouchbaseProperties {
 		 * Whether to enable SSL support. Enabled automatically if a "bundle" is provided
 		 * unless specified otherwise.
 		 */
-		private Boolean enabled;
+		private @Nullable Boolean enabled;
 
 		/**
 		 * SSL bundle name.
 		 */
-		private String bundle;
+		private @Nullable String bundle;
 
 		public Boolean getEnabled() {
 			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
@@ -262,11 +264,11 @@ public class CouchbaseProperties {
 			this.enabled = enabled;
 		}
 
-		public String getBundle() {
+		public @Nullable String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
 		}
 

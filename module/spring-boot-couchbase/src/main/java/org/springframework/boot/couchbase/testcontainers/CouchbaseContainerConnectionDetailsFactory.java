@@ -16,6 +16,7 @@
 
 package org.springframework.boot.couchbase.testcontainers;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.couchbase.CouchbaseContainer;
 
 import org.springframework.boot.couchbase.autoconfigure.CouchbaseConnectionDetails;
@@ -68,7 +69,7 @@ class CouchbaseContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			return super.getSslBundle();
 		}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.couchbase.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 
@@ -39,19 +41,19 @@ public interface CouchbaseConnectionDetails extends ConnectionDetails {
 	 * Cluster username.
 	 * @return the cluster username
 	 */
-	String getUsername();
+	@Nullable String getUsername();
 
 	/**
 	 * Cluster password.
 	 * @return the cluster password
 	 */
-	String getPassword();
+	@Nullable String getPassword();
 
 	/**
 	 * SSL bundle to use.
 	 * @return the SSL bundle to use
 	 */
-	default SslBundle getSslBundle() {
+	default @Nullable SslBundle getSslBundle() {
 		return null;
 	}
 

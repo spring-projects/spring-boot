@@ -17,4 +17,7 @@
 /**
  * Health integration for Couchbase.
  */
+@NullMarked
 package org.springframework.boot.couchbase.health;
+
+import org.jspecify.annotations.NullMarked;
