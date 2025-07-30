@@ -88,11 +88,12 @@ class PropertyDescriptorResolver {
 	private PropertyDescriptor extracted(TypeElement declaringElement, TypeElementMembers members,
 			VariableElement parameter) {
 		String name = getPropertyName(parameter);
+		String parameterName = parameter.getSimpleName().toString();
 		TypeMirror type = parameter.asType();
-		ExecutableElement getter = members.getPublicGetter(name, type);
-		ExecutableElement setter = members.getPublicSetter(name, type);
-		VariableElement field = members.getFields().get(name);
-		RecordComponentElement recordComponent = members.getRecordComponents().get(name);
+		ExecutableElement getter = members.getPublicGetter(parameterName, type);
+		ExecutableElement setter = members.getPublicSetter(parameterName, type);
+		VariableElement field = members.getFields().get(parameterName);
+		RecordComponentElement recordComponent = members.getRecordComponents().get(parameterName);
 		SourceMetadata sourceMetadata = this.environment.resolveSourceMetadata(field, getter);
 		PropertyDescriptor propertyDescriptor = (recordComponent != null)
 				? new RecordParameterPropertyDescriptor(name, type, parameter, declaringElement, getter,
