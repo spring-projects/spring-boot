@@ -81,7 +81,8 @@ public class ReactiveHealthEndpointWebExtension
 	}
 
 	public Mono<WebEndpointResponse<? extends HealthDescriptor>> health(ApiVersion apiVersion,
-			WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll, String... path) {
+			@Nullable WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll,
+			String... path) {
 		Result<Mono<? extends HealthDescriptor>> result = getResult(apiVersion, serverNamespace, securityContext,
 				showAll, path);
 		if (result == null) {

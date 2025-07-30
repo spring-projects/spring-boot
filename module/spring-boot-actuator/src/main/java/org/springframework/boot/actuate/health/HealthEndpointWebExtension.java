@@ -80,8 +80,9 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<Health, He
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}
 
-	public WebEndpointResponse<HealthDescriptor> health(ApiVersion apiVersion, WebServerNamespace serverNamespace,
-			SecurityContext securityContext, boolean showAll, String... path) {
+	public WebEndpointResponse<HealthDescriptor> health(ApiVersion apiVersion,
+			@Nullable WebServerNamespace serverNamespace, SecurityContext securityContext, boolean showAll,
+			String... path) {
 		Result<HealthDescriptor> result = getResult(apiVersion, serverNamespace, securityContext, showAll, path);
 		if (result == null) {
 			return (Arrays.equals(path, EMPTY_PATH))

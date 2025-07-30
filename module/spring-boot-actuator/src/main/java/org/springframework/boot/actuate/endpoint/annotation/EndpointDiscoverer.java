@@ -338,7 +338,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		return isFilterMatch(filter, getFilterEndpoint(endpointBean));
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	// Doesn't detect lambda with correct nullability
+	@SuppressWarnings({ "unchecked", "NullAway" })
 	private boolean isFilterMatch(EndpointFilter<E> filter, E endpoint) {
 		Boolean result = LambdaSafe.callback(EndpointFilter.class, filter, endpoint)
 			.withLogger(EndpointDiscoverer.class)
@@ -357,7 +358,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
+	// Doesn't detect lambda with correct nullability
+	@SuppressWarnings({ "unchecked", "NullAway" })
 	private boolean isFilterMatch(OperationFilter<O> filter, Operation operation, EndpointId endpointId,
 			Access defaultAccess) {
 		Boolean result = LambdaSafe.callback(OperationFilter.class, filter, operation)
