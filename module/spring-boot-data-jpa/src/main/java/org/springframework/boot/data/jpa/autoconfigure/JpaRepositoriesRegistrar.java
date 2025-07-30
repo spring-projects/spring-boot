@@ -19,6 +19,8 @@ package org.springframework.boot.data.jpa.autoconfigure;
 import java.lang.annotation.Annotation;
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
@@ -38,7 +40,7 @@ import org.springframework.util.StringUtils;
  */
 class JpaRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
-	private BootstrapMode bootstrapMode = null;
+	private @Nullable BootstrapMode bootstrapMode;
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

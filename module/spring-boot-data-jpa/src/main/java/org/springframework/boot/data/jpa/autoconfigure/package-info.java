@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring Data JPA.
  */
+@NullMarked
 package org.springframework.boot.data.jpa.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;
