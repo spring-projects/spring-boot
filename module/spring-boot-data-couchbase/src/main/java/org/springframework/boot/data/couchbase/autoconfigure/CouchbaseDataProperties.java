@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.couchbase.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -36,17 +38,17 @@ public class CouchbaseDataProperties {
 	/**
 	 * Name of the bucket to connect to.
 	 */
-	private String bucketName;
+	private @Nullable String bucketName;
 
 	/**
 	 * Name of the scope used for all collection access.
 	 */
-	private String scopeName;
+	private @Nullable String scopeName;
 
 	/**
 	 * Fully qualified name of the FieldNamingStrategy to use.
 	 */
-	private Class<?> fieldNamingStrategy;
+	private @Nullable Class<?> fieldNamingStrategy;
 
 	/**
 	 * Name of the field that stores the type information for complex types when using
@@ -62,27 +64,27 @@ public class CouchbaseDataProperties {
 		this.autoIndex = autoIndex;
 	}
 
-	public String getBucketName() {
+	public @Nullable String getBucketName() {
 		return this.bucketName;
 	}
 
-	public void setBucketName(String bucketName) {
+	public void setBucketName(@Nullable String bucketName) {
 		this.bucketName = bucketName;
 	}
 
-	public String getScopeName() {
+	public @Nullable String getScopeName() {
 		return this.scopeName;
 	}
 
-	public void setScopeName(String scopeName) {
+	public void setScopeName(@Nullable String scopeName) {
 		this.scopeName = scopeName;
 	}
 
-	public Class<?> getFieldNamingStrategy() {
+	public @Nullable Class<?> getFieldNamingStrategy() {
 		return this.fieldNamingStrategy;
 	}
 
-	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
+	public void setFieldNamingStrategy(@Nullable Class<?> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
 	}
 
