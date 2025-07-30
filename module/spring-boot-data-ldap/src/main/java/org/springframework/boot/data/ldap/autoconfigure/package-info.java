@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring Data LDAP.
  */
+@NullMarked
 package org.springframework.boot.data.ldap.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;
