@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.List;
 
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
@@ -40,23 +41,23 @@ public class CassandraProperties {
 	/**
 	 * Location of the configuration file to use.
 	 */
-	private Resource config;
+	private @Nullable Resource config;
 
 	/**
 	 * Keyspace name to use.
 	 */
-	private String keyspaceName;
+	private @Nullable String keyspaceName;
 
 	/**
 	 * Name of the Cassandra session.
 	 */
-	private String sessionName;
+	private @Nullable String sessionName;
 
 	/**
 	 * Cluster node addresses in the form 'host:port', or a simple 'host' to use the
 	 * configured port.
 	 */
-	private List<String> contactPoints;
+	private @Nullable List<String> contactPoints;
 
 	/**
 	 * Port to use if a contact point does not specify one.
@@ -67,22 +68,22 @@ public class CassandraProperties {
 	 * Datacenter that is considered "local". Contact points should be from this
 	 * datacenter.
 	 */
-	private String localDatacenter;
+	private @Nullable String localDatacenter;
 
 	/**
 	 * Login user of the server.
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Login password of the server.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Compression supported by the Cassandra binary protocol.
 	 */
-	private Compression compression;
+	private @Nullable Compression compression;
 
 	/**
 	 * Schema action to take at startup.
@@ -114,35 +115,35 @@ public class CassandraProperties {
 	 */
 	private final Controlconnection controlconnection = new Controlconnection();
 
-	public Resource getConfig() {
+	public @Nullable Resource getConfig() {
 		return this.config;
 	}
 
-	public void setConfig(Resource config) {
+	public void setConfig(@Nullable Resource config) {
 		this.config = config;
 	}
 
-	public String getKeyspaceName() {
+	public @Nullable String getKeyspaceName() {
 		return this.keyspaceName;
 	}
 
-	public void setKeyspaceName(String keyspaceName) {
+	public void setKeyspaceName(@Nullable String keyspaceName) {
 		this.keyspaceName = keyspaceName;
 	}
 
-	public String getSessionName() {
+	public @Nullable String getSessionName() {
 		return this.sessionName;
 	}
 
-	public void setSessionName(String sessionName) {
+	public void setSessionName(@Nullable String sessionName) {
 		this.sessionName = sessionName;
 	}
 
-	public List<String> getContactPoints() {
+	public @Nullable List<String> getContactPoints() {
 		return this.contactPoints;
 	}
 
-	public void setContactPoints(List<String> contactPoints) {
+	public void setContactPoints(@Nullable List<String> contactPoints) {
 		this.contactPoints = contactPoints;
 	}
 
@@ -154,35 +155,35 @@ public class CassandraProperties {
 		this.port = port;
 	}
 
-	public String getLocalDatacenter() {
+	public @Nullable String getLocalDatacenter() {
 		return this.localDatacenter;
 	}
 
-	public void setLocalDatacenter(String localDatacenter) {
+	public void setLocalDatacenter(@Nullable String localDatacenter) {
 		this.localDatacenter = localDatacenter;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
-	public Compression getCompression() {
+	public @Nullable Compression getCompression() {
 		return this.compression;
 	}
 
-	public void setCompression(Compression compression) {
+	public void setCompression(@Nullable Compression compression) {
 		this.compression = compression;
 	}
 
@@ -223,12 +224,12 @@ public class CassandraProperties {
 		/**
 		 * Whether to enable SSL support.
 		 */
-		private Boolean enabled;
+		private @Nullable Boolean enabled;
 
 		/**
 		 * SSL bundle name.
 		 */
-		private String bundle;
+		private @Nullable String bundle;
 
 		public boolean isEnabled() {
 			return (this.enabled != null) ? this.enabled : this.bundle != null;
@@ -238,11 +239,11 @@ public class CassandraProperties {
 			this.enabled = enabled;
 		}
 
-		public String getBundle() {
+		public @Nullable String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
 		}
 
@@ -253,27 +254,27 @@ public class CassandraProperties {
 		/**
 		 * Timeout to use when establishing driver connections.
 		 */
-		private Duration connectTimeout;
+		private @Nullable Duration connectTimeout;
 
 		/**
 		 * Timeout to use for internal queries that run as part of the initialization
 		 * process, just after a connection is opened.
 		 */
-		private Duration initQueryTimeout;
+		private @Nullable Duration initQueryTimeout;
 
-		public Duration getConnectTimeout() {
+		public @Nullable Duration getConnectTimeout() {
 			return this.connectTimeout;
 		}
 
-		public void setConnectTimeout(Duration connectTimeout) {
+		public void setConnectTimeout(@Nullable Duration connectTimeout) {
 			this.connectTimeout = connectTimeout;
 		}
 
-		public Duration getInitQueryTimeout() {
+		public @Nullable Duration getInitQueryTimeout() {
 			return this.initQueryTimeout;
 		}
 
-		public void setInitQueryTimeout(Duration initQueryTimeout) {
+		public void setInitQueryTimeout(@Nullable Duration initQueryTimeout) {
 			this.initQueryTimeout = initQueryTimeout;
 		}
 
@@ -284,54 +285,54 @@ public class CassandraProperties {
 		/**
 		 * How long the driver waits for a request to complete.
 		 */
-		private Duration timeout;
+		private @Nullable Duration timeout;
 
 		/**
 		 * Queries consistency level.
 		 */
-		private DefaultConsistencyLevel consistency;
+		private @Nullable DefaultConsistencyLevel consistency;
 
 		/**
 		 * Queries serial consistency level.
 		 */
-		private DefaultConsistencyLevel serialConsistency;
+		private @Nullable DefaultConsistencyLevel serialConsistency;
 
 		/**
 		 * How many rows will be retrieved simultaneously in a single network round-trip.
 		 */
-		private Integer pageSize;
+		private @Nullable Integer pageSize;
 
 		private final Throttler throttler = new Throttler();
 
-		public Duration getTimeout() {
+		public @Nullable Duration getTimeout() {
 			return this.timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		public void setTimeout(@Nullable Duration timeout) {
 			this.timeout = timeout;
 		}
 
-		public DefaultConsistencyLevel getConsistency() {
+		public @Nullable DefaultConsistencyLevel getConsistency() {
 			return this.consistency;
 		}
 
-		public void setConsistency(DefaultConsistencyLevel consistency) {
+		public void setConsistency(@Nullable DefaultConsistencyLevel consistency) {
 			this.consistency = consistency;
 		}
 
-		public DefaultConsistencyLevel getSerialConsistency() {
+		public @Nullable DefaultConsistencyLevel getSerialConsistency() {
 			return this.serialConsistency;
 		}
 
-		public void setSerialConsistency(DefaultConsistencyLevel serialConsistency) {
+		public void setSerialConsistency(@Nullable DefaultConsistencyLevel serialConsistency) {
 			this.serialConsistency = serialConsistency;
 		}
 
-		public Integer getPageSize() {
+		public @Nullable Integer getPageSize() {
 			return this.pageSize;
 		}
 
-		public void setPageSize(int pageSize) {
+		public void setPageSize(@Nullable Integer pageSize) {
 			this.pageSize = pageSize;
 		}
 
@@ -349,27 +350,27 @@ public class CassandraProperties {
 		/**
 		 * Idle timeout before an idle connection is removed.
 		 */
-		private Duration idleTimeout;
+		private @Nullable Duration idleTimeout;
 
 		/**
 		 * Heartbeat interval after which a message is sent on an idle connection to make
 		 * sure it's still alive.
 		 */
-		private Duration heartbeatInterval;
+		private @Nullable Duration heartbeatInterval;
 
-		public Duration getIdleTimeout() {
+		public @Nullable Duration getIdleTimeout() {
 			return this.idleTimeout;
 		}
 
-		public void setIdleTimeout(Duration idleTimeout) {
+		public void setIdleTimeout(@Nullable Duration idleTimeout) {
 			this.idleTimeout = idleTimeout;
 		}
 
-		public Duration getHeartbeatInterval() {
+		public @Nullable Duration getHeartbeatInterval() {
 			return this.heartbeatInterval;
 		}
 
-		public void setHeartbeatInterval(Duration heartbeatInterval) {
+		public void setHeartbeatInterval(@Nullable Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 
@@ -380,13 +381,13 @@ public class CassandraProperties {
 		/**
 		 * Timeout to use for control queries.
 		 */
-		private Duration timeout;
+		private @Nullable Duration timeout;
 
-		public Duration getTimeout() {
+		public @Nullable Duration getTimeout() {
 			return this.timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		public void setTimeout(@Nullable Duration timeout) {
 			this.timeout = timeout;
 		}
 
@@ -397,68 +398,68 @@ public class CassandraProperties {
 		/**
 		 * Request throttling type.
 		 */
-		private ThrottlerType type;
+		private @Nullable ThrottlerType type;
 
 		/**
 		 * Maximum number of requests that can be enqueued when the throttling threshold
 		 * is exceeded.
 		 */
-		private Integer maxQueueSize;
+		private @Nullable Integer maxQueueSize;
 
 		/**
 		 * Maximum number of requests that are allowed to execute in parallel.
 		 */
-		private Integer maxConcurrentRequests;
+		private @Nullable Integer maxConcurrentRequests;
 
 		/**
 		 * Maximum allowed request rate.
 		 */
-		private Integer maxRequestsPerSecond;
+		private @Nullable Integer maxRequestsPerSecond;
 
 		/**
 		 * How often the throttler attempts to dequeue requests. Set this high enough that
 		 * each attempt will process multiple entries in the queue, but not delay requests
 		 * too much.
 		 */
-		private Duration drainInterval;
+		private @Nullable Duration drainInterval;
 
-		public ThrottlerType getType() {
+		public @Nullable ThrottlerType getType() {
 			return this.type;
 		}
 
-		public void setType(ThrottlerType type) {
+		public void setType(@Nullable ThrottlerType type) {
 			this.type = type;
 		}
 
-		public Integer getMaxQueueSize() {
+		public @Nullable Integer getMaxQueueSize() {
 			return this.maxQueueSize;
 		}
 
-		public void setMaxQueueSize(int maxQueueSize) {
+		public void setMaxQueueSize(@Nullable Integer maxQueueSize) {
 			this.maxQueueSize = maxQueueSize;
 		}
 
-		public Integer getMaxConcurrentRequests() {
+		public @Nullable Integer getMaxConcurrentRequests() {
 			return this.maxConcurrentRequests;
 		}
 
-		public void setMaxConcurrentRequests(int maxConcurrentRequests) {
+		public void setMaxConcurrentRequests(@Nullable Integer maxConcurrentRequests) {
 			this.maxConcurrentRequests = maxConcurrentRequests;
 		}
 
-		public Integer getMaxRequestsPerSecond() {
+		public @Nullable Integer getMaxRequestsPerSecond() {
 			return this.maxRequestsPerSecond;
 		}
 
-		public void setMaxRequestsPerSecond(int maxRequestsPerSecond) {
+		public void setMaxRequestsPerSecond(@Nullable Integer maxRequestsPerSecond) {
 			this.maxRequestsPerSecond = maxRequestsPerSecond;
 		}
 
-		public Duration getDrainInterval() {
+		public @Nullable Duration getDrainInterval() {
 			return this.drainInterval;
 		}
 
-		public void setDrainInterval(Duration drainInterval) {
+		public void setDrainInterval(@Nullable Duration drainInterval) {
 			this.drainInterval = drainInterval;
 		}
 

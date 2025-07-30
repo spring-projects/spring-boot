@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Cassandra.
  */
+@NullMarked
 package org.springframework.boot.cassandra.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

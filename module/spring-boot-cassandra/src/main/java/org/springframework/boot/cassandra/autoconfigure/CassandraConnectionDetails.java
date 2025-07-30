@@ -18,6 +18,8 @@ package org.springframework.boot.cassandra.autoconfigure;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 
@@ -41,7 +43,7 @@ public interface CassandraConnectionDetails extends ConnectionDetails {
 	 * Login user of the server.
 	 * @return the login user of the server or {@code null}
 	 */
-	default String getUsername() {
+	default @Nullable String getUsername() {
 		return null;
 	}
 
@@ -49,7 +51,7 @@ public interface CassandraConnectionDetails extends ConnectionDetails {
 	 * Login password of the server.
 	 * @return the login password of the server or {@code null}
 	 */
-	default String getPassword() {
+	default @Nullable String getPassword() {
 		return null;
 	}
 
@@ -58,13 +60,13 @@ public interface CassandraConnectionDetails extends ConnectionDetails {
 	 * datacenter.
 	 * @return the datacenter that is considered "local"
 	 */
-	String getLocalDatacenter();
+	@Nullable String getLocalDatacenter();
 
 	/**
 	 * SSL bundle to use.
 	 * @return the SSL bundle to use
 	 */
-	default SslBundle getSslBundle() {
+	default @Nullable SslBundle getSslBundle() {
 		return null;
 	}
 

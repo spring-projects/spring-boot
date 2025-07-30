@@ -19,6 +19,7 @@ package org.springframework.boot.cassandra.testcontainers;
 import java.net.InetSocketAddress;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.cassandra.CassandraContainer;
 
 import org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails;
@@ -77,7 +78,7 @@ class CassandraContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			return super.getSslBundle();
 		}
 

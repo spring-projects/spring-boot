@@ -34,6 +34,7 @@ import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfig
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultProgrammaticDriverConfigLoaderBuilder;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -123,8 +124,9 @@ public final class CassandraAutoConfiguration {
 
 	private void configureAuthentication(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails) {
 		String username = connectionDetails.getUsername();
-		if (username != null) {
-			builder.withAuthCredentials(username, connectionDetails.getPassword());
+		String password = connectionDetails.getPassword();
+		if (username != null && password != null) {
+			builder.withAuthCredentials(username, password);
 		}
 	}
 
@@ -260,7 +262,7 @@ public final class CassandraAutoConfiguration {
 
 		private final Map<String, String> options = new LinkedHashMap<>();
 
-		private CassandraDriverOptions add(DriverOption option, String value) {
+		private CassandraDriverOptions add(DriverOption option, @Nullable String value) {
 			String key = createKeyFor(option);
 			this.options.put(key, value);
 			return this;
@@ -298,9 +300,9 @@ public final class CassandraAutoConfiguration {
 
 		private final CassandraProperties properties;
 
-		private final SslBundles sslBundles;
+		private final @Nullable SslBundles sslBundles;
 
-		private PropertiesCassandraConnectionDetails(CassandraProperties properties, SslBundles sslBundles) {
+		private PropertiesCassandraConnectionDetails(CassandraProperties properties, @Nullable SslBundles sslBundles) {
 			this.properties = properties;
 			this.sslBundles = sslBundles;
 		}
@@ -313,22 +315,22 @@ public final class CassandraAutoConfiguration {
 		}
 
 		@Override
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.properties.getUsername();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.properties.getPassword();
 		}
 
 		@Override
-		public String getLocalDatacenter() {
+		public @Nullable String getLocalDatacenter() {
 			return this.properties.getLocalDatacenter();
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			Ssl ssl = this.properties.getSsl();
 			if (ssl == null || !ssl.isEnabled()) {
 				return null;
@@ -352,7 +354,7 @@ public final class CassandraAutoConfiguration {
 			return new Node(contactPoint, this.properties.getPort());
 		}
 
-		private Integer asPort(String value) {
+		private @Nullable Integer asPort(String value) {
 			try {
 				int i = Integer.parseInt(value);
 				return (i > 0 && i < 65535) ? i : null;

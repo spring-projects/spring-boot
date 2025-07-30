@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Cassandra health.
  */
+@NullMarked
 package org.springframework.boot.cassandra.autoconfigure.health;
+
+import org.jspecify.annotations.NullMarked;

@@ -17,4 +17,7 @@
 /**
  * Support for testcontainers Cassandra service connections.
  */
+@NullMarked
 package org.springframework.boot.cassandra.testcontainers;
+
+import org.jspecify.annotations.NullMarked;
