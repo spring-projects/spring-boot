@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.neo4j.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -30,13 +32,13 @@ public class Neo4jDataProperties {
 	/**
 	 * Database name to use. By default, the server decides the default database to use.
 	 */
-	private String database;
+	private @Nullable String database;
 
-	public String getDatabase() {
+	public @Nullable String getDatabase() {
 		return this.database;
 	}
 
-	public void setDatabase(String database) {
+	public void setDatabase(@Nullable String database) {
 		this.database = database;
 	}
 
