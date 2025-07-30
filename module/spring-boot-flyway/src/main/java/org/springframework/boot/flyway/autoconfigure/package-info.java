@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Flyway.
  */
+@NullMarked
 package org.springframework.boot.flyway.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

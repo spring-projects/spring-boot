@@ -17,6 +17,7 @@
 package org.springframework.boot.flyway.autoconfigure;
 
 import org.flywaydb.core.Flyway;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.Ordered;
@@ -33,7 +34,7 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 
 	private final Flyway flyway;
 
-	private final FlywayMigrationStrategy migrationStrategy;
+	private final @Nullable FlywayMigrationStrategy migrationStrategy;
 
 	private int order = 0;
 
@@ -50,7 +51,7 @@ public class FlywayMigrationInitializer implements InitializingBean, Ordered {
 	 * @param flyway the flyway instance
 	 * @param migrationStrategy the migration strategy or {@code null}
 	 */
-	public FlywayMigrationInitializer(Flyway flyway, FlywayMigrationStrategy migrationStrategy) {
+	public FlywayMigrationInitializer(Flyway flyway, @Nullable FlywayMigrationStrategy migrationStrategy) {
 		Assert.notNull(flyway, "'flyway' must not be null");
 		this.flyway = flyway;
 		this.migrationStrategy = migrationStrategy;

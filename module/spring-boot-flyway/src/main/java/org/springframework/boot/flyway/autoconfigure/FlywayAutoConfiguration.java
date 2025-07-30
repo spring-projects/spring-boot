@@ -38,6 +38,7 @@ import org.flywaydb.core.extensibility.ConfigurationExtension;
 import org.flywaydb.database.oracle.OracleConfigurationExtension;
 import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -177,14 +178,14 @@ public final class FlywayAutoConfiguration {
 			return configuration.load();
 		}
 
-		private void configureDataSource(FluentConfiguration configuration, DataSource flywayDataSource,
-				DataSource dataSource, FlywayConnectionDetails connectionDetails) {
+		private void configureDataSource(FluentConfiguration configuration, @Nullable DataSource flywayDataSource,
+				@Nullable DataSource dataSource, FlywayConnectionDetails connectionDetails) {
 			DataSource migrationDataSource = getMigrationDataSource(flywayDataSource, dataSource, connectionDetails);
 			configuration.dataSource(migrationDataSource);
 		}
 
-		private DataSource getMigrationDataSource(DataSource flywayDataSource, DataSource dataSource,
-				FlywayConnectionDetails connectionDetails) {
+		private DataSource getMigrationDataSource(@Nullable DataSource flywayDataSource,
+				@Nullable DataSource dataSource, FlywayConnectionDetails connectionDetails) {
 			if (flywayDataSource != null) {
 				return flywayDataSource;
 			}
@@ -424,7 +425,7 @@ public final class FlywayAutoConfiguration {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			String value = ObjectUtils.nullSafeToString(source);
 			return MigrationVersion.fromVersion(value);
 		}
@@ -457,7 +458,7 @@ public final class FlywayAutoConfiguration {
 	static class FlywayAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern("db/migration/*");
 		}
 
@@ -475,22 +476,22 @@ public final class FlywayAutoConfiguration {
 		}
 
 		@Override
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.properties.getUser();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.properties.getPassword();
 		}
 
 		@Override
-		public String getJdbcUrl() {
+		public @Nullable String getJdbcUrl() {
 			return this.properties.getUrl();
 		}
 
 		@Override
-		public String getDriverClassName() {
+		public @Nullable String getDriverClassName() {
 			return this.properties.getDriverClassName();
 		}
 
@@ -574,7 +575,7 @@ public final class FlywayAutoConfiguration {
 	 */
 	static class Extension<E extends ConfigurationExtension> {
 
-		private SingletonSupplier<E> extension;
+		private final SingletonSupplier<E> extension;
 
 		Extension(FluentConfiguration configuration, Class<E> type, String name) {
 			this.extension = SingletonSupplier.of(() -> {

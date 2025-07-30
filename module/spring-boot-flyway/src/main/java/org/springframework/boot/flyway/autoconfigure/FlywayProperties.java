@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
@@ -83,7 +85,7 @@ public class FlywayProperties {
 	/**
 	 * Default schema name managed by Flyway (case-sensitive).
 	 */
-	private String defaultSchema;
+	private @Nullable String defaultSchema;
 
 	/**
 	 * Scheme names managed by Flyway (case-sensitive).
@@ -106,7 +108,7 @@ public class FlywayProperties {
 	 * database that does not support tablespaces. Defaults to the default tablespace of
 	 * the connection used by Flyway.
 	 */
-	private String tablespace;
+	private @Nullable String tablespace;
 
 	/**
 	 * Description to tag an existing schema with when applying a baseline.
@@ -121,7 +123,7 @@ public class FlywayProperties {
 	/**
 	 * Username recorded in the schema history table as having applied the migration.
 	 */
-	private String installedBy;
+	private @Nullable String installedBy;
 
 	/**
 	 * Placeholders and their replacements to apply to sql migration scripts.
@@ -176,23 +178,23 @@ public class FlywayProperties {
 	/**
 	 * Login user of the database to migrate.
 	 */
-	private String user;
+	private @Nullable String user;
 
 	/**
 	 * Login password of the database to migrate.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
 	 */
-	private String driverClassName;
+	private @Nullable String driverClassName;
 
 	/**
 	 * JDBC url of the database to migrate. If not set, the primary configured data source
 	 * is used.
 	 */
-	private String url;
+	private @Nullable String url;
 
 	/**
 	 * SQL statements to execute to initialize a connection immediately after obtaining
@@ -262,7 +264,7 @@ public class FlywayProperties {
 	 * PowerShell executable to use for running PowerShell scripts. Default to
 	 * "powershell" on Windows, "pwsh" on other platforms.
 	 */
-	private String powershellExecutable;
+	private @Nullable String powershellExecutable;
 
 	/**
 	 * Whether Flyway should execute SQL within a transaction.
@@ -277,24 +279,24 @@ public class FlywayProperties {
 	/**
 	 * Whether to batch SQL statements when executing them.
 	 */
-	private Boolean batch;
+	private @Nullable Boolean batch;
 
 	/**
 	 * File to which the SQL statements of a migration dry run should be output. Requires
 	 * Flyway Teams.
 	 */
-	private File dryRunOutput;
+	private @Nullable File dryRunOutput;
 
 	/**
 	 * Rules for the built-in error handling to override specific SQL states and error
 	 * codes. Requires Flyway Teams.
 	 */
-	private String[] errorOverrides;
+	private String @Nullable [] errorOverrides;
 
 	/**
 	 * Whether to stream SQL migrations when executing them.
 	 */
-	private Boolean stream;
+	private @Nullable Boolean stream;
 
 	/**
 	 * Properties to pass to the JDBC driver.
@@ -304,34 +306,34 @@ public class FlywayProperties {
 	/**
 	 * Path of the Kerberos config file. Requires Flyway Teams.
 	 */
-	private String kerberosConfigFile;
+	private @Nullable String kerberosConfigFile;
 
 	/**
 	 * Whether Flyway should output a table with the results of queries when executing
 	 * migrations.
 	 */
-	private Boolean outputQueryResults;
+	private @Nullable Boolean outputQueryResults;
 
 	/**
 	 * Whether Flyway should skip executing the contents of the migrations and only update
 	 * the schema history table.
 	 */
-	private Boolean skipExecutingMigrations;
+	private @Nullable Boolean skipExecutingMigrations;
 
 	/**
 	 * List of patterns that identify migrations to ignore when performing validation.
 	 */
-	private List<String> ignoreMigrationPatterns;
+	private @Nullable List<String> ignoreMigrationPatterns;
 
 	/**
 	 * Whether to attempt to automatically detect SQL migration file encoding.
 	 */
-	private Boolean detectEncoding;
+	private @Nullable Boolean detectEncoding;
 
 	/**
 	 * Whether to enable community database support.
 	 */
-	private Boolean communityDbSupportEnabled;
+	private @Nullable Boolean communityDbSupportEnabled;
 
 	private final Oracle oracle = new Oracle();
 
@@ -395,11 +397,11 @@ public class FlywayProperties {
 		this.lockRetryCount = lockRetryCount;
 	}
 
-	public String getDefaultSchema() {
+	public @Nullable String getDefaultSchema() {
 		return this.defaultSchema;
 	}
 
-	public void setDefaultSchema(String defaultSchema) {
+	public void setDefaultSchema(@Nullable String defaultSchema) {
 		this.defaultSchema = defaultSchema;
 	}
 
@@ -427,11 +429,11 @@ public class FlywayProperties {
 		this.table = table;
 	}
 
-	public String getTablespace() {
+	public @Nullable String getTablespace() {
 		return this.tablespace;
 	}
 
-	public void setTablespace(String tablespace) {
+	public void setTablespace(@Nullable String tablespace) {
 		this.tablespace = tablespace;
 	}
 
@@ -451,11 +453,11 @@ public class FlywayProperties {
 		this.baselineVersion = baselineVersion;
 	}
 
-	public String getInstalledBy() {
+	public @Nullable String getInstalledBy() {
 		return this.installedBy;
 	}
 
-	public void setInstalledBy(String installedBy) {
+	public void setInstalledBy(@Nullable String installedBy) {
 		this.installedBy = installedBy;
 	}
 
@@ -539,35 +541,35 @@ public class FlywayProperties {
 		this.target = target;
 	}
 
-	public String getUser() {
+	public @Nullable String getUser() {
 		return this.user;
 	}
 
-	public void setUser(String user) {
+	public void setUser(@Nullable String user) {
 		this.user = user;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
-	public String getDriverClassName() {
+	public @Nullable String getDriverClassName() {
 		return this.driverClassName;
 	}
 
-	public void setDriverClassName(String driverClassName) {
+	public void setDriverClassName(@Nullable String driverClassName) {
 		this.driverClassName = driverClassName;
 	}
 
-	public String getUrl() {
+	public @Nullable String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(@Nullable String url) {
 		this.url = url;
 	}
 
@@ -667,11 +669,11 @@ public class FlywayProperties {
 		this.scriptPlaceholderSuffix = scriptPlaceholderSuffix;
 	}
 
-	public String getPowershellExecutable() {
+	public @Nullable String getPowershellExecutable() {
 		return this.powershellExecutable;
 	}
 
-	public void setPowershellExecutable(String powershellExecutable) {
+	public void setPowershellExecutable(@Nullable String powershellExecutable) {
 		this.powershellExecutable = powershellExecutable;
 	}
 
@@ -691,35 +693,35 @@ public class FlywayProperties {
 		this.loggers = loggers;
 	}
 
-	public Boolean getBatch() {
+	public @Nullable Boolean getBatch() {
 		return this.batch;
 	}
 
-	public void setBatch(Boolean batch) {
+	public void setBatch(@Nullable Boolean batch) {
 		this.batch = batch;
 	}
 
-	public File getDryRunOutput() {
+	public @Nullable File getDryRunOutput() {
 		return this.dryRunOutput;
 	}
 
-	public void setDryRunOutput(File dryRunOutput) {
+	public void setDryRunOutput(@Nullable File dryRunOutput) {
 		this.dryRunOutput = dryRunOutput;
 	}
 
-	public String[] getErrorOverrides() {
+	public String @Nullable [] getErrorOverrides() {
 		return this.errorOverrides;
 	}
 
-	public void setErrorOverrides(String[] errorOverrides) {
+	public void setErrorOverrides(String @Nullable [] errorOverrides) {
 		this.errorOverrides = errorOverrides;
 	}
 
-	public Boolean getStream() {
+	public @Nullable Boolean getStream() {
 		return this.stream;
 	}
 
-	public void setStream(Boolean stream) {
+	public void setStream(@Nullable Boolean stream) {
 		this.stream = stream;
 	}
 
@@ -731,51 +733,51 @@ public class FlywayProperties {
 		this.jdbcProperties = jdbcProperties;
 	}
 
-	public String getKerberosConfigFile() {
+	public @Nullable String getKerberosConfigFile() {
 		return this.kerberosConfigFile;
 	}
 
-	public void setKerberosConfigFile(String kerberosConfigFile) {
+	public void setKerberosConfigFile(@Nullable String kerberosConfigFile) {
 		this.kerberosConfigFile = kerberosConfigFile;
 	}
 
-	public Boolean getOutputQueryResults() {
+	public @Nullable Boolean getOutputQueryResults() {
 		return this.outputQueryResults;
 	}
 
-	public void setOutputQueryResults(Boolean outputQueryResults) {
+	public void setOutputQueryResults(@Nullable Boolean outputQueryResults) {
 		this.outputQueryResults = outputQueryResults;
 	}
 
-	public Boolean getSkipExecutingMigrations() {
+	public @Nullable Boolean getSkipExecutingMigrations() {
 		return this.skipExecutingMigrations;
 	}
 
-	public void setSkipExecutingMigrations(Boolean skipExecutingMigrations) {
+	public void setSkipExecutingMigrations(@Nullable Boolean skipExecutingMigrations) {
 		this.skipExecutingMigrations = skipExecutingMigrations;
 	}
 
-	public List<String> getIgnoreMigrationPatterns() {
+	public @Nullable List<String> getIgnoreMigrationPatterns() {
 		return this.ignoreMigrationPatterns;
 	}
 
-	public void setIgnoreMigrationPatterns(List<String> ignoreMigrationPatterns) {
+	public void setIgnoreMigrationPatterns(@Nullable List<String> ignoreMigrationPatterns) {
 		this.ignoreMigrationPatterns = ignoreMigrationPatterns;
 	}
 
-	public Boolean getDetectEncoding() {
+	public @Nullable Boolean getDetectEncoding() {
 		return this.detectEncoding;
 	}
 
-	public void setDetectEncoding(final Boolean detectEncoding) {
+	public void setDetectEncoding(final @Nullable Boolean detectEncoding) {
 		this.detectEncoding = detectEncoding;
 	}
 
-	public Boolean getCommunityDbSupportEnabled() {
+	public @Nullable Boolean getCommunityDbSupportEnabled() {
 		return this.communityDbSupportEnabled;
 	}
 
-	public void setCommunityDbSupportEnabled(Boolean communityDbSupportEnabled) {
+	public void setCommunityDbSupportEnabled(@Nullable Boolean communityDbSupportEnabled) {
 		this.communityDbSupportEnabled = communityDbSupportEnabled;
 	}
 
@@ -799,54 +801,54 @@ public class FlywayProperties {
 		/**
 		 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Teams.
 		 */
-		private Boolean sqlplus;
+		private @Nullable Boolean sqlplus;
 
 		/**
 		 * Whether to issue a warning rather than an error when a not-yet-supported Oracle
 		 * SQL*Plus statement is encountered. Requires Flyway Teams.
 		 */
-		private Boolean sqlplusWarn;
+		private @Nullable Boolean sqlplusWarn;
 
 		/**
 		 * Path of the Oracle Kerberos cache file. Requires Flyway Teams.
 		 */
-		private String kerberosCacheFile;
+		private @Nullable String kerberosCacheFile;
 
 		/**
 		 * Location of the Oracle Wallet, used to sign in to the database automatically.
 		 * Requires Flyway Teams.
 		 */
-		private String walletLocation;
+		private @Nullable String walletLocation;
 
-		public Boolean getSqlplus() {
+		public @Nullable Boolean getSqlplus() {
 			return this.sqlplus;
 		}
 
-		public void setSqlplus(Boolean sqlplus) {
+		public void setSqlplus(@Nullable Boolean sqlplus) {
 			this.sqlplus = sqlplus;
 		}
 
-		public Boolean getSqlplusWarn() {
+		public @Nullable Boolean getSqlplusWarn() {
 			return this.sqlplusWarn;
 		}
 
-		public void setSqlplusWarn(Boolean sqlplusWarn) {
+		public void setSqlplusWarn(@Nullable Boolean sqlplusWarn) {
 			this.sqlplusWarn = sqlplusWarn;
 		}
 
-		public String getKerberosCacheFile() {
+		public @Nullable String getKerberosCacheFile() {
 			return this.kerberosCacheFile;
 		}
 
-		public void setKerberosCacheFile(String kerberosCacheFile) {
+		public void setKerberosCacheFile(@Nullable String kerberosCacheFile) {
 			this.kerberosCacheFile = kerberosCacheFile;
 		}
 
-		public String getWalletLocation() {
+		public @Nullable String getWalletLocation() {
 			return this.walletLocation;
 		}
 
-		public void setWalletLocation(String walletLocation) {
+		public void setWalletLocation(@Nullable String walletLocation) {
 			this.walletLocation = walletLocation;
 		}
 
@@ -861,13 +863,13 @@ public class FlywayProperties {
 		 * Whether transactional advisory locks should be used. If set to false,
 		 * session-level locks are used instead.
 		 */
-		private Boolean transactionalLock;
+		private @Nullable Boolean transactionalLock;
 
-		public Boolean getTransactionalLock() {
+		public @Nullable Boolean getTransactionalLock() {
 			return this.transactionalLock;
 		}
 
-		public void setTransactionalLock(Boolean transactionalLock) {
+		public void setTransactionalLock(@Nullable Boolean transactionalLock) {
 			this.transactionalLock = transactionalLock;
 		}
 
@@ -881,13 +883,13 @@ public class FlywayProperties {
 		/**
 		 * Path to the SQL Server Kerberos login file. Requires Flyway Teams.
 		 */
-		private String kerberosLoginFile;
+		private @Nullable String kerberosLoginFile;
 
-		public String getKerberosLoginFile() {
+		public @Nullable String getKerberosLoginFile() {
 			return this.kerberosLoginFile;
 		}
 
-		public void setKerberosLoginFile(String kerberosLoginFile) {
+		public void setKerberosLoginFile(@Nullable String kerberosLoginFile) {
 			this.kerberosLoginFile = kerberosLoginFile;
 		}
 

@@ -17,4 +17,7 @@
 /**
  * Actuator endpoint for Flyway.
  */
+@NullMarked
 package org.springframework.boot.flyway.endpoint;
+
+import org.jspecify.annotations.NullMarked;

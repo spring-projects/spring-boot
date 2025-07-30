@@ -33,6 +33,7 @@ import org.flywaydb.core.api.resource.LoadableResource;
 import org.flywaydb.core.internal.resource.classpath.ClassPathResource;
 import org.flywaydb.core.internal.scanner.Scanner;
 import org.flywaydb.core.internal.util.StringUtils;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.NativeDetector;
 import org.springframework.core.io.Resource;
@@ -74,7 +75,7 @@ class NativeImageResourceProvider implements ResourceProvider {
 	}
 
 	@Override
-	public LoadableResource getResource(String name) {
+	public @Nullable LoadableResource getResource(String name) {
 		if (!NativeDetector.inNativeImage()) {
 			return this.scanner.getResource(name);
 		}
