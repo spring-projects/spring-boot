@@ -17,6 +17,7 @@
 package org.springframework.boot.data.rest.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -37,11 +38,11 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 @SuppressWarnings("removal")
 class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
-	private final Jackson2ObjectMapperBuilder objectMapperBuilder;
+	private final @Nullable Jackson2ObjectMapperBuilder objectMapperBuilder;
 
 	private final RepositoryRestProperties properties;
 
-	SpringBootRepositoryRestConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder,
+	SpringBootRepositoryRestConfigurer(@Nullable Jackson2ObjectMapperBuilder objectMapperBuilder,
 			RepositoryRestProperties properties) {
 		this.objectMapperBuilder = objectMapperBuilder;
 		this.properties = properties;

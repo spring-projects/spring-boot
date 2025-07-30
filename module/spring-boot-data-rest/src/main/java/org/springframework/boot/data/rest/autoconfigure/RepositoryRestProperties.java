@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.rest.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -34,34 +36,34 @@ public class RepositoryRestProperties {
 	/**
 	 * Base path to be used by Spring Data REST to expose repository resources.
 	 */
-	private String basePath;
+	private @Nullable String basePath;
 
 	/**
 	 * Default size of pages.
 	 */
-	private Integer defaultPageSize;
+	private @Nullable Integer defaultPageSize;
 
 	/**
 	 * Maximum size of pages.
 	 */
-	private Integer maxPageSize;
+	private @Nullable Integer maxPageSize;
 
 	/**
 	 * Name of the URL query string parameter that indicates what page to return.
 	 */
-	private String pageParamName;
+	private @Nullable String pageParamName;
 
 	/**
 	 * Name of the URL query string parameter that indicates how many results to return at
 	 * once.
 	 */
-	private String limitParamName;
+	private @Nullable String limitParamName;
 
 	/**
 	 * Name of the URL query string parameter that indicates what direction to sort
 	 * results.
 	 */
-	private String sortParamName;
+	private @Nullable String sortParamName;
 
 	/**
 	 * Strategy to use to determine which repositories get exposed.
@@ -71,69 +73,69 @@ public class RepositoryRestProperties {
 	/**
 	 * Content type to use as a default when none is specified.
 	 */
-	private MediaType defaultMediaType;
+	private @Nullable MediaType defaultMediaType;
 
 	/**
 	 * Whether to return a response body after creating an entity.
 	 */
-	private Boolean returnBodyOnCreate;
+	private @Nullable Boolean returnBodyOnCreate;
 
 	/**
 	 * Whether to return a response body after updating an entity.
 	 */
-	private Boolean returnBodyOnUpdate;
+	private @Nullable Boolean returnBodyOnUpdate;
 
 	/**
 	 * Whether to enable enum value translation through the Spring Data REST default
 	 * resource bundle.
 	 */
-	private Boolean enableEnumTranslation;
+	private @Nullable Boolean enableEnumTranslation;
 
-	public String getBasePath() {
+	public @Nullable String getBasePath() {
 		return this.basePath;
 	}
 
-	public void setBasePath(String basePath) {
+	public void setBasePath(@Nullable String basePath) {
 		this.basePath = basePath;
 	}
 
-	public Integer getDefaultPageSize() {
+	public @Nullable Integer getDefaultPageSize() {
 		return this.defaultPageSize;
 	}
 
-	public void setDefaultPageSize(Integer defaultPageSize) {
+	public void setDefaultPageSize(@Nullable Integer defaultPageSize) {
 		this.defaultPageSize = defaultPageSize;
 	}
 
-	public Integer getMaxPageSize() {
+	public @Nullable Integer getMaxPageSize() {
 		return this.maxPageSize;
 	}
 
-	public void setMaxPageSize(Integer maxPageSize) {
+	public void setMaxPageSize(@Nullable Integer maxPageSize) {
 		this.maxPageSize = maxPageSize;
 	}
 
-	public String getPageParamName() {
+	public @Nullable String getPageParamName() {
 		return this.pageParamName;
 	}
 
-	public void setPageParamName(String pageParamName) {
+	public void setPageParamName(@Nullable String pageParamName) {
 		this.pageParamName = pageParamName;
 	}
 
-	public String getLimitParamName() {
+	public @Nullable String getLimitParamName() {
 		return this.limitParamName;
 	}
 
-	public void setLimitParamName(String limitParamName) {
+	public void setLimitParamName(@Nullable String limitParamName) {
 		this.limitParamName = limitParamName;
 	}
 
-	public String getSortParamName() {
+	public @Nullable String getSortParamName() {
 		return this.sortParamName;
 	}
 
-	public void setSortParamName(String sortParamName) {
+	public void setSortParamName(@Nullable String sortParamName) {
 		this.sortParamName = sortParamName;
 	}
 
@@ -145,35 +147,35 @@ public class RepositoryRestProperties {
 		this.detectionStrategy = detectionStrategy;
 	}
 
-	public MediaType getDefaultMediaType() {
+	public @Nullable MediaType getDefaultMediaType() {
 		return this.defaultMediaType;
 	}
 
-	public void setDefaultMediaType(MediaType defaultMediaType) {
+	public void setDefaultMediaType(@Nullable MediaType defaultMediaType) {
 		this.defaultMediaType = defaultMediaType;
 	}
 
-	public Boolean getReturnBodyOnCreate() {
+	public @Nullable Boolean getReturnBodyOnCreate() {
 		return this.returnBodyOnCreate;
 	}
 
-	public void setReturnBodyOnCreate(Boolean returnBodyOnCreate) {
+	public void setReturnBodyOnCreate(@Nullable Boolean returnBodyOnCreate) {
 		this.returnBodyOnCreate = returnBodyOnCreate;
 	}
 
-	public Boolean getReturnBodyOnUpdate() {
+	public @Nullable Boolean getReturnBodyOnUpdate() {
 		return this.returnBodyOnUpdate;
 	}
 
-	public void setReturnBodyOnUpdate(Boolean returnBodyOnUpdate) {
+	public void setReturnBodyOnUpdate(@Nullable Boolean returnBodyOnUpdate) {
 		this.returnBodyOnUpdate = returnBodyOnUpdate;
 	}
 
-	public Boolean getEnableEnumTranslation() {
+	public @Nullable Boolean getEnableEnumTranslation() {
 		return this.enableEnumTranslation;
 	}
 
-	public void setEnableEnumTranslation(Boolean enableEnumTranslation) {
+	public void setEnableEnumTranslation(@Nullable Boolean enableEnumTranslation) {
 		this.enableEnumTranslation = enableEnumTranslation;
 	}
 
