@@ -17,4 +17,7 @@
 /**
  * Auto-Configuration for Spring Data R2DBC.
  */
+@NullMarked
 package org.springframework.boot.data.r2dbc.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;
