@@ -16,7 +16,10 @@
 
 package org.springframework.boot.data.redis.autoconfigure;
 
+import java.util.Collections;
 import java.util.List;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -37,21 +40,21 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
 	private final RedisProperties properties;
 
-	private final SslBundles sslBundles;
+	private final @Nullable SslBundles sslBundles;
 
-	PropertiesRedisConnectionDetails(RedisProperties properties, SslBundles sslBundles) {
+	PropertiesRedisConnectionDetails(RedisProperties properties, @Nullable SslBundles sslBundles) {
 		this.properties = properties;
 		this.sslBundles = sslBundles;
 	}
 
 	@Override
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		RedisUrl redisUrl = getRedisUrl();
 		return (redisUrl != null) ? redisUrl.credentials().username() : this.properties.getUsername();
 	}
 
 	@Override
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		RedisUrl redisUrl = getRedisUrl();
 		return (redisUrl != null) ? redisUrl.credentials().password() : this.properties.getPassword();
 	}
@@ -65,7 +68,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 						getSslBundle());
 	}
 
-	private SslBundle getSslBundle() {
+	private @Nullable SslBundle getSslBundle() {
 		if (!this.properties.getSsl().isEnabled()) {
 			return null;
 		}
@@ -78,22 +81,25 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	}
 
 	@Override
-	public Sentinel getSentinel() {
+	public @Nullable Sentinel getSentinel() {
 		RedisProperties.Sentinel sentinel = this.properties.getSentinel();
 		return (sentinel != null) ? new PropertiesSentinel(getStandalone().getDatabase(), sentinel) : null;
 	}
 
 	@Override
-	public Cluster getCluster() {
+	public @Nullable Cluster getCluster() {
 		RedisProperties.Cluster cluster = this.properties.getCluster();
 		return (cluster != null) ? new PropertiesCluster(cluster) : null;
 	}
 
-	private RedisUrl getRedisUrl() {
+	private @Nullable RedisUrl getRedisUrl() {
 		return RedisUrl.of(this.properties.getUrl());
 	}
 
-	private List<Node> asNodes(List<String> nodes) {
+	private List<Node> asNodes(@Nullable List<String> nodes) {
+		if (nodes == null) {
+			return Collections.emptyList();
+		}
 		return nodes.stream().map(this::asNode).toList();
 	}
 
@@ -121,7 +127,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			return PropertiesRedisConnectionDetails.this.getSslBundle();
 		}
 
@@ -148,7 +154,9 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
 		@Override
 		public String getMaster() {
-			return this.properties.getMaster();
+			String master = this.properties.getMaster();
+			Assert.state(master != null, "'master' must not be null");
+			return master;
 		}
 
 		@Override
@@ -157,17 +165,17 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		}
 
 		@Override
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.properties.getUsername();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.properties.getPassword();
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			return PropertiesRedisConnectionDetails.this.getSslBundle();
 		}
 

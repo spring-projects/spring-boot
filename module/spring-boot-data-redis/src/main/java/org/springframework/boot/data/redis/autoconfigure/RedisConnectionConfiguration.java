@@ -19,10 +19,13 @@ package org.springframework.boot.data.redis.autoconfigure;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails.Cluster;
 import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails.Node;
 import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails.Sentinel;
+import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails.Standalone;
 import org.springframework.boot.data.redis.autoconfigure.RedisProperties.Pool;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
@@ -30,6 +33,7 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -52,11 +56,11 @@ abstract class RedisConnectionConfiguration {
 
 	private final RedisProperties properties;
 
-	private final RedisStandaloneConfiguration standaloneConfiguration;
+	private final @Nullable RedisStandaloneConfiguration standaloneConfiguration;
 
-	private final RedisSentinelConfiguration sentinelConfiguration;
+	private final @Nullable RedisSentinelConfiguration sentinelConfiguration;
 
-	private final RedisClusterConfiguration clusterConfiguration;
+	private final @Nullable RedisClusterConfiguration clusterConfiguration;
 
 	private final RedisConnectionDetails connectionDetails;
 
@@ -79,15 +83,17 @@ abstract class RedisConnectionConfiguration {
 			return this.standaloneConfiguration;
 		}
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-		config.setHostName(this.connectionDetails.getStandalone().getHost());
-		config.setPort(this.connectionDetails.getStandalone().getPort());
+		Standalone standalone = this.connectionDetails.getStandalone();
+		Assert.state(standalone != null, "'standalone' must not be null");
+		config.setHostName(standalone.getHost());
+		config.setPort(standalone.getPort());
 		config.setUsername(this.connectionDetails.getUsername());
 		config.setPassword(RedisPassword.of(this.connectionDetails.getPassword()));
-		config.setDatabase(this.connectionDetails.getStandalone().getDatabase());
+		config.setDatabase(standalone.getDatabase());
 		return config;
 	}
 
-	protected final RedisSentinelConfiguration getSentinelConfig() {
+	protected final @Nullable RedisSentinelConfiguration getSentinelConfig() {
 		if (this.sentinelConfiguration != null) {
 			return this.sentinelConfiguration;
 		}
@@ -115,7 +121,7 @@ abstract class RedisConnectionConfiguration {
 	 * Create a {@link RedisClusterConfiguration} if necessary.
 	 * @return {@literal null} if no cluster settings are set.
 	 */
-	protected final RedisClusterConfiguration getClusterConfiguration() {
+	protected final @Nullable RedisClusterConfiguration getClusterConfiguration() {
 		if (this.clusterConfiguration != null) {
 			return this.clusterConfiguration;
 		}
@@ -148,7 +154,7 @@ abstract class RedisConnectionConfiguration {
 		return this.properties;
 	}
 
-	protected SslBundle getSslBundle() {
+	protected @Nullable SslBundle getSslBundle() {
 		return switch (this.mode) {
 			case STANDALONE -> (this.connectionDetails.getStandalone() != null)
 					? this.connectionDetails.getStandalone().getSslBundle() : null;
@@ -163,8 +169,8 @@ abstract class RedisConnectionConfiguration {
 		return getProperties().getSsl().isEnabled();
 	}
 
-	protected final boolean urlUsesSsl() {
-		return RedisUrl.of(this.properties.getUrl()).useSsl();
+	protected final boolean urlUsesSsl(String url) {
+		return RedisUrl.of(url).useSsl();
 	}
 
 	protected boolean isPoolEnabled(Pool pool) {

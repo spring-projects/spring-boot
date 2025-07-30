@@ -43,6 +43,7 @@ import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisSslClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -92,8 +93,16 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers);
 		return switch (this.mode) {
 			case STANDALONE -> new JedisConnectionFactory(getStandaloneConfig(), clientConfiguration);
-			case CLUSTER -> new JedisConnectionFactory(getClusterConfiguration(), clientConfiguration);
-			case SENTINEL -> new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
+			case CLUSTER -> {
+				RedisClusterConfiguration clusterConfiguration = getClusterConfiguration();
+				Assert.state(clusterConfiguration != null, "'clusterConfiguration' must not be null");
+				yield new JedisConnectionFactory(clusterConfiguration, clientConfiguration);
+			}
+			case SENTINEL -> {
+				RedisSentinelConfiguration sentinelConfig = getSentinelConfig();
+				Assert.state(sentinelConfig != null, "'sentinelConfig' must not be null");
+				yield new JedisConnectionFactory(sentinelConfig, clientConfiguration);
+			}
 		};
 	}
 
@@ -105,8 +114,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		if (isPoolEnabled(pool)) {
 			applyPooling(pool, builder);
 		}
-		if (StringUtils.hasText(getProperties().getUrl())) {
-			customizeConfigurationFromUrl(builder);
+		String url = getProperties().getUrl();
+		if (StringUtils.hasText(url)) {
+			customizeConfigurationFromUrl(builder, url);
 		}
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -154,8 +164,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		return config;
 	}
 
-	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		if (urlUsesSsl()) {
+	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder,
+			String url) {
+		if (urlUsesSsl(url)) {
 			builder.useSsl();
 		}
 	}

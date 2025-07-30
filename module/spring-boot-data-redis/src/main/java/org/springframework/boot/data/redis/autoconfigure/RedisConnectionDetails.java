@@ -18,6 +18,8 @@ package org.springframework.boot.data.redis.autoconfigure;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.util.Assert;
@@ -35,7 +37,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	 * Login username of the redis server.
 	 * @return the login username of the redis server
 	 */
-	default String getUsername() {
+	default @Nullable String getUsername() {
 		return null;
 	}
 
@@ -43,7 +45,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	 * Login password of the redis server.
 	 * @return the login password of the redis server
 	 */
-	default String getPassword() {
+	default @Nullable String getPassword() {
 		return null;
 	}
 
@@ -52,7 +54,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	 * {@link #getCluster()}.
 	 * @return the Redis standalone configuration
 	 */
-	default Standalone getStandalone() {
+	default @Nullable Standalone getStandalone() {
 		return null;
 	}
 
@@ -61,7 +63,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	 * {@link #getCluster()}.
 	 * @return the Redis sentinel configuration
 	 */
-	default Sentinel getSentinel() {
+	default @Nullable Sentinel getSentinel() {
 		return null;
 	}
 
@@ -70,7 +72,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	 * {@link #getSentinel()}.
 	 * @return the Redis cluster configuration
 	 */
-	default Cluster getCluster() {
+	default @Nullable Cluster getCluster() {
 		return null;
 	}
 
@@ -103,7 +105,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * SSL bundle to use.
 		 * @return the SSL bundle to use
 		 */
-		default SslBundle getSslBundle() {
+		default @Nullable SslBundle getSslBundle() {
 			return null;
 		}
 
@@ -124,7 +126,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * @param sslBundle the SSL bundle
 		 * @return the new instance
 		 */
-		static Standalone of(String host, int port, SslBundle sslBundle) {
+		static Standalone of(String host, int port, @Nullable SslBundle sslBundle) {
 			return of(host, port, 0, sslBundle);
 		}
 
@@ -147,7 +149,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * @param sslBundle the SSL bundle
 		 * @return the new instance
 		 */
-		static Standalone of(String host, int port, int database, SslBundle sslBundle) {
+		static Standalone of(String host, int port, int database, @Nullable SslBundle sslBundle) {
 			Assert.hasLength(host, "'host' must not be empty");
 			return new Standalone() {
 
@@ -167,7 +169,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 				}
 
 				@Override
-				public SslBundle getSslBundle() {
+				public @Nullable SslBundle getSslBundle() {
 					return sslBundle;
 				}
 			};
@@ -202,19 +204,19 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * Login username for authenticating with sentinel(s).
 		 * @return the login username for authenticating with sentinel(s) or {@code null}
 		 */
-		String getUsername();
+		@Nullable String getUsername();
 
 		/**
 		 * Password for authenticating with sentinel(s).
 		 * @return the password for authenticating with sentinel(s) or {@code null}
 		 */
-		String getPassword();
+		@Nullable String getPassword();
 
 		/**
 		 * SSL bundle to use.
 		 * @return the SSL bundle to use
 		 */
-		default SslBundle getSslBundle() {
+		default @Nullable SslBundle getSslBundle() {
 			return null;
 		}
 
@@ -236,7 +238,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * SSL bundle to use.
 		 * @return the SSL bundle to use
 		 */
-		default SslBundle getSslBundle() {
+		default @Nullable SslBundle getSslBundle() {
 			return null;
 		}
 

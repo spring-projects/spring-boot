@@ -17,4 +17,7 @@
 /**
  * Support for Docker Compose Redis service connections.
  */
+@NullMarked
 package org.springframework.boot.data.redis.docker.compose;
+
+import org.jspecify.annotations.NullMarked;

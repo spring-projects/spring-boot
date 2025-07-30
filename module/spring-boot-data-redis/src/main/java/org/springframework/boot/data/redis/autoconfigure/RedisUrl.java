@@ -19,6 +19,9 @@ package org.springframework.boot.data.redis.autoconfigure;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,7 +44,8 @@ import org.springframework.util.StringUtils;
  */
 record RedisUrl(URI uri, boolean useSsl, Credentials credentials, int database) {
 
-	static RedisUrl of(String url) {
+	@Contract("!null -> !null")
+	static @Nullable RedisUrl of(@Nullable String url) {
 		return (url != null) ? of(toUri(url)) : null;
 	}
 
@@ -78,11 +82,11 @@ record RedisUrl(URI uri, boolean useSsl, Credentials credentials, int database) 
 	 * @param username the username or {@code null}
 	 * @param password the password
 	 */
-	record Credentials(String username, String password) {
+	record Credentials(@Nullable String username, @Nullable String password) {
 
 		private static final Credentials NONE = new Credentials(null, null);
 
-		private static Credentials fromUserInfo(String userInfo) {
+		private static Credentials fromUserInfo(@Nullable String userInfo) {
 			if (userInfo == null) {
 				return NONE;
 			}

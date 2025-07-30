@@ -19,6 +19,8 @@ package org.springframework.boot.data.redis.autoconfigure;
 import java.time.Duration;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -46,7 +48,7 @@ public class RedisProperties {
 	 * Connection URL. Overrides host, port, username, password, and database. Example:
 	 * redis://user:password@example.com:6379/8
 	 */
-	private String url;
+	private @Nullable String url;
 
 	/**
 	 * Redis server host.
@@ -56,12 +58,12 @@ public class RedisProperties {
 	/**
 	 * Login username of the redis server.
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Login password of the redis server.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Redis server port.
@@ -71,26 +73,26 @@ public class RedisProperties {
 	/**
 	 * Read timeout.
 	 */
-	private Duration timeout;
+	private @Nullable Duration timeout;
 
 	/**
 	 * Connection timeout.
 	 */
-	private Duration connectTimeout;
+	private @Nullable Duration connectTimeout;
 
 	/**
 	 * Client name to be set on connections with CLIENT SETNAME.
 	 */
-	private String clientName;
+	private @Nullable String clientName;
 
 	/**
 	 * Type of client to use. By default, auto-detected according to the classpath.
 	 */
-	private ClientType clientType;
+	private @Nullable ClientType clientType;
 
-	private Sentinel sentinel;
+	private @Nullable Sentinel sentinel;
 
-	private Cluster cluster;
+	private @Nullable Cluster cluster;
 
 	private final Ssl ssl = new Ssl();
 
@@ -106,11 +108,11 @@ public class RedisProperties {
 		this.database = database;
 	}
 
-	public String getUrl() {
+	public @Nullable String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(@Nullable String url) {
 		this.url = url;
 	}
 
@@ -122,19 +124,19 @@ public class RedisProperties {
 		this.host = host;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
@@ -150,51 +152,51 @@ public class RedisProperties {
 		return this.ssl;
 	}
 
-	public void setTimeout(Duration timeout) {
-		this.timeout = timeout;
-	}
-
-	public Duration getTimeout() {
+	public @Nullable Duration getTimeout() {
 		return this.timeout;
 	}
 
-	public Duration getConnectTimeout() {
+	public void setTimeout(@Nullable Duration timeout) {
+		this.timeout = timeout;
+	}
+
+	public @Nullable Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
 
-	public void setConnectTimeout(Duration connectTimeout) {
+	public void setConnectTimeout(@Nullable Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
 
-	public String getClientName() {
+	public @Nullable String getClientName() {
 		return this.clientName;
 	}
 
-	public void setClientName(String clientName) {
+	public void setClientName(@Nullable String clientName) {
 		this.clientName = clientName;
 	}
 
-	public ClientType getClientType() {
+	public @Nullable ClientType getClientType() {
 		return this.clientType;
 	}
 
-	public void setClientType(ClientType clientType) {
+	public void setClientType(@Nullable ClientType clientType) {
 		this.clientType = clientType;
 	}
 
-	public Sentinel getSentinel() {
+	public @Nullable Sentinel getSentinel() {
 		return this.sentinel;
 	}
 
-	public void setSentinel(Sentinel sentinel) {
+	public void setSentinel(@Nullable Sentinel sentinel) {
 		this.sentinel = sentinel;
 	}
 
-	public Cluster getCluster() {
+	public @Nullable Cluster getCluster() {
 		return this.cluster;
 	}
 
-	public void setCluster(Cluster cluster) {
+	public void setCluster(@Nullable Cluster cluster) {
 		this.cluster = cluster;
 	}
 
@@ -233,7 +235,7 @@ public class RedisProperties {
 		 * available. With Jedis, pooling is implicitly enabled in sentinel mode and this
 		 * setting only applies to single node setup.
 		 */
-		private Boolean enabled;
+		private @Nullable Boolean enabled;
 
 		/**
 		 * Maximum number of "idle" connections in the pool. Use a negative value to
@@ -265,13 +267,13 @@ public class RedisProperties {
 		 * Time between runs of the idle object evictor thread. When positive, the idle
 		 * object evictor thread starts, otherwise no idle object eviction is performed.
 		 */
-		private Duration timeBetweenEvictionRuns;
+		private @Nullable Duration timeBetweenEvictionRuns;
 
-		public Boolean getEnabled() {
+		public @Nullable Boolean getEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(Boolean enabled) {
+		public void setEnabled(@Nullable Boolean enabled) {
 			this.enabled = enabled;
 		}
 
@@ -307,11 +309,11 @@ public class RedisProperties {
 			this.maxWait = maxWait;
 		}
 
-		public Duration getTimeBetweenEvictionRuns() {
+		public @Nullable Duration getTimeBetweenEvictionRuns() {
 			return this.timeBetweenEvictionRuns;
 		}
 
-		public void setTimeBetweenEvictionRuns(Duration timeBetweenEvictionRuns) {
+		public void setTimeBetweenEvictionRuns(@Nullable Duration timeBetweenEvictionRuns) {
 			this.timeBetweenEvictionRuns = timeBetweenEvictionRuns;
 		}
 
@@ -326,27 +328,27 @@ public class RedisProperties {
 		 * List of "host:port" pairs to bootstrap from. This represents an "initial" list
 		 * of cluster nodes and is required to have at least one entry.
 		 */
-		private List<String> nodes;
+		private @Nullable List<String> nodes;
 
 		/**
 		 * Maximum number of redirects to follow when executing commands across the
 		 * cluster.
 		 */
-		private Integer maxRedirects;
+		private @Nullable Integer maxRedirects;
 
-		public List<String> getNodes() {
+		public @Nullable List<String> getNodes() {
 			return this.nodes;
 		}
 
-		public void setNodes(List<String> nodes) {
+		public void setNodes(@Nullable List<String> nodes) {
 			this.nodes = nodes;
 		}
 
-		public Integer getMaxRedirects() {
+		public @Nullable Integer getMaxRedirects() {
 			return this.maxRedirects;
 		}
 
-		public void setMaxRedirects(Integer maxRedirects) {
+		public void setMaxRedirects(@Nullable Integer maxRedirects) {
 			this.maxRedirects = maxRedirects;
 		}
 
@@ -360,52 +362,52 @@ public class RedisProperties {
 		/**
 		 * Name of the Redis server.
 		 */
-		private String master;
+		private @Nullable String master;
 
 		/**
 		 * List of "host:port" pairs.
 		 */
-		private List<String> nodes;
+		private @Nullable List<String> nodes;
 
 		/**
 		 * Login username for authenticating with sentinel(s).
 		 */
-		private String username;
+		private @Nullable String username;
 
 		/**
 		 * Password for authenticating with sentinel(s).
 		 */
-		private String password;
+		private @Nullable String password;
 
-		public String getMaster() {
+		public @Nullable String getMaster() {
 			return this.master;
 		}
 
-		public void setMaster(String master) {
+		public void setMaster(@Nullable String master) {
 			this.master = master;
 		}
 
-		public List<String> getNodes() {
+		public @Nullable List<String> getNodes() {
 			return this.nodes;
 		}
 
-		public void setNodes(List<String> nodes) {
+		public void setNodes(@Nullable List<String> nodes) {
 			this.nodes = nodes;
 		}
 
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		public void setUsername(@Nullable String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		public void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
@@ -417,12 +419,12 @@ public class RedisProperties {
 		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
 		 * unless specified otherwise.
 		 */
-		private Boolean enabled;
+		private @Nullable Boolean enabled;
 
 		/**
 		 * SSL bundle name.
 		 */
-		private String bundle;
+		private @Nullable String bundle;
 
 		public boolean isEnabled() {
 			return (this.enabled != null) ? this.enabled : this.bundle != null;
@@ -432,11 +434,11 @@ public class RedisProperties {
 			this.enabled = enabled;
 		}
 
-		public String getBundle() {
+		public @Nullable String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
 		}
 
@@ -471,7 +473,7 @@ public class RedisProperties {
 		/**
 		 * Defines from which Redis nodes data is read.
 		 */
-		private String readFrom;
+		private @Nullable String readFrom;
 
 		/**
 		 * Lettuce pool configuration.
@@ -488,12 +490,12 @@ public class RedisProperties {
 			this.shutdownTimeout = shutdownTimeout;
 		}
 
-		public void setReadFrom(String readFrom) {
-			this.readFrom = readFrom;
+		public @Nullable String getReadFrom() {
+			return this.readFrom;
 		}
 
-		public String getReadFrom() {
-			return this.readFrom;
+		public void setReadFrom(@Nullable String readFrom) {
+			this.readFrom = readFrom;
 		}
 
 		public Pool getPool() {
@@ -524,7 +526,7 @@ public class RedisProperties {
 				/**
 				 * Cluster topology refresh period.
 				 */
-				private Duration period;
+				private @Nullable Duration period;
 
 				/**
 				 * Whether adaptive topology refreshing using all available refresh
@@ -540,11 +542,11 @@ public class RedisProperties {
 					this.dynamicRefreshSources = dynamicRefreshSources;
 				}
 
-				public Duration getPeriod() {
+				public @Nullable Duration getPeriod() {
 					return this.period;
 				}
 
-				public void setPeriod(Duration period) {
+				public void setPeriod(@Nullable Duration period) {
 					this.period = period;
 				}
 
