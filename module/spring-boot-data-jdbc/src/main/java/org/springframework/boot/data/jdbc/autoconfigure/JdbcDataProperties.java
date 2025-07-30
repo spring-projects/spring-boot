@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.jdbc.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -31,13 +33,13 @@ public class JdbcDataProperties {
 	 * Dialect to use. By default, the dialect is determined by inspecting the database
 	 * connection.
 	 */
-	private JdbcDatabaseDialect dialect;
+	private @Nullable JdbcDatabaseDialect dialect;
 
-	public JdbcDatabaseDialect getDialect() {
+	public @Nullable JdbcDatabaseDialect getDialect() {
 		return this.dialect;
 	}
 
-	public void setDialect(JdbcDatabaseDialect dialect) {
+	public void setDialect(@Nullable JdbcDatabaseDialect dialect) {
 		this.dialect = dialect;
 	}
 
