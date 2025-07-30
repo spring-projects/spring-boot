@@ -32,6 +32,7 @@ dependencies {
 	api("org.springframework.data:spring-data-mongodb")
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+	compileOnly("com.google.code.findbugs:jsr305")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-health"))

@@ -24,6 +24,7 @@ import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -50,6 +51,7 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsOperations;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -87,6 +89,7 @@ public final class MongoReactiveDataAutoConfiguration {
 		if (database == null) {
 			database = this.connectionDetails.getConnectionString().getDatabase();
 		}
+		Assert.hasText(database, "Database name must not be empty");
 		return new SimpleReactiveMongoDatabaseFactory(mongo, database);
 	}
 
@@ -143,7 +146,7 @@ public final class MongoReactiveDataAutoConfiguration {
 			return this.delegate.getMongoDatabase();
 		}
 
-		private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
+		private @Nullable String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
 			return (connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getDatabase() : null;
 		}
 

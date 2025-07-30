@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.MongoDatabaseFactorySupport;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
+import org.springframework.util.Assert;
 
 /**
  * Configuration for a {@link MongoDatabaseFactory}.
@@ -49,6 +50,7 @@ class MongoDatabaseFactoryConfiguration {
 		if (database == null) {
 			database = connectionDetails.getConnectionString().getDatabase();
 		}
+		Assert.hasText(database, "Database name must not be empty");
 		return new SimpleMongoClientDatabaseFactory(mongoClient, database);
 	}
 

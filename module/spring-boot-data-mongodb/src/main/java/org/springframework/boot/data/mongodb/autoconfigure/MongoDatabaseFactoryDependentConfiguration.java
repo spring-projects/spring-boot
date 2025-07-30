@@ -19,6 +19,7 @@ package org.springframework.boot.data.mongodb.autoconfigure;
 import com.mongodb.ClientSessionOptions;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -112,7 +113,7 @@ class MongoDatabaseFactoryDependentConfiguration {
 			return this.mongoDatabaseFactory.withSession(session);
 		}
 
-		private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
+		private @Nullable String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
 			return (connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getDatabase() : null;
 		}
 

@@ -17,4 +17,7 @@
 /**
  * MongoDB health integration using Spring Data MongoDB.
  */
+@NullMarked
 package org.springframework.boot.data.mongodb.health;
+
+import org.jspecify.annotations.NullMarked;
