@@ -23,6 +23,8 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.attributes.Category;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -56,11 +58,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 
-	/**
-	 * Name of the {@link Configuration} that holds the configuration property metadata
-	 * artifact.
-	 */
-	public static final String CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME = "configurationPropertiesMetadata";
+	private static final String CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME = "configurationPropertiesMetadata";
 
 	/**
 	 * Name of the {@link CheckAdditionalSpringConfigurationMetadata} task.
@@ -108,7 +106,15 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 			.getByType(JavaPluginExtension.class)
 			.getSourceSets()
 			.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-		project.getConfigurations().maybeCreate(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME);
+		project.getConfigurations()
+			.consumable(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME, (configuration) -> {
+				configuration.attributes((attributes) -> {
+					attributes.attribute(Category.CATEGORY_ATTRIBUTE,
+							project.getObjects().named(Category.class, Category.DOCUMENTATION));
+					attributes.attribute(Usage.USAGE_ATTRIBUTE,
+							project.getObjects().named(Usage.class, "configuration-properties-metadata"));
+				});
+			});
 		project.afterEvaluate((evaluatedProject) -> evaluatedProject.getArtifacts()
 			.add(CONFIGURATION_PROPERTIES_METADATA_CONFIGURATION_NAME,
 					mainSourceSet.getJava()
