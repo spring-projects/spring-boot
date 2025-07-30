@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Cloud Foundry endpoints.
  */
+@NullMarked
 package org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint;
+
+import org.jspecify.annotations.NullMarked;

@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
@@ -134,12 +136,13 @@ public final class CloudFoundryActuatorAutoConfiguration {
 	private SecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
 			Environment environment) {
 		SecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(restTemplateBuilder, environment);
-		TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
+		TokenValidator tokenValidator = (cloudfoundrySecurityService != null)
+				? new TokenValidator(cloudfoundrySecurityService) : null;
 		return new SecurityInterceptor(tokenValidator, cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
 	}
 
-	private SecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
+	private @Nullable SecurityService getCloudFoundrySecurityService(RestTemplateBuilder restTemplateBuilder,
 			Environment environment) {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty("management.cloudfoundry.skip-ssl-validation",

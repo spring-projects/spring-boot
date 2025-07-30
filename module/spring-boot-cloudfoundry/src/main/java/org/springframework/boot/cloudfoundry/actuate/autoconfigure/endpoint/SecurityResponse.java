@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.HttpStatus;
 
 /**
@@ -28,13 +30,13 @@ public class SecurityResponse {
 
 	private final HttpStatus status;
 
-	private final String message;
+	private final @Nullable String message;
 
 	public SecurityResponse(HttpStatus status) {
 		this(status, null);
 	}
 
-	public SecurityResponse(HttpStatus status, String message) {
+	public SecurityResponse(HttpStatus status, @Nullable String message) {
 		this.status = status;
 		this.message = message;
 	}
@@ -43,7 +45,7 @@ public class SecurityResponse {
 		return this.status;
 	}
 
-	public String getMessage() {
+	public @Nullable String getMessage() {
 		return this.message;
 	}
 

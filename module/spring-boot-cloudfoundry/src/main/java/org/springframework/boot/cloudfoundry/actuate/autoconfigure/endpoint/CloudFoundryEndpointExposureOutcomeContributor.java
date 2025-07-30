@@ -18,6 +18,8 @@ package org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.EndpointExposureOutcomeContributor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
@@ -38,7 +40,7 @@ class CloudFoundryEndpointExposureOutcomeContributor implements EndpointExposure
 
 	private static final String PROPERTY = "management.endpoints.cloud-foundry.exposure";
 
-	private final IncludeExcludeEndpointFilter<?> filter;
+	private final @Nullable IncludeExcludeEndpointFilter<?> filter;
 
 	CloudFoundryEndpointExposureOutcomeContributor(Environment environment) {
 		this.filter = (!CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) ? null
@@ -46,7 +48,7 @@ class CloudFoundryEndpointExposureOutcomeContributor implements EndpointExposure
 	}
 
 	@Override
-	public ConditionOutcome getExposureOutcome(EndpointId endpointId, Set<EndpointExposure> exposures,
+	public @Nullable ConditionOutcome getExposureOutcome(EndpointId endpointId, Set<EndpointExposure> exposures,
 			Builder message) {
 		if (exposures.contains(EndpointExposure.WEB) && this.filter != null && this.filter.match(endpointId)) {
 			return ConditionOutcome.match(message.because("marked as exposed by a '" + PROPERTY + "' property"));

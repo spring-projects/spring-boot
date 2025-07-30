@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -128,12 +130,13 @@ public final class CloudFoundryReactiveActuatorAutoConfiguration {
 
 	private SecurityInterceptor getSecurityInterceptor(WebClient.Builder webClientBuilder, Environment environment) {
 		SecurityService cloudfoundrySecurityService = getCloudFoundrySecurityService(webClientBuilder, environment);
-		TokenValidator tokenValidator = new TokenValidator(cloudfoundrySecurityService);
+		TokenValidator tokenValidator = (cloudfoundrySecurityService != null)
+				? new TokenValidator(cloudfoundrySecurityService) : null;
 		return new SecurityInterceptor(tokenValidator, cloudfoundrySecurityService,
 				environment.getProperty("vcap.application.application_id"));
 	}
 
-	private SecurityService getCloudFoundrySecurityService(WebClient.Builder webClientBuilder,
+	private @Nullable SecurityService getCloudFoundrySecurityService(WebClient.Builder webClientBuilder,
 			Environment environment) {
 		String cloudControllerUrl = environment.getProperty("vcap.application.cf_api");
 		boolean skipSslValidation = environment.getProperty("management.cloudfoundry.skip-ssl-validation",

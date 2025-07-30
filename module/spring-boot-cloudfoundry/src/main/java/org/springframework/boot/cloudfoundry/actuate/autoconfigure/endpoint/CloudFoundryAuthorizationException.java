@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.HttpStatus;
 
 /**
@@ -28,11 +30,11 @@ public class CloudFoundryAuthorizationException extends RuntimeException {
 
 	private final Reason reason;
 
-	public CloudFoundryAuthorizationException(Reason reason, String message) {
+	public CloudFoundryAuthorizationException(Reason reason, @Nullable String message) {
 		this(reason, message, null);
 	}
 
-	public CloudFoundryAuthorizationException(Reason reason, String message, Throwable cause) {
+	public CloudFoundryAuthorizationException(Reason reason, @Nullable String message, @Nullable Throwable cause) {
 		super(message, cause);
 		this.reason = reason;
 	}

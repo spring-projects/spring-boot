@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
@@ -111,7 +112,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 				});
 		}
 
-		private Map<String, Link> getAccessibleLinks(AccessLevel accessLevel, Map<String, Link> links) {
+		private Map<String, Link> getAccessibleLinks(@Nullable AccessLevel accessLevel, Map<String, Link> links) {
 			if (accessLevel == null) {
 				return new LinkedHashMap<>();
 			}
@@ -169,7 +170,7 @@ class CloudFoundryWebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointH
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.reflectiveRegistrar.registerRuntimeHints(hints, CloudFoundryLinksHandler.class);
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), Link.class);
 		}

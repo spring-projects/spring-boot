@@ -135,7 +135,9 @@ class SecurityService {
 
 	private Map<String, String> extractTokenKeys(Map<String, Object> response) {
 		Map<String, String> tokenKeys = new HashMap<>();
-		for (Object key : (List<?>) response.get("keys")) {
+		List<?> keys = (List<?>) response.get("keys");
+		Assert.state(keys != null, "'keys' must not be null");
+		for (Object key : keys) {
 			Map<?, ?> tokenKey = (Map<?, ?>) key;
 			tokenKeys.put((String) tokenKey.get("kid"), (String) tokenKey.get("value"));
 		}

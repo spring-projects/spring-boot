@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Cloud Foundry Servlet endpoints.
  */
+@NullMarked
 package org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.servlet;
+
+import org.jspecify.annotations.NullMarked;

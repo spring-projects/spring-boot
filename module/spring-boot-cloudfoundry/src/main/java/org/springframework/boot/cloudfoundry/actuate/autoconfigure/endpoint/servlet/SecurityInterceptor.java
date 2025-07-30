@@ -21,6 +21,7 @@ import java.util.Locale;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.AccessLevel;
@@ -30,6 +31,7 @@ import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.Secu
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.Token;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsUtils;
 
@@ -42,22 +44,22 @@ class SecurityInterceptor {
 
 	private static final Log logger = LogFactory.getLog(SecurityInterceptor.class);
 
-	private final TokenValidator tokenValidator;
+	private final @Nullable TokenValidator tokenValidator;
 
-	private final SecurityService cloudFoundrySecurityService;
+	private final @Nullable SecurityService cloudFoundrySecurityService;
 
-	private final String applicationId;
+	private final @Nullable String applicationId;
 
 	private static final SecurityResponse SUCCESS = SecurityResponse.success();
 
-	SecurityInterceptor(TokenValidator tokenValidator, SecurityService cloudFoundrySecurityService,
-			String applicationId) {
+	SecurityInterceptor(@Nullable TokenValidator tokenValidator, @Nullable SecurityService cloudFoundrySecurityService,
+			@Nullable String applicationId) {
 		this.tokenValidator = tokenValidator;
 		this.cloudFoundrySecurityService = cloudFoundrySecurityService;
 		this.applicationId = applicationId;
 	}
 
-	SecurityResponse preHandle(HttpServletRequest request, EndpointId endpointId) {
+	SecurityResponse preHandle(HttpServletRequest request, @Nullable EndpointId endpointId) {
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return SecurityResponse.success();
 		}
@@ -66,7 +68,7 @@ class SecurityInterceptor {
 				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 						"Application id is not available");
 			}
-			if (this.cloudFoundrySecurityService == null) {
+			if (this.cloudFoundrySecurityService == null || this.tokenValidator == null) {
 				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 						"Cloud controller URL is not available");
 			}
@@ -86,7 +88,10 @@ class SecurityInterceptor {
 		return SecurityResponse.success();
 	}
 
-	private void check(HttpServletRequest request, EndpointId endpointId) {
+	private void check(HttpServletRequest request, @Nullable EndpointId endpointId) {
+		Assert.state(this.cloudFoundrySecurityService != null, "'cloudFoundrySecurityService' must not be null");
+		Assert.state(this.applicationId != null, "'applicationId' must not be null");
+		Assert.state(this.tokenValidator != null, "'tokenValidator' must not be null");
 		Token token = getToken(request);
 		this.tokenValidator.validate(token);
 		AccessLevel accessLevel = this.cloudFoundrySecurityService.getAccessLevel(token.toString(), this.applicationId);

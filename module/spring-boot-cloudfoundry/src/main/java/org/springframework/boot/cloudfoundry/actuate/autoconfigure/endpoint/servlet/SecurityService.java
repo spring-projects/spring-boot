@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.AccessLevel;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.CloudFoundryAuthorizationException;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.CloudFoundryAuthorizationException.Reason;
@@ -45,7 +47,7 @@ class SecurityService {
 
 	private final String cloudControllerUrl;
 
-	private String uaaUrl;
+	private @Nullable String uaaUrl;
 
 	SecurityService(RestTemplateBuilder restTemplateBuilder, String cloudControllerUrl, boolean skipSslValidation) {
 		Assert.notNull(restTemplateBuilder, "'restTemplateBuilder' must not be null");
@@ -69,7 +71,7 @@ class SecurityService {
 			URI uri = getPermissionsUri(applicationId);
 			RequestEntity<?> request = RequestEntity.get(uri).header("Authorization", "bearer " + token).build();
 			Map<?, ?> body = this.restTemplate.exchange(request, Map.class).getBody();
-			if (Boolean.TRUE.equals(body.get("read_sensitive_data"))) {
+			if (body != null && Boolean.TRUE.equals(body.get("read_sensitive_data"))) {
 				return AccessLevel.FULL;
 			}
 			return AccessLevel.RESTRICTED;
@@ -100,7 +102,9 @@ class SecurityService {
 	 */
 	Map<String, String> fetchTokenKeys() {
 		try {
-			return extractTokenKeys(this.restTemplate.getForObject(getUaaUrl() + "/token_keys", Map.class));
+			Map<?, ?> response = this.restTemplate.getForObject(getUaaUrl() + "/token_keys", Map.class);
+			Assert.state(response != null, "'response' must not be null");
+			return extractTokenKeys(response);
 		}
 		catch (HttpStatusCodeException ex) {
 			throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE, "UAA not reachable");
@@ -109,7 +113,9 @@ class SecurityService {
 
 	private Map<String, String> extractTokenKeys(Map<?, ?> response) {
 		Map<String, String> tokenKeys = new HashMap<>();
-		for (Object key : (List<?>) response.get("keys")) {
+		List<?> keys = (List<?>) response.get("keys");
+		Assert.state(keys != null, "'keys' must not be null");
+		for (Object key : keys) {
 			Map<?, ?> tokenKey = (Map<?, ?>) key;
 			tokenKeys.put((String) tokenKey.get("kid"), (String) tokenKey.get("value"));
 		}
@@ -124,7 +130,10 @@ class SecurityService {
 		if (this.uaaUrl == null) {
 			try {
 				Map<?, ?> response = this.restTemplate.getForObject(this.cloudControllerUrl + "/info", Map.class);
-				this.uaaUrl = (String) response.get("token_endpoint");
+				Assert.state(response != null, "'response' must not be null");
+				String tokenEndpoint = (String) response.get("token_endpoint");
+				Assert.state(tokenEndpoint != null, "'tokenEndpoint' must not be null");
+				this.uaaUrl = tokenEndpoint;
 			}
 			catch (HttpStatusCodeException ex) {
 				throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,

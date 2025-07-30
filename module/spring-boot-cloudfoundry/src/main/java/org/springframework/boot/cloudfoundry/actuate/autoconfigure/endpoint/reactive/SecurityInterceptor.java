@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.CloudFoundryAuthorizationException;
@@ -28,6 +29,7 @@ import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.Secu
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.Token;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.reactive.CorsUtils;
 import org.springframework.web.server.ServerWebExchange;
@@ -41,16 +43,16 @@ class SecurityInterceptor {
 
 	private static final Log logger = LogFactory.getLog(SecurityInterceptor.class);
 
-	private final TokenValidator tokenValidator;
+	private final @Nullable TokenValidator tokenValidator;
 
-	private final SecurityService cloudFoundrySecurityService;
+	private final @Nullable SecurityService cloudFoundrySecurityService;
 
-	private final String applicationId;
+	private final @Nullable String applicationId;
 
 	private static final Mono<SecurityResponse> SUCCESS = Mono.just(SecurityResponse.success());
 
-	SecurityInterceptor(TokenValidator tokenValidator, SecurityService cloudFoundrySecurityService,
-			String applicationId) {
+	SecurityInterceptor(@Nullable TokenValidator tokenValidator, @Nullable SecurityService cloudFoundrySecurityService,
+			@Nullable String applicationId) {
 		this.tokenValidator = tokenValidator;
 		this.cloudFoundrySecurityService = cloudFoundrySecurityService;
 		this.applicationId = applicationId;
@@ -65,7 +67,7 @@ class SecurityInterceptor {
 			return Mono.error(new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 					"Application id is not available"));
 		}
-		if (this.cloudFoundrySecurityService == null) {
+		if (this.cloudFoundrySecurityService == null || this.tokenValidator == null) {
 			return Mono.error(new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 					"Cloud controller URL is not available"));
 		}
@@ -77,6 +79,9 @@ class SecurityInterceptor {
 	}
 
 	private Mono<Void> check(ServerWebExchange exchange, String id) {
+		Assert.state(this.tokenValidator != null, "'tokenValidator' must not be null");
+		Assert.state(this.cloudFoundrySecurityService != null, "'cloudFoundrySecurityService' must not be null");
+		Assert.state(this.applicationId != null, "'applicationId' must not be null");
 		try {
 			Token token = getToken(exchange.getRequest());
 			return this.tokenValidator.validate(token)
