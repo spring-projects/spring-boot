@@ -302,7 +302,7 @@ spring:
             header: X-Version
 ----
 
-You can also defined javadoc:org.springframework.web.client.ApiVersionInserter[] and javadoc:org.springframework.web.client.ApiVersionFormatter[] beans if you need more control of the way that version information should be inserted and formatted.
+You can also define javadoc:org.springframework.web.client.ApiVersionInserter[] and javadoc:org.springframework.web.client.ApiVersionFormatter[] beans if you need more control of the way that version information should be inserted and formatted.
 
 TIP: API versioning is also supported on the server-side.
 See the xref:web/servlet.adoc#web.servlet.spring-mvc.api-versioning[Spring MVC] and xref:web/reactive.adoc#web.reactive.webflux.api-versioning[Spring WebFlux] sections for details.
