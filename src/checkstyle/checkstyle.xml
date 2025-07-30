@@ -8,7 +8,7 @@
 	</module>
 	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
 	<module name="io.spring.javaformat.checkstyle.check.SpringHeaderCheck">
-		<property name="headerCopyrightPattern" value="2012-present" />
+		<property name="headerFile" value="${config_loc}/checkstyle-header.txt"/>
 	</module>
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
 		<module name="io.spring.javaformat.checkstyle.check.SpringDeprecatedCheck" />
