@@ -18,6 +18,8 @@ package org.springframework.boot.elasticsearch.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -29,14 +31,14 @@ import org.springframework.util.Assert;
  */
 class ElasticsearchEnvironment {
 
-	private final String password;
+	private final @Nullable String password;
 
 	ElasticsearchEnvironment(Map<String, String> env) {
 		Assert.state(!env.containsKey("ELASTIC_PASSWORD_FILE"), "ELASTIC_PASSWORD_FILE is not supported");
 		this.password = env.get("ELASTIC_PASSWORD");
 	}
 
-	String getPassword() {
+	@Nullable String getPassword() {
 		return this.password;
 	}
 

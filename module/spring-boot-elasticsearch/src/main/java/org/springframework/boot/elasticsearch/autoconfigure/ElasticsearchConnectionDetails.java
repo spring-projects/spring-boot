@@ -20,6 +20,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;
 
@@ -43,7 +45,7 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	 * Username for authentication with Elasticsearch.
 	 * @return username for authentication with Elasticsearch or {@code null}
 	 */
-	default String getUsername() {
+	default @Nullable String getUsername() {
 		return null;
 	}
 
@@ -51,7 +53,7 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	 * Password for authentication with Elasticsearch.
 	 * @return password for authentication with Elasticsearch or {@code null}
 	 */
-	default String getPassword() {
+	default @Nullable String getPassword() {
 		return null;
 	}
 
@@ -60,7 +62,7 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	 * @return prefix added to the path of every request sent to Elasticsearch or
 	 * {@code null}
 	 */
-	default String getPathPrefix() {
+	default @Nullable String getPathPrefix() {
 		return null;
 	}
 
@@ -68,7 +70,7 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	 * SSL bundle to use.
 	 * @return the SSL bundle to use
 	 */
-	default SslBundle getSslBundle() {
+	default @Nullable SslBundle getSslBundle() {
 		return null;
 	}
 
@@ -81,7 +83,8 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 	 * @param username the username or {@code null}
 	 * @param password the password or {@code null}
 	 */
-	record Node(String hostname, int port, Node.Protocol protocol, String username, String password) {
+	record Node(String hostname, int port, Node.Protocol protocol, @Nullable String username,
+			@Nullable String password) {
 
 		public Node(String host, int port, Node.Protocol protocol) {
 			this(host, port, protocol, null, null);
@@ -96,7 +99,7 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 			}
 		}
 
-		private String userInfo() {
+		private @Nullable String userInfo() {
 			if (this.username == null) {
 				return null;
 			}

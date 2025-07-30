@@ -26,6 +26,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails;
@@ -64,7 +65,7 @@ class ElasticsearchContainerConnectionDetailsFactory
 	private static final class ElasticsearchContainerConnectionDetails
 			extends ContainerConnectionDetails<ElasticsearchContainer> implements ElasticsearchConnectionDetails {
 
-		private volatile SslBundle sslBundle;
+		private volatile @Nullable SslBundle sslBundle;
 
 		private ElasticsearchContainerConnectionDetails(ContainerConnectionSource<ElasticsearchContainer> source) {
 			super(source);
@@ -76,7 +77,7 @@ class ElasticsearchContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return getContainer().getEnvMap().get("ELASTIC_PASSWORD");
 		}
 
@@ -89,7 +90,7 @@ class ElasticsearchContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			if (this.sslBundle != null) {
 				return this.sslBundle;
 			}
@@ -111,22 +112,7 @@ class ElasticsearchContainerConnectionDetailsFactory
 		}
 
 		private SslBundle createSslBundleWithTrustStore(KeyStore trustStore) {
-			return SslBundle.of(new SslStoreBundle() {
-				@Override
-				public KeyStore getKeyStore() {
-					return null;
-				}
-
-				@Override
-				public String getKeyStorePassword() {
-					return null;
-				}
-
-				@Override
-				public KeyStore getTrustStore() {
-					return trustStore;
-				}
-			});
+			return SslBundle.of(SslStoreBundle.of(null, null, trustStore));
 		}
 
 		private KeyStore createTrustStore(byte[] caCertificate) {

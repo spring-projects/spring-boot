@@ -18,6 +18,8 @@ package org.springframework.boot.elasticsearch.docker.compose;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -73,7 +75,7 @@ class ElasticsearchDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.environment.getPassword();
 		}
 

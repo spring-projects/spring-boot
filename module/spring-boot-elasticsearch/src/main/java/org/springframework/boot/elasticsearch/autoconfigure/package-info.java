@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Elasticsearch client.
  */
+@NullMarked
 package org.springframework.boot.elasticsearch.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

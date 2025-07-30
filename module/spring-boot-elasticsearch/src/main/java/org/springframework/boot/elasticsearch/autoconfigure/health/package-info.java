@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Elasticsearch health.
  */
+@NullMarked
 package org.springframework.boot.elasticsearch.autoconfigure.health;
+
+import org.jspecify.annotations.NullMarked;

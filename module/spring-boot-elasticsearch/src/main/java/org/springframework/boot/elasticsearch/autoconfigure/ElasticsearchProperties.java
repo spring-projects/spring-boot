@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -40,12 +42,12 @@ public class ElasticsearchProperties {
 	/**
 	 * Username for authentication with Elasticsearch.
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Password for authentication with Elasticsearch.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Connection timeout used when communicating with Elasticsearch.
@@ -65,7 +67,7 @@ public class ElasticsearchProperties {
 	/**
 	 * Prefix added to the path of every request sent to Elasticsearch.
 	 */
-	private String pathPrefix;
+	private @Nullable String pathPrefix;
 
 	private final Restclient restclient = new Restclient();
 
@@ -77,19 +79,19 @@ public class ElasticsearchProperties {
 		this.uris = uris;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
@@ -117,11 +119,11 @@ public class ElasticsearchProperties {
 		this.socketKeepAlive = socketKeepAlive;
 	}
 
-	public String getPathPrefix() {
+	public @Nullable String getPathPrefix() {
 		return this.pathPrefix;
 	}
 
-	public void setPathPrefix(String pathPrefix) {
+	public void setPathPrefix(@Nullable String pathPrefix) {
 		this.pathPrefix = pathPrefix;
 	}
 
@@ -178,13 +180,13 @@ public class ElasticsearchProperties {
 			/**
 			 * SSL bundle name.
 			 */
-			private String bundle;
+			private @Nullable String bundle;
 
-			public String getBundle() {
+			public @Nullable String getBundle() {
 				return this.bundle;
 			}
 
-			public void setBundle(String bundle) {
+			public void setBundle(@Nullable String bundle) {
 				this.bundle = bundle;
 			}
 

@@ -17,4 +17,7 @@
 /**
  * Support for testcontainers Elasticsearch service connections.
  */
+@NullMarked
 package org.springframework.boot.elasticsearch.testcontainers;
+
+import org.jspecify.annotations.NullMarked;

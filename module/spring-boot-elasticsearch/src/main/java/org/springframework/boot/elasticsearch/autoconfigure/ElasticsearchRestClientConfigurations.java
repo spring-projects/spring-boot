@@ -37,6 +37,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.sniff.Sniffer;
 import org.elasticsearch.client.sniff.SnifferBuilder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -209,7 +210,7 @@ class ElasticsearchRestClientConfigurations {
 			return connectionDetails.getNodes().stream().map(Node::toUri);
 		}
 
-		private boolean hasUserInfo(URI uri) {
+		private boolean hasUserInfo(@Nullable URI uri) {
 			return uri != null && StringUtils.hasLength(uri.getUserInfo());
 		}
 
@@ -238,9 +239,9 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		private final SslBundles sslBundles;
+		private final @Nullable SslBundles sslBundles;
 
-		PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties, SslBundles sslBundles) {
+		PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties, @Nullable SslBundles sslBundles) {
 			this.properties = properties;
 			this.sslBundles = sslBundles;
 		}
@@ -251,22 +252,22 @@ class ElasticsearchRestClientConfigurations {
 		}
 
 		@Override
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.properties.getUsername();
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.properties.getPassword();
 		}
 
 		@Override
-		public String getPathPrefix() {
+		public @Nullable String getPathPrefix() {
 			return this.properties.getPathPrefix();
 		}
 
 		@Override
-		public SslBundle getSslBundle() {
+		public @Nullable SslBundle getSslBundle() {
 			Ssl ssl = this.properties.getRestclient().getSsl();
 			if (StringUtils.hasLength(ssl.getBundle())) {
 				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
