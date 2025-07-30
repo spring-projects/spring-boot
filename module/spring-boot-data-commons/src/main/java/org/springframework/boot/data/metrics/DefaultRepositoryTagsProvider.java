@@ -21,8 +21,10 @@ import java.util.function.Function;
 
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener.RepositoryMethodInvocation;
+import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener.RepositoryMethodInvocationResult;
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener.RepositoryMethodInvocationResult.State;
 import org.springframework.util.StringUtils;
 
@@ -41,16 +43,20 @@ public class DefaultRepositoryTagsProvider implements RepositoryTagsProvider {
 		Tags tags = Tags.empty();
 		tags = and(tags, invocation.getRepositoryInterface(), "repository", this::getSimpleClassName);
 		tags = and(tags, invocation.getMethod(), "method", Method::getName);
-		tags = and(tags, invocation.getResult().getState(), "state", State::name);
-		tags = and(tags, invocation.getResult().getError(), "exception", this::getExceptionName, EXCEPTION_NONE);
+		RepositoryMethodInvocationResult result = invocation.getResult();
+		if (result != null) {
+			tags = and(tags, result.getState(), "state", State::name);
+			tags = and(tags, result.getError(), "exception", this::getExceptionName, EXCEPTION_NONE);
+		}
 		return tags;
 	}
 
-	private <T> Tags and(Tags tags, T instance, String key, Function<T, String> value) {
+	private <T> Tags and(Tags tags, @Nullable T instance, String key, Function<T, String> value) {
 		return and(tags, instance, key, value, null);
 	}
 
-	private <T> Tags and(Tags tags, T instance, String key, Function<T, String> value, Tag fallback) {
+	private <T> Tags and(Tags tags, @Nullable T instance, String key, Function<T, String> value,
+			@Nullable Tag fallback) {
 		if (instance != null) {
 			return tags.and(key, value.apply(instance));
 		}

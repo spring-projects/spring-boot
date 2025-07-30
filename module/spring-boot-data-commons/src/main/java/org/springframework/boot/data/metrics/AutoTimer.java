@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.CollectionUtils;
 
@@ -98,7 +99,8 @@ public interface AutoTimer {
 	 */
 	void apply(Timer.Builder builder);
 
-	static void apply(AutoTimer autoTimer, String metricName, Set<Timed> annotations, Consumer<Timer.Builder> action) {
+	static void apply(@Nullable AutoTimer autoTimer, String metricName, Set<Timed> annotations,
+			Consumer<Timer.Builder> action) {
 		if (!CollectionUtils.isEmpty(annotations)) {
 			for (Timed annotation : annotations) {
 				action.accept(Timer.builder(annotation, metricName));

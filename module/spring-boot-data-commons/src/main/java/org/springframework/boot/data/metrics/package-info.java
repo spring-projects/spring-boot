@@ -17,4 +17,7 @@
 /**
  * Spring Data repository metrics.
  */
+@NullMarked
 package org.springframework.boot.data.metrics;
+
+import org.jspecify.annotations.NullMarked;

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.autoconfigure.metrics;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -73,7 +75,7 @@ public class DataMetricsProperties {
 			/**
 			 * Percentiles for which additional time series should be published.
 			 */
-			private double[] percentiles;
+			private double @Nullable [] percentiles;
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -91,11 +93,11 @@ public class DataMetricsProperties {
 				this.percentilesHistogram = percentilesHistogram;
 			}
 
-			public double[] getPercentiles() {
+			public double @Nullable [] getPercentiles() {
 				return this.percentiles;
 			}
 
-			public void setPercentiles(double[] percentiles) {
+			public void setPercentiles(double @Nullable [] percentiles) {
 				this.percentiles = percentiles;
 			}
 

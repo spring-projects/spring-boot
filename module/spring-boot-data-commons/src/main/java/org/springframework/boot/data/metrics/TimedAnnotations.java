@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.micrometer.core.annotation.Timed;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.annotation.MergedAnnotationCollectors;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -56,7 +57,7 @@ public final class TimedAnnotations {
 		return findTimedAnnotations(type);
 	}
 
-	private static Set<Timed> findTimedAnnotations(AnnotatedElement element) {
+	private static Set<Timed> findTimedAnnotations(@Nullable AnnotatedElement element) {
 		if (element == null) {
 			return Collections.emptySet();
 		}

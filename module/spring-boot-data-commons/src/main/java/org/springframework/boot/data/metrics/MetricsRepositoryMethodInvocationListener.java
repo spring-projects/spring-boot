@@ -23,8 +23,10 @@ import java.util.function.Supplier;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener;
+import org.springframework.util.Assert;
 import org.springframework.util.function.SingletonSupplier;
 
 /**
@@ -53,7 +55,7 @@ public class MetricsRepositoryMethodInvocationListener implements RepositoryMeth
 	 * @since 4.0.0
 	 */
 	public MetricsRepositoryMethodInvocationListener(Supplier<MeterRegistry> registrySupplier,
-			RepositoryTagsProvider tagsProvider, String metricName, AutoTimer autoTimer) {
+			RepositoryTagsProvider tagsProvider, String metricName, @Nullable AutoTimer autoTimer) {
 		this.registrySupplier = (registrySupplier instanceof SingletonSupplier)
 				? (SingletonSupplier<MeterRegistry>) registrySupplier : SingletonSupplier.of(registrySupplier);
 		this.tagsProvider = tagsProvider;
@@ -66,11 +68,14 @@ public class MetricsRepositoryMethodInvocationListener implements RepositoryMeth
 		Set<Timed> annotations = TimedAnnotations.get(invocation.getMethod(), invocation.getRepositoryInterface());
 		Iterable<Tag> tags = this.tagsProvider.repositoryTags(invocation);
 		long duration = invocation.getDuration(TimeUnit.NANOSECONDS);
-		AutoTimer.apply(this.autoTimer, this.metricName, annotations,
-				(builder) -> builder.description("Duration of repository invocations")
-					.tags(tags)
-					.register(this.registrySupplier.get())
-					.record(duration, TimeUnit.NANOSECONDS));
+		AutoTimer.apply(this.autoTimer, this.metricName, annotations, (builder) -> {
+			MeterRegistry registry = this.registrySupplier.get();
+			Assert.state(registry != null, "'registry' must not be null");
+			builder.description("Duration of repository invocations")
+				.tags(tags)
+				.register(registry)
+				.record(duration, TimeUnit.NANOSECONDS);
+		});
 	}
 
 }
