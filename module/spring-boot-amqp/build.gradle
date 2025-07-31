@@ -41,6 +41,7 @@ dependencies {
 	optional(project(":module:spring-boot-metrics"))
 	optional("io.micrometer:micrometer-core")
 	optional("org.springframework.amqp:spring-rabbit-stream")
+	optional("org.springframework.amqp:spring-rabbitmq-client")
 	optional("org.testcontainers:rabbitmq")
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))

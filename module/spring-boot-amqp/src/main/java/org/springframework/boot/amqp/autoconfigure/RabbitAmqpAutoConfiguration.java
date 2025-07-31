@@ -1,0 +1,156 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.boot.amqp.autoconfigure;
+
+import com.rabbitmq.client.amqp.Connection;
+import com.rabbitmq.client.amqp.CredentialsProvider;
+import com.rabbitmq.client.amqp.Environment;
+import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
+import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder.EnvironmentConnectionSettings;
+
+import org.springframework.amqp.rabbit.config.ContainerCustomizer;
+import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
+import org.springframework.amqp.rabbitmq.client.AmqpConnectionFactory;
+import org.springframework.amqp.rabbitmq.client.RabbitAmqpAdmin;
+import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
+import org.springframework.amqp.rabbitmq.client.SingleAmqpConnectionFactory;
+import org.springframework.amqp.rabbitmq.client.config.RabbitAmqpListenerContainerFactory;
+import org.springframework.amqp.rabbitmq.client.listener.RabbitAmqpListenerContainer;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
+import org.springframework.boot.amqp.autoconfigure.RabbitProperties.ListenerRetry;
+import org.springframework.boot.amqp.autoconfigure.RabbitRetryTemplateCustomizer.Target;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.context.annotation.Bean;
+import org.springframework.retry.support.RetryTemplate;
+
+/**
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitAmqpTemplate}.
+ *
+ * @author Eddú Meléndez
+ * @since 4.0.0
+ */
+@AutoConfiguration
+@ConditionalOnClass({ RabbitAmqpTemplate.class, Connection.class })
+@EnableConfigurationProperties(RabbitProperties.class)
+public final class RabbitAmqpAutoConfiguration {
+
+	private final RabbitProperties properties;
+
+	RabbitAmqpAutoConfiguration(RabbitProperties properties) {
+		this.properties = properties;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	RabbitConnectionDetails rabbitConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesRabbitConnectionDetails(this.properties, sslBundles.getIfAvailable());
+	}
+
+	@Bean(name = "rabbitAmqpListenerContainerFactory")
+	@ConditionalOnMissingBean(name = "rabbitAmqpListenerContainerFactory")
+	public RabbitAmqpListenerContainerFactory rabbitAmqpListenerContainerFactory(
+			AmqpConnectionFactory connectionFactory,
+			ObjectProvider<ContainerCustomizer<RabbitAmqpListenerContainer>> amqpContainerCustomizer,
+			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
+			ObjectProvider<MessageRecoverer> messageRecoverer) {
+		RabbitAmqpListenerContainerFactory factory = new RabbitAmqpListenerContainerFactory(connectionFactory);
+		amqpContainerCustomizer.ifUnique(factory::setContainerCustomizer);
+
+		RabbitProperties.AmqpContainer configuration = this.properties.getListener().getSimple();
+		factory.setObservationEnabled(configuration.isObservationEnabled());
+		ListenerRetry retryConfig = configuration.getRetry();
+		if (retryConfig.isEnabled()) {
+			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()
+					: RetryInterceptorBuilder.stateful();
+
+			RetryTemplate retryTemplate = new RetryTemplateFactory(retryTemplateCustomizers.orderedStream().toList())
+				.createRetryTemplate(retryConfig, Target.LISTENER);
+
+			builder.retryOperations(retryTemplate);
+			MessageRecoverer recoverer = (messageRecoverer.getIfAvailable() != null) ? messageRecoverer.getIfAvailable()
+					: new RejectAndDontRequeueRecoverer();
+			builder.recoverer(recoverer);
+			factory.setAdviceChain(builder.build());
+		}
+		return factory;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Environment rabbitAmqpEnvironment(RabbitConnectionDetails connectionDetails,
+			ObjectProvider<AmqpEnvironmentBuilderCustomizer> customizers,
+			ObjectProvider<CredentialsProvider> credentialsProvider) {
+		PropertyMapper map = PropertyMapper.get();
+		EnvironmentConnectionSettings environmentConnectionSettings = new AmqpEnvironmentBuilder().connectionSettings();
+		Address address = connectionDetails.getFirstAddress();
+		map.from(address::host).whenNonNull().to(environmentConnectionSettings::host);
+		map.from(address::port).to(environmentConnectionSettings::port);
+		map.from(connectionDetails::getUsername).whenNonNull().to(environmentConnectionSettings::username);
+		map.from(connectionDetails::getPassword).whenNonNull().to(environmentConnectionSettings::password);
+		map.from(connectionDetails::getVirtualHost).whenNonNull().to(environmentConnectionSettings::virtualHost);
+		map.from(credentialsProvider::getIfAvailable)
+			.whenNonNull()
+			.to(environmentConnectionSettings::credentialsProvider);
+
+		AmqpEnvironmentBuilder builder = environmentConnectionSettings.environmentBuilder();
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		return builder.build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public AmqpConnectionFactory amqpConnection(Environment environment) {
+		return new SingleAmqpConnectionFactory(environment);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public RabbitAmqpTemplate rabbitAmqpTemplate(AmqpConnectionFactory connectionFactory,
+			ObjectProvider<RabbitAmqpTemplateCustomizer> customizers,
+			ObjectProvider<MessageConverter> messageConverter) {
+		RabbitAmqpTemplate rabbitAmqpTemplate = new RabbitAmqpTemplate(connectionFactory);
+		if (messageConverter.getIfAvailable() != null) {
+			rabbitAmqpTemplate.setMessageConverter(messageConverter.getIfAvailable());
+		}
+		RabbitProperties.Template templateProperties = this.properties.getTemplate();
+
+		PropertyMapper map = PropertyMapper.get();
+		map.from(templateProperties::getDefaultReceiveQueue).whenNonNull().to(rabbitAmqpTemplate::setReceiveQueue);
+		map.from(templateProperties::getExchange).whenNonNull().to(rabbitAmqpTemplate::setExchange);
+		map.from(templateProperties::getRoutingKey).to(rabbitAmqpTemplate::setRoutingKey);
+
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(rabbitAmqpTemplate));
+		return rabbitAmqpTemplate;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public RabbitAmqpAdmin rabbitAmqpAdmin(AmqpConnectionFactory connectionFactory) {
+		return new RabbitAmqpAdmin(connectionFactory);
+	}
+
+}
