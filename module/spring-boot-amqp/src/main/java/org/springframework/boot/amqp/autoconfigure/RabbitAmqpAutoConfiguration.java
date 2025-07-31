@@ -72,7 +72,7 @@ public final class RabbitAmqpAutoConfiguration {
 
 	@Bean(name = "rabbitAmqpListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitAmqpListenerContainerFactory")
-	public RabbitAmqpListenerContainerFactory rabbitAmqpListenerContainerFactory(
+	RabbitAmqpListenerContainerFactory rabbitAmqpListenerContainerFactory(
 			AmqpConnectionFactory connectionFactory,
 			ObjectProvider<ContainerCustomizer<RabbitAmqpListenerContainer>> amqpContainerCustomizer,
 			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
@@ -101,7 +101,7 @@ public final class RabbitAmqpAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Environment rabbitAmqpEnvironment(RabbitConnectionDetails connectionDetails,
+	Environment rabbitAmqpEnvironment(RabbitConnectionDetails connectionDetails,
 			ObjectProvider<AmqpEnvironmentBuilderCustomizer> customizers,
 			ObjectProvider<CredentialsProvider> credentialsProvider) {
 		PropertyMapper map = PropertyMapper.get();
@@ -123,13 +123,13 @@ public final class RabbitAmqpAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AmqpConnectionFactory amqpConnection(Environment environment) {
+	AmqpConnectionFactory amqpConnection(Environment environment) {
 		return new SingleAmqpConnectionFactory(environment);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RabbitAmqpTemplate rabbitAmqpTemplate(AmqpConnectionFactory connectionFactory,
+	RabbitAmqpTemplate rabbitAmqpTemplate(AmqpConnectionFactory connectionFactory,
 			ObjectProvider<RabbitAmqpTemplateCustomizer> customizers,
 			ObjectProvider<MessageConverter> messageConverter) {
 		RabbitAmqpTemplate rabbitAmqpTemplate = new RabbitAmqpTemplate(connectionFactory);
@@ -149,7 +149,7 @@ public final class RabbitAmqpAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public RabbitAmqpAdmin rabbitAmqpAdmin(AmqpConnectionFactory connectionFactory) {
+	RabbitAmqpAdmin rabbitAmqpAdmin(AmqpConnectionFactory connectionFactory) {
 		return new RabbitAmqpAdmin(connectionFactory);
 	}
 
