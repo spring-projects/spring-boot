@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
@@ -71,7 +73,7 @@ public class FreeMarkerProperties {
 	/**
 	 * View names that can be resolved.
 	 */
-	private String[] viewNames;
+	private String @Nullable [] viewNames;
 
 	/**
 	 * Whether to check that the templates location exists.
@@ -91,7 +93,7 @@ public class FreeMarkerProperties {
 	/**
 	 * Name of the RequestContext attribute for all views.
 	 */
-	private String requestContextAttribute;
+	private @Nullable String requestContextAttribute;
 
 	/**
 	 * Whether all request attributes should be added to the model prior to merging with
@@ -157,11 +159,11 @@ public class FreeMarkerProperties {
 		return this.checkTemplateLocation;
 	}
 
-	public String[] getViewNames() {
+	public String @Nullable [] getViewNames() {
 		return this.viewNames;
 	}
 
-	public void setViewNames(String[] viewNames) {
+	public void setViewNames(String @Nullable [] viewNames) {
 		this.viewNames = viewNames;
 	}
 
@@ -191,7 +193,7 @@ public class FreeMarkerProperties {
 		return this.charset;
 	}
 
-	public String getCharsetName() {
+	public @Nullable String getCharsetName() {
 		return (this.charset != null) ? this.charset.name() : null;
 	}
 
@@ -239,11 +241,11 @@ public class FreeMarkerProperties {
 		this.suffix = suffix;
 	}
 
-	public String getRequestContextAttribute() {
+	public @Nullable String getRequestContextAttribute() {
 		return this.requestContextAttribute;
 	}
 
-	public void setRequestContextAttribute(String requestContextAttribute) {
+	public void setRequestContextAttribute(@Nullable String requestContextAttribute) {
 		this.requestContextAttribute = requestContextAttribute;
 	}
 
