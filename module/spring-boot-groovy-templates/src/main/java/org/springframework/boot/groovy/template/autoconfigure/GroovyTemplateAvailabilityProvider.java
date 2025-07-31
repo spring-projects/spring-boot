@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.autoconfigure.template.PathBasedTemplateAvailabilityProvider;
@@ -69,7 +71,7 @@ public class GroovyTemplateAvailabilityProvider extends PathBasedTemplateAvailab
 	static class GroovyTemplateAvailabilityRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			if (ClassUtils.isPresent(REQUIRED_CLASS_NAME, classLoader)) {
 				BindableRuntimeHintsRegistrar.forTypes(GroovyTemplateAvailabilityProperties.class)
 					.registerHints(hints, classLoader);
