@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.util.Assert;
@@ -36,13 +37,13 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthIndicator {
 
-	private static final String NO_MESSAGE = null;
+	private static final @Nullable String NO_MESSAGE = null;
 
 	private static final String DEFAULT_MESSAGE = "Health check failed";
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	private final Function<Throwable, String> healthCheckFailedMessage;
+	private final Function<Throwable, @Nullable String> healthCheckFailedMessage;
 
 	/**
 	 * Create a new {@link AbstractReactiveHealthIndicator} instance with a default
@@ -57,7 +58,7 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	 * message to log when the health check fails.
 	 * @param healthCheckFailedMessage the message to log on health check failure
 	 */
-	protected AbstractReactiveHealthIndicator(String healthCheckFailedMessage) {
+	protected AbstractReactiveHealthIndicator(@Nullable String healthCheckFailedMessage) {
 		this.healthCheckFailedMessage = (ex) -> healthCheckFailedMessage;
 	}
 
@@ -66,7 +67,7 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	 * message to log when the health check fails.
 	 * @param healthCheckFailedMessage the message to log on health check failure
 	 */
-	protected AbstractReactiveHealthIndicator(Function<Throwable, String> healthCheckFailedMessage) {
+	protected AbstractReactiveHealthIndicator(Function<Throwable, @Nullable String> healthCheckFailedMessage) {
 		Assert.notNull(healthCheckFailedMessage, "'healthCheckFailedMessage' must not be null");
 		this.healthCheckFailedMessage = healthCheckFailedMessage;
 	}
@@ -83,7 +84,7 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 		}
 	}
 
-	private void logExceptionIfPresent(Throwable ex) {
+	private void logExceptionIfPresent(@Nullable Throwable ex) {
 		if (ex != null && this.logger.isWarnEnabled()) {
 			String message = (ex instanceof Exception) ? this.healthCheckFailedMessage.apply(ex) : null;
 			this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, ex);

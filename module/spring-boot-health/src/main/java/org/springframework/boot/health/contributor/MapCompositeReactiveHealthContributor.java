@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -51,7 +53,7 @@ class MapCompositeReactiveHealthContributor<V> implements CompositeReactiveHealt
 	}
 
 	@Override
-	public ReactiveHealthContributor getContributor(String name) {
+	public @Nullable ReactiveHealthContributor getContributor(String name) {
 		return this.contributors.get(name);
 	}
 

@@ -26,6 +26,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -48,8 +50,8 @@ abstract class AbstractRegistry<C, E> {
 	private final Object monitor = new Object();
 
 	AbstractRegistry(BiFunction<String, C, E> entryAdapter,
-			Collection<? extends HealthContributorNameValidator> nameValidators,
-			Consumer<BiConsumer<String, C>> initialRegistrations) {
+			@Nullable Collection<? extends HealthContributorNameValidator> nameValidators,
+			@Nullable Consumer<BiConsumer<String, C>> initialRegistrations) {
 		this.nameValidators = (nameValidators != null) ? List.copyOf(nameValidators) : Collections.emptyList();
 		this.entryAdapter = entryAdapter;
 		Map<String, C> contributors = new LinkedHashMap<>();
@@ -76,7 +78,7 @@ abstract class AbstractRegistry<C, E> {
 		contributors.put(name, contributor);
 	}
 
-	C unregisterContributor(String name) {
+	@Nullable C unregisterContributor(String name) {
 		Assert.notNull(name, "'name' must not be null");
 		synchronized (this.monitor) {
 			C unregistered = this.contributors.get(name);
@@ -89,7 +91,7 @@ abstract class AbstractRegistry<C, E> {
 		}
 	}
 
-	C getContributor(String name) {
+	@Nullable C getContributor(String name) {
 		return this.contributors.get(name);
 	}
 

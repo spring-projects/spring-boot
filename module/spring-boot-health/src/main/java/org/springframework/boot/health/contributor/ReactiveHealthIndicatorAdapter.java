@@ -16,6 +16,8 @@
 
 package org.springframework.boot.health.contributor;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Adapts a {@link ReactiveHealthIndicator} to a {@link HealthIndicator}.
  *
@@ -31,12 +33,12 @@ class ReactiveHealthIndicatorAdapter implements HealthIndicator {
 	}
 
 	@Override
-	public Health health(boolean includeDetails) {
+	public @Nullable Health health(boolean includeDetails) {
 		return this.delegate.health(includeDetails).block();
 	}
 
 	@Override
-	public Health health() {
+	public @Nullable Health health() {
 		return this.delegate.health().block();
 	}
 

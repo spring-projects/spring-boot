@@ -16,6 +16,8 @@
 
 package org.springframework.boot.health.registry;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.health.contributor.ReactiveHealthContributor;
 import org.springframework.boot.health.contributor.ReactiveHealthContributors;
 
@@ -42,6 +44,6 @@ public interface ReactiveHealthContributorRegistry extends ReactiveHealthContrib
 	 * @return the unregistered indicator, or {@code null} if no indicator was found in
 	 * the registry for the given {@code name}.
 	 */
-	ReactiveHealthContributor unregisterContributor(String name);
+	@Nullable ReactiveHealthContributor unregisterContributor(String name);
 
 }

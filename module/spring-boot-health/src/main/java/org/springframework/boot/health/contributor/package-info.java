@@ -17,4 +17,7 @@
 /**
  * Classes related to contributing health information about an application.
  */
+@NullMarked
 package org.springframework.boot.health.contributor;
+
+import org.jspecify.annotations.NullMarked;

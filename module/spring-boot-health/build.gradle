@@ -26,6 +26,8 @@ description = "Spring Boot Health"
 dependencies {
 	api(project(":core:spring-boot"))
 
+	compileOnly("com.google.code.findbugs:jsr305")
+
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional("io.projectreactor:reactor-core")
 	optional("com.fasterxml.jackson.core:jackson-annotations")
