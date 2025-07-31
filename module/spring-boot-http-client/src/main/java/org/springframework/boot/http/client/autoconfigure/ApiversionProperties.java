@@ -69,6 +69,11 @@ public class ApiversionProperties {
 		 */
 		private Integer pathSegment;
 
+		/**
+		 * Insert the version into a media type parameter with the given name.
+		 */
+		private String mediaTypeParameter;
+
 		public String getHeader() {
 			return this.header;
 		}
@@ -91,6 +96,14 @@ public class ApiversionProperties {
 
 		public void setPathSegment(Integer pathSegment) {
 			this.pathSegment = pathSegment;
+		}
+
+		public String getMediaTypeParameter() {
+			return this.mediaTypeParameter;
+		}
+
+		public void setMediaTypeParameter(String mediaTypeParameter) {
+			this.mediaTypeParameter = mediaTypeParameter;
 		}
 
 	}

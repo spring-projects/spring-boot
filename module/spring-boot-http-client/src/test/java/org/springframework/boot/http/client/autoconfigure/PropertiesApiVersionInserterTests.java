@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
 
@@ -60,12 +61,15 @@ class PropertiesApiVersionInserterTests {
 		ApiversionProperties properties2 = new ApiversionProperties();
 		properties2.getInsert().setQueryParameter("v2");
 		properties2.getInsert().setPathSegment(1);
+		properties2.getInsert().setMediaTypeParameter("mtp");
 		ApiVersionInserter inserter = PropertiesApiVersionInserter.get(null, null, properties1, properties2);
 		URI uri = new URI("https://example.com/foo/bar");
 		assertThat(inserter.insertVersion("123", uri)).hasToString("https://example.com/foo/123/bar?v1=123&v2=123");
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		inserter.insertVersion("123", headers);
 		assertThat(headers.get("x-test")).containsExactly("123");
+		assertThat(headers.getContentType().getParameters()).containsEntry("mtp", "123");
 	}
 
 	@Test

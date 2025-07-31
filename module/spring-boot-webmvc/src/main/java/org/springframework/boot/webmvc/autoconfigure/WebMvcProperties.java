@@ -477,7 +477,7 @@ public class WebMvcProperties {
 		/**
 		 * Whether the API version is required with each request.
 		 */
-		private boolean required = false;
+		private Boolean required;
 
 		/**
 		 * Default version that should be used for each request.
@@ -493,18 +493,18 @@ public class WebMvcProperties {
 		/**
 		 * Whether supported versions should be detected from controllers.
 		 */
-		private boolean detectSupported = true;
+		private Boolean detectSupported;
 
 		/**
 		 * How version details should be inserted into requests.
 		 */
 		private final Use use = new Use();
 
-		public boolean isRequired() {
+		public Boolean getRequired() {
 			return this.required;
 		}
 
-		public void setRequired(boolean required) {
+		public void setRequired(Boolean required) {
 			this.required = required;
 		}
 
@@ -524,16 +524,16 @@ public class WebMvcProperties {
 			this.supported = supported;
 		}
 
-		public Use getUse() {
-			return this.use;
-		}
-
-		public boolean isDetectSupported() {
+		public Boolean getDetectSupported() {
 			return this.detectSupported;
 		}
 
-		public void setDetectSupported(boolean detectSupported) {
+		public void setDetectSupported(Boolean detectSupported) {
 			this.detectSupported = detectSupported;
+		}
+
+		public Use getUse() {
+			return this.use;
 		}
 
 		public static class Use {
@@ -546,7 +546,7 @@ public class WebMvcProperties {
 			/**
 			 * Use the query parameter with the given name to obtain the version.
 			 */
-			private String requestParameter;
+			private String queryParameter;
 
 			/**
 			 * Use the path segment at the given index to obtain the version.
@@ -566,12 +566,12 @@ public class WebMvcProperties {
 				this.header = header;
 			}
 
-			public String getRequestParameter() {
-				return this.requestParameter;
+			public String getQueryParameter() {
+				return this.queryParameter;
 			}
 
-			public void setRequestParameter(String queryParameter) {
-				this.requestParameter = queryParameter;
+			public void setQueryParameter(String queryParameter) {
+				this.queryParameter = queryParameter;
 			}
 
 			public Integer getPathSegment() {

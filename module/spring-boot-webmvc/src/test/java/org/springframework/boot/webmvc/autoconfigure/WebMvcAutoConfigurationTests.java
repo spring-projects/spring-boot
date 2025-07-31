@@ -1060,11 +1060,11 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void apiVersionUseRequestParameterPropertyIsApplied() {
-		this.contextRunner.withPropertyValues("spring.mvc.apiversion.use.request-parameter=rpv").run((context) -> {
+	void apiVersionUseQueryParameterPropertyIsApplied() {
+		this.contextRunner.withPropertyValues("spring.mvc.apiversion.use.query-parameter=rpv").run((context) -> {
 			ApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy", ApiVersionStrategy.class);
 			MockHttpServletRequest request = new MockHttpServletRequest();
-			request.addParameter("rpv", "123");
+			request.setQueryString("rpv=123");
 			assertThat(versionStrategy.resolveVersion(request)).isEqualTo("123");
 		});
 	}

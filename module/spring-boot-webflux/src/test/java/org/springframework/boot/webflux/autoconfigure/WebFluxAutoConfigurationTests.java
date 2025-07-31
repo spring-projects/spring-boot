@@ -850,8 +850,8 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void apiVersionUseRequestParameterPropertyIsApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.request-parameter=rpv").run((context) -> {
+	void apiVersionUseQueryParameterPropertyIsApplied() {
+		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.query-parameter=rpv").run((context) -> {
 			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			MockServerWebExchange request = MockServerWebExchange

@@ -98,6 +98,7 @@ public final class PropertiesApiVersionInserter implements ApiVersionInserter {
 				map.from(insert::getHeader).whenHasText().as(counter::counted).to(builder::useHeader);
 				map.from(insert::getQueryParameter).whenHasText().as(counter::counted).to(builder::useQueryParam);
 				map.from(insert::getPathSegment).as(counter::counted).to(builder::usePathSegment);
+				map.from(insert::getMediaTypeParameter).to(builder::useMediaTypeParam);
 				if (!counter.isEmpty()) {
 					inserters.add(builder.build());
 				}

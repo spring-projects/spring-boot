@@ -390,10 +390,10 @@ public final class WebMvcAutoConfiguration {
 		public void configureApiVersioning(ApiVersionConfigurer configurer) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			Apiversion properties = this.mvcProperties.getApiversion();
-			map.from(properties::isRequired).to(configurer::setVersionRequired);
+			map.from(properties::getRequired).to(configurer::setVersionRequired);
 			map.from(properties::getDefaultVersion).to(configurer::setDefaultVersion);
 			map.from(properties::getSupported).to((supported) -> supported.forEach(configurer::addSupportedVersions));
-			map.from(properties::isDetectSupported).to(configurer::detectSupportedVersions);
+			map.from(properties::getDetectSupported).to(configurer::detectSupportedVersions);
 			configureApiVersioningUse(configurer, properties.getUse());
 			this.apiVersionResolvers.orderedStream().forEach(configurer::useVersionResolver);
 			this.apiVersionParser.ifAvailable(configurer::setVersionParser);
@@ -403,7 +403,7 @@ public final class WebMvcAutoConfiguration {
 		private void configureApiVersioningUse(ApiVersionConfigurer configurer, Use use) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(use::getHeader).whenHasText().to(configurer::useRequestHeader);
-			map.from(use::getRequestParameter).whenHasText().to(configurer::useRequestParam);
+			map.from(use::getQueryParameter).whenHasText().to(configurer::useQueryParam);
 			map.from(use::getPathSegment).to(configurer::usePathSegment);
 			use.getMediaTypeParameter()
 				.forEach((mediaType, parameterName) -> configurer.useMediaTypeParameter(mediaType, parameterName));
