@@ -43,7 +43,11 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		builder.up().withDetail("version", getVersion());
+		builder.up();
+		String version = getVersion();
+		if (version != null) {
+			builder.withDetail("version", version);
+		}
 	}
 
 	private @Nullable String getVersion() {
