@@ -20,17 +20,16 @@ plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java"
 	id "org.antora"
+	id "org.jetbrains.kotlin.jvm"
+	id "org.springframework.boot.aggregator"
 	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.antora-dependencies"
 	id "org.springframework.boot.deployed"
-	id 'org.jetbrains.kotlin.jvm'
 }
 
 description = "Spring Boot Docs"
 
 configurations {
-	autoConfiguration
-	configurationProperties
 	remoteSpringApplicationExample
 	resolvedBom
 	springApplicationExample
@@ -69,20 +68,6 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
-	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "autoConfigurationMetadata"))
-
-	configurationProperties(project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
-
 	dokkatoo(project(path: ":spring-boot-project:spring-boot"))
 	dokkatoo(project(path: ":spring-boot-project:spring-boot-test"))
 
@@ -255,8 +240,13 @@ tasks.register("documentStarters", org.springframework.boot.build.starters.Docum
 	outputDir = layout.buildDirectory.dir("generated/docs/using/starters/")
 }
 
+def autoConfigurationMetadataAggregate = aggregates.create("autoConfigurationMetadata") {
+	category = Category.DOCUMENTATION
+	usage = "auto-configuration-metadata"
+}
+
 tasks.register("documentAutoConfigurationClasses", org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
-	autoConfiguration = configurations.autoConfiguration
+	autoConfiguration = autoConfigurationMetadataAggregate.files
 	outputDir = layout.buildDirectory.dir("generated/docs/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
@@ -270,8 +260,13 @@ tasks.register("documentDependencyVersionProperties", org.springframework.boot.b
 	resolvedBoms = configurations.resolvedBom
 }
 
+def configurationPropertiesMetadataAggregate = aggregates.create("configurationPropertiesMetadata") {
+	category = Category.DOCUMENTATION
+	usage = "configuration-properties-metadata"
+}
+
 tasks.register("documentConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
-	configurationPropertyMetadata = configurations.configurationProperties
+	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
 	outputDir = layout.buildDirectory.dir("generated/docs/application-properties")
 }
 
@@ -347,7 +342,7 @@ antoraContributions {
 			from("src/main") {
 				into "modules/ROOT/examples"
 			}
-			from(project.configurations.configurationProperties) {
+			from(configurationPropertiesMetadataAggregate.files) {
 				eachFile {
 					it.path = rootProject
 						.projectDir

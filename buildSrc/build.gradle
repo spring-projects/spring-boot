@@ -84,6 +84,10 @@ configurations.all {
 
 gradlePlugin {
 	plugins {
+		aggregatorPlugin {
+			id = "org.springframework.boot.aggregator"
+			implementationClass = "org.springframework.boot.build.aggregation.AggregatorPlugin"
+		}
 		annotationProcessorPlugin {
 			id = "org.springframework.boot.annotation-processor"
 			implementationClass = "org.springframework.boot.build.processors.AnnotationProcessorPlugin"
