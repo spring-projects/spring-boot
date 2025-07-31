@@ -391,9 +391,9 @@ public final class WebFluxAutoConfiguration {
 		}
 
 		@Override
-		@ConditionalOnMissingBean(name = "mvcApiVersionStrategy")
-		public @Nullable ApiVersionStrategy mvcApiVersionStrategy() {
-			return super.mvcApiVersionStrategy();
+		@ConditionalOnMissingBean(name = "webFluxApiVersionStrategy")
+		public @Nullable ApiVersionStrategy webFluxApiVersionStrategy() {
+			return super.webFluxApiVersionStrategy();
 		}
 
 	}

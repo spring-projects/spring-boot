@@ -807,7 +807,7 @@ class WebFluxAutoConfigurationTests {
 					"spring.webflux.apiversion.required=true", "spring.webflux.apiversion.supported=123,456",
 					"spring.webflux.apiversion.detect-supported=false")
 			.run((context) -> {
-				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+				DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 						DefaultApiVersionStrategy.class);
 				MockServerWebExchange request = MockServerWebExchange
 					.from(MockServerHttpRequest.get("https://example.com"));
@@ -826,7 +826,7 @@ class WebFluxAutoConfigurationTests {
 			.withPropertyValues("spring.webflux.apiversion.use.header=version",
 					"spring.webflux.apiversion.default=1.0.0")
 			.run((context) -> {
-				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+				DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 						DefaultApiVersionStrategy.class);
 				MockServerWebExchange request = MockServerWebExchange
 					.from(MockServerHttpRequest.get("https://example.com"));
@@ -841,7 +841,7 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void apiVersionUseHeaderPropertyIsApplied() {
 		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.header=hv").run((context) -> {
-			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("https://example.com").header("hv", "123"));
@@ -852,7 +852,7 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void apiVersionUseRequestParameterPropertyIsApplied() {
 		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.request-parameter=rpv").run((context) -> {
-			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("https://example.com?rpv=123"));
@@ -863,7 +863,7 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void apiVersionUsePathSegmentPropertyIsApplied() {
 		this.contextRunner.withPropertyValues("spring.webflux.apiversion.use.path-segment=1").run((context) -> {
-			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			MockServerWebExchange request = MockServerWebExchange
 				.from(MockServerHttpRequest.get("https://example.com/test/123"));
@@ -876,7 +876,7 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.webflux.apiversion.use.media-type-parameter[application/json]=mtpv")
 			.run((context) -> {
-				DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+				DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 						DefaultApiVersionStrategy.class);
 				MockServerWebExchange request = MockServerWebExchange
 					.from(MockServerHttpRequest.get("https://example.com")
@@ -888,7 +888,7 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void apiVersionBeansAreInjected() {
 		this.contextRunner.withUserConfiguration(ApiVersionConfiguration.class).run((context) -> {
-			DefaultApiVersionStrategy versionStrategy = context.getBean("mvcApiVersionStrategy",
+			DefaultApiVersionStrategy versionStrategy = context.getBean("webFluxApiVersionStrategy",
 					DefaultApiVersionStrategy.class);
 			assertThat(versionStrategy).extracting("versionResolvers")
 				.asInstanceOf(InstanceOfAssertFactories.LIST)

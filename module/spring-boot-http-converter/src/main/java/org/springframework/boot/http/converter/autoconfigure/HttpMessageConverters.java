@@ -20,15 +20,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -64,13 +65,16 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		NON_REPLACING_CONVERTERS = Collections.unmodifiableList(nonReplacingConverters);
 	}
 
-	private static final Map<Class<?>, Class<?>> EQUIVALENT_CONVERTERS;
+	private static final MultiValueMap<Class<?>, Class<?>> EQUIVALENT_CONVERTERS;
 
 	static {
-		Map<Class<?>, Class<?>> equivalentConverters = new HashMap<>();
+		MultiValueMap<Class<?>, Class<?>> equivalentConverters = new LinkedMultiValueMap<>();
+		putIfExists(equivalentConverters, "org.springframework.http.converter.json.JacksonJsonHttpMessageConverter",
+				"org.springframework.http.converter.json.MappingJackson2HttpMessageConverter",
+				"org.springframework.http.converter.json.GsonHttpMessageConverter");
 		putIfExists(equivalentConverters, "org.springframework.http.converter.json.MappingJackson2HttpMessageConverter",
 				"org.springframework.http.converter.json.GsonHttpMessageConverter");
-		EQUIVALENT_CONVERTERS = Collections.unmodifiableMap(equivalentConverters);
+		EQUIVALENT_CONVERTERS = CollectionUtils.unmodifiableMultiValueMap(equivalentConverters);
 	}
 
 	private final List<HttpMessageConverter<?>> converters;
@@ -146,8 +150,10 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		if (ClassUtils.isAssignableValue(converterClass, candidate)) {
 			return true;
 		}
-		Class<?> equivalentClass = EQUIVALENT_CONVERTERS.get(converterClass);
-		return equivalentClass != null && ClassUtils.isAssignableValue(equivalentClass, candidate);
+		List<Class<?>> equivalentClasses = EQUIVALENT_CONVERTERS.get(converterClass);
+		return (equivalentClasses != null) && equivalentClasses.stream()
+			.anyMatch((equivalentClass) -> equivalentClass != null
+					&& ClassUtils.isAssignableValue(equivalentClass, candidate));
 	}
 
 	private void configurePartConverters(AllEncompassingFormHttpMessageConverter formConverter,
@@ -236,12 +242,15 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		}
 	}
 
-	private static void putIfExists(Map<Class<?>, Class<?>> map, String keyClassName, String valueClassName) {
-		try {
-			map.put(Class.forName(keyClassName), Class.forName(valueClassName));
-		}
-		catch (ClassNotFoundException | NoClassDefFoundError ex) {
-			// Ignore
+	private static void putIfExists(MultiValueMap<Class<?>, Class<?>> map, String keyClassName,
+			String... valueClassNames) {
+		for (String valueClassName : valueClassNames) {
+			try {
+				map.add(Class.forName(keyClassName), Class.forName(valueClassName));
+			}
+			catch (ClassNotFoundException | NoClassDefFoundError ex) {
+				// Ignore
+			}
 		}
 	}
 
