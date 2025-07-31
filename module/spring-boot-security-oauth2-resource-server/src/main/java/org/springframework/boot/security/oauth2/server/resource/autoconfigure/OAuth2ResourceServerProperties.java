@@ -35,7 +35,7 @@ import org.springframework.util.StreamUtils;
  * @author Artsiom Yudovin
  * @author Mushtaq Ahmed
  * @author Yan Kardziyaka
-  * @author Yanming Zhou
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.security.oauth2.resourceserver")
