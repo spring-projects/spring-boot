@@ -35,6 +35,7 @@ import org.springframework.util.StreamUtils;
  * @author Artsiom Yudovin
  * @author Mushtaq Ahmed
  * @author Yan Kardziyaka
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.security.oauth2.resourceserver")
@@ -173,7 +174,7 @@ public class OAuth2ResourceServerProperties {
 		}
 
 		public String readPublicKey() throws IOException {
-			String key = "spring.security.oauth2.resourceserver.public-key-location";
+			String key = "spring.security.oauth2.resourceserver.jwt.public-key-location";
 			if (this.publicKeyLocation == null) {
 				throw new InvalidConfigurationPropertyValueException(key, this.publicKeyLocation,
 						"No public key location specified");
