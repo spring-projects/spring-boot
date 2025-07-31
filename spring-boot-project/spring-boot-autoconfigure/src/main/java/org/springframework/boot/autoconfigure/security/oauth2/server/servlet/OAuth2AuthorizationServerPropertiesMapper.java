@@ -38,6 +38,7 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
  * Maps {@link OAuth2AuthorizationServerProperties} to Authorization Server types.
  *
  * @author Steve Riesenberg
+ * @author Florian Lemaire
  */
 final class OAuth2AuthorizationServerPropertiesMapper {
 
@@ -61,6 +62,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		map.from(endpoint::getJwkSetUri).to(builder::jwkSetEndpoint);
 		map.from(endpoint::getTokenRevocationUri).to(builder::tokenRevocationEndpoint);
 		map.from(endpoint::getTokenIntrospectionUri).to(builder::tokenIntrospectionEndpoint);
+		map.from(endpoint::getPushedAuthorizationRequestUri).to(builder::pushedAuthorizationRequestEndpoint);
 		map.from(oidc::getLogoutUri).to(builder::oidcLogoutEndpoint);
 		map.from(oidc::getClientRegistrationUri).to(builder::oidcClientRegistrationEndpoint);
 		map.from(oidc::getUserInfoUri).to(builder::oidcUserInfoEndpoint);
