@@ -21,17 +21,16 @@ plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java"
 	id "org.antora"
+	id "org.jetbrains.kotlin.jvm"
+	id "org.springframework.boot.aggregator"
 	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.antora-dependencies"
 	id "org.springframework.boot.deployed"
-	id 'org.jetbrains.kotlin.jvm'
 }
 
 description = "Spring Boot Docs"
 
 configurations {
-	autoConfiguration
-	configurationProperties
 	remoteSpringApplicationExample
 	resolvedBom
 	springApplicationExample
@@ -75,187 +74,6 @@ plugins.withType(EclipsePlugin) {
 }
 
 dependencies {
-	autoConfiguration(project(path: ":core:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":core:spring-boot-testcontainers", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-activemq", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-amqp", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-artemis", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-batch", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-cache", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-cassandra", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-cloudfoundry", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-couchbase", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-cassandra", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-commons", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-couchbase", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-elasticsearch", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-jdbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-jpa", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-ldap", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-mongodb", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-neo4j", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-r2dbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-redis", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-data-rest", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-elasticsearch", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-flyway", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-freemarker", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-graphql", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-groovy-templates", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-gson", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-h2console", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-hateoas", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-hazelcast", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-health", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-hibernate", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-http-client", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-http-codec", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-http-converter", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-integration", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jackson", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jdbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jersey", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jetty", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jms", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jooq", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-jsonb", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-kafka", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-ldap", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-liquibase", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-mail", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-metrics", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-mongodb", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-mustache", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-neo4j", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-netty", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-observation", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-opentelemetry", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-pulsar", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-quartz", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-r2dbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-reactor", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-reactor-netty", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-restclient", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-rsocket", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security-oauth2-authorization-server", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security-oauth2-client", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security-oauth2-resource-server", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-security-saml2", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-sendgrid", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-servlet", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session-data-mongodb", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session-data-redis", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session-hazelcast", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-session-jdbc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-thymeleaf", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-tomcat", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-tracing", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-tx", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-undertow", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-validation", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-webclient", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-webflux", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-webmvc", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-webservices", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-websocket", configuration: "autoConfigurationMetadata"))
-	autoConfiguration(project(path: ":module:spring-boot-zipkin", configuration: "autoConfigurationMetadata"))
-
-	configurationProperties(project(path: ":core:spring-boot", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":core:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":core:spring-boot-docker-compose", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":core:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-activemq", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-amqp", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-artemis", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-batch", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-cache", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-cassandra", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-couchbase", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-cassandra", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-commons", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-couchbase", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-elasticsearch", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-jdbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-jpa", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-mongodb", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-ldap", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-neo4j", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-r2dbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-redis", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-data-rest", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-elasticsearch", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-flyway", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-freemarker", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-graphql", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-groovy-templates", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-gson", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-h2console", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-hateoas", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-hazelcast", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-hibernate", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-http-client", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-http-codec", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-http-converter", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-integration", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jackson", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jdbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jersey", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jetty", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jms", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jooq", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-jpa", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-kafka", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-ldap", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-liquibase", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-mail", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-metrics", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-mongodb", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-mustache", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-neo4j", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-netty", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-observation", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-opentelemetry", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-pulsar", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-quartz", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-r2dbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-reactor", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-reactor-netty", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-restclient", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-rsocket", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security-oauth2-authorization-server", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security-oauth2-client", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security-oauth2-resource-server", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-security-saml2", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-sendgrid", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-servlet", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session-data-mongodb", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session-data-redis", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session-hazelcast", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-session-jdbc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-sql", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-thymeleaf", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-tomcat", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-tracing", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-tx", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-undertow", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-validation", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-web-server", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-webclient", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-webflux", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-webmvc", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-webservices", configuration: "configurationPropertiesMetadata"))
-	configurationProperties(project(path: ":module:spring-boot-zipkin", configuration: "configurationPropertiesMetadata"))
-
 	implementation(project(path: ":cli:spring-boot-cli"))
 	implementation(project(path: ":core:spring-boot-docker-compose"))
 	implementation(project(path: ":core:spring-boot-test"))
@@ -443,8 +261,13 @@ tasks.register("documentStarters", org.springframework.boot.build.starters.Docum
 	outputDir = layout.buildDirectory.dir("generated/docs/using/starters/")
 }
 
+def autoConfigurationMetadataAggregate = aggregates.create("autoConfigurationMetadata") {
+	category = Category.DOCUMENTATION
+	usage = "auto-configuration-metadata"
+}
+
 tasks.register("documentAutoConfigurationClasses", org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
-	autoConfiguration = configurations.autoConfiguration
+	autoConfiguration = autoConfigurationMetadataAggregate.files
 	outputDir = layout.buildDirectory.dir("generated/docs/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
@@ -458,8 +281,13 @@ tasks.register("documentDependencyVersionProperties", org.springframework.boot.b
 	resolvedBoms = configurations.resolvedBom
 }
 
+def configurationPropertiesMetadataAggregate = aggregates.create("configurationPropertiesMetadata") {
+	category = Category.DOCUMENTATION
+	usage = "configuration-properties-metadata"
+}
+
 tasks.register("documentConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
-	configurationPropertyMetadata = configurations.configurationProperties
+	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
 	outputDir = layout.buildDirectory.dir("generated/docs/application-properties")
 }
 
@@ -535,7 +363,7 @@ antoraContributions {
 			from("src/main") {
 				into "modules/ROOT/examples"
 			}
-			from(project.configurations.configurationProperties) {
+			from(configurationPropertiesMetadataAggregate.files) {
 				eachFile {
 					it.path = rootProject
 						.projectDir
