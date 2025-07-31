@@ -38,10 +38,18 @@ final class RedisHealth {
 	}
 
 	static Health.Builder fromClusterInfo(Health.Builder builder, ClusterInfo clusterInfo) {
-		builder.withDetail("cluster_size", clusterInfo.getClusterSize());
-		builder.withDetail("slots_up", clusterInfo.getSlotsOk());
-		builder.withDetail("slots_fail", clusterInfo.getSlotsFail());
-
+		Long clusterSize = clusterInfo.getClusterSize();
+		if (clusterSize != null) {
+			builder.withDetail("cluster_size", clusterSize);
+		}
+		Long slotsOk = clusterInfo.getSlotsOk();
+		if (slotsOk != null) {
+			builder.withDetail("slots_up", slotsOk);
+		}
+		Long slotsFail = clusterInfo.getSlotsFail();
+		if (slotsFail != null) {
+			builder.withDetail("slots_fail", slotsFail);
+		}
 		if ("fail".equalsIgnoreCase(clusterInfo.getState())) {
 			return builder.down();
 		}
