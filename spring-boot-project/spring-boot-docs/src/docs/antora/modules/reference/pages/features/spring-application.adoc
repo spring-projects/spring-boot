@@ -400,9 +400,11 @@ Spring Boot can also be configured to expose a xref:api:rest/actuator/startup.ad
 [[features.spring-application.virtual-threads]]
 == Virtual threads
 
-If you're running on Java 21 or up, you can enable virtual threads by setting the property configprop:spring.threads.virtual.enabled[] to `true`.
+Virtual threads require Java 21 or later.
+For the best experience, Java 24 or later is strongly recommended.
+To enable virtual threads, set the configprop:spring.threads.virtual.enabled[] property to `true`.
 
-Before turning on this option for your application, you should consider https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html[reading the official Java virtual threads documentation].
+Before turning on this option for your application, you should consider https://docs.oracle.com/en/java/javase/24/core/virtual-threads.html[reading the official Java virtual threads documentation].
 In some cases, applications can experience lower throughput because of "Pinned Virtual Threads"; this page also explains how to detect such cases with JDK Flight Recorder or the `jcmd` CLI.
 
 NOTE: If virtual threads are enabled, properties which configure thread pools don't have an effect anymore.
