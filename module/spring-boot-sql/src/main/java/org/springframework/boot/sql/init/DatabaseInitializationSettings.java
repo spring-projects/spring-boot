@@ -19,6 +19,8 @@ package org.springframework.boot.sql.init;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Settings for initializing an SQL database.
  *
@@ -27,15 +29,15 @@ import java.util.List;
  */
 public class DatabaseInitializationSettings {
 
-	private List<String> schemaLocations;
+	private @Nullable List<String> schemaLocations;
 
-	private List<String> dataLocations;
+	private @Nullable List<String> dataLocations;
 
 	private boolean continueOnError;
 
 	private String separator = ";";
 
-	private Charset encoding;
+	private @Nullable Charset encoding;
 
 	private DatabaseInitializationMode mode = DatabaseInitializationMode.EMBEDDED;
 
@@ -43,7 +45,7 @@ public class DatabaseInitializationSettings {
 	 * Returns the locations of the schema (DDL) scripts to apply to the database.
 	 * @return the locations of the schema scripts
 	 */
-	public List<String> getSchemaLocations() {
+	public @Nullable List<String> getSchemaLocations() {
 		return this.schemaLocations;
 	}
 
@@ -53,7 +55,7 @@ public class DatabaseInitializationSettings {
 	 * location can be made optional by prefixing it with {@code optional:}.
 	 * @param schemaLocations locations of the schema scripts
 	 */
-	public void setSchemaLocations(List<String> schemaLocations) {
+	public void setSchemaLocations(@Nullable List<String> schemaLocations) {
 		this.schemaLocations = schemaLocations;
 	}
 
@@ -61,7 +63,7 @@ public class DatabaseInitializationSettings {
 	 * Returns the locations of data (DML) scripts to apply to the database.
 	 * @return the locations of the data scripts
 	 */
-	public List<String> getDataLocations() {
+	public @Nullable List<String> getDataLocations() {
 		return this.dataLocations;
 	}
 
@@ -71,7 +73,7 @@ public class DatabaseInitializationSettings {
 	 * location can be made optional by prefixing it with {@code optional:}.
 	 * @param dataLocations locations of the data scripts
 	 */
-	public void setDataLocations(List<String> dataLocations) {
+	public void setDataLocations(@Nullable List<String> dataLocations) {
 		this.dataLocations = dataLocations;
 	}
 
@@ -113,7 +115,7 @@ public class DatabaseInitializationSettings {
 	 * Returns the encoding to use when reading the schema and data scripts.
 	 * @return the script encoding
 	 */
-	public Charset getEncoding() {
+	public @Nullable Charset getEncoding() {
 		return this.encoding;
 	}
 
@@ -121,7 +123,7 @@ public class DatabaseInitializationSettings {
 	 * Sets the encoding to use when reading the schema and data scripts.
 	 * @param encoding encoding to use when reading the schema and data scripts
 	 */
-	public void setEncoding(Charset encoding) {
+	public void setEncoding(@Nullable Charset encoding) {
 		this.encoding = encoding;
 	}
 

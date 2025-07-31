@@ -19,6 +19,8 @@ package org.springframework.boot.sql.autoconfigure.init;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
@@ -35,12 +37,12 @@ public class SqlInitializationProperties {
 	/**
 	 * Locations of the schema (DDL) scripts to apply to the database.
 	 */
-	private List<String> schemaLocations;
+	private @Nullable List<String> schemaLocations;
 
 	/**
 	 * Locations of the data (DML) scripts to apply to the database.
 	 */
-	private List<String> dataLocations;
+	private @Nullable List<String> dataLocations;
 
 	/**
 	 * Platform to use in the default schema or data script locations,
@@ -52,13 +54,13 @@ public class SqlInitializationProperties {
 	 * Username of the database to use when applying initialization scripts (if
 	 * different).
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Password of the database to use when applying initialization scripts (if
 	 * different).
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Whether initialization should continue when an error occurs.
@@ -73,26 +75,26 @@ public class SqlInitializationProperties {
 	/**
 	 * Encoding of the schema and data scripts.
 	 */
-	private Charset encoding;
+	private @Nullable Charset encoding;
 
 	/**
 	 * Mode to apply when determining whether initialization should be performed.
 	 */
 	private DatabaseInitializationMode mode = DatabaseInitializationMode.EMBEDDED;
 
-	public List<String> getSchemaLocations() {
+	public @Nullable List<String> getSchemaLocations() {
 		return this.schemaLocations;
 	}
 
-	public void setSchemaLocations(List<String> schemaLocations) {
+	public void setSchemaLocations(@Nullable List<String> schemaLocations) {
 		this.schemaLocations = schemaLocations;
 	}
 
-	public List<String> getDataLocations() {
+	public @Nullable List<String> getDataLocations() {
 		return this.dataLocations;
 	}
 
-	public void setDataLocations(List<String> dataLocations) {
+	public void setDataLocations(@Nullable List<String> dataLocations) {
 		this.dataLocations = dataLocations;
 	}
 
@@ -104,19 +106,19 @@ public class SqlInitializationProperties {
 		this.platform = platform;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
@@ -136,11 +138,11 @@ public class SqlInitializationProperties {
 		this.separator = separator;
 	}
 
-	public Charset getEncoding() {
+	public @Nullable Charset getEncoding() {
 		return this.encoding;
 	}
 
-	public void setEncoding(Charset encoding) {
+	public void setEncoding(@Nullable Charset encoding) {
 		this.encoding = encoding;
 	}
 

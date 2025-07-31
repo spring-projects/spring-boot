@@ -18,6 +18,8 @@ package org.springframework.boot.sql.autoconfigure.init;
 
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -68,7 +70,8 @@ public abstract class OnDatabaseInitializationCondition extends SpringBootCondit
 		return !mode.equals(DatabaseInitializationMode.NEVER);
 	}
 
-	private DatabaseInitializationMode getDatabaseInitializationMode(Environment environment, String propertyName) {
+	private DatabaseInitializationMode getDatabaseInitializationMode(Environment environment,
+			@Nullable String propertyName) {
 		if (StringUtils.hasText(propertyName)) {
 			String candidate = environment.getProperty(propertyName, "embedded").toUpperCase(Locale.ENGLISH);
 			if (StringUtils.hasText(candidate)) {
@@ -78,7 +81,7 @@ public abstract class OnDatabaseInitializationCondition extends SpringBootCondit
 		return DatabaseInitializationMode.EMBEDDED;
 	}
 
-	private String getConfiguredProperty(Environment environment) {
+	private @Nullable String getConfiguredProperty(Environment environment) {
 		for (String propertyName : this.propertyNames) {
 			if (environment.containsProperty(propertyName)) {
 				return propertyName;
