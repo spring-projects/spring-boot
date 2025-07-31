@@ -44,7 +44,7 @@ jobs:
         uses: ./.github/actions/send-notification
         with:
           build-scan-url: ${{ steps.build-and-publish.outputs.build-scan-url }}
-          run-name: ${{ format('{0} | Linux | Java 17', github.ref_name) }}
+          run-name: ${{ format('{0} | Linux | Java 24', github.ref_name) }}
           status: ${{ job.status }}
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
     outputs:
