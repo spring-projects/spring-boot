@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
@@ -81,7 +82,7 @@ class DataSourceJmxConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "dataSourceMBean")
-		Object dataSourceMBean(DataSource dataSource) {
+		@Nullable Object dataSourceMBean(DataSource dataSource) {
 			DataSourceProxy dataSourceProxy = DataSourceUnwrapper.unwrap(dataSource, PoolConfiguration.class,
 					DataSourceProxy.class);
 			if (dataSourceProxy != null) {

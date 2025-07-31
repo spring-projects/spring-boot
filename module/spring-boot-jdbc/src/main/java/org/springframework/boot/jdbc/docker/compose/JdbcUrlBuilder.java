@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jdbc.docker.compose;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -61,11 +63,11 @@ class JdbcUrlBuilder {
 	 * @param database the database to connect to
 	 * @return a new JDBC URL
 	 */
-	String build(RunningService service, String database) {
+	String build(RunningService service, @Nullable String database) {
 		return urlFor(service, database);
 	}
 
-	private String urlFor(RunningService service, String database) {
+	private String urlFor(RunningService service, @Nullable String database) {
 		Assert.notNull(service, "'service' must not be null");
 		StringBuilder url = new StringBuilder("jdbc:%s://%s:%d".formatted(this.driverProtocol, service.host(),
 				service.ports().get(this.containerPort)));
@@ -91,7 +93,7 @@ class JdbcUrlBuilder {
 		url.append("?").append(parameters);
 	}
 
-	private String getParameters(RunningService service) {
+	private @Nullable String getParameters(RunningService service) {
 		return service.labels().get(PARAMETERS_LABEL);
 	}
 

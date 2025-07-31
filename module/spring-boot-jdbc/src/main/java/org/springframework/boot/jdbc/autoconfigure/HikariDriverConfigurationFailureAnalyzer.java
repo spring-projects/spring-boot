@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jdbc.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
@@ -31,7 +33,7 @@ class HikariDriverConfigurationFailureAnalyzer extends AbstractFailureAnalyzer<C
 	private static final String EXPECTED_MESSAGE = "cannot use driverClassName and dataSourceClassName together.";
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure, CannotGetJdbcConnectionException cause) {
+	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, CannotGetJdbcConnectionException cause) {
 		Throwable subCause = cause.getCause();
 		if (subCause == null || !EXPECTED_MESSAGE.equals(subCause.getMessage())) {
 			return null;

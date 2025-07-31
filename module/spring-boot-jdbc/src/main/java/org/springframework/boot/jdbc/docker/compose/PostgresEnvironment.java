@@ -18,6 +18,8 @@ package org.springframework.boot.jdbc.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -43,7 +45,7 @@ class PostgresEnvironment {
 
 	private final String username;
 
-	private final String password;
+	private final @Nullable String password;
 
 	private final String database;
 
@@ -62,7 +64,7 @@ class PostgresEnvironment {
 		return defaultValue;
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	private @Nullable String extractPassword(Map<String, String> env) {
 		if (isUsingTrustHostAuthMethod(env)) {
 			return null;
 		}
@@ -81,7 +83,7 @@ class PostgresEnvironment {
 		return this.username;
 	}
 
-	String getPassword() {
+	@Nullable String getPassword() {
 		return this.password;
 	}
 

@@ -16,8 +16,11 @@
 
 package org.springframework.boot.jdbc.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.util.Assert;
 
 /**
  * Details required to establish a connection to an SQL service using JDBC.
@@ -33,13 +36,13 @@ public interface JdbcConnectionDetails extends ConnectionDetails {
 	 * Username for the database.
 	 * @return the username for the database
 	 */
-	String getUsername();
+	@Nullable String getUsername();
 
 	/**
 	 * Password for the database.
 	 * @return the password for the database
 	 */
-	String getPassword();
+	@Nullable String getPassword();
 
 	/**
 	 * JDBC url for the database.
@@ -56,7 +59,9 @@ public interface JdbcConnectionDetails extends ConnectionDetails {
 	 * @see DatabaseDriver#getDriverClassName()
 	 */
 	default String getDriverClassName() {
-		return DatabaseDriver.fromJdbcUrl(getJdbcUrl()).getDriverClassName();
+		String driverClassName = DatabaseDriver.fromJdbcUrl(getJdbcUrl()).getDriverClassName();
+		Assert.state(driverClassName != null, "'driverClassName' must not be null");
+		return driverClassName;
 	}
 
 	/**
@@ -67,7 +72,7 @@ public interface JdbcConnectionDetails extends ConnectionDetails {
 	 * @see DatabaseDriver#fromJdbcUrl(String)
 	 * @see DatabaseDriver#getXaDataSourceClassName()
 	 */
-	default String getXaDataSourceClassName() {
+	default @Nullable String getXaDataSourceClassName() {
 		return DatabaseDriver.fromJdbcUrl(getJdbcUrl()).getXaDataSourceClassName();
 	}
 

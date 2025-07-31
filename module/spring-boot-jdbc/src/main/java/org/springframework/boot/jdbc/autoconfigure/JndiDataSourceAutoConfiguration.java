@@ -30,6 +30,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.support.JmxUtils;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for a JNDI located
@@ -49,7 +50,9 @@ public final class JndiDataSourceAutoConfiguration {
 	@ConditionalOnMissingBean
 	DataSource dataSource(DataSourceProperties properties, ApplicationContext context) {
 		JndiDataSourceLookup dataSourceLookup = new JndiDataSourceLookup();
-		DataSource dataSource = dataSourceLookup.getDataSource(properties.getJndiName());
+		String jndiName = properties.getJndiName();
+		Assert.state(jndiName != null, "'jndiName' must not be null");
+		DataSource dataSource = dataSourceLookup.getDataSource(jndiName);
 		excludeMBeanIfNecessary(dataSource, "dataSource", context);
 		return dataSource;
 	}

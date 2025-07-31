@@ -22,6 +22,8 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,6 +49,7 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties("spring.datasource")
 public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader classLoader;
 
 	/**
@@ -58,49 +61,50 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Datasource name to use if "generate-unique-name" is false. Defaults to "testdb"
 	 * when using an embedded database, otherwise null.
 	 */
-	private String name;
+	private @Nullable String name;
 
 	/**
 	 * Fully qualified name of the DataSource implementation to use. By default, a
 	 * connection pool implementation is auto-detected from the classpath.
 	 */
-	private Class<? extends DataSource> type;
+	private @Nullable Class<? extends DataSource> type;
 
 	/**
 	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
 	 */
-	private String driverClassName;
+	private @Nullable String driverClassName;
 
 	/**
 	 * JDBC URL of the database.
 	 */
-	private String url;
+	private @Nullable String url;
 
 	/**
 	 * Login username of the database.
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Login password of the database.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * JNDI location of the datasource. Class, url, username and password are ignored when
 	 * set.
 	 */
-	private String jndiName;
+	private @Nullable String jndiName;
 
 	/**
 	 * Connection details for an embedded database. Defaults to the most suitable embedded
 	 * database that is available on the classpath.
 	 */
+	@SuppressWarnings("NullAway.Init")
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection;
 
 	private Xa xa = new Xa();
 
-	private String uniqueName;
+	private @Nullable String uniqueName;
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -136,19 +140,19 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		this.generateUniqueName = generateUniqueName;
 	}
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 
-	public Class<? extends DataSource> getType() {
+	public @Nullable Class<? extends DataSource> getType() {
 		return this.type;
 	}
 
-	public void setType(Class<? extends DataSource> type) {
+	public void setType(@Nullable Class<? extends DataSource> type) {
 		this.type = type;
 	}
 
@@ -157,11 +161,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * @return the configured driver
 	 * @see #determineDriverClassName()
 	 */
-	public String getDriverClassName() {
+	public @Nullable String getDriverClassName() {
 		return this.driverClassName;
 	}
 
-	public void setDriverClassName(String driverClassName) {
+	public void setDriverClassName(@Nullable String driverClassName) {
 		this.driverClassName = driverClassName;
 	}
 
@@ -178,9 +182,10 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		return driverClassName;
 	}
 
-	String findDriverClassName() {
+	@Nullable String findDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
-			Assert.state(driverClassIsLoadable(), () -> "Cannot load driver class: " + this.driverClassName);
+			Assert.state(driverClassIsLoadable(this.driverClassName),
+					() -> "Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
 		String driverClassName = null;
@@ -193,9 +198,9 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		return driverClassName;
 	}
 
-	private boolean driverClassIsLoadable() {
+	private boolean driverClassIsLoadable(String driverClassName) {
 		try {
-			ClassUtils.forName(this.driverClassName, null);
+			ClassUtils.forName(driverClassName, null);
 			return true;
 		}
 		catch (UnsupportedClassVersionError ex) {
@@ -212,11 +217,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * @return the configured url
 	 * @see #determineUrl()
 	 */
-	public String getUrl() {
+	public @Nullable String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(@Nullable String url) {
 		this.url = url;
 	}
 
@@ -241,7 +246,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Determine the name to used based on this configuration.
 	 * @return the database name to use or {@code null}
 	 */
-	public String determineDatabaseName() {
+	public @Nullable String determineDatabaseName() {
 		if (this.generateUniqueName) {
 			if (this.uniqueName == null) {
 				this.uniqueName = UUID.randomUUID().toString();
@@ -262,11 +267,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * @return the configured username
 	 * @see #determineUsername()
 	 */
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
@@ -274,7 +279,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Determine the username to use based on this configuration and the environment.
 	 * @return the username to use
 	 */
-	public String determineUsername() {
+	public @Nullable String determineUsername() {
 		if (StringUtils.hasText(this.username)) {
 			return this.username;
 		}
@@ -289,11 +294,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * @return the configured password
 	 * @see #determinePassword()
 	 */
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
@@ -301,7 +306,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * Determine the password to use based on this configuration and the environment.
 	 * @return the password to use
 	 */
-	public String determinePassword() {
+	public @Nullable String determinePassword() {
 		if (StringUtils.hasText(this.password)) {
 			return this.password;
 		}
@@ -311,7 +316,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		return null;
 	}
 
-	public String getJndiName() {
+	public @Nullable String getJndiName() {
 		return this.jndiName;
 	}
 
@@ -321,7 +326,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * will be ignored when using JNDI lookups.
 	 * @param jndiName the JNDI name
 	 */
-	public void setJndiName(String jndiName) {
+	public void setJndiName(@Nullable String jndiName) {
 		this.jndiName = jndiName;
 	}
 
@@ -353,18 +358,18 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		/**
 		 * XA datasource fully qualified name.
 		 */
-		private String dataSourceClassName;
+		private @Nullable String dataSourceClassName;
 
 		/**
 		 * Properties to pass to the XA data source.
 		 */
 		private Map<String, String> properties = new LinkedHashMap<>();
 
-		public String getDataSourceClassName() {
+		public @Nullable String getDataSourceClassName() {
 			return this.dataSourceClassName;
 		}
 
-		public void setDataSourceClassName(String dataSourceClassName) {
+		public void setDataSourceClassName(@Nullable String dataSourceClassName) {
 			this.dataSourceClassName = dataSourceClassName;
 		}
 

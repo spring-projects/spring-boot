@@ -24,6 +24,8 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
@@ -64,15 +66,15 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	HSQLDB("org.hsqldb.jdbcDriver", "jdbc:hsqldb:mem:%s");
 
-	private final String alternativeDriverClass;
+	private final @Nullable String alternativeDriverClass;
 
-	private final String url;
+	private final @Nullable String url;
 
-	EmbeddedDatabaseConnection(String url) {
+	EmbeddedDatabaseConnection(@Nullable String url) {
 		this(null, url);
 	}
 
-	EmbeddedDatabaseConnection(String fallbackDriverClass, String url) {
+	EmbeddedDatabaseConnection(@Nullable String fallbackDriverClass, @Nullable String url) {
 		this.alternativeDriverClass = fallbackDriverClass;
 		this.url = url;
 	}
@@ -81,7 +83,7 @@ public enum EmbeddedDatabaseConnection {
 	 * Returns the driver class name.
 	 * @return the driver class name
 	 */
-	public String getDriverClassName() {
+	public @Nullable String getDriverClassName() {
 		// See https://github.com/spring-projects/spring-boot/issues/32865
 		return switch (this) {
 			case NONE -> null;
@@ -95,7 +97,7 @@ public enum EmbeddedDatabaseConnection {
 	 * Returns the {@link EmbeddedDatabaseType} for the connection.
 	 * @return the database type
 	 */
-	public EmbeddedDatabaseType getType() {
+	public @Nullable EmbeddedDatabaseType getType() {
 		// See https://github.com/spring-projects/spring-boot/issues/32865
 		return switch (this) {
 			case NONE -> null;
@@ -110,7 +112,7 @@ public enum EmbeddedDatabaseConnection {
 	 * @param databaseName the name of the database
 	 * @return the connection URL
 	 */
-	public String getUrl(String databaseName) {
+	public @Nullable String getUrl(String databaseName) {
 		Assert.hasText(databaseName, "'databaseName' must not be empty");
 		return (this.url != null) ? String.format(this.url, databaseName) : null;
 	}
@@ -125,7 +127,7 @@ public enum EmbeddedDatabaseConnection {
 		};
 	}
 
-	boolean isDriverCompatible(String driverClass) {
+	boolean isDriverCompatible(@Nullable String driverClass) {
 		return (driverClass != null
 				&& (driverClass.equals(getDriverClassName()) || driverClass.equals(this.alternativeDriverClass)));
 	}
@@ -138,7 +140,7 @@ public enum EmbeddedDatabaseConnection {
 	 * @return true if the driver class and url refer to an embedded database
 	 * @since 2.4.0
 	 */
-	public static boolean isEmbedded(String driverClass, String url) {
+	public static boolean isEmbedded(@Nullable String driverClass, @Nullable String url) {
 		if (driverClass == null) {
 			return false;
 		}
@@ -178,9 +180,14 @@ public enum EmbeddedDatabaseConnection {
 	 * @param classLoader the class loader used to check for classes
 	 * @return an {@link EmbeddedDatabaseConnection} or {@link #NONE}.
 	 */
-	public static EmbeddedDatabaseConnection get(ClassLoader classLoader) {
+	public static EmbeddedDatabaseConnection get(@Nullable ClassLoader classLoader) {
 		for (EmbeddedDatabaseConnection candidate : EmbeddedDatabaseConnection.values()) {
-			if (candidate != NONE && ClassUtils.isPresent(candidate.getDriverClassName(), classLoader)) {
+			if (candidate == NONE) {
+				continue;
+			}
+			String driverClassName = candidate.getDriverClassName();
+			Assert.state(driverClassName != null, "'driverClassName' must not be null");
+			if (ClassUtils.isPresent(driverClassName, classLoader)) {
 				return candidate;
 			}
 		}
@@ -202,7 +209,12 @@ public enum EmbeddedDatabaseConnection {
 			productName = productName.toUpperCase(Locale.ENGLISH);
 			EmbeddedDatabaseConnection[] candidates = EmbeddedDatabaseConnection.values();
 			for (EmbeddedDatabaseConnection candidate : candidates) {
-				if (candidate != NONE && productName.contains(candidate.getType().name())) {
+				if (candidate == NONE) {
+					continue;
+				}
+				EmbeddedDatabaseType type = candidate.getType();
+				Assert.state(type != null, "'type' must not be null");
+				if (productName.contains(type.name())) {
 					String url = metaData.getURL();
 					return (url == null || candidate.isEmbeddedUrl(url));
 				}

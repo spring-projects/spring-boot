@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -233,23 +235,25 @@ public enum DatabaseDriver {
 
 	};
 
-	private final String productName;
+	private final @Nullable String productName;
 
-	private final String driverClassName;
+	private final @Nullable String driverClassName;
 
-	private final String xaDataSourceClassName;
+	private final @Nullable String xaDataSourceClassName;
 
-	private final String validationQuery;
+	private final @Nullable String validationQuery;
 
-	DatabaseDriver(String productName, String driverClassName) {
+	DatabaseDriver(@Nullable String productName, @Nullable String driverClassName) {
 		this(productName, driverClassName, null);
 	}
 
-	DatabaseDriver(String productName, String driverClassName, String xaDataSourceClassName) {
+	DatabaseDriver(@Nullable String productName, @Nullable String driverClassName,
+			@Nullable String xaDataSourceClassName) {
 		this(productName, driverClassName, xaDataSourceClassName, null);
 	}
 
-	DatabaseDriver(String productName, String driverClassName, String xaDataSourceClassName, String validationQuery) {
+	DatabaseDriver(@Nullable String productName, @Nullable String driverClassName,
+			@Nullable String xaDataSourceClassName, @Nullable String validationQuery) {
 		this.productName = productName;
 		this.driverClassName = driverClassName;
 		this.xaDataSourceClassName = xaDataSourceClassName;
@@ -280,7 +284,7 @@ public enum DatabaseDriver {
 	 * Return the driver class name.
 	 * @return the class name or {@code null}
 	 */
-	public String getDriverClassName() {
+	public @Nullable String getDriverClassName() {
 		return this.driverClassName;
 	}
 
@@ -288,7 +292,7 @@ public enum DatabaseDriver {
 	 * Return the XA driver source class name.
 	 * @return the class name or {@code null}
 	 */
-	public String getXaDataSourceClassName() {
+	public @Nullable String getXaDataSourceClassName() {
 		return this.xaDataSourceClassName;
 	}
 
@@ -296,7 +300,7 @@ public enum DatabaseDriver {
 	 * Return the validation query.
 	 * @return the validation query or {@code null}
 	 */
-	public String getValidationQuery() {
+	public @Nullable String getValidationQuery() {
 		return this.validationQuery;
 	}
 
@@ -305,7 +309,7 @@ public enum DatabaseDriver {
 	 * @param url the JDBC URL
 	 * @return the database driver or {@link #UNKNOWN} if not found
 	 */
-	public static DatabaseDriver fromJdbcUrl(String url) {
+	public static DatabaseDriver fromJdbcUrl(@Nullable String url) {
 		if (StringUtils.hasLength(url)) {
 			Assert.isTrue(url.startsWith("jdbc"), "'url' must start with \"jdbc\"");
 			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase(Locale.ENGLISH);
@@ -326,7 +330,7 @@ public enum DatabaseDriver {
 	 * @param productName product name
 	 * @return the database driver or {@link #UNKNOWN} if not found
 	 */
-	public static DatabaseDriver fromProductName(String productName) {
+	public static DatabaseDriver fromProductName(@Nullable String productName) {
 		if (StringUtils.hasLength(productName)) {
 			for (DatabaseDriver candidate : values()) {
 				if (candidate.matchProductName(productName)) {

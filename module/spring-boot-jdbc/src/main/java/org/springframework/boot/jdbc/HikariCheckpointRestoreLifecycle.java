@@ -33,6 +33,7 @@ import com.zaxxer.hikari.HikariPoolMXBean;
 import com.zaxxer.hikari.pool.HikariPool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;
@@ -71,7 +72,7 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	private final Function<HikariPool, Boolean> hasOpenConnections;
 
-	private final HikariDataSource dataSource;
+	private final @Nullable HikariDataSource dataSource;
 
 	private final ConfigurableApplicationContext applicationContext;
 
@@ -123,15 +124,16 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 						+ "Please configure allow-pool-suspension to fix this!");
 			}
 		}
-		closeConnections(Duration.ofMillis(this.dataSource.getConnectionTimeout() + 250));
+		closeConnections(this.dataSource, Duration.ofMillis(this.dataSource.getConnectionTimeout() + 250));
 	}
 
-	private void closeConnections(Duration shutdownTimeout) {
+	private void closeConnections(HikariDataSource dataSource, Duration shutdownTimeout) {
 		logger.info("Evicting Hikari connections");
-		this.dataSource.getHikariPoolMXBean().softEvictConnections();
+		dataSource.getHikariPoolMXBean().softEvictConnections();
 		logger.debug(LogMessage.format("Waiting %d seconds for Hikari connections to be closed",
 				shutdownTimeout.toSeconds()));
-		CompletableFuture<Void> allConnectionsClosed = CompletableFuture.runAsync(this::waitForConnectionsToClose);
+		CompletableFuture<Void> allConnectionsClosed = CompletableFuture
+			.runAsync(() -> this.waitForConnectionsToClose(dataSource));
 		try {
 			allConnectionsClosed.get(shutdownTimeout.toMillis(), TimeUnit.MILLISECONDS);
 			logger.debug("Hikari connections closed");
@@ -148,8 +150,8 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 		}
 	}
 
-	private void waitForConnectionsToClose() {
-		while (this.hasOpenConnections.apply((HikariPool) this.dataSource.getHikariPoolMXBean())) {
+	private void waitForConnectionsToClose(HikariDataSource dataSource) {
+		while (this.hasOpenConnections.apply((HikariPool) dataSource.getHikariPoolMXBean())) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(50);
 			}

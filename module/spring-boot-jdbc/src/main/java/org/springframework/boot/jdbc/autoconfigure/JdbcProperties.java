@@ -19,6 +19,8 @@ package org.springframework.boot.jdbc.autoconfigure;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
@@ -65,7 +67,7 @@ public class JdbcProperties {
 		 * duration suffix is not specified, seconds will be used.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration queryTimeout;
+		private @Nullable Duration queryTimeout;
 
 		/**
 		 * Whether results processing should be skipped. Can be used to optimize callable
@@ -108,11 +110,11 @@ public class JdbcProperties {
 			this.maxRows = maxRows;
 		}
 
-		public Duration getQueryTimeout() {
+		public @Nullable Duration getQueryTimeout() {
 			return this.queryTimeout;
 		}
 
-		public void setQueryTimeout(Duration queryTimeout) {
+		public void setQueryTimeout(@Nullable Duration queryTimeout) {
 			this.queryTimeout = queryTimeout;
 		}
 

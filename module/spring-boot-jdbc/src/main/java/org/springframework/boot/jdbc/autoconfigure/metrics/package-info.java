@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for JDBC metrics.
  */
+@NullMarked
 package org.springframework.boot.jdbc.autoconfigure.metrics;
+
+import org.jspecify.annotations.NullMarked;

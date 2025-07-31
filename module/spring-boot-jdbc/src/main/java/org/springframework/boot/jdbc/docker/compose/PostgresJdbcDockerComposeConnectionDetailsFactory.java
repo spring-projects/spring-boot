@@ -19,6 +19,8 @@ package org.springframework.boot.jdbc.docker.compose;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -74,7 +76,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.environment.getPassword();
 		}
 
