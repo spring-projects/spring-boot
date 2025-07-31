@@ -16,6 +16,9 @@
 
 package org.springframework.boot.test.graphql.tester;
 
+import jakarta.servlet.ServletContext;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -41,6 +44,7 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -59,6 +63,7 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(mergedConfig.getTestClass(),
 				SpringBootTest.class);
+		Assert.state(springBootTest != null, "'springBootTest' must not be null");
 		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerHttpGraphQlTester(context);
 		}
@@ -78,7 +83,7 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return (obj != null) && (obj.getClass() == getClass());
 	}
 
@@ -89,6 +94,7 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 	static class HttpGraphQlTesterRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
+		@SuppressWarnings("NullAway.Init")
 		private BeanFactory beanFactory;
 
 		@Override
@@ -126,9 +132,10 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 		private static final String REACTIVE_APPLICATION_CONTEXT_CLASS = "org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext";
 
+		@SuppressWarnings("NullAway.Init")
 		private ApplicationContext applicationContext;
 
-		private HttpGraphQlTester object;
+		private @Nullable HttpGraphQlTester object;
 
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -183,7 +190,9 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 			}
 			else if (webApplicationType == WebApplicationType.SERVLET) {
-				serverBasePath = ((WebApplicationContext) this.applicationContext).getServletContext().getContextPath();
+				ServletContext servletContext = ((WebApplicationContext) this.applicationContext).getServletContext();
+				Assert.state(servletContext != null, "'servletContext' must not be null");
+				serverBasePath = servletContext.getContextPath();
 			}
 			return (serverBasePath != null) ? serverBasePath : "";
 		}

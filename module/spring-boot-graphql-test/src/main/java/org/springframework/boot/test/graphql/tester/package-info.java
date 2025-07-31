@@ -17,4 +17,7 @@
 /**
  * {@link org.springframework.graphql.test.tester.GraphQlTester} utilities.
  */
+@NullMarked
 package org.springframework.boot.test.graphql.tester;
+
+import org.jspecify.annotations.NullMarked;

@@ -18,6 +18,8 @@ package org.springframework.boot.test.graphql.tester;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -39,7 +41,7 @@ class HttpGraphQlTesterContextCustomizerFactory implements ContextCustomizerFact
 	private static final String WEBTESTCLIENT_CLASS = "org.springframework.test.web.reactive.server.WebTestClient";
 
 	@Override
-	public ContextCustomizer createContextCustomizer(Class<?> testClass,
+	public @Nullable ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class);
