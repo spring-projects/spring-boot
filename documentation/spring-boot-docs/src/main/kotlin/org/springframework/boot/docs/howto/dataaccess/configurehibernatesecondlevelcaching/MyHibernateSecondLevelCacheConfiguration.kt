@@ -28,7 +28,10 @@ class MyHibernateSecondLevelCacheConfiguration {
 	@Bean
 	fun hibernateSecondLevelCacheCustomizer(cacheManager: JCacheCacheManager): HibernatePropertiesCustomizer {
 		return HibernatePropertiesCustomizer { properties ->
-			properties[ConfigSettings.CACHE_MANAGER] = cacheManager.cacheManager
+			val cacheManager = cacheManager.cacheManager
+			if (cacheManager != null) {
+				properties[ConfigSettings.CACHE_MANAGER] = cacheManager
+			}
 		}
 	}
 

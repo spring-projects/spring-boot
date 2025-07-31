@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Settings to apply when configuring Hibernate.
  *
@@ -28,16 +30,16 @@ import java.util.function.Supplier;
  */
 public class HibernateSettings {
 
-	private Supplier<String> ddlAuto;
+	private @Nullable Supplier<String> ddlAuto;
 
-	private Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
+	private @Nullable Collection<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
-	public HibernateSettings ddlAuto(Supplier<String> ddlAuto) {
+	public HibernateSettings ddlAuto(@Nullable Supplier<String> ddlAuto) {
 		this.ddlAuto = ddlAuto;
 		return this;
 	}
 
-	public String getDdlAuto() {
+	public @Nullable String getDdlAuto() {
 		return (this.ddlAuto != null) ? this.ddlAuto.get() : null;
 	}
 
@@ -47,7 +49,7 @@ public class HibernateSettings {
 		return this;
 	}
 
-	public Collection<HibernatePropertiesCustomizer> getHibernatePropertiesCustomizers() {
+	public @Nullable Collection<HibernatePropertiesCustomizer> getHibernatePropertiesCustomizers() {
 		return this.hibernatePropertiesCustomizers;
 	}
 

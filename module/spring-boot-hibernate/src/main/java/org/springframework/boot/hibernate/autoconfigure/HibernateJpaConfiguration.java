@@ -33,6 +33,7 @@ import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategySnakeCaseImpl;
 import org.hibernate.cfg.ManagedBeanSettings;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -122,8 +123,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
-			PhysicalNamingStrategy physicalNamingStrategy, ImplicitNamingStrategy implicitNamingStrategy,
-			ConfigurableListableBeanFactory beanFactory,
+			@Nullable PhysicalNamingStrategy physicalNamingStrategy,
+			@Nullable ImplicitNamingStrategy implicitNamingStrategy, ConfigurableListableBeanFactory beanFactory,
 			List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers) {
 		List<HibernatePropertiesCustomizer> customizers = new ArrayList<>();
 		if (ClassUtils.isPresent("org.hibernate.resource.beans.container.spi.BeanContainer",
@@ -237,12 +238,12 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private static class NamingStrategiesHibernatePropertiesCustomizer implements HibernatePropertiesCustomizer {
 
-		private final PhysicalNamingStrategy physicalNamingStrategy;
+		private final @Nullable PhysicalNamingStrategy physicalNamingStrategy;
 
-		private final ImplicitNamingStrategy implicitNamingStrategy;
+		private final @Nullable ImplicitNamingStrategy implicitNamingStrategy;
 
-		NamingStrategiesHibernatePropertiesCustomizer(PhysicalNamingStrategy physicalNamingStrategy,
-				ImplicitNamingStrategy implicitNamingStrategy) {
+		NamingStrategiesHibernatePropertiesCustomizer(@Nullable PhysicalNamingStrategy physicalNamingStrategy,
+				@Nullable ImplicitNamingStrategy implicitNamingStrategy) {
 			this.physicalNamingStrategy = physicalNamingStrategy;
 			this.implicitNamingStrategy = implicitNamingStrategy;
 		}
@@ -265,7 +266,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 			.builtWith(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			for (String noJtaPlatformClass : NO_JTA_PLATFORM_CLASSES) {
 				hints.reflection().registerType(TypeReference.of(noJtaPlatformClass), INVOKE_DECLARED_CONSTRUCTORS);
 			}

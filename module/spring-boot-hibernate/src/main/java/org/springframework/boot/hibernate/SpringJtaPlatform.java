@@ -44,11 +44,13 @@ public class SpringJtaPlatform extends AbstractJtaPlatform {
 	}
 
 	@Override
+	@SuppressWarnings("NullAway") // TODO: Not sure about returning nullness here
 	protected TransactionManager locateTransactionManager() {
 		return this.transactionManager.getTransactionManager();
 	}
 
 	@Override
+	@SuppressWarnings("NullAway") // TODO: Not sure about returning nullness here
 	protected UserTransaction locateUserTransaction() {
 		return this.transactionManager.getUserTransaction();
 	}

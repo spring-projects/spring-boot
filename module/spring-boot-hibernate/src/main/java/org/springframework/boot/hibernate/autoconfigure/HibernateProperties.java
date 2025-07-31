@@ -25,6 +25,7 @@ import org.hibernate.boot.model.naming.PhysicalNamingStrategySnakeCaseImpl;
 import org.hibernate.cfg.MappingSettings;
 import org.hibernate.cfg.PersistenceSettings;
 import org.hibernate.cfg.SchemaToolingSettings;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.hibernate.SpringImplicitNamingStrategy;
@@ -54,13 +55,13 @@ public class HibernateProperties {
 	 * Defaults to "create-drop" when using an embedded database and no schema manager was
 	 * detected. Otherwise, defaults to "none".
 	 */
-	private String ddlAuto;
+	private @Nullable String ddlAuto;
 
-	public String getDdlAuto() {
+	public @Nullable String getDdlAuto() {
 		return this.ddlAuto;
 	}
 
-	public void setDdlAuto(String ddlAuto) {
+	public void setDdlAuto(@Nullable String ddlAuto) {
 		this.ddlAuto = ddlAuto;
 	}
 
@@ -107,7 +108,7 @@ public class HibernateProperties {
 		}
 	}
 
-	private String determineDdlAuto(Map<String, String> existing, Supplier<String> defaultDdlAuto) {
+	private @Nullable String determineDdlAuto(Map<String, String> existing, Supplier<@Nullable String> defaultDdlAuto) {
 		String ddlAuto = existing.get(SchemaToolingSettings.HBM2DDL_AUTO);
 		if (ddlAuto != null) {
 			return ddlAuto;
@@ -126,26 +127,26 @@ public class HibernateProperties {
 		/**
 		 * Fully qualified name of the implicit naming strategy.
 		 */
-		private String implicitStrategy;
+		private @Nullable String implicitStrategy;
 
 		/**
 		 * Fully qualified name of the physical naming strategy.
 		 */
-		private String physicalStrategy;
+		private @Nullable String physicalStrategy;
 
-		public String getImplicitStrategy() {
+		public @Nullable String getImplicitStrategy() {
 			return this.implicitStrategy;
 		}
 
-		public void setImplicitStrategy(String implicitStrategy) {
+		public void setImplicitStrategy(@Nullable String implicitStrategy) {
 			this.implicitStrategy = implicitStrategy;
 		}
 
-		public String getPhysicalStrategy() {
+		public @Nullable String getPhysicalStrategy() {
 			return this.physicalStrategy;
 		}
 
-		public void setPhysicalStrategy(String physicalStrategy) {
+		public void setPhysicalStrategy(@Nullable String physicalStrategy) {
 			this.physicalStrategy = physicalStrategy;
 		}
 
@@ -156,7 +157,7 @@ public class HibernateProperties {
 					PhysicalNamingStrategySnakeCaseImpl.class::getName);
 		}
 
-		private void applyNamingStrategy(Map<String, Object> properties, String key, Object strategy,
+		private void applyNamingStrategy(Map<String, Object> properties, String key, @Nullable Object strategy,
 				Supplier<String> defaultStrategy) {
 			if (strategy != null) {
 				properties.put(key, strategy);
