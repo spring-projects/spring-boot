@@ -19,6 +19,8 @@ package org.springframework.boot.graphql.autoconfigure;
 import java.time.Duration;
 import java.util.Arrays;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 
@@ -239,7 +241,7 @@ public class GraphQlProperties {
 		/**
 		 * Path of the GraphQL WebSocket subscription endpoint.
 		 */
-		private String path;
+		private @Nullable String path;
 
 		/**
 		 * Time within which the initial {@code CONNECTION_INIT} type message must be
@@ -250,13 +252,13 @@ public class GraphQlProperties {
 		/**
 		 * Maximum idle period before a server keep-alive ping is sent to client.
 		 */
-		private Duration keepAlive;
+		private @Nullable Duration keepAlive;
 
-		public String getPath() {
+		public @Nullable String getPath() {
 			return this.path;
 		}
 
-		public void setPath(String path) {
+		public void setPath(@Nullable String path) {
 			this.path = path;
 		}
 
@@ -268,11 +270,11 @@ public class GraphQlProperties {
 			this.connectionInitTimeout = connectionInitTimeout;
 		}
 
-		public Duration getKeepAlive() {
+		public @Nullable Duration getKeepAlive() {
 			return this.keepAlive;
 		}
 
-		public void setKeepAlive(Duration keepAlive) {
+		public void setKeepAlive(@Nullable Duration keepAlive) {
 			this.keepAlive = keepAlive;
 		}
 
@@ -283,13 +285,13 @@ public class GraphQlProperties {
 		/**
 		 * Mapping of the RSocket message handler.
 		 */
-		private String mapping;
+		private @Nullable String mapping;
 
-		public String getMapping() {
+		public @Nullable String getMapping() {
 			return this.mapping;
 		}
 
-		public void setMapping(String mapping) {
+		public void setMapping(@Nullable String mapping) {
 			this.mapping = mapping;
 		}
 
@@ -300,26 +302,26 @@ public class GraphQlProperties {
 		/**
 		 * How frequently keep-alive messages should be sent.
 		 */
-		private Duration keepAlive;
+		private @Nullable Duration keepAlive;
 
 		/**
 		 * Time required for concurrent handling to complete.
 		 */
-		private Duration timeout;
+		private @Nullable Duration timeout;
 
-		public Duration getKeepAlive() {
+		public @Nullable Duration getKeepAlive() {
 			return this.keepAlive;
 		}
 
-		public void setKeepAlive(Duration keepAlive) {
+		public void setKeepAlive(@Nullable Duration keepAlive) {
 			this.keepAlive = keepAlive;
 		}
 
-		public Duration getTimeout() {
+		public @Nullable Duration getTimeout() {
 			return this.timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		public void setTimeout(@Nullable Duration timeout) {
 			this.timeout = timeout;
 		}
 

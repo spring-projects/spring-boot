@@ -28,6 +28,7 @@ import graphql.execution.instrumentation.Instrumentation;
 import graphql.introspection.Introspection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -204,7 +205,7 @@ public final class GraphQlAutoConfiguration {
 	static class GraphQlResourcesRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern("graphql/**/*.graphqls").registerPattern("graphql/**/*.gqls");
 		}
 

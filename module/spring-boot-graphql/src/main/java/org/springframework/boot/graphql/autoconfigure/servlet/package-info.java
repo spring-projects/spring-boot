@@ -17,4 +17,7 @@
 /**
  * Auto-configuration classes for MVC support in Spring GraphQL.
  */
+@NullMarked
 package org.springframework.boot.graphql.autoconfigure.servlet;
+
+import org.jspecify.annotations.NullMarked;

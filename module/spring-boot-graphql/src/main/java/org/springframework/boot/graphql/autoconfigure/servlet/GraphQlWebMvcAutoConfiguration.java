@@ -23,6 +23,7 @@ import graphql.GraphQL;
 import jakarta.websocket.server.ServerContainer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -122,7 +123,7 @@ public final class GraphQlWebMvcAutoConfiguration {
 		builder.POST(path, this::unsupportedMediaType);
 		builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
-			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
+			GraphiQlHandler graphiQLHandler = createGraphiQLHandler(properties, path);
 			builder.GET(properties.getGraphiql().getPath(), graphiQLHandler::handleRequest);
 		}
 		GraphQlSource graphQlSource = graphQlSourceProvider.getIfAvailable();
@@ -131,6 +132,12 @@ public final class GraphQlWebMvcAutoConfiguration {
 			builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
 		return builder.build();
+	}
+
+	// https://github.com/spring-projects/spring-graphql/issues/1276
+	@SuppressWarnings("NullAway")
+	private GraphiQlHandler createGraphiQLHandler(GraphQlProperties properties, String path) {
+		return new GraphiQlHandler(path, properties.getWebsocket().getPath());
 	}
 
 	private ServerResponse unsupportedMediaType(ServerRequest request) {
@@ -219,7 +226,7 @@ public final class GraphQlWebMvcAutoConfiguration {
 	static class GraphiQlResourceHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.resources().registerPattern("graphiql/index.html");
 		}
 

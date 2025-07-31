@@ -21,6 +21,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.DurationUnit;
@@ -72,7 +74,7 @@ public class GraphQlCorsProperties {
 	/**
 	 * Whether credentials are supported. When not set, credentials are not supported.
 	 */
-	private Boolean allowCredentials;
+	private @Nullable Boolean allowCredentials;
 
 	/**
 	 * How long the response from a pre-flight request can be cached by clients. If a
@@ -121,11 +123,11 @@ public class GraphQlCorsProperties {
 		this.exposedHeaders = exposedHeaders;
 	}
 
-	public Boolean getAllowCredentials() {
+	public @Nullable Boolean getAllowCredentials() {
 		return this.allowCredentials;
 	}
 
-	public void setAllowCredentials(Boolean allowCredentials) {
+	public void setAllowCredentials(@Nullable Boolean allowCredentials) {
 		this.allowCredentials = allowCredentials;
 	}
 
@@ -137,7 +139,7 @@ public class GraphQlCorsProperties {
 		this.maxAge = maxAge;
 	}
 
-	public CorsConfiguration toCorsConfiguration() {
+	public @Nullable CorsConfiguration toCorsConfiguration() {
 		if (CollectionUtils.isEmpty(this.allowedOrigins) && CollectionUtils.isEmpty(this.allowedOriginPatterns)) {
 			return null;
 		}
