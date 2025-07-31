@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.h2.server.web.JakartaWebServlet;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -118,7 +119,7 @@ public final class H2ConsoleAutoConfiguration {
 				.toList();
 		}
 
-		private String getConnectionUrl(DataSource dataSource) {
+		private @Nullable String getConnectionUrl(DataSource dataSource) {
 			try (Connection connection = dataSource.getConnection()) {
 				return "'" + connection.getMetaData().getURL() + "'";
 			}
