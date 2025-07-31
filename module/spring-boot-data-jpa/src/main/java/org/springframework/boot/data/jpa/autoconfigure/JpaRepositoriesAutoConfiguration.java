@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -91,6 +92,11 @@ public final class JpaRepositoriesAutoConfiguration {
 				builder.setBootstrapExecutor(bootstrapExecutor);
 			}
 		};
+	}
+
+	@Bean
+	static LazyInitializationExcludeFilter eagerJpaMetamodelCacheCleanup() {
+		return (name, definition, type) -> "org.springframework.data.jpa.util.JpaMetamodelCacheCleanup".equals(name);
 	}
 
 	private @Nullable AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {

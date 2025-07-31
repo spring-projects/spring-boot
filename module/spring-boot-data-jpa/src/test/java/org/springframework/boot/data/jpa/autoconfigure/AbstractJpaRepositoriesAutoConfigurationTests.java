@@ -16,9 +16,13 @@
 
 package org.springframework.boot.data.jpa.autoconfigure;
 
+import java.util.Map;
+
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.metamodel.Metamodel;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -35,8 +39,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.jpa.util.JpaMetamodel;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -131,6 +137,19 @@ abstract class AbstractJpaRepositoriesAutoConfigurationTests {
 			.run((context) -> assertThat(
 					context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
 				.isNull());
+	}
+
+	@Test
+	void whenLazyInitializationIsEnabledJpaMetamodelCacheIsClearedOnContextClose() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withBean(LazyInitializationBeanFactoryPostProcessor.class)
+			.run((context) -> assertThat(jpaMetamodelCache()).isNotEmpty());
+		assertThat(jpaMetamodelCache()).isEmpty();
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<Metamodel, JpaMetamodel> jpaMetamodelCache() {
+		return (Map<Metamodel, JpaMetamodel>) ReflectionTestUtils.getField(JpaMetamodel.class, "CACHE");
 	}
 
 	@Configuration(proxyBeanMethods = false)
