@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import jakarta.persistence.EntityManagerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -82,7 +83,7 @@ public abstract class JpaBaseConfiguration {
 
 	private final JpaProperties properties;
 
-	private final JtaTransactionManager jtaTransactionManager;
+	private final @Nullable JtaTransactionManager jtaTransactionManager;
 
 	protected JpaBaseConfiguration(DataSource dataSource, JpaProperties properties,
 			ObjectProvider<JtaTransactionManager> jtaTransactionManager) {
@@ -163,7 +164,7 @@ public abstract class JpaBaseConfiguration {
 	protected void customizeVendorProperties(Map<String, Object> vendorProperties) {
 	}
 
-	private String[] getMappingResources() {
+	private String @Nullable [] getMappingResources() {
 		List<String> mappingResources = this.properties.getMappingResources();
 		return (!ObjectUtils.isEmpty(mappingResources) ? StringUtils.toStringArray(mappingResources) : null);
 	}
@@ -172,7 +173,7 @@ public abstract class JpaBaseConfiguration {
 	 * Return the JTA transaction manager.
 	 * @return the transaction manager or {@code null}
 	 */
-	protected JtaTransactionManager getJtaTransactionManager() {
+	protected @Nullable JtaTransactionManager getJtaTransactionManager() {
 		return this.jtaTransactionManager;
 	}
 

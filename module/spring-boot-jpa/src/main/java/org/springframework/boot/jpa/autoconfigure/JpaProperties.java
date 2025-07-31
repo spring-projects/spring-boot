@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.orm.jpa.vendor.Database;
 
@@ -51,13 +53,13 @@ public class JpaProperties {
 	 * Name of the target database to operate on, auto-detected by default. Can be
 	 * alternatively set using the "Database" enum.
 	 */
-	private String databasePlatform;
+	private @Nullable String databasePlatform;
 
 	/**
 	 * Target database to operate on, auto-detected by default. Can be alternatively set
 	 * using the "databasePlatform" property.
 	 */
-	private Database database;
+	private @Nullable Database database;
 
 	/**
 	 * Whether to initialize the schema on startup.
@@ -73,7 +75,7 @@ public class JpaProperties {
 	 * Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the
 	 * thread for the entire processing of the request.
 	 */
-	private Boolean openInView;
+	private @Nullable Boolean openInView;
 
 	public Map<String, String> getProperties() {
 		return this.properties;
@@ -87,19 +89,19 @@ public class JpaProperties {
 		return this.mappingResources;
 	}
 
-	public String getDatabasePlatform() {
+	public @Nullable String getDatabasePlatform() {
 		return this.databasePlatform;
 	}
 
-	public void setDatabasePlatform(String databasePlatform) {
+	public void setDatabasePlatform(@Nullable String databasePlatform) {
 		this.databasePlatform = databasePlatform;
 	}
 
-	public Database getDatabase() {
+	public @Nullable Database getDatabase() {
 		return this.database;
 	}
 
-	public void setDatabase(Database database) {
+	public void setDatabase(@Nullable Database database) {
 		this.database = database;
 	}
 
@@ -119,11 +121,11 @@ public class JpaProperties {
 		this.showSql = showSql;
 	}
 
-	public Boolean getOpenInView() {
+	public @Nullable Boolean getOpenInView() {
 		return this.openInView;
 	}
 
-	public void setOpenInView(Boolean openInView) {
+	public void setOpenInView(@Nullable Boolean openInView) {
 		this.openInView = openInView;
 	}
 

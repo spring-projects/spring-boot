@@ -26,6 +26,8 @@ import java.util.function.Function;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -53,15 +55,15 @@ public class EntityManagerFactoryBuilder {
 
 	private final JpaVendorAdapter jpaVendorAdapter;
 
-	private final PersistenceUnitManager persistenceUnitManager;
+	private final @Nullable PersistenceUnitManager persistenceUnitManager;
 
 	private final Function<DataSource, Map<String, ?>> jpaPropertiesFactory;
 
-	private final URL persistenceUnitRootLocation;
+	private final @Nullable URL persistenceUnitRootLocation;
 
-	private AsyncTaskExecutor bootstrapExecutor;
+	private @Nullable AsyncTaskExecutor bootstrapExecutor;
 
-	private PersistenceUnitPostProcessor[] persistenceUnitPostProcessors;
+	private PersistenceUnitPostProcessor @Nullable [] persistenceUnitPostProcessors;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -74,7 +76,8 @@ public class EntityManagerFactoryBuilder {
 	 * @since 3.4.4
 	 */
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			Function<DataSource, Map<String, ?>> jpaPropertiesFactory, PersistenceUnitManager persistenceUnitManager) {
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
+			@Nullable PersistenceUnitManager persistenceUnitManager) {
 		this(jpaVendorAdapter, jpaPropertiesFactory, persistenceUnitManager, null);
 	}
 
@@ -91,8 +94,8 @@ public class EntityManagerFactoryBuilder {
 	 * @since 3.4.4
 	 */
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			Function<DataSource, Map<String, ?>> jpaPropertiesFactory, PersistenceUnitManager persistenceUnitManager,
-			URL persistenceUnitRootLocation) {
+			Function<DataSource, Map<String, ?>> jpaPropertiesFactory,
+			@Nullable PersistenceUnitManager persistenceUnitManager, @Nullable URL persistenceUnitRootLocation) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
 		this.jpaPropertiesFactory = jpaPropertiesFactory;
@@ -137,15 +140,15 @@ public class EntityManagerFactoryBuilder {
 
 		private final DataSource dataSource;
 
-		private PersistenceManagedTypes managedTypes;
+		private @Nullable PersistenceManagedTypes managedTypes;
 
-		private String[] packagesToScan;
+		private String @Nullable [] packagesToScan;
 
-		private String persistenceUnit;
+		private @Nullable String persistenceUnit;
 
 		private final Map<String, Object> properties = new HashMap<>();
 
-		private String[] mappingResources;
+		private String @Nullable [] mappingResources;
 
 		private boolean jta;
 
@@ -159,7 +162,7 @@ public class EntityManagerFactoryBuilder {
 		 * @param managedTypes managed types.
 		 * @return the builder for fluent usage
 		 */
-		public Builder managedTypes(PersistenceManagedTypes managedTypes) {
+		public Builder managedTypes(@Nullable PersistenceManagedTypes managedTypes) {
 			this.managedTypes = managedTypes;
 			return this;
 		}
@@ -170,7 +173,7 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 * @see #managedTypes(PersistenceManagedTypes)
 		 */
-		public Builder packages(String... packagesToScan) {
+		public Builder packages(String @Nullable ... packagesToScan) {
 			this.packagesToScan = packagesToScan;
 			return this;
 		}
@@ -197,7 +200,7 @@ public class EntityManagerFactoryBuilder {
 		 * @param persistenceUnit the name of the persistence unit
 		 * @return the builder for fluent usage
 		 */
-		public Builder persistenceUnit(String persistenceUnit) {
+		public Builder persistenceUnit(@Nullable String persistenceUnit) {
 			this.persistenceUnit = persistenceUnit;
 			return this;
 		}
@@ -223,7 +226,7 @@ public class EntityManagerFactoryBuilder {
 		 * @param mappingResources the mapping resources to use
 		 * @return the builder for fluent usage
 		 */
-		public Builder mappingResources(String... mappingResources) {
+		public Builder mappingResources(String @Nullable ... mappingResources) {
 			this.mappingResources = mappingResources;
 			return this;
 		}
@@ -264,7 +267,7 @@ public class EntityManagerFactoryBuilder {
 				entityManagerFactoryBean.setManagedTypes(this.managedTypes);
 			}
 			else {
-				entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
+				setPackagesToScan(entityManagerFactoryBean);
 			}
 			Map<String, ?> jpaProperties = EntityManagerFactoryBuilder.this.jpaPropertiesFactory.apply(this.dataSource);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(new LinkedHashMap<>(jpaProperties));
@@ -284,6 +287,14 @@ public class EntityManagerFactoryBuilder {
 					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
 			}
 			return entityManagerFactoryBean;
+		}
+
+		// TODO: Review this. The test
+		// HibernateJpaAutoConfigurationTests.usesManuallyDefinedLocalContainerEntityManagerFactoryBeanUsingBuilder
+		// fails if an non-null assert is added
+		@SuppressWarnings("NullAway")
+		private void setPackagesToScan(LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
+			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
 		}
 
 	}
