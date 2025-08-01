@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for HTTP converters.
  */
+@NullMarked
 package org.springframework.boot.http.converter.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;
