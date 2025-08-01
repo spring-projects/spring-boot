@@ -67,6 +67,7 @@ public final class ManagementContextFactory {
 		}
 		ConfigurableApplicationContext managementContext = ApplicationContextFactory.DEFAULT
 			.create(this.webApplicationType);
+		Assert.state(managementContext != null, "'managementContext' must not be null");
 		managementContext.setEnvironment(childEnvironment);
 		managementContext.setParent(parentContext);
 		return managementContext;
