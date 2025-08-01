@@ -17,6 +17,7 @@
 package org.springframework.boot.http.codec.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
@@ -74,8 +74,7 @@ public final class CodecsAutoConfiguration {
 	static class DefaultCodecsConfiguration {
 
 		@Bean
-		DefaultCodecCustomizer defaultCodecCustomizer(HttpCodecsProperties httpCodecProperties,
-				Environment environment) {
+		DefaultCodecCustomizer defaultCodecCustomizer(HttpCodecsProperties httpCodecProperties) {
 			return new DefaultCodecCustomizer(httpCodecProperties.isLogRequestDetails(),
 					httpCodecProperties.getMaxInMemorySize());
 		}
@@ -84,9 +83,9 @@ public final class CodecsAutoConfiguration {
 
 			private final boolean logRequestDetails;
 
-			private final DataSize maxInMemorySize;
+			private final @Nullable DataSize maxInMemorySize;
 
-			DefaultCodecCustomizer(boolean logRequestDetails, DataSize maxInMemorySize) {
+			DefaultCodecCustomizer(boolean logRequestDetails, @Nullable DataSize maxInMemorySize) {
 				this.logRequestDetails = logRequestDetails;
 				this.maxInMemorySize = maxInMemorySize;
 			}
