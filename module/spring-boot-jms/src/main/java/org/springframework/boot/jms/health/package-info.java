@@ -17,4 +17,7 @@
 /**
  * Health integration for JMS.
  */
+@NullMarked
 package org.springframework.boot.jms.health;
+
+import org.jspecify.annotations.NullMarked;

@@ -21,6 +21,7 @@ import java.time.Duration;
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ExceptionListener;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.jms.autoconfigure.JmsProperties.Listener.Session;
@@ -46,24 +47,24 @@ import org.springframework.util.Assert;
  */
 public final class DefaultJmsListenerContainerFactoryConfigurer {
 
-	private DestinationResolver destinationResolver;
+	private @Nullable DestinationResolver destinationResolver;
 
-	private MessageConverter messageConverter;
+	private @Nullable MessageConverter messageConverter;
 
-	private ExceptionListener exceptionListener;
+	private @Nullable ExceptionListener exceptionListener;
 
-	private JtaTransactionManager transactionManager;
+	private @Nullable JtaTransactionManager transactionManager;
 
-	private JmsProperties jmsProperties;
+	private @Nullable JmsProperties jmsProperties;
 
-	private ObservationRegistry observationRegistry;
+	private @Nullable ObservationRegistry observationRegistry;
 
 	/**
 	 * Set the {@link DestinationResolver} to use or {@code null} if no destination
 	 * resolver should be associated with the factory by default.
 	 * @param destinationResolver the {@link DestinationResolver}
 	 */
-	void setDestinationResolver(DestinationResolver destinationResolver) {
+	void setDestinationResolver(@Nullable DestinationResolver destinationResolver) {
 		this.destinationResolver = destinationResolver;
 	}
 
@@ -72,7 +73,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * converter should be used.
 	 * @param messageConverter the {@link MessageConverter}
 	 */
-	void setMessageConverter(MessageConverter messageConverter) {
+	void setMessageConverter(@Nullable MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
 
@@ -81,7 +82,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * should be associated by default.
 	 * @param exceptionListener the {@link ExceptionListener}
 	 */
-	void setExceptionListener(ExceptionListener exceptionListener) {
+	void setExceptionListener(@Nullable ExceptionListener exceptionListener) {
 		this.exceptionListener = exceptionListener;
 	}
 
@@ -90,7 +91,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * should not be used.
 	 * @param transactionManager the {@link JtaTransactionManager}
 	 */
-	void setTransactionManager(JtaTransactionManager transactionManager) {
+	void setTransactionManager(@Nullable JtaTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
@@ -98,7 +99,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * Set the {@link JmsProperties} to use.
 	 * @param jmsProperties the {@link JmsProperties}
 	 */
-	void setJmsProperties(JmsProperties jmsProperties) {
+	void setJmsProperties(@Nullable JmsProperties jmsProperties) {
 		this.jmsProperties = jmsProperties;
 	}
 
@@ -106,7 +107,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * Set the {@link ObservationRegistry} to use.
 	 * @param observationRegistry the {@link ObservationRegistry}
 	 */
-	void setObservationRegistry(ObservationRegistry observationRegistry) {
+	void setObservationRegistry(@Nullable ObservationRegistry observationRegistry) {
 		this.observationRegistry = observationRegistry;
 	}
 
@@ -119,6 +120,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	public void configure(DefaultJmsListenerContainerFactory factory, ConnectionFactory connectionFactory) {
 		Assert.notNull(factory, "'factory' must not be null");
 		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
+		Assert.state(this.jmsProperties != null, "'jmsProperties' must not be null");
 		JmsProperties.Listener listenerProperties = this.jmsProperties.getListener();
 		Session sessionProperties = listenerProperties.getSession();
 		factory.setConnectionFactory(connectionFactory);

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for JMS.
  */
+@NullMarked
 package org.springframework.boot.jms.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

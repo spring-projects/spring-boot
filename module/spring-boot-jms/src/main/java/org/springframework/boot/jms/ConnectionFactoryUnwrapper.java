@@ -17,6 +17,7 @@
 package org.springframework.boot.jms;
 
 import jakarta.jms.ConnectionFactory;
+import org.jspecify.annotations.Nullable;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
 import org.springframework.jms.connection.CachingConnectionFactory;
@@ -57,7 +58,7 @@ public final class ConnectionFactoryUnwrapper {
 	 * @param connectionFactory a connection factory
 	 * @return the native connection factory that it wraps, if any
 	 */
-	public static ConnectionFactory unwrap(ConnectionFactory connectionFactory) {
+	public static @Nullable ConnectionFactory unwrap(@Nullable ConnectionFactory connectionFactory) {
 		if (connectionFactory instanceof CachingConnectionFactory cachingConnectionFactory) {
 			return unwrap(cachingConnectionFactory.getTargetConnectionFactory());
 		}
@@ -65,7 +66,8 @@ public final class ConnectionFactoryUnwrapper {
 		return (unwrapedConnectionFactory != null) ? unwrap(unwrapedConnectionFactory) : connectionFactory;
 	}
 
-	private static ConnectionFactory unwrapFromJmsPoolConnectionFactory(ConnectionFactory connectionFactory) {
+	private static @Nullable ConnectionFactory unwrapFromJmsPoolConnectionFactory(
+			@Nullable ConnectionFactory connectionFactory) {
 		try {
 			if (connectionFactory instanceof JmsPoolConnectionFactory jmsPoolConnectionFactory) {
 				return (ConnectionFactory) jmsPoolConnectionFactory.getConnectionFactory();

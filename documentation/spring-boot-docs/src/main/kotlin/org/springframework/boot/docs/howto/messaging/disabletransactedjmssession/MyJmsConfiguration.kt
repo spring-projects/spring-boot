@@ -28,7 +28,7 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory
 class MyJmsConfiguration {
 
 	@Bean
-	fun jmsListenerContainerFactory(connectionFactory: ConnectionFactory?,
+	fun jmsListenerContainerFactory(connectionFactory: ConnectionFactory,
 			configurer: DefaultJmsListenerContainerFactoryConfigurer): DefaultJmsListenerContainerFactory {
 		val listenerFactory = DefaultJmsListenerContainerFactory()
 		configurer.configure(listenerFactory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory))

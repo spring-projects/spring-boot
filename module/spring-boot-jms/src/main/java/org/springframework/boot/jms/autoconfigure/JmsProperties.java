@@ -18,6 +18,8 @@ package org.springframework.boot.jms.autoconfigure;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -42,7 +44,7 @@ public class JmsProperties {
 	 * Connection factory JNDI name. When set, takes precedence to others connection
 	 * factory auto-configurations.
 	 */
-	private String jndiName;
+	private @Nullable String jndiName;
 
 	/**
 	 * Whether the subscription is durable.
@@ -52,7 +54,7 @@ public class JmsProperties {
 	/**
 	 * Client id of the connection.
 	 */
-	private String clientId;
+	private @Nullable String clientId;
 
 	private final Cache cache = new Cache();
 
@@ -76,19 +78,19 @@ public class JmsProperties {
 		this.subscriptionDurable = subscriptionDurable;
 	}
 
-	public String getClientId() {
+	public @Nullable String getClientId() {
 		return this.clientId;
 	}
 
-	public void setClientId(String clientId) {
+	public void setClientId(@Nullable String clientId) {
 		this.clientId = clientId;
 	}
 
-	public String getJndiName() {
+	public @Nullable String getJndiName() {
 		return this.jndiName;
 	}
 
-	public void setJndiName(String jndiName) {
+	public void setJndiName(@Nullable String jndiName) {
 		this.jndiName = jndiName;
 	}
 
@@ -171,12 +173,12 @@ public class JmsProperties {
 		 * Minimum number of concurrent consumers. When max-concurrency is not specified
 		 * the minimum will also be used as the maximum.
 		 */
-		private Integer minConcurrency;
+		private @Nullable Integer minConcurrency;
 
 		/**
 		 * Maximum number of concurrent consumers.
 		 */
-		private Integer maxConcurrency;
+		private @Nullable Integer maxConcurrency;
 
 		/**
 		 * Timeout to use for receive calls. Use -1 for a no-wait receive or 0 for no
@@ -190,7 +192,7 @@ public class JmsProperties {
 		 * a SchedulingTaskExecutor is configured on the listener (10 messages), as it
 		 * indicates a preference for short-lived tasks.
 		 */
-		private Integer maxMessagesPerTask;
+		private @Nullable Integer maxMessagesPerTask;
 
 		private final Session session = new Session();
 
@@ -202,23 +204,23 @@ public class JmsProperties {
 			this.autoStartup = autoStartup;
 		}
 
-		public Integer getMinConcurrency() {
+		public @Nullable Integer getMinConcurrency() {
 			return this.minConcurrency;
 		}
 
-		public void setMinConcurrency(Integer minConcurrency) {
+		public void setMinConcurrency(@Nullable Integer minConcurrency) {
 			this.minConcurrency = minConcurrency;
 		}
 
-		public Integer getMaxConcurrency() {
+		public @Nullable Integer getMaxConcurrency() {
 			return this.maxConcurrency;
 		}
 
-		public void setMaxConcurrency(Integer maxConcurrency) {
+		public void setMaxConcurrency(@Nullable Integer maxConcurrency) {
 			this.maxConcurrency = maxConcurrency;
 		}
 
-		public String formatConcurrency() {
+		public @Nullable String formatConcurrency() {
 			if (this.minConcurrency == null) {
 				return (this.maxConcurrency != null) ? "1-" + this.maxConcurrency : null;
 			}
@@ -234,11 +236,11 @@ public class JmsProperties {
 			this.receiveTimeout = receiveTimeout;
 		}
 
-		public Integer getMaxMessagesPerTask() {
+		public @Nullable Integer getMaxMessagesPerTask() {
 			return this.maxMessagesPerTask;
 		}
 
-		public void setMaxMessagesPerTask(Integer maxMessagesPerTask) {
+		public void setMaxMessagesPerTask(@Nullable Integer maxMessagesPerTask) {
 			this.maxMessagesPerTask = maxMessagesPerTask;
 		}
 
@@ -257,7 +259,7 @@ public class JmsProperties {
 			 * Whether the listener container should use transacted JMS sessions. Defaults
 			 * to false in the presence of a JtaTransactionManager and true otherwise.
 			 */
-			private Boolean transacted;
+			private @Nullable Boolean transacted;
 
 			public AcknowledgeMode getAcknowledgeMode() {
 				return this.acknowledgeMode;
@@ -267,11 +269,11 @@ public class JmsProperties {
 				this.acknowledgeMode = acknowledgeMode;
 			}
 
-			public Boolean getTransacted() {
+			public @Nullable Boolean getTransacted() {
 				return this.transacted;
 			}
 
-			public void setTransacted(Boolean transacted) {
+			public void setTransacted(@Nullable Boolean transacted) {
 				this.transacted = transacted;
 			}
 
@@ -285,28 +287,28 @@ public class JmsProperties {
 		 * Default destination to use on send and receive operations that do not have a
 		 * destination parameter.
 		 */
-		private String defaultDestination;
+		private @Nullable String defaultDestination;
 
 		/**
 		 * Delivery delay to use for send calls.
 		 */
-		private Duration deliveryDelay;
+		private @Nullable Duration deliveryDelay;
 
 		/**
 		 * Delivery mode. Enables QoS (Quality of Service) when set.
 		 */
-		private DeliveryMode deliveryMode;
+		private @Nullable DeliveryMode deliveryMode;
 
 		/**
 		 * Priority of a message when sending. Enables QoS (Quality of Service) when set.
 		 */
-		private Integer priority;
+		private @Nullable Integer priority;
 
 		/**
 		 * Time-to-live of a message when sending. Enables QoS (Quality of Service) when
 		 * set.
 		 */
-		private Duration timeToLive;
+		private @Nullable Duration timeToLive;
 
 		/**
 		 * Whether to enable explicit QoS (Quality of Service) when sending a message.
@@ -314,52 +316,52 @@ public class JmsProperties {
 		 * used when sending a message. QoS is automatically enabled when at least one of
 		 * those settings is customized.
 		 */
-		private Boolean qosEnabled;
+		private @Nullable Boolean qosEnabled;
 
 		/**
 		 * Timeout to use for receive calls.
 		 */
-		private Duration receiveTimeout;
+		private @Nullable Duration receiveTimeout;
 
 		private final Session session = new Session();
 
-		public String getDefaultDestination() {
+		public @Nullable String getDefaultDestination() {
 			return this.defaultDestination;
 		}
 
-		public void setDefaultDestination(String defaultDestination) {
+		public void setDefaultDestination(@Nullable String defaultDestination) {
 			this.defaultDestination = defaultDestination;
 		}
 
-		public Duration getDeliveryDelay() {
+		public @Nullable Duration getDeliveryDelay() {
 			return this.deliveryDelay;
 		}
 
-		public void setDeliveryDelay(Duration deliveryDelay) {
+		public void setDeliveryDelay(@Nullable Duration deliveryDelay) {
 			this.deliveryDelay = deliveryDelay;
 		}
 
-		public DeliveryMode getDeliveryMode() {
+		public @Nullable DeliveryMode getDeliveryMode() {
 			return this.deliveryMode;
 		}
 
-		public void setDeliveryMode(DeliveryMode deliveryMode) {
+		public void setDeliveryMode(@Nullable DeliveryMode deliveryMode) {
 			this.deliveryMode = deliveryMode;
 		}
 
-		public Integer getPriority() {
+		public @Nullable Integer getPriority() {
 			return this.priority;
 		}
 
-		public void setPriority(Integer priority) {
+		public void setPriority(@Nullable Integer priority) {
 			this.priority = priority;
 		}
 
-		public Duration getTimeToLive() {
+		public @Nullable Duration getTimeToLive() {
 			return this.timeToLive;
 		}
 
-		public void setTimeToLive(Duration timeToLive) {
+		public void setTimeToLive(@Nullable Duration timeToLive) {
 			this.timeToLive = timeToLive;
 		}
 
@@ -370,19 +372,19 @@ public class JmsProperties {
 			return (getDeliveryMode() != null || getPriority() != null || getTimeToLive() != null);
 		}
 
-		public Boolean getQosEnabled() {
+		public @Nullable Boolean getQosEnabled() {
 			return this.qosEnabled;
 		}
 
-		public void setQosEnabled(Boolean qosEnabled) {
+		public void setQosEnabled(@Nullable Boolean qosEnabled) {
 			this.qosEnabled = qosEnabled;
 		}
 
-		public Duration getReceiveTimeout() {
+		public @Nullable Duration getReceiveTimeout() {
 			return this.receiveTimeout;
 		}
 
-		public void setReceiveTimeout(Duration receiveTimeout) {
+		public void setReceiveTimeout(@Nullable Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
 		}
 
