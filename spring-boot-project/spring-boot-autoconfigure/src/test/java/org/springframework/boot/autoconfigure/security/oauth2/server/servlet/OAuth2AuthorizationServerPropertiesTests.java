@@ -86,7 +86,8 @@ class OAuth2AuthorizationServerPropertiesTests {
 		assertThat(properties.getJwkSetUri()).isEqualTo(defaults.getJwkSetEndpoint());
 		assertThat(properties.getTokenRevocationUri()).isEqualTo(defaults.getTokenRevocationEndpoint());
 		assertThat(properties.getTokenIntrospectionUri()).isEqualTo(defaults.getTokenIntrospectionEndpoint());
-		assertThat(properties.getPushedAuthorizationRequestUri()).isEqualTo(defaults.getPushedAuthorizationRequestEndpoint());
+		assertThat(properties.getPushedAuthorizationRequestUri())
+			.isEqualTo(defaults.getPushedAuthorizationRequestEndpoint());
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = properties.getOidc();
 		assertThat(oidc.getLogoutUri()).isEqualTo(defaults.getOidcLogoutEndpoint());
 		assertThat(oidc.getClientRegistrationUri()).isEqualTo(defaults.getOidcClientRegistrationEndpoint());
