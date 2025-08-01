@@ -19,6 +19,8 @@ package org.springframework.boot.transaction.autoconfigure;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
@@ -39,26 +41,26 @@ public class TransactionProperties implements TransactionManagerCustomizer<Abstr
 	 * used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration defaultTimeout;
+	private @Nullable Duration defaultTimeout;
 
 	/**
 	 * Whether to roll back on commit failures.
 	 */
-	private Boolean rollbackOnCommitFailure;
+	private @Nullable Boolean rollbackOnCommitFailure;
 
-	public Duration getDefaultTimeout() {
+	public @Nullable Duration getDefaultTimeout() {
 		return this.defaultTimeout;
 	}
 
-	public void setDefaultTimeout(Duration defaultTimeout) {
+	public void setDefaultTimeout(@Nullable Duration defaultTimeout) {
 		this.defaultTimeout = defaultTimeout;
 	}
 
-	public Boolean getRollbackOnCommitFailure() {
+	public @Nullable Boolean getRollbackOnCommitFailure() {
 		return this.rollbackOnCommitFailure;
 	}
 
-	public void setRollbackOnCommitFailure(Boolean rollbackOnCommitFailure) {
+	public void setRollbackOnCommitFailure(@Nullable Boolean rollbackOnCommitFailure) {
 		this.rollbackOnCommitFailure = rollbackOnCommitFailure;
 	}
 

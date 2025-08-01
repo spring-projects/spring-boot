@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.transaction.TransactionManager;
 
@@ -56,7 +58,8 @@ public final class TransactionManagerCustomizers {
 	 * @param customizers the customizers
 	 * @return the new instance
 	 */
-	public static TransactionManagerCustomizers of(Collection<? extends TransactionManagerCustomizer<?>> customizers) {
+	public static TransactionManagerCustomizers of(
+			@Nullable Collection<? extends TransactionManagerCustomizer<?>> customizers) {
 		return new TransactionManagerCustomizers(
 				(customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList());
 	}

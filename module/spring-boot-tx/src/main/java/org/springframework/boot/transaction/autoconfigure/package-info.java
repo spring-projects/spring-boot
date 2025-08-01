@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for transaction support.
  */
+@NullMarked
 package org.springframework.boot.transaction.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;
