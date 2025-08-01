@@ -332,7 +332,13 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	}
 
 	/**
-	 * {@link RegistrationBeanAdapter} for {@link Filter} beans.
+	 * {@link RegistrationBeanAdapter} implementation for {@link Filter} beans.
+	 * <p>
+	 * <b>NOTE:</b> A similar implementation is used in
+	 * {@code SpringBootMockMvcBuilderCustomizer} for registering
+	 * {@code @FilterRegistration} beans with {@code @MockMvc}. If you modify this class,
+	 * please also update {@code SpringBootMockMvcBuilderCustomizer} if needed.
+	 * </p>
 	 */
 	private static class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
 
