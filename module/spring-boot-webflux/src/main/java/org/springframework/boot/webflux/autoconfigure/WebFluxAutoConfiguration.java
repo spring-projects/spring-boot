@@ -184,13 +184,16 @@ public final class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler;
 
+		private final ObjectProvider<ApiVersionCustomizer> apiVersionCustomizers;
+
 		WebFluxConfig(Environment environment, WebProperties webProperties, WebFluxProperties webFluxProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizers,
 				ObjectProvider<ViewResolver> viewResolvers, ObjectProvider<ApiVersionResolver> apiVersionResolvers,
 				ObjectProvider<ApiVersionParser<?>> apiVersionParser,
-				ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler) {
+				ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler,
+				ObjectProvider<ApiVersionCustomizer> apiVersionCustomizers) {
 			this.environment = environment;
 			this.resourceProperties = webProperties.getResources();
 			this.webFluxProperties = webFluxProperties;
@@ -202,6 +205,7 @@ public final class WebFluxAutoConfiguration {
 			this.apiVersionResolvers = apiVersionResolvers;
 			this.apiVersionParser = apiVersionParser;
 			this.apiVersionDeprecationHandler = apiVersionDeprecationHandler;
+			this.apiVersionCustomizers = apiVersionCustomizers;
 		}
 
 		@Override
@@ -284,6 +288,7 @@ public final class WebFluxAutoConfiguration {
 			this.apiVersionResolvers.orderedStream().forEach(configurer::useVersionResolver);
 			this.apiVersionParser.ifAvailable(configurer::setVersionParser);
 			this.apiVersionDeprecationHandler.ifAvailable(configurer::setDeprecationHandler);
+			this.apiVersionCustomizers.orderedStream().forEach(customizer -> customizer.customize(configurer));
 		}
 
 		private void configureApiVersioningUse(ApiVersionConfigurer configurer, Use use) {

@@ -1101,6 +1101,7 @@ class WebMvcAutoConfigurationTests {
 			assertThat(versionStrategy).extracting("deprecationHandler")
 				.isEqualTo(context.getBean(ApiVersionDeprecationHandler.class));
 			assertThat(versionStrategy).extracting("versionParser").isEqualTo(context.getBean(ApiVersionParser.class));
+			assertThat(versionStrategy).extracting("supportedVersionPredicate").isEqualTo(context.getBean(ApiVersionCustomizer.class));
 		});
 	}
 
@@ -1683,6 +1684,10 @@ class WebMvcAutoConfigurationTests {
 			return (version) -> String.valueOf(version);
 		}
 
+		@Bean
+		ApiVersionCustomizer apiVersionCustomizer() {
+			return configurer -> configurer.setSupportedVersionPredicate(comparable -> true);
+		}
 	}
 
 }

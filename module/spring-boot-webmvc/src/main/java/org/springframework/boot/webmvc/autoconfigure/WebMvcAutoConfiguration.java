@@ -211,6 +211,8 @@ public final class WebMvcAutoConfiguration {
 
 		private final ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler;
 
+		private final ObjectProvider<ApiVersionCustomizer> apiVersionCustomizers;
+
 		WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
@@ -218,7 +220,8 @@ public final class WebMvcAutoConfiguration {
 				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations,
 				ObjectProvider<ApiVersionResolver> apiVersionResolvers,
 				ObjectProvider<ApiVersionParser<?>> apiVersionParser,
-				ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler) {
+				ObjectProvider<ApiVersionDeprecationHandler> apiVersionDeprecationHandler,
+				ObjectProvider<ApiVersionCustomizer> apiVersionCustomizers) {
 			this.resourceProperties = webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
@@ -229,6 +232,7 @@ public final class WebMvcAutoConfiguration {
 			this.apiVersionResolvers = apiVersionResolvers;
 			this.apiVersionParser = apiVersionParser;
 			this.apiVersionDeprecationHandler = apiVersionDeprecationHandler;
+			this.apiVersionCustomizers = apiVersionCustomizers;
 		}
 
 		@Override
@@ -398,6 +402,7 @@ public final class WebMvcAutoConfiguration {
 			this.apiVersionResolvers.orderedStream().forEach(configurer::useVersionResolver);
 			this.apiVersionParser.ifAvailable(configurer::setVersionParser);
 			this.apiVersionDeprecationHandler.ifAvailable(configurer::setDeprecationHandler);
+			this.apiVersionCustomizers.orderedStream().forEach(customizer -> customizer.customize(configurer));
 		}
 
 		private void configureApiVersioningUse(ApiVersionConfigurer configurer, Use use) {
