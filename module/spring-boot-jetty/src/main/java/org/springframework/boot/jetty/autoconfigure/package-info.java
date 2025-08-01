@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Jetty.
  */
+@NullMarked
 package org.springframework.boot.jetty.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

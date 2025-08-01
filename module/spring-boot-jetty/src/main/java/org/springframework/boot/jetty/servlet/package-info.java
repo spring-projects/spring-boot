@@ -17,4 +17,7 @@
 /**
  * Servlet web server implementation backed by Jetty.
  */
+@NullMarked
 package org.springframework.boot.jetty.servlet;
+
+import org.jspecify.annotations.NullMarked;

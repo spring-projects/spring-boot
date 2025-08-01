@@ -18,6 +18,7 @@ package org.springframework.boot.jetty;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 
@@ -41,7 +42,7 @@ public interface ConfigurableJettyWebServerFactory extends ConfigurableWebServer
 	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
 	 * @param threadPool the ThreadPool to be used
 	 */
-	void setThreadPool(ThreadPool threadPool);
+	void setThreadPool(@Nullable ThreadPool threadPool);
 
 	/**
 	 * Set the number of selector threads to use.

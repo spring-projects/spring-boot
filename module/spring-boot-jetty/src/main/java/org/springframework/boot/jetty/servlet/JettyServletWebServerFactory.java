@@ -67,6 +67,7 @@ import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.eclipse.jetty.util.resource.URLResourceFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.jetty.ForwardHeadersCustomizer;
@@ -123,6 +124,7 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 
 	private final ServletWebServerSettings settings = new ServletWebServerSettings();
 
+	@SuppressWarnings("NullAway.Init")
 	private ResourceLoader resourceLoader;
 
 	/**
@@ -262,7 +264,7 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		}
 	}
 
-	private boolean isNegative(Duration sessionTimeout) {
+	private boolean isNegative(@Nullable Duration sessionTimeout) {
 		return sessionTimeout == null || sessionTimeout.isNegative();
 	}
 
@@ -271,7 +273,7 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 			.forEach((locale, charset) -> context.addLocaleEncoding(locale.toString(), charset.toString()));
 	}
 
-	private File getTempDirectory(WebAppContext context) {
+	private @Nullable File getTempDirectory(WebAppContext context) {
 		String temp = System.getProperty("java.io.tmpdir");
 		return (temp != null) ? new File(temp, getTempDirectoryPrefix(context) + UUID.randomUUID()) : null;
 	}
@@ -312,8 +314,8 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		}
 	}
 
-	private Resource createResource(URL url, ResourceFactory resourceFactory, URLResourceFactory urlResourceFactory)
-			throws Exception {
+	private @Nullable Resource createResource(URL url, ResourceFactory resourceFactory,
+			URLResourceFactory urlResourceFactory) throws Exception {
 		if ("file".equals(url.getProtocol())) {
 			File file = new File(url.toURI());
 			if (file.isFile()) {
@@ -591,11 +593,11 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 					.build();
 			}
 
-			private SameSite getSameSite(HttpCookie cookie) {
+			private @Nullable SameSite getSameSite(HttpCookie cookie) {
 				return getSameSite(asServletCookie(cookie));
 			}
 
-			private SameSite getSameSite(Cookie cookie) {
+			private @Nullable SameSite getSameSite(Cookie cookie) {
 				return SuppliedSameSiteCookieHandlerWrapper.this.suppliers.stream()
 					.map((supplier) -> supplier.getSameSite(cookie))
 					.filter(Objects::nonNull)

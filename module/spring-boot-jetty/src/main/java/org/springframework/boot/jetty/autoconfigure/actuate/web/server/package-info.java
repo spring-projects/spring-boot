@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Jetty actuator web concerns.
  */
+@NullMarked
 package org.springframework.boot.jetty.autoconfigure.actuate.web.server;
+
+import org.jspecify.annotations.NullMarked;

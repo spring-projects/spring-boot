@@ -24,6 +24,7 @@ import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.websocket.core.server.WebSocketMappings;
 import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -58,7 +59,7 @@ public class WebSocketJettyReactiveWebServerFactoryCustomizer
 		});
 	}
 
-	private ServletContextHandler findServletContextHandler(Handler handler) {
+	private @Nullable ServletContextHandler findServletContextHandler(Handler handler) {
 		if (handler instanceof ServletContextHandler servletContextHandler) {
 			return servletContextHandler;
 		}

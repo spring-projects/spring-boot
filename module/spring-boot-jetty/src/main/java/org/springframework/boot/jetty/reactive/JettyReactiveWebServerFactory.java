@@ -25,6 +25,7 @@ import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.jetty.ForwardHeadersCustomizer;
@@ -53,7 +54,7 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 
 	private static final Log logger = LogFactory.getLog(JettyReactiveWebServerFactory.class);
 
-	private JettyResourceFactory resourceFactory;
+	private @Nullable JettyResourceFactory resourceFactory;
 
 	/**
 	 * Create a new {@link JettyServletWebServerFactory} instance.
@@ -81,11 +82,11 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 	 * Set the {@link JettyResourceFactory} to get the shared resources from.
 	 * @param resourceFactory the server resources
 	 */
-	public void setResourceFactory(JettyResourceFactory resourceFactory) {
+	public void setResourceFactory(@Nullable JettyResourceFactory resourceFactory) {
 		this.resourceFactory = resourceFactory;
 	}
 
-	protected JettyResourceFactory getResourceFactory() {
+	protected @Nullable JettyResourceFactory getResourceFactory() {
 		return this.resourceFactory;
 	}
 
