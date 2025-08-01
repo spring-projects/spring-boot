@@ -80,6 +80,7 @@ class OperationMethodParameter implements OperationParameter {
 	@SuppressWarnings("deprecation")
 	private boolean isOptional() {
 		return this.parameter.getAnnotationsByType(org.springframework.lang.Nullable.class).length > 0
+				|| this.parameter.getAnnotatedType().isAnnotationPresent(org.jspecify.annotations.Nullable.class)
 				|| this.optional.test(this.parameter);
 	}
 
