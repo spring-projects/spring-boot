@@ -16,6 +16,8 @@
 
 package org.springframework.boot.configurationsample.record;
 
+import org.springframework.boot.configurationsample.Name;
+
 // @formatter:off
 
 /**
@@ -26,12 +28,21 @@ package org.springframework.boot.configurationsample.record;
  * @param someInteger description with @param and @ pitfalls
  * @param someBoolean description with extra spaces
  * @param someLong description without space after asterisk
+ * @param namedComponent description of a named component
  * @param someByte last description in Javadoc
  * @since 1.0.0
  * @author Pavel Anisimov
  */
 @org.springframework.boot.configurationsample.ConfigurationProperties("record.descriptions")
-public record ExampleRecord(String someString, Integer someInteger, Boolean someBoolean, Long someLong, Byte someByte) {
+public record ExampleRecord(
+				String someString,
+				Integer someInteger,
+				Boolean someBoolean,
+				Long someLong,
+				@Name("named.record.component")
+				String namedComponent,
+				Byte someByte
+		) {
 }
 
 //@formatter:on

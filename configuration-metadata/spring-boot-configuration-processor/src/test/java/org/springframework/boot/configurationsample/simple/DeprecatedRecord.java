@@ -18,16 +18,18 @@ package org.springframework.boot.configurationsample.simple;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.DeprecatedConfigurationProperty;
+import org.springframework.boot.configurationsample.Name;
 
 /**
  * Configuration properties as record with deprecated property.
  *
  * @param alpha alpha property, deprecated
  * @param bravo bravo property
+ * @param charlie charlie property, named, deprecated
  * @author Moritz Halbritter
  */
 @ConfigurationProperties("deprecated-record")
-public record DeprecatedRecord(String alpha, String bravo) {
+public record DeprecatedRecord(String alpha, String bravo, @Name("named.charlie") String charlie) {
 
 	@Deprecated
 	@DeprecatedConfigurationProperty(reason = "some-reason")
@@ -35,4 +37,9 @@ public record DeprecatedRecord(String alpha, String bravo) {
 		return this.alpha;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(reason = "another-reason")
+	public String charlie() {
+		return this.charlie;
+	}
 }
