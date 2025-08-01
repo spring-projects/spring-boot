@@ -70,6 +70,7 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		assertThat(config.getTokenRevocationEndpoint()).hasToString("https://provider.com/revoke");
 		assertThat(config.getEndSessionEndpoint()).hasToString("https://provider.com/logout");
 		assertThat(config.getTokenIntrospectionEndpoint()).hasToString("https://provider.com/introspect");
+		assertThat(config.getPushedAuthorizationRequestEndpoint()).hasToString("https://provider.com/par");
 		assertThat(config.getUserInfoEndpoint()).hasToString("https://provider.com/user");
 		// OIDC Client Registration is disabled by default
 		assertThat(config.getClientRegistrationEndpoint()).isNull();
@@ -88,6 +89,7 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		assertThat(config.getJwkSetUrl()).hasToString("https://provider.com/jwks");
 		assertThat(config.getTokenRevocationEndpoint()).hasToString("https://provider.com/revoke");
 		assertThat(config.getTokenIntrospectionEndpoint()).hasToString("https://provider.com/introspect");
+		assertThat(config.getPushedAuthorizationRequestEndpoint()).hasToString("https://provider.com/par");
 		// OIDC Client Registration is disabled by default
 		assertThat(config.getClientRegistrationEndpoint()).isNull();
 	}
