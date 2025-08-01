@@ -76,7 +76,7 @@ public interface ApplicationContextFactory {
 	 * @param webApplicationType the web application type
 	 * @return the newly created application context
 	 */
-	ConfigurableApplicationContext create(@Nullable WebApplicationType webApplicationType);
+	@Nullable ConfigurableApplicationContext create(@Nullable WebApplicationType webApplicationType);
 
 	/**
 	 * Creates an {@code ApplicationContextFactory} that will create contexts by

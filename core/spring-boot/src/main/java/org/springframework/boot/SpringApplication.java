@@ -569,7 +569,10 @@ public class SpringApplication {
 	 * @see #setApplicationContextFactory(ApplicationContextFactory)
 	 */
 	protected ConfigurableApplicationContext createApplicationContext() {
-		return this.applicationContextFactory.create(this.properties.getWebApplicationType());
+		ConfigurableApplicationContext context = this.applicationContextFactory
+			.create(this.properties.getWebApplicationType());
+		Assert.state(context != null, "ApplicationContextFactory created null context");
+		return context;
 	}
 
 	/**
