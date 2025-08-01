@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for JSON-B.
  */
+@NullMarked
 package org.springframework.boot.jsonb.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;
