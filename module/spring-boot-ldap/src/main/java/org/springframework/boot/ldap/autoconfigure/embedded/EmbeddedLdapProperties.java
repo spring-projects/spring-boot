@@ -19,6 +19,8 @@ package org.springframework.boot.ldap.autoconfigure.embedded;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.io.Resource;
@@ -101,26 +103,26 @@ public class EmbeddedLdapProperties {
 		/**
 		 * Embedded LDAP username.
 		 */
-		private String username;
+		private @Nullable String username;
 
 		/**
 		 * Embedded LDAP password.
 		 */
-		private String password;
+		private @Nullable String password;
 
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		public void setUsername(@Nullable String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		public void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
@@ -140,7 +142,7 @@ public class EmbeddedLdapProperties {
 		/**
 		 * Path to the custom schema.
 		 */
-		private Resource schema;
+		private @Nullable Resource schema;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -150,11 +152,11 @@ public class EmbeddedLdapProperties {
 			this.enabled = enabled;
 		}
 
-		public Resource getSchema() {
+		public @Nullable Resource getSchema() {
 			return this.schema;
 		}
 
-		public void setSchema(Resource schema) {
+		public void setSchema(@Nullable Resource schema) {
 			this.schema = schema;
 		}
 

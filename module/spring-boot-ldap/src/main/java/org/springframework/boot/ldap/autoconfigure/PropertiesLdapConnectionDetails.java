@@ -16,6 +16,8 @@
 
 package org.springframework.boot.ldap.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.Environment;
 
 /**
@@ -40,17 +42,17 @@ class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 	}
 
 	@Override
-	public String getBase() {
+	public @Nullable String getBase() {
 		return this.properties.getBase();
 	}
 
 	@Override
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.properties.getUsername();
 	}
 
 	@Override
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.properties.getPassword();
 	}
 

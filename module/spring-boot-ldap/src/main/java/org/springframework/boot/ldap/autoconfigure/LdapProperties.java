@@ -19,6 +19,8 @@ package org.springframework.boot.ldap.autoconfigure;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.ReferralException;
@@ -40,34 +42,34 @@ public class LdapProperties {
 	/**
 	 * LDAP URLs of the server.
 	 */
-	private String[] urls;
+	private String @Nullable [] urls;
 
 	/**
 	 * Base suffix from which all operations should originate.
 	 */
-	private String base;
+	private @Nullable String base;
 
 	/**
 	 * Login username of the server.
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Login password of the server.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Whether read-only operations should use an anonymous environment. Disabled by
 	 * default unless a username is set.
 	 */
-	private Boolean anonymousReadOnly;
+	private @Nullable Boolean anonymousReadOnly;
 
 	/**
 	 * Specify how referrals encountered by the service provider are to be processed. If
 	 * not specified, the default is determined by the provider.
 	 */
-	private Referral referral;
+	private @Nullable Referral referral;
 
 	/**
 	 * LDAP specification settings.
@@ -76,51 +78,51 @@ public class LdapProperties {
 
 	private final Template template = new Template();
 
-	public String[] getUrls() {
+	public String @Nullable [] getUrls() {
 		return this.urls;
 	}
 
-	public void setUrls(String[] urls) {
+	public void setUrls(String @Nullable [] urls) {
 		this.urls = urls;
 	}
 
-	public String getBase() {
+	public @Nullable String getBase() {
 		return this.base;
 	}
 
-	public void setBase(String base) {
+	public void setBase(@Nullable String base) {
 		this.base = base;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
-	public Boolean getAnonymousReadOnly() {
+	public @Nullable Boolean getAnonymousReadOnly() {
 		return this.anonymousReadOnly;
 	}
 
-	public void setAnonymousReadOnly(Boolean anonymousReadOnly) {
+	public void setAnonymousReadOnly(@Nullable Boolean anonymousReadOnly) {
 		this.anonymousReadOnly = anonymousReadOnly;
 	}
 
-	public Referral getReferral() {
+	public @Nullable Referral getReferral() {
 		return this.referral;
 	}
 
-	public void setReferral(Referral referral) {
+	public void setReferral(@Nullable Referral referral) {
 		this.referral = referral;
 	}
 
