@@ -24,6 +24,7 @@ import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -240,14 +241,14 @@ public final class KafkaAutoConfiguration {
 		}
 	}
 
-	static void applySslBundle(Map<String, Object> properties, SslBundle sslBundle) {
+	static void applySslBundle(Map<String, Object> properties, @Nullable SslBundle sslBundle) {
 		if (sslBundle != null) {
 			properties.put(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG, SslBundleSslEngineFactory.class);
 			properties.put(SslBundle.class.getName(), sslBundle);
 		}
 	}
 
-	static void applySecurityProtocol(Map<String, Object> properties, String securityProtocol) {
+	static void applySecurityProtocol(Map<String, Object> properties, @Nullable String securityProtocol) {
 		if (StringUtils.hasLength(securityProtocol)) {
 			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
 		}
@@ -256,7 +257,7 @@ public final class KafkaAutoConfiguration {
 	static class KafkaRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.reflection().registerType(SslBundleSslEngineFactory.class, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 		}
 

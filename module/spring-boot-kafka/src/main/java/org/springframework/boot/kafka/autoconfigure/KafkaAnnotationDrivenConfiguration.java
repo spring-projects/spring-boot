@@ -18,6 +18,8 @@ package org.springframework.boot.kafka.autoconfigure;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -62,27 +64,27 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final KafkaProperties properties;
 
-	private final RecordMessageConverter recordMessageConverter;
+	private final @Nullable RecordMessageConverter recordMessageConverter;
 
-	private final RecordFilterStrategy<Object, Object> recordFilterStrategy;
+	private final @Nullable RecordFilterStrategy<Object, Object> recordFilterStrategy;
 
 	private final BatchMessageConverter batchMessageConverter;
 
-	private final KafkaTemplate<Object, Object> kafkaTemplate;
+	private final @Nullable KafkaTemplate<Object, Object> kafkaTemplate;
 
-	private final KafkaAwareTransactionManager<Object, Object> transactionManager;
+	private final @Nullable KafkaAwareTransactionManager<Object, Object> transactionManager;
 
-	private final ConsumerAwareRebalanceListener rebalanceListener;
+	private final @Nullable ConsumerAwareRebalanceListener rebalanceListener;
 
-	private final CommonErrorHandler commonErrorHandler;
+	private final @Nullable CommonErrorHandler commonErrorHandler;
 
-	private final AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
+	private final @Nullable AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
-	private final RecordInterceptor<Object, Object> recordInterceptor;
+	private final @Nullable RecordInterceptor<Object, Object> recordInterceptor;
 
-	private final BatchInterceptor<Object, Object> batchInterceptor;
+	private final @Nullable BatchInterceptor<Object, Object> batchInterceptor;
 
-	private final Function<MessageListenerContainer, String> threadNameSupplier;
+	private final @Nullable Function<MessageListenerContainer, String> threadNameSupplier;
 
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> recordMessageConverter,

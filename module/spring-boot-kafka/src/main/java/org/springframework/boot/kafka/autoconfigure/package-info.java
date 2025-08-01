@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Apache Kafka.
  */
+@NullMarked
 package org.springframework.boot.kafka.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;
