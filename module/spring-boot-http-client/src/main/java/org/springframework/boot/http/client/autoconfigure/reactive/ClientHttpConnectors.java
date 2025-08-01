@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.reactive.AbstractClientHttpConnectorProperties.Connector;
@@ -50,11 +52,13 @@ public final class ClientHttpConnectors {
 		this.orderedProperties = orderedProperties;
 	}
 
-	public ClientHttpConnectorBuilder<?> builder(ClassLoader classLoader) {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public ClientHttpConnectorBuilder<?> builder(@Nullable ClassLoader classLoader) {
 		Connector connector = getProperty(AbstractClientHttpConnectorProperties::getConnector);
 		return (connector != null) ? connector.builder() : ClientHttpConnectorBuilder.detect(classLoader);
 	}
 
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public ClientHttpConnectorSettings settings() {
 		HttpRedirects redirects = getProperty(AbstractClientHttpConnectorProperties::getRedirects);
 		Duration connectTimeout = getProperty(AbstractClientHttpConnectorProperties::getConnectTimeout);
@@ -66,12 +70,13 @@ public final class ClientHttpConnectors {
 		return new ClientHttpConnectorSettings(redirects, connectTimeout, readTimeout, sslBundle);
 	}
 
-	private <T> T getProperty(Function<AbstractClientHttpConnectorProperties, T> accessor) {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private <T> @Nullable T getProperty(Function<AbstractClientHttpConnectorProperties, @Nullable T> accessor) {
 		return getProperty(accessor, Function.identity(), Objects::nonNull);
 	}
 
-	private <P, T> T getProperty(Function<AbstractClientHttpConnectorProperties, P> accessor, Function<P, T> extractor,
-			Predicate<T> predicate) {
+	private <P, T> @Nullable T getProperty(Function<AbstractClientHttpConnectorProperties, @Nullable P> accessor,
+			Function<P, @Nullable T> extractor, Predicate<@Nullable T> predicate) {
 		for (AbstractClientHttpConnectorProperties properties : this.orderedProperties) {
 			if (properties != null) {
 				P value = accessor.apply(properties);

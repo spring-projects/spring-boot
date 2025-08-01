@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.JdkHttpClientBuilder;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
@@ -41,7 +43,7 @@ public final class JdkClientHttpConnectorBuilder extends AbstractClientHttpConne
 		this(null, new JdkHttpClientBuilder());
 	}
 
-	private JdkClientHttpConnectorBuilder(List<Consumer<JdkClientHttpConnector>> customizers,
+	private JdkClientHttpConnectorBuilder(@Nullable List<Consumer<JdkClientHttpConnector>> customizers,
 			JdkHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -82,7 +84,7 @@ public final class JdkClientHttpConnectorBuilder extends AbstractClientHttpConne
 
 		static final String HTTP_CLIENT = "java.net.http.HttpClient";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
 		}
 

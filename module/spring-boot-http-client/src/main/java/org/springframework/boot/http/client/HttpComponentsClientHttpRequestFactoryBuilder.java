@@ -28,6 +28,7 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
@@ -53,7 +54,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	}
 
 	private HttpComponentsClientHttpRequestFactoryBuilder(
-			List<Consumer<HttpComponentsClientHttpRequestFactory>> customizers,
+			@Nullable List<Consumer<HttpComponentsClientHttpRequestFactory>> customizers,
 			HttpComponentsHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -121,7 +122,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	 * @return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} instance
 	 */
 	public HttpComponentsClientHttpRequestFactoryBuilder withTlsSocketStrategyFactory(
-			Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory) {
+			Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> tlsSocketStrategyFactory) {
 		Assert.notNull(tlsSocketStrategyFactory, "'tlsSocketStrategyFactory' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withTlsSocketStrategyFactory(tlsSocketStrategyFactory));
@@ -156,7 +157,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENTS = "org.apache.hc.client5.http.impl.classic.HttpClients";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENTS, classLoader);
 		}
 

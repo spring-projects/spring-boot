@@ -26,6 +26,7 @@ import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.http.client.HttpComponentsHttpAsyncClientBuilder;
 import org.springframework.boot.ssl.SslBundle;
@@ -48,7 +49,8 @@ public final class HttpComponentsClientHttpConnectorBuilder
 		this(null, new HttpComponentsHttpAsyncClientBuilder());
 	}
 
-	private HttpComponentsClientHttpConnectorBuilder(List<Consumer<HttpComponentsClientHttpConnector>> customizers,
+	private HttpComponentsClientHttpConnectorBuilder(
+			@Nullable List<Consumer<HttpComponentsClientHttpConnector>> customizers,
 			HttpComponentsHttpAsyncClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -103,7 +105,7 @@ public final class HttpComponentsClientHttpConnectorBuilder
 	 * @return a new {@link HttpComponentsClientHttpConnectorBuilder} instance
 	 */
 	public HttpComponentsClientHttpConnectorBuilder withTlsSocketStrategyFactory(
-			Function<SslBundle, TlsStrategy> tlsStrategyFactory) {
+			Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsStrategyFactory) {
 		Assert.notNull(tlsStrategyFactory, "'tlsStrategyFactory' must not be null");
 		return new HttpComponentsClientHttpConnectorBuilder(getCustomizers(),
 				this.httpClientBuilder.withTlsStrategyFactory(tlsStrategyFactory));
@@ -136,7 +138,7 @@ public final class HttpComponentsClientHttpConnectorBuilder
 
 		static final String REACTIVE_RESPONSE_CONSUMER = "org.apache.hc.core5.reactive.ReactiveResponseConsumer";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENTS, classLoader)
 					&& ClassUtils.isPresent(REACTIVE_RESPONSE_CONSUMER, classLoader);
 		}

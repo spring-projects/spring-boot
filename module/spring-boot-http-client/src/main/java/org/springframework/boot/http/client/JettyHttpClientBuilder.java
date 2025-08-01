@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
 import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
@@ -107,7 +108,7 @@ public final class JettyHttpClientBuilder {
 	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(HttpClientSettings settings) {
+	public HttpClient build(@Nullable HttpClientSettings settings) {
 		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
 		HttpClientTransport transport = createTransport(settings);
 		this.httpClientTransportCustomizer.accept(transport);
@@ -119,7 +120,7 @@ public final class JettyHttpClientBuilder {
 		return httpClient;
 	}
 
-	private HttpClient createHttpClient(Duration readTimeout, HttpClientTransport transport) {
+	private HttpClient createHttpClient(@Nullable Duration readTimeout, HttpClientTransport transport) {
 		return (readTimeout != null) ? new HttpClientWithReadTimeout(transport, readTimeout)
 				: new HttpClient(transport);
 	}
@@ -130,7 +131,7 @@ public final class JettyHttpClientBuilder {
 				: new HttpClientTransportOverHTTP(connector);
 	}
 
-	private ClientConnector createClientConnector(SslBundle sslBundle) {
+	private ClientConnector createClientConnector(@Nullable SslBundle sslBundle) {
 		ClientConnector connector = new ClientConnector();
 		if (sslBundle != null) {
 			connector.setSslContextFactory(createSslContextFactory(sslBundle));

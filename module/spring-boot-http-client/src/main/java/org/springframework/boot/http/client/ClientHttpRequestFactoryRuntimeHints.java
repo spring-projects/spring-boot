@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
@@ -45,13 +47,13 @@ import org.springframework.util.ReflectionUtils;
 class ClientHttpRequestFactoryRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 		if (ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestFactory", classLoader)) {
 			registerHints(hints.reflection(), classLoader);
 		}
 	}
 
-	private void registerHints(ReflectionHints hints, ClassLoader classLoader) {
+	private void registerHints(ReflectionHints hints, @Nullable ClassLoader classLoader) {
 		hints.registerField(findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory"));
 		registerClientHttpRequestFactoryHints(hints, classLoader,
 				HttpComponentsClientHttpRequestFactoryBuilder.Classes.HTTP_CLIENTS,
@@ -71,8 +73,8 @@ class ClientHttpRequestFactoryRuntimeHints implements RuntimeHintsRegistrar {
 		});
 	}
 
-	private void registerClientHttpRequestFactoryHints(ReflectionHints hints, ClassLoader classLoader, String className,
-			Runnable action) {
+	private void registerClientHttpRequestFactoryHints(ReflectionHints hints, @Nullable ClassLoader classLoader,
+			String className, Runnable action) {
 		hints.registerTypeIfPresent(classLoader, className, (typeHint) -> {
 			typeHint.onReachableType(TypeReference.of(className));
 			action.run();

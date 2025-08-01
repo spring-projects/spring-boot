@@ -29,6 +29,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
@@ -54,7 +55,7 @@ public final class HttpComponentsHttpClientBuilder {
 
 	private final Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer;
 
-	private final Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory;
+	private final Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> tlsSocketStrategyFactory;
 
 	public HttpComponentsHttpClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
@@ -65,7 +66,7 @@ public final class HttpComponentsHttpClientBuilder {
 			Consumer<PoolingHttpClientConnectionManagerBuilder> connectionManagerCustomizer,
 			Consumer<SocketConfig.Builder> socketConfigCustomizer,
 			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer,
-			Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory) {
+			Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> tlsSocketStrategyFactory) {
 		this.customizer = customizer;
 		this.connectionManagerCustomizer = connectionManagerCustomizer;
 		this.socketConfigCustomizer = socketConfigCustomizer;
@@ -125,7 +126,7 @@ public final class HttpComponentsHttpClientBuilder {
 	 * @return a new {@link HttpComponentsHttpClientBuilder} instance
 	 */
 	public HttpComponentsHttpClientBuilder withTlsSocketStrategyFactory(
-			Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory) {
+			Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> tlsSocketStrategyFactory) {
 		Assert.notNull(tlsSocketStrategyFactory, "'tlsSocketStrategyFactory' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.socketConfigCustomizer, this.defaultRequestConfigCustomizer, tlsSocketStrategyFactory);
@@ -153,7 +154,7 @@ public final class HttpComponentsHttpClientBuilder {
 	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance
 	 */
-	public CloseableHttpClient build(HttpClientSettings settings) {
+	public CloseableHttpClient build(@Nullable HttpClientSettings settings) {
 		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
 		Assert.isTrue(settings.connectTimeout() == null, "'settings' must not have a 'connectTimeout'");
 		HttpClientBuilder builder = HttpClientBuilder.create()
@@ -170,9 +171,15 @@ public final class HttpComponentsHttpClientBuilder {
 			.useSystemProperties();
 		PropertyMapper map = PropertyMapper.get();
 		builder.setDefaultSocketConfig(createSocketConfig(settings));
-		map.from(settings::sslBundle).as(this.tlsSocketStrategyFactory).whenNonNull().to(builder::setTlsSocketStrategy);
+		setTlsSocketStrategy(settings, map, builder);
 		this.connectionManagerCustomizer.accept(builder);
 		return builder.build();
+	}
+
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private void setTlsSocketStrategy(HttpClientSettings settings, PropertyMapper map,
+			PoolingHttpClientConnectionManagerBuilder builder) {
+		map.from(settings::sslBundle).as(this.tlsSocketStrategyFactory).whenNonNull().to(builder::setTlsSocketStrategy);
 	}
 
 	private SocketConfig createSocketConfig(HttpClientSettings settings) {

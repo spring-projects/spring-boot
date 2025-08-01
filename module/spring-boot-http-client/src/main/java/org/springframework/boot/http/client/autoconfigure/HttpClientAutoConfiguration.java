@@ -50,6 +50,7 @@ public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	private final ClientHttpRequestFactories factories;
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
 	HttpClientAutoConfiguration(ObjectProvider<SslBundles> sslBundles, HttpClientProperties properties) {

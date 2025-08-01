@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.io.ClientConnector;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
@@ -47,7 +48,7 @@ public final class JettyClientHttpRequestFactoryBuilder
 		this(null, new JettyHttpClientBuilder());
 	}
 
-	private JettyClientHttpRequestFactoryBuilder(List<Consumer<JettyClientHttpRequestFactory>> customizers,
+	private JettyClientHttpRequestFactoryBuilder(@Nullable List<Consumer<JettyClientHttpRequestFactory>> customizers,
 			JettyHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -116,7 +117,7 @@ public final class JettyClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENT = "org.eclipse.jetty.client.HttpClient";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
 		}
 

@@ -55,6 +55,7 @@ public final class ClientHttpConnectorAutoConfiguration implements BeanClassLoad
 
 	private final ClientHttpConnectors connectors;
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
 	ClientHttpConnectorAutoConfiguration(ObjectProvider<SslBundles> sslBundles,

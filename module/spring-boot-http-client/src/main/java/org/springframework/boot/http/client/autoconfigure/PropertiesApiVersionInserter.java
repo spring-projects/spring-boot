@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.autoconfigure.ApiversionProperties.Insert;
 import org.springframework.http.HttpHeaders;
@@ -67,8 +69,8 @@ public final class PropertiesApiVersionInserter implements ApiVersionInserter {
 	 * @return an {@link ApiVersionInserter} or {@code null} if no API version should be
 	 * inserted
 	 */
-	public static ApiVersionInserter get(ApiVersionInserter apiVersionInserter, ApiVersionFormatter apiVersionFormatter,
-			ApiversionProperties... properties) {
+	public static @Nullable ApiVersionInserter get(@Nullable ApiVersionInserter apiVersionInserter,
+			@Nullable ApiVersionFormatter apiVersionFormatter, ApiversionProperties... properties) {
 		return get(apiVersionInserter, apiVersionFormatter, Arrays.stream(properties));
 	}
 
@@ -82,8 +84,8 @@ public final class PropertiesApiVersionInserter implements ApiVersionInserter {
 	 * @return an {@link ApiVersionInserter} or {@code null} if no API version should be
 	 * inserted
 	 */
-	public static ApiVersionInserter get(ApiVersionInserter apiVersionInserter, ApiVersionFormatter apiVersionFormatter,
-			Stream<ApiversionProperties> propertiesStream) {
+	public static @Nullable ApiVersionInserter get(@Nullable ApiVersionInserter apiVersionInserter,
+			@Nullable ApiVersionFormatter apiVersionFormatter, Stream<ApiversionProperties> propertiesStream) {
 		List<ApiVersionInserter> inserters = new ArrayList<>();
 		if (apiVersionInserter != null) {
 			inserters.add(apiVersionInserter);

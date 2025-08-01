@@ -18,6 +18,8 @@ package org.springframework.boot.http.client;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.SslBundle;
 
 /**
@@ -31,13 +33,17 @@ import org.springframework.boot.ssl.SslBundle;
  * @author Phillip Webb
  * @since 3.5.0
  */
-public record HttpClientSettings(HttpRedirects redirects, Duration connectTimeout, Duration readTimeout,
-		SslBundle sslBundle) {
+public record HttpClientSettings(HttpRedirects redirects, @Nullable Duration connectTimeout,
+		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
 
 	static final HttpClientSettings DEFAULTS = new HttpClientSettings(null, null, null, null);
 
-	public HttpClientSettings {
-		redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
+	public HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
+			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		this.redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
+		this.connectTimeout = connectTimeout;
+		this.readTimeout = readTimeout;
+		this.sslBundle = sslBundle;
 	}
 
 }

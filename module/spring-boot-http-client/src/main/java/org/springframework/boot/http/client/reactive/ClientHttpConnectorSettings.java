@@ -18,6 +18,8 @@ package org.springframework.boot.http.client.reactive;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.reactive.ClientHttpConnector;
@@ -34,13 +36,17 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
  * @since 3.5.0
  * @see ClientHttpConnectorBuilder
  */
-public record ClientHttpConnectorSettings(HttpRedirects redirects, Duration connectTimeout, Duration readTimeout,
-		SslBundle sslBundle) {
+public record ClientHttpConnectorSettings(HttpRedirects redirects, @Nullable Duration connectTimeout,
+		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
 
 	private static final ClientHttpConnectorSettings defaults = new ClientHttpConnectorSettings(null, null, null, null);
 
-	public ClientHttpConnectorSettings {
-		redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
+	public ClientHttpConnectorSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
+			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		this.redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
+		this.connectTimeout = connectTimeout;
+		this.readTimeout = readTimeout;
+		this.sslBundle = sslBundle;
 	}
 
 	/**
@@ -49,7 +55,7 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, Duration conn
 	 * @param connectTimeout the new connect timeout setting
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
-	public ClientHttpConnectorSettings withConnectTimeout(Duration connectTimeout) {
+	public ClientHttpConnectorSettings withConnectTimeout(@Nullable Duration connectTimeout) {
 		return new ClientHttpConnectorSettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
@@ -59,7 +65,7 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, Duration conn
 	 * @param readTimeout the new read timeout setting
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
-	public ClientHttpConnectorSettings withReadTimeout(Duration readTimeout) {
+	public ClientHttpConnectorSettings withReadTimeout(@Nullable Duration readTimeout) {
 		return new ClientHttpConnectorSettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
 	}
 
@@ -70,7 +76,7 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, Duration conn
 	 * @param readTimeout the new read timeout setting
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
-	public ClientHttpConnectorSettings withTimeouts(Duration connectTimeout, Duration readTimeout) {
+	public ClientHttpConnectorSettings withTimeouts(@Nullable Duration connectTimeout, @Nullable Duration readTimeout) {
 		return new ClientHttpConnectorSettings(this.redirects, connectTimeout, readTimeout, this.sslBundle);
 	}
 
@@ -80,7 +86,7 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, Duration conn
 	 * @param sslBundle the new SSL bundle setting
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
-	public ClientHttpConnectorSettings withSslBundle(SslBundle sslBundle) {
+	public ClientHttpConnectorSettings withSslBundle(@Nullable SslBundle sslBundle) {
 		return new ClientHttpConnectorSettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
 	}
 
@@ -90,7 +96,7 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, Duration conn
 	 * @param redirects the new redirects setting
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
-	public ClientHttpConnectorSettings withRedirects(HttpRedirects redirects) {
+	public ClientHttpConnectorSettings withRedirects(@Nullable HttpRedirects redirects) {
 		return new ClientHttpConnectorSettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
@@ -100,7 +106,7 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, Duration conn
 	 * @param sslBundle the SSL bundle setting
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
-	public static ClientHttpConnectorSettings ofSslBundle(SslBundle sslBundle) {
+	public static ClientHttpConnectorSettings ofSslBundle(@Nullable SslBundle sslBundle) {
 		return defaults().withSslBundle(sslBundle);
 	}
 

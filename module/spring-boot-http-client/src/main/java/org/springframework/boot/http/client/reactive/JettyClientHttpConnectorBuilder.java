@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.io.ClientConnector;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.http.client.JettyHttpClientBuilder;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
@@ -44,7 +45,7 @@ public final class JettyClientHttpConnectorBuilder
 		this(null, new JettyHttpClientBuilder());
 	}
 
-	private JettyClientHttpConnectorBuilder(List<Consumer<JettyClientHttpConnector>> customizers,
+	private JettyClientHttpConnectorBuilder(@Nullable List<Consumer<JettyClientHttpConnector>> customizers,
 			JettyHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -110,7 +111,7 @@ public final class JettyClientHttpConnectorBuilder
 
 		static final String REACTIVE_REQUEST = "org.eclipse.jetty.reactive.client.ReactiveRequest";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENT, classLoader)
 					&& ClassUtils.isPresent(REACTIVE_REQUEST, classLoader);
 		}

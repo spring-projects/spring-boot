@@ -18,6 +18,8 @@ package org.springframework.boot.http.client;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -35,14 +37,18 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @since 3.4.0
  * @see ClientHttpRequestFactoryBuilder
  */
-public record ClientHttpRequestFactorySettings(HttpRedirects redirects, Duration connectTimeout, Duration readTimeout,
-		SslBundle sslBundle) {
+public record ClientHttpRequestFactorySettings(HttpRedirects redirects, @Nullable Duration connectTimeout,
+		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
 
 	private static final ClientHttpRequestFactorySettings defaults = new ClientHttpRequestFactorySettings(null, null,
 			null, null);
 
-	public ClientHttpRequestFactorySettings {
-		redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
+	public ClientHttpRequestFactorySettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
+			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		this.redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
+		this.connectTimeout = connectTimeout;
+		this.readTimeout = readTimeout;
+		this.sslBundle = sslBundle;
 	}
 
 	/**
@@ -51,7 +57,7 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, Duration
 	 * @param connectTimeout the new connect timeout setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
-	public ClientHttpRequestFactorySettings withConnectTimeout(Duration connectTimeout) {
+	public ClientHttpRequestFactorySettings withConnectTimeout(@Nullable Duration connectTimeout) {
 		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
@@ -61,7 +67,7 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, Duration
 	 * @param readTimeout the new read timeout setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
-	public ClientHttpRequestFactorySettings withReadTimeout(Duration readTimeout) {
+	public ClientHttpRequestFactorySettings withReadTimeout(@Nullable Duration readTimeout) {
 		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
 	}
 
@@ -72,7 +78,8 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, Duration
 	 * @param readTimeout the new read timeout setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
-	public ClientHttpRequestFactorySettings withTimeouts(Duration connectTimeout, Duration readTimeout) {
+	public ClientHttpRequestFactorySettings withTimeouts(@Nullable Duration connectTimeout,
+			@Nullable Duration readTimeout) {
 		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, readTimeout, this.sslBundle);
 	}
 
@@ -82,7 +89,7 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, Duration
 	 * @param sslBundle the new SSL bundle setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
-	public ClientHttpRequestFactorySettings withSslBundle(SslBundle sslBundle) {
+	public ClientHttpRequestFactorySettings withSslBundle(@Nullable SslBundle sslBundle) {
 		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
 	}
 
@@ -92,7 +99,7 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, Duration
 	 * @param redirects the new redirects setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
-	public ClientHttpRequestFactorySettings withRedirects(HttpRedirects redirects) {
+	public ClientHttpRequestFactorySettings withRedirects(@Nullable HttpRedirects redirects) {
 		return new ClientHttpRequestFactorySettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
@@ -102,7 +109,7 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, Duration
 	 * @param sslBundle the SSL bundle setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
-	public static ClientHttpRequestFactorySettings ofSslBundle(SslBundle sslBundle) {
+	public static ClientHttpRequestFactorySettings ofSslBundle(@Nullable SslBundle sslBundle) {
 		return defaults().withSslBundle(sslBundle);
 	}
 

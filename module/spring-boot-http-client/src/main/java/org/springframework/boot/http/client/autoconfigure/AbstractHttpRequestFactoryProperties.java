@@ -19,6 +19,8 @@ package org.springframework.boot.http.client.autoconfigure;
 import java.time.Duration;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
@@ -40,17 +42,17 @@ public abstract class AbstractHttpRequestFactoryProperties {
 	/**
 	 * Handling for HTTP redirects.
 	 */
-	private HttpRedirects redirects;
+	private @Nullable HttpRedirects redirects;
 
 	/**
 	 * Default connect timeout for a client HTTP request.
 	 */
-	private Duration connectTimeout;
+	private @Nullable Duration connectTimeout;
 
 	/**
 	 * Default read timeout for a client HTTP request.
 	 */
-	private Duration readTimeout;
+	private @Nullable Duration readTimeout;
 
 	/**
 	 * Default SSL configuration for a client HTTP request.
@@ -60,29 +62,29 @@ public abstract class AbstractHttpRequestFactoryProperties {
 	/**
 	 * Default factory used for a client HTTP request.
 	 */
-	private Factory factory;
+	private @Nullable Factory factory;
 
-	public HttpRedirects getRedirects() {
+	public @Nullable HttpRedirects getRedirects() {
 		return this.redirects;
 	}
 
-	public void setRedirects(HttpRedirects redirects) {
+	public void setRedirects(@Nullable HttpRedirects redirects) {
 		this.redirects = redirects;
 	}
 
-	public Duration getConnectTimeout() {
+	public @Nullable Duration getConnectTimeout() {
 		return this.connectTimeout;
 	}
 
-	public void setConnectTimeout(Duration connectTimeout) {
+	public void setConnectTimeout(@Nullable Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
 	}
 
-	public Duration getReadTimeout() {
+	public @Nullable Duration getReadTimeout() {
 		return this.readTimeout;
 	}
 
-	public void setReadTimeout(Duration readTimeout) {
+	public void setReadTimeout(@Nullable Duration readTimeout) {
 		this.readTimeout = readTimeout;
 	}
 
@@ -90,11 +92,11 @@ public abstract class AbstractHttpRequestFactoryProperties {
 		return this.ssl;
 	}
 
-	public Factory getFactory() {
+	public @Nullable Factory getFactory() {
 		return this.factory;
 	}
 
-	public void setFactory(Factory factory) {
+	public void setFactory(@Nullable Factory factory) {
 		this.factory = factory;
 	}
 
@@ -107,13 +109,13 @@ public abstract class AbstractHttpRequestFactoryProperties {
 		/**
 		 * SSL bundle to use.
 		 */
-		private String bundle;
+		private @Nullable String bundle;
 
-		public String getBundle() {
+		public @Nullable String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
 		}
 

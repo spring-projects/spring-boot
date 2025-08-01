@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -50,11 +52,13 @@ public final class ClientHttpRequestFactories {
 		this.orderedProperties = orderedProperties;
 	}
 
-	public ClientHttpRequestFactoryBuilder<?> builder(ClassLoader classLoader) {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public ClientHttpRequestFactoryBuilder<?> builder(@Nullable ClassLoader classLoader) {
 		Factory factory = getProperty(AbstractHttpRequestFactoryProperties::getFactory);
 		return (factory != null) ? factory.builder() : ClientHttpRequestFactoryBuilder.detect(classLoader);
 	}
 
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public ClientHttpRequestFactorySettings settings() {
 		HttpRedirects redirects = getProperty(AbstractHttpRequestFactoryProperties::getRedirects);
 		Duration connectTimeout = getProperty(AbstractHttpRequestFactoryProperties::getConnectTimeout);
@@ -66,12 +70,13 @@ public final class ClientHttpRequestFactories {
 		return new ClientHttpRequestFactorySettings(redirects, connectTimeout, readTimeout, sslBundle);
 	}
 
-	private <T> T getProperty(Function<AbstractHttpRequestFactoryProperties, T> accessor) {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private <T> @Nullable T getProperty(Function<AbstractHttpRequestFactoryProperties, @Nullable T> accessor) {
 		return getProperty(accessor, Function.identity(), Objects::nonNull);
 	}
 
-	private <P, T> T getProperty(Function<AbstractHttpRequestFactoryProperties, P> accessor, Function<P, T> extractor,
-			Predicate<T> predicate) {
+	private <P, T> @Nullable T getProperty(Function<AbstractHttpRequestFactoryProperties, @Nullable P> accessor,
+			Function<P, T> extractor, Predicate<@Nullable T> predicate) {
 		for (AbstractHttpRequestFactoryProperties properties : this.orderedProperties) {
 			if (properties != null) {
 				P value = accessor.apply(properties);

@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import org.jspecify.annotations.Nullable;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -48,7 +49,8 @@ public final class ReactorClientHttpRequestFactoryBuilder
 		this(null, new ReactorHttpClientBuilder());
 	}
 
-	private ReactorClientHttpRequestFactoryBuilder(List<Consumer<ReactorClientHttpRequestFactory>> customizers,
+	private ReactorClientHttpRequestFactoryBuilder(
+			@Nullable List<Consumer<ReactorClientHttpRequestFactory>> customizers,
 			ReactorHttpClientBuilder httpClientBuilder) {
 		super(customizers);
 		this.httpClientBuilder = httpClientBuilder;
@@ -120,7 +122,7 @@ public final class ReactorClientHttpRequestFactoryBuilder
 
 		static final String HTTP_CLIENT = "reactor.netty.http.client.HttpClient";
 
-		static boolean present(ClassLoader classLoader) {
+		static boolean present(@Nullable ClassLoader classLoader) {
 			return ClassUtils.isPresent(HTTP_CLIENT, classLoader);
 		}
 

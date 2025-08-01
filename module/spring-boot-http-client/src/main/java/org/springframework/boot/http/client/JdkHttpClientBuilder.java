@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 
 import javax.net.ssl.SSLParameters;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
@@ -63,7 +65,7 @@ public final class JdkHttpClientBuilder {
 	 * @param settings the settings to apply
 	 * @return a new {@link HttpClient} instance
 	 */
-	public HttpClient build(HttpClientSettings settings) {
+	public HttpClient build(@Nullable HttpClientSettings settings) {
 		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
 		Assert.isTrue(settings.readTimeout() == null, "'settings' must not have a 'readTimeout'");
 		HttpClient.Builder builder = HttpClient.newBuilder();

@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -46,7 +48,8 @@ public final class SimpleClientHttpRequestFactoryBuilder
 		this(null);
 	}
 
-	private SimpleClientHttpRequestFactoryBuilder(List<Consumer<SimpleClientHttpRequestFactory>> customizers) {
+	private SimpleClientHttpRequestFactoryBuilder(
+			@Nullable List<Consumer<SimpleClientHttpRequestFactory>> customizers) {
 		super(customizers);
 	}
 
