@@ -108,9 +108,17 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
-	void autoConfiguresJvmMetricsWithVirtualThreadsMetrics() {
+	void doesntAutoConfigureJvmMetricsWithVirtualThreadsMetricsIfVirtualThreadsAreDisabled() {
 		this.contextRunner.run(assertMetricsBeans()
-			.andThen((context) -> assertThat(context).hasSingleBean(getVirtualThreadMetricsClass())));
+			.andThen((context) -> assertThat(context).doesNotHaveBean(getVirtualThreadMetricsClass())));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void autoConfiguresJvmMetricsWithVirtualThreadsMetricsIfVirtualThreadsAreEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.run(assertMetricsBeans()
+				.andThen((context) -> assertThat(context).hasSingleBean(getVirtualThreadMetricsClass())));
 	}
 
 	@Test
