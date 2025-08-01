@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import jakarta.validation.ValidatorFactory;
 import org.aspectj.lang.JoinPoint;
@@ -45,6 +46,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.codec.CodecCustomizer;
@@ -897,7 +899,7 @@ class WebFluxAutoConfigurationTests {
 				.isEqualTo(context.getBean(ApiVersionDeprecationHandler.class));
 			assertThat(versionStrategy).extracting("versionParser").isEqualTo(context.getBean(ApiVersionParser.class));
 			assertThat(versionStrategy).extracting("supportedVersionPredicate")
-				.isEqualTo(context.getBean(ApiVersionCustomizer.class));
+				.isEqualTo(context.getBean("supportedVersionPredicate"));
 		});
 	}
 
@@ -1315,8 +1317,14 @@ class WebFluxAutoConfigurationTests {
 		}
 
 		@Bean
-		ApiVersionCustomizer apiVersionCustomizer() {
-			return (configurer) -> configurer.setSupportedVersionPredicate((comparable) -> true);
+		Predicate<Comparable<?>> supportedVersionPredicate() {
+			return (comparable) -> true;
+		}
+
+		@Bean
+		ApiVersionCustomizer apiVersionCustomizer(
+				@Qualifier("supportedVersionPredicate") Predicate<Comparable<?>> supportedVersionPredicate) {
+			return (configurer) -> configurer.setSupportedVersionPredicate(supportedVersionPredicate);
 		}
 
 	}

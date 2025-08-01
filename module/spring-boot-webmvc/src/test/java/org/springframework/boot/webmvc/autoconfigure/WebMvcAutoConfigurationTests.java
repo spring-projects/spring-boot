@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,6 +44,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -1102,7 +1104,7 @@ class WebMvcAutoConfigurationTests {
 				.isEqualTo(context.getBean(ApiVersionDeprecationHandler.class));
 			assertThat(versionStrategy).extracting("versionParser").isEqualTo(context.getBean(ApiVersionParser.class));
 			assertThat(versionStrategy).extracting("supportedVersionPredicate")
-				.isEqualTo(context.getBean(ApiVersionCustomizer.class));
+				.isEqualTo(context.getBean("supportedVersionPredicate"));
 		});
 	}
 
@@ -1686,8 +1688,14 @@ class WebMvcAutoConfigurationTests {
 		}
 
 		@Bean
-		ApiVersionCustomizer apiVersionCustomizer() {
-			return (configurer) -> configurer.setSupportedVersionPredicate((comparable) -> true);
+		Predicate<Comparable<?>> supportedVersionPredicate() {
+			return (comparable) -> true;
+		}
+
+		@Bean
+		ApiVersionCustomizer apiVersionCustomizer(
+				@Qualifier("supportedVersionPredicate") Predicate<Comparable<?>> supportedVersionPredicate) {
+			return (configurer) -> configurer.setSupportedVersionPredicate(supportedVersionPredicate);
 		}
 
 	}
