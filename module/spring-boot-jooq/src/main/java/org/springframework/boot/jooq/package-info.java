@@ -19,4 +19,7 @@
  *
  * @see org.springframework.boot.json.JsonParser
  */
+@NullMarked
 package org.springframework.boot.jooq;
+
+import org.jspecify.annotations.NullMarked;
