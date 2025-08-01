@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  * OAuth 2.0 Authorization Server properties.
  *
  * @author Steve Riesenberg
+ * @author Florian Lemaire
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.security.oauth2.authorizationserver")
@@ -145,6 +146,11 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		private String tokenIntrospectionUri = "/oauth2/introspect";
 
 		/**
+		 * Authorization Server's OAuth 2.0 Pushed Authorization Request Endpoint.
+		 */
+		private String pushedAuthorizationRequestUri = "/oauth2/par";
+
+		/**
 		 * OpenID Connect 1.0 endpoints.
 		 */
 		@NestedConfigurationProperty
@@ -204,6 +210,14 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 
 		public void setTokenIntrospectionUri(String tokenIntrospectionUri) {
 			this.tokenIntrospectionUri = tokenIntrospectionUri;
+		}
+
+		public String getPushedAuthorizationRequestUri() {
+			return this.pushedAuthorizationRequestUri;
+		}
+
+		public void setPushedAuthorizationRequestUri(String pushedAuthorizationRequestUri) {
+			this.pushedAuthorizationRequestUri = pushedAuthorizationRequestUri;
 		}
 
 		public OidcEndpoint getOidc() {
