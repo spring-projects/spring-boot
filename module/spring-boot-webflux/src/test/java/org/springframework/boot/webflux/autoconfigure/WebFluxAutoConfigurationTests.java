@@ -896,7 +896,8 @@ class WebFluxAutoConfigurationTests {
 			assertThat(versionStrategy).extracting("deprecationHandler")
 				.isEqualTo(context.getBean(ApiVersionDeprecationHandler.class));
 			assertThat(versionStrategy).extracting("versionParser").isEqualTo(context.getBean(ApiVersionParser.class));
-			assertThat(versionStrategy).extracting("supportedVersionPredicate").isEqualTo(context.getBean(ApiVersionCustomizer.class));
+			assertThat(versionStrategy).extracting("supportedVersionPredicate")
+				.isEqualTo(context.getBean(ApiVersionCustomizer.class));
 		});
 	}
 

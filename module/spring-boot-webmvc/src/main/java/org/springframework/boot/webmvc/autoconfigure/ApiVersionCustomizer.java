@@ -16,12 +16,10 @@
 
 package org.springframework.boot.webmvc.autoconfigure;
 
-
 import org.springframework.web.servlet.config.annotation.ApiVersionConfigurer;
 
 /**
- * Customizer that can be used to modify the auto-configured
- * {@link ApiVersionConfigurer}
+ * Customizer that can be used to modify the auto-configured {@link ApiVersionConfigurer}
  *
  * @author Spencer Gibb
  * @since 4.0.0
@@ -33,4 +31,5 @@ public interface ApiVersionCustomizer {
 	 * @param apiVersionConfigurer the configurer to customize
 	 */
 	void customize(ApiVersionConfigurer apiVersionConfigurer);
+
 }

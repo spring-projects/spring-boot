@@ -19,8 +19,7 @@ package org.springframework.boot.webflux.autoconfigure;
 import org.springframework.web.reactive.config.ApiVersionConfigurer;
 
 /**
- * Customizer that can be used to modify the auto-configured
- * {@link ApiVersionConfigurer}
+ * Customizer that can be used to modify the auto-configured {@link ApiVersionConfigurer}
  *
  * @author Spencer Gibb
  * @since 4.0.0
@@ -32,4 +31,5 @@ public interface ApiVersionCustomizer {
 	 * @param apiVersionConfigurer the configurer to customize
 	 */
 	void customize(ApiVersionConfigurer apiVersionConfigurer);
+
 }
