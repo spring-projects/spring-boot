@@ -40,8 +40,7 @@ public class AggregatorPlugin implements Plugin<Project> {
 		target.getExtensions().add("aggregates", aggregates);
 		aggregates.all((aggregate) -> {
 			NamedDomainObjectProvider<DependencyScopeConfiguration> dependencies = target.getConfigurations()
-				.dependencyScope(aggregate.getName() + "Dependencies",
-						(configuration) -> configureAttributes(configuration, aggregate, target.getObjects()));
+				.dependencyScope(aggregate.getName() + "Dependencies");
 			NamedDomainObjectProvider<ResolvableConfiguration> aggregated = target.getConfigurations()
 				.resolvable(aggregate.getName(), (configuration) -> {
 					configuration.extendsFrom(dependencies.get());
