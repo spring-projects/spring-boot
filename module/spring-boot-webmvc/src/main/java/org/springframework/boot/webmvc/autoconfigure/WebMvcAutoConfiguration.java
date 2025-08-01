@@ -402,7 +402,7 @@ public final class WebMvcAutoConfiguration {
 			this.apiVersionResolvers.orderedStream().forEach(configurer::useVersionResolver);
 			this.apiVersionParser.ifAvailable(configurer::setVersionParser);
 			this.apiVersionDeprecationHandler.ifAvailable(configurer::setDeprecationHandler);
-			this.apiVersionCustomizers.orderedStream().forEach(customizer -> customizer.customize(configurer));
+			this.apiVersionCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configurer));
 		}
 
 		private void configureApiVersioningUse(ApiVersionConfigurer configurer, Use use) {

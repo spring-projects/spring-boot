@@ -1687,7 +1687,7 @@ class WebMvcAutoConfigurationTests {
 
 		@Bean
 		ApiVersionCustomizer apiVersionCustomizer() {
-			return configurer -> configurer.setSupportedVersionPredicate(comparable -> true);
+			return configurer -> configurer.setSupportedVersionPredicate((comparable) -> true);
 		}
 
 	}
