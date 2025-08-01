@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.SmartLifecycle;
@@ -49,7 +51,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * the server has not yet been created.
 	 * @return the web server
 	 */
-	WebServer getWebServer();
+	@Nullable WebServer getWebServer();
 
 	/**
 	 * Returns the namespace of the web server application context or {@code null} if no
@@ -58,7 +60,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * different port).
 	 * @return the server namespace
 	 */
-	String getServerNamespace();
+	@Nullable String getServerNamespace();
 
 	/**
 	 * Returns {@code true} if the specified context is a
@@ -81,7 +83,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * {@link WebServerApplicationContext}
 	 * @since 2.6.0
 	 */
-	static String getServerNamespace(ApplicationContext context) {
+	static @Nullable String getServerNamespace(ApplicationContext context) {
 		return (context instanceof WebServerApplicationContext configurableContext)
 				? configurableContext.getServerNamespace() : null;
 

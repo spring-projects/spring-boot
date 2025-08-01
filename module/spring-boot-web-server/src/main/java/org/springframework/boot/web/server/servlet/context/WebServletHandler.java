@@ -21,12 +21,14 @@ import java.util.Map;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,7 +43,7 @@ class WebServletHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	public void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
+	public void doHandle(Map<String, @Nullable Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServletRegistrationBean.class);
 		builder.addPropertyValue("asyncSupported", attributes.get("asyncSupported"));
@@ -55,13 +57,19 @@ class WebServletHandler extends ServletComponentHandler {
 		registry.registerBeanDefinition(name, builder.getBeanDefinition());
 	}
 
-	private String determineName(Map<String, Object> attributes, BeanDefinition beanDefinition) {
-		return (String) (StringUtils.hasText((String) attributes.get("name")) ? attributes.get("name")
-				: beanDefinition.getBeanClassName());
+	private String determineName(Map<String, @Nullable Object> attributes, BeanDefinition beanDefinition) {
+		String name = (String) attributes.get("name");
+		return StringUtils.hasText(name) ? name : getBeanClassName(beanDefinition);
 	}
 
-	private BeanDefinition determineMultipartConfig(AnnotatedBeanDefinition beanDefinition) {
-		Map<String, Object> attributes = beanDefinition.getMetadata()
+	private String getBeanClassName(BeanDefinition beanDefinition) {
+		String name = beanDefinition.getBeanClassName();
+		Assert.state(name != null, "'name' must not be null");
+		return name;
+	}
+
+	private @Nullable BeanDefinition determineMultipartConfig(AnnotatedBeanDefinition beanDefinition) {
+		Map<String, @Nullable Object> attributes = beanDefinition.getMetadata()
 			.getAnnotationAttributes(MultipartConfig.class.getName());
 		if (attributes == null) {
 			return null;

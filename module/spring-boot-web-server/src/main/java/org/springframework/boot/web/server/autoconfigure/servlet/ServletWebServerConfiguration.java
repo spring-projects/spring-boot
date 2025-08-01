@@ -17,6 +17,7 @@
 package org.springframework.boot.web.server.autoconfigure.servlet;
 
 import jakarta.servlet.DispatcherType;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -87,7 +88,7 @@ public class ServletWebServerConfiguration {
 	 */
 	static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
-		private ConfigurableListableBeanFactory beanFactory;
+		private @Nullable ConfigurableListableBeanFactory beanFactory;
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -102,15 +103,15 @@ public class ServletWebServerConfiguration {
 			if (this.beanFactory == null) {
 				return;
 			}
-			registerSyntheticBeanIfMissing(registry, "webServerFactoryCustomizerBeanPostProcessor",
+			registerSyntheticBeanIfMissing(this.beanFactory, registry, "webServerFactoryCustomizerBeanPostProcessor",
 					WebServerFactoryCustomizerBeanPostProcessor.class);
-			registerSyntheticBeanIfMissing(registry, "errorPageRegistrarBeanPostProcessor",
+			registerSyntheticBeanIfMissing(this.beanFactory, registry, "errorPageRegistrarBeanPostProcessor",
 					ErrorPageRegistrarBeanPostProcessor.class);
 		}
 
-		private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,
-				Class<T> beanClass) {
-			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
+		private <T> void registerSyntheticBeanIfMissing(ConfigurableListableBeanFactory beanFactory,
+				BeanDefinitionRegistry registry, String name, Class<T> beanClass) {
+			if (ObjectUtils.isEmpty(beanFactory.getBeanNamesForType(beanClass, true, false))) {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(name, beanDefinition);

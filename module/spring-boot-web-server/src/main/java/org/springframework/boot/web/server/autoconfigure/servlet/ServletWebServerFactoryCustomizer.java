@@ -19,6 +19,8 @@ package org.springframework.boot.web.server.autoconfigure.servlet;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -50,7 +52,7 @@ public class ServletWebServerFactoryCustomizer
 
 	private final List<CookieSameSiteSupplier> cookieSameSiteSuppliers;
 
-	private final SslBundles sslBundles;
+	private final @Nullable SslBundles sslBundles;
 
 	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
 		this(serverProperties, Collections.emptyList(), Collections.emptyList(), null);
@@ -58,7 +60,7 @@ public class ServletWebServerFactoryCustomizer
 
 	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties,
 			List<WebListenerRegistrar> webListenerRegistrars, List<CookieSameSiteSupplier> cookieSameSiteSuppliers,
-			SslBundles sslBundles) {
+			@Nullable SslBundles sslBundles) {
 		this.serverProperties = serverProperties;
 		this.webListenerRegistrars = webListenerRegistrars;
 		this.cookieSameSiteSuppliers = cookieSameSiteSuppliers;

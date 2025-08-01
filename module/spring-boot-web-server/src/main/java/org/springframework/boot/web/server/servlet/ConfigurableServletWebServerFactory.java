@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jakarta.servlet.ServletContext;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.Cookie.SameSite;
@@ -115,7 +116,7 @@ public interface ConfigurableServletWebServerFactory
 	 * static files.
 	 * @param documentRoot the document root or {@code null} if not required
 	 */
-	default void setDocumentRoot(File documentRoot) {
+	default void setDocumentRoot(@Nullable File documentRoot) {
 		getSettings().setDocumentRoot(documentRoot);
 	}
 

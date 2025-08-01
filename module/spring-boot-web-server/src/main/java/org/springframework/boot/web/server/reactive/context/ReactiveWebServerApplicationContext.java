@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.reactive.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.WebApplicationType;
@@ -42,9 +44,9 @@ import org.springframework.util.StringUtils;
 public class ReactiveWebServerApplicationContext extends GenericReactiveWebApplicationContext
 		implements ConfigurableWebServerApplicationContext {
 
-	private volatile WebServerManager serverManager;
+	private volatile @Nullable WebServerManager serverManager;
 
-	private String serverNamespace;
+	private @Nullable String serverNamespace;
 
 	/**
 	 * Create a new {@link ReactiveWebServerApplicationContext}.
@@ -166,18 +168,18 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	 * @return the web server
 	 */
 	@Override
-	public WebServer getWebServer() {
+	public @Nullable WebServer getWebServer() {
 		WebServerManager serverManager = this.serverManager;
 		return (serverManager != null) ? serverManager.getWebServer() : null;
 	}
 
 	@Override
-	public String getServerNamespace() {
+	public @Nullable String getServerNamespace() {
 		return this.serverNamespace;
 	}
 
 	@Override
-	public void setServerNamespace(String serverNamespace) {
+	public void setServerNamespace(@Nullable String serverNamespace) {
 		this.serverNamespace = serverNamespace;
 	}
 

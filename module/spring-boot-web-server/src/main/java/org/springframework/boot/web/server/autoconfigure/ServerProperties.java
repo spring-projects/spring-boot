@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -74,12 +76,12 @@ public class ServerProperties {
 	/**
 	 * Server HTTP port.
 	 */
-	private Integer port;
+	private @Nullable Integer port;
 
 	/**
 	 * Network address to which the server should bind.
 	 */
-	private InetAddress address;
+	private @Nullable InetAddress address;
 
 	@NestedConfigurationProperty
 	private final ErrorProperties error = new ErrorProperties();
@@ -87,12 +89,12 @@ public class ServerProperties {
 	/**
 	 * Strategy for handling X-Forwarded-* headers.
 	 */
-	private ForwardHeadersStrategy forwardHeadersStrategy;
+	private @Nullable ForwardHeadersStrategy forwardHeadersStrategy;
 
 	/**
 	 * Value to use for the Server response header (if empty, no header is sent).
 	 */
-	private String serverHeader;
+	private @Nullable String serverHeader;
 
 	/**
 	 * Maximum size of the HTTP request header. Refer to the documentation for your chosen
@@ -109,7 +111,7 @@ public class ServerProperties {
 	private Shutdown shutdown = Shutdown.GRACEFUL;
 
 	@NestedConfigurationProperty
-	private Ssl ssl;
+	private @Nullable Ssl ssl;
 
 	@NestedConfigurationProperty
 	private final Compression compression = new Compression();
@@ -126,27 +128,27 @@ public class ServerProperties {
 
 	private final Reactive reactive = new Reactive();
 
-	public Integer getPort() {
+	public @Nullable Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(Integer port) {
+	public void setPort(@Nullable Integer port) {
 		this.port = port;
 	}
 
-	public InetAddress getAddress() {
+	public @Nullable InetAddress getAddress() {
 		return this.address;
 	}
 
-	public void setAddress(InetAddress address) {
+	public void setAddress(@Nullable InetAddress address) {
 		this.address = address;
 	}
 
-	public String getServerHeader() {
+	public @Nullable String getServerHeader() {
 		return this.serverHeader;
 	}
 
-	public void setServerHeader(String serverHeader) {
+	public void setServerHeader(@Nullable String serverHeader) {
 		this.serverHeader = serverHeader;
 	}
 
@@ -170,11 +172,11 @@ public class ServerProperties {
 		return this.error;
 	}
 
-	public Ssl getSsl() {
+	public @Nullable Ssl getSsl() {
 		return this.ssl;
 	}
 
-	public void setSsl(Ssl ssl) {
+	public void setSsl(@Nullable Ssl ssl) {
 		this.ssl = ssl;
 	}
 
@@ -202,11 +204,11 @@ public class ServerProperties {
 		return this.reactive;
 	}
 
-	public ForwardHeadersStrategy getForwardHeadersStrategy() {
+	public @Nullable ForwardHeadersStrategy getForwardHeadersStrategy() {
 		return this.forwardHeadersStrategy;
 	}
 
-	public void setForwardHeadersStrategy(ForwardHeadersStrategy forwardHeadersStrategy) {
+	public void setForwardHeadersStrategy(@Nullable ForwardHeadersStrategy forwardHeadersStrategy) {
 		this.forwardHeadersStrategy = forwardHeadersStrategy;
 	}
 
@@ -223,7 +225,7 @@ public class ServerProperties {
 		/**
 		 * Context path of the application.
 		 */
-		private String contextPath;
+		private @Nullable String contextPath;
 
 		/**
 		 * Display name of the application.
@@ -243,15 +245,15 @@ public class ServerProperties {
 		@NestedConfigurationProperty
 		private final Session session = new Session();
 
-		public String getContextPath() {
+		public @Nullable String getContextPath() {
 			return this.contextPath;
 		}
 
-		public void setContextPath(String contextPath) {
+		public void setContextPath(@Nullable String contextPath) {
 			this.contextPath = cleanContextPath(contextPath);
 		}
 
-		private String cleanContextPath(String contextPath) {
+		private @Nullable String cleanContextPath(@Nullable String contextPath) {
 			String candidate = null;
 			if (StringUtils.hasLength(contextPath)) {
 				candidate = contextPath.strip();
@@ -375,13 +377,13 @@ public class ServerProperties {
 		/**
 		 * Mapping of locale to charset for response encoding.
 		 */
-		private Map<Locale, Charset> mapping;
+		private @Nullable Map<Locale, Charset> mapping;
 
-		public Map<Locale, Charset> getMapping() {
+		public @Nullable Map<Locale, Charset> getMapping() {
 			return this.mapping;
 		}
 
-		public void setMapping(Map<Locale, Charset> mapping) {
+		public void setMapping(@Nullable Map<Locale, Charset> mapping) {
 			this.mapping = mapping;
 		}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.reactive.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.WebApplicationType;
@@ -33,17 +35,18 @@ import org.springframework.core.env.ConfigurableEnvironment;
 class ReactiveWebServerApplicationContextFactory implements ApplicationContextFactory {
 
 	@Override
-	public Class<? extends ConfigurableEnvironment> getEnvironmentType(WebApplicationType webApplicationType) {
+	public @Nullable Class<? extends ConfigurableEnvironment> getEnvironmentType(
+			@Nullable WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.REACTIVE) ? null : ApplicationReactiveWebEnvironment.class;
 	}
 
 	@Override
-	public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
+	public @Nullable ConfigurableEnvironment createEnvironment(@Nullable WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.REACTIVE) ? null : new ApplicationReactiveWebEnvironment();
 	}
 
 	@Override
-	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
+	public @Nullable ConfigurableApplicationContext create(@Nullable WebApplicationType webApplicationType) {
 		return (webApplicationType != WebApplicationType.REACTIVE) ? null : createContext();
 	}
 

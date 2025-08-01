@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.context;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -34,6 +36,6 @@ public interface ConfigurableWebServerApplicationContext
 	 * @param serverNamespace the server namespace
 	 * @see #getServerNamespace()
 	 */
-	void setServerNamespace(String serverNamespace);
+	void setServerNamespace(@Nullable String serverNamespace);
 
 }

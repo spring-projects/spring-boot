@@ -19,6 +19,8 @@ package org.springframework.boot.web.server;
 import java.net.InetAddress;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.error.ErrorPageRegistry;
@@ -46,7 +48,7 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	 * Sets the specific network address that the server should bind to.
 	 * @param address the address to set (defaults to {@code null})
 	 */
-	void setAddress(InetAddress address);
+	void setAddress(@Nullable InetAddress address);
 
 	/**
 	 * Sets the error pages that will be used when handling exceptions.
@@ -58,33 +60,33 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	 * Sets the SSL configuration that will be applied to the server's default connector.
 	 * @param ssl the SSL configuration
 	 */
-	void setSsl(Ssl ssl);
+	void setSsl(@Nullable Ssl ssl);
 
 	/**
 	 * Sets the SSL bundles that can be used to configure SSL connections.
 	 * @param sslBundles the SSL bundles
 	 * @since 3.1.0
 	 */
-	void setSslBundles(SslBundles sslBundles);
+	void setSslBundles(@Nullable SslBundles sslBundles);
 
 	/**
 	 * Sets the HTTP/2 configuration that will be applied to the server.
 	 * @param http2 the HTTP/2 configuration
 	 */
-	void setHttp2(Http2 http2);
+	void setHttp2(@Nullable Http2 http2);
 
 	/**
 	 * Sets the compression configuration that will be applied to the server's default
 	 * connector.
 	 * @param compression the compression configuration
 	 */
-	void setCompression(Compression compression);
+	void setCompression(@Nullable Compression compression);
 
 	/**
 	 * Sets the server header value.
 	 * @param serverHeader the server header value
 	 */
-	void setServerHeader(String serverHeader);
+	void setServerHeader(@Nullable String serverHeader);
 
 	/**
 	 * Sets the shutdown configuration that will be applied to the server.

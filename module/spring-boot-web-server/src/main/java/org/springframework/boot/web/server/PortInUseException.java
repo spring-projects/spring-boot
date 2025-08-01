@@ -21,6 +21,8 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A {@code PortInUseException} is thrown when a web server fails to start due to a port
  * already being in use.
@@ -46,7 +48,7 @@ public class PortInUseException extends WebServerException {
 	 * @param port the port that was in use
 	 * @param cause the cause of the exception
 	 */
-	public PortInUseException(int port, Throwable cause) {
+	public PortInUseException(int port, @Nullable Throwable cause) {
 		super("Port " + port + " is already in use", cause);
 		this.port = port;
 	}
@@ -82,7 +84,8 @@ public class PortInUseException extends WebServerException {
 	public static void ifPortBindingException(Exception ex, Consumer<BindException> action) {
 		ifCausedBy(ex, BindException.class, (bindException) -> {
 			// bind exception can be also thrown because an address can't be assigned
-			if (bindException.getMessage().toLowerCase(Locale.ROOT).contains("in use")) {
+			String message = bindException.getMessage();
+			if (message != null && message.toLowerCase(Locale.ROOT).contains("in use")) {
 				action.accept(bindException);
 			}
 		});

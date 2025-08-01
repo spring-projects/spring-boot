@@ -17,4 +17,7 @@
 /**
  * Support for embedded web servers.
  */
+@NullMarked
 package org.springframework.boot.web.server;
+
+import org.jspecify.annotations.NullMarked;

@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Logic to extract URLs of static resource jars (those containing
  * {@code "META-INF/resources"} directories).
@@ -69,7 +71,7 @@ class StaticResourceJars {
 		}
 	}
 
-	private File toFile(URL url) {
+	private @Nullable File toFile(URL url) {
 		try {
 			return new File(url.toURI());
 		}

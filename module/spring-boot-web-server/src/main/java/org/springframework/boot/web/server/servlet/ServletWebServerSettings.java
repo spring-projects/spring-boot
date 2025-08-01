@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -44,7 +46,7 @@ public class ServletWebServerSettings {
 
 	private ContextPath contextPath = ContextPath.DEFAULT;
 
-	private String displayName;
+	private @Nullable String displayName;
 
 	private Session session = new Session();
 
@@ -52,7 +54,7 @@ public class ServletWebServerSettings {
 
 	private MimeMappings mimeMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
 
-	private File documentRoot;
+	private @Nullable File documentRoot;
 
 	private List<ServletContextInitializer> initializers = new ArrayList<>();
 
@@ -76,11 +78,11 @@ public class ServletWebServerSettings {
 		this.contextPath = contextPath;
 	}
 
-	public String getDisplayName() {
+	public @Nullable String getDisplayName() {
 		return this.displayName;
 	}
 
-	public void setDisplayName(String displayName) {
+	public void setDisplayName(@Nullable String displayName) {
 		this.displayName = displayName;
 	}
 
@@ -104,11 +106,11 @@ public class ServletWebServerSettings {
 		return this.mimeMappings;
 	}
 
-	public File getDocumentRoot() {
+	public @Nullable File getDocumentRoot() {
 		return this.documentRoot;
 	}
 
-	public void setDocumentRoot(File documentRoot) {
+	public void setDocumentRoot(@Nullable File documentRoot) {
 		this.documentRoot = documentRoot;
 	}
 
