@@ -16,6 +16,8 @@
 
 package org.springframework.boot.metrics.autoconfigure.export.datadog;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
 
@@ -33,13 +35,13 @@ public class DatadogProperties extends StepRegistryProperties {
 	/**
 	 * Datadog API key.
 	 */
-	private String apiKey;
+	private @Nullable String apiKey;
 
 	/**
 	 * Datadog application key. Not strictly required, but improves the Datadog experience
 	 * by sending meter descriptions, types, and base units to Datadog.
 	 */
-	private String applicationKey;
+	private @Nullable String applicationKey;
 
 	/**
 	 * Whether to publish descriptions metadata to Datadog. Turn this off to minimize the
@@ -58,19 +60,19 @@ public class DatadogProperties extends StepRegistryProperties {
 	 */
 	private String uri = "https://api.datadoghq.com";
 
-	public String getApiKey() {
+	public @Nullable String getApiKey() {
 		return this.apiKey;
 	}
 
-	public void setApiKey(String apiKey) {
+	public void setApiKey(@Nullable String apiKey) {
 		this.apiKey = apiKey;
 	}
 
-	public String getApplicationKey() {
+	public @Nullable String getApplicationKey() {
 		return this.applicationKey;
 	}
 
-	public void setApplicationKey(String applicationKey) {
+	public void setApplicationKey(@Nullable String applicationKey) {
 		this.applicationKey = applicationKey;
 	}
 

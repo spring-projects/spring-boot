@@ -17,4 +17,7 @@
 /**
  * Support for Docker Compose OpenTelemetry metrics service connections.
  */
+@NullMarked
 package org.springframework.boot.metrics.docker.compose.otlp;
+
+import org.jspecify.annotations.NullMarked;

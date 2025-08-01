@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Logback metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.logging.logback;
+
+import org.jspecify.annotations.NullMarked;

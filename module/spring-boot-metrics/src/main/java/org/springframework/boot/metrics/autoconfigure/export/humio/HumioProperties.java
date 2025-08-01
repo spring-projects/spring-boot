@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
 
@@ -36,7 +38,7 @@ public class HumioProperties extends StepRegistryProperties {
 	/**
 	 * Humio API token.
 	 */
-	private String apiToken;
+	private @Nullable String apiToken;
 
 	/**
 	 * Connection timeout for requests to this backend.
@@ -56,11 +58,11 @@ public class HumioProperties extends StepRegistryProperties {
 	 */
 	private String uri = "https://cloud.humio.com";
 
-	public String getApiToken() {
+	public @Nullable String getApiToken() {
 		return this.apiToken;
 	}
 
-	public void setApiToken(String apiToken) {
+	public void setApiToken(@Nullable String apiToken) {
 		this.apiToken = apiToken;
 	}
 

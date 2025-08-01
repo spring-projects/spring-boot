@@ -17,4 +17,7 @@
 /**
  * Base properties and adapters used when exporting actuator metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.properties;
+
+import org.jspecify.annotations.NullMarked;

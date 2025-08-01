@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to KairosDB.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.kairos;
+
+import org.jspecify.annotations.NullMarked;

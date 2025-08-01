@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.TimeGauge;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -112,7 +113,7 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 				event.getTimeTaken(), event.getSpringApplication());
 	}
 
-	private void registerGauge(String name, String description, Duration timeTaken,
+	private void registerGauge(String name, String description, @Nullable Duration timeTaken,
 			SpringApplication springApplication) {
 		if (timeTaken != null) {
 			Iterable<Tag> tags = createTagsFrom(springApplication);

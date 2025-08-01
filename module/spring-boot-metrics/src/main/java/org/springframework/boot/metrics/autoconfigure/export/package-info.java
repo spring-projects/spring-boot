@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for metrics exporter.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export;
+
+import org.jspecify.annotations.NullMarked;

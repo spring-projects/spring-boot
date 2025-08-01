@@ -19,6 +19,7 @@ package org.springframework.boot.metrics.autoconfigure.export.humio;
 import java.util.Map;
 
 import io.micrometer.humio.HumioConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 
@@ -39,22 +40,24 @@ class HumioPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<H
 	}
 
 	@Override
-	public String get(String k) {
+	public @Nullable String get(String k) {
 		return null;
 	}
 
 	@Override
 	public String uri() {
-		return get(HumioProperties::getUri, HumioConfig.super::uri);
+		return getRequired(HumioProperties::getUri, HumioConfig.super::uri);
 	}
 
 	@Override
-	public Map<String, String> tags() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable Map<String, String> tags() {
 		return get(HumioProperties::getTags, HumioConfig.super::tags);
 	}
 
 	@Override
-	public String apiToken() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String apiToken() {
 		return get(HumioProperties::getApiToken, HumioConfig.super::apiToken);
 	}
 

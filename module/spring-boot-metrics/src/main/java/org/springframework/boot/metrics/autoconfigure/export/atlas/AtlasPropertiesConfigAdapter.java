@@ -19,6 +19,7 @@ package org.springframework.boot.metrics.autoconfigure.export.atlas;
 import java.time.Duration;
 
 import com.netflix.spectator.atlas.AtlasConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.PropertiesConfigAdapter;
 
@@ -35,83 +36,83 @@ class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperti
 	}
 
 	@Override
-	public String get(String key) {
+	public @Nullable String get(String key) {
 		return null;
 	}
 
 	@Override
 	public Duration step() {
-		return get(AtlasProperties::getStep, AtlasConfig.super::step);
+		return getRequired(AtlasProperties::getStep, AtlasConfig.super::step);
 	}
 
 	@Override
 	public boolean enabled() {
-		return get(AtlasProperties::isEnabled, AtlasConfig.super::enabled);
+		return getRequired(AtlasProperties::isEnabled, AtlasConfig.super::enabled);
 	}
 
 	@Override
 	public Duration connectTimeout() {
-		return get(AtlasProperties::getConnectTimeout, AtlasConfig.super::connectTimeout);
+		return getRequired(AtlasProperties::getConnectTimeout, AtlasConfig.super::connectTimeout);
 	}
 
 	@Override
 	public Duration readTimeout() {
-		return get(AtlasProperties::getReadTimeout, AtlasConfig.super::readTimeout);
+		return getRequired(AtlasProperties::getReadTimeout, AtlasConfig.super::readTimeout);
 	}
 
 	@Override
 	public int numThreads() {
-		return get(AtlasProperties::getNumThreads, AtlasConfig.super::numThreads);
+		return getRequired(AtlasProperties::getNumThreads, AtlasConfig.super::numThreads);
 	}
 
 	@Override
 	public int batchSize() {
-		return get(AtlasProperties::getBatchSize, AtlasConfig.super::batchSize);
+		return getRequired(AtlasProperties::getBatchSize, AtlasConfig.super::batchSize);
 	}
 
 	@Override
 	public String uri() {
-		return get(AtlasProperties::getUri, AtlasConfig.super::uri);
+		return getRequired(AtlasProperties::getUri, AtlasConfig.super::uri);
 	}
 
 	@Override
 	public Duration meterTTL() {
-		return get(AtlasProperties::getMeterTimeToLive, AtlasConfig.super::meterTTL);
+		return getRequired(AtlasProperties::getMeterTimeToLive, AtlasConfig.super::meterTTL);
 	}
 
 	@Override
 	public boolean lwcEnabled() {
-		return get(AtlasProperties::isLwcEnabled, AtlasConfig.super::lwcEnabled);
+		return getRequired(AtlasProperties::isLwcEnabled, AtlasConfig.super::lwcEnabled);
 	}
 
 	@Override
 	public Duration lwcStep() {
-		return get(AtlasProperties::getLwcStep, AtlasConfig.super::lwcStep);
+		return getRequired(AtlasProperties::getLwcStep, AtlasConfig.super::lwcStep);
 	}
 
 	@Override
 	public boolean lwcIgnorePublishStep() {
-		return get(AtlasProperties::isLwcIgnorePublishStep, AtlasConfig.super::lwcIgnorePublishStep);
+		return getRequired(AtlasProperties::isLwcIgnorePublishStep, AtlasConfig.super::lwcIgnorePublishStep);
 	}
 
 	@Override
 	public Duration configRefreshFrequency() {
-		return get(AtlasProperties::getConfigRefreshFrequency, AtlasConfig.super::configRefreshFrequency);
+		return getRequired(AtlasProperties::getConfigRefreshFrequency, AtlasConfig.super::configRefreshFrequency);
 	}
 
 	@Override
 	public Duration configTTL() {
-		return get(AtlasProperties::getConfigTimeToLive, AtlasConfig.super::configTTL);
+		return getRequired(AtlasProperties::getConfigTimeToLive, AtlasConfig.super::configTTL);
 	}
 
 	@Override
 	public String configUri() {
-		return get(AtlasProperties::getConfigUri, AtlasConfig.super::configUri);
+		return getRequired(AtlasProperties::getConfigUri, AtlasConfig.super::configUri);
 	}
 
 	@Override
 	public String evalUri() {
-		return get(AtlasProperties::getEvalUri, AtlasConfig.super::evalUri);
+		return getRequired(AtlasProperties::getEvalUri, AtlasConfig.super::evalUri);
 	}
 
 }

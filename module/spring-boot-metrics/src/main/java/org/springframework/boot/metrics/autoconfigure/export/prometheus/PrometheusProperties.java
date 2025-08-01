@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -116,17 +118,17 @@ public class PrometheusProperties {
 		/**
 		 * Login user of the Prometheus Pushgateway.
 		 */
-		private String username;
+		private @Nullable String username;
 
 		/**
 		 * Login password of the Prometheus Pushgateway.
 		 */
-		private String password;
+		private @Nullable String password;
 
 		/**
 		 * Token to use for authentication with the Prometheus Pushgateway.
 		 */
-		private String token;
+		private @Nullable String token;
 
 		/**
 		 * Format to use when pushing metrics.
@@ -141,7 +143,7 @@ public class PrometheusProperties {
 		/**
 		 * Job identifier for this application instance.
 		 */
-		private String job;
+		private @Nullable String job;
 
 		/**
 		 * Grouping key for the pushed metrics.
@@ -169,19 +171,19 @@ public class PrometheusProperties {
 			this.address = address;
 		}
 
-		public String getUsername() {
+		public @Nullable String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		public void setUsername(@Nullable String username) {
 			this.username = username;
 		}
 
-		public String getPassword() {
+		public @Nullable String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		public void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
@@ -193,11 +195,11 @@ public class PrometheusProperties {
 			this.pushRate = pushRate;
 		}
 
-		public String getJob() {
+		public @Nullable String getJob() {
 			return this.job;
 		}
 
-		public void setJob(String job) {
+		public void setJob(@Nullable String job) {
 			this.job = job;
 		}
 
@@ -225,11 +227,11 @@ public class PrometheusProperties {
 			this.scheme = scheme;
 		}
 
-		public String getToken() {
+		public @Nullable String getToken() {
 			return this.token;
 		}
 
-		public void setToken(String token) {
+		public void setToken(@Nullable String token) {
 			this.token = token;
 		}
 

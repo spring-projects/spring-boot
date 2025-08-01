@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.graphite.GraphiteProtocol;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.ObjectUtils;
@@ -74,7 +75,7 @@ public class GraphiteProperties {
 	 * Whether Graphite tags should be used, as opposed to a hierarchical naming
 	 * convention. Enabled by default unless "tagsAsPrefix" is set.
 	 */
-	private Boolean graphiteTagsEnabled;
+	private @Nullable Boolean graphiteTagsEnabled;
 
 	/**
 	 * For the hierarchical naming convention, turn the specified tag keys into part of

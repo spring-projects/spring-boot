@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to Elastic.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.elastic;
+
+import org.jspecify.annotations.NullMarked;

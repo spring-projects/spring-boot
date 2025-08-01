@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import io.micrometer.prometheusmetrics.PrometheusConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.PropertiesConfigAdapter;
 
@@ -43,26 +44,27 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 	}
 
 	@Override
-	public String get(String key) {
+	public @Nullable String get(String key) {
 		return null;
 	}
 
 	@Override
 	public boolean descriptions() {
-		return get(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
+		return getRequired(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
 	}
 
 	@Override
 	public Duration step() {
-		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
+		return getRequired(PrometheusProperties::getStep, PrometheusConfig.super::step);
 	}
 
 	@Override
-	public Properties prometheusProperties() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable Properties prometheusProperties() {
 		return get(this::fromPropertiesMap, PrometheusConfig.super::prometheusProperties);
 	}
 
-	private Properties fromPropertiesMap(PrometheusProperties prometheusProperties) {
+	private @Nullable Properties fromPropertiesMap(PrometheusProperties prometheusProperties) {
 		Map<String, String> additionalProperties = prometheusProperties.getProperties();
 		if (additionalProperties.isEmpty()) {
 			return null;

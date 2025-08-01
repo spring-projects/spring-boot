@@ -16,6 +16,8 @@
 
 package org.springframework.boot.metrics.autoconfigure.export;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -24,6 +26,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link Condition} that checks if a metrics exporter is enabled.
@@ -41,6 +44,7 @@ class OnMetricsExportEnabledCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 			.fromMap(metadata.getAnnotationAttributes(ConditionalOnEnabledMetricsExport.class.getName()));
+		Assert.state(annotationAttributes != null, "'annotationAttributes' must not be null");
 		String endpointName = annotationAttributes.getString("value");
 		ConditionOutcome outcome = getProductOutcome(context, endpointName);
 		if (outcome != null) {
@@ -49,7 +53,7 @@ class OnMetricsExportEnabledCondition extends SpringBootCondition {
 		return getDefaultOutcome(context);
 	}
 
-	private ConditionOutcome getProductOutcome(ConditionContext context, String productName) {
+	private @Nullable ConditionOutcome getProductOutcome(ConditionContext context, String productName) {
 		Environment environment = context.getEnvironment();
 		String enabledProperty = PROPERTY_TEMPLATE.formatted(productName);
 		if (environment.containsProperty(enabledProperty)) {

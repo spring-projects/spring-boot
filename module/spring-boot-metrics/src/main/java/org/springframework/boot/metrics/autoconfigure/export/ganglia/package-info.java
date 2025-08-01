@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to Ganglia.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.ganglia;
+
+import org.jspecify.annotations.NullMarked;

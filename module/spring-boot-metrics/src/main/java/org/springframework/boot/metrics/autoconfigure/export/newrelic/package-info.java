@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to New Relic.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.newrelic;
+
+import org.jspecify.annotations.NullMarked;

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for task execution and scheduling metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.task;
+
+import org.jspecify.annotations.NullMarked;

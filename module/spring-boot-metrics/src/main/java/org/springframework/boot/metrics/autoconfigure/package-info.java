@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for metrics with Micrometer.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

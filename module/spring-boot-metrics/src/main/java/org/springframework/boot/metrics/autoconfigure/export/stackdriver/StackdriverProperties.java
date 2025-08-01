@@ -18,6 +18,8 @@ package org.springframework.boot.metrics.autoconfigure.export.stackdriver;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
 
@@ -35,7 +37,7 @@ public class StackdriverProperties extends StepRegistryProperties {
 	/**
 	 * Identifier of the Google Cloud project to monitor.
 	 */
-	private String projectId;
+	private @Nullable String projectId;
 
 	/**
 	 * Monitored resource type.
@@ -45,7 +47,7 @@ public class StackdriverProperties extends StepRegistryProperties {
 	/**
 	 * Monitored resource's labels.
 	 */
-	private Map<String, String> resourceLabels;
+	private @Nullable Map<String, String> resourceLabels;
 
 	/**
 	 * Whether to use semantically correct metric types. When false, counter metrics are
@@ -66,11 +68,11 @@ public class StackdriverProperties extends StepRegistryProperties {
 	 */
 	private boolean autoCreateMetricDescriptors = true;
 
-	public String getProjectId() {
+	public @Nullable String getProjectId() {
 		return this.projectId;
 	}
 
-	public void setProjectId(String projectId) {
+	public void setProjectId(@Nullable String projectId) {
 		this.projectId = projectId;
 	}
 
@@ -82,11 +84,11 @@ public class StackdriverProperties extends StepRegistryProperties {
 		this.resourceType = resourceType;
 	}
 
-	public Map<String, String> getResourceLabels() {
+	public @Nullable Map<String, String> getResourceLabels() {
 		return this.resourceLabels;
 	}
 
-	public void setResourceLabels(Map<String, String> resourceLabels) {
+	public void setResourceLabels(@Nullable Map<String, String> resourceLabels) {
 		this.resourceLabels = resourceLabels;
 	}
 

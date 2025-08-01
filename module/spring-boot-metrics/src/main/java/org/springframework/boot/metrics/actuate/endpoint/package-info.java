@@ -17,4 +17,7 @@
 /**
  * Actuator endpoint for metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.actuate.endpoint;
+
+import org.jspecify.annotations.NullMarked;

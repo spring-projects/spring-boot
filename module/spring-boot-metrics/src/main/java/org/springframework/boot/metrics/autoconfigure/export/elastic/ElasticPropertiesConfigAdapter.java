@@ -17,6 +17,7 @@
 package org.springframework.boot.metrics.autoconfigure.export.elastic;
 
 import io.micrometer.elastic.ElasticConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 
@@ -39,57 +40,61 @@ class ElasticPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 
 	@Override
 	public String host() {
-		return get(ElasticProperties::getHost, ElasticConfig.super::host);
+		return getRequired(ElasticProperties::getHost, ElasticConfig.super::host);
 	}
 
 	@Override
 	public String index() {
-		return get(ElasticProperties::getIndex, ElasticConfig.super::index);
+		return getRequired(ElasticProperties::getIndex, ElasticConfig.super::index);
 	}
 
 	@Override
 	public String indexDateFormat() {
-		return get(ElasticProperties::getIndexDateFormat, ElasticConfig.super::indexDateFormat);
+		return getRequired(ElasticProperties::getIndexDateFormat, ElasticConfig.super::indexDateFormat);
 	}
 
 	@Override
 	public String indexDateSeparator() {
-		return get(ElasticProperties::getIndexDateSeparator, ElasticConfig.super::indexDateSeparator);
+		return getRequired(ElasticProperties::getIndexDateSeparator, ElasticConfig.super::indexDateSeparator);
 	}
 
 	@Override
 	public String timestampFieldName() {
-		return get(ElasticProperties::getTimestampFieldName, ElasticConfig.super::timestampFieldName);
+		return getRequired(ElasticProperties::getTimestampFieldName, ElasticConfig.super::timestampFieldName);
 	}
 
 	@Override
 	public boolean autoCreateIndex() {
-		return get(ElasticProperties::isAutoCreateIndex, ElasticConfig.super::autoCreateIndex);
+		return getRequired(ElasticProperties::isAutoCreateIndex, ElasticConfig.super::autoCreateIndex);
 	}
 
 	@Override
-	public String userName() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String userName() {
 		return get(ElasticProperties::getUserName, ElasticConfig.super::userName);
 	}
 
 	@Override
-	public String password() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String password() {
 		return get(ElasticProperties::getPassword, ElasticConfig.super::password);
 	}
 
 	@Override
-	public String pipeline() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String pipeline() {
 		return get(ElasticProperties::getPipeline, ElasticConfig.super::pipeline);
 	}
 
 	@Override
-	public String apiKeyCredentials() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String apiKeyCredentials() {
 		return get(ElasticProperties::getApiKeyCredentials, ElasticConfig.super::apiKeyCredentials);
 	}
 
 	@Override
 	public boolean enableSource() {
-		return get(ElasticProperties::isEnableSource, ElasticConfig.super::enableSource);
+		return getRequired(ElasticProperties::isEnableSource, ElasticConfig.super::enableSource);
 	}
 
 }

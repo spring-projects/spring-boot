@@ -29,8 +29,10 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.MetricsProperties.Distribution;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -98,7 +100,8 @@ public class PropertiesMeterFilter implements MeterFilter {
 			.merge(config);
 	}
 
-	private double[] convertServiceLevelObjectives(Meter.Type meterType, ServiceLevelObjectiveBoundary[] slo) {
+	private double @Nullable [] convertServiceLevelObjectives(Meter.Type meterType,
+			ServiceLevelObjectiveBoundary @Nullable [] slo) {
 		if (slo == null) {
 			return null;
 		}
@@ -110,25 +113,28 @@ public class PropertiesMeterFilter implements MeterFilter {
 		return (converted.length != 0) ? converted : null;
 	}
 
-	private Double convertMeterValue(Meter.Type meterType, String value) {
+	private @Nullable Double convertMeterValue(Meter.Type meterType, @Nullable String value) {
 		return (value != null) ? MeterValue.valueOf(value).getValue(meterType) : null;
 	}
 
-	private <T> T lookup(Map<String, T> values, Id id, T defaultValue) {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private <T> @Nullable T lookup(Map<String, T> values, Id id, @Nullable T defaultValue) {
 		if (values.isEmpty()) {
 			return defaultValue;
 		}
 		return doLookup(values, id, () -> defaultValue);
 	}
 
-	private <T> T lookupWithFallbackToAll(Map<String, T> values, Id id, T defaultValue) {
+	@Contract("_, _, !null -> !null")
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private <T> @Nullable T lookupWithFallbackToAll(Map<String, T> values, Id id, @Nullable T defaultValue) {
 		if (values.isEmpty()) {
 			return defaultValue;
 		}
 		return doLookup(values, id, () -> values.getOrDefault("all", defaultValue));
 	}
 
-	private <T> T doLookup(Map<String, T> values, Id id, Supplier<T> defaultValue) {
+	private <T> @Nullable T doLookup(Map<String, T> values, Id id, Supplier<@Nullable T> defaultValue) {
 		String name = id.getName();
 		while (StringUtils.hasLength(name)) {
 			T result = values.get(name);

@@ -35,6 +35,7 @@ import io.micrometer.core.instrument.MultiGauge.Row;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.TimeGauge;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.BundleInfo;
@@ -98,7 +99,7 @@ class SslMeterBinder implements MeterBinder {
 		multiGauge.register(rows, true);
 	}
 
-	private Row<CertificateInfo> createRowForChain(BundleInfo bundle, CertificateChainInfo chain) {
+	private @Nullable Row<CertificateInfo> createRowForChain(BundleInfo bundle, CertificateChainInfo chain) {
 		CertificateInfo leastValidCertificate = chain.getCertificates()
 			.stream()
 			.min(Comparator.comparing(CertificateInfo::getValidityEnds))
@@ -106,8 +107,9 @@ class SslMeterBinder implements MeterBinder {
 		if (leastValidCertificate == null) {
 			return null;
 		}
+		String serialNumber = leastValidCertificate.getSerialNumber();
 		Tags tags = Tags.of("chain", chain.getAlias(), "bundle", bundle.getName(), "certificate",
-				leastValidCertificate.getSerialNumber());
+				(serialNumber != null) ? serialNumber : "");
 		return Row.of(tags, leastValidCertificate, this::getChainExpiry);
 	}
 

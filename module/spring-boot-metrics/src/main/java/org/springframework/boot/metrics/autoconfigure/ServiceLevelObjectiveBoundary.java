@@ -19,6 +19,7 @@ package org.springframework.boot.metrics.autoconfigure;
 import java.time.Duration;
 
 import io.micrometer.core.instrument.Meter;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -47,7 +48,7 @@ public final class ServiceLevelObjectiveBoundary {
 	 * @param meterType the meter type
 	 * @return the value or {@code null} if the value cannot be applied
 	 */
-	public Double getValue(Meter.Type meterType) {
+	public @Nullable Double getValue(Meter.Type meterType) {
 		return this.value.getValue(meterType);
 	}
 
@@ -74,7 +75,7 @@ public final class ServiceLevelObjectiveBoundary {
 	static class ServiceLevelObjectiveBoundaryHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.reflection().registerType(ServiceLevelObjectiveBoundary.class, MemberCategory.INVOKE_PUBLIC_METHODS);
 		}
 

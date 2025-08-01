@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to Datadog.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.datadog;
+
+import org.jspecify.annotations.NullMarked;

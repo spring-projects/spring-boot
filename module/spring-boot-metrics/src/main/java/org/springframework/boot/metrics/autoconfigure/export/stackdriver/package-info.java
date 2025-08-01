@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to Stackdriver.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.stackdriver;
+
+import org.jspecify.annotations.NullMarked;

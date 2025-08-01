@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to AppOptics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.appoptics;
+
+import org.jspecify.annotations.NullMarked;

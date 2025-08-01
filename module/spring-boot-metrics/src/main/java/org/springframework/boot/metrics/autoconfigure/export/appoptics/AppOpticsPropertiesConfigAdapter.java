@@ -17,6 +17,7 @@
 package org.springframework.boot.metrics.autoconfigure.export.appoptics;
 
 import io.micrometer.appoptics.AppOpticsConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 
@@ -39,22 +40,23 @@ class AppOpticsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 
 	@Override
 	public String uri() {
-		return get(AppOpticsProperties::getUri, AppOpticsConfig.super::uri);
+		return getRequired(AppOpticsProperties::getUri, AppOpticsConfig.super::uri);
 	}
 
 	@Override
 	public String apiToken() {
-		return get(AppOpticsProperties::getApiToken, AppOpticsConfig.super::apiToken);
+		return getRequired(AppOpticsProperties::getApiToken, AppOpticsConfig.super::apiToken);
 	}
 
 	@Override
-	public String hostTag() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String hostTag() {
 		return get(AppOpticsProperties::getHostTag, AppOpticsConfig.super::hostTag);
 	}
 
 	@Override
 	public boolean floorTimes() {
-		return get(AppOpticsProperties::isFloorTimes, AppOpticsConfig.super::floorTimes);
+		return getRequired(AppOpticsProperties::isFloorTimes, AppOpticsConfig.super::floorTimes);
 	}
 
 }

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for JVM metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.jvm;
+
+import org.jspecify.annotations.NullMarked;

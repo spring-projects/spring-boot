@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.Meter.Type;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.convert.DurationStyle;
 
@@ -49,7 +50,7 @@ public final class MeterValue {
 	 * @param meterType the meter type
 	 * @return the value or {@code null} if the value cannot be applied
 	 */
-	public Double getValue(Type meterType) {
+	public @Nullable Double getValue(Type meterType) {
 		if (meterType == Type.DISTRIBUTION_SUMMARY) {
 			return getDistributionSummaryValue();
 		}
@@ -62,14 +63,14 @@ public final class MeterValue {
 		return null;
 	}
 
-	private Double getDistributionSummaryValue() {
+	private @Nullable Double getDistributionSummaryValue() {
 		if (this.value instanceof Double doubleValue) {
 			return doubleValue;
 		}
 		return null;
 	}
 
-	private Long getTimerValue() {
+	private @Nullable Long getTimerValue() {
 		if (this.value instanceof Double doubleValue) {
 			return TimeUnit.MILLISECONDS.toNanos(doubleValue.longValue());
 		}
@@ -102,7 +103,7 @@ public final class MeterValue {
 		return new MeterValue(value);
 	}
 
-	private static Duration safeParseDuration(String value) {
+	private static @Nullable Duration safeParseDuration(String value) {
 		try {
 			return DurationStyle.detectAndParse(value);
 		}

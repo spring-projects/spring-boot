@@ -17,10 +17,10 @@
 package org.springframework.boot.metrics.autoconfigure.export.dynatrace;
 
 import java.util.Map;
-import java.util.function.Function;
 
 import io.micrometer.dynatrace.DynatraceApiVersion;
 import io.micrometer.dynatrace.DynatraceConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.dynatrace.DynatraceProperties.V1;
 import org.springframework.boot.metrics.autoconfigure.export.dynatrace.DynatraceProperties.V2;
@@ -46,66 +46,68 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 
 	@Override
 	public String apiToken() {
-		return get(DynatraceProperties::getApiToken, DynatraceConfig.super::apiToken);
+		return getRequired(DynatraceProperties::getApiToken, DynatraceConfig.super::apiToken);
 	}
 
 	@Override
 	public String deviceId() {
-		return get(v1(V1::getDeviceId), DynatraceConfig.super::deviceId);
+		return getRequired(v1(V1::getDeviceId), DynatraceConfig.super::deviceId);
 	}
 
 	@Override
 	public String technologyType() {
-		return get(v1(V1::getTechnologyType), DynatraceConfig.super::technologyType);
+		return getRequired(v1(V1::getTechnologyType), DynatraceConfig.super::technologyType);
 	}
 
 	@Override
 	public String uri() {
-		return get(DynatraceProperties::getUri, DynatraceConfig.super::uri);
+		return getRequired(DynatraceProperties::getUri, DynatraceConfig.super::uri);
 	}
 
 	@Override
-	public String group() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String group() {
 		return get(v1(V1::getGroup), DynatraceConfig.super::group);
 	}
 
 	@Override
 	public DynatraceApiVersion apiVersion() {
-		return get((properties) -> (properties.getV1().getDeviceId() != null) ? DynatraceApiVersion.V1
+		return getRequired((properties) -> (properties.getV1().getDeviceId() != null) ? DynatraceApiVersion.V1
 				: DynatraceApiVersion.V2, DynatraceConfig.super::apiVersion);
 	}
 
 	@Override
 	public String metricKeyPrefix() {
-		return get(v2(V2::getMetricKeyPrefix), DynatraceConfig.super::metricKeyPrefix);
+		return getRequired(v2(V2::getMetricKeyPrefix), DynatraceConfig.super::metricKeyPrefix);
 	}
 
 	@Override
 	public Map<String, String> defaultDimensions() {
-		return get(v2(V2::getDefaultDimensions), DynatraceConfig.super::defaultDimensions);
+		return getRequired(v2(V2::getDefaultDimensions), DynatraceConfig.super::defaultDimensions);
 	}
 
 	@Override
 	public boolean enrichWithDynatraceMetadata() {
-		return get(v2(V2::isEnrichWithDynatraceMetadata), DynatraceConfig.super::enrichWithDynatraceMetadata);
+		return getRequired(v2(V2::isEnrichWithDynatraceMetadata), DynatraceConfig.super::enrichWithDynatraceMetadata);
 	}
 
 	@Override
 	public boolean useDynatraceSummaryInstruments() {
-		return get(v2(V2::isUseDynatraceSummaryInstruments), DynatraceConfig.super::useDynatraceSummaryInstruments);
+		return getRequired(v2(V2::isUseDynatraceSummaryInstruments),
+				DynatraceConfig.super::useDynatraceSummaryInstruments);
 	}
 
 	@Override
 	public boolean exportMeterMetadata() {
-		return get(v2(V2::isExportMeterMetadata), DynatraceConfig.super::exportMeterMetadata);
+		return getRequired(v2(V2::isExportMeterMetadata), DynatraceConfig.super::exportMeterMetadata);
 	}
 
-	private <V> Function<DynatraceProperties, V> v1(Function<V1, V> getter) {
-		return (properties) -> getter.apply(properties.getV1());
+	private <V> Getter<DynatraceProperties, V> v1(Getter<V1, V> getter) {
+		return (properties) -> getter.get(properties.getV1());
 	}
 
-	private <V> Function<DynatraceProperties, V> v2(Function<V2, V> getter) {
-		return (properties) -> getter.apply(properties.getV2());
+	private <V> Getter<DynatraceProperties, V> v2(Getter<V2, V> getter) {
+		return (properties) -> getter.get(properties.getV2());
 	}
 
 }

@@ -22,6 +22,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -73,13 +74,13 @@ public final class TaskExecutorMetricsAutoConfiguration {
 		return LazyInitializationExcludeFilter.forBeanTypes(TaskExecutorMetricsAutoConfiguration.class);
 	}
 
-	private void monitor(MeterRegistry registry, ThreadPoolExecutor threadPoolExecutor, String name) {
+	private void monitor(MeterRegistry registry, @Nullable ThreadPoolExecutor threadPoolExecutor, String name) {
 		if (threadPoolExecutor != null) {
 			new ExecutorServiceMetrics(threadPoolExecutor, name, Collections.emptyList()).bindTo(registry);
 		}
 	}
 
-	private ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskExecutor taskExecutor) {
+	private @Nullable ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskExecutor taskExecutor) {
 		try {
 			return taskExecutor.getThreadPoolExecutor();
 		}
@@ -88,7 +89,7 @@ public final class TaskExecutorMetricsAutoConfiguration {
 		}
 	}
 
-	private ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskScheduler taskScheduler) {
+	private @Nullable ThreadPoolExecutor safeGetThreadPoolExecutor(ThreadPoolTaskScheduler taskScheduler) {
 		try {
 			return taskScheduler.getScheduledThreadPoolExecutor();
 		}

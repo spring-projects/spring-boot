@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
 import io.micrometer.registry.otlp.HistogramFlavor;
@@ -65,12 +64,12 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public String url() {
-		return get((properties) -> this.connectionDetails.getUrl(), OtlpConfig.super::url);
+		return getRequired((properties) -> this.connectionDetails.getUrl(), OtlpConfig.super::url);
 	}
 
 	@Override
 	public AggregationTemporality aggregationTemporality() {
-		return get(OtlpMetricsProperties::getAggregationTemporality, OtlpConfig.super::aggregationTemporality);
+		return getRequired(OtlpMetricsProperties::getAggregationTemporality, OtlpConfig.super::aggregationTemporality);
 	}
 
 	@Override
@@ -83,47 +82,47 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public Map<String, String> headers() {
-		return get(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers);
+		return getRequired(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers);
 	}
 
 	@Override
 	public HistogramFlavor histogramFlavor() {
-		return get(OtlpMetricsProperties::getHistogramFlavor, OtlpConfig.super::histogramFlavor);
+		return getRequired(OtlpMetricsProperties::getHistogramFlavor, OtlpConfig.super::histogramFlavor);
 	}
 
 	@Override
 	public Map<String, HistogramFlavor> histogramFlavorPerMeter() {
-		return get(perMeter(Meter::getHistogramFlavor), OtlpConfig.super::histogramFlavorPerMeter);
+		return getRequired(perMeter(Meter::getHistogramFlavor), OtlpConfig.super::histogramFlavorPerMeter);
 	}
 
 	@Override
 	public Map<String, Integer> maxBucketsPerMeter() {
-		return get(perMeter(Meter::getMaxBucketCount), OtlpConfig.super::maxBucketsPerMeter);
+		return getRequired(perMeter(Meter::getMaxBucketCount), OtlpConfig.super::maxBucketsPerMeter);
 	}
 
 	@Override
 	public int maxScale() {
-		return get(OtlpMetricsProperties::getMaxScale, OtlpConfig.super::maxScale);
+		return getRequired(OtlpMetricsProperties::getMaxScale, OtlpConfig.super::maxScale);
 	}
 
 	@Override
 	public int maxBucketCount() {
-		return get(OtlpMetricsProperties::getMaxBucketCount, OtlpConfig.super::maxBucketCount);
+		return getRequired(OtlpMetricsProperties::getMaxBucketCount, OtlpConfig.super::maxBucketCount);
 	}
 
 	@Override
 	public TimeUnit baseTimeUnit() {
-		return get(OtlpMetricsProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
+		return getRequired(OtlpMetricsProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
 	}
 
-	private <V> Function<OtlpMetricsProperties, Map<String, V>> perMeter(Function<Meter, V> getter) {
+	private <V> Getter<OtlpMetricsProperties, Map<String, V>> perMeter(Getter<Meter, V> getter) {
 		return (properties) -> {
 			if (CollectionUtils.isEmpty(properties.getMeter())) {
 				return null;
 			}
 			Map<String, V> perMeter = new LinkedHashMap<>();
 			properties.getMeter().forEach((key, meterProperties) -> {
-				V value = getter.apply(meterProperties);
+				V value = getter.get(meterProperties);
 				if (value != null) {
 					perMeter.put(key, value);
 				}

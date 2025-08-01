@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import info.ganglia.gmetric4j.gmetric.GMetric;
 import io.micrometer.ganglia.GangliaConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.PropertiesConfigAdapter;
 
@@ -42,43 +43,43 @@ class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProp
 	}
 
 	@Override
-	public String get(String k) {
+	public @Nullable String get(String k) {
 		return null;
 	}
 
 	@Override
 	public boolean enabled() {
-		return get(GangliaProperties::isEnabled, GangliaConfig.super::enabled);
+		return getRequired(GangliaProperties::isEnabled, GangliaConfig.super::enabled);
 	}
 
 	@Override
 	public Duration step() {
-		return get(GangliaProperties::getStep, GangliaConfig.super::step);
+		return getRequired(GangliaProperties::getStep, GangliaConfig.super::step);
 	}
 
 	@Override
 	public TimeUnit durationUnits() {
-		return get(GangliaProperties::getDurationUnits, GangliaConfig.super::durationUnits);
+		return getRequired(GangliaProperties::getDurationUnits, GangliaConfig.super::durationUnits);
 	}
 
 	@Override
 	public GMetric.UDPAddressingMode addressingMode() {
-		return get(GangliaProperties::getAddressingMode, GangliaConfig.super::addressingMode);
+		return getRequired(GangliaProperties::getAddressingMode, GangliaConfig.super::addressingMode);
 	}
 
 	@Override
 	public int ttl() {
-		return get(GangliaProperties::getTimeToLive, GangliaConfig.super::ttl);
+		return getRequired(GangliaProperties::getTimeToLive, GangliaConfig.super::ttl);
 	}
 
 	@Override
 	public String host() {
-		return get(GangliaProperties::getHost, GangliaConfig.super::host);
+		return getRequired(GangliaProperties::getHost, GangliaConfig.super::host);
 	}
 
 	@Override
 	public int port() {
-		return get(GangliaProperties::getPort, GangliaConfig.super::port);
+		return getRequired(GangliaProperties::getPort, GangliaConfig.super::port);
 	}
 
 }

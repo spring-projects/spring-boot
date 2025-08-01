@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Log4J2 metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.logging.log4j2;
+
+import org.jspecify.annotations.NullMarked;

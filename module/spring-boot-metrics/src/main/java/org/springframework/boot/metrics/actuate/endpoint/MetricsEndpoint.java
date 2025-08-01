@@ -32,6 +32,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
@@ -77,7 +78,7 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public MetricDescriptor metric(@Selector String requiredMetricName, @OptionalParameter List<String> tag) {
+	public @Nullable MetricDescriptor metric(@Selector String requiredMetricName, @OptionalParameter List<String> tag) {
 		List<Tag> tags = parseTags(tag);
 		Collection<Meter> meters = findFirstMatchingMeters(this.registry, requiredMetricName, tags);
 		if (meters.isEmpty()) {
@@ -91,7 +92,7 @@ public class MetricsEndpoint {
 				asList(samples, Sample::new), asList(availableTags, AvailableTag::new));
 	}
 
-	private List<Tag> parseTags(List<String> tags) {
+	private List<Tag> parseTags(@Nullable List<String> tags) {
 		return (tags != null) ? tags.stream().map(this::parseTag).toList() : Collections.emptyList();
 	}
 
@@ -186,16 +187,16 @@ public class MetricsEndpoint {
 
 		private final String name;
 
-		private final String description;
+		private final @Nullable String description;
 
-		private final String baseUnit;
+		private final @Nullable String baseUnit;
 
 		private final List<Sample> measurements;
 
 		private final List<AvailableTag> availableTags;
 
-		MetricDescriptor(String name, String description, String baseUnit, List<Sample> measurements,
-				List<AvailableTag> availableTags) {
+		MetricDescriptor(String name, @Nullable String description, @Nullable String baseUnit,
+				List<Sample> measurements, List<AvailableTag> availableTags) {
 			this.name = name;
 			this.description = description;
 			this.baseUnit = baseUnit;
@@ -207,11 +208,11 @@ public class MetricsEndpoint {
 			return this.name;
 		}
 
-		public String getDescription() {
+		public @Nullable String getDescription() {
 			return this.description;
 		}
 
-		public String getBaseUnit() {
+		public @Nullable String getBaseUnit() {
 			return this.baseUnit;
 		}
 

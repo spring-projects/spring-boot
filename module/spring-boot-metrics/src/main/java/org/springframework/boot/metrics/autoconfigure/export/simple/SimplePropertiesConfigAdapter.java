@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import io.micrometer.core.instrument.simple.CountingMode;
 import io.micrometer.core.instrument.simple.SimpleConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.PropertiesConfigAdapter;
 
@@ -41,18 +42,18 @@ public class SimplePropertiesConfigAdapter extends PropertiesConfigAdapter<Simpl
 	}
 
 	@Override
-	public String get(String k) {
+	public @Nullable String get(String k) {
 		return null;
 	}
 
 	@Override
 	public Duration step() {
-		return get(SimpleProperties::getStep, SimpleConfig.super::step);
+		return getRequired(SimpleProperties::getStep, SimpleConfig.super::step);
 	}
 
 	@Override
 	public CountingMode mode() {
-		return get(SimpleProperties::getMode, SimpleConfig.super::mode);
+		return getRequired(SimpleProperties::getMode, SimpleConfig.super::mode);
 	}
 
 }

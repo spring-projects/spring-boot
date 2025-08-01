@@ -17,6 +17,7 @@
 package org.springframework.boot.metrics.autoconfigure.export.datadog;
 
 import io.micrometer.datadog.DatadogConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 
@@ -40,27 +41,29 @@ class DatadogPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 
 	@Override
 	public String apiKey() {
-		return get(DatadogProperties::getApiKey, DatadogConfig.super::apiKey);
+		return getRequired(DatadogProperties::getApiKey, DatadogConfig.super::apiKey);
 	}
 
 	@Override
-	public String applicationKey() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String applicationKey() {
 		return get(DatadogProperties::getApplicationKey, DatadogConfig.super::applicationKey);
 	}
 
 	@Override
-	public String hostTag() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String hostTag() {
 		return get(DatadogProperties::getHostTag, DatadogConfig.super::hostTag);
 	}
 
 	@Override
 	public String uri() {
-		return get(DatadogProperties::getUri, DatadogConfig.super::uri);
+		return getRequired(DatadogProperties::getUri, DatadogConfig.super::uri);
 	}
 
 	@Override
 	public boolean descriptions() {
-		return get(DatadogProperties::isDescriptions, DatadogConfig.super::descriptions);
+		return getRequired(DatadogProperties::isDescriptions, DatadogConfig.super::descriptions);
 	}
 
 }

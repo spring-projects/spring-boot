@@ -18,6 +18,8 @@ package org.springframework.boot.metrics.autoconfigure.export.dynatrace;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
 
@@ -39,27 +41,27 @@ public class DynatraceProperties extends StepRegistryProperties {
 	/**
 	 * Dynatrace authentication token.
 	 */
-	private String apiToken;
+	private @Nullable String apiToken;
 
 	/**
 	 * URI to ship metrics to. Should be used for SaaS, self-managed instances or to
 	 * en-route through an internal proxy.
 	 */
-	private String uri;
+	private @Nullable String uri;
 
-	public String getApiToken() {
+	public @Nullable String getApiToken() {
 		return this.apiToken;
 	}
 
-	public void setApiToken(String apiToken) {
+	public void setApiToken(@Nullable String apiToken) {
 		this.apiToken = apiToken;
 	}
 
-	public String getUri() {
+	public @Nullable String getUri() {
 		return this.uri;
 	}
 
-	public void setUri(String uri) {
+	public void setUri(@Nullable String uri) {
 		this.uri = uri;
 	}
 
@@ -76,13 +78,13 @@ public class DynatraceProperties extends StepRegistryProperties {
 		/**
 		 * ID of the custom device that is exporting metrics to Dynatrace.
 		 */
-		private String deviceId;
+		private @Nullable String deviceId;
 
 		/**
 		 * Group for exported metrics. Used to specify custom device group name in the
 		 * Dynatrace UI.
 		 */
-		private String group;
+		private @Nullable String group;
 
 		/**
 		 * Technology type for exported metrics. Used to group metrics under a logical
@@ -90,19 +92,19 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private String technologyType = "java";
 
-		public String getDeviceId() {
+		public @Nullable String getDeviceId() {
 			return this.deviceId;
 		}
 
-		public void setDeviceId(String deviceId) {
+		public void setDeviceId(@Nullable String deviceId) {
 			this.deviceId = deviceId;
 		}
 
-		public String getGroup() {
+		public @Nullable String getGroup() {
 			return this.group;
 		}
 
-		public void setGroup(String group) {
+		public void setGroup(@Nullable String group) {
 			this.group = group;
 		}
 
@@ -122,7 +124,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 * Default dimensions that are added to all metrics in the form of key-value
 		 * pairs. These are overwritten by Micrometer tags if they use the same key.
 		 */
-		private Map<String, String> defaultDimensions;
+		private @Nullable Map<String, String> defaultDimensions;
 
 		/**
 		 * Whether to enable Dynatrace metadata export.
@@ -132,7 +134,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 		/**
 		 * Prefix string that is added to all exported metrics.
 		 */
-		private String metricKeyPrefix;
+		private @Nullable String metricKeyPrefix;
 
 		/**
 		 * Whether to fall back to the built-in micrometer instruments for Timer and
@@ -146,11 +148,11 @@ public class DynatraceProperties extends StepRegistryProperties {
 		 */
 		private boolean exportMeterMetadata = true;
 
-		public Map<String, String> getDefaultDimensions() {
+		public @Nullable Map<String, String> getDefaultDimensions() {
 			return this.defaultDimensions;
 		}
 
-		public void setDefaultDimensions(Map<String, String> defaultDimensions) {
+		public void setDefaultDimensions(@Nullable Map<String, String> defaultDimensions) {
 			this.defaultDimensions = defaultDimensions;
 		}
 
@@ -162,11 +164,11 @@ public class DynatraceProperties extends StepRegistryProperties {
 			this.enrichWithDynatraceMetadata = enrichWithDynatraceMetadata;
 		}
 
-		public String getMetricKeyPrefix() {
+		public @Nullable String getMetricKeyPrefix() {
 			return this.metricKeyPrefix;
 		}
 
-		public void setMetricKeyPrefix(String metricKeyPrefix) {
+		public void setMetricKeyPrefix(@Nullable String metricKeyPrefix) {
 			this.metricKeyPrefix = metricKeyPrefix;
 		}
 

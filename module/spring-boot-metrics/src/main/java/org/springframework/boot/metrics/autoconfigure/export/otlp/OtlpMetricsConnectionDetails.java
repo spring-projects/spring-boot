@@ -16,6 +16,8 @@
 
 package org.springframework.boot.metrics.autoconfigure.export.otlp;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
@@ -30,6 +32,6 @@ public interface OtlpMetricsConnectionDetails extends ConnectionDetails {
 	 * Address to where metrics will be published.
 	 * @return the address to where metrics will be published
 	 */
-	String getUrl();
+	@Nullable String getUrl();
 
 }

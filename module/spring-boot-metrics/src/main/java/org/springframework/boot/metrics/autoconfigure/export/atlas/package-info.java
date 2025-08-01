@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to Atlas.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.atlas;
+
+import org.jspecify.annotations.NullMarked;

@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to Graphite.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.graphite;
+
+import org.jspecify.annotations.NullMarked;

@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to InfluxDB.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.influx;
+
+import org.jspecify.annotations.NullMarked;

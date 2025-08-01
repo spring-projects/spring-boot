@@ -18,6 +18,8 @@ package org.springframework.boot.metrics.autoconfigure.export.appoptics;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
 
@@ -39,7 +41,7 @@ public class AppOpticsProperties extends StepRegistryProperties {
 	/**
 	 * AppOptics API token.
 	 */
-	private String apiToken;
+	private @Nullable String apiToken;
 
 	/**
 	 * Tag that will be mapped to "@host" when shipping metrics to AppOptics.
@@ -71,11 +73,11 @@ public class AppOpticsProperties extends StepRegistryProperties {
 		this.uri = uri;
 	}
 
-	public String getApiToken() {
+	public @Nullable String getApiToken() {
 		return this.apiToken;
 	}
 
-	public void setApiToken(String apiToken) {
+	public void setApiToken(@Nullable String apiToken) {
 		this.apiToken = apiToken;
 	}
 

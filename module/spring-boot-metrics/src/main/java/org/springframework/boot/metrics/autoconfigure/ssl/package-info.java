@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for SSL metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.ssl;
+
+import org.jspecify.annotations.NullMarked;

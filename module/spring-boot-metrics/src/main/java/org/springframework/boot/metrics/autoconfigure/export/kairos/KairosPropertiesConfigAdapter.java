@@ -17,6 +17,7 @@
 package org.springframework.boot.metrics.autoconfigure.export.kairos;
 
 import io.micrometer.kairos.KairosConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 
@@ -39,16 +40,18 @@ class KairosPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<
 
 	@Override
 	public String uri() {
-		return get(KairosProperties::getUri, KairosConfig.super::uri);
+		return getRequired(KairosProperties::getUri, KairosConfig.super::uri);
 	}
 
 	@Override
-	public String userName() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String userName() {
 		return get(KairosProperties::getUserName, KairosConfig.super::userName);
 	}
 
 	@Override
-	public String password() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String password() {
 		return get(KairosProperties::getPassword, KairosConfig.super::password);
 	}
 

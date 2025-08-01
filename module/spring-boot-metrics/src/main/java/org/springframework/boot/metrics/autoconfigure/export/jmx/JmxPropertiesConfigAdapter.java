@@ -19,6 +19,7 @@ package org.springframework.boot.metrics.autoconfigure.export.jmx;
 import java.time.Duration;
 
 import io.micrometer.jmx.JmxConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.PropertiesConfigAdapter;
 
@@ -40,18 +41,18 @@ class JmxPropertiesConfigAdapter extends PropertiesConfigAdapter<JmxProperties> 
 	}
 
 	@Override
-	public String get(String key) {
+	public @Nullable String get(String key) {
 		return null;
 	}
 
 	@Override
 	public String domain() {
-		return get(JmxProperties::getDomain, JmxConfig.super::domain);
+		return getRequired(JmxProperties::getDomain, JmxConfig.super::domain);
 	}
 
 	@Override
 	public Duration step() {
-		return get(JmxProperties::getStep, JmxConfig.super::step);
+		return getRequired(JmxProperties::getStep, JmxConfig.super::step);
 	}
 
 }

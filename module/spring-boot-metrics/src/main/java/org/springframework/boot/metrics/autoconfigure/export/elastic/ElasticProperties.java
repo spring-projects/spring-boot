@@ -16,6 +16,8 @@
 
 package org.springframework.boot.metrics.autoconfigure.export.elastic;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
 
@@ -62,22 +64,22 @@ public class ElasticProperties extends StepRegistryProperties {
 	/**
 	 * Login user of the Elastic server. Mutually exclusive with api-key-credentials.
 	 */
-	private String userName;
+	private @Nullable String userName;
 
 	/**
 	 * Login password of the Elastic server. Mutually exclusive with api-key-credentials.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Ingest pipeline name. By default, events are not pre-processed.
 	 */
-	private String pipeline;
+	private @Nullable String pipeline;
 
 	/**
 	 * Base64-encoded credentials string. Mutually exclusive with user-name and password.
 	 */
-	private String apiKeyCredentials;
+	private @Nullable String apiKeyCredentials;
 
 	/**
 	 * Whether to enable _source in the default index template when auto-creating the
@@ -133,35 +135,35 @@ public class ElasticProperties extends StepRegistryProperties {
 		this.autoCreateIndex = autoCreateIndex;
 	}
 
-	public String getUserName() {
+	public @Nullable String getUserName() {
 		return this.userName;
 	}
 
-	public void setUserName(String userName) {
+	public void setUserName(@Nullable String userName) {
 		this.userName = userName;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
-	public String getPipeline() {
+	public @Nullable String getPipeline() {
 		return this.pipeline;
 	}
 
-	public void setPipeline(String pipeline) {
+	public void setPipeline(@Nullable String pipeline) {
 		this.pipeline = pipeline;
 	}
 
-	public String getApiKeyCredentials() {
+	public @Nullable String getApiKeyCredentials() {
 		return this.apiKeyCredentials;
 	}
 
-	public void setApiKeyCredentials(String apiKeyCredentials) {
+	public void setApiKeyCredentials(@Nullable String apiKeyCredentials) {
 		this.apiKeyCredentials = apiKeyCredentials;
 	}
 

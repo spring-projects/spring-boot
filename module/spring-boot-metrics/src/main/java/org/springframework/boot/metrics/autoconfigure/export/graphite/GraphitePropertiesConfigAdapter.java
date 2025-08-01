@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteProtocol;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.PropertiesConfigAdapter;
 
@@ -42,53 +43,53 @@ class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphitePr
 	}
 
 	@Override
-	public String get(String k) {
+	public @Nullable String get(String k) {
 		return null;
 	}
 
 	@Override
 	public boolean enabled() {
-		return get(GraphiteProperties::isEnabled, GraphiteConfig.super::enabled);
+		return getRequired(GraphiteProperties::isEnabled, GraphiteConfig.super::enabled);
 	}
 
 	@Override
 	public Duration step() {
-		return get(GraphiteProperties::getStep, GraphiteConfig.super::step);
+		return getRequired(GraphiteProperties::getStep, GraphiteConfig.super::step);
 	}
 
 	@Override
 	public TimeUnit rateUnits() {
-		return get(GraphiteProperties::getRateUnits, GraphiteConfig.super::rateUnits);
+		return getRequired(GraphiteProperties::getRateUnits, GraphiteConfig.super::rateUnits);
 	}
 
 	@Override
 	public TimeUnit durationUnits() {
-		return get(GraphiteProperties::getDurationUnits, GraphiteConfig.super::durationUnits);
+		return getRequired(GraphiteProperties::getDurationUnits, GraphiteConfig.super::durationUnits);
 	}
 
 	@Override
 	public String host() {
-		return get(GraphiteProperties::getHost, GraphiteConfig.super::host);
+		return getRequired(GraphiteProperties::getHost, GraphiteConfig.super::host);
 	}
 
 	@Override
 	public int port() {
-		return get(GraphiteProperties::getPort, GraphiteConfig.super::port);
+		return getRequired(GraphiteProperties::getPort, GraphiteConfig.super::port);
 	}
 
 	@Override
 	public GraphiteProtocol protocol() {
-		return get(GraphiteProperties::getProtocol, GraphiteConfig.super::protocol);
+		return getRequired(GraphiteProperties::getProtocol, GraphiteConfig.super::protocol);
 	}
 
 	@Override
 	public boolean graphiteTagsEnabled() {
-		return get(GraphiteProperties::getGraphiteTagsEnabled, GraphiteConfig.super::graphiteTagsEnabled);
+		return getRequired(GraphiteProperties::getGraphiteTagsEnabled, GraphiteConfig.super::graphiteTagsEnabled);
 	}
 
 	@Override
 	public String[] tagsAsPrefix() {
-		return get(GraphiteProperties::getTagsAsPrefix, GraphiteConfig.super::tagsAsPrefix);
+		return getRequired(GraphiteProperties::getTagsAsPrefix, GraphiteConfig.super::tagsAsPrefix);
 	}
 
 }

@@ -25,6 +25,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -110,7 +111,7 @@ public final class JvmMetricsAutoConfiguration {
 	static final class VirtualThreadMetricsRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.reflection()
 				.registerTypeIfPresent(classLoader, VIRTUAL_THREAD_METRICS_CLASS,
 						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);

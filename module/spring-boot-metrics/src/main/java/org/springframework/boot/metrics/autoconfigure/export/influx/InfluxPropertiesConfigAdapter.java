@@ -19,6 +19,7 @@ package org.springframework.boot.metrics.autoconfigure.export.influx;
 import io.micrometer.influx.InfluxApiVersion;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxConsistency;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 
@@ -42,76 +43,84 @@ class InfluxPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<
 
 	@Override
 	public String db() {
-		return get(InfluxProperties::getDb, InfluxConfig.super::db);
+		return getRequired(InfluxProperties::getDb, InfluxConfig.super::db);
 	}
 
 	@Override
 	public InfluxConsistency consistency() {
-		return get(InfluxProperties::getConsistency, InfluxConfig.super::consistency);
+		return getRequired(InfluxProperties::getConsistency, InfluxConfig.super::consistency);
 	}
 
 	@Override
-	public String userName() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String userName() {
 		return get(InfluxProperties::getUserName, InfluxConfig.super::userName);
 	}
 
 	@Override
-	public String password() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String password() {
 		return get(InfluxProperties::getPassword, InfluxConfig.super::password);
 	}
 
 	@Override
-	public String retentionPolicy() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String retentionPolicy() {
 		return get(InfluxProperties::getRetentionPolicy, InfluxConfig.super::retentionPolicy);
 	}
 
 	@Override
-	public Integer retentionReplicationFactor() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable Integer retentionReplicationFactor() {
 		return get(InfluxProperties::getRetentionReplicationFactor, InfluxConfig.super::retentionReplicationFactor);
 	}
 
 	@Override
-	public String retentionDuration() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String retentionDuration() {
 		return get(InfluxProperties::getRetentionDuration, InfluxConfig.super::retentionDuration);
 	}
 
 	@Override
-	public String retentionShardDuration() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String retentionShardDuration() {
 		return get(InfluxProperties::getRetentionShardDuration, InfluxConfig.super::retentionShardDuration);
 	}
 
 	@Override
 	public String uri() {
-		return get(InfluxProperties::getUri, InfluxConfig.super::uri);
+		return getRequired(InfluxProperties::getUri, InfluxConfig.super::uri);
 	}
 
 	@Override
 	public boolean compressed() {
-		return get(InfluxProperties::isCompressed, InfluxConfig.super::compressed);
+		return getRequired(InfluxProperties::isCompressed, InfluxConfig.super::compressed);
 	}
 
 	@Override
 	public boolean autoCreateDb() {
-		return get(InfluxProperties::isAutoCreateDb, InfluxConfig.super::autoCreateDb);
+		return getRequired(InfluxProperties::isAutoCreateDb, InfluxConfig.super::autoCreateDb);
 	}
 
 	@Override
 	public InfluxApiVersion apiVersion() {
-		return get(InfluxProperties::getApiVersion, InfluxConfig.super::apiVersion);
+		return getRequired(InfluxProperties::getApiVersion, InfluxConfig.super::apiVersion);
 	}
 
 	@Override
-	public String org() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String org() {
 		return get(InfluxProperties::getOrg, InfluxConfig.super::org);
 	}
 
 	@Override
 	public String bucket() {
-		return get(InfluxProperties::getBucket, InfluxConfig.super::bucket);
+		return getRequired(InfluxProperties::getBucket, InfluxConfig.super::bucket);
 	}
 
 	@Override
-	public String token() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String token() {
 		return get(InfluxProperties::getToken, InfluxConfig.super::token);
 	}
 

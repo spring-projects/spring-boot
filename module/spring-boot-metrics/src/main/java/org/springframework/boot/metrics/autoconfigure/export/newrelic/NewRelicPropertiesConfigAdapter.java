@@ -18,6 +18,7 @@ package org.springframework.boot.metrics.autoconfigure.export.newrelic;
 
 import io.micrometer.newrelic.ClientProviderType;
 import io.micrometer.newrelic.NewRelicConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryPropertiesConfigAdapter;
 
@@ -42,32 +43,35 @@ public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 
 	@Override
 	public boolean meterNameEventTypeEnabled() {
-		return get(NewRelicProperties::isMeterNameEventTypeEnabled, NewRelicConfig.super::meterNameEventTypeEnabled);
+		return getRequired(NewRelicProperties::isMeterNameEventTypeEnabled,
+				NewRelicConfig.super::meterNameEventTypeEnabled);
 	}
 
 	@Override
 	public String eventType() {
-		return get(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
+		return getRequired(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
 	}
 
 	@Override
 	public ClientProviderType clientProviderType() {
-		return get(NewRelicProperties::getClientProviderType, NewRelicConfig.super::clientProviderType);
+		return getRequired(NewRelicProperties::getClientProviderType, NewRelicConfig.super::clientProviderType);
 	}
 
 	@Override
-	public String apiKey() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String apiKey() {
 		return get(NewRelicProperties::getApiKey, NewRelicConfig.super::apiKey);
 	}
 
 	@Override
-	public String accountId() {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	public @Nullable String accountId() {
 		return get(NewRelicProperties::getAccountId, NewRelicConfig.super::accountId);
 	}
 
 	@Override
 	public String uri() {
-		return get(NewRelicProperties::getUri, NewRelicConfig.super::uri);
+		return getRequired(NewRelicProperties::getUri, NewRelicConfig.super::uri);
 	}
 
 }

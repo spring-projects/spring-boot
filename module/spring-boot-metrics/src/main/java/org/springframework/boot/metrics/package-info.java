@@ -17,4 +17,7 @@
 /**
  * General metrics-related classes.
  */
+@NullMarked
 package org.springframework.boot.metrics;
+
+import org.jspecify.annotations.NullMarked;

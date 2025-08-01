@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for system metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.system;
+
+import org.jspecify.annotations.NullMarked;

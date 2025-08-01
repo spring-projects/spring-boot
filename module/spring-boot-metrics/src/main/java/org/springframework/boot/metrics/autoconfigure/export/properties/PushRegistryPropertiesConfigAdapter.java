@@ -19,6 +19,7 @@ package org.springframework.boot.metrics.autoconfigure.export.properties;
 import java.time.Duration;
 
 import io.micrometer.core.instrument.push.PushRegistryConfig;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Base class for {@link PushRegistryProperties} to {@link PushRegistryConfig} adapters.
@@ -37,21 +38,24 @@ public abstract class PushRegistryPropertiesConfigAdapter<T extends PushRegistry
 	}
 
 	@Override
-	public String get(String k) {
+	public @Nullable String get(String k) {
 		return null;
 	}
 
 	@Override
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public Duration step() {
 		return get(T::getStep, PushRegistryConfig.super::step);
 	}
 
 	@Override
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public boolean enabled() {
 		return get(T::isEnabled, PushRegistryConfig.super::enabled);
 	}
 
 	@Override
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public int batchSize() {
 		return get(T::getBatchSize, PushRegistryConfig.super::batchSize);
 	}

@@ -21,6 +21,7 @@ import java.time.Duration;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdFlavor;
 import io.micrometer.statsd.StatsdProtocol;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.metrics.autoconfigure.export.properties.PropertiesConfigAdapter;
 
@@ -37,7 +38,7 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 	}
 
 	@Override
-	public String get(String s) {
+	public @Nullable String get(String s) {
 		return null;
 	}
 
@@ -48,52 +49,52 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 
 	@Override
 	public StatsdFlavor flavor() {
-		return get(StatsdProperties::getFlavor, StatsdConfig.super::flavor);
+		return getRequired(StatsdProperties::getFlavor, StatsdConfig.super::flavor);
 	}
 
 	@Override
 	public boolean enabled() {
-		return get(StatsdProperties::isEnabled, StatsdConfig.super::enabled);
+		return getRequired(StatsdProperties::isEnabled, StatsdConfig.super::enabled);
 	}
 
 	@Override
 	public String host() {
-		return get(StatsdProperties::getHost, StatsdConfig.super::host);
+		return getRequired(StatsdProperties::getHost, StatsdConfig.super::host);
 	}
 
 	@Override
 	public int port() {
-		return get(StatsdProperties::getPort, StatsdConfig.super::port);
+		return getRequired(StatsdProperties::getPort, StatsdConfig.super::port);
 	}
 
 	@Override
 	public StatsdProtocol protocol() {
-		return get(StatsdProperties::getProtocol, StatsdConfig.super::protocol);
+		return getRequired(StatsdProperties::getProtocol, StatsdConfig.super::protocol);
 	}
 
 	@Override
 	public int maxPacketLength() {
-		return get(StatsdProperties::getMaxPacketLength, StatsdConfig.super::maxPacketLength);
+		return getRequired(StatsdProperties::getMaxPacketLength, StatsdConfig.super::maxPacketLength);
 	}
 
 	@Override
 	public Duration pollingFrequency() {
-		return get(StatsdProperties::getPollingFrequency, StatsdConfig.super::pollingFrequency);
+		return getRequired(StatsdProperties::getPollingFrequency, StatsdConfig.super::pollingFrequency);
 	}
 
 	@Override
 	public Duration step() {
-		return get(StatsdProperties::getStep, StatsdConfig.super::step);
+		return getRequired(StatsdProperties::getStep, StatsdConfig.super::step);
 	}
 
 	@Override
 	public boolean publishUnchangedMeters() {
-		return get(StatsdProperties::isPublishUnchangedMeters, StatsdConfig.super::publishUnchangedMeters);
+		return getRequired(StatsdProperties::isPublishUnchangedMeters, StatsdConfig.super::publishUnchangedMeters);
 	}
 
 	@Override
 	public boolean buffered() {
-		return get(StatsdProperties::isBuffered, StatsdConfig.super::buffered);
+		return getRequired(StatsdProperties::isBuffered, StatsdConfig.super::buffered);
 	}
 
 }

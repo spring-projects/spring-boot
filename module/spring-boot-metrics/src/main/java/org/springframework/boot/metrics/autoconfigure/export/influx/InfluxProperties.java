@@ -18,6 +18,7 @@ package org.springframework.boot.metrics.autoconfigure.export.influx;
 
 import io.micrometer.influx.InfluxApiVersion;
 import io.micrometer.influx.InfluxConsistency;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
@@ -46,37 +47,37 @@ public class InfluxProperties extends StepRegistryProperties {
 	/**
 	 * Login user of the Influx server. InfluxDB v1 only.
 	 */
-	private String userName;
+	private @Nullable String userName;
 
 	/**
 	 * Login password of the Influx server. InfluxDB v1 only.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Retention policy to use (Influx writes to the DEFAULT retention policy if one is
 	 * not specified). InfluxDB v1 only.
 	 */
-	private String retentionPolicy;
+	private @Nullable String retentionPolicy;
 
 	/**
 	 * Time period for which Influx should retain data in the current database. For
 	 * instance 7d, check the influx documentation for more details on the duration
 	 * format. InfluxDB v1 only.
 	 */
-	private String retentionDuration;
+	private @Nullable String retentionDuration;
 
 	/**
 	 * How many copies of the data are stored in the cluster. Must be 1 for a single node
 	 * instance. InfluxDB v1 only.
 	 */
-	private Integer retentionReplicationFactor;
+	private @Nullable Integer retentionReplicationFactor;
 
 	/**
 	 * Time range covered by a shard group. For instance 2w, check the influx
 	 * documentation for more details on the duration format. InfluxDB v1 only.
 	 */
-	private String retentionShardDuration;
+	private @Nullable String retentionShardDuration;
 
 	/**
 	 * URI of the Influx server.
@@ -98,24 +99,24 @@ public class InfluxProperties extends StepRegistryProperties {
 	 * API version of InfluxDB to use. Defaults to 'v1' unless an org is configured. If an
 	 * org is configured, defaults to 'v2'.
 	 */
-	private InfluxApiVersion apiVersion;
+	private @Nullable InfluxApiVersion apiVersion;
 
 	/**
 	 * Org to write metrics to. InfluxDB v2 only.
 	 */
-	private String org;
+	private @Nullable String org;
 
 	/**
 	 * Bucket for metrics. Use either the bucket name or ID. Defaults to the value of the
 	 * db property if not set. InfluxDB v2 only.
 	 */
-	private String bucket;
+	private @Nullable String bucket;
 
 	/**
 	 * Authentication token to use with calls to the InfluxDB backend. For InfluxDB v1,
 	 * the Bearer scheme is used. For v2, the Token scheme is used.
 	 */
-	private String token;
+	private @Nullable String token;
 
 	public String getDb() {
 		return this.db;
@@ -133,51 +134,51 @@ public class InfluxProperties extends StepRegistryProperties {
 		this.consistency = consistency;
 	}
 
-	public String getUserName() {
+	public @Nullable String getUserName() {
 		return this.userName;
 	}
 
-	public void setUserName(String userName) {
+	public void setUserName(@Nullable String userName) {
 		this.userName = userName;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
-	public String getRetentionPolicy() {
+	public @Nullable String getRetentionPolicy() {
 		return this.retentionPolicy;
 	}
 
-	public void setRetentionPolicy(String retentionPolicy) {
+	public void setRetentionPolicy(@Nullable String retentionPolicy) {
 		this.retentionPolicy = retentionPolicy;
 	}
 
-	public String getRetentionDuration() {
+	public @Nullable String getRetentionDuration() {
 		return this.retentionDuration;
 	}
 
-	public void setRetentionDuration(String retentionDuration) {
+	public void setRetentionDuration(@Nullable String retentionDuration) {
 		this.retentionDuration = retentionDuration;
 	}
 
-	public Integer getRetentionReplicationFactor() {
+	public @Nullable Integer getRetentionReplicationFactor() {
 		return this.retentionReplicationFactor;
 	}
 
-	public void setRetentionReplicationFactor(Integer retentionReplicationFactor) {
+	public void setRetentionReplicationFactor(@Nullable Integer retentionReplicationFactor) {
 		this.retentionReplicationFactor = retentionReplicationFactor;
 	}
 
-	public String getRetentionShardDuration() {
+	public @Nullable String getRetentionShardDuration() {
 		return this.retentionShardDuration;
 	}
 
-	public void setRetentionShardDuration(String retentionShardDuration) {
+	public void setRetentionShardDuration(@Nullable String retentionShardDuration) {
 		this.retentionShardDuration = retentionShardDuration;
 	}
 
@@ -205,35 +206,35 @@ public class InfluxProperties extends StepRegistryProperties {
 		this.autoCreateDb = autoCreateDb;
 	}
 
-	public InfluxApiVersion getApiVersion() {
+	public @Nullable InfluxApiVersion getApiVersion() {
 		return this.apiVersion;
 	}
 
-	public void setApiVersion(InfluxApiVersion apiVersion) {
+	public void setApiVersion(@Nullable InfluxApiVersion apiVersion) {
 		this.apiVersion = apiVersion;
 	}
 
-	public String getOrg() {
+	public @Nullable String getOrg() {
 		return this.org;
 	}
 
-	public void setOrg(String org) {
+	public void setOrg(@Nullable String org) {
 		this.org = org;
 	}
 
-	public String getBucket() {
+	public @Nullable String getBucket() {
 		return this.bucket;
 	}
 
-	public void setBucket(String bucket) {
+	public void setBucket(@Nullable String bucket) {
 		this.bucket = bucket;
 	}
 
-	public String getToken() {
+	public @Nullable String getToken() {
 		return this.token;
 	}
 
-	public void setToken(String token) {
+	public void setToken(@Nullable String token) {
 		this.token = token;
 	}
 

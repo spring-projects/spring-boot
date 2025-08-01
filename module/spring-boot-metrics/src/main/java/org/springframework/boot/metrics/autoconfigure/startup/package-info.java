@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for actuator startup time metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.startup;
+
+import org.jspecify.annotations.NullMarked;

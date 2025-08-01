@@ -16,8 +16,9 @@
 
 package org.springframework.boot.metrics.autoconfigure.export.properties;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -31,7 +32,7 @@ import org.springframework.util.Assert;
  */
 public class PropertiesConfigAdapter<T> {
 
-	private final T properties;
+	protected final T properties;
 
 	/**
 	 * Create a new {@link PropertiesConfigAdapter} instance.
@@ -49,9 +50,32 @@ public class PropertiesConfigAdapter<T> {
 	 * @param <V> the value type
 	 * @return the property or fallback value
 	 */
-	protected final <V> V get(Function<T, V> getter, Supplier<V> fallback) {
-		V value = getter.apply(this.properties);
+	protected final <V> @Nullable V get(Getter<T, V> getter, Supplier<@Nullable V> fallback) {
+		V value = getter.get(this.properties);
 		return (value != null) ? value : fallback.get();
+	}
+
+	/**
+	 * Get the value from the properties or use a fallback from the {@code defaults}.
+	 * @param getter the getter for the properties
+	 * @param fallback the fallback method, usually super interface method reference
+	 * @param <V> the value type
+	 * @return the property or fallback value
+	 */
+	protected final <V> V getRequired(Getter<T, V> getter, Supplier<V> fallback) {
+		V value = getter.get(this.properties);
+		if (value != null) {
+			return value;
+		}
+		V fallbackValue = fallback.get();
+		Assert.state(fallbackValue != null, "'fallbackValue' must not be null");
+		return fallbackValue;
+	}
+
+	protected interface Getter<T, V> {
+
+		@Nullable V get(T properties);
+
 	}
 
 }

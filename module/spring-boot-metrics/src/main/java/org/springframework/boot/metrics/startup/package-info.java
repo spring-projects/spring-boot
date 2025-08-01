@@ -17,4 +17,7 @@
 /**
  * Support for startup metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.startup;
+
+import org.jspecify.annotations.NullMarked;

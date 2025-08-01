@@ -17,6 +17,7 @@
 package org.springframework.boot.metrics.autoconfigure.export.newrelic;
 
 import io.micrometer.newrelic.ClientProviderType;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
@@ -56,12 +57,12 @@ public class NewRelicProperties extends StepRegistryProperties {
 	/**
 	 * New Relic API key.
 	 */
-	private String apiKey;
+	private @Nullable String apiKey;
 
 	/**
 	 * New Relic account ID.
 	 */
-	private String accountId;
+	private @Nullable String accountId;
 
 	/**
 	 * URI to ship metrics to.
@@ -92,19 +93,19 @@ public class NewRelicProperties extends StepRegistryProperties {
 		this.clientProviderType = clientProviderType;
 	}
 
-	public String getApiKey() {
+	public @Nullable String getApiKey() {
 		return this.apiKey;
 	}
 
-	public void setApiKey(String apiKey) {
+	public void setApiKey(@Nullable String apiKey) {
 		this.apiKey = apiKey;
 	}
 
-	public String getAccountId() {
+	public @Nullable String getAccountId() {
 		return this.accountId;
 	}
 
-	public void setAccountId(String accountId) {
+	public void setAccountId(@Nullable String accountId) {
 		this.accountId = accountId;
 	}
 

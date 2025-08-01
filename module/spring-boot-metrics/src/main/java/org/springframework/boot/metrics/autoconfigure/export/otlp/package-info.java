@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to OTLP.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.otlp;
+
+import org.jspecify.annotations.NullMarked;

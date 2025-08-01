@@ -17,4 +17,7 @@
 /**
  * Support for exporting actuator metrics to a simple in-memory store.
  */
+@NullMarked
 package org.springframework.boot.metrics.autoconfigure.export.simple;
+
+import org.jspecify.annotations.NullMarked;

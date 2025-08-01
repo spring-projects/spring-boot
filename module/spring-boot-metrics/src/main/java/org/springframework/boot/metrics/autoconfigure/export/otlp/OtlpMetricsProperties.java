@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
 import io.micrometer.registry.otlp.HistogramFlavor;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
@@ -40,7 +41,7 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	/**
 	 * URI of the OTLP server.
 	 */
-	private String url;
+	private @Nullable String url;
 
 	/**
 	 * Aggregation temporality of sums. It defines the way additive values are expressed.
@@ -51,7 +52,7 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	/**
 	 * Headers for the exported metrics.
 	 */
-	private Map<String, String> headers;
+	private @Nullable Map<String, String> headers;
 
 	/**
 	 * Default histogram type when histogram publishing is enabled.
@@ -77,13 +78,13 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 	/**
 	 * Per-meter properties that can be used to override defaults.
 	 */
-	private Map<String, Meter> meter = new LinkedHashMap<>();
+	private final Map<String, Meter> meter = new LinkedHashMap<>();
 
-	public String getUrl() {
+	public @Nullable String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(@Nullable String url) {
 		this.url = url;
 	}
 
@@ -95,11 +96,11 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 		this.aggregationTemporality = aggregationTemporality;
 	}
 
-	public Map<String, String> getHeaders() {
+	public @Nullable Map<String, String> getHeaders() {
 		return this.headers;
 	}
 
-	public void setHeaders(Map<String, String> headers) {
+	public void setHeaders(@Nullable Map<String, String> headers) {
 		this.headers = headers;
 	}
 
@@ -148,26 +149,26 @@ public class OtlpMetricsProperties extends StepRegistryProperties {
 		 * Maximum number of buckets to be used for exponential histograms, if configured.
 		 * This has no effect on explicit bucket histograms.
 		 */
-		private Integer maxBucketCount;
+		private @Nullable Integer maxBucketCount;
 
 		/**
 		 * Histogram type when histogram publishing is enabled.
 		 */
-		private HistogramFlavor histogramFlavor;
+		private @Nullable HistogramFlavor histogramFlavor;
 
-		public Integer getMaxBucketCount() {
+		public @Nullable Integer getMaxBucketCount() {
 			return this.maxBucketCount;
 		}
 
-		public void setMaxBucketCount(Integer maxBucketCount) {
+		public void setMaxBucketCount(@Nullable Integer maxBucketCount) {
 			this.maxBucketCount = maxBucketCount;
 		}
 
-		public HistogramFlavor getHistogramFlavor() {
+		public @Nullable HistogramFlavor getHistogramFlavor() {
 			return this.histogramFlavor;
 		}
 
-		public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
+		public void setHistogramFlavor(@Nullable HistogramFlavor histogramFlavor) {
 			this.histogramFlavor = histogramFlavor;
 		}
 

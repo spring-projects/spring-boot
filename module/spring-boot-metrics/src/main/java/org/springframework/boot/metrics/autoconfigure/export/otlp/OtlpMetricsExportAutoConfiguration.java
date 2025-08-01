@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import io.micrometer.registry.otlp.OtlpMetricsSender;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -111,7 +112,7 @@ public final class OtlpMetricsExportAutoConfiguration {
 		}
 
 		@Override
-		public String getUrl() {
+		public @Nullable String getUrl() {
 			return this.properties.getUrl();
 		}
 

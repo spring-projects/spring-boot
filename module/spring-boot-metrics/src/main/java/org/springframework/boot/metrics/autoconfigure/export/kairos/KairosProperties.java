@@ -16,6 +16,8 @@
 
 package org.springframework.boot.metrics.autoconfigure.export.kairos;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.metrics.autoconfigure.export.properties.StepRegistryProperties;
 
@@ -37,12 +39,12 @@ public class KairosProperties extends StepRegistryProperties {
 	/**
 	 * Login user of the KairosDB server.
 	 */
-	private String userName;
+	private @Nullable String userName;
 
 	/**
 	 * Login password of the KairosDB server.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	public String getUri() {
 		return this.uri;
@@ -52,19 +54,19 @@ public class KairosProperties extends StepRegistryProperties {
 		this.uri = uri;
 	}
 
-	public String getUserName() {
+	public @Nullable String getUserName() {
 		return this.userName;
 	}
 
-	public void setUserName(String userName) {
+	public void setUserName(@Nullable String userName) {
 		this.userName = userName;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 

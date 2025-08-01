@@ -17,4 +17,7 @@
 /**
  * System metrics.
  */
+@NullMarked
 package org.springframework.boot.metrics.system;
+
+import org.jspecify.annotations.NullMarked;
