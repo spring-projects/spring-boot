@@ -21,6 +21,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -224,39 +226,39 @@ public class IntegrationProperties {
 			/**
 			 * TCP RSocket server host to connect to.
 			 */
-			private String host;
+			private @Nullable String host;
 
 			/**
 			 * TCP RSocket server port to connect to.
 			 */
-			private Integer port;
+			private @Nullable Integer port;
 
 			/**
 			 * WebSocket RSocket server uri to connect to.
 			 */
-			private URI uri;
+			private @Nullable URI uri;
 
-			public void setHost(String host) {
+			public void setHost(@Nullable String host) {
 				this.host = host;
 			}
 
-			public String getHost() {
+			public @Nullable String getHost() {
 				return this.host;
 			}
 
-			public void setPort(Integer port) {
+			public void setPort(@Nullable Integer port) {
 				this.port = port;
 			}
 
-			public Integer getPort() {
+			public @Nullable Integer getPort() {
 				return this.port;
 			}
 
-			public void setUri(URI uri) {
+			public void setUri(@Nullable URI uri) {
 				this.uri = uri;
 			}
 
-			public URI getUri() {
+			public @Nullable URI getUri() {
 				return this.uri;
 			}
 
@@ -296,24 +298,24 @@ public class IntegrationProperties {
 		/**
 		 * Polling delay period. Mutually exclusive with 'cron' and 'fixedRate'.
 		 */
-		private Duration fixedDelay;
+		private @Nullable Duration fixedDelay;
 
 		/**
 		 * Polling rate period. Mutually exclusive with 'fixedDelay' and 'cron'.
 		 */
-		private Duration fixedRate;
+		private @Nullable Duration fixedRate;
 
 		/**
 		 * Polling initial delay. Applied for 'fixedDelay' and 'fixedRate'; ignored for
 		 * 'cron'.
 		 */
-		private Duration initialDelay;
+		private @Nullable Duration initialDelay;
 
 		/**
 		 * Cron expression for polling. Mutually exclusive with 'fixedDelay' and
 		 * 'fixedRate'.
 		 */
-		private String cron;
+		private @Nullable String cron;
 
 		public int getMaxMessagesPerPoll() {
 			return this.maxMessagesPerPoll;
@@ -331,35 +333,35 @@ public class IntegrationProperties {
 			this.receiveTimeout = receiveTimeout;
 		}
 
-		public Duration getFixedDelay() {
+		public @Nullable Duration getFixedDelay() {
 			return this.fixedDelay;
 		}
 
-		public void setFixedDelay(Duration fixedDelay) {
+		public void setFixedDelay(@Nullable Duration fixedDelay) {
 			this.fixedDelay = fixedDelay;
 		}
 
-		public Duration getFixedRate() {
+		public @Nullable Duration getFixedRate() {
 			return this.fixedRate;
 		}
 
-		public void setFixedRate(Duration fixedRate) {
+		public void setFixedRate(@Nullable Duration fixedRate) {
 			this.fixedRate = fixedRate;
 		}
 
-		public Duration getInitialDelay() {
+		public @Nullable Duration getInitialDelay() {
 			return this.initialDelay;
 		}
 
-		public void setInitialDelay(Duration initialDelay) {
+		public void setInitialDelay(@Nullable Duration initialDelay) {
 			this.initialDelay = initialDelay;
 		}
 
-		public String getCron() {
+		public @Nullable String getCron() {
 			return this.cron;
 		}
 
-		public void setCron(String cron) {
+		public void setCron(@Nullable String cron) {
 			this.cron = cron;
 		}
 

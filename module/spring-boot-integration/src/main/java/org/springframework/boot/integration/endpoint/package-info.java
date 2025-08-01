@@ -17,4 +17,7 @@
 /**
  * Actuator endpoint for Spring Integration.
  */
+@NullMarked
 package org.springframework.boot.integration.endpoint;
+
+import org.jspecify.annotations.NullMarked;

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring Integration endpoint.
  */
+@NullMarked
 package org.springframework.boot.integration.autoconfigure.endpoint;
+
+import org.jspecify.annotations.NullMarked;

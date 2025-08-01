@@ -22,6 +22,7 @@ import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
 import io.rsocket.transport.netty.server.TcpServerTransport;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -40,6 +41,7 @@ import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfigurati
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
+import org.springframework.boot.integration.autoconfigure.IntegrationProperties.Poller;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.autoconfigure.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
@@ -144,12 +146,18 @@ public final class IntegrationAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
 			map.from(poller::getReceiveTimeout).as(Duration::toMillis).to(pollerMetadata::setReceiveTimeout);
-			map.from(poller).as(this::asTrigger).to(pollerMetadata::setTrigger);
+			setTrigger(map, poller, pollerMetadata);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(pollerMetadata));
 			return pollerMetadata;
 		}
 
-		private Trigger asTrigger(IntegrationProperties.Poller poller) {
+		@SuppressWarnings("NullAway") // Lambda isn't detected with the correct
+										// nullability
+		private void setTrigger(PropertyMapper map, Poller poller, PollerMetadata pollerMetadata) {
+			map.from(poller).as(this::asTrigger).to(pollerMetadata::setTrigger);
+		}
+
+		private @Nullable Trigger asTrigger(IntegrationProperties.Poller poller) {
 			if (StringUtils.hasText(poller.getCron())) {
 				return new CronTrigger(poller.getCron());
 			}
@@ -162,7 +170,7 @@ public final class IntegrationAutoConfiguration {
 			return null;
 		}
 
-		private Trigger createPeriodicTrigger(Duration period, Duration initialDelay, boolean fixedRate) {
+		private Trigger createPeriodicTrigger(Duration period, @Nullable Duration initialDelay, boolean fixedRate) {
 			PeriodicTrigger trigger = new PeriodicTrigger(period);
 			if (initialDelay != null) {
 				trigger.setInitialDelay(initialDelay);
@@ -348,11 +356,17 @@ public final class IntegrationAutoConfiguration {
 			@Conditional(RemoteRSocketServerAddressConfigured.class)
 			ClientRSocketConnector clientRSocketConnector(IntegrationProperties integrationProperties,
 					RSocketStrategies rSocketStrategies) {
-
 				IntegrationProperties.RSocket.Client client = integrationProperties.getRsocket().getClient();
-				ClientRSocketConnector clientRSocketConnector = (client.getUri() != null)
-						? new ClientRSocketConnector(client.getUri())
-						: new ClientRSocketConnector(client.getHost(), client.getPort());
+				ClientRSocketConnector clientRSocketConnector;
+				if (client.getUri() != null) {
+					clientRSocketConnector = new ClientRSocketConnector(client.getUri());
+				}
+				else if (client.getHost() != null && client.getPort() != null) {
+					clientRSocketConnector = new ClientRSocketConnector(client.getHost(), client.getPort());
+				}
+				else {
+					throw new IllegalStateException("Neither uri nor host and port is set");
+				}
 				clientRSocketConnector.setRSocketStrategies(rSocketStrategies);
 				return clientRSocketConnector;
 			}

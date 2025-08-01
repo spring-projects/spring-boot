@@ -16,6 +16,8 @@
 
 package org.springframework.boot.integration.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
@@ -42,7 +44,7 @@ public class IntegrationJdbcProperties {
 	 * Platform to use in initialization scripts if the @@platform@@ placeholder is used.
 	 * Auto-detected by default.
 	 */
-	private String platform;
+	private @Nullable String platform;
 
 	/**
 	 * Database schema initialization mode.
@@ -57,11 +59,11 @@ public class IntegrationJdbcProperties {
 		this.schema = schema;
 	}
 
-	public String getPlatform() {
+	public @Nullable String getPlatform() {
 		return this.platform;
 	}
 
-	public void setPlatform(String platform) {
+	public void setPlatform(@Nullable String platform) {
 		this.platform = platform;
 	}
 
