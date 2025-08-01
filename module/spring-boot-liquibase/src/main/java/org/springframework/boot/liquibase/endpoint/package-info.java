@@ -17,4 +17,7 @@
 /**
  * Actuator endpoint for Liquibase.
  */
+@NullMarked
 package org.springframework.boot.liquibase.endpoint;
+
+import org.jspecify.annotations.NullMarked;

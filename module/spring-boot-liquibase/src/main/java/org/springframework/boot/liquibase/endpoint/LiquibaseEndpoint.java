@@ -31,6 +31,7 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.integration.spring.SpringLiquibase;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -128,9 +129,10 @@ public class LiquibaseEndpoint {
 
 		private final Map<String, LiquibaseBeanDescriptor> liquibaseBeans;
 
-		private final String parentId;
+		private final @Nullable String parentId;
 
-		private ContextLiquibaseBeansDescriptor(Map<String, LiquibaseBeanDescriptor> liquibaseBeans, String parentId) {
+		private ContextLiquibaseBeansDescriptor(Map<String, LiquibaseBeanDescriptor> liquibaseBeans,
+				@Nullable String parentId) {
 			this.liquibaseBeans = liquibaseBeans;
 			this.parentId = parentId;
 		}
@@ -139,7 +141,7 @@ public class LiquibaseEndpoint {
 			return this.liquibaseBeans;
 		}
 
-		public String getParentId() {
+		public @Nullable String getParentId() {
 			return this.parentId;
 		}
 
@@ -187,7 +189,7 @@ public class LiquibaseEndpoint {
 
 		private final Set<String> labels;
 
-		private final String checksum;
+		private final @Nullable String checksum;
 
 		private final Integer orderExecuted;
 
@@ -250,7 +252,7 @@ public class LiquibaseEndpoint {
 			return this.labels;
 		}
 
-		public String getChecksum() {
+		public @Nullable String getChecksum() {
 			return this.checksum;
 		}
 

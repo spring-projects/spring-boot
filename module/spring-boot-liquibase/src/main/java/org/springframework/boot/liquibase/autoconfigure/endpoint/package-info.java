@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Liquibase endpoint.
  */
+@NullMarked
 package org.springframework.boot.liquibase.autoconfigure.endpoint;
+
+import org.jspecify.annotations.NullMarked;

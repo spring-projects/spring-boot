@@ -16,6 +16,8 @@
 
 package org.springframework.boot.liquibase.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.jdbc.DatabaseDriver;
 
@@ -32,21 +34,21 @@ public interface LiquibaseConnectionDetails extends ConnectionDetails {
 	 * required.
 	 * @return the username for the database or {@code null}
 	 */
-	String getUsername();
+	@Nullable String getUsername();
 
 	/**
 	 * Password for the database or {@code null} if no Liquibase-specific configuration is
 	 * required.
 	 * @return the password for the database or {@code null}
 	 */
-	String getPassword();
+	@Nullable String getPassword();
 
 	/**
 	 * JDBC URL for the database or {@code null} if no Liquibase-specific configuration is
 	 * required.
 	 * @return the JDBC URL for the database or {@code null}
 	 */
-	String getJdbcUrl();
+	@Nullable String getJdbcUrl();
 
 	/**
 	 * The name of the JDBC driver class. Defaults to the class name of the driver
@@ -56,7 +58,7 @@ public interface LiquibaseConnectionDetails extends ConnectionDetails {
 	 * @see DatabaseDriver#fromJdbcUrl(String)
 	 * @see DatabaseDriver#getDriverClassName()
 	 */
-	default String getDriverClassName() {
+	@Nullable default String getDriverClassName() {
 		String jdbcUrl = getJdbcUrl();
 		return (jdbcUrl != null) ? DatabaseDriver.fromJdbcUrl(jdbcUrl).getDriverClassName() : null;
 	}

@@ -24,6 +24,7 @@ import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
 import liquibase.integration.spring.SpringLiquibase;
 import liquibase.ui.UIServiceEnum;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -54,22 +55,22 @@ public class LiquibaseProperties {
 	/**
 	 * List of runtime contexts to use.
 	 */
-	private List<String> contexts;
+	private @Nullable List<String> contexts;
 
 	/**
 	 * Default database schema.
 	 */
-	private String defaultSchema;
+	private @Nullable String defaultSchema;
 
 	/**
 	 * Schema to use for Liquibase objects.
 	 */
-	private String liquibaseSchema;
+	private @Nullable String liquibaseSchema;
 
 	/**
 	 * Tablespace to use for Liquibase objects.
 	 */
-	private String liquibaseTablespace;
+	private @Nullable String liquibaseTablespace;
 
 	/**
 	 * Name of table to use for tracking change history.
@@ -94,38 +95,38 @@ public class LiquibaseProperties {
 	/**
 	 * Login user of the database to migrate.
 	 */
-	private String user;
+	private @Nullable String user;
 
 	/**
 	 * Login password of the database to migrate.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
 	 */
-	private String driverClassName;
+	private @Nullable String driverClassName;
 
 	/**
 	 * JDBC URL of the database to migrate. If not set, the primary configured data source
 	 * is used.
 	 */
-	private String url;
+	private @Nullable String url;
 
 	/**
 	 * List of runtime labels to use.
 	 */
-	private List<String> labelFilter;
+	private @Nullable List<String> labelFilter;
 
 	/**
 	 * Change log parameters.
 	 */
-	private Map<String, String> parameters;
+	private @Nullable Map<String, String> parameters;
 
 	/**
 	 * File to which rollback SQL is written when an update is performed.
 	 */
-	private File rollbackFile;
+	private @Nullable File rollbackFile;
 
 	/**
 	 * Whether rollback should be tested before update is performed.
@@ -137,32 +138,32 @@ public class LiquibaseProperties {
 	 * "rollbackFile" to generate a rollback script for all existing changes associated
 	 * with that tag.
 	 */
-	private String tag;
+	private @Nullable String tag;
 
 	/**
 	 * Whether to print a summary of the update operation.
 	 */
-	private ShowSummary showSummary;
+	private @Nullable ShowSummary showSummary;
 
 	/**
 	 * Where to print a summary of the update operation.
 	 */
-	private ShowSummaryOutput showSummaryOutput;
+	private @Nullable ShowSummaryOutput showSummaryOutput;
 
 	/**
 	 * Which UIService to use.
 	 */
-	private UiService uiService;
+	private @Nullable UiService uiService;
 
 	/**
 	 * Whether to send product usage data and analytics to Liquibase.
 	 */
-	private Boolean analyticsEnabled;
+	private @Nullable Boolean analyticsEnabled;
 
 	/**
 	 * Liquibase Pro license key.
 	 */
-	private String licenseKey;
+	private @Nullable String licenseKey;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -173,35 +174,35 @@ public class LiquibaseProperties {
 		this.changeLog = changeLog;
 	}
 
-	public List<String> getContexts() {
+	public @Nullable List<String> getContexts() {
 		return this.contexts;
 	}
 
-	public void setContexts(List<String> contexts) {
+	public void setContexts(@Nullable List<String> contexts) {
 		this.contexts = contexts;
 	}
 
-	public String getDefaultSchema() {
+	public @Nullable String getDefaultSchema() {
 		return this.defaultSchema;
 	}
 
-	public void setDefaultSchema(String defaultSchema) {
+	public void setDefaultSchema(@Nullable String defaultSchema) {
 		this.defaultSchema = defaultSchema;
 	}
 
-	public String getLiquibaseSchema() {
+	public @Nullable String getLiquibaseSchema() {
 		return this.liquibaseSchema;
 	}
 
-	public void setLiquibaseSchema(String liquibaseSchema) {
+	public void setLiquibaseSchema(@Nullable String liquibaseSchema) {
 		this.liquibaseSchema = liquibaseSchema;
 	}
 
-	public String getLiquibaseTablespace() {
+	public @Nullable String getLiquibaseTablespace() {
 		return this.liquibaseTablespace;
 	}
 
-	public void setLiquibaseTablespace(String liquibaseTablespace) {
+	public void setLiquibaseTablespace(@Nullable String liquibaseTablespace) {
 		this.liquibaseTablespace = liquibaseTablespace;
 	}
 
@@ -245,59 +246,59 @@ public class LiquibaseProperties {
 		this.enabled = enabled;
 	}
 
-	public String getUser() {
+	public @Nullable String getUser() {
 		return this.user;
 	}
 
-	public void setUser(String user) {
+	public void setUser(@Nullable String user) {
 		this.user = user;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
-	public String getDriverClassName() {
+	public @Nullable String getDriverClassName() {
 		return this.driverClassName;
 	}
 
-	public void setDriverClassName(String driverClassName) {
+	public void setDriverClassName(@Nullable String driverClassName) {
 		this.driverClassName = driverClassName;
 	}
 
-	public String getUrl() {
+	public @Nullable String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(@Nullable String url) {
 		this.url = url;
 	}
 
-	public List<String> getLabelFilter() {
+	public @Nullable List<String> getLabelFilter() {
 		return this.labelFilter;
 	}
 
-	public void setLabelFilter(List<String> labelFilter) {
+	public void setLabelFilter(@Nullable List<String> labelFilter) {
 		this.labelFilter = labelFilter;
 	}
 
-	public Map<String, String> getParameters() {
+	public @Nullable Map<String, String> getParameters() {
 		return this.parameters;
 	}
 
-	public void setParameters(Map<String, String> parameters) {
+	public void setParameters(@Nullable Map<String, String> parameters) {
 		this.parameters = parameters;
 	}
 
-	public File getRollbackFile() {
+	public @Nullable File getRollbackFile() {
 		return this.rollbackFile;
 	}
 
-	public void setRollbackFile(File rollbackFile) {
+	public void setRollbackFile(@Nullable File rollbackFile) {
 		this.rollbackFile = rollbackFile;
 	}
 
@@ -309,51 +310,51 @@ public class LiquibaseProperties {
 		this.testRollbackOnUpdate = testRollbackOnUpdate;
 	}
 
-	public String getTag() {
+	public @Nullable String getTag() {
 		return this.tag;
 	}
 
-	public void setTag(String tag) {
+	public void setTag(@Nullable String tag) {
 		this.tag = tag;
 	}
 
-	public ShowSummary getShowSummary() {
+	public @Nullable ShowSummary getShowSummary() {
 		return this.showSummary;
 	}
 
-	public void setShowSummary(ShowSummary showSummary) {
+	public void setShowSummary(@Nullable ShowSummary showSummary) {
 		this.showSummary = showSummary;
 	}
 
-	public ShowSummaryOutput getShowSummaryOutput() {
+	public @Nullable ShowSummaryOutput getShowSummaryOutput() {
 		return this.showSummaryOutput;
 	}
 
-	public void setShowSummaryOutput(ShowSummaryOutput showSummaryOutput) {
+	public void setShowSummaryOutput(@Nullable ShowSummaryOutput showSummaryOutput) {
 		this.showSummaryOutput = showSummaryOutput;
 	}
 
-	public UiService getUiService() {
+	public @Nullable UiService getUiService() {
 		return this.uiService;
 	}
 
-	public void setUiService(UiService uiService) {
+	public void setUiService(@Nullable UiService uiService) {
 		this.uiService = uiService;
 	}
 
-	public Boolean getAnalyticsEnabled() {
+	public @Nullable Boolean getAnalyticsEnabled() {
 		return this.analyticsEnabled;
 	}
 
-	public void setAnalyticsEnabled(Boolean analyticsEnabled) {
+	public void setAnalyticsEnabled(@Nullable Boolean analyticsEnabled) {
 		this.analyticsEnabled = analyticsEnabled;
 	}
 
-	public String getLicenseKey() {
+	public @Nullable String getLicenseKey() {
 		return this.licenseKey;
 	}
 
-	public void setLicenseKey(String licenseKey) {
+	public void setLicenseKey(@Nullable String licenseKey) {
 		this.licenseKey = licenseKey;
 	}
 
