@@ -32,7 +32,9 @@ dependencies {
 	api("org.glassfish.jersey.core:jersey-server")
 	api("org.glassfish.jersey.ext:jersey-spring6")
 	api("org.glassfish.jersey.media:jersey-media-json-jackson")
+
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
+	compileOnly("com.google.code.findbugs:jsr305")
 
 	implementation("org.springframework:spring-web")
 

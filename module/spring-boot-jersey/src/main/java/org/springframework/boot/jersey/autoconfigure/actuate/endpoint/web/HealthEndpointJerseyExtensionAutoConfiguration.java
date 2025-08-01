@@ -24,6 +24,7 @@ import java.util.Objects;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -73,7 +74,7 @@ public final class HealthEndpointJerseyExtensionAutoConfiguration {
 		return new JerseyAdditionalHealthEndpointPathsResourcesRegistrar(health, healthEndpointGroups);
 	}
 
-	private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
+	private static @Nullable ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		return webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
@@ -110,11 +111,11 @@ public final class HealthEndpointJerseyExtensionAutoConfiguration {
 
 	static class JerseyAdditionalHealthEndpointPathsResourcesRegistrar implements ResourceConfigCustomizer {
 
-		private final ExposableWebEndpoint endpoint;
+		private final @Nullable ExposableWebEndpoint endpoint;
 
 		private final HealthEndpointGroups groups;
 
-		JerseyAdditionalHealthEndpointPathsResourcesRegistrar(ExposableWebEndpoint endpoint,
+		JerseyAdditionalHealthEndpointPathsResourcesRegistrar(@Nullable ExposableWebEndpoint endpoint,
 				HealthEndpointGroups groups) {
 			this.endpoint = endpoint;
 			this.groups = groups;

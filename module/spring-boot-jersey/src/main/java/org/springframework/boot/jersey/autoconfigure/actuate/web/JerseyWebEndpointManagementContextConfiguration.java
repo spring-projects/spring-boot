@@ -29,6 +29,7 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.ext.ContextResolver;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
@@ -179,11 +180,11 @@ class JerseyWebEndpointManagementContextConfiguration {
 	class JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar
 			implements ManagementContextResourceConfigCustomizer {
 
-		private final ExposableWebEndpoint healthEndpoint;
+		private final @Nullable ExposableWebEndpoint healthEndpoint;
 
 		private final HealthEndpointGroups groups;
 
-		JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(ExposableWebEndpoint healthEndpoint,
+		JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(@Nullable ExposableWebEndpoint healthEndpoint,
 				HealthEndpointGroups groups) {
 			this.healthEndpoint = healthEndpoint;
 			this.groups = groups;
@@ -192,16 +193,16 @@ class JerseyWebEndpointManagementContextConfiguration {
 		@Override
 		public void customize(ResourceConfig config) {
 			if (this.healthEndpoint != null) {
-				register(config);
+				register(config, this.healthEndpoint);
 			}
 		}
 
-		private void register(ResourceConfig config) {
+		private void register(ResourceConfig config, ExposableWebEndpoint healthEndpoint) {
 			EndpointMapping mapping = new EndpointMapping("");
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.MANAGEMENT, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
-				.createEndpointResources(mapping, Collections.singletonList(this.healthEndpoint))
+				.createEndpointResources(mapping, Collections.singletonList(healthEndpoint))
 				.stream()
 				.filter(Objects::nonNull)
 				.toList();
@@ -228,7 +229,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 		}
 
 		@Override
-		public ObjectMapper getContext(Class<?> type) {
+		public @Nullable ObjectMapper getContext(Class<?> type) {
 			for (Class<?> supportedType : this.endpointObjectMapper.getSupportedTypes()) {
 				if (supportedType.isAssignableFrom(type)) {
 					return this.endpointObjectMapper.get();
