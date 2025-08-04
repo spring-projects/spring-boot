@@ -264,6 +264,9 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.fromSource(type)
 			.withDeprecation("some-reason", null, null));
 		assertThat(metadata).has(Metadata.withProperty("deprecated-record.bravo", String.class).fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("deprecated-record.named.charlie", String.class)
+			.fromSource(type)
+			.withDeprecation("another-reason", null, null));
 	}
 
 	@Test
@@ -568,6 +571,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.withDescription("description without space after asterisk"));
 		assertThat(metadata).has(Metadata.withProperty("record.descriptions.some-byte", Byte.class)
 			.withDescription("last description in Javadoc"));
+		assertThat(metadata).has(Metadata.withProperty("record.descriptions.named.record.component", String.class)
+			.withDescription("description of a named component"));
 	}
 
 }
