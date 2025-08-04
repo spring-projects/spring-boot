@@ -75,4 +75,9 @@ public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle 
 		return WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE;
 	}
 
+	@Override
+	public boolean isPauseable() {
+		return false;
+	}
+
 }

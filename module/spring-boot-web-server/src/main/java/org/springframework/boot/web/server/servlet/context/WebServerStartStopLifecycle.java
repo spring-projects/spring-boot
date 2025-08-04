@@ -63,4 +63,9 @@ class WebServerStartStopLifecycle implements SmartLifecycle {
 		return WebServerApplicationContext.START_STOP_LIFECYCLE_PHASE;
 	}
 
+	@Override
+	public boolean isPauseable() {
+		return false;
+	}
+
 }
