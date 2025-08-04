@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Mustache.
  */
+@NullMarked
 package org.springframework.boot.mustache.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

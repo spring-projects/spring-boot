@@ -18,6 +18,7 @@ package org.springframework.boot.mustache.reactive.view;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Compiler;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.UrlBasedViewResolver;
@@ -34,7 +35,7 @@ public class MustacheViewResolver extends UrlBasedViewResolver {
 
 	private final Compiler compiler;
 
-	private String charset;
+	private @Nullable String charset;
 
 	/**
 	 * Create a {@code MustacheViewResolver} backed by a default instance of a

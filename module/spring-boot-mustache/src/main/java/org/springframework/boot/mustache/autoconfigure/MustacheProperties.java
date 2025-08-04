@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
@@ -51,12 +53,12 @@ public class MustacheProperties {
 	/**
 	 * View names that can be resolved.
 	 */
-	private String[] viewNames;
+	private String @Nullable [] viewNames;
 
 	/**
 	 * Name of the RequestContext attribute for all views.
 	 */
-	private String requestContextAttribute;
+	private @Nullable String requestContextAttribute;
 
 	/**
 	 * Whether to enable MVC view resolution for Mustache.
@@ -107,19 +109,19 @@ public class MustacheProperties {
 		this.suffix = suffix;
 	}
 
-	public String[] getViewNames() {
+	public String @Nullable [] getViewNames() {
 		return this.viewNames;
 	}
 
-	public void setViewNames(String[] viewNames) {
+	public void setViewNames(String @Nullable [] viewNames) {
 		this.viewNames = viewNames;
 	}
 
-	public String getRequestContextAttribute() {
+	public @Nullable String getRequestContextAttribute() {
 		return this.requestContextAttribute;
 	}
 
-	public void setRequestContextAttribute(String requestContextAttribute) {
+	public void setRequestContextAttribute(@Nullable String requestContextAttribute) {
 		this.requestContextAttribute = requestContextAttribute;
 	}
 
@@ -128,7 +130,7 @@ public class MustacheProperties {
 	}
 
 	public String getCharsetName() {
-		return (this.charset != null) ? this.charset.name() : null;
+		return this.charset.name();
 	}
 
 	public void setCharset(Charset charset) {
@@ -275,13 +277,13 @@ public class MustacheProperties {
 		/**
 		 * Media types supported by Mustache views.
 		 */
-		private List<MediaType> mediaTypes;
+		private @Nullable List<MediaType> mediaTypes;
 
-		public List<MediaType> getMediaTypes() {
+		public @Nullable List<MediaType> getMediaTypes() {
 			return this.mediaTypes;
 		}
 
-		public void setMediaTypes(List<MediaType> mediaTypes) {
+		public void setMediaTypes(@Nullable List<MediaType> mediaTypes) {
 			this.mediaTypes = mediaTypes;
 		}
 

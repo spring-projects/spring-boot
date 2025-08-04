@@ -18,6 +18,7 @@ package org.springframework.boot.mustache.servlet.view;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Compiler;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
@@ -33,7 +34,7 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 
 	private final Mustache.Compiler compiler;
 
-	private String charset;
+	private @Nullable String charset;
 
 	/**
 	 * Create a {@code MustacheViewResolver} backed by a default instance of a
@@ -63,7 +64,7 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 	 * Set the charset.
 	 * @param charset the charset
 	 */
-	public void setCharset(String charset) {
+	public void setCharset(@Nullable String charset) {
 		this.charset = charset;
 	}
 

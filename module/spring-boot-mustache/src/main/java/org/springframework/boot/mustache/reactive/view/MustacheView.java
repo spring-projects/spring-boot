@@ -28,14 +28,17 @@ import java.util.Optional;
 
 import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Template;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.server.ServerWebExchange;
@@ -48,9 +51,9 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public class MustacheView extends AbstractUrlBasedView {
 
-	private Compiler compiler;
+	private @Nullable Compiler compiler;
 
-	private String charset;
+	private @Nullable String charset;
 
 	/**
 	 * Set the JMustache compiler to be used by this view. Typically this property is not
@@ -66,7 +69,7 @@ public class MustacheView extends AbstractUrlBasedView {
 	 * Set the charset used for reading Mustache template files.
 	 * @param charset the charset to use for reading template files
 	 */
-	public void setCharset(String charset) {
+	public void setCharset(@Nullable String charset) {
 		this.charset = charset;
 	}
 
@@ -76,7 +79,8 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	@Override
-	protected Mono<Void> renderInternal(Map<String, Object> model, MediaType contentType, ServerWebExchange exchange) {
+	protected Mono<Void> renderInternal(Map<String, Object> model, @Nullable MediaType contentType,
+			ServerWebExchange exchange) {
 		Resource resource = resolveResource();
 		if (resource == null) {
 			return Mono
@@ -86,6 +90,7 @@ public class MustacheView extends AbstractUrlBasedView {
 			.bufferFactory()
 			.allocateBuffer(DefaultDataBufferFactory.DEFAULT_INITIAL_CAPACITY);
 		try (Reader reader = getReader(resource)) {
+			Assert.state(this.compiler != null, "'compiler' must not be null");
 			Template template = this.compiler.compile(reader);
 			Charset charset = getCharset(contentType).orElseGet(this::getDefaultCharset);
 			try (Writer writer = new OutputStreamWriter(dataBuffer.asOutputStream(), charset)) {
@@ -100,8 +105,13 @@ public class MustacheView extends AbstractUrlBasedView {
 		return exchange.getResponse().writeWith(Flux.just(dataBuffer));
 	}
 
-	private Resource resolveResource() {
-		Resource resource = getApplicationContext().getResource(getUrl());
+	private @Nullable Resource resolveResource() {
+		ApplicationContext applicationContext = getApplicationContext();
+		String url = getUrl();
+		if (applicationContext == null || url == null) {
+			return null;
+		}
+		Resource resource = applicationContext.getResource(url);
 		if (resource == null || !resource.exists()) {
 			return null;
 		}
@@ -115,7 +125,7 @@ public class MustacheView extends AbstractUrlBasedView {
 		return new InputStreamReader(resource.getInputStream());
 	}
 
-	private Optional<Charset> getCharset(MediaType mediaType) {
+	private Optional<Charset> getCharset(@Nullable MediaType mediaType) {
 		return Optional.ofNullable((mediaType != null) ? mediaType.getCharset() : null);
 	}
 
