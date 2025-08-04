@@ -34,9 +34,11 @@ import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.nio.ssl.BasicClientTlsStrategy;
 import org.apache.hc.core5.reactor.IOReactorConfig;
+import org.apache.hc.core5.reactor.ssl.SSLBufferMode;
 import org.apache.hc.core5.util.Timeout;
 import org.jspecify.annotations.Nullable;
 
@@ -189,12 +191,11 @@ class ElasticsearchRestClientConfigurations {
 			SslBundle sslBundle = this.connectionDetails.getSslBundle();
 			if (sslBundle != null) {
 				SSLContext sslContext = sslBundle.createSslContext();
-				connectionManagerBuilder
-					.setTlsStrategy(new BasicClientTlsStrategy(sslContext, (endpoint, sslEngine) -> {
-						SslOptions sslOptions = sslBundle.getOptions();
-						sslEngine.setEnabledProtocols(sslOptions.getEnabledProtocols());
-						sslEngine.setEnabledCipherSuites(sslOptions.getCiphers());
-					}, null));
+				SslOptions sslOptions = sslBundle.getOptions();
+				DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext,
+						sslOptions.getEnabledProtocols(), sslOptions.getCiphers(), SSLBufferMode.STATIC,
+						NoopHostnameVerifier.INSTANCE);
+				connectionManagerBuilder.setTlsStrategy(tlsStrategy);
 			}
 		}
 

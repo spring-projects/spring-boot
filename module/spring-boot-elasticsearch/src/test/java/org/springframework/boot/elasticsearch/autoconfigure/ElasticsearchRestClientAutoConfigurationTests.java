@@ -20,8 +20,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.net.ssl.SSLEngine;
-
 import co.elastic.clients.transport.rest5_client.low_level.Node;
 import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import co.elastic.clients.transport.rest5_client.low_level.Rest5ClientBuilder;
@@ -37,7 +35,6 @@ import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBu
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.config.Registry;
-import org.apache.hc.core5.reactor.ssl.SSLSessionInitializer;
 import org.apache.hc.core5.util.Timeout;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -310,13 +307,9 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			assertThat(restClient).extracting("client.manager.connectionOperator.tlsStrategyLookup")
 				.asInstanceOf(InstanceOfAssertFactories.type(Registry.class))
 				.extracting((registry) -> registry.lookup("https"))
-				.extracting("initializer")
-				.asInstanceOf(InstanceOfAssertFactories.type(SSLSessionInitializer.class))
-				.satisfies((sslInitializer) -> {
-					SSLEngine engine = mock(SSLEngine.class);
-					sslInitializer.initialize(null, engine);
-					then(engine).should().setEnabledCipherSuites(new String[] { "DESede" });
-					then(engine).should().setEnabledProtocols(new String[] { "TLSv1.3" });
+				.satisfies((tlsStrategy) -> {
+					assertThat(tlsStrategy).extracting("supportedProtocols").isEqualTo(new String[] { "TLSv1.3" });
+					assertThat(tlsStrategy).extracting("supportedCipherSuites").isEqualTo(new String[] { "DESede" });
 				});
 		});
 	}
