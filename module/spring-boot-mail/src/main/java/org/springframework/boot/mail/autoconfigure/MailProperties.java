@@ -21,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -39,22 +41,22 @@ public class MailProperties {
 	/**
 	 * SMTP server host. For instance, 'smtp.example.com'.
 	 */
-	private String host;
+	private @Nullable String host;
 
 	/**
 	 * SMTP server port.
 	 */
-	private Integer port;
+	private @Nullable Integer port;
 
 	/**
 	 * Login user of the SMTP server.
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Login password of the SMTP server.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Protocol used by the SMTP server.
@@ -74,42 +76,42 @@ public class MailProperties {
 	/**
 	 * Session JNDI name. When set, takes precedence over other Session settings.
 	 */
-	private String jndiName;
+	private @Nullable String jndiName;
 
 	/**
 	 * SSL configuration.
 	 */
 	private final Ssl ssl = new Ssl();
 
-	public String getHost() {
+	public @Nullable String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	public void setHost(@Nullable String host) {
 		this.host = host;
 	}
 
-	public Integer getPort() {
+	public @Nullable Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(Integer port) {
+	public void setPort(@Nullable Integer port) {
 		this.port = port;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
@@ -133,12 +135,12 @@ public class MailProperties {
 		return this.properties;
 	}
 
-	public void setJndiName(String jndiName) {
-		this.jndiName = jndiName;
+	public @Nullable String getJndiName() {
+		return this.jndiName;
 	}
 
-	public String getJndiName() {
-		return this.jndiName;
+	public void setJndiName(@Nullable String jndiName) {
+		this.jndiName = jndiName;
 	}
 
 	public Ssl getSsl() {
@@ -160,7 +162,7 @@ public class MailProperties {
 		 * Note that the STARTTLS command can use the corresponding SSLSocketFactory, even
 		 * if the 'mail.(protocol).ssl.enable' property is not set.
 		 */
-		private String bundle;
+		private @Nullable String bundle;
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -170,11 +172,11 @@ public class MailProperties {
 			this.enabled = enabled;
 		}
 
-		public String getBundle() {
+		public @Nullable String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
 		}
 

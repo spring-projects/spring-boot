@@ -19,6 +19,8 @@ package org.springframework.boot.mail.autoconfigure;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -51,7 +54,8 @@ class MailSenderPropertiesConfiguration {
 		return sender;
 	}
 
-	private void applyProperties(MailProperties properties, JavaMailSenderImpl sender, SslBundles sslBundles) {
+	private void applyProperties(MailProperties properties, JavaMailSenderImpl sender,
+			@Nullable SslBundles sslBundles) {
 		sender.setHost(properties.getHost());
 		if (properties.getPort() != null) {
 			sender.setPort(properties.getPort());
@@ -70,6 +74,7 @@ class MailSenderPropertiesConfiguration {
 			javaMailProperties.setProperty("mail." + protocol + ".ssl.enable", "true");
 		}
 		if (ssl.getBundle() != null) {
+			Assert.state(sslBundles != null, "'sslBundles' must not be null");
 			SslBundle sslBundle = sslBundles.getBundle(ssl.getBundle());
 			javaMailProperties.put("mail." + protocol + ".ssl.socketFactory",
 					sslBundle.createSslContext().getSocketFactory());

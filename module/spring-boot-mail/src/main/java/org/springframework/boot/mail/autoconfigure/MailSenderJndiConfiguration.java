@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.util.Assert;
 
 /**
  * Auto-configure a {@link MailSender} based on a {@link Session} available on JNDI.
@@ -60,6 +61,7 @@ class MailSenderJndiConfiguration {
 	@ConditionalOnMissingBean
 	Session session() {
 		String jndiName = this.properties.getJndiName();
+		Assert.state(jndiName != null, "'jndiName' must not be null");
 		try {
 			return JndiLocatorDelegate.createDefaultResourceRefLocator().lookup(jndiName, Session.class);
 		}
