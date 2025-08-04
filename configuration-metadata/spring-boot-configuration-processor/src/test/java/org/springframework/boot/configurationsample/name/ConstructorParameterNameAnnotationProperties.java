@@ -14,27 +14,43 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.immutable;
+package org.springframework.boot.configurationsample.name;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.DefaultValue;
 import org.springframework.boot.configurationsample.Name;
 
 /**
- * Immutable class properties making use of {@code @Name}.
+ * Constructor properties making use of {@code @Name}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties("named")
 public class ConstructorParameterNameAnnotationProperties {
 
+	/**
+	 * Imports to apply.
+	 */
 	private final String imports;
 
-	public ConstructorParameterNameAnnotationProperties(@Name("import") String imports) {
+	/**
+	 * Whether default mode is enabled.
+	 */
+	private final boolean defaultValue;
+
+	public ConstructorParameterNameAnnotationProperties(@Name("import") String imports,
+			@Name("default") @DefaultValue("true") boolean defaultValue) {
 		this.imports = imports;
+		this.defaultValue = defaultValue;
 	}
 
 	public String getImports() {
 		return this.imports;
+	}
+
+	public boolean isDefaultValue() {
+		return this.defaultValue;
 	}
 
 }

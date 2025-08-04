@@ -145,14 +145,15 @@ class MetadataGenerationEnvironment {
 	}
 
 	/**
-	 * Return the default value of the field with the specified {@code name}.
+	 * Return the default value of the given {@code field}.
 	 * @param type the type to consider
-	 * @param name the name of the field
+	 * @param field the field or {@code null} if it is not available
 	 * @return the default value or {@code null} if the field does not exist or no default
 	 * value has been detected
 	 */
-	Object getFieldDefaultValue(TypeElement type, String name) {
-		return this.defaultValues.computeIfAbsent(type, this::resolveFieldValues).get(name);
+	Object getFieldDefaultValue(TypeElement type, VariableElement field) {
+		return (field != null) ? this.defaultValues.computeIfAbsent(type, this::resolveFieldValues)
+			.get(field.getSimpleName().toString()) : null;
 	}
 
 	/**
