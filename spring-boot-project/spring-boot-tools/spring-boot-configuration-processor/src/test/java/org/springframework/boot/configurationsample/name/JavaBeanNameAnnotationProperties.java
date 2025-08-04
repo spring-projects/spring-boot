@@ -14,18 +14,46 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.immutable;
+package org.springframework.boot.configurationsample.name;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.Name;
 
 /**
- * Immutable record properties making use of {@code @Name}.
+ * Java bean properties making use of {@code @Name}.
  *
- * @param imports some imports
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties("named")
-public record RecordComponentNameAnnotationProperties(@Name("import") String imports) {
+public class JavaBeanNameAnnotationProperties {
+
+	/**
+	 * Imports to apply.
+	 */
+	@Name("import")
+	private String imports;
+
+	/**
+	 * Whether default mode is enabled.
+	 */
+	@Name("default")
+	private boolean defaultValue = true;
+
+	public String getImports() {
+		return this.imports;
+	}
+
+	public void setImports(String imports) {
+		this.imports = imports;
+	}
+
+	public boolean isDefaultValue() {
+		return this.defaultValue;
+	}
+
+	public void setDefaultValue(boolean defaultValue) {
+		this.defaultValue = defaultValue;
+	}
 
 }

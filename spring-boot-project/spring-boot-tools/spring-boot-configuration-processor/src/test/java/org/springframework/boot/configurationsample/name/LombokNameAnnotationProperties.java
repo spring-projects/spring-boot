@@ -14,28 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.immutable;
+package org.springframework.boot.configurationsample.name;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.Name;
 
 /**
- * Java bean properties making use of {@code @Name}.
+ * Lombok properties making use of {@code @Name}.
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
+@Getter
+@Setter
 @ConfigurationProperties("named")
-public class JavaBeanNameAnnotationProperties {
+public class LombokNameAnnotationProperties {
 
+	/**
+	 * Imports to apply.
+	 */
 	@Name("import")
 	private String imports;
 
-	public String getImports() {
-		return this.imports;
-	}
-
-	public void setImports(String imports) {
-		this.imports = imports;
-	}
+	/**
+	 * Whether default mode is enabled.
+	 */
+	@Name("default")
+	private boolean defaultValue = true;
 
 }
