@@ -33,6 +33,7 @@ import org.apache.pulsar.client.api.SubscriptionInitialPosition;
 import org.apache.pulsar.client.api.SubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -125,7 +126,7 @@ public class PulsarProperties {
 		/**
 		 * Client lookup timeout.
 		 */
-		private Duration lookupTimeout;
+		private @Nullable Duration lookupTimeout;
 
 		/**
 		 * Duration to wait for a connection to a broker to be established.
@@ -163,11 +164,11 @@ public class PulsarProperties {
 			this.operationTimeout = operationTimeout;
 		}
 
-		public Duration getLookupTimeout() {
+		public @Nullable Duration getLookupTimeout() {
 			return this.lookupTimeout;
 		}
 
-		public void setLookupTimeout(Duration lookupTimeout) {
+		public void setLookupTimeout(@Nullable Duration lookupTimeout) {
 			this.lookupTimeout = lookupTimeout;
 		}
 
@@ -289,7 +290,7 @@ public class PulsarProperties {
 		 * @param topicName the topic name
 		 * @param schemaInfo the schema info
 		 */
-		public record TypeMapping(Class<?> messageType, String topicName, SchemaInfo schemaInfo) {
+		public record TypeMapping(Class<?> messageType, @Nullable String topicName, @Nullable SchemaInfo schemaInfo) {
 
 			public TypeMapping {
 				Assert.notNull(messageType, "'messageType' must not be null");
@@ -306,7 +307,7 @@ public class PulsarProperties {
 		 * @param schemaType schema type
 		 * @param messageKeyType message key type (required for key value type)
 		 */
-		public record SchemaInfo(SchemaType schemaType, Class<?> messageKeyType) {
+		public record SchemaInfo(SchemaType schemaType, @Nullable Class<?> messageKeyType) {
 
 			public SchemaInfo {
 				Assert.notNull(schemaType, "'schemaType' must not be null");
@@ -402,12 +403,12 @@ public class PulsarProperties {
 		/**
 		 * Name for the producer. If not assigned, a unique name is generated.
 		 */
-		private String name;
+		private @Nullable String name;
 
 		/**
 		 * Topic the producer will publish to.
 		 */
-		private String topicName;
+		private @Nullable String topicName;
 
 		/**
 		 * Time before a message has to be acknowledged by the broker.
@@ -438,7 +439,7 @@ public class PulsarProperties {
 		/**
 		 * Message compression type.
 		 */
-		private CompressionType compressionType;
+		private @Nullable CompressionType compressionType;
 
 		/**
 		 * Type of access to the topic the producer requires.
@@ -447,19 +448,19 @@ public class PulsarProperties {
 
 		private final Cache cache = new Cache();
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 
-		public String getTopicName() {
+		public @Nullable String getTopicName() {
 			return this.topicName;
 		}
 
-		public void setTopicName(String topicName) {
+		public void setTopicName(@Nullable String topicName) {
 			this.topicName = topicName;
 		}
 
@@ -503,11 +504,11 @@ public class PulsarProperties {
 			this.chunkingEnabled = chunkingEnabled;
 		}
 
-		public CompressionType getCompressionType() {
+		public @Nullable CompressionType getCompressionType() {
 			return this.compressionType;
 		}
 
-		public void setCompressionType(CompressionType compressionType) {
+		public void setCompressionType(@Nullable CompressionType compressionType) {
 			this.compressionType = compressionType;
 		}
 
@@ -573,17 +574,17 @@ public class PulsarProperties {
 		/**
 		 * Consumer name to identify a particular consumer from the topic stats.
 		 */
-		private String name;
+		private @Nullable String name;
 
 		/**
 		 * Topics the consumer subscribes to.
 		 */
-		private List<String> topics;
+		private @Nullable List<String> topics;
 
 		/**
 		 * Pattern for topics the consumer subscribes to.
 		 */
-		private Pattern topicsPattern;
+		private @Nullable Pattern topicsPattern;
 
 		/**
 		 * Priority level for shared subscription consumers.
@@ -600,7 +601,7 @@ public class PulsarProperties {
 		 * Dead letter policy to use.
 		 */
 		@NestedConfigurationProperty
-		private DeadLetterPolicy deadLetterPolicy;
+		private @Nullable DeadLetterPolicy deadLetterPolicy;
 
 		/**
 		 * Consumer subscription properties.
@@ -612,11 +613,11 @@ public class PulsarProperties {
 		 */
 		private boolean retryEnable = false;
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 
@@ -624,19 +625,19 @@ public class PulsarProperties {
 			return this.subscription;
 		}
 
-		public List<String> getTopics() {
+		public @Nullable List<String> getTopics() {
 			return this.topics;
 		}
 
-		public void setTopics(List<String> topics) {
+		public void setTopics(@Nullable List<String> topics) {
 			this.topics = topics;
 		}
 
-		public Pattern getTopicsPattern() {
+		public @Nullable Pattern getTopicsPattern() {
 			return this.topicsPattern;
 		}
 
-		public void setTopicsPattern(Pattern topicsPattern) {
+		public void setTopicsPattern(@Nullable Pattern topicsPattern) {
 			this.topicsPattern = topicsPattern;
 		}
 
@@ -656,11 +657,11 @@ public class PulsarProperties {
 			this.readCompacted = readCompacted;
 		}
 
-		public DeadLetterPolicy getDeadLetterPolicy() {
+		public @Nullable DeadLetterPolicy getDeadLetterPolicy() {
 			return this.deadLetterPolicy;
 		}
 
-		public void setDeadLetterPolicy(DeadLetterPolicy deadLetterPolicy) {
+		public void setDeadLetterPolicy(@Nullable DeadLetterPolicy deadLetterPolicy) {
 			this.deadLetterPolicy = deadLetterPolicy;
 		}
 
@@ -677,7 +678,7 @@ public class PulsarProperties {
 			/**
 			 * Subscription name for the consumer.
 			 */
-			private String name;
+			private @Nullable String name;
 
 			/**
 			 * Position where to initialize a newly created subscription.
@@ -700,11 +701,11 @@ public class PulsarProperties {
 			 */
 			private SubscriptionType type = SubscriptionType.Exclusive;
 
-			public String getName() {
+			public @Nullable String getName() {
 				return this.name;
 			}
 
-			public void setName(String name) {
+			public void setName(@Nullable String name) {
 				this.name = name;
 			}
 
@@ -753,12 +754,12 @@ public class PulsarProperties {
 			/**
 			 * Name of the retry topic where the failing messages will be sent.
 			 */
-			private String retryLetterTopic;
+			private @Nullable String retryLetterTopic;
 
 			/**
 			 * Name of the dead topic where the failing messages will be sent.
 			 */
-			private String deadLetterTopic;
+			private @Nullable String deadLetterTopic;
 
 			/**
 			 * Name of the initial subscription of the dead letter topic. When not set,
@@ -766,7 +767,7 @@ public class PulsarProperties {
 			 * set then the broker's 'allowAutoSubscriptionCreation' must be enabled or
 			 * the DLQ producer will fail.
 			 */
-			private String initialSubscriptionName;
+			private @Nullable String initialSubscriptionName;
 
 			public int getMaxRedeliverCount() {
 				return this.maxRedeliverCount;
@@ -776,27 +777,27 @@ public class PulsarProperties {
 				this.maxRedeliverCount = maxRedeliverCount;
 			}
 
-			public String getRetryLetterTopic() {
+			public @Nullable String getRetryLetterTopic() {
 				return this.retryLetterTopic;
 			}
 
-			public void setRetryLetterTopic(String retryLetterTopic) {
+			public void setRetryLetterTopic(@Nullable String retryLetterTopic) {
 				this.retryLetterTopic = retryLetterTopic;
 			}
 
-			public String getDeadLetterTopic() {
+			public @Nullable String getDeadLetterTopic() {
 				return this.deadLetterTopic;
 			}
 
-			public void setDeadLetterTopic(String deadLetterTopic) {
+			public void setDeadLetterTopic(@Nullable String deadLetterTopic) {
 				this.deadLetterTopic = deadLetterTopic;
 			}
 
-			public String getInitialSubscriptionName() {
+			public @Nullable String getInitialSubscriptionName() {
 				return this.initialSubscriptionName;
 			}
 
-			public void setInitialSubscriptionName(String initialSubscriptionName) {
+			public void setInitialSubscriptionName(@Nullable String initialSubscriptionName) {
 				this.initialSubscriptionName = initialSubscriptionName;
 			}
 
@@ -809,12 +810,12 @@ public class PulsarProperties {
 		/**
 		 * SchemaType of the consumed messages.
 		 */
-		private SchemaType schemaType;
+		private @Nullable SchemaType schemaType;
 
 		/**
 		 * Number of threads used by listener container.
 		 */
-		private Integer concurrency;
+		private @Nullable Integer concurrency;
 
 		/**
 		 * Whether to record observations for when the Observations API is available and
@@ -822,19 +823,19 @@ public class PulsarProperties {
 		 */
 		private boolean observationEnabled;
 
-		public SchemaType getSchemaType() {
+		public @Nullable SchemaType getSchemaType() {
 			return this.schemaType;
 		}
 
-		public void setSchemaType(SchemaType schemaType) {
+		public void setSchemaType(@Nullable SchemaType schemaType) {
 			this.schemaType = schemaType;
 		}
 
-		public Integer getConcurrency() {
+		public @Nullable Integer getConcurrency() {
 			return this.concurrency;
 		}
 
-		public void setConcurrency(Integer concurrency) {
+		public void setConcurrency(@Nullable Integer concurrency) {
 			this.concurrency = concurrency;
 		}
 
@@ -853,22 +854,22 @@ public class PulsarProperties {
 		/**
 		 * Reader name.
 		 */
-		private String name;
+		private @Nullable String name;
 
 		/**
 		 * Topics the reader subscribes to.
 		 */
-		private List<String> topics;
+		private @Nullable List<String> topics;
 
 		/**
 		 * Subscription name.
 		 */
-		private String subscriptionName;
+		private @Nullable String subscriptionName;
 
 		/**
 		 * Prefix of subscription role.
 		 */
-		private String subscriptionRolePrefix;
+		private @Nullable String subscriptionRolePrefix;
 
 		/**
 		 * Whether to read messages from a compacted topic rather than a full message
@@ -876,35 +877,35 @@ public class PulsarProperties {
 		 */
 		private boolean readCompacted;
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 
-		public List<String> getTopics() {
+		public @Nullable List<String> getTopics() {
 			return this.topics;
 		}
 
-		public void setTopics(List<String> topics) {
+		public void setTopics(@Nullable List<String> topics) {
 			this.topics = topics;
 		}
 
-		public String getSubscriptionName() {
+		public @Nullable String getSubscriptionName() {
 			return this.subscriptionName;
 		}
 
-		public void setSubscriptionName(String subscriptionName) {
+		public void setSubscriptionName(@Nullable String subscriptionName) {
 			this.subscriptionName = subscriptionName;
 		}
 
-		public String getSubscriptionRolePrefix() {
+		public @Nullable String getSubscriptionRolePrefix() {
 			return this.subscriptionRolePrefix;
 		}
 
-		public void setSubscriptionRolePrefix(String subscriptionRolePrefix) {
+		public void setSubscriptionRolePrefix(@Nullable String subscriptionRolePrefix) {
 			this.subscriptionRolePrefix = subscriptionRolePrefix;
 		}
 
@@ -957,18 +958,18 @@ public class PulsarProperties {
 		/**
 		 * Fully qualified class name of the authentication plugin.
 		 */
-		private String pluginClassName;
+		private @Nullable String pluginClassName;
 
 		/**
 		 * Authentication parameter(s) as a map of parameter names to parameter values.
 		 */
 		private Map<String, String> param = new LinkedHashMap<>();
 
-		public String getPluginClassName() {
+		public @Nullable String getPluginClassName() {
 			return this.pluginClassName;
 		}
 
-		public void setPluginClassName(String pluginClassName) {
+		public void setPluginClassName(@Nullable String pluginClassName) {
 			this.pluginClassName = pluginClassName;
 		}
 
@@ -987,26 +988,26 @@ public class PulsarProperties {
 		/**
 		 * Number of threads to be used for handling connections to brokers.
 		 */
-		private Integer io;
+		private @Nullable Integer io;
 
 		/**
 		 * Number of threads to be used for message listeners.
 		 */
-		private Integer listener;
+		private @Nullable Integer listener;
 
-		public Integer getIo() {
+		public @Nullable Integer getIo() {
 			return this.io;
 		}
 
-		public void setIo(Integer io) {
+		public void setIo(@Nullable Integer io) {
 			this.io = io;
 		}
 
-		public Integer getListener() {
+		public @Nullable Integer getListener() {
 			return this.listener;
 		}
 
-		public void setListener(Integer listener) {
+		public void setListener(@Nullable Integer listener) {
 			this.listener = listener;
 		}
 
@@ -1023,18 +1024,18 @@ public class PulsarProperties {
 		 * Delay before the Pulsar client switches from the primary cluster to the backup
 		 * cluster.
 		 */
-		private Duration delay;
+		private @Nullable Duration delay;
 
 		/**
 		 * Delay before the Pulsar client switches from the backup cluster to the primary
 		 * cluster.
 		 */
-		private Duration switchBackDelay;
+		private @Nullable Duration switchBackDelay;
 
 		/**
 		 * Frequency of performing a probe task.
 		 */
-		private Duration checkInterval;
+		private @Nullable Duration checkInterval;
 
 		/**
 		 * List of backup clusters. The backup cluster is chosen in the sequence of the
@@ -1051,27 +1052,27 @@ public class PulsarProperties {
 			this.policy = policy;
 		}
 
-		public Duration getDelay() {
+		public @Nullable Duration getDelay() {
 			return this.delay;
 		}
 
-		public void setDelay(Duration delay) {
+		public void setDelay(@Nullable Duration delay) {
 			this.delay = delay;
 		}
 
-		public Duration getSwitchBackDelay() {
+		public @Nullable Duration getSwitchBackDelay() {
 			return this.switchBackDelay;
 		}
 
-		public void setSwitchBackDelay(Duration switchBackDelay) {
+		public void setSwitchBackDelay(@Nullable Duration switchBackDelay) {
 			this.switchBackDelay = switchBackDelay;
 		}
 
-		public Duration getCheckInterval() {
+		public @Nullable Duration getCheckInterval() {
 			return this.checkInterval;
 		}
 
-		public void setCheckInterval(Duration checkInterval) {
+		public void setCheckInterval(@Nullable Duration checkInterval) {
 			this.checkInterval = checkInterval;
 		}
 

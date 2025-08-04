@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.pulsar.config.PulsarContainerFactory;
 import org.springframework.pulsar.core.PulsarConsumerFactory;
@@ -34,7 +36,7 @@ class PulsarContainerFactoryCustomizers {
 
 	private final List<PulsarContainerFactoryCustomizer<?>> customizers;
 
-	PulsarContainerFactoryCustomizers(List<? extends PulsarContainerFactoryCustomizer<?>> customizers) {
+	PulsarContainerFactoryCustomizers(@Nullable List<? extends PulsarContainerFactoryCustomizer<?>> customizers) {
 		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
 	}
 
