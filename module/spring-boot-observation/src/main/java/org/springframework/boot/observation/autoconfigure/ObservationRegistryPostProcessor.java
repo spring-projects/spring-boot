@@ -21,6 +21,7 @@ import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -47,7 +48,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	private final ObjectProvider<ObservationFilter> observationFilters;
 
-	private volatile ObservationRegistryConfigurer configurer;
+	private volatile @Nullable ObservationRegistryConfigurer configurer;
 
 	ObservationRegistryPostProcessor(ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,

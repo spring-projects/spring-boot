@@ -23,6 +23,7 @@ import java.util.List;
 
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationRegistry.ObservationConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -52,8 +53,15 @@ class ObservationHandlerGroups {
 
 	void register(ObservationConfig config, List<ObservationHandler<?>> handlers) {
 		MultiValueMap<ObservationHandlerGroup, ObservationHandler<?>> grouped = new LinkedMultiValueMap<>();
+		List<ObservationHandler<?>> unclaimed = new ArrayList<>();
 		for (ObservationHandler<?> handler : handlers) {
-			grouped.add(findGroup(handler), handler);
+			ObservationHandlerGroup group = findGroup(handler);
+			if (group == null) {
+				unclaimed.add(handler);
+			}
+			else {
+				grouped.add(group, handler);
+			}
 		}
 		for (ObservationHandlerGroup group : this.groups) {
 			List<ObservationHandler<?>> members = grouped.get(group);
@@ -61,7 +69,6 @@ class ObservationHandlerGroups {
 				group.registerMembers(config, members);
 			}
 		}
-		List<ObservationHandler<?>> unclaimed = grouped.get(null);
 		if (!CollectionUtils.isEmpty(unclaimed)) {
 			for (ObservationHandler<?> handler : unclaimed) {
 				config.observationHandler(handler);
@@ -69,7 +76,7 @@ class ObservationHandlerGroups {
 		}
 	}
 
-	private ObservationHandlerGroup findGroup(ObservationHandler<?> handler) {
+	private @Nullable ObservationHandlerGroup findGroup(ObservationHandler<?> handler) {
 		for (ObservationHandlerGroup group : this.groups) {
 			if (group.isMember(handler)) {
 				return group;

@@ -17,11 +17,13 @@
 package org.springframework.boot.observation.autoconfigure;
 
 import io.micrometer.common.annotation.ValueExpressionResolver;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
+import org.springframework.util.Assert;
 
 /**
  * A {@link Expression SpEL}-based {@link ValueExpressionResolver}.
@@ -33,11 +35,13 @@ class SpelValueExpressionResolver implements ValueExpressionResolver {
 	private final ExpressionParser expressionParser = new SpelExpressionParser();
 
 	@Override
-	public String resolve(String expression, Object parameter) {
+	public String resolve(String expression, @Nullable Object parameter) {
 		try {
 			SimpleEvaluationContext context = SimpleEvaluationContext.forReadOnlyDataBinding().build();
 			Expression expressionToEvaluate = this.expressionParser.parseExpression(expression);
-			return expressionToEvaluate.getValue(context, parameter, String.class);
+			String value = expressionToEvaluate.getValue(context, parameter, String.class);
+			Assert.state(value != null, "'value' must not be null");
+			return value;
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to evaluate SpEL expression '%s'".formatted(expression), ex);
