@@ -85,21 +85,18 @@ class PropertyDescriptorResolver {
 
 	private PropertyDescriptor extracted(TypeElement declaringElement, TypeElementMembers members,
 			VariableElement parameter) {
-		String name = getPropertyName(parameter);
+		String parameterName = parameter.getSimpleName().toString();
+		String name = getPropertyName(parameter, parameterName);
 		TypeMirror type = parameter.asType();
-		ExecutableElement getter = members.getPublicGetter(name, type);
-		ExecutableElement setter = members.getPublicSetter(name, type);
-		VariableElement field = members.getFields().get(name);
-		RecordComponentElement recordComponent = members.getRecordComponents().get(name);
+		ExecutableElement getter = members.getPublicGetter(parameterName, type);
+		ExecutableElement setter = members.getPublicSetter(parameterName, type);
+		VariableElement field = members.getFields().get(parameterName);
+		RecordComponentElement recordComponent = members.getRecordComponents().get(parameterName);
 		return (recordComponent != null)
 				? new RecordParameterPropertyDescriptor(name, type, parameter, declaringElement, getter,
 						recordComponent)
 				: new ConstructorParameterPropertyDescriptor(name, type, parameter, declaringElement, getter, setter,
 						field);
-	}
-
-	private String getPropertyName(VariableElement parameter) {
-		return getPropertyName(parameter, parameter.getSimpleName().toString());
 	}
 
 	private String getPropertyName(VariableElement parameter, String fallback) {
