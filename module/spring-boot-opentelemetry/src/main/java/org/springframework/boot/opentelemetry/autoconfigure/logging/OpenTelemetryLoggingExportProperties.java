@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -34,7 +36,7 @@ public class OpenTelemetryLoggingExportProperties {
 	/**
 	 * URL to the OTel collector's HTTP API.
 	 */
-	private String endpoint;
+	private @Nullable String endpoint;
 
 	/**
 	 * Call timeout for the OTel Collector to process an exported batch of data. This
@@ -64,11 +66,11 @@ public class OpenTelemetryLoggingExportProperties {
 	 */
 	private final Map<String, String> headers = new HashMap<>();
 
-	public String getEndpoint() {
+	public @Nullable String getEndpoint() {
 		return this.endpoint;
 	}
 
-	public void setEndpoint(String endpoint) {
+	public void setEndpoint(@Nullable String endpoint) {
 		this.endpoint = endpoint;
 	}
 

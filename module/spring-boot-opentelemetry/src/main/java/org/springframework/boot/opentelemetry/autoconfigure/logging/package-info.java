@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for exporting logs with OpenTelemetry.
  */
+@NullMarked
 package org.springframework.boot.opentelemetry.autoconfigure.logging;
+
+import org.jspecify.annotations.NullMarked;

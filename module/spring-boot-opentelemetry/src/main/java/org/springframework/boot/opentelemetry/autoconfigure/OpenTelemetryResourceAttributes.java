@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -52,7 +54,7 @@ public class OpenTelemetryResourceAttributes {
 
 	private final Map<String, String> resourceAttributes;
 
-	private final Function<String, String> systemEnvironment;
+	private final Function<String, @Nullable String> systemEnvironment;
 
 	/**
 	 * Creates a new instance of {@link OpenTelemetryResourceAttributes}.
@@ -69,8 +71,8 @@ public class OpenTelemetryResourceAttributes {
 	 * @param resourceAttributes user-provided resource attributes to be used
 	 * @param systemEnvironment a function to retrieve environment variables by name
 	 */
-	OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes,
-			Function<String, String> systemEnvironment) {
+	OpenTelemetryResourceAttributes(Environment environment, @Nullable Map<String, String> resourceAttributes,
+			@Nullable Function<String, @Nullable String> systemEnvironment) {
 		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
 		this.resourceAttributes = (resourceAttributes != null) ? resourceAttributes : Collections.emptyMap();
@@ -106,7 +108,7 @@ public class OpenTelemetryResourceAttributes {
 		return this.environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME);
 	}
 
-	private String getServiceNamespace() {
+	private @Nullable String getServiceNamespace() {
 		return this.environment.getProperty("spring.application.group");
 	}
 
@@ -137,7 +139,7 @@ public class OpenTelemetryResourceAttributes {
 		return attributes;
 	}
 
-	private String getEnv(String name) {
+	private @Nullable String getEnv(String name) {
 		return this.systemEnvironment.apply(name);
 	}
 
