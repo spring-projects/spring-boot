@@ -18,6 +18,7 @@ package org.springframework.boot.neo4j.health;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.exceptions.SessionExpiredException;
@@ -31,6 +32,7 @@ import reactor.util.retry.Retry;
 import org.springframework.boot.health.contributor.AbstractReactiveHealthIndicator;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.ReactiveHealthIndicator;
+import org.springframework.util.Assert;
 
 /**
  * {@link ReactiveHealthIndicator} that tests the status of a Neo4j by executing a Cypher
@@ -90,13 +92,14 @@ public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIn
 	 */
 	private static final class Neo4jHealthDetailsBuilder {
 
-		private Record record;
+		private @Nullable Record record;
 
 		void record(Record record) {
 			this.record = record;
 		}
 
 		private Neo4jHealthDetails build(ResultSummary summary) {
+			Assert.state(this.record != null, "'record' must not be null");
 			return new Neo4jHealthDetails(this.record, summary);
 		}
 

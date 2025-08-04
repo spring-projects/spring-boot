@@ -18,7 +18,9 @@ package org.springframework.boot.neo4j.docker.compose;
 
 import java.net.URI;
 
+import org.jspecify.annotations.Nullable;
 import org.neo4j.driver.AuthToken;
+import org.neo4j.driver.AuthTokens;
 
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
@@ -53,7 +55,7 @@ class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		private static final int BOLT_PORT = 7687;
 
-		private final AuthToken authToken;
+		private final @Nullable AuthToken authToken;
 
 		private final URI uri;
 
@@ -71,7 +73,7 @@ class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		@Override
 		public AuthToken getAuthToken() {
-			return this.authToken;
+			return (this.authToken != null) ? this.authToken : AuthTokens.none();
 		}
 
 	}
