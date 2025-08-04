@@ -25,13 +25,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorBuilderCustomizer;
-import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigurations.ReactorResourceFactoryConfiguration;
 import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -52,14 +49,12 @@ public class ClientHttpConnectorAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HttpClient.class)
-	@Import(ReactorResourceFactoryConfiguration.class)
 	@SuppressWarnings("removal")
 	static class ReactorNetty {
 
 		@Bean
 		@Order(0)
 		ClientHttpConnectorBuilderCustomizer<ReactorClientHttpConnectorBuilder> reactorNettyHttpClientMapperClientHttpConnectorBuilderCustomizer(
-				ReactorResourceFactory reactorResourceFactory,
 				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
 			return applyMappers(mapperProvider.orderedStream().toList());
 		}
