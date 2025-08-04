@@ -365,6 +365,11 @@ bom {
 				managedBy "Spring Data Bom"
 			}
 		}
+		group("org.elasticsearch.client") {
+			modules = [
+				"elasticsearch-rest-client"
+			]
+		}
 		group("co.elastic.clients") {
 			modules = [
 				"elasticsearch-java"
