@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for the Netty library.
  */
+@NullMarked
 package org.springframework.boot.netty.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

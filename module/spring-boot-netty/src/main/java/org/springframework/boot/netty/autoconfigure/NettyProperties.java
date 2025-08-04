@@ -16,6 +16,8 @@
 
 package org.springframework.boot.netty.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -34,13 +36,13 @@ public class NettyProperties {
 	 * 'ResourceLeakDetector.setLevel' or the 'io.netty.leakDetection.level' system
 	 * property, default to 'simple'.
 	 */
-	private LeakDetection leakDetection;
+	private @Nullable LeakDetection leakDetection;
 
-	public LeakDetection getLeakDetection() {
+	public @Nullable LeakDetection getLeakDetection() {
 		return this.leakDetection;
 	}
 
-	public void setLeakDetection(LeakDetection leakDetection) {
+	public void setLeakDetection(@Nullable LeakDetection leakDetection) {
 		this.leakDetection = leakDetection;
 	}
 
