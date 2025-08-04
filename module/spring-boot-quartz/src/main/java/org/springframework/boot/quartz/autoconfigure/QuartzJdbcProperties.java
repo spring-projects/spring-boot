@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
@@ -46,7 +48,7 @@ public class QuartzJdbcProperties {
 	 * Platform to use in initialization scripts if the @@platform@@ placeholder is used.
 	 * Auto-detected by default.
 	 */
-	private String platform;
+	private @Nullable String platform;
 
 	/**
 	 * Database schema initialization mode.
@@ -66,11 +68,11 @@ public class QuartzJdbcProperties {
 		this.schema = schema;
 	}
 
-	public String getPlatform() {
+	public @Nullable String getPlatform() {
 		return this.platform;
 	}
 
-	public void setPlatform(String platform) {
+	public void setPlatform(@Nullable String platform) {
 		this.platform = platform;
 	}
 

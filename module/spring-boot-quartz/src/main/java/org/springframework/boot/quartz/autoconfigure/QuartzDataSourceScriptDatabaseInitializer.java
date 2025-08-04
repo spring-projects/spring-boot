@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
@@ -39,7 +41,7 @@ import org.springframework.util.StringUtils;
  */
 public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
-	private final List<String> commentPrefixes;
+	private final @Nullable List<String> commentPrefixes;
 
 	/**
 	 * Create a new {@link QuartzDataSourceScriptDatabaseInitializer} instance.
@@ -62,7 +64,7 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	}
 
 	private QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings,
-			List<String> commentPrefixes) {
+			@Nullable List<String> commentPrefixes) {
 		super(dataSource, settings);
 		this.commentPrefixes = commentPrefixes;
 	}

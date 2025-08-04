@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.quartz.CalendarIntervalTrigger;
 import org.quartz.CronTrigger;
 import org.quartz.DailyTimeIntervalTrigger;
@@ -55,6 +56,7 @@ import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 
 /**
@@ -137,7 +139,7 @@ public class QuartzEndpoint {
 	 * @return a summary of the jobs in the given {@code group}
 	 * @throws SchedulerException if retrieving the information from the scheduler failed
 	 */
-	public QuartzJobGroupSummaryDescriptor quartzJobGroupSummary(String group) throws SchedulerException {
+	public @Nullable QuartzJobGroupSummaryDescriptor quartzJobGroupSummary(String group) throws SchedulerException {
 		List<JobDetail> jobs = findJobsByGroup(group);
 		if (jobs.isEmpty() && !this.scheduler.getJobGroupNames().contains(group)) {
 			return null;
@@ -165,7 +167,8 @@ public class QuartzEndpoint {
 	 * @return a summary of the triggers in the given {@code group}
 	 * @throws SchedulerException if retrieving the information from the scheduler failed
 	 */
-	public QuartzTriggerGroupSummaryDescriptor quartzTriggerGroupSummary(String group) throws SchedulerException {
+	public @Nullable QuartzTriggerGroupSummaryDescriptor quartzTriggerGroupSummary(String group)
+			throws SchedulerException {
 		List<Trigger> triggers = findTriggersByGroup(group);
 		if (triggers.isEmpty() && !this.scheduler.getTriggerGroupNames().contains(group)) {
 			return null;
@@ -199,7 +202,7 @@ public class QuartzEndpoint {
 	 * @return the details of the job or {@code null} if such job does not exist
 	 * @throws SchedulerException if retrieving the information from the scheduler failed
 	 */
-	public QuartzJobDetailsDescriptor quartzJob(String groupName, String jobName, boolean showUnsanitized)
+	public @Nullable QuartzJobDetailsDescriptor quartzJob(String groupName, String jobName, boolean showUnsanitized)
 			throws SchedulerException {
 		JobKey jobKey = JobKey.jobKey(jobName, groupName);
 		JobDetail jobDetail = this.scheduler.getJobDetail(jobKey);
@@ -219,11 +222,12 @@ public class QuartzEndpoint {
 	 * exist
 	 * @throws SchedulerException if there is an error triggering the job
 	 */
-	public QuartzJobTriggerDescriptor triggerQuartzJob(String groupName, String jobName) throws SchedulerException {
+	public @Nullable QuartzJobTriggerDescriptor triggerQuartzJob(String groupName, String jobName)
+			throws SchedulerException {
 		return triggerQuartzJob(JobKey.jobKey(jobName, groupName));
 	}
 
-	private QuartzJobTriggerDescriptor triggerQuartzJob(JobKey jobKey) throws SchedulerException {
+	private @Nullable QuartzJobTriggerDescriptor triggerQuartzJob(JobKey jobKey) throws SchedulerException {
 		JobDetail jobDetail = this.scheduler.getJobDetail(jobKey);
 		if (jobDetail == null) {
 			return null;
@@ -255,7 +259,7 @@ public class QuartzEndpoint {
 	 * @return the details of the trigger or {@code null} if such trigger does not exist
 	 * @throws SchedulerException if retrieving the information from the scheduler failed
 	 */
-	Map<String, Object> quartzTrigger(String groupName, String triggerName, boolean showUnsanitized)
+	@Nullable Map<String, Object> quartzTrigger(String groupName, String triggerName, boolean showUnsanitized)
 			throws SchedulerException {
 		TriggerKey triggerKey = TriggerKey.triggerKey(triggerName, groupName);
 		Trigger trigger = this.scheduler.getTrigger(triggerKey);
@@ -272,12 +276,13 @@ public class QuartzEndpoint {
 		return temporalUnit(unit).getDuration().multipliedBy(amount);
 	}
 
-	private static LocalTime getLocalTime(TimeOfDay timeOfDay) {
+	private static @Nullable LocalTime getLocalTime(@Nullable TimeOfDay timeOfDay) {
 		return (timeOfDay != null) ? LocalTime.of(timeOfDay.getHour(), timeOfDay.getMinute(), timeOfDay.getSecond())
 				: null;
 	}
 
-	private Map<String, Object> sanitizeJobDataMap(JobDataMap dataMap, boolean showUnsanitized) {
+	@Contract("!null, _ -> !null")
+	private @Nullable Map<String, Object> sanitizeJobDataMap(@Nullable JobDataMap dataMap, boolean showUnsanitized) {
 		if (dataMap == null) {
 			return null;
 		}
@@ -286,7 +291,7 @@ public class QuartzEndpoint {
 		return map;
 	}
 
-	private Object getSanitizedValue(boolean showUnsanitized, String key, Object value) {
+	private @Nullable Object getSanitizedValue(boolean showUnsanitized, String key, @Nullable Object value) {
 		SanitizableData data = new SanitizableData(null, key, value);
 		return this.sanitizer.sanitize(data, showUnsanitized);
 	}
@@ -669,7 +674,8 @@ public class QuartzEndpoint {
 		 * @param sanitizedDataMap a sanitized data map or {@code null}
 		 * @return all properties of the trigger
 		 */
-		public Map<String, Object> buildDetails(TriggerState triggerState, Map<String, Object> sanitizedDataMap) {
+		public Map<String, Object> buildDetails(TriggerState triggerState,
+				@Nullable Map<String, Object> sanitizedDataMap) {
 			Map<String, Object> details = new LinkedHashMap<>();
 			details.put("group", this.trigger.getKey().getGroup());
 			details.put("name", this.trigger.getKey().getName());
@@ -697,7 +703,7 @@ public class QuartzEndpoint {
 		 */
 		protected abstract void appendDetails(Map<String, Object> content);
 
-		protected void putIfNoNull(Map<String, Object> content, String key, Object value) {
+		protected void putIfNoNull(Map<String, Object> content, String key, @Nullable Object value) {
 			if (value != null) {
 				content.put(key, value);
 			}

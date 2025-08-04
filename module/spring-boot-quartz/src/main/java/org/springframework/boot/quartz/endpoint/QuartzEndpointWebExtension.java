@@ -18,6 +18,7 @@ package org.springframework.boot.quartz.endpoint;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.quartz.SchedulerException;
 
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
@@ -109,7 +110,7 @@ public class QuartzEndpointWebExtension {
 		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
 	}
 
-	private <T> WebEndpointResponse<T> handleNull(T value) {
+	private <T> WebEndpointResponse<T> handleNull(@Nullable T value) {
 		return (value != null) ? new WebEndpointResponse<>(value)
 				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}
@@ -117,7 +118,7 @@ public class QuartzEndpointWebExtension {
 	@FunctionalInterface
 	private interface ResponseSupplier<T> {
 
-		T get() throws SchedulerException;
+		@Nullable T get() throws SchedulerException;
 
 	}
 
@@ -126,7 +127,7 @@ public class QuartzEndpointWebExtension {
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(), QuartzGroupsDescriptor.class,
 					QuartzJobDetailsDescriptor.class, QuartzJobGroupSummaryDescriptor.class,
 					QuartzTriggerGroupSummaryDescriptor.class);
