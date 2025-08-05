@@ -457,8 +457,12 @@ public class Ssl {
 		 * @return the mapped value
 		 * @since 3.1.0
 		 */
+		@Contract("_, !null, _, _ -> !null")
 		public static <R> @Nullable R map(@Nullable ClientAuth clientAuth, @Nullable R none, R want, R need) {
-			return switch ((clientAuth != null) ? clientAuth : NONE) {
+			if (clientAuth == null) {
+				return none;
+			}
+			return switch (clientAuth) {
 				case NONE -> none;
 				case WANT -> want;
 				case NEED -> need;
