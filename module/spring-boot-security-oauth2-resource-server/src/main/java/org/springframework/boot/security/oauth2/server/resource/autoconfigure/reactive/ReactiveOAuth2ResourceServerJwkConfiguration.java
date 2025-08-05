@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -125,7 +127,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			return new JwtClaimValidator<>(JwtClaimNames.AUD, (aud) -> nullSafeDisjoint(aud, audiences));
 		}
 
-		private boolean nullSafeDisjoint(List<String> c1, List<String> c2) {
+		private boolean nullSafeDisjoint(@Nullable List<String> c1, List<String> c2) {
 			return c1 != null && !Collections.disjoint(c1, c2);
 		}
 
