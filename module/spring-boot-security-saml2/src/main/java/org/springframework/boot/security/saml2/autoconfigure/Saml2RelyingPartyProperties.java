@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
@@ -76,7 +78,7 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Name ID format for a relying party registration.
 		 */
-		private String nameIdFormat;
+		private @Nullable String nameIdFormat;
 
 		public String getEntityId() {
 			return this.entityId;
@@ -106,11 +108,11 @@ public class Saml2RelyingPartyProperties {
 			return this.assertingparty;
 		}
 
-		public String getNameIdFormat() {
+		public @Nullable String getNameIdFormat() {
 			return this.nameIdFormat;
 		}
 
-		public void setNameIdFormat(String nameIdFormat) {
+		public void setNameIdFormat(@Nullable String nameIdFormat) {
 			this.nameIdFormat = nameIdFormat;
 		}
 
@@ -166,26 +168,26 @@ public class Saml2RelyingPartyProperties {
 				/**
 				 * Private key used for signing.
 				 */
-				private Resource privateKeyLocation;
+				private @Nullable Resource privateKeyLocation;
 
 				/**
 				 * Relying Party X509Certificate shared with the identity provider.
 				 */
-				private Resource certificateLocation;
+				private @Nullable Resource certificateLocation;
 
-				public Resource getPrivateKeyLocation() {
+				public @Nullable Resource getPrivateKeyLocation() {
 					return this.privateKeyLocation;
 				}
 
-				public void setPrivateKeyLocation(Resource privateKey) {
+				public void setPrivateKeyLocation(@Nullable Resource privateKey) {
 					this.privateKeyLocation = privateKey;
 				}
 
-				public Resource getCertificateLocation() {
+				public @Nullable Resource getCertificateLocation() {
 					return this.certificateLocation;
 				}
 
-				public void setCertificateLocation(Resource certificate) {
+				public void setCertificateLocation(@Nullable Resource certificate) {
 					this.certificateLocation = certificate;
 				}
 
@@ -215,26 +217,26 @@ public class Saml2RelyingPartyProperties {
 			/**
 			 * Private key used for decrypting.
 			 */
-			private Resource privateKeyLocation;
+			private @Nullable Resource privateKeyLocation;
 
 			/**
 			 * Relying Party X509Certificate shared with the identity provider.
 			 */
-			private Resource certificateLocation;
+			private @Nullable Resource certificateLocation;
 
-			public Resource getPrivateKeyLocation() {
+			public @Nullable Resource getPrivateKeyLocation() {
 				return this.privateKeyLocation;
 			}
 
-			public void setPrivateKeyLocation(Resource privateKey) {
+			public void setPrivateKeyLocation(@Nullable Resource privateKey) {
 				this.privateKeyLocation = privateKey;
 			}
 
-			public Resource getCertificateLocation() {
+			public @Nullable Resource getCertificateLocation() {
 				return this.certificateLocation;
 			}
 
-			public void setCertificateLocation(Resource certificate) {
+			public void setCertificateLocation(@Nullable Resource certificate) {
 				this.certificateLocation = certificate;
 			}
 
@@ -250,12 +252,12 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Unique identifier for the identity provider.
 		 */
-		private String entityId;
+		private @Nullable String entityId;
 
 		/**
 		 * URI to the metadata endpoint for discovery-based configuration.
 		 */
-		private String metadataUri;
+		private @Nullable String metadataUri;
 
 		private final Singlesignon singlesignon = new Singlesignon();
 
@@ -263,19 +265,19 @@ public class Saml2RelyingPartyProperties {
 
 		private final Singlelogout singlelogout = new Singlelogout();
 
-		public String getEntityId() {
+		public @Nullable String getEntityId() {
 			return this.entityId;
 		}
 
-		public void setEntityId(String entityId) {
+		public void setEntityId(@Nullable String entityId) {
 			this.entityId = entityId;
 		}
 
-		public String getMetadataUri() {
+		public @Nullable String getMetadataUri() {
 			return this.metadataUri;
 		}
 
-		public void setMetadataUri(String metadataUri) {
+		public void setMetadataUri(@Nullable String metadataUri) {
 			this.metadataUri = metadataUri;
 		}
 
@@ -299,43 +301,39 @@ public class Saml2RelyingPartyProperties {
 			/**
 			 * Remote endpoint to send authentication requests to.
 			 */
-			private String url;
+			private @Nullable String url;
 
 			/**
 			 * Whether to redirect or post authentication requests.
 			 */
-			private Saml2MessageBinding binding;
+			private @Nullable Saml2MessageBinding binding;
 
 			/**
 			 * Whether to sign authentication requests.
 			 */
-			private Boolean signRequest;
+			private @Nullable Boolean signRequest;
 
-			public String getUrl() {
+			public @Nullable String getUrl() {
 				return this.url;
 			}
 
-			public void setUrl(String url) {
+			public void setUrl(@Nullable String url) {
 				this.url = url;
 			}
 
-			public Saml2MessageBinding getBinding() {
+			public @Nullable Saml2MessageBinding getBinding() {
 				return this.binding;
 			}
 
-			public void setBinding(Saml2MessageBinding binding) {
+			public void setBinding(@Nullable Saml2MessageBinding binding) {
 				this.binding = binding;
 			}
 
-			public boolean isSignRequest() {
+			public @Nullable Boolean getSignRequest() {
 				return this.signRequest;
 			}
 
-			public Boolean getSignRequest() {
-				return this.signRequest;
-			}
-
-			public void setSignRequest(Boolean signRequest) {
+			public void setSignRequest(@Nullable Boolean signRequest) {
 				this.signRequest = signRequest;
 			}
 
@@ -365,13 +363,13 @@ public class Saml2RelyingPartyProperties {
 				 * Locations of the X.509 certificate used for verification of incoming
 				 * SAML messages.
 				 */
-				private Resource certificate;
+				private @Nullable Resource certificate;
 
-				public Resource getCertificateLocation() {
+				public @Nullable Resource getCertificateLocation() {
 					return this.certificate;
 				}
 
-				public void setCertificateLocation(Resource certificate) {
+				public void setCertificateLocation(@Nullable Resource certificate) {
 					this.certificate = certificate;
 				}
 
@@ -389,39 +387,39 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Location where SAML2 LogoutRequest gets sent to.
 		 */
-		private String url;
+		private @Nullable String url;
 
 		/**
 		 * Location where SAML2 LogoutResponse gets sent to.
 		 */
-		private String responseUrl;
+		private @Nullable String responseUrl;
 
 		/**
 		 * Whether to redirect or post logout requests.
 		 */
-		private Saml2MessageBinding binding;
+		private @Nullable Saml2MessageBinding binding;
 
-		public String getUrl() {
+		public @Nullable String getUrl() {
 			return this.url;
 		}
 
-		public void setUrl(String url) {
+		public void setUrl(@Nullable String url) {
 			this.url = url;
 		}
 
-		public String getResponseUrl() {
+		public @Nullable String getResponseUrl() {
 			return this.responseUrl;
 		}
 
-		public void setResponseUrl(String responseUrl) {
+		public void setResponseUrl(@Nullable String responseUrl) {
 			this.responseUrl = responseUrl;
 		}
 
-		public Saml2MessageBinding getBinding() {
+		public @Nullable Saml2MessageBinding getBinding() {
 			return this.binding;
 		}
 
-		public void setBinding(Saml2MessageBinding binding) {
+		public void setBinding(@Nullable Saml2MessageBinding binding) {
 			this.binding = binding;
 		}
 

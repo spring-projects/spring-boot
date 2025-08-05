@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.security.saml2.autoconfigure.Saml2RelyingPartyProperties.AssertingParty;
@@ -169,11 +171,12 @@ class Saml2RelyingPartyRegistrationConfiguration {
 				Saml2X509Credential.Saml2X509CredentialType.VERIFICATION);
 	}
 
-	private RSAPrivateKey readPrivateKey(Resource location) {
+	private RSAPrivateKey readPrivateKey(@Nullable Resource location) {
 		Assert.state(location != null, "No private key location specified");
 		Assert.state(location.exists(), () -> "Private key location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {
 			PemContent pemContent = PemContent.load(inputStream);
+			Assert.state(pemContent != null, "'pemContent' must not be null");
 			PrivateKey privateKey = pemContent.getPrivateKey();
 			Assert.state(privateKey instanceof RSAPrivateKey,
 					() -> "PrivateKey in resource '" + location + "' must be an RSAPrivateKey");
@@ -184,12 +187,14 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		}
 	}
 
-	private X509Certificate readCertificate(Resource location) {
+	private X509Certificate readCertificate(@Nullable Resource location) {
 		Assert.state(location != null, "No certificate location specified");
 		Assert.state(location.exists(), () -> "Certificate  location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {
 			PemContent pemContent = PemContent.load(inputStream);
+			Assert.state(pemContent != null, "'pemContent' must not be null");
 			List<X509Certificate> certificates = pemContent.getCertificates();
+			Assert.state(certificates != null, "'certificates' must not be null");
 			return certificates.get(0);
 		}
 		catch (Exception ex) {
