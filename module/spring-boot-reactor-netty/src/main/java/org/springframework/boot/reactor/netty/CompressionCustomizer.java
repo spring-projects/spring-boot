@@ -22,6 +22,7 @@ import java.util.function.BiPredicate;
 
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
+import org.jspecify.annotations.Nullable;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
@@ -82,7 +83,7 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 		};
 	}
 
-	private CompressionPredicate getExcludedUserAgentsPredicate(String[] excludedUserAgents) {
+	private CompressionPredicate getExcludedUserAgentsPredicate(String @Nullable [] excludedUserAgents) {
 		if (ObjectUtils.isEmpty(excludedUserAgents)) {
 			return ALWAYS_COMPRESS;
 		}

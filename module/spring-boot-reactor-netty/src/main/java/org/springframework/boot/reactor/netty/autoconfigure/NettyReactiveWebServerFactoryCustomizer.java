@@ -66,7 +66,7 @@ public class NettyReactiveWebServerFactoryCustomizer
 		map.from(this.nettyProperties::getIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		map.from(this.nettyProperties::getMaxKeepAliveRequests)
 			.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
-		if (this.serverProperties.getHttp2() != null && this.serverProperties.getHttp2().isEnabled()) {
+		if (this.serverProperties.getHttp2().isEnabled()) {
 			map.from(this.serverProperties.getMaxHttpRequestHeaderSize())
 				.to((size) -> customizeHttp2MaxHeaderSize(factory, size.toBytes()));
 		}

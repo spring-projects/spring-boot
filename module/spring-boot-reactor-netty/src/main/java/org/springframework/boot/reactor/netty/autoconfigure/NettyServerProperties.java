@@ -18,6 +18,8 @@ package org.springframework.boot.reactor.netty.autoconfigure;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.unit.DataSize;
 
@@ -55,7 +57,7 @@ public class NettyServerProperties {
 	/**
 	 * Connection timeout of the Netty channel.
 	 */
-	private Duration connectionTimeout;
+	private @Nullable Duration connectionTimeout;
 
 	/**
 	 * Maximum content length of an H2C upgrade request.
@@ -76,7 +78,7 @@ public class NettyServerProperties {
 	 * Maximum number of requests that can be made per connection. By default, a
 	 * connection serves unlimited number of requests.
 	 */
-	private Integer maxKeepAliveRequests;
+	private @Nullable Integer maxKeepAliveRequests;
 
 	/**
 	 * Whether to validate headers when decoding requests.
@@ -86,13 +88,13 @@ public class NettyServerProperties {
 	/**
 	 * Idle timeout of the Netty channel. When not specified, an infinite timeout is used.
 	 */
-	private Duration idleTimeout;
+	private @Nullable Duration idleTimeout;
 
-	public Duration getConnectionTimeout() {
+	public @Nullable Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
-	public void setConnectionTimeout(Duration connectionTimeout) {
+	public void setConnectionTimeout(@Nullable Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
@@ -120,11 +122,11 @@ public class NettyServerProperties {
 		this.maxInitialLineLength = maxInitialLineLength;
 	}
 
-	public Integer getMaxKeepAliveRequests() {
+	public @Nullable Integer getMaxKeepAliveRequests() {
 		return this.maxKeepAliveRequests;
 	}
 
-	public void setMaxKeepAliveRequests(Integer maxKeepAliveRequests) {
+	public void setMaxKeepAliveRequests(@Nullable Integer maxKeepAliveRequests) {
 		this.maxKeepAliveRequests = maxKeepAliveRequests;
 	}
 
@@ -136,11 +138,11 @@ public class NettyServerProperties {
 		this.validateHeaders = validateHeaders;
 	}
 
-	public Duration getIdleTimeout() {
+	public @Nullable Duration getIdleTimeout() {
 		return this.idleTimeout;
 	}
 
-	public void setIdleTimeout(Duration idleTimeout) {
+	public void setIdleTimeout(@Nullable Duration idleTimeout) {
 		this.idleTimeout = idleTimeout;
 	}
 

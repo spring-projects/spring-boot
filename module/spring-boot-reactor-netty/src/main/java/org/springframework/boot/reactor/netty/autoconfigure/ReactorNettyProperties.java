@@ -18,6 +18,8 @@ package org.springframework.boot.reactor.netty.autoconfigure;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -32,13 +34,13 @@ public class ReactorNettyProperties {
 	/**
 	 * Amount of time to wait before shutting down resources.
 	 */
-	private Duration shutdownQuietPeriod;
+	private @Nullable Duration shutdownQuietPeriod;
 
-	public Duration getShutdownQuietPeriod() {
+	public @Nullable Duration getShutdownQuietPeriod() {
 		return this.shutdownQuietPeriod;
 	}
 
-	public void setShutdownQuietPeriod(Duration shutdownQuietPeriod) {
+	public void setShutdownQuietPeriod(@Nullable Duration shutdownQuietPeriod) {
 		this.shutdownQuietPeriod = shutdownQuietPeriod;
 	}
 

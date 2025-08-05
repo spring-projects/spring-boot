@@ -29,6 +29,8 @@ dependencies {
 	api("io.projectreactor.netty:reactor-netty-http")
 	api("org.springframework:spring-web")
 
+	compileOnly("com.google.code.findbugs:jsr305")
+
 	implementation(project(":module:spring-boot-netty"))
 
 	optional(project(":core:spring-boot-autoconfigure"))

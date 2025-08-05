@@ -28,6 +28,7 @@ import io.netty.channel.unix.Errors.NativeIoException;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import reactor.netty.ChannelBindException;
 import reactor.netty.DisposableServer;
@@ -72,15 +73,15 @@ public class NettyWebServer implements WebServer {
 
 	private final BiFunction<? super HttpServerRequest, ? super HttpServerResponse, ? extends Publisher<Void>> handler;
 
-	private final Duration lifecycleTimeout;
+	private final @Nullable Duration lifecycleTimeout;
 
-	private final GracefulShutdown gracefulShutdown;
+	private final @Nullable GracefulShutdown gracefulShutdown;
 
-	private final ReactorResourceFactory resourceFactory;
+	private final @Nullable ReactorResourceFactory resourceFactory;
 
 	private List<NettyRouteProvider> routeProviders = Collections.emptyList();
 
-	private volatile DisposableServer disposableServer;
+	private volatile @Nullable DisposableServer disposableServer;
 
 	/**
 	 * Creates a new {@code NettyWebServer} instance.
@@ -92,8 +93,9 @@ public class NettyWebServer implements WebServer {
 	 * resources}, may be {@code null}
 	 * @since 4.0.0
 	 */
-	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
-			Shutdown shutdown, ReactorResourceFactory resourceFactory) {
+	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
+			@Nullable Duration lifecycleTimeout, @Nullable Shutdown shutdown,
+			@Nullable ReactorResourceFactory resourceFactory) {
 		Assert.notNull(httpServer, "'httpServer' must not be null");
 		Assert.notNull(handlerAdapter, "'handlerAdapter' must not be null");
 		this.lifecycleTimeout = lifecycleTimeout;
@@ -138,6 +140,7 @@ public class NettyWebServer implements WebServer {
 	}
 
 	protected String getStartedLogMessage() {
+		Assert.state(this.disposableServer != null, "'disposableServer' must not be null");
 		return getStartedOnMessage(this.disposableServer);
 	}
 
@@ -171,7 +174,7 @@ public class NettyWebServer implements WebServer {
 		return server.bindNow();
 	}
 
-	private boolean isPermissionDenied(Throwable bindExceptionCause) {
+	private boolean isPermissionDenied(@Nullable Throwable bindExceptionCause) {
 		try {
 			if (bindExceptionCause instanceof NativeIoException nativeException) {
 				return nativeException.expectedErr() == ERROR_NO_EACCES;
