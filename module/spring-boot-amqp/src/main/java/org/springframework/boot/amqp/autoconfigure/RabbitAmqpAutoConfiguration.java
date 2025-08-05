@@ -67,8 +67,7 @@ public final class RabbitAmqpAutoConfiguration {
 
 	@Bean(name = "rabbitAmqpListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitAmqpListenerContainerFactory")
-	RabbitAmqpListenerContainerFactory rabbitAmqpListenerContainerFactory(
-			AmqpConnectionFactory connectionFactory,
+	RabbitAmqpListenerContainerFactory rabbitAmqpListenerContainerFactory(AmqpConnectionFactory connectionFactory,
 			ObjectProvider<ContainerCustomizer<RabbitAmqpListenerContainer>> amqpContainerCustomizer,
 			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,
 			ObjectProvider<MessageRecoverer> messageRecoverer) {
