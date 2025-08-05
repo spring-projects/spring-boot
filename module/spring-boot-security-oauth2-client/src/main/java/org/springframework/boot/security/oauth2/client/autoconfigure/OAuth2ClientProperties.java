@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
@@ -80,106 +82,106 @@ public class OAuth2ClientProperties implements InitializingBean {
 		 * 'provider' property or used one of the commonly used providers (google, github,
 		 * facebook, okta).
 		 */
-		private String provider;
+		private @Nullable String provider;
 
 		/**
 		 * Client ID for the registration.
 		 */
-		private String clientId;
+		private @Nullable String clientId;
 
 		/**
 		 * Client secret of the registration.
 		 */
-		private String clientSecret;
+		private @Nullable String clientSecret;
 
 		/**
 		 * Client authentication method. May be left blank when using a pre-defined
 		 * provider.
 		 */
-		private String clientAuthenticationMethod;
+		private @Nullable String clientAuthenticationMethod;
 
 		/**
 		 * Authorization grant type. May be left blank when using a pre-defined provider.
 		 */
-		private String authorizationGrantType;
+		private @Nullable String authorizationGrantType;
 
 		/**
 		 * Redirect URI. May be left blank when using a pre-defined provider.
 		 */
-		private String redirectUri;
+		private @Nullable String redirectUri;
 
 		/**
 		 * Authorization scopes. When left blank the provider's default scopes, if any,
 		 * will be used.
 		 */
-		private Set<String> scope;
+		private @Nullable Set<String> scope;
 
 		/**
 		 * Client name. May be left blank when using a pre-defined provider.
 		 */
-		private String clientName;
+		private @Nullable String clientName;
 
-		public String getProvider() {
+		public @Nullable String getProvider() {
 			return this.provider;
 		}
 
-		public void setProvider(String provider) {
+		public void setProvider(@Nullable String provider) {
 			this.provider = provider;
 		}
 
-		public String getClientId() {
+		public @Nullable String getClientId() {
 			return this.clientId;
 		}
 
-		public void setClientId(String clientId) {
+		public void setClientId(@Nullable String clientId) {
 			this.clientId = clientId;
 		}
 
-		public String getClientSecret() {
+		public @Nullable String getClientSecret() {
 			return this.clientSecret;
 		}
 
-		public void setClientSecret(String clientSecret) {
+		public void setClientSecret(@Nullable String clientSecret) {
 			this.clientSecret = clientSecret;
 		}
 
-		public String getClientAuthenticationMethod() {
+		public @Nullable String getClientAuthenticationMethod() {
 			return this.clientAuthenticationMethod;
 		}
 
-		public void setClientAuthenticationMethod(String clientAuthenticationMethod) {
+		public void setClientAuthenticationMethod(@Nullable String clientAuthenticationMethod) {
 			this.clientAuthenticationMethod = clientAuthenticationMethod;
 		}
 
-		public String getAuthorizationGrantType() {
+		public @Nullable String getAuthorizationGrantType() {
 			return this.authorizationGrantType;
 		}
 
-		public void setAuthorizationGrantType(String authorizationGrantType) {
+		public void setAuthorizationGrantType(@Nullable String authorizationGrantType) {
 			this.authorizationGrantType = authorizationGrantType;
 		}
 
-		public String getRedirectUri() {
+		public @Nullable String getRedirectUri() {
 			return this.redirectUri;
 		}
 
-		public void setRedirectUri(String redirectUri) {
+		public void setRedirectUri(@Nullable String redirectUri) {
 			this.redirectUri = redirectUri;
 		}
 
-		public Set<String> getScope() {
+		public @Nullable Set<String> getScope() {
 			return this.scope;
 		}
 
-		public void setScope(Set<String> scope) {
+		public void setScope(@Nullable Set<String> scope) {
 			this.scope = scope;
 		}
 
-		public String getClientName() {
+		public @Nullable String getClientName() {
 			return this.clientName;
 		}
 
-		public void setClientName(String clientName) {
+		public void setClientName(@Nullable String clientName) {
 			this.clientName = clientName;
 		}
 
@@ -190,93 +192,93 @@ public class OAuth2ClientProperties implements InitializingBean {
 		/**
 		 * Authorization URI for the provider.
 		 */
-		private String authorizationUri;
+		private @Nullable String authorizationUri;
 
 		/**
 		 * Token URI for the provider.
 		 */
-		private String tokenUri;
+		private @Nullable String tokenUri;
 
 		/**
 		 * User info URI for the provider.
 		 */
-		private String userInfoUri;
+		private @Nullable String userInfoUri;
 
 		/**
 		 * User info authentication method for the provider.
 		 */
-		private String userInfoAuthenticationMethod;
+		private @Nullable String userInfoAuthenticationMethod;
 
 		/**
 		 * Name of the attribute that will be used to extract the username from the call
 		 * to 'userInfoUri'.
 		 */
-		private String userNameAttribute;
+		private @Nullable String userNameAttribute;
 
 		/**
 		 * JWK set URI for the provider.
 		 */
-		private String jwkSetUri;
+		private @Nullable String jwkSetUri;
 
 		/**
 		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
 		 * Authorization Server Metadata endpoint defined by RFC 8414.
 		 */
-		private String issuerUri;
+		private @Nullable String issuerUri;
 
-		public String getAuthorizationUri() {
+		public @Nullable String getAuthorizationUri() {
 			return this.authorizationUri;
 		}
 
-		public void setAuthorizationUri(String authorizationUri) {
+		public void setAuthorizationUri(@Nullable String authorizationUri) {
 			this.authorizationUri = authorizationUri;
 		}
 
-		public String getTokenUri() {
+		public @Nullable String getTokenUri() {
 			return this.tokenUri;
 		}
 
-		public void setTokenUri(String tokenUri) {
+		public void setTokenUri(@Nullable String tokenUri) {
 			this.tokenUri = tokenUri;
 		}
 
-		public String getUserInfoUri() {
+		public @Nullable String getUserInfoUri() {
 			return this.userInfoUri;
 		}
 
-		public void setUserInfoUri(String userInfoUri) {
+		public void setUserInfoUri(@Nullable String userInfoUri) {
 			this.userInfoUri = userInfoUri;
 		}
 
-		public String getUserInfoAuthenticationMethod() {
+		public @Nullable String getUserInfoAuthenticationMethod() {
 			return this.userInfoAuthenticationMethod;
 		}
 
-		public void setUserInfoAuthenticationMethod(String userInfoAuthenticationMethod) {
+		public void setUserInfoAuthenticationMethod(@Nullable String userInfoAuthenticationMethod) {
 			this.userInfoAuthenticationMethod = userInfoAuthenticationMethod;
 		}
 
-		public String getUserNameAttribute() {
+		public @Nullable String getUserNameAttribute() {
 			return this.userNameAttribute;
 		}
 
-		public void setUserNameAttribute(String userNameAttribute) {
+		public void setUserNameAttribute(@Nullable String userNameAttribute) {
 			this.userNameAttribute = userNameAttribute;
 		}
 
-		public String getJwkSetUri() {
+		public @Nullable String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
 
-		public void setJwkSetUri(String jwkSetUri) {
+		public void setJwkSetUri(@Nullable String jwkSetUri) {
 			this.jwkSetUri = jwkSetUri;
 		}
 
-		public String getIssuerUri() {
+		public @Nullable String getIssuerUri() {
 			return this.issuerUri;
 		}
 
-		public void setIssuerUri(String issuerUri) {
+		public void setIssuerUri(@Nullable String issuerUri) {
 			this.issuerUri = issuerUri;
 		}
 
