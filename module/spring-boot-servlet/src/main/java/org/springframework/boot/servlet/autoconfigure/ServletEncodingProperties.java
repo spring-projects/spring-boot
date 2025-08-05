@@ -19,6 +19,8 @@ package org.springframework.boot.servlet.autoconfigure;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -45,18 +47,18 @@ public class ServletEncodingProperties {
 	 * Whether to force the encoding to the configured charset on HTTP requests and
 	 * responses.
 	 */
-	private Boolean force;
+	private @Nullable Boolean force;
 
 	/**
 	 * Whether to force the encoding to the configured charset on HTTP requests. Defaults
 	 * to true when "force" has not been specified.
 	 */
-	private Boolean forceRequest;
+	private @Nullable Boolean forceRequest;
 
 	/**
 	 * Whether to force the encoding to the configured charset on HTTP responses.
 	 */
-	private Boolean forceResponse;
+	private @Nullable Boolean forceResponse;
 
 	public Charset getCharset() {
 		return this.charset;

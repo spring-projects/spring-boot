@@ -17,4 +17,7 @@
 /**
  * Actuator servlet request mappings support.
  */
+@NullMarked
 package org.springframework.boot.servlet.actuate.mappings;
+
+import org.jspecify.annotations.NullMarked;

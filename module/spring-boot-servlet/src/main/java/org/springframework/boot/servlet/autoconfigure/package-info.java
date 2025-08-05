@@ -18,4 +18,7 @@
  * Auto-configuration for application support of the {@code jakarta.servlet}
  * specification.
  */
+@NullMarked
 package org.springframework.boot.servlet.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

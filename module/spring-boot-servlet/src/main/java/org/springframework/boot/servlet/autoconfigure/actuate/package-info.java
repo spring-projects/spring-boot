@@ -17,4 +17,7 @@
 /**
  * Actuator Servlet support.
  */
+@NullMarked
 package org.springframework.boot.servlet.autoconfigure.actuate;
+
+import org.jspecify.annotations.NullMarked;

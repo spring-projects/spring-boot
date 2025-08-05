@@ -17,6 +17,7 @@
 package org.springframework.boot.servlet.autoconfigure;
 
 import jakarta.servlet.MultipartConfigElement;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -57,7 +58,7 @@ public class MultipartProperties {
 	/**
 	 * Intermediate location of uploaded files.
 	 */
-	private String location;
+	private @Nullable String location;
 
 	/**
 	 * Max file size.
@@ -94,11 +95,11 @@ public class MultipartProperties {
 		this.enabled = enabled;
 	}
 
-	public String getLocation() {
+	public @Nullable String getLocation() {
 		return this.location;
 	}
 
-	public void setLocation(String location) {
+	public void setLocation(@Nullable String location) {
 		this.location = location;
 	}
 

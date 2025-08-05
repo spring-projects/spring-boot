@@ -27,6 +27,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
@@ -106,7 +107,7 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 		}
 	}
 
-	private String getSessionId(HttpServletRequest request) {
+	private @Nullable String getSessionId(HttpServletRequest request) {
 		HttpSession session = request.getSession(false);
 		return (session != null) ? session.getId() : null;
 	}

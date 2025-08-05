@@ -19,4 +19,7 @@
  *
  * @see org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository
  */
+@NullMarked
 package org.springframework.boot.servlet.actuate.exchanges;
+
+import org.jspecify.annotations.NullMarked;

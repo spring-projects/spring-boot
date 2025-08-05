@@ -21,6 +21,7 @@ import java.util.List;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletContext;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
@@ -29,6 +30,7 @@ import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.servlet.actuate.mappings.FiltersMappingDescriptionProvider.FiltersMappingDescriptionProviderRuntimeHints;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -44,8 +46,9 @@ public class FiltersMappingDescriptionProvider implements MappingDescriptionProv
 	@Override
 	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
-			return webApplicationContext.getServletContext()
-				.getFilterRegistrations()
+			ServletContext servletContext = webApplicationContext.getServletContext();
+			Assert.state(servletContext != null, "'servletContext' must not be null");
+			return servletContext.getFilterRegistrations()
 				.values()
 				.stream()
 				.map(FilterRegistrationMappingDescription::new)
@@ -64,7 +67,7 @@ public class FiltersMappingDescriptionProvider implements MappingDescriptionProv
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
 					FilterRegistrationMappingDescription.class);
 		}
