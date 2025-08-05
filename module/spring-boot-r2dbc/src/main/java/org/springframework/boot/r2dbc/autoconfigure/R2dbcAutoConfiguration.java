@@ -23,6 +23,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
 import io.r2dbc.spi.Option;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -79,10 +80,7 @@ public final class R2dbcAutoConfiguration {
 					StringUtils::hasText);
 			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE,
 					() -> determineDatabaseName(this.properties), StringUtils::hasText);
-			if (this.properties.getProperties() != null) {
-				this.properties.getProperties()
-					.forEach((key, value) -> optionsBuilder.option(Option.valueOf(key), value));
-			}
+			this.properties.getProperties().forEach((key, value) -> optionsBuilder.option(Option.valueOf(key), value));
 			return optionsBuilder.build();
 		}
 
@@ -98,7 +96,7 @@ public final class R2dbcAutoConfiguration {
 			}
 		}
 
-		private String determineDatabaseName(R2dbcProperties properties) {
+		private @Nullable String determineDatabaseName(R2dbcProperties properties) {
 			if (properties.isGenerateUniqueName()) {
 				return properties.determineUniqueName();
 			}

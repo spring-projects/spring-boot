@@ -21,6 +21,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.Row;
 import io.r2dbc.spi.RowMetadata;
 import io.r2dbc.spi.ValidationDepth;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -42,7 +43,7 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 
 	private final ConnectionFactory connectionFactory;
 
-	private final String validationQuery;
+	private final @Nullable String validationQuery;
 
 	/**
 	 * Create a new {@link ConnectionFactoryHealthIndicator} using the specified
@@ -61,7 +62,7 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 	 * @param validationQuery the validation query, can be {@code null} to use connection
 	 * validation
 	 */
-	public ConnectionFactoryHealthIndicator(ConnectionFactory connectionFactory, String validationQuery) {
+	public ConnectionFactoryHealthIndicator(ConnectionFactory connectionFactory, @Nullable String validationQuery) {
 		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
 		this.connectionFactory = connectionFactory;
 		this.validationQuery = validationQuery;
@@ -80,6 +81,7 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 	}
 
 	private Mono<Health> validateWithQuery(Health.Builder builder) {
+		Assert.state(this.validationQuery != null, "'validationQuery' must not be null");
 		builder.withDetail("validationQuery", this.validationQuery);
 		Mono<Object> connectionValidation = Mono.usingWhen(this.connectionFactory.create(),
 				(conn) -> Flux.from(conn.createStatement(this.validationQuery).execute())
@@ -97,7 +99,7 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 		return connectionValidation.map((valid) -> builder.status((valid) ? Status.UP : Status.DOWN).build());
 	}
 
-	private Object extractResult(Row row, RowMetadata metadata) {
+	private @Nullable Object extractResult(Row row, RowMetadata metadata) {
 		return row.get(metadata.getColumnMetadatas().iterator().next().getName());
 	}
 

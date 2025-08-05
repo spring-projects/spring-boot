@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.Tags;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.Wrapped;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -57,7 +58,7 @@ public final class ConnectionPoolMetricsAutoConfiguration {
 			});
 	}
 
-	private ConnectionPool extractPool(Object candidate) {
+	private @Nullable ConnectionPool extractPool(Object candidate) {
 		if (candidate instanceof ConnectionPool connectionPool) {
 			return connectionPool;
 		}

@@ -21,6 +21,7 @@ import java.util.List;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -60,7 +61,7 @@ import org.springframework.util.StringUtils;
 abstract class ConnectionFactoryConfigurations {
 
 	protected static ConnectionFactory createConnectionFactory(R2dbcProperties properties,
-			R2dbcConnectionDetails connectionDetails, ClassLoader classLoader,
+			@Nullable R2dbcConnectionDetails connectionDetails, @Nullable ClassLoader classLoader,
 			List<ConnectionFactoryOptionsBuilderCustomizer> optionsCustomizers,
 			List<ConnectionFactoryDecorator> decorators) {
 		try {

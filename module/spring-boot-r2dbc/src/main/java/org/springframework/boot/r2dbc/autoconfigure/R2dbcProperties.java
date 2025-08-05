@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.r2dbc.spi.ValidationDepth;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -41,7 +42,7 @@ public class R2dbcProperties {
 	 * Database name. Set if no name is specified in the url. Default to "testdb" when
 	 * using an embedded database.
 	 */
-	private String name;
+	private @Nullable String name;
 
 	/**
 	 * Whether to generate a random database name. Ignore any configured name when
@@ -53,17 +54,17 @@ public class R2dbcProperties {
 	 * R2DBC URL of the database. database name, username, password and pooling options
 	 * specified in the url take precedence over individual options.
 	 */
-	private String url;
+	private @Nullable String url;
 
 	/**
 	 * Login username of the database. Set if no username is specified in the url.
 	 */
-	private String username;
+	private @Nullable String username;
 
 	/**
 	 * Login password of the database. Set if no password is specified in the url.
 	 */
-	private String password;
+	private @Nullable String password;
 
 	/**
 	 * Additional R2DBC options.
@@ -72,13 +73,13 @@ public class R2dbcProperties {
 
 	private final Pool pool = new Pool();
 
-	private String uniqueName;
+	private @Nullable String uniqueName;
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 
@@ -90,27 +91,27 @@ public class R2dbcProperties {
 		this.generateUniqueName = generateUniqueName;
 	}
 
-	public String getUrl() {
+	public @Nullable String getUrl() {
 		return this.url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(@Nullable String url) {
 		this.url = url;
 	}
 
-	public String getUsername() {
+	public @Nullable String getUsername() {
 		return this.username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(@Nullable String username) {
 		this.username = username;
 	}
 
-	public String getPassword() {
+	public @Nullable String getPassword() {
 		return this.password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(@Nullable String password) {
 		this.password = password;
 	}
 
@@ -150,13 +151,13 @@ public class R2dbcProperties {
 		 * Maximum lifetime of a connection in the pool. By default, connections have an
 		 * infinite lifetime.
 		 */
-		private Duration maxLifeTime;
+		private @Nullable Duration maxLifeTime;
 
 		/**
 		 * Maximum time to acquire a connection from the pool. By default, wait
 		 * indefinitely.
 		 */
-		private Duration maxAcquireTime;
+		private @Nullable Duration maxAcquireTime;
 
 		/**
 		 * Number of acquire retries if the first acquire attempt fails.
@@ -167,12 +168,12 @@ public class R2dbcProperties {
 		 * Maximum time to validate a connection from the pool. By default, wait
 		 * indefinitely.
 		 */
-		private Duration maxValidationTime;
+		private @Nullable Duration maxValidationTime;
 
 		/**
 		 * Maximum time to wait to create a new connection. By default, wait indefinitely.
 		 */
-		private Duration maxCreateConnectionTime;
+		private @Nullable Duration maxCreateConnectionTime;
 
 		/**
 		 * Initial connection pool size.
@@ -187,7 +188,7 @@ public class R2dbcProperties {
 		/**
 		 * Validation query.
 		 */
-		private String validationQuery;
+		private @Nullable String validationQuery;
 
 		/**
 		 * Validation depth.
@@ -215,27 +216,27 @@ public class R2dbcProperties {
 			this.maxIdleTime = maxIdleTime;
 		}
 
-		public Duration getMaxLifeTime() {
+		public @Nullable Duration getMaxLifeTime() {
 			return this.maxLifeTime;
 		}
 
-		public void setMaxLifeTime(Duration maxLifeTime) {
+		public void setMaxLifeTime(@Nullable Duration maxLifeTime) {
 			this.maxLifeTime = maxLifeTime;
 		}
 
-		public Duration getMaxValidationTime() {
+		public @Nullable Duration getMaxValidationTime() {
 			return this.maxValidationTime;
 		}
 
-		public void setMaxValidationTime(Duration maxValidationTime) {
+		public void setMaxValidationTime(@Nullable Duration maxValidationTime) {
 			this.maxValidationTime = maxValidationTime;
 		}
 
-		public Duration getMaxAcquireTime() {
+		public @Nullable Duration getMaxAcquireTime() {
 			return this.maxAcquireTime;
 		}
 
-		public void setMaxAcquireTime(Duration maxAcquireTime) {
+		public void setMaxAcquireTime(@Nullable Duration maxAcquireTime) {
 			this.maxAcquireTime = maxAcquireTime;
 		}
 
@@ -247,11 +248,11 @@ public class R2dbcProperties {
 			this.acquireRetry = acquireRetry;
 		}
 
-		public Duration getMaxCreateConnectionTime() {
+		public @Nullable Duration getMaxCreateConnectionTime() {
 			return this.maxCreateConnectionTime;
 		}
 
-		public void setMaxCreateConnectionTime(Duration maxCreateConnectionTime) {
+		public void setMaxCreateConnectionTime(@Nullable Duration maxCreateConnectionTime) {
 			this.maxCreateConnectionTime = maxCreateConnectionTime;
 		}
 
@@ -271,11 +272,11 @@ public class R2dbcProperties {
 			this.maxSize = maxSize;
 		}
 
-		public String getValidationQuery() {
+		public @Nullable String getValidationQuery() {
 			return this.validationQuery;
 		}
 
-		public void setValidationQuery(String validationQuery) {
+		public void setValidationQuery(@Nullable String validationQuery) {
 			this.validationQuery = validationQuery;
 		}
 

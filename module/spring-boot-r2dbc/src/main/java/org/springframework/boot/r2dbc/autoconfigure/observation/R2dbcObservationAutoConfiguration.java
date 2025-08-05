@@ -23,6 +23,7 @@ import io.r2dbc.proxy.observation.QueryObservationConvention;
 import io.r2dbc.proxy.observation.QueryParametersTagProvider;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -87,7 +88,7 @@ public final class R2dbcObservationAutoConfiguration {
 		return new HostAndPort(hostAsString, portAsInt);
 	}
 
-	private record HostAndPort(String host, Integer port) {
+	private record HostAndPort(@Nullable String host, @Nullable Integer port) {
 		static HostAndPort empty() {
 			return new HostAndPort(null, null);
 		}
