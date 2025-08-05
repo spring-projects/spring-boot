@@ -17,4 +17,7 @@
 /**
  * RestClient and RestTemplate test utilities.
  */
+@NullMarked
 package org.springframework.boot.restclient.test;
+
+import org.jspecify.annotations.NullMarked;

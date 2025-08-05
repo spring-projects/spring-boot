@@ -158,7 +158,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 			RequestExpectationManager expectationManager) {
 		Assert.notNull(restTemplate, "'restTemplate' must not be null");
 		UriTemplateHandler templateHandler = restTemplate.getUriTemplateHandler();
-		if (templateHandler instanceof RootUriTemplateHandler rootHandler) {
+		if (templateHandler instanceof RootUriTemplateHandler rootHandler && rootHandler.getRootUri() != null) {
 			return new RootUriRequestExpectationManager(rootHandler.getRootUri(), expectationManager);
 		}
 		return expectationManager;

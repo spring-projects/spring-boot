@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RestTemplateCustomizer;
@@ -147,7 +149,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 		return this.expectationManagers;
 	}
 
-	public MockRestServiceServer getServer(RestTemplate restTemplate) {
+	public @Nullable MockRestServiceServer getServer(RestTemplate restTemplate) {
 		return this.servers.get(restTemplate);
 	}
 

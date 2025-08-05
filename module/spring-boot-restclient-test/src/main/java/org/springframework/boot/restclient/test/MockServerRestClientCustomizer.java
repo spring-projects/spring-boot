@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
@@ -133,7 +135,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 		return this.expectationManagers;
 	}
 
-	public MockRestServiceServer getServer(RestClient.Builder restClientBuilder) {
+	public @Nullable MockRestServiceServer getServer(RestClient.Builder restClientBuilder) {
 		return this.servers.get(restClientBuilder);
 	}
 
