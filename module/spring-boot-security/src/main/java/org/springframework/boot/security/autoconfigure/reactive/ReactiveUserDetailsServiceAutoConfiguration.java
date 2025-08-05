@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -88,7 +89,7 @@ public final class ReactiveUserDetailsServiceAutoConfiguration {
 		return User.withUsername(user.getName()).password(password).roles(StringUtils.toStringArray(roles)).build();
 	}
 
-	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
+	private String getOrDeducePassword(SecurityProperties.User user, @Nullable PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
 			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));

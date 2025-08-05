@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for reactive Spring Security.
  */
+@NullMarked
 package org.springframework.boot.security.autoconfigure.reactive;
+
+import org.jspecify.annotations.NullMarked;

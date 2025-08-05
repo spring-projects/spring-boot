@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -158,9 +159,9 @@ public final class EndpointRequest {
 	private abstract static class AbstractRequestMatcher
 			extends ApplicationContextRequestMatcher<WebApplicationContext> {
 
-		private volatile RequestMatcher delegate;
+		private volatile @Nullable RequestMatcher delegate;
 
-		private volatile ManagementPortType managementPortType;
+		private volatile @Nullable ManagementPortType managementPortType;
 
 		AbstractRequestMatcher() {
 			super(WebApplicationContext.class);
@@ -202,7 +203,9 @@ public final class EndpointRequest {
 
 		@Override
 		protected final boolean matches(HttpServletRequest request, Supplier<WebApplicationContext> context) {
-			return this.delegate.matches(request);
+			RequestMatcher delegate = this.delegate;
+			Assert.state(delegate != null, "'delegate' must not be null");
+			return delegate.matches(request);
 		}
 
 		private RequestMatcher createDelegate(WebApplicationContext context) {
@@ -218,7 +221,7 @@ public final class EndpointRequest {
 				RequestMatcherFactory requestMatcherFactory);
 
 		protected final List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
-				RequestMatcherProvider matcherProvider, Set<String> paths, HttpMethod httpMethod) {
+				RequestMatcherProvider matcherProvider, Set<String> paths, @Nullable HttpMethod httpMethod) {
 			return paths.stream()
 				.map((path) -> requestMatcherFactory.antPath(matcherProvider, httpMethod, path, "/**"))
 				.collect(Collectors.toCollection(ArrayList::new));
@@ -280,7 +283,7 @@ public final class EndpointRequest {
 
 		private final boolean includeLinks;
 
-		private final HttpMethod httpMethod;
+		private final @Nullable HttpMethod httpMethod;
 
 		private EndpointRequestMatcher(boolean includeLinks) {
 			this(Collections.emptyList(), Collections.emptyList(), includeLinks, null);
@@ -295,7 +298,7 @@ public final class EndpointRequest {
 		}
 
 		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks,
-				HttpMethod httpMethod) {
+				@Nullable HttpMethod httpMethod) {
 			this.includes = includes;
 			this.excludes = excludes;
 			this.includeLinks = includeLinks;
@@ -402,7 +405,7 @@ public final class EndpointRequest {
 
 		private final List<Object> endpoints;
 
-		private final HttpMethod httpMethod;
+		private final @Nullable HttpMethod httpMethod;
 
 		AdditionalPathsEndpointRequestMatcher(WebServerNamespace webServerNamespace, String... endpoints) {
 			this(webServerNamespace, Arrays.asList((Object[]) endpoints), null);
@@ -413,7 +416,7 @@ public final class EndpointRequest {
 		}
 
 		private AdditionalPathsEndpointRequestMatcher(WebServerNamespace webServerNamespace, List<Object> endpoints,
-				HttpMethod httpMethod) {
+				@Nullable HttpMethod httpMethod) {
 			Assert.notNull(webServerNamespace, "'webServerNamespace' must not be null");
 			Assert.notNull(endpoints, "'endpoints' must not be null");
 			Assert.notEmpty(endpoints, "'endpoints' must not be empty");
@@ -472,7 +475,8 @@ public final class EndpointRequest {
 	 */
 	private static final class RequestMatcherFactory {
 
-		RequestMatcher antPath(RequestMatcherProvider matcherProvider, HttpMethod httpMethod, String... parts) {
+		RequestMatcher antPath(RequestMatcherProvider matcherProvider, @Nullable HttpMethod httpMethod,
+				String... parts) {
 			StringBuilder pattern = new StringBuilder();
 			for (String part : parts) {
 				Assert.notNull(part, "'part' must not be null");

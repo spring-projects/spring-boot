@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -157,9 +158,9 @@ public final class EndpointRequest {
 	 */
 	private abstract static class AbstractWebExchangeMatcher<C> extends ApplicationContextServerWebExchangeMatcher<C> {
 
-		private volatile ServerWebExchangeMatcher delegate;
+		private volatile @Nullable ServerWebExchangeMatcher delegate;
 
-		private volatile ManagementPortType managementPortType;
+		private volatile @Nullable ManagementPortType managementPortType;
 
 		AbstractWebExchangeMatcher(Class<? extends C> contextClass) {
 			super(contextClass);
@@ -181,49 +182,59 @@ public final class EndpointRequest {
 
 		protected abstract ServerWebExchangeMatcher createDelegate(C context);
 
-		protected final List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths, HttpMethod httpMethod) {
+		protected final List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths,
+				@Nullable HttpMethod httpMethod) {
 			return paths.stream()
 				.map((path) -> getDelegateMatcher(path, httpMethod))
 				.collect(Collectors.toCollection(ArrayList::new));
 		}
 
-		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path, HttpMethod httpMethod) {
+		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path,
+				@Nullable HttpMethod httpMethod) {
 			Assert.notNull(path, "'path' must not be null");
 			return new PathPatternParserServerWebExchangeMatcher(path + "/**", httpMethod);
 		}
 
 		@Override
 		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<C> context) {
-			return this.delegate.matches(exchange);
+			ServerWebExchangeMatcher delegate = this.delegate;
+			Assert.state(delegate != null, "'delegate' must not be null");
+			return delegate.matches(exchange);
 		}
 
 		@Override
-		protected boolean ignoreApplicationContext(ApplicationContext applicationContext) {
+		protected boolean ignoreApplicationContext(@Nullable ApplicationContext applicationContext) {
 			ManagementPortType managementPortType = this.managementPortType;
 			if (managementPortType == null) {
+				Assert.state(applicationContext != null, "'applicationContext' must not be null");
 				managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
 				this.managementPortType = managementPortType;
 			}
 			return ignoreApplicationContext(applicationContext, managementPortType);
 		}
 
-		protected boolean ignoreApplicationContext(ApplicationContext applicationContext,
+		protected boolean ignoreApplicationContext(@Nullable ApplicationContext applicationContext,
 				ManagementPortType managementPortType) {
 			return managementPortType == ManagementPortType.DIFFERENT
 					&& !hasWebServerNamespace(applicationContext, WebServerNamespace.MANAGEMENT);
 		}
 
-		protected final boolean hasWebServerNamespace(ApplicationContext applicationContext,
+		protected final boolean hasWebServerNamespace(@Nullable ApplicationContext applicationContext,
 				WebServerNamespace webServerNamespace) {
 			return WebServerApplicationContext.hasServerNamespace(applicationContext, webServerNamespace.getValue())
 					|| hasImplicitServerNamespace(applicationContext, webServerNamespace);
 		}
 
-		private boolean hasImplicitServerNamespace(ApplicationContext applicationContext,
+		private boolean hasImplicitServerNamespace(@Nullable ApplicationContext applicationContext,
 				WebServerNamespace webServerNamespace) {
 			return WebServerNamespace.SERVER.equals(webServerNamespace)
 					&& WebServerApplicationContext.getServerNamespace(applicationContext) == null
-					&& applicationContext.getParent() == null;
+					&& getApplicationContextParent(applicationContext) == null;
+		}
+
+		private @Nullable ApplicationContext getApplicationContextParent(
+				@Nullable ApplicationContext applicationContext) {
+			return (applicationContext != null) ? applicationContext.getParent() : null;
 		}
 
 		protected final String toString(List<Object> endpoints, String emptyValue) {
@@ -266,7 +277,7 @@ public final class EndpointRequest {
 
 		private final boolean includeLinks;
 
-		private final HttpMethod httpMethod;
+		private final @Nullable HttpMethod httpMethod;
 
 		private EndpointServerWebExchangeMatcher(boolean includeLinks) {
 			this(Collections.emptyList(), Collections.emptyList(), includeLinks, null);
@@ -281,7 +292,7 @@ public final class EndpointRequest {
 		}
 
 		private EndpointServerWebExchangeMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks,
-				HttpMethod httpMethod) {
+				@Nullable HttpMethod httpMethod) {
 			super(PathMappedEndpoints.class);
 			this.includes = includes;
 			this.excludes = excludes;
@@ -386,7 +397,7 @@ public final class EndpointRequest {
 
 		private final List<Object> endpoints;
 
-		private final HttpMethod httpMethod;
+		private final @Nullable HttpMethod httpMethod;
 
 		AdditionalPathsEndpointServerWebExchangeMatcher(WebServerNamespace webServerNamespace, String... endpoints) {
 			this(webServerNamespace, Arrays.asList((Object[]) endpoints), null);
@@ -397,7 +408,7 @@ public final class EndpointRequest {
 		}
 
 		private AdditionalPathsEndpointServerWebExchangeMatcher(WebServerNamespace webServerNamespace,
-				List<Object> endpoints, HttpMethod httpMethod) {
+				List<Object> endpoints, @Nullable HttpMethod httpMethod) {
 			super(PathMappedEndpoints.class);
 			Assert.notNull(webServerNamespace, "'webServerNamespace' must not be null");
 			Assert.notNull(endpoints, "'endpoints' must not be null");
@@ -419,7 +430,7 @@ public final class EndpointRequest {
 		}
 
 		@Override
-		protected boolean ignoreApplicationContext(ApplicationContext applicationContext,
+		protected boolean ignoreApplicationContext(@Nullable ApplicationContext applicationContext,
 				ManagementPortType managementPortType) {
 			return !hasWebServerNamespace(applicationContext, this.webServerNamespace);
 		}

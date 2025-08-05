@@ -17,4 +17,7 @@
 /**
  * Classes and utilities for reactive Spring Security.
  */
+@NullMarked
 package org.springframework.boot.security.reactive;
+
+import org.jspecify.annotations.NullMarked;

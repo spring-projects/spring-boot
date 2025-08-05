@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Servlet-based Spring Security.
  */
+@NullMarked
 package org.springframework.boot.security.autoconfigure.servlet;
+
+import org.jspecify.annotations.NullMarked;

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for RSocket support in Spring Security.
  */
+@NullMarked
 package org.springframework.boot.security.autoconfigure.rsocket;
+
+import org.jspecify.annotations.NullMarked;

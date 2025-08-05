@@ -20,6 +20,7 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.DispatcherType;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -64,7 +65,7 @@ public final class SecurityFilterAutoConfiguration {
 		return registration;
 	}
 
-	private EnumSet<DispatcherType> getDispatcherTypes(SecurityProperties securityProperties) {
+	private @Nullable EnumSet<DispatcherType> getDispatcherTypes(SecurityProperties securityProperties) {
 		if (securityProperties.getFilter().getDispatcherTypes() == null) {
 			return null;
 		}

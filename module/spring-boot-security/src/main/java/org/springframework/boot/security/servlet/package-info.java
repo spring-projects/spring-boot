@@ -17,4 +17,7 @@
 /**
  * Classes and utilities for Servlet-based Spring Security.
  */
+@NullMarked
 package org.springframework.boot.security.servlet;
+
+import org.jspecify.annotations.NullMarked;

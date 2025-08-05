@@ -16,6 +16,8 @@
 
 package org.springframework.boot.security.autoconfigure.actuate.servlet;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -37,6 +39,6 @@ public interface RequestMatcherProvider {
 	 * @param httpMethod the http method
 	 * @return a request matcher
 	 */
-	RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod);
+	RequestMatcher getRequestMatcher(String pattern, @Nullable HttpMethod httpMethod);
 
 }

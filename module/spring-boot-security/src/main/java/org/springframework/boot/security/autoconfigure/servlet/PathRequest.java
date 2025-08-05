@@ -19,6 +19,7 @@ package org.springframework.boot.security.autoconfigure.servlet;
 import java.util.function.Supplier;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
 import org.springframework.boot.security.autoconfigure.StaticResourceLocation;
@@ -67,7 +68,7 @@ public final class PathRequest {
 	 */
 	public static final class H2ConsoleRequestMatcher extends ApplicationContextRequestMatcher<ApplicationContext> {
 
-		private volatile RequestMatcher delegate;
+		private volatile @Nullable RequestMatcher delegate;
 
 		private H2ConsoleRequestMatcher() {
 			super(ApplicationContext.class);
@@ -87,7 +88,9 @@ public final class PathRequest {
 
 		@Override
 		protected boolean matches(HttpServletRequest request, Supplier<ApplicationContext> context) {
-			return this.delegate.matches(request);
+			RequestMatcher delegate = this.delegate;
+			Assert.state(delegate != null, "'delegate' must not be null");
+			return delegate.matches(request);
 		}
 
 	}

@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.security.autoconfigure.StaticResourceLocation;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
@@ -99,7 +100,7 @@ public final class StaticResourceRequest {
 
 		private final Set<StaticResourceLocation> locations;
 
-		private volatile RequestMatcher delegate;
+		private volatile @Nullable RequestMatcher delegate;
 
 		private StaticResourceRequestMatcher(Set<StaticResourceLocation> locations) {
 			super(DispatcherServletPath.class);
@@ -152,7 +153,9 @@ public final class StaticResourceRequest {
 
 		@Override
 		protected boolean matches(HttpServletRequest request, Supplier<DispatcherServletPath> context) {
-			return this.delegate.matches(request);
+			RequestMatcher delegate = this.delegate;
+			Assert.state(delegate != null, "'delegate' must not be null");
+			return delegate.matches(request);
 		}
 
 	}

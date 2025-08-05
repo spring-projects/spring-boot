@@ -18,6 +18,8 @@ package org.springframework.boot.security.autoconfigure.actuate.servlet;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -37,7 +39,7 @@ class PathPatternRequestMatcherProvider implements RequestMatcherProvider {
 	}
 
 	@Override
-	public RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod) {
+	public RequestMatcher getRequestMatcher(String pattern, @Nullable HttpMethod httpMethod) {
 		return PathPatternRequestMatcher.withDefaults().matcher(httpMethod, this.pathFactory.apply(pattern));
 	}
 

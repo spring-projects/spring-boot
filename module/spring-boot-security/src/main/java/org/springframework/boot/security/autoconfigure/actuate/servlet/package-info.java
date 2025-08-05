@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for actuator security using Spring MVC.
  */
+@NullMarked
 package org.springframework.boot.security.autoconfigure.actuate.servlet;
+
+import org.jspecify.annotations.NullMarked;
