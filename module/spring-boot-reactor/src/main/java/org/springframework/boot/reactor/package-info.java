@@ -17,4 +17,7 @@
 /**
  * Support classes for Reactor integration.
  */
+@NullMarked
 package org.springframework.boot.reactor;
+
+import org.jspecify.annotations.NullMarked;
