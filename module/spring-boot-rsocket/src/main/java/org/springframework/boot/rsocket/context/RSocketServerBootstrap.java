@@ -35,6 +35,7 @@ public class RSocketServerBootstrap implements ApplicationEventPublisherAware, S
 
 	private final RSocketServer server;
 
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationEventPublisher eventPublisher;
 
 	public RSocketServerBootstrap(RSocketServerFactory serverFactory, SocketAcceptor socketAcceptor) {
@@ -60,11 +61,7 @@ public class RSocketServerBootstrap implements ApplicationEventPublisherAware, S
 
 	@Override
 	public boolean isRunning() {
-		RSocketServer server = this.server;
-		if (server != null) {
-			return server.address() != null;
-		}
-		return false;
+		return this.server.address() != null;
 	}
 
 }

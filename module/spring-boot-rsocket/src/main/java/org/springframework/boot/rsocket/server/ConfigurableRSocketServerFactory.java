@@ -18,6 +18,8 @@ package org.springframework.boot.rsocket.server;
 
 import java.net.InetAddress;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.unit.DataSize;
@@ -44,13 +46,13 @@ public interface ConfigurableRSocketServerFactory {
 	 * @param fragmentSize the fragment size
 	 * @since 2.4.0
 	 */
-	void setFragmentSize(DataSize fragmentSize);
+	void setFragmentSize(@Nullable DataSize fragmentSize);
 
 	/**
 	 * Set the specific network address that the server should bind to.
 	 * @param address the address to set (defaults to {@code null})
 	 */
-	void setAddress(InetAddress address);
+	void setAddress(@Nullable InetAddress address);
 
 	/**
 	 * Set the transport that the RSocket server should use.
@@ -62,13 +64,13 @@ public interface ConfigurableRSocketServerFactory {
 	 * Sets the SSL configuration that will be applied to the server's default connector.
 	 * @param ssl the SSL configuration
 	 */
-	void setSsl(Ssl ssl);
+	void setSsl(@Nullable Ssl ssl);
 
 	/**
 	 * Sets an SSL bundle that can be used to get SSL configuration.
 	 * @param sslBundles the SSL bundles
 	 * @since 3.1.0
 	 */
-	void setSslBundles(SslBundles sslBundles);
+	void setSslBundles(@Nullable SslBundles sslBundles);
 
 }

@@ -51,6 +51,7 @@ import org.springframework.core.io.buffer.NettyDataBufferFactory;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -78,9 +79,10 @@ public final class RSocketServerAutoConfiguration {
 		@ConditionalOnMissingBean
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
 				RSocketMessageHandler messageHandler, ObjectProvider<RSocketServerCustomizer> customizers) {
-			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.responder(), customizeWebsocketServerSpec(properties.getServer().getSpec()),
-					customizers.orderedStream());
+			String mappingPath = properties.getServer().getMappingPath();
+			Assert.state(mappingPath != null, "'mappingPath' must not be null");
+			return new RSocketWebSocketNettyRouteProvider(mappingPath, messageHandler.responder(),
+					customizeWebsocketServerSpec(properties.getServer().getSpec()), customizers.orderedStream());
 		}
 
 		private Consumer<Builder> customizeWebsocketServerSpec(Spec spec) {

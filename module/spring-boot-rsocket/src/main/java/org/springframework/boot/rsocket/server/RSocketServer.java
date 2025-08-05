@@ -18,6 +18,8 @@ package org.springframework.boot.rsocket.server;
 
 import java.net.InetSocketAddress;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Simple interface that represents a fully configured RSocket server. Allows the server
  * to be {@link #start() started} and {@link #stop() stopped}.
@@ -45,7 +47,7 @@ public interface RSocketServer {
 	 * Return the address this server is listening on.
 	 * @return the address
 	 */
-	InetSocketAddress address();
+	@Nullable InetSocketAddress address();
 
 	/**
 	 * Choice of transport protocol for the RSocket server.

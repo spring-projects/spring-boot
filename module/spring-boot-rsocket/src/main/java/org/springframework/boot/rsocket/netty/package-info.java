@@ -17,4 +17,7 @@
 /**
  * Reactor Netty based RSocket server implementation.
  */
+@NullMarked
 package org.springframework.boot.rsocket.netty;
+
+import org.jspecify.annotations.NullMarked;

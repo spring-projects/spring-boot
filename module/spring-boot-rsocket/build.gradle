@@ -29,6 +29,8 @@ dependencies {
 	api("io.rsocket:rsocket-core")
 	api("org.springframework:spring-messaging")
 
+	compileOnly("com.google.code.findbugs:jsr305")
+
 	implementation("org.springframework:spring-web")
 
 	optional(project(":core:spring-boot-autoconfigure"))

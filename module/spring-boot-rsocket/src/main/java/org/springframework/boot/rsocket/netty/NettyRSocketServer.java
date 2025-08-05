@@ -22,6 +22,7 @@ import java.time.Duration;
 import io.rsocket.transport.netty.server.CloseableChannel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
@@ -41,18 +42,18 @@ public class NettyRSocketServer implements RSocketServer {
 
 	private final Mono<CloseableChannel> starter;
 
-	private final Duration lifecycleTimeout;
+	private final @Nullable Duration lifecycleTimeout;
 
-	private CloseableChannel channel;
+	private @Nullable CloseableChannel channel;
 
-	public NettyRSocketServer(Mono<CloseableChannel> starter, Duration lifecycleTimeout) {
+	public NettyRSocketServer(Mono<CloseableChannel> starter, @Nullable Duration lifecycleTimeout) {
 		Assert.notNull(starter, "'starter' must not be null");
 		this.starter = starter;
 		this.lifecycleTimeout = lifecycleTimeout;
 	}
 
 	@Override
-	public InetSocketAddress address() {
+	public @Nullable InetSocketAddress address() {
 		if (this.channel != null) {
 			return this.channel.address();
 		}
@@ -62,11 +63,16 @@ public class NettyRSocketServer implements RSocketServer {
 	@Override
 	public void start() throws RSocketServerException {
 		this.channel = block(this.starter, this.lifecycleTimeout);
-		logger.info("Netty RSocket started on port " + address().getPort());
+		InetSocketAddress address = address();
+		Assert.state(address != null, "'address' must not be null");
+		logger.info("Netty RSocket started on port " + address.getPort());
 		startDaemonAwaitThread(this.channel);
 	}
 
-	private void startDaemonAwaitThread(CloseableChannel channel) {
+	private void startDaemonAwaitThread(@Nullable CloseableChannel channel) {
+		if (channel == null) {
+			return;
+		}
 		Thread awaitThread = new Thread(() -> channel.onClose().block(), "rsocket");
 		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
@@ -81,7 +87,7 @@ public class NettyRSocketServer implements RSocketServer {
 		}
 	}
 
-	private <T> T block(Mono<T> mono, Duration timeout) {
+	private <T> @Nullable T block(Mono<T> mono, @Nullable Duration timeout) {
 		return (timeout != null) ? mono.block(timeout) : mono.block();
 	}
 
