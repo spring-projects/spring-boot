@@ -44,10 +44,10 @@ public final class ClientHttpRequestFactories {
 
 	private final ObjectFactory<SslBundles> sslBundles;
 
-	private final AbstractHttpRequestFactoryProperties[] orderedProperties;
+	private final @Nullable AbstractHttpRequestFactoryProperties[] orderedProperties;
 
 	public ClientHttpRequestFactories(ObjectFactory<SslBundles> sslBundles,
-			AbstractHttpRequestFactoryProperties... orderedProperties) {
+			@Nullable AbstractHttpRequestFactoryProperties... orderedProperties) {
 		this.sslBundles = sslBundles;
 		this.orderedProperties = orderedProperties;
 	}
