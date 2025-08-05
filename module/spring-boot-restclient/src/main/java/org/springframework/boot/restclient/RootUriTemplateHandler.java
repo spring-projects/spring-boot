@@ -19,6 +19,8 @@ package org.springframework.boot.restclient;
 import java.net.URI;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriTemplateHandler;
@@ -32,7 +34,7 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 public class RootUriTemplateHandler implements UriTemplateHandler {
 
-	private final String rootUri;
+	private final @Nullable String rootUri;
 
 	private final UriTemplateHandler handler;
 
@@ -55,7 +57,7 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	}
 
 	@Override
-	public URI expand(String uriTemplate, Object... uriVariables) {
+	public URI expand(String uriTemplate, @Nullable Object... uriVariables) {
 		return this.handler.expand(apply(uriTemplate), uriVariables);
 	}
 
@@ -66,7 +68,7 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 		return uriTemplate;
 	}
 
-	public String getRootUri() {
+	public @Nullable String getRootUri() {
 		return this.rootUri;
 	}
 

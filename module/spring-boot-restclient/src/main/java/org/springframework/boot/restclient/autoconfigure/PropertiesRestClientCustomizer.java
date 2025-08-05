@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.autoconfigure.ApiversionProperties;
 import org.springframework.boot.http.client.autoconfigure.PropertiesApiVersionInserter;
@@ -29,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 /**
  * {@link RestClientCustomizer} to apply {@link AbstractRestClientProperties}.
@@ -38,18 +41,19 @@ import org.springframework.web.client.RestClient;
  */
 public class PropertiesRestClientCustomizer implements RestClientCustomizer {
 
-	private final AbstractRestClientProperties[] orderedProperties;
+	private final @Nullable AbstractRestClientProperties[] orderedProperties;
 
-	private ApiVersionInserter apiVersionInserter;
+	private final @Nullable ApiVersionInserter apiVersionInserter;
 
-	public PropertiesRestClientCustomizer(ApiVersionInserter apiVersionInserter,
-			ApiVersionFormatter apiVersionFormatter, AbstractRestClientProperties... orderedProperties) {
+	public PropertiesRestClientCustomizer(@Nullable ApiVersionInserter apiVersionInserter,
+			@Nullable ApiVersionFormatter apiVersionFormatter,
+			@Nullable AbstractRestClientProperties... orderedProperties) {
 		this.orderedProperties = orderedProperties;
 		this.apiVersionInserter = PropertiesApiVersionInserter.get(apiVersionInserter, apiVersionFormatter,
 				Arrays.stream(orderedProperties).map(this::getApiVersion));
 	}
 
-	private ApiversionProperties getApiVersion(AbstractRestClientProperties properties) {
+	private @Nullable ApiversionProperties getApiVersion(@Nullable AbstractRestClientProperties properties) {
 		return (properties != null) ? properties.getApiversion() : null;
 	}
 
@@ -62,11 +66,14 @@ public class PropertiesRestClientCustomizer implements RestClientCustomizer {
 			if (properties != null) {
 				map.from(properties::getBaseUrl).whenHasText().to(builder::baseUrl);
 				map.from(properties::getDefaultHeader).as(this::putAllHeaders).to(builder::defaultHeaders);
-				map.from(properties.getApiversion())
-					.as(ApiversionProperties::getDefaultVersion)
-					.to(builder::defaultApiVersion);
+				setDefaultApiVersion(builder, map, properties);
 			}
 		}
+	}
+
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private void setDefaultApiVersion(Builder builder, PropertyMapper map, AbstractRestClientProperties properties) {
+		map.from(properties.getApiversion()).as(ApiversionProperties::getDefaultVersion).to(builder::defaultApiVersion);
 	}
 
 	private Consumer<HttpHeaders> putAllHeaders(Map<String, List<String>> defaultHeaders) {

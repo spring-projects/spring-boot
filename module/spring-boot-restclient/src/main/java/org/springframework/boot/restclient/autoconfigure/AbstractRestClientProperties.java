@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.http.client.autoconfigure.AbstractHttpRequestFactoryProperties;
 import org.springframework.boot.http.client.autoconfigure.ApiversionProperties;
@@ -40,7 +42,7 @@ public abstract class AbstractRestClientProperties extends AbstractHttpRequestFa
 	 * Base url to set in the underlying HTTP client group. By default, set to
 	 * {@code null}.
 	 */
-	private String baseUrl;
+	private @Nullable String baseUrl;
 
 	/**
 	 * Default request headers for interface client group. By default, set to empty
@@ -54,11 +56,11 @@ public abstract class AbstractRestClientProperties extends AbstractHttpRequestFa
 	@NestedConfigurationProperty
 	private final ApiversionProperties apiversion = new ApiversionProperties();
 
-	public String getBaseUrl() {
+	public @Nullable String getBaseUrl() {
 		return this.baseUrl;
 	}
 
-	public void setBaseUrl(String baseUrl) {
+	public void setBaseUrl(@Nullable String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 

@@ -55,6 +55,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
 @EnableConfigurationProperties(HttpClientServiceProperties.class)
 public final class HttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
 	HttpServiceClientAutoConfiguration() {

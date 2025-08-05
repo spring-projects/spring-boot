@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -74,19 +76,19 @@ public class RestTemplateBuilder {
 
 	private final boolean detectRequestFactory;
 
-	private final String rootUri;
+	private final @Nullable String rootUri;
 
-	private final Set<HttpMessageConverter<?>> messageConverters;
+	private final @Nullable Set<HttpMessageConverter<?>> messageConverters;
 
 	private final Set<ClientHttpRequestInterceptor> interceptors;
 
-	private final ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
+	private final @Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
-	private final UriTemplateHandler uriTemplateHandler;
+	private final @Nullable UriTemplateHandler uriTemplateHandler;
 
-	private final ResponseErrorHandler errorHandler;
+	private final @Nullable ResponseErrorHandler errorHandler;
 
-	private final BasicAuthentication basicAuthentication;
+	private final @Nullable BasicAuthentication basicAuthentication;
 
 	private final Map<String, List<String>> defaultHeaders;
 
@@ -116,10 +118,11 @@ public class RestTemplateBuilder {
 	}
 
 	private RestTemplateBuilder(ClientHttpRequestFactorySettings requestFactorySettings, boolean detectRequestFactory,
-			String rootUri, Set<HttpMessageConverter<?>> messageConverters,
-			Set<ClientHttpRequestInterceptor> interceptors, ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
-			UriTemplateHandler uriTemplateHandler, ResponseErrorHandler errorHandler,
-			BasicAuthentication basicAuthentication, Map<String, List<String>> defaultHeaders,
+			@Nullable String rootUri, @Nullable Set<HttpMessageConverter<?>> messageConverters,
+			Set<ClientHttpRequestInterceptor> interceptors,
+			@Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
+			@Nullable UriTemplateHandler uriTemplateHandler, @Nullable ResponseErrorHandler errorHandler,
+			@Nullable BasicAuthentication basicAuthentication, Map<String, List<String>> defaultHeaders,
 			Set<RestTemplateCustomizer> customizers, Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		this.requestFactorySettings = requestFactorySettings;
 		this.detectRequestFactory = detectRequestFactory;
@@ -156,7 +159,7 @@ public class RestTemplateBuilder {
 	 * @param rootUri the root URI or {@code null}
 	 * @return a new builder instance
 	 */
-	public RestTemplateBuilder rootUri(String rootUri) {
+	public RestTemplateBuilder rootUri(@Nullable String rootUri) {
 		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
@@ -390,7 +393,7 @@ public class RestTemplateBuilder {
 	 * @return a new builder instance
 	 * @since 2.2.0
 	 */
-	public RestTemplateBuilder basicAuthentication(String username, String password, Charset charset) {
+	public RestTemplateBuilder basicAuthentication(String username, String password, @Nullable Charset charset) {
 		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, new BasicAuthentication(username, password, charset), this.defaultHeaders,
@@ -688,7 +691,7 @@ public class RestTemplateBuilder {
 	 * @return a {@link ClientHttpRequestFactory} or {@code null}
 	 * @since 2.2.0
 	 */
-	public ClientHttpRequestFactory buildRequestFactory() {
+	public @Nullable ClientHttpRequestFactory buildRequestFactory() {
 		ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder = requestFactoryBuilder();
 		return (requestFactoryBuilder != null) ? requestFactoryBuilder.build(this.requestFactorySettings) : null;
 	}
@@ -699,7 +702,7 @@ public class RestTemplateBuilder {
 	 * @return a {@link ClientHttpRequestFactoryBuilder} or {@code null}
 	 * @since 3.5.0
 	 */
-	public ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder() {
+	public @Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder() {
 		if (this.requestFactoryBuilder != null) {
 			return this.requestFactoryBuilder;
 		}
@@ -731,7 +734,8 @@ public class RestTemplateBuilder {
 		return Collections.unmodifiableList(Arrays.asList(Arrays.copyOf(items, items.length)));
 	}
 
-	private static <T> Set<T> append(Collection<? extends T> collection, Collection<? extends T> additions) {
+	private static <T> Set<T> append(@Nullable Collection<? extends T> collection,
+			@Nullable Collection<? extends T> additions) {
 		Set<T> result = new LinkedHashSet<>((collection != null) ? collection : Collections.emptySet());
 		if (additions != null) {
 			result.addAll(additions);
@@ -739,7 +743,7 @@ public class RestTemplateBuilder {
 		return Collections.unmodifiableSet(result);
 	}
 
-	private static <K, V> Map<K, List<V>> append(Map<K, List<V>> map, K key, V[] values) {
+	private static <K, V> Map<K, List<V>> append(@Nullable Map<K, List<V>> map, K key, V @Nullable [] values) {
 		Map<K, List<V>> result = new LinkedHashMap<>((map != null) ? map : Collections.emptyMap());
 		if (values != null) {
 			result.put(key, copiedListOf(values));

@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
@@ -40,33 +42,34 @@ import org.springframework.util.ObjectUtils;
  */
 public final class RestTemplateBuilderConfigurer {
 
-	private ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
+	private @Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
-	private ClientHttpRequestFactorySettings requestFactorySettings;
+	private @Nullable ClientHttpRequestFactorySettings requestFactorySettings;
 
-	private HttpMessageConverters httpMessageConverters;
+	private @Nullable HttpMessageConverters httpMessageConverters;
 
-	private List<RestTemplateCustomizer> restTemplateCustomizers;
+	private @Nullable List<RestTemplateCustomizer> restTemplateCustomizers;
 
-	private List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers;
+	private @Nullable List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers;
 
-	void setRequestFactoryBuilder(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
+	void setRequestFactoryBuilder(@Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
 		this.requestFactoryBuilder = requestFactoryBuilder;
 	}
 
-	void setRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
+	void setRequestFactorySettings(@Nullable ClientHttpRequestFactorySettings requestFactorySettings) {
 		this.requestFactorySettings = requestFactorySettings;
 	}
 
-	void setHttpMessageConverters(HttpMessageConverters httpMessageConverters) {
+	void setHttpMessageConverters(@Nullable HttpMessageConverters httpMessageConverters) {
 		this.httpMessageConverters = httpMessageConverters;
 	}
 
-	void setRestTemplateCustomizers(List<RestTemplateCustomizer> restTemplateCustomizers) {
+	void setRestTemplateCustomizers(@Nullable List<RestTemplateCustomizer> restTemplateCustomizers) {
 		this.restTemplateCustomizers = restTemplateCustomizers;
 	}
 
-	void setRestTemplateRequestCustomizers(List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers) {
+	void setRestTemplateRequestCustomizers(
+			@Nullable List<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers) {
 		this.restTemplateRequestCustomizers = restTemplateRequestCustomizers;
 	}
 
@@ -91,7 +94,7 @@ public final class RestTemplateBuilderConfigurer {
 		return builder;
 	}
 
-	private <T> RestTemplateBuilder addCustomizers(RestTemplateBuilder builder, List<T> customizers,
+	private <T> RestTemplateBuilder addCustomizers(RestTemplateBuilder builder, @Nullable List<T> customizers,
 			BiFunction<RestTemplateBuilder, Collection<T>, RestTemplateBuilder> method) {
 		if (!ObjectUtils.isEmpty(customizers)) {
 			return method.apply(builder, customizers);

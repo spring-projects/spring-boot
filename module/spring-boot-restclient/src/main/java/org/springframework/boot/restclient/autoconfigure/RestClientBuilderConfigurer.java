@@ -19,6 +19,8 @@ package org.springframework.boot.restclient.autoconfigure;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.restclient.RestClientCustomizer;
@@ -43,7 +45,7 @@ public class RestClientBuilderConfigurer {
 
 	private final List<RestClientCustomizer> customizers;
 
-	private final PropertiesRestClientCustomizer propertiesCustomizer;
+	private final @Nullable PropertiesRestClientCustomizer propertiesCustomizer;
 
 	public RestClientBuilderConfigurer() {
 		this(ClientHttpRequestFactoryBuilder.detect(), ClientHttpRequestFactorySettings.defaults(), null,
@@ -52,7 +54,7 @@ public class RestClientBuilderConfigurer {
 
 	RestClientBuilderConfigurer(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
 			ClientHttpRequestFactorySettings requestFactorySettings,
-			PropertiesRestClientCustomizer propertiesCustomizer, List<RestClientCustomizer> customizers) {
+			@Nullable PropertiesRestClientCustomizer propertiesCustomizer, List<RestClientCustomizer> customizers) {
 		this.requestFactoryBuilder = requestFactoryBuilder;
 		this.requestFactorySettings = requestFactorySettings;
 		this.propertiesCustomizer = propertiesCustomizer;
