@@ -92,18 +92,6 @@ class RabbitAmqpAutoConfigurationTests {
 			});
 	}
 
-	@Test
-	void testSimpleRabbitListenerContainerFactoryRetryWithCustomizer() {
-		this.contextRunner.withUserConfiguration(RabbitRetryTemplateCustomizerConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.listener.simple.retry.enabled:true")
-			.run((context) -> {
-				RabbitAmqpListenerContainerFactory rabbitListenerContainerFactory = context
-					.getBean("rabbitAmqpListenerContainerFactory", RabbitAmqpListenerContainerFactory.class);
-				assertListenerRetryTemplate(rabbitListenerContainerFactory,
-						context.getBean(RabbitRetryTemplateCustomizerConfiguration.class).retryPolicy);
-			});
-	}
-
 	private void assertListenerRetryTemplate(BaseRabbitListenerContainerFactory<?> rabbitListenerContainerFactory,
 			RetryPolicy retryPolicy) {
 		Advice[] adviceChain = rabbitListenerContainerFactory.getAdviceChain();

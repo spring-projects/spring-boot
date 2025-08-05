@@ -23,9 +23,7 @@ import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder;
 import com.rabbitmq.client.amqp.impl.AmqpEnvironmentBuilder.EnvironmentConnectionSettings;
 
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
-import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
-import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.rabbitmq.client.AmqpConnectionFactory;
 import org.springframework.amqp.rabbitmq.client.RabbitAmqpAdmin;
 import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
@@ -35,8 +33,6 @@ import org.springframework.amqp.rabbitmq.client.listener.RabbitAmqpListenerConta
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails.Address;
-import org.springframework.boot.amqp.autoconfigure.RabbitProperties.ListenerRetry;
-import org.springframework.boot.amqp.autoconfigure.RabbitRetryTemplateCustomizer.Target;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -45,7 +41,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
-import org.springframework.retry.support.RetryTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitAmqpTemplate}.
@@ -53,7 +48,7 @@ import org.springframework.retry.support.RetryTemplate;
  * @author Eddú Meléndez
  * @since 4.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = RabbitAutoConfiguration.class)
 @ConditionalOnClass({ RabbitAmqpTemplate.class, Connection.class })
 @EnableConfigurationProperties(RabbitProperties.class)
 public final class RabbitAmqpAutoConfiguration {
@@ -82,20 +77,6 @@ public final class RabbitAmqpAutoConfiguration {
 
 		RabbitProperties.AmqpContainer configuration = this.properties.getListener().getSimple();
 		factory.setObservationEnabled(configuration.isObservationEnabled());
-		ListenerRetry retryConfig = configuration.getRetry();
-		if (retryConfig.isEnabled()) {
-			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()
-					: RetryInterceptorBuilder.stateful();
-
-			RetryTemplate retryTemplate = new RetryTemplateFactory(retryTemplateCustomizers.orderedStream().toList())
-				.createRetryTemplate(retryConfig, Target.LISTENER);
-
-			builder.retryOperations(retryTemplate);
-			MessageRecoverer recoverer = (messageRecoverer.getIfAvailable() != null) ? messageRecoverer.getIfAvailable()
-					: new RejectAndDontRequeueRecoverer();
-			builder.recoverer(recoverer);
-			factory.setAdviceChain(builder.build());
-		}
 		return factory;
 	}
 
@@ -123,7 +104,7 @@ public final class RabbitAmqpAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	AmqpConnectionFactory amqpConnection(Environment environment) {
+	AmqpConnectionFactory amqpConnectionFactory(Environment environment) {
 		return new SingleAmqpConnectionFactory(environment);
 	}
 
