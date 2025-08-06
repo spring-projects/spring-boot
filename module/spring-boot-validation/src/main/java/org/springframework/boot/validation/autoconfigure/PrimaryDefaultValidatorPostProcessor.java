@@ -16,6 +16,8 @@
 
 package org.springframework.boot.validation.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -46,7 +49,7 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	 */
 	private static final String VALIDATOR_BEAN_NAME = "defaultValidator";
 
-	private ConfigurableListableBeanFactory beanFactory;
+	private @Nullable ConfigurableListableBeanFactory beanFactory;
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -63,7 +66,7 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 		}
 	}
 
-	private BeanDefinition getAutoConfiguredValidator(BeanDefinitionRegistry registry) {
+	private @Nullable BeanDefinition getAutoConfiguredValidator(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(VALIDATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(VALIDATOR_BEAN_NAME);
 			if (definition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE
@@ -79,6 +82,7 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	}
 
 	private boolean hasPrimarySpringValidator() {
+		Assert.state(this.beanFactory != null, "'beanFactory' must not be null");
 		String[] validatorBeans = this.beanFactory.getBeanNamesForType(Validator.class, false, false);
 		for (String validatorBean : validatorBeans) {
 			BeanDefinition definition = this.beanFactory.getBeanDefinition(validatorBean);
