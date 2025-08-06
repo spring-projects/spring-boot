@@ -16,6 +16,8 @@
 
 package org.springframework.boot.session.jdbc.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.session.FlushMode;
@@ -46,7 +48,7 @@ public class JdbcSessionProperties {
 	 * Platform to use in initialization scripts if the @@platform@@ placeholder is used.
 	 * Auto-detected by default.
 	 */
-	private String platform;
+	private @Nullable String platform;
 
 	/**
 	 * Name of the database table used to store sessions.
@@ -83,11 +85,11 @@ public class JdbcSessionProperties {
 		this.schema = schema;
 	}
 
-	public String getPlatform() {
+	public @Nullable String getPlatform() {
 		return this.platform;
 	}
 
-	public void setPlatform(String platform) {
+	public void setPlatform(@Nullable String platform) {
 		this.platform = platform;
 	}
 
