@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.undertow.UndertowOptions;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.unit.DataSize;
@@ -69,13 +70,13 @@ public class UndertowServerProperties {
 	 * Size of each buffer. The default is derived from the maximum amount of memory that
 	 * is available to the JVM.
 	 */
-	private DataSize bufferSize;
+	private @Nullable DataSize bufferSize;
 
 	/**
 	 * Whether to allocate buffers outside the Java heap. The default is derived from the
 	 * maximum amount of memory that is available to the JVM.
 	 */
-	private Boolean directBuffers;
+	private @Nullable Boolean directBuffers;
 
 	/**
 	 * Whether servlet filters should be initialized on startup.
@@ -106,7 +107,7 @@ public class UndertowServerProperties {
 	 * enable this if you have a legacy application that requires it. When set,
 	 * server.undertow.allow-encoded-slash has no effect.
 	 */
-	private Boolean decodeSlash;
+	private @Nullable Boolean decodeSlash;
 
 	/**
 	 * Whether the URL should be decoded. When disabled, percent-encoded characters in the
@@ -129,7 +130,7 @@ public class UndertowServerProperties {
 	 * Amount of time a connection can sit idle without processing a request, before it is
 	 * closed by the server.
 	 */
-	private Duration noRequestTimeout;
+	private @Nullable Duration noRequestTimeout;
 
 	/**
 	 * Whether to preserve the path of a request when it is forwarded.
@@ -153,19 +154,19 @@ public class UndertowServerProperties {
 		this.maxHttpPostSize = maxHttpPostSize;
 	}
 
-	public DataSize getBufferSize() {
+	public @Nullable DataSize getBufferSize() {
 		return this.bufferSize;
 	}
 
-	public void setBufferSize(DataSize bufferSize) {
+	public void setBufferSize(@Nullable DataSize bufferSize) {
 		this.bufferSize = bufferSize;
 	}
 
-	public Boolean getDirectBuffers() {
+	public @Nullable Boolean getDirectBuffers() {
 		return this.directBuffers;
 	}
 
-	public void setDirectBuffers(Boolean directBuffers) {
+	public void setDirectBuffers(@Nullable Boolean directBuffers) {
 		this.directBuffers = directBuffers;
 	}
 
@@ -201,11 +202,11 @@ public class UndertowServerProperties {
 		this.maxCookies = maxCookies;
 	}
 
-	public Boolean getDecodeSlash() {
+	public @Nullable Boolean getDecodeSlash() {
 		return this.decodeSlash;
 	}
 
-	public void setDecodeSlash(Boolean decodeSlash) {
+	public void setDecodeSlash(@Nullable Boolean decodeSlash) {
 		this.decodeSlash = decodeSlash;
 	}
 
@@ -233,11 +234,11 @@ public class UndertowServerProperties {
 		this.alwaysSetKeepAlive = alwaysSetKeepAlive;
 	}
 
-	public Duration getNoRequestTimeout() {
+	public @Nullable Duration getNoRequestTimeout() {
 		return this.noRequestTimeout;
 	}
 
-	public void setNoRequestTimeout(Duration noRequestTimeout) {
+	public void setNoRequestTimeout(@Nullable Duration noRequestTimeout) {
 		this.noRequestTimeout = noRequestTimeout;
 	}
 
@@ -355,26 +356,26 @@ public class UndertowServerProperties {
 		 * Number of I/O threads to create for the worker. The default is derived from the
 		 * number of available processors.
 		 */
-		private Integer io;
+		private @Nullable Integer io;
 
 		/**
 		 * Number of worker threads. The default is 8 times the number of I/O threads.
 		 */
-		private Integer worker;
+		private @Nullable Integer worker;
 
-		public Integer getIo() {
+		public @Nullable Integer getIo() {
 			return this.io;
 		}
 
-		public void setIo(Integer io) {
+		public void setIo(@Nullable Integer io) {
 			this.io = io;
 		}
 
-		public Integer getWorker() {
+		public @Nullable Integer getWorker() {
 			return this.worker;
 		}
 
-		public void setWorker(Integer worker) {
+		public void setWorker(@Nullable Integer worker) {
 			this.worker = worker;
 		}
 

@@ -20,4 +20,7 @@
  * @see org.springframework.boot.undertow.servlet.UndertowServletWebServerFactory
  * @see org.springframework.boot.undertow.reactive.UndertowReactiveWebServerFactory
  */
+@NullMarked
 package org.springframework.boot.undertow;
+
+import org.jspecify.annotations.NullMarked;

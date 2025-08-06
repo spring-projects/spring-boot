@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Collection;
 
 import io.undertow.Undertow.Builder;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 
@@ -50,49 +51,49 @@ public interface ConfigurableUndertowWebServerFactory extends ConfigurableWebSer
 	 * Set the buffer size.
 	 * @param bufferSize buffer size
 	 */
-	void setBufferSize(Integer bufferSize);
+	void setBufferSize(@Nullable Integer bufferSize);
 
 	/**
 	 * Set the number of IO Threads.
 	 * @param ioThreads number of IO Threads
 	 */
-	void setIoThreads(Integer ioThreads);
+	void setIoThreads(@Nullable Integer ioThreads);
 
 	/**
 	 * Set the number of Worker Threads.
 	 * @param workerThreads number of Worker Threads
 	 */
-	void setWorkerThreads(Integer workerThreads);
+	void setWorkerThreads(@Nullable Integer workerThreads);
 
 	/**
 	 * Set whether direct buffers should be used.
 	 * @param useDirectBuffers whether direct buffers should be used
 	 */
-	void setUseDirectBuffers(Boolean useDirectBuffers);
+	void setUseDirectBuffers(@Nullable Boolean useDirectBuffers);
 
 	/**
 	 * Set the access log directory.
 	 * @param accessLogDirectory access log directory
 	 */
-	void setAccessLogDirectory(File accessLogDirectory);
+	void setAccessLogDirectory(@Nullable File accessLogDirectory);
 
 	/**
 	 * Set the access log pattern.
 	 * @param accessLogPattern access log pattern
 	 */
-	void setAccessLogPattern(String accessLogPattern);
+	void setAccessLogPattern(@Nullable String accessLogPattern);
 
 	/**
 	 * Set the access log prefix.
 	 * @param accessLogPrefix log prefix
 	 */
-	void setAccessLogPrefix(String accessLogPrefix);
+	void setAccessLogPrefix(@Nullable String accessLogPrefix);
 
 	/**
 	 * Set the access log suffix.
 	 * @param accessLogSuffix access log suffix
 	 */
-	void setAccessLogSuffix(String accessLogSuffix);
+	void setAccessLogSuffix(@Nullable String accessLogSuffix);
 
 	/**
 	 * Set whether access logs are enabled.

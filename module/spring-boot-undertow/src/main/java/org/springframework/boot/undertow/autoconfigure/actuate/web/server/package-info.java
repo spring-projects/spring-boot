@@ -17,4 +17,7 @@
 /**
  * Actuator Undertow actuator web concerns.
  */
+@NullMarked
 package org.springframework.boot.undertow.autoconfigure.actuate.web.server;
+
+import org.jspecify.annotations.NullMarked;

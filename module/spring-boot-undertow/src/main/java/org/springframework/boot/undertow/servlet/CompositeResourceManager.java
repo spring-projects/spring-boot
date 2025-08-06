@@ -24,6 +24,7 @@ import io.undertow.UndertowMessages;
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceChangeListener;
 import io.undertow.server.handlers.resource.ResourceManager;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link ResourceManager} that delegates to multiple {@code ResourceManager} instances.
@@ -46,7 +47,7 @@ class CompositeResourceManager implements ResourceManager {
 	}
 
 	@Override
-	public Resource getResource(String path) throws IOException {
+	public @Nullable Resource getResource(String path) throws IOException {
 		for (ResourceManager resourceManager : this.resourceManagers) {
 			Resource resource = resourceManager.getResource(path);
 			if (resource != null) {

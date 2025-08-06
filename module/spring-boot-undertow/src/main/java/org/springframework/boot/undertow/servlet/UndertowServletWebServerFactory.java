@@ -61,6 +61,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.undertow.HttpHandlerFactory;
@@ -110,6 +111,7 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 
 	private Set<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new LinkedHashSet<>();
 
+	@SuppressWarnings("NullAway.Init")
 	private ResourceLoader resourceLoader;
 
 	private boolean eagerFilterInit = true;
@@ -273,10 +275,12 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 
 	@SuppressWarnings("unchecked")
 	private Class<? extends EventListener> loadWebListenerClass(String className) throws ClassNotFoundException {
-		return (Class<? extends EventListener>) getServletClassLoader().loadClass(className);
+		ClassLoader classLoader = getServletClassLoader();
+		Assert.state(classLoader != null, "'classLoader' must not be null");
+		return (Class<? extends EventListener>) classLoader.loadClass(className);
 	}
 
-	private boolean isZeroOrLess(Duration timeoutDuration) {
+	private boolean isZeroOrLess(@Nullable Duration timeoutDuration) {
 		return timeoutDuration == null || timeoutDuration.isZero() || timeoutDuration.isNegative();
 	}
 
@@ -293,7 +297,7 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 				new ImmediateInstanceFactory<>(initializer), NO_CLASSES));
 	}
 
-	private ClassLoader getServletClassLoader() {
+	private @Nullable ClassLoader getServletClassLoader() {
 		if (this.resourceLoader != null) {
 			return this.resourceLoader.getClassLoader();
 		}
@@ -337,7 +341,7 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 		return new CompositeResourceManager(managers.toArray(new ResourceManager[0]));
 	}
 
-	private File getCanonicalDocumentRoot(File docBase) {
+	private File getCanonicalDocumentRoot(@Nullable File docBase) {
 		try {
 			File root = (docBase != null) ? docBase : createTempDir("undertow-docbase");
 			return root.getCanonicalFile();
@@ -402,7 +406,7 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 				port >= 0);
 	}
 
-	private HttpHandlerFactory getCookieHandlerFactory(Deployment deployment) {
+	private @Nullable HttpHandlerFactory getCookieHandlerFactory(Deployment deployment) {
 		SameSite sessionSameSite = getSettings().getSession().getCookie().getSameSite();
 		List<CookieSameSiteSupplier> suppliers = new ArrayList<>();
 		if (sessionSameSite != null) {
@@ -458,7 +462,7 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 		}
 
 		@Override
-		public Resource getResource(String path) {
+		public @Nullable Resource getResource(String path) {
 			for (URL url : this.metaInfResourceJarUrls) {
 				URLResource resource = getMetaInfResource(url, path);
 				if (resource != null) {
@@ -482,7 +486,7 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 
 		}
 
-		private URLResource getMetaInfResource(URL resourceJar, String path) {
+		private @Nullable URLResource getMetaInfResource(URL resourceJar, String path) {
 			try {
 				String urlPath = URLEncoder.encode(ENCODED_SLASH.matcher(path).replaceAll("/"), StandardCharsets.UTF_8);
 				URL resourceUrl = new URL(resourceJar + "META-INF/resources" + urlPath);
@@ -511,7 +515,7 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 		}
 
 		@Override
-		public Resource getResource(String path) throws IOException {
+		public @Nullable Resource getResource(String path) throws IOException {
 			if (path.startsWith("/org/springframework/boot")) {
 				return null;
 			}
@@ -546,11 +550,11 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 	 */
 	private static class SuppliedSameSiteCookieHandler implements HttpHandler {
 
-		private final HttpHandler next;
+		private final @Nullable HttpHandler next;
 
 		private final List<CookieSameSiteSupplier> suppliers;
 
-		SuppliedSameSiteCookieHandler(HttpHandler next, List<CookieSameSiteSupplier> suppliers) {
+		SuppliedSameSiteCookieHandler(@Nullable HttpHandler next, List<CookieSameSiteSupplier> suppliers) {
 			this.next = next;
 			this.suppliers = suppliers;
 		}
@@ -558,7 +562,9 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 		@Override
 		public void handleRequest(HttpServerExchange exchange) throws Exception {
 			exchange.addResponseCommitListener(this::beforeCommit);
-			this.next.handleRequest(exchange);
+			if (this.next != null) {
+				this.next.handleRequest(exchange);
+			}
 		}
 
 		private void beforeCommit(HttpServerExchange exchange) {
@@ -587,7 +593,7 @@ public class UndertowServletWebServerFactory extends UndertowWebServerFactory
 			return result;
 		}
 
-		private SameSite getSameSite(jakarta.servlet.http.Cookie cookie) {
+		private @Nullable SameSite getSameSite(jakarta.servlet.http.Cookie cookie) {
 			for (CookieSameSiteSupplier supplier : this.suppliers) {
 				SameSite sameSite = supplier.getSameSite(cookie);
 				if (sameSite != null) {

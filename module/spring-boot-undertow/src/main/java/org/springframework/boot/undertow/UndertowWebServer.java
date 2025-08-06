@@ -32,6 +32,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.GracefulShutdownHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 import org.xnio.channels.BoundChannel;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -61,7 +62,7 @@ public class UndertowWebServer implements WebServer {
 
 	private static final Log logger = LogFactory.getLog(UndertowWebServer.class);
 
-	private final AtomicReference<GracefulShutdownCallback> gracefulShutdownCallback = new AtomicReference<>();
+	private final AtomicReference<@Nullable GracefulShutdownCallback> gracefulShutdownCallback = new AtomicReference<>();
 
 	private final Object monitor = new Object();
 
@@ -71,13 +72,13 @@ public class UndertowWebServer implements WebServer {
 
 	private final boolean autoStart;
 
-	private Undertow undertow;
+	private @Nullable Undertow undertow;
 
 	private volatile boolean started = false;
 
-	private volatile GracefulShutdownHandler gracefulShutdown;
+	private volatile @Nullable GracefulShutdownHandler gracefulShutdown;
 
-	private volatile List<Closeable> closeables;
+	private volatile @Nullable List<Closeable> closeables;
 
 	/**
 	 * Create a new {@link UndertowWebServer} instance.
@@ -142,6 +143,7 @@ public class UndertowWebServer implements WebServer {
 		try {
 			if (this.undertow != null) {
 				this.undertow.stop();
+				Assert.state(this.closeables != null, "'closeables' must not be null");
 				this.closeables.forEach(this::closeSilently);
 			}
 		}
@@ -167,11 +169,12 @@ public class UndertowWebServer implements WebServer {
 		return this.builder.build();
 	}
 
-	protected HttpHandler createHttpHandler() {
+	protected @Nullable HttpHandler createHttpHandler() {
 		HttpHandler handler = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
 			handler = factory.getHandler(handler);
 			if (handler instanceof Closeable closeable) {
+				Assert.state(this.closeables != null, "'closeables' must not be null");
 				this.closeables.add(closeable);
 			}
 			if (handler instanceof GracefulShutdownHandler shutdownHandler) {
@@ -220,11 +223,14 @@ public class UndertowWebServer implements WebServer {
 	@SuppressWarnings("unchecked")
 	private List<BoundChannel> extractChannels() {
 		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
+		Assert.state(channelsField != null, "'channelsField' must not be null");
 		ReflectionUtils.makeAccessible(channelsField);
-		return (List<BoundChannel>) ReflectionUtils.getField(channelsField, this.undertow);
+		List<BoundChannel> channels = (List<BoundChannel>) ReflectionUtils.getField(channelsField, this.undertow);
+		Assert.state(channels != null, "'channels' must not be null");
+		return channels;
 	}
 
-	private UndertowWebServer.Port getPortFromChannel(BoundChannel channel) {
+	private UndertowWebServer.@Nullable Port getPortFromChannel(BoundChannel channel) {
 		SocketAddress socketAddress = channel.getLocalAddress();
 		if (socketAddress instanceof InetSocketAddress inetSocketAddress) {
 			Field sslField = ReflectionUtils.findField(channel.getClass(), "ssl");
@@ -253,18 +259,35 @@ public class UndertowWebServer implements WebServer {
 	@SuppressWarnings("unchecked")
 	private List<Object> extractListeners() {
 		Field listenersField = ReflectionUtils.findField(Undertow.class, "listeners");
+		Assert.state(listenersField != null, "'listenersField' must not be null");
 		ReflectionUtils.makeAccessible(listenersField);
-		return (List<Object>) ReflectionUtils.getField(listenersField, this.undertow);
+		List<Object> listeners = (List<Object>) ReflectionUtils.getField(listenersField, this.undertow);
+		Assert.state(listeners != null, "'listeners' must not be null");
+		return listeners;
 	}
 
 	private UndertowWebServer.Port getPortFromListener(Object listener) {
 		Field typeField = ReflectionUtils.findField(listener.getClass(), "type");
-		ReflectionUtils.makeAccessible(typeField);
-		String protocol = ReflectionUtils.getField(typeField, listener).toString();
+		Assert.state(typeField != null, "'typeField' must not be null");
+		String protocol = getProtocol(listener, typeField);
 		Field portField = ReflectionUtils.findField(listener.getClass(), "port");
-		ReflectionUtils.makeAccessible(portField);
-		int port = (Integer) ReflectionUtils.getField(portField, listener);
+		Assert.state(portField != null, "'portField' must not be null");
+		int port = getPort(listener, portField);
 		return new UndertowWebServer.Port(port, protocol);
+	}
+
+	private static Integer getPort(Object listener, Field portField) {
+		ReflectionUtils.makeAccessible(portField);
+		Integer value = (Integer) ReflectionUtils.getField(portField, listener);
+		Assert.state(value != null, "'value' must not be null");
+		return value;
+	}
+
+	private String getProtocol(Object listener, Field typeField) {
+		ReflectionUtils.makeAccessible(typeField);
+		Object value = ReflectionUtils.getField(typeField, listener);
+		Assert.state(value != null, "'value' must not be null");
+		return value.toString();
 	}
 
 	@Override
@@ -278,9 +301,12 @@ public class UndertowWebServer implements WebServer {
 				notifyGracefulCallback(false);
 			}
 			try {
-				this.undertow.stop();
-				for (Closeable closeable : this.closeables) {
-					closeable.close();
+				if (this.undertow != null) {
+					this.undertow.stop();
+					Assert.state(this.closeables != null, "'closeables' must not be null");
+					for (Closeable closeable : this.closeables) {
+						closeable.close();
+					}
 				}
 			}
 			catch (Exception ex) {
@@ -304,7 +330,7 @@ public class UndertowWebServer implements WebServer {
 	 * @return the Undertow server or {@code null} if the server hasn't been started yet
 	 * @since 4.0.0
 	 */
-	public Undertow getUndertow() {
+	public @Nullable Undertow getUndertow() {
 		return this.undertow;
 	}
 
@@ -396,27 +422,30 @@ public class UndertowWebServer implements WebServer {
 	 */
 	private static final class CloseableHttpHandlerFactory implements HttpHandlerFactory {
 
-		private final Closeable closeable;
+		private final @Nullable Closeable closeable;
 
-		private CloseableHttpHandlerFactory(Closeable closeable) {
+		private CloseableHttpHandlerFactory(@Nullable Closeable closeable) {
 			this.closeable = closeable;
 		}
 
 		@Override
-		public HttpHandler getHandler(HttpHandler next) {
-			if (this.closeable == null) {
+		public @Nullable HttpHandler getHandler(@Nullable HttpHandler next) {
+			Closeable closeable = this.closeable;
+			if (closeable == null) {
 				return next;
 			}
 			return new CloseableHttpHandler() {
 
 				@Override
 				public void handleRequest(HttpServerExchange exchange) throws Exception {
-					next.handleRequest(exchange);
+					if (next != null) {
+						next.handleRequest(exchange);
+					}
 				}
 
 				@Override
 				public void close() throws IOException {
-					CloseableHttpHandlerFactory.this.closeable.close();
+					closeable.close();
 				}
 
 			};
@@ -438,7 +467,7 @@ public class UndertowWebServer implements WebServer {
 	static class UndertowWebServerRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			hints.reflection()
 				.registerTypeIfPresent(classLoader, "io.undertow.Undertow",
 						(hint) -> hint.withField("listeners").withField("channels"));

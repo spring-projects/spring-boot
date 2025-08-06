@@ -25,12 +25,11 @@ import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
+import org.jspecify.annotations.Nullable;
 import org.xnio.OptionMap;
 import org.xnio.Options;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
-
-import org.springframework.util.Assert;
 
 /**
  * An {@link HttpHandlerFactory} for an {@link AccessLogHandler}.
@@ -41,15 +40,16 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 
 	private final File directory;
 
-	private final String pattern;
+	private final @Nullable String pattern;
 
-	private final String prefix;
+	private final @Nullable String prefix;
 
-	private final String suffix;
+	private final @Nullable String suffix;
 
 	private final boolean rotate;
 
-	AccessLogHttpHandlerFactory(File directory, String pattern, String prefix, String suffix, boolean rotate) {
+	AccessLogHttpHandlerFactory(File directory, @Nullable String pattern, @Nullable String prefix,
+			@Nullable String suffix, boolean rotate) {
 		this.directory = directory;
 		this.pattern = pattern;
 		this.prefix = prefix;
@@ -58,7 +58,7 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 	}
 
 	@Override
-	public HttpHandler getHandler(HttpHandler next) {
+	public HttpHandler getHandler(@Nullable HttpHandler next) {
 		try {
 			createAccessLogDirectoryIfNecessary();
 			XnioWorker worker = createWorker();
@@ -74,7 +74,6 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 	}
 
 	private void createAccessLogDirectoryIfNecessary() {
-		Assert.state(this.directory != null, "Access log directory is not set");
 		if (!this.directory.isDirectory() && !this.directory.mkdirs()) {
 			throw new IllegalStateException("Failed to create access log directory '" + this.directory + "'");
 		}
@@ -94,8 +93,8 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 
 		private final XnioWorker worker;
 
-		ClosableAccessLogHandler(HttpHandler next, XnioWorker worker, DefaultAccessLogReceiver accessLogReceiver,
-				String formatString) {
+		ClosableAccessLogHandler(@Nullable HttpHandler next, XnioWorker worker,
+				DefaultAccessLogReceiver accessLogReceiver, String formatString) {
 			super(next, accessLogReceiver, formatString, Undertow.class.getClassLoader());
 			this.worker = worker;
 			this.accessLogReceiver = accessLogReceiver;

@@ -24,6 +24,7 @@ import javax.net.ssl.SSLContext;
 import io.undertow.Undertow;
 import io.undertow.protocols.ssl.SNIContextMatcher;
 import io.undertow.protocols.ssl.SNISSLContext;
+import org.jspecify.annotations.Nullable;
 import org.xnio.Options;
 import org.xnio.Sequence;
 import org.xnio.SslClientAuthMode;
@@ -44,15 +45,15 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
 	private final int port;
 
-	private final InetAddress address;
+	private final @Nullable InetAddress address;
 
-	private final ClientAuth clientAuth;
+	private final @Nullable ClientAuth clientAuth;
 
 	private final SslBundle sslBundle;
 
 	private final Map<String, SslBundle> serverNameSslBundles;
 
-	SslBuilderCustomizer(int port, InetAddress address, ClientAuth clientAuth, SslBundle sslBundle,
+	SslBuilderCustomizer(int port, @Nullable InetAddress address, @Nullable ClientAuth clientAuth, SslBundle sslBundle,
 			Map<String, SslBundle> serverNameSslBundles) {
 		this.port = port;
 		this.address = address;

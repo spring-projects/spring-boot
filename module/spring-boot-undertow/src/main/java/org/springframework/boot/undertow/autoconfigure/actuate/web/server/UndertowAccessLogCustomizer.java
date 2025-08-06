@@ -18,6 +18,8 @@ package org.springframework.boot.undertow.autoconfigure.actuate.web.server;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.autoconfigure.web.server.AccessLogCustomizer;
 import org.springframework.boot.undertow.ConfigurableUndertowWebServerFactory;
 
@@ -29,10 +31,10 @@ import org.springframework.boot.undertow.ConfigurableUndertowWebServerFactory;
  */
 class UndertowAccessLogCustomizer<T extends ConfigurableUndertowWebServerFactory> extends AccessLogCustomizer<T> {
 
-	private final Function<T, String> accessLogPrefixExtractor;
+	private final Function<T, @Nullable String> accessLogPrefixExtractor;
 
 	UndertowAccessLogCustomizer(UndertowManagementServerProperties properties,
-			Function<T, String> accessLogPrefixExtractor) {
+			Function<T, @Nullable String> accessLogPrefixExtractor) {
 		super(properties.getAccesslog().getPrefix());
 		this.accessLogPrefixExtractor = accessLogPrefixExtractor;
 	}

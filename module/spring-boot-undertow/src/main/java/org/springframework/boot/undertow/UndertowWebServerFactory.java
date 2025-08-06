@@ -31,6 +31,7 @@ import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
 import io.undertow.UndertowOptions;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
@@ -52,21 +53,21 @@ public abstract class UndertowWebServerFactory extends AbstractConfigurableWebSe
 
 	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
 
-	private Integer bufferSize;
+	private @Nullable Integer bufferSize;
 
-	private Integer ioThreads;
+	private @Nullable Integer ioThreads;
 
-	private Integer workerThreads;
+	private @Nullable Integer workerThreads;
 
-	private Boolean directBuffers;
+	private @Nullable Boolean directBuffers;
 
-	private File accessLogDirectory;
+	private @Nullable File accessLogDirectory;
 
-	private String accessLogPattern;
+	private @Nullable String accessLogPattern;
 
-	private String accessLogPrefix;
+	private @Nullable String accessLogPrefix;
 
-	private String accessLogSuffix;
+	private @Nullable String accessLogSuffix;
 
 	private boolean accessLogEnabled;
 
@@ -98,46 +99,46 @@ public abstract class UndertowWebServerFactory extends AbstractConfigurableWebSe
 	}
 
 	@Override
-	public void setBufferSize(Integer bufferSize) {
+	public void setBufferSize(@Nullable Integer bufferSize) {
 		this.bufferSize = bufferSize;
 	}
 
 	@Override
-	public void setIoThreads(Integer ioThreads) {
+	public void setIoThreads(@Nullable Integer ioThreads) {
 		this.ioThreads = ioThreads;
 	}
 
 	@Override
-	public void setWorkerThreads(Integer workerThreads) {
+	public void setWorkerThreads(@Nullable Integer workerThreads) {
 		this.workerThreads = workerThreads;
 	}
 
 	@Override
-	public void setUseDirectBuffers(Boolean directBuffers) {
+	public void setUseDirectBuffers(@Nullable Boolean directBuffers) {
 		this.directBuffers = directBuffers;
 	}
 
 	@Override
-	public void setAccessLogDirectory(File accessLogDirectory) {
+	public void setAccessLogDirectory(@Nullable File accessLogDirectory) {
 		this.accessLogDirectory = accessLogDirectory;
 	}
 
 	@Override
-	public void setAccessLogPattern(String accessLogPattern) {
+	public void setAccessLogPattern(@Nullable String accessLogPattern) {
 		this.accessLogPattern = accessLogPattern;
 	}
 
 	@Override
-	public void setAccessLogPrefix(String accessLogPrefix) {
+	public void setAccessLogPrefix(@Nullable String accessLogPrefix) {
 		this.accessLogPrefix = accessLogPrefix;
 	}
 
-	public String getAccessLogPrefix() {
+	public @Nullable String getAccessLogPrefix() {
 		return this.accessLogPrefix;
 	}
 
 	@Override
-	public void setAccessLogSuffix(String accessLogSuffix) {
+	public void setAccessLogSuffix(@Nullable String accessLogSuffix) {
 		this.accessLogSuffix = accessLogSuffix;
 	}
 
@@ -207,14 +208,16 @@ public abstract class UndertowWebServerFactory extends AbstractConfigurableWebSe
 				this.useForwardHeaders, webServerFactory.getServerHeader(), webServerFactory.getShutdown(),
 				initialHttpHandlerFactories);
 		if (isAccessLogEnabled()) {
+			Assert.state(this.accessLogDirectory != null, "Access log directory is not set");
 			factories.add(new AccessLogHttpHandlerFactory(this.accessLogDirectory, this.accessLogPattern,
 					this.accessLogPrefix, this.accessLogSuffix, this.accessLogRotate));
 		}
 		return factories;
 	}
 
-	static List<HttpHandlerFactory> createHttpHandlerFactories(Compression compression, boolean useForwardHeaders,
-			String serverHeader, Shutdown shutdown, HttpHandlerFactory... initialHttpHandlerFactories) {
+	static List<HttpHandlerFactory> createHttpHandlerFactories(@Nullable Compression compression,
+			boolean useForwardHeaders, @Nullable String serverHeader, Shutdown shutdown,
+			HttpHandlerFactory... initialHttpHandlerFactories) {
 		List<HttpHandlerFactory> factories = new ArrayList<>(Arrays.asList(initialHttpHandlerFactories));
 		if (compression != null && compression.getEnabled()) {
 			factories.add(new CompressionHttpHandlerFactory(compression));

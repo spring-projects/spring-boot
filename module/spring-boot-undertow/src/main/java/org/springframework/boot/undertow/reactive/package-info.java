@@ -17,4 +17,7 @@
 /**
  * Reactive web server implementation backed by Undertow.
  */
+@NullMarked
 package org.springframework.boot.undertow.reactive;
+
+import org.jspecify.annotations.NullMarked;

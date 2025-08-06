@@ -29,6 +29,7 @@ import io.undertow.server.handlers.encoding.EncodingHandler;
 import io.undertow.server.handlers.encoding.GzipEncodingProvider;
 import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.http.HttpHeaders;
@@ -51,7 +52,7 @@ class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 	}
 
 	@Override
-	public HttpHandler getHandler(HttpHandler next) {
+	public @Nullable HttpHandler getHandler(@Nullable HttpHandler next) {
 		if (!this.compression.getEnabled()) {
 			return next;
 		}

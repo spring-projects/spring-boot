@@ -20,6 +20,7 @@ import io.undertow.Handlers;
 import io.undertow.Undertow.Builder;
 import io.undertow.server.HttpHandler;
 import io.undertow.servlet.api.DeploymentManager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.undertow.HttpHandlerFactory;
 import org.springframework.boot.undertow.UndertowWebServer;
@@ -43,7 +44,7 @@ public class UndertowServletWebServer extends UndertowWebServer {
 
 	private final String contextPath;
 
-	private final DeploymentManager manager;
+	private final @Nullable DeploymentManager manager;
 
 	/**
 	 * Create a new {@link UndertowServletWebServer} instance.
@@ -60,7 +61,7 @@ public class UndertowServletWebServer extends UndertowWebServer {
 		this.manager = findManager(httpHandlerFactories);
 	}
 
-	private DeploymentManager findManager(Iterable<HttpHandlerFactory> httpHandlerFactories) {
+	private @Nullable DeploymentManager findManager(Iterable<HttpHandlerFactory> httpHandlerFactories) {
 		for (HttpHandlerFactory httpHandlerFactory : httpHandlerFactories) {
 			if (httpHandlerFactory instanceof DeploymentManagerHttpHandlerFactory deploymentManagerFactory) {
 				return deploymentManagerFactory.getDeploymentManager();
@@ -70,7 +71,7 @@ public class UndertowServletWebServer extends UndertowWebServer {
 	}
 
 	@Override
-	protected HttpHandler createHttpHandler() {
+	protected @Nullable HttpHandler createHttpHandler() {
 		HttpHandler handler = super.createHttpHandler();
 		if (StringUtils.hasLength(this.contextPath)) {
 			handler = Handlers.path().addPrefixPath(this.contextPath, handler);
@@ -88,7 +89,7 @@ public class UndertowServletWebServer extends UndertowWebServer {
 		return message.toString();
 	}
 
-	public DeploymentManager getDeploymentManager() {
+	public @Nullable DeploymentManager getDeploymentManager() {
 		return this.manager;
 	}
 

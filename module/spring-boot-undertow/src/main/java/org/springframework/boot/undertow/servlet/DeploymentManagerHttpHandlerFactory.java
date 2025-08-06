@@ -23,6 +23,7 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.servlet.api.DeploymentManager;
 import jakarta.servlet.ServletException;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.undertow.HttpHandlerFactory;
 import org.springframework.util.Assert;
@@ -42,7 +43,7 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 	}
 
 	@Override
-	public HttpHandler getHandler(HttpHandler next) {
+	public @Nullable HttpHandler getHandler(@Nullable HttpHandler next) {
 		Assert.state(next == null, "DeploymentManagerHttpHandlerFactory must be first");
 		return new DeploymentManagerHandler(this.deploymentManager);
 	}

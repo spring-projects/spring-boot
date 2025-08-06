@@ -17,4 +17,7 @@
 /**
  * Classes related to the auto-configuration of a reactive web server using Undertow.
  */
+@NullMarked
 package org.springframework.boot.undertow.autoconfigure.reactive;
+
+import org.jspecify.annotations.NullMarked;
