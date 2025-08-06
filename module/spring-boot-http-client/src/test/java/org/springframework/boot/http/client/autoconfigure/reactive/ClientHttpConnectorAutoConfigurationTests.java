@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.LoopResources;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -114,6 +115,21 @@ class ClientHttpConnectorAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ClientHttpConnector.class);
 			assertThat(context).hasSingleBean(ReactorResourceFactory.class);
 			assertThat(context).hasBean("customReactorResourceFactory");
+			ClientHttpConnector connector = context.getBean(ClientHttpConnector.class);
+			assertThat(connector).extracting("httpClient.config.loopResources")
+				.isEqualTo(context.getBean("customReactorResourceFactory", ReactorResourceFactory.class)
+					.getLoopResources());
+		});
+	}
+
+	@Test
+	void shouldUseReactorResourceFactory() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(ClientHttpConnector.class);
+			assertThat(context).hasSingleBean(ReactorResourceFactory.class);
+			ClientHttpConnector connector = context.getBean(ClientHttpConnector.class);
+			assertThat(connector).extracting("httpClient.config.loopResources")
+				.isEqualTo(context.getBean(ReactorResourceFactory.class).getLoopResources());
 		});
 	}
 
@@ -190,7 +206,10 @@ class ClientHttpConnectorAutoConfigurationTests {
 
 		@Bean
 		ReactorResourceFactory customReactorResourceFactory() {
-			return new ReactorResourceFactory();
+			ReactorResourceFactory reactorResourceFactory = new ReactorResourceFactory();
+			reactorResourceFactory.setUseGlobalResources(false);
+			reactorResourceFactory.setLoopResources(LoopResources.create("custom-loop", 1, true));
+			return reactorResourceFactory;
 		}
 
 	}
