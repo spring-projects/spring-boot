@@ -16,6 +16,8 @@
 
 package org.springframework.boot.session.data.redis.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
@@ -57,7 +59,7 @@ public class RedisSessionProperties {
 	 * repository-type is set to indexed. Not supported with a reactive session
 	 * repository.
 	 */
-	private String cleanupCron;
+	private @Nullable String cleanupCron;
 
 	/**
 	 * Type of Redis session repository to configure.
@@ -88,11 +90,11 @@ public class RedisSessionProperties {
 		this.saveMode = saveMode;
 	}
 
-	public String getCleanupCron() {
+	public @Nullable String getCleanupCron() {
 		return this.cleanupCron;
 	}
 
-	public void setCleanupCron(String cleanupCron) {
+	public void setCleanupCron(@Nullable String cleanupCron) {
 		this.cleanupCron = cleanupCron;
 	}
 
