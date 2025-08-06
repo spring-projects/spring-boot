@@ -18,6 +18,9 @@ package org.springframework.boot.web.server.test.client.reactive;
 
 import java.util.Collection;
 
+import jakarta.servlet.ServletContext;
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -44,6 +47,7 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -71,6 +75,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(mergedConfig.getTestClass(),
 				SpringBootTest.class);
+		Assert.state(springBootTest != null, "'springBootTest' must not be null");
 		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerWebTestClient(context);
 		}
@@ -90,7 +95,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return (obj != null) && (obj.getClass() == getClass());
 	}
 
@@ -106,6 +111,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	 */
 	static class WebTestClientRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
+		@SuppressWarnings("NullAway.Init")
 		private BeanFactory beanFactory;
 
 		@Override
@@ -142,9 +148,10 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	 */
 	public static class WebTestClientFactory implements FactoryBean<WebTestClient>, ApplicationContextAware {
 
+		@SuppressWarnings("NullAway.Init")
 		private ApplicationContext applicationContext;
 
-		private WebTestClient object;
+		private @Nullable WebTestClient object;
 
 		private static final String SERVLET_APPLICATION_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
 
@@ -191,13 +198,15 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			return (sslEnabled ? "https" : "http") + "://localhost:" + port + pathSegment;
 		}
 
-		private String deduceBasePath() {
+		private @Nullable String deduceBasePath() {
 			WebApplicationType webApplicationType = deduceFromApplicationContext(this.applicationContext.getClass());
 			if (webApplicationType == WebApplicationType.REACTIVE) {
 				return this.applicationContext.getEnvironment().getProperty("spring.webflux.base-path");
 			}
 			else if (webApplicationType == WebApplicationType.SERVLET) {
-				return ((WebApplicationContext) this.applicationContext).getServletContext().getContextPath();
+				ServletContext servletContext = ((WebApplicationContext) this.applicationContext).getServletContext();
+				Assert.state(servletContext != null, "'servletContext' must not be null");
+				return servletContext.getContextPath();
 			}
 			return null;
 		}

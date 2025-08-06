@@ -17,4 +17,7 @@
 /**
  * Selenium support classes.
  */
+@NullMarked
 package org.springframework.boot.web.server.test.htmlunit.webdriver;
+
+import org.jspecify.annotations.NullMarked;

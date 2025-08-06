@@ -36,6 +36,7 @@ import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.ssl.TLS;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.TrustStrategy;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -117,7 +118,8 @@ public class TestRestTemplate {
 	 * @param password the password (or {@code null})
 	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 */
-	public TestRestTemplate(String username, String password, HttpClientOption... httpClientOptions) {
+	public TestRestTemplate(@Nullable String username, @Nullable String password,
+			HttpClientOption... httpClientOptions) {
 		this(new RestTemplateBuilder(), username, password, httpClientOptions);
 	}
 
@@ -128,12 +130,12 @@ public class TestRestTemplate {
 	 * @param password the password (or {@code null})
 	 * @param httpClientOptions client options to use if the Apache HTTP Client is used
 	 */
-	public TestRestTemplate(RestTemplateBuilder builder, String username, String password,
+	public TestRestTemplate(RestTemplateBuilder builder, @Nullable String username, @Nullable String password,
 			HttpClientOption... httpClientOptions) {
 		this(createInitialBuilder(builder, username, password, httpClientOptions), null);
 	}
 
-	private TestRestTemplate(RestTemplateBuilder builder, UriTemplateHandler uriTemplateHandler) {
+	private TestRestTemplate(RestTemplateBuilder builder, @Nullable UriTemplateHandler uriTemplateHandler) {
 		this.builder = builder;
 		this.restTemplate = builder.build();
 		if (uriTemplateHandler != null) {
@@ -142,15 +144,15 @@ public class TestRestTemplate {
 		this.restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
 	}
 
-	private static RestTemplateBuilder createInitialBuilder(RestTemplateBuilder builder, String username,
-			String password, HttpClientOption... httpClientOptions) {
+	private static RestTemplateBuilder createInitialBuilder(RestTemplateBuilder builder, @Nullable String username,
+			@Nullable String password, HttpClientOption... httpClientOptions) {
 		Assert.notNull(builder, "'builder' must not be null");
 		ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder = builder.requestFactoryBuilder();
 		if (requestFactoryBuilder instanceof HttpComponentsClientHttpRequestFactoryBuilder) {
 			builder = builder.requestFactoryBuilder(applyHttpClientOptions(
 					(HttpComponentsClientHttpRequestFactoryBuilder) requestFactoryBuilder, httpClientOptions));
 		}
-		if (username != null || password != null) {
+		if (username != null && password != null) {
 			builder = builder.basicAuthentication(username, password);
 		}
 		return builder;
@@ -183,7 +185,7 @@ public class TestRestTemplate {
 	 * {@code ""} if the root URI has not been applied.
 	 * @return the root URI
 	 */
-	public String getRootUri() {
+	public @Nullable String getRootUri() {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
 		if (uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) {
 			return rootHandler.getRootUri();
@@ -203,7 +205,7 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @see RestTemplate#getForObject(String, Class, Object...)
 	 */
-	public <T> T getForObject(String url, Class<T> responseType, Object... urlVariables) {
+	public <T> @Nullable T getForObject(String url, Class<T> responseType, Object... urlVariables) {
 		return this.restTemplate.getForObject(url, responseType, urlVariables);
 	}
 
@@ -219,7 +221,7 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @see RestTemplate#getForObject(String, Class, Object...)
 	 */
-	public <T> T getForObject(String url, Class<T> responseType, Map<String, ?> urlVariables) {
+	public <T> @Nullable T getForObject(String url, Class<T> responseType, Map<String, ?> urlVariables) {
 		return this.restTemplate.getForObject(url, responseType, urlVariables);
 	}
 
@@ -232,7 +234,7 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @see RestTemplate#getForObject(java.net.URI, java.lang.Class)
 	 */
-	public <T> T getForObject(URI url, Class<T> responseType) {
+	public <T> @Nullable T getForObject(URI url, Class<T> responseType) {
 		return this.restTemplate.getForObject(applyRootUriIfNecessary(url), responseType);
 	}
 
@@ -335,7 +337,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#postForLocation(java.lang.String, java.lang.Object,
 	 * java.lang.Object[])
 	 */
-	public URI postForLocation(String url, Object request, Object... urlVariables) {
+	public @Nullable URI postForLocation(String url, @Nullable Object request, Object... urlVariables) {
 		return this.restTemplate.postForLocation(url, request, urlVariables);
 	}
 
@@ -356,7 +358,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#postForLocation(java.lang.String, java.lang.Object,
 	 * java.util.Map)
 	 */
-	public URI postForLocation(String url, Object request, Map<String, ?> urlVariables) {
+	public @Nullable URI postForLocation(String url, @Nullable Object request, Map<String, ?> urlVariables) {
 		return this.restTemplate.postForLocation(url, request, urlVariables);
 	}
 
@@ -373,7 +375,7 @@ public class TestRestTemplate {
 	 * @see HttpEntity
 	 * @see RestTemplate#postForLocation(java.net.URI, java.lang.Object)
 	 */
-	public URI postForLocation(URI url, Object request) {
+	public @Nullable URI postForLocation(URI url, @Nullable Object request) {
 		return this.restTemplate.postForLocation(applyRootUriIfNecessary(url), request);
 	}
 
@@ -395,7 +397,8 @@ public class TestRestTemplate {
 	 * @see RestTemplate#postForObject(java.lang.String, java.lang.Object,
 	 * java.lang.Class, java.lang.Object[])
 	 */
-	public <T> T postForObject(String url, Object request, Class<T> responseType, Object... urlVariables) {
+	public <T> @Nullable T postForObject(String url, @Nullable Object request, Class<T> responseType,
+			Object... urlVariables) {
 		return this.restTemplate.postForObject(url, request, responseType, urlVariables);
 	}
 
@@ -417,7 +420,8 @@ public class TestRestTemplate {
 	 * @see RestTemplate#postForObject(java.lang.String, java.lang.Object,
 	 * java.lang.Class, java.util.Map)
 	 */
-	public <T> T postForObject(String url, Object request, Class<T> responseType, Map<String, ?> urlVariables) {
+	public <T> @Nullable T postForObject(String url, @Nullable Object request, Class<T> responseType,
+			Map<String, ?> urlVariables) {
 		return this.restTemplate.postForObject(url, request, responseType, urlVariables);
 	}
 
@@ -435,7 +439,7 @@ public class TestRestTemplate {
 	 * @see HttpEntity
 	 * @see RestTemplate#postForObject(java.net.URI, java.lang.Object, java.lang.Class)
 	 */
-	public <T> T postForObject(URI url, Object request, Class<T> responseType) {
+	public <T> @Nullable T postForObject(URI url, @Nullable Object request, Class<T> responseType) {
 		return this.restTemplate.postForObject(applyRootUriIfNecessary(url), request, responseType);
 	}
 
@@ -457,7 +461,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#postForEntity(java.lang.String, java.lang.Object,
 	 * java.lang.Class, java.lang.Object[])
 	 */
-	public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType,
+	public <T> ResponseEntity<T> postForEntity(String url, @Nullable Object request, Class<T> responseType,
 			Object... urlVariables) {
 		return this.restTemplate.postForEntity(url, request, responseType, urlVariables);
 	}
@@ -480,7 +484,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#postForEntity(java.lang.String, java.lang.Object,
 	 * java.lang.Class, java.util.Map)
 	 */
-	public <T> ResponseEntity<T> postForEntity(String url, Object request, Class<T> responseType,
+	public <T> ResponseEntity<T> postForEntity(String url, @Nullable Object request, Class<T> responseType,
 			Map<String, ?> urlVariables) {
 		return this.restTemplate.postForEntity(url, request, responseType, urlVariables);
 	}
@@ -499,7 +503,7 @@ public class TestRestTemplate {
 	 * @see HttpEntity
 	 * @see RestTemplate#postForEntity(java.net.URI, java.lang.Object, java.lang.Class)
 	 */
-	public <T> ResponseEntity<T> postForEntity(URI url, Object request, Class<T> responseType) {
+	public <T> ResponseEntity<T> postForEntity(URI url, @Nullable Object request, Class<T> responseType) {
 		return this.restTemplate.postForEntity(applyRootUriIfNecessary(url), request, responseType);
 	}
 
@@ -519,7 +523,7 @@ public class TestRestTemplate {
 	 * @see HttpEntity
 	 * @see RestTemplate#put(java.lang.String, java.lang.Object, java.lang.Object[])
 	 */
-	public void put(String url, Object request, Object... urlVariables) {
+	public void put(String url, @Nullable Object request, Object... urlVariables) {
 		this.restTemplate.put(url, request, urlVariables);
 	}
 
@@ -539,7 +543,7 @@ public class TestRestTemplate {
 	 * @see HttpEntity
 	 * @see RestTemplate#put(java.lang.String, java.lang.Object, java.util.Map)
 	 */
-	public void put(String url, Object request, Map<String, ?> urlVariables) {
+	public void put(String url, @Nullable Object request, Map<String, ?> urlVariables) {
 		this.restTemplate.put(url, request, urlVariables);
 	}
 
@@ -556,7 +560,7 @@ public class TestRestTemplate {
 	 * @see HttpEntity
 	 * @see RestTemplate#put(java.net.URI, java.lang.Object)
 	 */
-	public void put(URI url, Object request) {
+	public void put(URI url, @Nullable Object request) {
 		this.restTemplate.put(applyRootUriIfNecessary(url), request);
 	}
 
@@ -576,7 +580,8 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @see HttpEntity
 	 */
-	public <T> T patchForObject(String url, Object request, Class<T> responseType, Object... uriVariables) {
+	public <T> @Nullable T patchForObject(String url, @Nullable Object request, Class<T> responseType,
+			Object... uriVariables) {
 		return this.restTemplate.patchForObject(url, request, responseType, uriVariables);
 	}
 
@@ -596,7 +601,8 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @see HttpEntity
 	 */
-	public <T> T patchForObject(String url, Object request, Class<T> responseType, Map<String, ?> uriVariables) {
+	public <T> @Nullable T patchForObject(String url, @Nullable Object request, Class<T> responseType,
+			Map<String, ?> uriVariables) {
 		return this.restTemplate.patchForObject(url, request, responseType, uriVariables);
 	}
 
@@ -613,7 +619,7 @@ public class TestRestTemplate {
 	 * @return the converted object
 	 * @see HttpEntity
 	 */
-	public <T> T patchForObject(URI url, Object request, Class<T> responseType) {
+	public <T> @Nullable T patchForObject(URI url, @Nullable Object request, Class<T> responseType) {
 		return this.restTemplate.patchForObject(applyRootUriIfNecessary(url), request, responseType);
 	}
 
@@ -711,7 +717,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#exchange(java.lang.String, org.springframework.http.HttpMethod,
 	 * org.springframework.http.HttpEntity, java.lang.Class, java.lang.Object[])
 	 */
-	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
+	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity,
 			Class<T> responseType, Object... urlVariables) {
 		return this.restTemplate.exchange(url, method, requestEntity, responseType, urlVariables);
 	}
@@ -732,7 +738,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#exchange(java.lang.String, org.springframework.http.HttpMethod,
 	 * org.springframework.http.HttpEntity, java.lang.Class, java.util.Map)
 	 */
-	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
+	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity,
 			Class<T> responseType, Map<String, ?> urlVariables) {
 		return this.restTemplate.exchange(url, method, requestEntity, responseType, urlVariables);
 	}
@@ -750,7 +756,7 @@ public class TestRestTemplate {
 	 * @see RestTemplate#exchange(java.net.URI, org.springframework.http.HttpMethod,
 	 * org.springframework.http.HttpEntity, java.lang.Class)
 	 */
-	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
+	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, @Nullable HttpEntity<?> requestEntity,
 			Class<T> responseType) {
 		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method, requestEntity, responseType);
 	}
@@ -775,7 +781,7 @@ public class TestRestTemplate {
 	 * org.springframework.http.HttpEntity,
 	 * org.springframework.core.ParameterizedTypeReference, java.lang.Object[])
 	 */
-	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
+	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity,
 			ParameterizedTypeReference<T> responseType, Object... urlVariables) {
 		return this.restTemplate.exchange(url, method, requestEntity, responseType, urlVariables);
 	}
@@ -800,7 +806,7 @@ public class TestRestTemplate {
 	 * org.springframework.http.HttpEntity,
 	 * org.springframework.core.ParameterizedTypeReference, java.util.Map)
 	 */
-	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity,
+	public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity,
 			ParameterizedTypeReference<T> responseType, Map<String, ?> urlVariables) {
 		return this.restTemplate.exchange(url, method, requestEntity, responseType, urlVariables);
 	}
@@ -824,7 +830,7 @@ public class TestRestTemplate {
 	 * org.springframework.http.HttpEntity,
 	 * org.springframework.core.ParameterizedTypeReference)
 	 */
-	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, HttpEntity<?> requestEntity,
+	public <T> ResponseEntity<T> exchange(URI url, HttpMethod method, @Nullable HttpEntity<?> requestEntity,
 			ParameterizedTypeReference<T> responseType) {
 		return this.restTemplate.exchange(applyRootUriIfNecessary(url), method, requestEntity, responseType);
 	}
@@ -883,7 +889,7 @@ public class TestRestTemplate {
 	 * org.springframework.web.client.RequestCallback,
 	 * org.springframework.web.client.ResponseExtractor, java.lang.Object[])
 	 */
-	public <T> T execute(String url, HttpMethod method, RequestCallback requestCallback,
+	public <T> @Nullable T execute(String url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor, Object... urlVariables) {
 		return this.restTemplate.execute(url, method, requestCallback, responseExtractor, urlVariables);
 	}
@@ -904,7 +910,7 @@ public class TestRestTemplate {
 	 * org.springframework.web.client.RequestCallback,
 	 * org.springframework.web.client.ResponseExtractor, java.util.Map)
 	 */
-	public <T> T execute(String url, HttpMethod method, RequestCallback requestCallback,
+	public <T> @Nullable T execute(String url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor, Map<String, ?> urlVariables) {
 		return this.restTemplate.execute(url, method, requestCallback, responseExtractor, urlVariables);
 	}
@@ -922,7 +928,7 @@ public class TestRestTemplate {
 	 * org.springframework.web.client.RequestCallback,
 	 * org.springframework.web.client.ResponseExtractor)
 	 */
-	public <T> T execute(URI url, HttpMethod method, RequestCallback requestCallback,
+	public <T> @Nullable T execute(URI url, HttpMethod method, RequestCallback requestCallback,
 			ResponseExtractor<T> responseExtractor) {
 		return this.restTemplate.execute(applyRootUriIfNecessary(url), method, requestCallback, responseExtractor);
 	}
@@ -945,8 +951,8 @@ public class TestRestTemplate {
 	 * @param password the password
 	 * @return the new template
 	 */
-	public TestRestTemplate withBasicAuth(String username, String password) {
-		if (username == null && password == null) {
+	public TestRestTemplate withBasicAuth(@Nullable String username, @Nullable String password) {
+		if (username == null || password == null) {
 			return this;
 		}
 		return new TestRestTemplate(this.builder.basicAuthentication(username, password),
@@ -1048,12 +1054,13 @@ public class TestRestTemplate {
 	 * Factory used to create a {@link TlsSocketStrategy} supporting self-signed
 	 * certificates.
 	 */
-	private static final class SelfSignedTlsSocketStrategyFactory implements Function<SslBundle, TlsSocketStrategy> {
+	private static final class SelfSignedTlsSocketStrategyFactory
+			implements Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> {
 
 		private static final String[] SUPPORTED_PROTOCOLS = { TLS.V_1_3.getId(), TLS.V_1_2.getId() };
 
 		@Override
-		public TlsSocketStrategy apply(SslBundle sslBundle) {
+		public TlsSocketStrategy apply(@Nullable SslBundle sslBundle) {
 			try {
 				TrustSelfSignedStrategy trustStrategy = new TrustSelfSignedStrategy();
 				SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, trustStrategy).build();

@@ -17,4 +17,7 @@
 /**
  * Web server test utilities and support classes.
  */
+@NullMarked
 package org.springframework.boot.web.server.test;
+
+import org.jspecify.annotations.NullMarked;

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.web.server.test.client;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -41,6 +43,7 @@ import org.springframework.core.Ordered;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.util.Assert;
 
 /**
  * {@link ContextCustomizer} for {@link TestRestTemplate}.
@@ -58,6 +61,7 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils
 			.findMergedAnnotation(mergedContextConfiguration.getTestClass(), SpringBootTest.class);
+		Assert.state(springBootTest != null, "'springBootTest' must not be null");
 		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerTestRestTemplate(context);
 		}
@@ -77,7 +81,7 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return (obj != null) && (obj.getClass() == getClass());
 	}
 
@@ -93,6 +97,7 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	 */
 	static class TestRestTemplateRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
+		@SuppressWarnings("NullAway.Init")
 		private BeanFactory beanFactory;
 
 		@Override
@@ -133,6 +138,7 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 
 		private static final HttpClientOption[] SSL_OPTIONS = { HttpClientOption.SSL };
 
+		@SuppressWarnings("NullAway.Init")
 		private TestRestTemplate template;
 
 		@Override

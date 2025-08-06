@@ -18,6 +18,8 @@ package org.springframework.boot.web.server.test.reactor.netty;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -37,7 +39,7 @@ class DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory imple
 	String REACTOR_RESOURCE_FACTORY_CLASS = "org.springframework.http.client.ReactorResourceFactory";
 
 	@Override
-	public ContextCustomizer createContextCustomizer(Class<?> testClass,
+	public @Nullable ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		if (ClassUtils.isPresent(this.REACTOR_RESOURCE_FACTORY_CLASS, testClass.getClassLoader())) {
 			return new DisableReactorResourceFactoryGlobalResourcesContextCustomizerCustomizer();

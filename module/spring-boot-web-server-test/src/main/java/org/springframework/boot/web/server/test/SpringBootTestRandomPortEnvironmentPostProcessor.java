@@ -18,12 +18,15 @@ package org.springframework.boot.web.server.test;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
+import org.springframework.lang.Contract;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.ClassUtils;
 
@@ -69,7 +72,9 @@ class SpringBootTestRandomPortEnvironmentPostProcessor implements EnvironmentPos
 		return source.getProperty(MANAGEMENT_PORT_PROPERTY) != null;
 	}
 
-	private Integer getPropertyAsInteger(ConfigurableEnvironment environment, String property, Integer defaultValue) {
+	@Contract("_, _, !null -> !null")
+	private @Nullable Integer getPropertyAsInteger(ConfigurableEnvironment environment, String property,
+			@Nullable Integer defaultValue) {
 		return environment.getPropertySources()
 			.stream()
 			.filter((source) -> !source.getName()
@@ -80,7 +85,7 @@ class SpringBootTestRandomPortEnvironmentPostProcessor implements EnvironmentPos
 			.orElse(defaultValue);
 	}
 
-	private Integer getPropertyAsInteger(PropertySource<?> source, String property,
+	private @Nullable Integer getPropertyAsInteger(PropertySource<?> source, String property,
 			ConfigurableEnvironment environment) {
 		Object value = source.getProperty(property);
 		if (value == null) {
@@ -100,7 +105,7 @@ class SpringBootTestRandomPortEnvironmentPostProcessor implements EnvironmentPos
 		}
 	}
 
-	private Integer getResolvedValueIfPossible(ConfigurableEnvironment environment, String value) {
+	private @Nullable Integer getResolvedValueIfPossible(ConfigurableEnvironment environment, String value) {
 		String resolvedValue = environment.resolveRequiredPlaceholders(value);
 		return environment.getConversionService().convert(resolvedValue, Integer.class);
 	}

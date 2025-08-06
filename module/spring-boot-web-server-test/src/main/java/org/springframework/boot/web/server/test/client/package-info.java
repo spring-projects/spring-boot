@@ -17,4 +17,7 @@
 /**
  * Client-side support for testing embedded web servers.
  */
+@NullMarked
 package org.springframework.boot.web.server.test.client;
+
+import org.jspecify.annotations.NullMarked;

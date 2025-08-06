@@ -17,4 +17,7 @@
 /**
  * Spring Boot support for testing Reactor Netty.
  */
+@NullMarked
 package org.springframework.boot.web.server.test.reactor.netty;
+
+import org.jspecify.annotations.NullMarked;

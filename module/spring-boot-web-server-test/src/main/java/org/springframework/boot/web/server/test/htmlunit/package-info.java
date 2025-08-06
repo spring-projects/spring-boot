@@ -17,4 +17,7 @@
 /**
  * HtmlUnit support classes.
  */
+@NullMarked
 package org.springframework.boot.web.server.test.htmlunit;
+
+import org.jspecify.annotations.NullMarked;
