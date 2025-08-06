@@ -156,7 +156,7 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 		}
 
 		@Override
-		public Object handle(HttpServletRequest request, Map<String, String> body) {
+		public @Nullable Object handle(HttpServletRequest request, @Nullable Map<String, String> body) {
 			SecurityResponse securityResponse = this.securityInterceptor.preHandle(request, this.endpointId);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				return new ResponseEntity<Object>(securityResponse.getMessage(), securityResponse.getStatus());
