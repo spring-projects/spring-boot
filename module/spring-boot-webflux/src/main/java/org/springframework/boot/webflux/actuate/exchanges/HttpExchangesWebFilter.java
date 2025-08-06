@@ -19,6 +19,7 @@ package org.springframework.boot.webflux.actuate.exchanges;
 import java.security.Principal;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.web.exchanges.HttpExchange;
@@ -98,20 +99,20 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 	 */
 	private static class PrincipalAndSession {
 
-		private final Principal principal;
+		private final @Nullable Principal principal;
 
-		private final WebSession session;
+		private final @Nullable WebSession session;
 
 		PrincipalAndSession(Object[] zipped) {
 			this.principal = (zipped[0] != NONE) ? (Principal) zipped[0] : null;
 			this.session = (zipped[1] != NONE) ? (WebSession) zipped[1] : null;
 		}
 
-		Principal getPrincipal() {
+		@Nullable Principal getPrincipal() {
 			return this.principal;
 		}
 
-		String getSessionId() {
+		@Nullable String getSessionId() {
 			return (this.session != null && this.session.isStarted()) ? this.session.getId() : null;
 		}
 

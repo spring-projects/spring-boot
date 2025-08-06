@@ -17,4 +17,7 @@
 /**
  * Spring WebFlux error handling infrastructure.
  */
+@NullMarked
 package org.springframework.boot.webflux.error;
+
+import org.jspecify.annotations.NullMarked;

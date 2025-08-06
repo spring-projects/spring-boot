@@ -19,6 +19,8 @@ package org.springframework.boot.webflux.autoconfigure;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.codec.multipart.DefaultPartHttpMessageReader;
 import org.springframework.http.codec.multipart.PartEventHttpMessageReader;
@@ -64,7 +66,7 @@ public class ReactiveMultipartProperties {
 	 * directory named 'spring-multipart' created under the system temporary directory.
 	 * Ignored when using the PartEvent streaming support.
 	 */
-	private String fileStorageDirectory;
+	private @Nullable String fileStorageDirectory;
 
 	/**
 	 * Character set used to decode headers.
@@ -103,11 +105,11 @@ public class ReactiveMultipartProperties {
 		this.maxParts = maxParts;
 	}
 
-	public String getFileStorageDirectory() {
+	public @Nullable String getFileStorageDirectory() {
 		return this.fileStorageDirectory;
 	}
 
-	public void setFileStorageDirectory(String fileStorageDirectory) {
+	public void setFileStorageDirectory(@Nullable String fileStorageDirectory) {
 		this.fileStorageDirectory = fileStorageDirectory;
 	}
 

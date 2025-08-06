@@ -18,6 +18,7 @@ package org.springframework.boot.webflux.actuate.mappings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
@@ -78,7 +80,11 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 	}
 
 	private List<DispatcherHandlerMappingDescription> describeMappings(DispatcherHandler dispatcherHandler) {
-		return dispatcherHandler.getHandlerMappings().stream().flatMap(this::describe).toList();
+		List<HandlerMapping> handlerMappings = dispatcherHandler.getHandlerMappings();
+		if (handlerMappings == null) {
+			return Collections.emptyList();
+		}
+		return handlerMappings.stream().flatMap(this::describe).toList();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -202,7 +208,7 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
 					DispatcherHandlerMappingDescription.class);
 		}

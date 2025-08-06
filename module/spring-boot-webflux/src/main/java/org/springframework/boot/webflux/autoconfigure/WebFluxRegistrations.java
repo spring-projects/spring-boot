@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webflux.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 
@@ -38,7 +40,7 @@ public interface WebFluxRegistrations {
 	 * processed by the WebFlux configuration.
 	 * @return the custom {@link RequestMappingHandlerMapping} instance
 	 */
-	default RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+	default @Nullable RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
 		return null;
 	}
 
@@ -47,7 +49,7 @@ public interface WebFluxRegistrations {
 	 * processed by the WebFlux configuration.
 	 * @return the custom {@link RequestMappingHandlerAdapter} instance
 	 */
-	default RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
+	default @Nullable RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
 		return null;
 	}
 

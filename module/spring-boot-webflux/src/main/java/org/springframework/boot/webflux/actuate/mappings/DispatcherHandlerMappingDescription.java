@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webflux.actuate.mappings;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.web.reactive.DispatcherHandler;
 
 /**
@@ -30,9 +32,10 @@ public class DispatcherHandlerMappingDescription {
 
 	private final String handler;
 
-	private final DispatcherHandlerMappingDetails details;
+	private final @Nullable DispatcherHandlerMappingDetails details;
 
-	DispatcherHandlerMappingDescription(String predicate, String handler, DispatcherHandlerMappingDetails details) {
+	DispatcherHandlerMappingDescription(String predicate, String handler,
+			@Nullable DispatcherHandlerMappingDetails details) {
 		this.predicate = predicate;
 		this.handler = handler;
 		this.details = details;
@@ -46,7 +49,7 @@ public class DispatcherHandlerMappingDescription {
 		return this.predicate;
 	}
 
-	public DispatcherHandlerMappingDetails getDetails() {
+	public @Nullable DispatcherHandlerMappingDetails getDetails() {
 		return this.details;
 	}
 

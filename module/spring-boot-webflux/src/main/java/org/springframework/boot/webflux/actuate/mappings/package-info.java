@@ -17,4 +17,7 @@
 /**
  * Actuator reactive request mappings support.
  */
+@NullMarked
 package org.springframework.boot.webflux.actuate.mappings;
+
+import org.jspecify.annotations.NullMarked;

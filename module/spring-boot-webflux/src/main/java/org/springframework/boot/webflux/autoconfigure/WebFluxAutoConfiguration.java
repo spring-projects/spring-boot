@@ -18,6 +18,7 @@ package org.springframework.boot.webflux.autoconfigure;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,7 +66,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 import org.springframework.web.accept.ApiVersionParser;
@@ -137,7 +140,7 @@ public final class WebFluxAutoConfiguration {
 	static class WelcomePageConfiguration {
 
 		@Bean
-		RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
+		@Nullable RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
 				WebFluxProperties webFluxProperties, WebProperties webProperties) {
 			String[] staticLocations = webProperties.getResources().getStaticLocations();
 			WelcomePageRouterFunctionFactory factory = new WelcomePageRouterFunctionFactory(
@@ -258,7 +261,10 @@ public final class WebFluxAutoConfiguration {
 			if (cachePeriod != null && cacheControl.getMaxAge() == null) {
 				cacheControl.setMaxAge(cachePeriod);
 			}
-			registration.setCacheControl(cacheControl.toHttpCacheControl());
+			CacheControl httpCacheControl = cacheControl.toHttpCacheControl();
+			if (httpCacheControl != null) {
+				registration.setCacheControl(httpCacheControl);
+			}
 			registration.setUseLastModified(this.resourceProperties.getCache().isUseLastModified());
 		}
 
@@ -310,7 +316,7 @@ public final class WebFluxAutoConfiguration {
 
 		private final ServerProperties serverProperties;
 
-		private final WebFluxRegistrations webFluxRegistrations;
+		private final @Nullable WebFluxRegistrations webFluxRegistrations;
 
 		EnableWebFluxConfiguration(WebFluxProperties webFluxProperties, WebProperties webProperties,
 				ServerProperties serverProperties, ObjectProvider<WebFluxRegistrations> webFluxRegistrations) {
@@ -340,7 +346,9 @@ public final class WebFluxAutoConfiguration {
 							getClass().getClassLoader())) {
 				return super.webFluxValidator();
 			}
-			return ValidatorAdapter.get(getApplicationContext(), getValidator());
+			ApplicationContext applicationContext = getApplicationContext();
+			Assert.state(applicationContext != null, "'applicationContext' must not be null");
+			return ValidatorAdapter.get(applicationContext, getValidator());
 		}
 
 		@Override
@@ -369,11 +377,13 @@ public final class WebFluxAutoConfiguration {
 		@Override
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.LOCALE_CONTEXT_RESOLVER_BEAN_NAME)
 		public LocaleContextResolver localeContextResolver() {
+			Locale locale = this.webProperties.getLocale();
 			if (this.webProperties.getLocaleResolver() == WebProperties.LocaleResolver.FIXED) {
-				return new FixedLocaleContextResolver(this.webProperties.getLocale());
+				Assert.state(locale != null, "'locale' must not be null");
+				return new FixedLocaleContextResolver(locale);
 			}
 			AcceptHeaderLocaleContextResolver localeContextResolver = new AcceptHeaderLocaleContextResolver();
-			localeContextResolver.setDefaultLocale(this.webProperties.getLocale());
+			localeContextResolver.setDefaultLocale(locale);
 			return localeContextResolver;
 		}
 

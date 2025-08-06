@@ -24,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.web.exchanges.RecordableHttpRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -41,7 +43,7 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 
 	private final URI uri;
 
-	private final String remoteAddress;
+	private final @Nullable String remoteAddress;
 
 	RecordableServerHttpRequest(ServerHttpRequest request) {
 		this.method = request.getMethod().name();
@@ -50,7 +52,7 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 		this.remoteAddress = getRemoteAddress(request);
 	}
 
-	private static String getRemoteAddress(ServerHttpRequest request) {
+	private static @Nullable String getRemoteAddress(ServerHttpRequest request) {
 		InetSocketAddress remoteAddress = request.getRemoteAddress();
 		InetAddress address = (remoteAddress != null) ? remoteAddress.getAddress() : null;
 		return (address != null) ? address.toString() : null;
@@ -74,7 +76,7 @@ class RecordableServerHttpRequest implements RecordableHttpRequest {
 	}
 
 	@Override
-	public String getRemoteAddress() {
+	public @Nullable String getRemoteAddress() {
 		return this.remoteAddress;
 	}
 

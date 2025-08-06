@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -135,7 +136,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * @param request the source request
 	 * @return the error
 	 */
-	protected Throwable getError(ServerRequest request) {
+	protected @Nullable Throwable getError(ServerRequest request) {
 		return this.errorAttributes.getError(request);
 	}
 
@@ -208,7 +209,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		return this.templateAvailabilityProviders.getProvider(viewName, this.applicationContext) != null;
 	}
 
-	private Resource resolveResource(String viewName) {
+	private @Nullable Resource resolveResource(String viewName) {
 		for (String location : this.resources.getStaticLocations()) {
 			try {
 				Resource resource = this.applicationContext.getResource(location);
@@ -261,7 +262,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		return responseBody.bodyValue(builder.toString());
 	}
 
-	private String htmlEscape(Object input) {
+	private @Nullable String htmlEscape(@Nullable Object input) {
 		return (input != null) ? HtmlUtils.htmlEscape(input.toString()) : null;
 	}
 

@@ -76,6 +76,11 @@ public final class WebSessionIdResolverAutoConfiguration {
 		map.from(cookie::getSecure).to(builder::secure);
 		map.from(cookie::getMaxAge).to(builder::maxAge);
 		map.from(cookie::getPartitioned).to(builder::partitioned);
+		setSameSite(builder, map, cookie);
+	}
+
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private void setSameSite(ResponseCookieBuilder builder, PropertyMapper map, Cookie cookie) {
 		map.from(cookie::getSameSite).as(SameSite::attributeValue).to(builder::sameSite);
 	}
 

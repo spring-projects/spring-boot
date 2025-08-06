@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webflux.actuate.mappings;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.web.reactive.DispatcherHandler;
 
@@ -27,33 +29,33 @@ import org.springframework.web.reactive.DispatcherHandler;
  */
 public class DispatcherHandlerMappingDetails {
 
-	private HandlerMethodDescription handlerMethod;
+	private @Nullable HandlerMethodDescription handlerMethod;
 
-	private HandlerFunctionDescription handlerFunction;
+	private @Nullable HandlerFunctionDescription handlerFunction;
 
-	private RequestMappingConditionsDescription requestMappingConditions;
+	private @Nullable RequestMappingConditionsDescription requestMappingConditions;
 
-	public HandlerMethodDescription getHandlerMethod() {
+	public @Nullable HandlerMethodDescription getHandlerMethod() {
 		return this.handlerMethod;
 	}
 
-	void setHandlerMethod(HandlerMethodDescription handlerMethod) {
+	void setHandlerMethod(@Nullable HandlerMethodDescription handlerMethod) {
 		this.handlerMethod = handlerMethod;
 	}
 
-	public HandlerFunctionDescription getHandlerFunction() {
+	public @Nullable HandlerFunctionDescription getHandlerFunction() {
 		return this.handlerFunction;
 	}
 
-	void setHandlerFunction(HandlerFunctionDescription handlerFunction) {
+	void setHandlerFunction(@Nullable HandlerFunctionDescription handlerFunction) {
 		this.handlerFunction = handlerFunction;
 	}
 
-	public RequestMappingConditionsDescription getRequestMappingConditions() {
+	public @Nullable RequestMappingConditionsDescription getRequestMappingConditions() {
 		return this.requestMappingConditions;
 	}
 
-	void setRequestMappingConditions(RequestMappingConditionsDescription requestMappingConditions) {
+	void setRequestMappingConditions(@Nullable RequestMappingConditionsDescription requestMappingConditions) {
 		this.requestMappingConditions = requestMappingConditions;
 	}
 

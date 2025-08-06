@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.result.condition.MediaTypeExpression;
 import org.springframework.web.reactive.result.condition.NameValueExpression;
@@ -131,7 +133,7 @@ public class RequestMappingConditionsDescription {
 
 		private final String name;
 
-		private final Object value;
+		private final @Nullable Object value;
 
 		private final boolean negated;
 
@@ -145,7 +147,7 @@ public class RequestMappingConditionsDescription {
 			return this.name;
 		}
 
-		public Object getValue() {
+		public @Nullable Object getValue() {
 			return this.value;
 		}
 
