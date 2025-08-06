@@ -17,4 +17,7 @@
 /**
  * Actuator endpoint for Spring Session.
  */
+@NullMarked
 package org.springframework.boot.session.endpoint;
+
+import org.jspecify.annotations.NullMarked;

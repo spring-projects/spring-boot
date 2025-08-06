@@ -20,6 +20,7 @@ import java.util.EnumSet;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.DispatcherType;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -52,7 +53,7 @@ class SessionRepositoryFilterConfiguration {
 		return registration;
 	}
 
-	private EnumSet<DispatcherType> getDispatcherTypes(SessionProperties sessionProperties) {
+	private @Nullable EnumSet<DispatcherType> getDispatcherTypes(SessionProperties sessionProperties) {
 		SessionProperties.Servlet servletProperties = sessionProperties.getServlet();
 		if (servletProperties.getFilterDispatcherTypes() == null) {
 			return null;

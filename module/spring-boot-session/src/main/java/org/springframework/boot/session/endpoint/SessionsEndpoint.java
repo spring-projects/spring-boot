@@ -18,6 +18,8 @@ package org.springframework.boot.session.endpoint;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -40,7 +42,7 @@ public class SessionsEndpoint {
 
 	private final SessionRepository<? extends Session> sessionRepository;
 
-	private final FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository;
+	private final @Nullable FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository;
 
 	/**
 	 * Create a new {@link SessionsEndpoint} instance.
@@ -48,14 +50,14 @@ public class SessionsEndpoint {
 	 * @param indexedSessionRepository the indexed session repository
 	 */
 	public SessionsEndpoint(SessionRepository<? extends Session> sessionRepository,
-			FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
+			@Nullable FindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
 		Assert.notNull(sessionRepository, "'sessionRepository' must not be null");
 		this.sessionRepository = sessionRepository;
 		this.indexedSessionRepository = indexedSessionRepository;
 	}
 
 	@ReadOperation
-	public SessionsDescriptor sessionsForUsername(String username) {
+	public @Nullable SessionsDescriptor sessionsForUsername(String username) {
 		if (this.indexedSessionRepository == null) {
 			return null;
 		}
@@ -64,7 +66,7 @@ public class SessionsEndpoint {
 	}
 
 	@ReadOperation
-	public SessionDescriptor getSession(@Selector String sessionId) {
+	public @Nullable SessionDescriptor getSession(@Selector String sessionId) {
 		Session session = this.sessionRepository.findById(sessionId);
 		if (session == null) {
 			return null;

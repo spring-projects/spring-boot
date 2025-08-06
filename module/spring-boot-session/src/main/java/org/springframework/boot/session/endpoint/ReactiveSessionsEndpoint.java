@@ -16,6 +16,7 @@
 
 package org.springframework.boot.session.endpoint;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
@@ -41,7 +42,7 @@ public class ReactiveSessionsEndpoint {
 
 	private final ReactiveSessionRepository<? extends Session> sessionRepository;
 
-	private final ReactiveFindByIndexNameSessionRepository<? extends Session> indexedSessionRepository;
+	private final @Nullable ReactiveFindByIndexNameSessionRepository<? extends Session> indexedSessionRepository;
 
 	/**
 	 * Create a new {@link ReactiveSessionsEndpoint} instance.
@@ -49,7 +50,7 @@ public class ReactiveSessionsEndpoint {
 	 * @param indexedSessionRepository the indexed session repository
 	 */
 	public ReactiveSessionsEndpoint(ReactiveSessionRepository<? extends Session> sessionRepository,
-			ReactiveFindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
+			@Nullable ReactiveFindByIndexNameSessionRepository<? extends Session> indexedSessionRepository) {
 		Assert.notNull(sessionRepository, "'sessionRepository' must not be null");
 		this.sessionRepository = sessionRepository;
 		this.indexedSessionRepository = indexedSessionRepository;

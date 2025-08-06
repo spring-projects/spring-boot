@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring Session.
  */
+@NullMarked
 package org.springframework.boot.session.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

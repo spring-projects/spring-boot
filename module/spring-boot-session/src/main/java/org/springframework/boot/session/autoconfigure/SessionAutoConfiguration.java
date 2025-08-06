@@ -79,10 +79,16 @@ public final class SessionAutoConfiguration {
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
-			map.from(cookie::getSameSite).as(SameSite::attributeValue).to(cookieSerializer::setSameSite);
+			setSameSite(map, cookie, cookieSerializer);
 			map.from(cookie::getPartitioned).to(cookieSerializer::setPartitioned);
 			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
 			return cookieSerializer;
+		}
+
+		@SuppressWarnings("NullAway") // Lambda isn't detected with the correct
+										// nullability
+		private void setSameSite(PropertyMapper map, Cookie cookie, DefaultCookieSerializer cookieSerializer) {
+			map.from(cookie::getSameSite).as(SameSite::attributeValue).to(cookieSerializer::setSameSite);
 		}
 
 		@Configuration(proxyBeanMethods = false)

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring Session endpoint.
  */
+@NullMarked
 package org.springframework.boot.session.autoconfigure.endpoint;
+
+import org.jspecify.annotations.NullMarked;
