@@ -22,6 +22,7 @@ import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
 import org.springframework.boot.amqp.health.RabbitHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,12 +31,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link RabbitHealthContributorAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 class RabbitHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class,
-				RabbitHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+				RabbitHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class))
+		.withClassLoader(
+				new FilteredClassLoader("com.rabbitmq.client.amqp", "org.springframework.amqp.rabbitmq.client"));
 
 	@Test
 	void runShouldCreateIndicator() {

@@ -65,8 +65,8 @@ public final class RabbitAmqpAutoConfiguration {
 		return new PropertiesRabbitConnectionDetails(this.properties, sslBundles.getIfAvailable());
 	}
 
-	@Bean(name = "rabbitAmqpListenerContainerFactory")
-	@ConditionalOnMissingBean(name = "rabbitAmqpListenerContainerFactory")
+	@Bean(name = "rabbitListenerContainerFactory")
+	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	RabbitAmqpListenerContainerFactory rabbitAmqpListenerContainerFactory(AmqpConnectionFactory connectionFactory,
 			ObjectProvider<ContainerCustomizer<RabbitAmqpListenerContainer>> amqpContainerCustomizer,
 			ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers,

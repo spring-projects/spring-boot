@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
@@ -71,10 +72,13 @@ import org.springframework.core.io.ResourceLoader;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Eddú Meléndez
  * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
+@ConditionalOnMissingClass({ "com.rabbitmq.client.amqp.Connection",
+		"org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate" })
 @EnableConfigurationProperties(RabbitProperties.class)
 @Import({ RabbitAnnotationDrivenConfiguration.class, RabbitStreamConfiguration.class })
 public final class RabbitAutoConfiguration {
