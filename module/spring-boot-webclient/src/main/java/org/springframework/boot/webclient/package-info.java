@@ -17,4 +17,7 @@
 /**
  * Spring WebFlux WebClient support abstractions.
  */
+@NullMarked
 package org.springframework.boot.webclient;
+
+import org.jspecify.annotations.NullMarked;

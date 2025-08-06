@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.autoconfigure.ApiversionProperties;
 import org.springframework.boot.http.client.autoconfigure.PropertiesApiVersionInserter;
@@ -29,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.Builder;
 
 /**
  * {@link WebClientCustomizer} to apply {@link AbstractWebClientProperties}.
@@ -38,18 +41,19 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 public class PropertiesWebClientCustomizer implements WebClientCustomizer {
 
-	private final AbstractWebClientProperties[] orderedProperties;
+	private final @Nullable AbstractWebClientProperties[] orderedProperties;
 
-	private ApiVersionInserter apiVersionInserter;
+	private final @Nullable ApiVersionInserter apiVersionInserter;
 
-	public PropertiesWebClientCustomizer(ApiVersionInserter apiVersionInserter, ApiVersionFormatter apiVersionFormatter,
-			AbstractWebClientProperties... orderedProperties) {
+	public PropertiesWebClientCustomizer(@Nullable ApiVersionInserter apiVersionInserter,
+			@Nullable ApiVersionFormatter apiVersionFormatter,
+			@Nullable AbstractWebClientProperties... orderedProperties) {
 		this.orderedProperties = orderedProperties;
 		this.apiVersionInserter = PropertiesApiVersionInserter.get(apiVersionInserter, apiVersionFormatter,
 				Arrays.stream(orderedProperties).map(this::getApiVersion));
 	}
 
-	private ApiversionProperties getApiVersion(AbstractWebClientProperties properties) {
+	private @Nullable ApiversionProperties getApiVersion(@Nullable AbstractWebClientProperties properties) {
 		return (properties != null) ? properties.getApiversion() : null;
 	}
 
@@ -62,11 +66,14 @@ public class PropertiesWebClientCustomizer implements WebClientCustomizer {
 			if (properties != null) {
 				map.from(properties::getBaseUrl).whenHasText().to(builder::baseUrl);
 				map.from(properties::getDefaultHeader).as(this::putAllHeaders).to(builder::defaultHeaders);
-				map.from(properties.getApiversion())
-					.as(ApiversionProperties::getDefaultVersion)
-					.to(builder::defaultApiVersion);
+				setDefaultApiVersion(builder, map, properties);
 			}
 		}
+	}
+
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private void setDefaultApiVersion(Builder builder, PropertyMapper map, AbstractWebClientProperties properties) {
+		map.from(properties.getApiversion()).as(ApiversionProperties::getDefaultVersion).to(builder::defaultApiVersion);
 	}
 
 	private Consumer<HttpHeaders> putAllHeaders(Map<String, List<String>> defaultHeaders) {

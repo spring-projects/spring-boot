@@ -17,4 +17,7 @@
 /**
  * Observation integration for WebClient.
  */
+@NullMarked
 package org.springframework.boot.webclient.observation;
+
+import org.jspecify.annotations.NullMarked;

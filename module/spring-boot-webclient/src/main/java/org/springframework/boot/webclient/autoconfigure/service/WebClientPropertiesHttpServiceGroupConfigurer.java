@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webclient.autoconfigure.service;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectors;
 import org.springframework.boot.http.client.autoconfigure.reactive.HttpReactiveClientProperties;
@@ -54,9 +56,9 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	private final ObjectProvider<ClientHttpConnectorSettings> clientConnectorSettings;
 
-	private final ApiVersionInserter apiVersionInserter;
+	private final @Nullable ApiVersionInserter apiVersionInserter;
 
-	private final ApiVersionFormatter apiVersionFormatter;
+	private final @Nullable ApiVersionFormatter apiVersionFormatter;
 
 	WebClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, ObjectProvider<SslBundles> sslBundles,
 			HttpReactiveClientProperties clientProperties, ReactiveHttpClientServiceProperties serviceProperties,
@@ -91,12 +93,13 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 	}
 
 	private PropertiesWebClientCustomizer getPropertiesWebClientCustomizer(
-			ReactiveHttpClientServiceProperties.Group groupProperties) {
+			ReactiveHttpClientServiceProperties.@Nullable Group groupProperties) {
 		return new PropertiesWebClientCustomizer(this.apiVersionInserter, this.apiVersionFormatter, groupProperties,
 				this.serviceProperties);
 	}
 
-	private ClientHttpConnector getClientConnector(ReactiveHttpClientServiceProperties.Group groupProperties) {
+	private ClientHttpConnector getClientConnector(
+			ReactiveHttpClientServiceProperties.@Nullable Group groupProperties) {
 		ClientHttpConnectors connectors = new ClientHttpConnectors(this.sslBundles, groupProperties,
 				this.serviceProperties, this.clientProperties);
 		ClientHttpConnectorBuilder<?> builder = this.clientConnectorBuilder

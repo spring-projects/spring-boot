@@ -44,10 +44,10 @@ public final class ClientHttpConnectors {
 
 	private final ObjectFactory<SslBundles> sslBundles;
 
-	private final AbstractClientHttpConnectorProperties[] orderedProperties;
+	private final @Nullable AbstractClientHttpConnectorProperties[] orderedProperties;
 
 	public ClientHttpConnectors(ObjectFactory<SslBundles> sslBundles,
-			AbstractClientHttpConnectorProperties... orderedProperties) {
+			@Nullable AbstractClientHttpConnectorProperties... orderedProperties) {
 		this.sslBundles = sslBundles;
 		this.orderedProperties = orderedProperties;
 	}

@@ -53,6 +53,7 @@ import org.springframework.web.service.registry.ImportHttpServices;
 @EnableConfigurationProperties(ReactiveHttpClientServiceProperties.class)
 public final class ReactiveHttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
 	ReactiveHttpServiceClientAutoConfiguration() {
