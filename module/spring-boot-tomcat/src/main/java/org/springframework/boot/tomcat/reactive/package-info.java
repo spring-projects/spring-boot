@@ -17,4 +17,7 @@
 /**
  * Reactive web server implementation backed by Tomcat.
  */
+@NullMarked
 package org.springframework.boot.tomcat.reactive;
+
+import org.jspecify.annotations.NullMarked;

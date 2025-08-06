@@ -63,6 +63,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tomcat.util.http.Rfc6265CookieProcessor;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
 import org.springframework.boot.tomcat.DisableReferenceClearingContextCustomizer;
@@ -125,6 +126,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 
 	private final ServletWebServerSettings settings = new ServletWebServerSettings();
 
+	@SuppressWarnings("NullAway.Init")
 	private ResourceLoader resourceLoader;
 
 	private Set<String> tldSkipPatterns = new LinkedHashSet<>(TldPatterns.DEFAULT_SKIP);
@@ -210,6 +212,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 			method.run();
 		}
 		catch (NoSuchMethodError ex) {
+			// Intentionally left blank
 		}
 	}
 
@@ -379,7 +382,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 		return Math.max(sessionTimeout.toMinutes(), 1);
 	}
 
-	private boolean isZeroOrLess(Duration sessionTimeout) {
+	private boolean isZeroOrLess(@Nullable Duration sessionTimeout) {
 		return sessionTimeout == null || sessionTimeout.isNegative() || sessionTimeout.isZero();
 	}
 
@@ -668,7 +671,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 			return delegate.generateHeader(cookie, request);
 		}
 
-		private SameSite getSameSite(Cookie cookie) {
+		private @Nullable SameSite getSameSite(Cookie cookie) {
 			for (CookieSameSiteSupplier supplier : this.suppliers) {
 				SameSite sameSite = supplier.getSameSite(cookie);
 				if (sameSite != null) {

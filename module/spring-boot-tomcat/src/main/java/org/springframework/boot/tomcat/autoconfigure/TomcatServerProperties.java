@@ -24,6 +24,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.unit.DataSize;
@@ -62,7 +64,7 @@ public class TomcatServerProperties {
 	/**
 	 * Tomcat base directory. If not specified, a temporary directory is used.
 	 */
-	private File basedir;
+	private @Nullable File basedir;
 
 	/**
 	 * Delay between the invocation of backgroundProcess methods. If a duration suffix is
@@ -134,7 +136,7 @@ public class TomcatServerProperties {
 	 * Time to wait for another HTTP request before the connection is closed. When not set
 	 * the connectionTimeout is used. When set to -1 there will be no timeout.
 	 */
-	private Duration keepAliveTimeout;
+	private @Nullable Duration keepAliveTimeout;
 
 	/**
 	 * Maximum number of HTTP requests that can be pipelined before the connection is
@@ -166,7 +168,7 @@ public class TomcatServerProperties {
 	 * Amount of time the connector will wait, after accepting a connection, for the
 	 * request URI line to be presented.
 	 */
-	private Duration connectionTimeout;
+	private @Nullable Duration connectionTimeout;
 
 	/**
 	 * Maximum size of the HTTP response header.
@@ -217,11 +219,11 @@ public class TomcatServerProperties {
 		this.backgroundProcessorDelay = backgroundProcessorDelay;
 	}
 
-	public File getBasedir() {
+	public @Nullable File getBasedir() {
 		return this.basedir;
 	}
 
-	public void setBasedir(File basedir) {
+	public void setBasedir(@Nullable File basedir) {
 		this.basedir = basedir;
 	}
 
@@ -281,11 +283,11 @@ public class TomcatServerProperties {
 		this.processorCache = processorCache;
 	}
 
-	public Duration getKeepAliveTimeout() {
+	public @Nullable Duration getKeepAliveTimeout() {
 		return this.keepAliveTimeout;
 	}
 
-	public void setKeepAliveTimeout(Duration keepAliveTimeout) {
+	public void setKeepAliveTimeout(@Nullable Duration keepAliveTimeout) {
 		this.keepAliveTimeout = keepAliveTimeout;
 	}
 
@@ -321,11 +323,11 @@ public class TomcatServerProperties {
 		this.relaxedQueryChars = relaxedQueryChars;
 	}
 
-	public Duration getConnectionTimeout() {
+	public @Nullable Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
 
-	public void setConnectionTimeout(Duration connectionTimeout) {
+	public void setConnectionTimeout(@Nullable Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
 	}
 
@@ -411,13 +413,13 @@ public class TomcatServerProperties {
 		 * Whether logging of the request will only be enabled if
 		 * "ServletRequest.getAttribute(conditionIf)" does not yield null.
 		 */
-		private String conditionIf;
+		private @Nullable String conditionIf;
 
 		/**
 		 * Whether logging of the request will only be enabled if
 		 * "ServletRequest.getAttribute(conditionUnless)" yield null.
 		 */
-		private String conditionUnless;
+		private @Nullable String conditionUnless;
 
 		/**
 		 * Format pattern for access logs.
@@ -444,13 +446,13 @@ public class TomcatServerProperties {
 		 * Character set used by the log file. Default to the system default character
 		 * set.
 		 */
-		private String encoding;
+		private @Nullable String encoding;
 
 		/**
 		 * Locale used to format timestamps in log entries and in log file name suffix.
 		 * Default to the default locale of the Java process.
 		 */
-		private String locale;
+		private @Nullable String locale;
 
 		/**
 		 * Whether to check for log file existence so it can be recreated if an external
@@ -503,19 +505,19 @@ public class TomcatServerProperties {
 			this.enabled = enabled;
 		}
 
-		public String getConditionIf() {
+		public @Nullable String getConditionIf() {
 			return this.conditionIf;
 		}
 
-		public void setConditionIf(String conditionIf) {
+		public void setConditionIf(@Nullable String conditionIf) {
 			this.conditionIf = conditionIf;
 		}
 
-		public String getConditionUnless() {
+		public @Nullable String getConditionUnless() {
 			return this.conditionUnless;
 		}
 
-		public void setConditionUnless(String conditionUnless) {
+		public void setConditionUnless(@Nullable String conditionUnless) {
 			this.conditionUnless = conditionUnless;
 		}
 
@@ -551,19 +553,19 @@ public class TomcatServerProperties {
 			this.suffix = suffix;
 		}
 
-		public String getEncoding() {
+		public @Nullable String getEncoding() {
 			return this.encoding;
 		}
 
-		public void setEncoding(String encoding) {
+		public void setEncoding(@Nullable String encoding) {
 			this.encoding = encoding;
 		}
 
-		public String getLocale() {
+		public @Nullable String getLocale() {
 			return this.locale;
 		}
 
-		public void setLocale(String locale) {
+		public void setLocale(@Nullable String locale) {
 			this.locale = locale;
 		}
 
@@ -695,7 +697,7 @@ public class TomcatServerProperties {
 		/**
 		 * Time-to-live of the static resource cache.
 		 */
-		private Duration cacheTtl;
+		private @Nullable Duration cacheTtl;
 
 		public boolean isAllowCaching() {
 			return this.allowCaching;
@@ -705,11 +707,11 @@ public class TomcatServerProperties {
 			this.allowCaching = allowCaching;
 		}
 
-		public Duration getCacheTtl() {
+		public @Nullable Duration getCacheTtl() {
 			return this.cacheTtl;
 		}
 
-		public void setCacheTtl(Duration cacheTtl) {
+		public void setCacheTtl(@Nullable Duration cacheTtl) {
 			this.cacheTtl = cacheTtl;
 		}
 
@@ -756,7 +758,7 @@ public class TomcatServerProperties {
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
 		 */
-		private String protocolHeader;
+		private @Nullable String protocolHeader;
 
 		/**
 		 * Value of the protocol header indicating whether the incoming request uses SSL.
@@ -777,13 +779,13 @@ public class TomcatServerProperties {
 		 * Name of the HTTP header from which the remote IP is extracted. For instance,
 		 * 'X-FORWARDED-FOR'.
 		 */
-		private String remoteIpHeader;
+		private @Nullable String remoteIpHeader;
 
 		/**
 		 * Regular expression defining proxies that are trusted when they appear in the
 		 * "remote-ip-header" header.
 		 */
-		private String trustedProxies;
+		private @Nullable String trustedProxies;
 
 		public String getInternalProxies() {
 			return this.internalProxies;
@@ -793,11 +795,11 @@ public class TomcatServerProperties {
 			this.internalProxies = internalProxies;
 		}
 
-		public String getProtocolHeader() {
+		public @Nullable String getProtocolHeader() {
 			return this.protocolHeader;
 		}
 
-		public void setProtocolHeader(String protocolHeader) {
+		public void setProtocolHeader(@Nullable String protocolHeader) {
 			this.protocolHeader = protocolHeader;
 		}
 
@@ -825,19 +827,19 @@ public class TomcatServerProperties {
 			this.portHeader = portHeader;
 		}
 
-		public String getRemoteIpHeader() {
+		public @Nullable String getRemoteIpHeader() {
 			return this.remoteIpHeader;
 		}
 
-		public void setRemoteIpHeader(String remoteIpHeader) {
+		public void setRemoteIpHeader(@Nullable String remoteIpHeader) {
 			this.remoteIpHeader = remoteIpHeader;
 		}
 
-		public String getTrustedProxies() {
+		public @Nullable String getTrustedProxies() {
 			return this.trustedProxies;
 		}
 
-		public void setTrustedProxies(String trustedProxies) {
+		public void setTrustedProxies(@Nullable String trustedProxies) {
 			this.trustedProxies = trustedProxies;
 		}
 

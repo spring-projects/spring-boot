@@ -23,6 +23,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
@@ -40,7 +41,7 @@ public class TomcatStarter implements ServletContainerInitializer {
 
 	private final Iterable<ServletContextInitializer> initializers;
 
-	private volatile Exception startUpException;
+	private volatile @Nullable Exception startUpException;
 
 	public TomcatStarter(Iterable<ServletContextInitializer> initializers) {
 		this.initializers = initializers;
@@ -64,7 +65,7 @@ public class TomcatStarter implements ServletContainerInitializer {
 		}
 	}
 
-	Exception getStartUpException() {
+	@Nullable Exception getStartUpException() {
 		return this.startUpException;
 	}
 

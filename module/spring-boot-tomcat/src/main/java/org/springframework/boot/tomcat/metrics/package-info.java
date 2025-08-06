@@ -17,4 +17,7 @@
 /**
  * Tomcat metrics.
  */
+@NullMarked
 package org.springframework.boot.tomcat.metrics;
+
+import org.jspecify.annotations.NullMarked;

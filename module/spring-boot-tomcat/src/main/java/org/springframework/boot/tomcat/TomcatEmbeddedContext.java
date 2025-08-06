@@ -30,6 +30,7 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.session.ManagerBase;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerException;
@@ -45,9 +46,9 @@ import org.springframework.util.ClassUtils;
  */
 public class TomcatEmbeddedContext extends StandardContext {
 
-	private TomcatStarter starter;
+	private @Nullable TomcatStarter starter;
 
-	private MimeMappings mimeMappings;
+	private @Nullable MimeMappings mimeMappings;
 
 	@Override
 	public boolean loadOnStartup(Container[] children) {
@@ -102,7 +103,7 @@ public class TomcatEmbeddedContext extends StandardContext {
 	 * @param classLoader the class loader to use
 	 * @param code the code to run
 	 */
-	private void doWithThreadContextClassLoader(ClassLoader classLoader, Runnable code) {
+	private void doWithThreadContextClassLoader(@Nullable ClassLoader classLoader, Runnable code) {
 		ClassLoader existingLoader = (classLoader != null) ? ClassUtils.overrideThreadContextClassLoader(classLoader)
 				: null;
 		try {
@@ -115,11 +116,11 @@ public class TomcatEmbeddedContext extends StandardContext {
 		}
 	}
 
-	public void setStarter(TomcatStarter starter) {
+	public void setStarter(@Nullable TomcatStarter starter) {
 		this.starter = starter;
 	}
 
-	TomcatStarter getStarter() {
+	@Nullable TomcatStarter getStarter() {
 		return this.starter;
 	}
 
@@ -137,7 +138,7 @@ public class TomcatEmbeddedContext extends StandardContext {
 	}
 
 	@Override
-	public String findMimeMapping(String extension) {
+	public @Nullable String findMimeMapping(String extension) {
 		String mimeMapping = super.findMimeMapping(extension);
 		if (mimeMapping != null) {
 			return mimeMapping;

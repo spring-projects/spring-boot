@@ -21,6 +21,7 @@ import java.util.function.Function;
 
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.AccessLogCustomizer;
 import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
@@ -50,7 +51,7 @@ class TomcatAccessLogCustomizer<T extends ConfigurableTomcatWebServerFactory> ex
 		accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
 	}
 
-	private AccessLogValve findAccessLogValve(T factory) {
+	private @Nullable AccessLogValve findAccessLogValve(T factory) {
 		for (Valve engineValve : this.engineValvesExtractor.apply(factory)) {
 			if (engineValve instanceof AccessLogValve accessLogValve) {
 				return accessLogValve;

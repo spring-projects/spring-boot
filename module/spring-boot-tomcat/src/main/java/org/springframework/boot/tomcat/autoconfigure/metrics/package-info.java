@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Tomcat metrics.
  */
+@NullMarked
 package org.springframework.boot.tomcat.autoconfigure.metrics;
+
+import org.jspecify.annotations.NullMarked;

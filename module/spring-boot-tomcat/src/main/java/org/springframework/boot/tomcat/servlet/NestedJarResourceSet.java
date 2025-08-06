@@ -32,6 +32,7 @@ import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.webresources.AbstractSingleArchiveResourceSet;
 import org.apache.catalina.webresources.JarResource;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
@@ -47,13 +48,13 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 
 	private final URL url;
 
-	private JarFile archive = null;
+	private @Nullable JarFile archive;
 
-	private long archiveUseCount = 0;
+	private long archiveUseCount;
 
 	private boolean useCaches;
 
-	private volatile Boolean multiRelease;
+	private volatile @Nullable Boolean multiRelease;
 
 	NestedJarResourceSet(URL url, WebResourceRoot root, String webAppMount, String internalPath)
 			throws IllegalArgumentException {
