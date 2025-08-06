@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring Session Data MongoDB.
  */
+@NullMarked
 package org.springframework.boot.session.data.mongodb.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;
