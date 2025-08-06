@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
+import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 
 /**
@@ -102,6 +105,13 @@ public class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAwar
 	@ConditionalOnClass(reactor.netty.http.client.HttpClient.class)
 	@Import(ReactorNettyConfigurations.ReactorResourceFactoryConfiguration.class)
 	static class ReactorNetty {
+
+		@Bean
+		@Order(0)
+		ClientHttpConnectorBuilderCustomizer<ReactorClientHttpConnectorBuilder> reactorResourceFactoryClientHttpConnectorBuilderCustomizer(
+				ReactorResourceFactory reactorResourceFactory) {
+			return (builder) -> builder.withReactorResourceFactory(reactorResourceFactory);
+		}
 
 	}
 
