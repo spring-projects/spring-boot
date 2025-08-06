@@ -23,7 +23,6 @@ description = "Spring Boot RabbitMQ AMQP smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-amqp"))
-	implementation("org.springframework.amqp:spring-rabbitmq-client")
 
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))

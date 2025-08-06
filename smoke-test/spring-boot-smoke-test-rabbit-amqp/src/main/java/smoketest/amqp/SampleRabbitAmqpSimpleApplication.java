@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.boot.ApplicationRunner;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.Payload;
 
 @SpringBootApplication
+@EnableRabbit
 @RabbitListener(queues = "foo")
 public class SampleRabbitAmqpSimpleApplication {
 
