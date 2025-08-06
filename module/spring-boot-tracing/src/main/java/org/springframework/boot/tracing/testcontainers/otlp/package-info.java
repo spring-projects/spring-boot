@@ -17,4 +17,7 @@
 /**
  * Support for Testcontainers OpenTelemetry tracing service connections.
  */
+@NullMarked
 package org.springframework.boot.tracing.testcontainers.otlp;
+
+import org.jspecify.annotations.NullMarked;

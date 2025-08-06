@@ -31,6 +31,7 @@ import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
@@ -103,7 +104,7 @@ class BravePropagationConfigurations {
 			return new Factory() {
 
 				@Override
-				public Propagation<String> get() {
+				public @Nullable Propagation<String> get() {
 					return null;
 				}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.tracing.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.logging.LoggingSystem;
@@ -63,7 +65,7 @@ class LogCorrelationEnvironmentPostProcessor implements EnvironmentPostProcessor
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			if (name.equals(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY)) {
 				return this.environment.getProperty("management.tracing.enabled", Boolean.class, Boolean.TRUE);
 			}

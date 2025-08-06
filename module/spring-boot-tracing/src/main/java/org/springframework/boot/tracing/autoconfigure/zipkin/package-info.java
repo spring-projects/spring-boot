@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for tracing with Zipkin.
  */
+@NullMarked
 package org.springframework.boot.tracing.autoconfigure.zipkin;
+
+import org.jspecify.annotations.NullMarked;

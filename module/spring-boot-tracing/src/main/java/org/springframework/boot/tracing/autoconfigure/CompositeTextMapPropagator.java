@@ -32,6 +32,7 @@ import io.opentelemetry.context.propagation.TextMapGetter;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.context.propagation.TextMapSetter;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.tracing.autoconfigure.TracingProperties.Propagation.PropagationType;
 
@@ -48,7 +49,7 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 
 	private final Collection<TextMapPropagator> extractors;
 
-	private final TextMapPropagator baggagePropagator;
+	private final @Nullable TextMapPropagator baggagePropagator;
 
 	private final Set<String> fields;
 
@@ -61,7 +62,7 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 	 * @param baggagePropagator the baggage propagator to use, or {@code null}
 	 */
 	CompositeTextMapPropagator(Collection<TextMapPropagator> injectors,
-			Collection<TextMapPropagator> mutuallyExclusiveExtractors, TextMapPropagator baggagePropagator) {
+			Collection<TextMapPropagator> mutuallyExclusiveExtractors, @Nullable TextMapPropagator baggagePropagator) {
 		this.injectors = injectors;
 		this.extractors = mutuallyExclusiveExtractors;
 		this.baggagePropagator = baggagePropagator;
@@ -92,14 +93,14 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 	}
 
 	@Override
-	public <C> void inject(Context context, C carrier, TextMapSetter<C> setter) {
+	public <C> void inject(Context context, @Nullable C carrier, TextMapSetter<C> setter) {
 		if (context != null && setter != null) {
 			this.injectors.forEach((injector) -> injector.inject(context, carrier, setter));
 		}
 	}
 
 	@Override
-	public <C> Context extract(Context context, C carrier, TextMapGetter<C> getter) {
+	public <C> Context extract(Context context, @Nullable C carrier, TextMapGetter<C> getter) {
 		if (context == null) {
 			return Context.root();
 		}
@@ -123,7 +124,8 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 	 * @param baggagePropagator the baggage propagator to use, or {@code null}
 	 * @return the {@link CompositeTextMapPropagator}
 	 */
-	static TextMapPropagator create(TracingProperties.Propagation properties, TextMapPropagator baggagePropagator) {
+	static TextMapPropagator create(TracingProperties.Propagation properties,
+			@Nullable TextMapPropagator baggagePropagator) {
 		TextMapPropagatorMapper mapper = new TextMapPropagatorMapper(baggagePropagator != null);
 		List<TextMapPropagator> injectors = properties.getEffectiveProducedTypes()
 			.stream()

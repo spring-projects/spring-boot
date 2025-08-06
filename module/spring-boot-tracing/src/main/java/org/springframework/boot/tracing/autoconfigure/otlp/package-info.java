@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for exporting traces with OTLP.
  */
+@NullMarked
 package org.springframework.boot.tracing.autoconfigure.otlp;
+
+import org.jspecify.annotations.NullMarked;

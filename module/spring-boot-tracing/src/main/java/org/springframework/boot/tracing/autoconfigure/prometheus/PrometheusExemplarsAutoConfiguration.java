@@ -19,6 +19,7 @@ package org.springframework.boot.tracing.autoconfigure.prometheus;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
 import io.prometheus.metrics.tracer.common.SpanContext;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -64,13 +65,13 @@ public final class PrometheusExemplarsAutoConfiguration {
 		}
 
 		@Override
-		public String getCurrentTraceId() {
+		public @Nullable String getCurrentTraceId() {
 			Span currentSpan = currentSpan();
 			return (currentSpan != null) ? currentSpan.context().traceId() : null;
 		}
 
 		@Override
-		public String getCurrentSpanId() {
+		public @Nullable String getCurrentSpanId() {
 			Span currentSpan = currentSpan();
 			return (currentSpan != null) ? currentSpan.context().spanId() : null;
 		}
@@ -89,7 +90,7 @@ public final class PrometheusExemplarsAutoConfiguration {
 		public void markCurrentSpanAsExemplar() {
 		}
 
-		private Span currentSpan() {
+		private @Nullable Span currentSpan() {
 			return this.tracer.obtain().currentSpan();
 		}
 

@@ -18,6 +18,8 @@ package org.springframework.boot.tracing.autoconfigure;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -59,8 +61,9 @@ class OnEnabledTracingCondition extends SpringBootCondition {
 			.because("tracing is enabled by default"));
 	}
 
-	private static String getExporterName(AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnEnabledTracing.class.getName());
+	private static @Nullable String getExporterName(AnnotatedTypeMetadata metadata) {
+		Map<String, @Nullable Object> attributes = metadata
+			.getAnnotationAttributes(ConditionalOnEnabledTracing.class.getName());
 		if (attributes == null) {
 			return null;
 		}

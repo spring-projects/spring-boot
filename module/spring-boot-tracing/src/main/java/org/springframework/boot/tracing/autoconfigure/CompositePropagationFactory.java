@@ -29,6 +29,7 @@ import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
 import io.micrometer.tracing.BaggageManager;
 import io.micrometer.tracing.brave.bridge.W3CPropagation;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.tracing.autoconfigure.TracingProperties.Propagation.PropagationType;
 
@@ -107,8 +108,8 @@ class CompositePropagationFactory extends Propagation.Factory {
 	 * @param localFields the local fields, or {@code null}
 	 * @return the {@link CompositePropagationFactory}
 	 */
-	static CompositePropagationFactory create(TracingProperties.Propagation properties, BaggageManager baggageManager,
-			LocalBaggageFields localFields) {
+	static CompositePropagationFactory create(TracingProperties.Propagation properties,
+			@Nullable BaggageManager baggageManager, @Nullable LocalBaggageFields localFields) {
 		PropagationFactoryMapper mapper = new PropagationFactoryMapper(baggageManager, localFields);
 		List<Factory> injectors = properties.getEffectiveProducedTypes().stream().map(mapper::map).toList();
 		List<Factory> extractors = properties.getEffectiveConsumedTypes().stream().map(mapper::map).toList();
@@ -121,11 +122,11 @@ class CompositePropagationFactory extends Propagation.Factory {
 	 */
 	private static class PropagationFactoryMapper {
 
-		private final BaggageManager baggageManager;
+		private final @Nullable BaggageManager baggageManager;
 
 		private final LocalBaggageFields localFields;
 
-		PropagationFactoryMapper(BaggageManager baggageManager, LocalBaggageFields localFields) {
+		PropagationFactoryMapper(@Nullable BaggageManager baggageManager, @Nullable LocalBaggageFields localFields) {
 			this.baggageManager = baggageManager;
 			this.localFields = (localFields != null) ? localFields : LocalBaggageFields.empty();
 		}

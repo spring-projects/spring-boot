@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -204,7 +206,7 @@ public class TracingProperties {
 		 * Setting this property overrides the more fine-grained propagation type
 		 * properties.
 		 */
-		private List<PropagationType> type;
+		private @Nullable List<PropagationType> type;
 
 		/**
 		 * Tracing context propagation types produced by the application.
@@ -216,7 +218,7 @@ public class TracingProperties {
 		 */
 		private List<PropagationType> consume = List.of(PropagationType.values());
 
-		public void setType(List<PropagationType> type) {
+		public void setType(@Nullable List<PropagationType> type) {
 			this.type = type;
 		}
 
@@ -228,7 +230,7 @@ public class TracingProperties {
 			this.consume = consume;
 		}
 
-		public List<PropagationType> getType() {
+		public @Nullable List<PropagationType> getType() {
 			return this.type;
 		}
 

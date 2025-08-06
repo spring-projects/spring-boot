@@ -24,6 +24,7 @@ import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.ContextStorage;
 import io.opentelemetry.context.Scope;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.context.ApplicationContext;
@@ -122,7 +123,7 @@ public class OpenTelemetryEventPublisherBeansApplicationListener implements Gene
 
 		private final MultiValueMap<ApplicationContext, EventPublishingContextWrapper> beans = new LinkedMultiValueMap<>();
 
-		private volatile ContextStorage storageDelegate;
+		private volatile @Nullable ContextStorage storageDelegate;
 
 		private Wrapper() {
 		}
@@ -181,7 +182,7 @@ public class OpenTelemetryEventPublisherBeansApplicationListener implements Gene
 			}
 
 			@Override
-			public Context current() {
+			public @Nullable Context current() {
 				return getDelegate().current();
 			}
 

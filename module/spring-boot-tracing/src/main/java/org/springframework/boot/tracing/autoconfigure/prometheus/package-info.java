@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Prometheus Exemplars with Micrometer Tracing.
  */
+@NullMarked
 package org.springframework.boot.tracing.autoconfigure.prometheus;
+
+import org.jspecify.annotations.NullMarked;

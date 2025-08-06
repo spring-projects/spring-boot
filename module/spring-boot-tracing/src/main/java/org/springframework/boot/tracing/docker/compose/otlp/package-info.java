@@ -17,4 +17,7 @@
 /**
  * Support for Docker Compose OpenTelemetry tracing service connections.
  */
+@NullMarked
 package org.springframework.boot.tracing.docker.compose.otlp;
+
+import org.jspecify.annotations.NullMarked;
