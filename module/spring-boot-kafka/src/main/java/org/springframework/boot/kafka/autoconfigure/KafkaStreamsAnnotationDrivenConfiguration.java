@@ -87,12 +87,11 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		KafkaAutoConfiguration.applySslBundle(properties, streams.getSslBundle());
 	}
 
-	private static final class KafkaPropertiesStreamsBuilderFactoryBeanConfigurer
-			implements StreamsBuilderFactoryBeanConfigurer {
+	static class KafkaPropertiesStreamsBuilderFactoryBeanConfigurer implements StreamsBuilderFactoryBeanConfigurer {
 
 		private final KafkaProperties properties;
 
-		private KafkaPropertiesStreamsBuilderFactoryBeanConfigurer(KafkaProperties properties) {
+		KafkaPropertiesStreamsBuilderFactoryBeanConfigurer(KafkaProperties properties) {
 			this.properties = properties;
 		}
 
