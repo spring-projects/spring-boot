@@ -19,9 +19,13 @@ package org.springframework.boot.webmvc.actuate.mappings;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.condition.MediaTypeExpression;
 import org.springframework.web.servlet.mvc.condition.NameValueExpression;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 /**
@@ -73,8 +77,12 @@ public class RequestMappingConditionsDescription {
 	private Set<String> extractPathPatterns(RequestMappingInfo requestMapping) {
 		org.springframework.web.servlet.mvc.condition.PatternsRequestCondition patternsCondition = requestMapping
 			.getPatternsCondition();
-		return (patternsCondition != null) ? patternsCondition.getPatterns()
-				: requestMapping.getPathPatternsCondition().getPatternValues();
+		if (patternsCondition != null) {
+			return patternsCondition.getPatterns();
+		}
+		PathPatternsRequestCondition condition = requestMapping.getPathPatternsCondition();
+		Assert.state(condition != null, "'condition' must not be null");
+		return condition.getPatternValues();
 	}
 
 	public List<MediaTypeExpressionDescription> getConsumes() {
@@ -132,7 +140,7 @@ public class RequestMappingConditionsDescription {
 
 		private final String name;
 
-		private final Object value;
+		private final @Nullable Object value;
 
 		private final boolean negated;
 
@@ -146,7 +154,7 @@ public class RequestMappingConditionsDescription {
 			return this.name;
 		}
 
-		public Object getValue() {
+		public @Nullable Object getValue() {
 			return this.value;
 		}
 

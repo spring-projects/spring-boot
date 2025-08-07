@@ -28,6 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import jakarta.servlet.Servlet;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
@@ -272,7 +273,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			this.bindingRegistrar.registerReflectionHints(hints.reflection(),
 					DispatcherServletMappingDescription.class);
 		}

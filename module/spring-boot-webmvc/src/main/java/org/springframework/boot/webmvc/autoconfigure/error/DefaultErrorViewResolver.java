@@ -22,6 +22,7 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
@@ -97,7 +98,8 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	}
 
 	@Override
-	public ModelAndView resolveErrorView(HttpServletRequest request, HttpStatus status, Map<String, Object> model) {
+	public @Nullable ModelAndView resolveErrorView(HttpServletRequest request, HttpStatus status,
+			Map<String, Object> model) {
 		ModelAndView modelAndView = resolve(String.valueOf(status.value()), model);
 		if (modelAndView == null && SERIES_VIEWS.containsKey(status.series())) {
 			modelAndView = resolve(SERIES_VIEWS.get(status.series()), model);
@@ -105,7 +107,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		return modelAndView;
 	}
 
-	private ModelAndView resolve(String viewName, Map<String, Object> model) {
+	private @Nullable ModelAndView resolve(String viewName, Map<String, Object> model) {
 		String errorViewName = "error/" + viewName;
 		TemplateAvailabilityProvider provider = this.templateAvailabilityProviders.getProvider(errorViewName,
 				this.applicationContext);
@@ -115,7 +117,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		return resolveResource(errorViewName, model);
 	}
 
-	private ModelAndView resolveResource(String viewName, Map<String, Object> model) {
+	private @Nullable ModelAndView resolveResource(String viewName, Map<String, Object> model) {
 		for (String location : this.resources.getStaticLocations()) {
 			try {
 				Resource resource = this.applicationContext.getResource(location);
@@ -157,7 +159,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		}
 
 		@Override
-		public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
+		public void render(@Nullable Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
 			response.setContentType(getContentType());
 			FileCopyUtils.copy(this.resource.getInputStream(), response.getOutputStream());

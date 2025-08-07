@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import io.undertow.servlet.api.DeploymentManager;
 import jakarta.servlet.ServletException;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -133,7 +134,10 @@ final class DispatcherServletHandlerMappings {
 
 		void initializeServlet(String name) {
 			try {
-				this.webServer.getDeploymentManager().getDeployment().getServlets().getManagedServlet(name).forceInit();
+				DeploymentManager deploymentManager = this.webServer.getDeploymentManager();
+				if (deploymentManager != null) {
+					deploymentManager.getDeployment().getServlets().getManagedServlet(name).forceInit();
+				}
 			}
 			catch (ServletException ex) {
 				// Continue

@@ -18,6 +18,7 @@ package org.springframework.boot.webmvc.autoconfigure;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -25,6 +26,7 @@ import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -74,9 +76,12 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.lang.Contract;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -201,9 +206,9 @@ public final class WebMvcAutoConfiguration {
 
 		private final ObjectProvider<ServletRegistrationBean<?>> servletRegistrations;
 
-		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+		private final @Nullable ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		private ServletContext servletContext;
+		private @Nullable ServletContext servletContext;
 
 		private final ObjectProvider<ApiVersionResolver> apiVersionResolvers;
 
@@ -328,7 +333,7 @@ public final class WebMvcAutoConfiguration {
 		}
 
 		@Override
-		public MessageCodesResolver getMessageCodesResolver() {
+		public @Nullable MessageCodesResolver getMessageCodesResolver() {
 			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
 				DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
 				resolver.setMessageCodeFormatter(this.mvcProperties.getMessageCodesResolverFormat());
@@ -370,13 +375,20 @@ public final class WebMvcAutoConfiguration {
 			}
 			ResourceHandlerRegistration registration = registry.addResourceHandler(pattern);
 			customizer.accept(registration);
-			registration.setCachePeriod(getSeconds(this.resourceProperties.getCache().getPeriod()));
-			registration.setCacheControl(this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl());
+			Integer cachePeriod = getSeconds(this.resourceProperties.getCache().getPeriod());
+			if (cachePeriod != null) {
+				registration.setCachePeriod(cachePeriod);
+			}
+			CacheControl cacheControl = this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl();
+			if (cacheControl != null) {
+				registration.setCacheControl(cacheControl);
+			}
 			registration.setUseLastModified(this.resourceProperties.getCache().isUseLastModified());
 			customizeResourceHandlerRegistration(registration);
 		}
 
-		private Integer getSeconds(Duration cachePeriod) {
+		@Contract("!null -> !null")
+		private @Nullable Integer getSeconds(@Nullable Duration cachePeriod) {
 			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
 		}
 
@@ -433,8 +445,9 @@ public final class WebMvcAutoConfiguration {
 
 		private final ListableBeanFactory beanFactory;
 
-		private final WebMvcRegistrations mvcRegistrations;
+		private final @Nullable WebMvcRegistrations mvcRegistrations;
 
+		@SuppressWarnings("NullAway.Init")
 		private ResourceLoader resourceLoader;
 
 		EnableWebMvcConfiguration(WebMvcProperties mvcProperties, WebProperties webProperties,
@@ -491,11 +504,13 @@ public final class WebMvcAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
 		public LocaleResolver localeResolver() {
+			Locale locale = this.webProperties.getLocale();
 			if (this.webProperties.getLocaleResolver() == WebProperties.LocaleResolver.FIXED) {
-				return new FixedLocaleResolver(this.webProperties.getLocale());
+				Assert.state(locale != null, "'locale' must not be null");
+				return new FixedLocaleResolver(locale);
 			}
 			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
-			localeResolver.setDefaultLocale(this.webProperties.getLocale());
+			localeResolver.setDefaultLocale(locale);
 			return localeResolver;
 		}
 
@@ -513,7 +528,7 @@ public final class WebMvcAutoConfiguration {
 			return super.viewNameTranslator();
 		}
 
-		private Resource getIndexHtmlResource() {
+		private @Nullable Resource getIndexHtmlResource() {
 			for (String location : this.resourceProperties.getStaticLocations()) {
 				Resource indexHtml = getIndexHtmlResource(location);
 				if (indexHtml != null) {
@@ -527,11 +542,11 @@ public final class WebMvcAutoConfiguration {
 			return null;
 		}
 
-		private Resource getIndexHtmlResource(String location) {
+		private @Nullable Resource getIndexHtmlResource(String location) {
 			return getIndexHtmlResource(this.resourceLoader.getResource(location));
 		}
 
-		private Resource getIndexHtmlResource(Resource location) {
+		private @Nullable Resource getIndexHtmlResource(Resource location) {
 			try {
 				Resource resource = location.createRelative("index.html");
 				if (resource.exists() && (resource.getURL() != null)) {
@@ -564,7 +579,9 @@ public final class WebMvcAutoConfiguration {
 							getClass().getClassLoader())) {
 				return super.mvcValidator();
 			}
-			return ValidatorAdapter.get(getApplicationContext(), getValidator());
+			ApplicationContext applicationContext = getApplicationContext();
+			Assert.state(applicationContext != null, "'applicationContext' must not be null");
+			return ValidatorAdapter.get(applicationContext, getValidator());
 		}
 
 		@Override
@@ -620,7 +637,7 @@ public final class WebMvcAutoConfiguration {
 
 		@Override
 		@ConditionalOnMissingBean(name = "mvcApiVersionStrategy")
-		public ApiVersionStrategy mvcApiVersionStrategy() {
+		public @Nullable ApiVersionStrategy mvcApiVersionStrategy() {
 			return super.mvcApiVersionStrategy();
 		}
 
@@ -642,7 +659,7 @@ public final class WebMvcAutoConfiguration {
 	interface WelcomePageHandlerMappingFactory<T extends AbstractUrlHandlerMapping> {
 
 		T create(TemplateAvailabilityProviders templateAvailabilityProviders, ApplicationContext applicationContext,
-				Resource indexHtmlResource, String staticPathPattern);
+				@Nullable Resource indexHtmlResource, String staticPathPattern);
 
 	}
 
@@ -682,6 +699,7 @@ public final class WebMvcAutoConfiguration {
 			if (properties.getFixed().isEnabled()) {
 				String version = properties.getFixed().getVersion();
 				String[] paths = properties.getFixed().getPaths();
+				Assert.state(version != null, "'version' must not be null");
 				resolver.addFixedVersionStrategy(version, paths);
 			}
 			if (properties.getContent().isEnabled()) {

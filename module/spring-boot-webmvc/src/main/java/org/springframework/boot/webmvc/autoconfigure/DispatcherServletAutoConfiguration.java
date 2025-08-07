@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -132,6 +133,7 @@ public final class DispatcherServletAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Default DispatcherServlet");
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			Assert.state(beanFactory != null, "'beanFactory' must not be null");
 			List<String> dispatchServletBeans = Arrays
 				.asList(beanFactory.getBeanNamesForType(DispatcherServlet.class, false, false));
 			if (dispatchServletBeans.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
@@ -158,6 +160,7 @@ public final class DispatcherServletAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			Assert.state(beanFactory != null, "'beanFactory' must not be null");
 			ConditionOutcome outcome = checkDefaultDispatcherName(beanFactory);
 			if (!outcome.isMatch()) {
 				return outcome;

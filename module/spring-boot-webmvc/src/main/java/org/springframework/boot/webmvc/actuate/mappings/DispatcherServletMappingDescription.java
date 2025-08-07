@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webmvc.actuate.mappings;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -30,9 +32,10 @@ public class DispatcherServletMappingDescription {
 
 	private final String predicate;
 
-	private final DispatcherServletMappingDetails details;
+	private final @Nullable DispatcherServletMappingDetails details;
 
-	DispatcherServletMappingDescription(String predicate, String handler, DispatcherServletMappingDetails details) {
+	DispatcherServletMappingDescription(String predicate, String handler,
+			@Nullable DispatcherServletMappingDetails details) {
 		this.handler = handler;
 		this.predicate = predicate;
 		this.details = details;
@@ -46,7 +49,7 @@ public class DispatcherServletMappingDescription {
 		return this.predicate;
 	}
 
-	public DispatcherServletMappingDetails getDetails() {
+	public @Nullable DispatcherServletMappingDetails getDetails() {
 		return this.details;
 	}
 

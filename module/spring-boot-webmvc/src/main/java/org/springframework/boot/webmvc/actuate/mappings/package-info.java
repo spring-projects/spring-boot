@@ -17,4 +17,7 @@
 /**
  * Actuator request mappings support for Spring MVC.
  */
+@NullMarked
 package org.springframework.boot.webmvc.actuate.mappings;
+
+import org.jspecify.annotations.NullMarked;

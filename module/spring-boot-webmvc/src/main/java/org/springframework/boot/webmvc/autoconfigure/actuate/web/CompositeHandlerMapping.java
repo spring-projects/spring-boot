@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +40,10 @@ class CompositeHandlerMapping implements HandlerMapping {
 	@Autowired
 	private ListableBeanFactory beanFactory;
 
-	private List<HandlerMapping> mappings;
+	private @Nullable List<HandlerMapping> mappings;
 
 	@Override
-	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+	public @Nullable HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		for (HandlerMapping mapping : getMappings()) {
 			HandlerExecutionChain handler = mapping.getHandler(request);
 			if (handler != null) {

@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aop.framework.autoproxy.AutoProxyUtils;
 import org.springframework.beans.BeansException;
@@ -65,6 +66,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Contract;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
@@ -173,9 +176,11 @@ public final class ErrorMvcAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ErrorTemplate Missing");
-			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(context.getClassLoader());
+			ClassLoader classLoader = context.getClassLoader();
+			Assert.state(classLoader != null, "'classLoader' must not be null");
+			TemplateAvailabilityProviders providers = new TemplateAvailabilityProviders(classLoader);
 			TemplateAvailabilityProvider provider = providers.getProvider("error", context.getEnvironment(),
-					context.getClassLoader(), context.getResourceLoader());
+					classLoader, context.getResourceLoader());
 			if (provider != null) {
 				return ConditionOutcome.noMatch(message.foundExactly("template from " + provider));
 			}
@@ -194,8 +199,9 @@ public final class ErrorMvcAutoConfiguration {
 		private static final Log logger = LogFactory.getLog(StaticView.class);
 
 		@Override
-		public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
+		public void render(@Nullable Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
+			Assert.state(model != null, "'model' must not be null");
 			if (response.isCommitted()) {
 				String message = getMessage(model);
 				logger.error(message);
@@ -229,7 +235,8 @@ public final class ErrorMvcAutoConfiguration {
 			response.getWriter().append(builder.toString());
 		}
 
-		private String htmlEscape(Object input) {
+		@Contract("!null -> !null")
+		private @Nullable String htmlEscape(@Nullable Object input) {
 			return (input != null) ? HtmlUtils.htmlEscape(input.toString()) : null;
 		}
 

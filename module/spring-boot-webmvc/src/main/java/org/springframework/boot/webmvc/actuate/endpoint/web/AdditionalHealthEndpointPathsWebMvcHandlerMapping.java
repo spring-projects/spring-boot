@@ -20,7 +20,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
+import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
@@ -37,18 +40,18 @@ import org.springframework.web.servlet.HandlerMapping;
  */
 public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
-	private final ExposableWebEndpoint healthEndpoint;
+	private final @Nullable ExposableWebEndpoint healthEndpoint;
 
 	private final Set<HealthEndpointGroup> groups;
 
-	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint healthEndpoint,
+	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(@Nullable ExposableWebEndpoint healthEndpoint,
 			Set<HealthEndpointGroup> groups) {
-		super(new EndpointMapping(""), asList(healthEndpoint), null, false);
+		super(new EndpointMapping(""), asList(healthEndpoint), new EndpointMediaTypes(), false);
 		this.healthEndpoint = healthEndpoint;
 		this.groups = groups;
 	}
 
-	private static Collection<ExposableWebEndpoint> asList(ExposableWebEndpoint healthEndpoint) {
+	private static Collection<ExposableWebEndpoint> asList(@Nullable ExposableWebEndpoint healthEndpoint) {
 		return (healthEndpoint != null) ? Collections.singletonList(healthEndpoint) : Collections.emptyList();
 	}
 
@@ -73,7 +76,7 @@ public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractW
 
 	@Override
 	protected LinksHandler getLinksHandler() {
-		return null;
+		return (request, response) -> null;
 	}
 
 }

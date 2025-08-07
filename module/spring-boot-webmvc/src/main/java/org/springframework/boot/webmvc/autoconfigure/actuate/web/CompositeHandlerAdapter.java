@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -39,7 +40,7 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 
 	private final ListableBeanFactory beanFactory;
 
-	private List<HandlerAdapter> adapters;
+	private @Nullable List<HandlerAdapter> adapters;
 
 	CompositeHandlerAdapter(ListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
@@ -51,7 +52,7 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 	}
 
 	@Override
-	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
+	public @Nullable ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		Optional<HandlerAdapter> adapter = getAdapter(handler);
 		if (adapter.isPresent()) {
