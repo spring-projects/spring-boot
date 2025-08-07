@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
@@ -62,6 +63,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class JsonComponentModule extends SimpleModule implements BeanFactoryAware, InitializingBean {
 
+	@SuppressWarnings("NullAway.Init")
 	private BeanFactory beanFactory;
 
 	@Override
@@ -129,6 +131,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	private <T> void addJsonSerializerBean(JsonSerializer<T> serializer, JsonComponent.Scope scope, Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonSerializer.class, serializer.getClass())
 			.resolveGeneric();
+		Assert.state(baseType != null, "'baseType' must not be null");
 		addBeanToModule(serializer, baseType, types,
 				(scope == Scope.VALUES) ? this::addSerializer : this::addKeySerializer);
 
@@ -138,6 +141,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	private <T> void addJsonDeserializerBean(JsonDeserializer<T> deserializer, Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonDeserializer.class, deserializer.getClass())
 			.resolveGeneric();
+		Assert.state(baseType != null, "'baseType' must not be null");
 		addBeanToModule(deserializer, baseType, types, this::addDeserializer);
 	}
 
@@ -162,12 +166,13 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	static class JsonComponentBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
 
 		@Override
-		public BeanFactoryInitializationAotContribution processAheadOfTime(
+		public @Nullable BeanFactoryInitializationAotContribution processAheadOfTime(
 				ConfigurableListableBeanFactory beanFactory) {
 			String[] jsonComponents = beanFactory.getBeanNamesForAnnotation(JsonComponent.class);
 			Map<Class<?>, List<Class<?>>> innerComponents = new HashMap<>();
 			for (String jsonComponent : jsonComponents) {
 				Class<?> type = beanFactory.getType(jsonComponent, true);
+				Assert.state(type != null, "'type' must not be null");
 				for (Class<?> declaredClass : type.getDeclaredClasses()) {
 					if (isSuitableInnerClass(declaredClass)) {
 						innerComponents.computeIfAbsent(type, (t) -> new ArrayList<>()).add(declaredClass);

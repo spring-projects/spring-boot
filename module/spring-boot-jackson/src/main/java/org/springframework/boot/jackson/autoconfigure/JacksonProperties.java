@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.EnumFeature;
 import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -50,13 +51,13 @@ public class JacksonProperties {
 	 * Date format string or a fully-qualified date format class name. For instance,
 	 * 'yyyy-MM-dd HH:mm:ss'.
 	 */
-	private String dateFormat;
+	private @Nullable String dateFormat;
 
 	/**
 	 * One of the constants on Jackson's PropertyNamingStrategies. Can also be a
 	 * fully-qualified class name of a PropertyNamingStrategy implementation.
 	 */
-	private String propertyNamingStrategy;
+	private @Nullable String propertyNamingStrategy;
 
 	/**
 	 * Jackson visibility thresholds that can be used to limit which methods (and fields)
@@ -93,45 +94,45 @@ public class JacksonProperties {
 	 * Controls the inclusion of properties during serialization. Configured with one of
 	 * the values in Jackson's JsonInclude.Include enumeration.
 	 */
-	private JsonInclude.Include defaultPropertyInclusion;
+	private JsonInclude.@Nullable Include defaultPropertyInclusion;
 
 	/**
 	 * Global default setting (if any) for leniency.
 	 */
-	private Boolean defaultLeniency;
+	private @Nullable Boolean defaultLeniency;
 
 	/**
 	 * Strategy to use to auto-detect constructor, and in particular behavior with
 	 * single-argument constructors.
 	 */
-	private ConstructorDetectorStrategy constructorDetector;
+	private @Nullable ConstructorDetectorStrategy constructorDetector;
 
 	/**
 	 * Time zone used when formatting dates. For instance, "America/Los_Angeles" or
 	 * "GMT+10".
 	 */
-	private TimeZone timeZone = null;
+	private @Nullable TimeZone timeZone;
 
 	/**
 	 * Locale used for formatting.
 	 */
-	private Locale locale;
+	private @Nullable Locale locale;
 
 	private final Datatype datatype = new Datatype();
 
-	public String getDateFormat() {
+	public @Nullable String getDateFormat() {
 		return this.dateFormat;
 	}
 
-	public void setDateFormat(String dateFormat) {
+	public void setDateFormat(@Nullable String dateFormat) {
 		this.dateFormat = dateFormat;
 	}
 
-	public String getPropertyNamingStrategy() {
+	public @Nullable String getPropertyNamingStrategy() {
 		return this.propertyNamingStrategy;
 	}
 
-	public void setPropertyNamingStrategy(String propertyNamingStrategy) {
+	public void setPropertyNamingStrategy(@Nullable String propertyNamingStrategy) {
 		this.propertyNamingStrategy = propertyNamingStrategy;
 	}
 
@@ -159,43 +160,43 @@ public class JacksonProperties {
 		return this.generator;
 	}
 
-	public JsonInclude.Include getDefaultPropertyInclusion() {
+	public JsonInclude.@Nullable Include getDefaultPropertyInclusion() {
 		return this.defaultPropertyInclusion;
 	}
 
-	public void setDefaultPropertyInclusion(JsonInclude.Include defaultPropertyInclusion) {
+	public void setDefaultPropertyInclusion(JsonInclude.@Nullable Include defaultPropertyInclusion) {
 		this.defaultPropertyInclusion = defaultPropertyInclusion;
 	}
 
-	public Boolean getDefaultLeniency() {
+	public @Nullable Boolean getDefaultLeniency() {
 		return this.defaultLeniency;
 	}
 
-	public void setDefaultLeniency(Boolean defaultLeniency) {
+	public void setDefaultLeniency(@Nullable Boolean defaultLeniency) {
 		this.defaultLeniency = defaultLeniency;
 	}
 
-	public ConstructorDetectorStrategy getConstructorDetector() {
+	public @Nullable ConstructorDetectorStrategy getConstructorDetector() {
 		return this.constructorDetector;
 	}
 
-	public void setConstructorDetector(ConstructorDetectorStrategy constructorDetector) {
+	public void setConstructorDetector(@Nullable ConstructorDetectorStrategy constructorDetector) {
 		this.constructorDetector = constructorDetector;
 	}
 
-	public TimeZone getTimeZone() {
+	public @Nullable TimeZone getTimeZone() {
 		return this.timeZone;
 	}
 
-	public void setTimeZone(TimeZone timeZone) {
+	public void setTimeZone(@Nullable TimeZone timeZone) {
 		this.timeZone = timeZone;
 	}
 
-	public Locale getLocale() {
+	public @Nullable Locale getLocale() {
 		return this.locale;
 	}
 
-	public void setLocale(Locale locale) {
+	public void setLocale(@Nullable Locale locale) {
 		this.locale = locale;
 	}
 

@@ -21,6 +21,8 @@ import java.util.Set;
 
 import javax.lang.model.element.Modifier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.generate.AccessControl;
 import org.springframework.aot.generate.GeneratedMethod;
 import org.springframework.aot.generate.GenerationContext;
@@ -44,7 +46,7 @@ import org.springframework.javapoet.CodeBlock;
 class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistrationAotProcessor {
 
 	@Override
-	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
+	public @Nullable BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		if (registeredBean.getBeanClass().equals(JsonMixinModuleEntries.class)) {
 			return BeanRegistrationAotContribution
 				.withCustomCodeFragments((codeFragments) -> new AotContribution(codeFragments, registeredBean));
@@ -58,7 +60,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 
 		private final RegisteredBean registeredBean;
 
-		private final ClassLoader classLoader;
+		private final @Nullable ClassLoader classLoader;
 
 		AotContribution(BeanRegistrationCodeFragments delegate, RegisteredBean registeredBean) {
 			super(delegate);

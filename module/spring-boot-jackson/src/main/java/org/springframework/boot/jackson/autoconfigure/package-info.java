@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Jackson.
  */
+@NullMarked
 package org.springframework.boot.jackson.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

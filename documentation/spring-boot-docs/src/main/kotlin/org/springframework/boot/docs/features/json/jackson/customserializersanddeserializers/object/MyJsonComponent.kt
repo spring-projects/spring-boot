@@ -42,8 +42,8 @@ class MyJsonComponent {
 		@Throws(IOException::class)
 		override fun deserializeObject(jsonParser: JsonParser, context: DeserializationContext,
 				codec: ObjectCodec, tree: JsonNode): MyObject {
-			val name = nullSafeValue(tree["name"], String::class.java)
-			val age = nullSafeValue(tree["age"], Int::class.java)
+			val name = nullSafeValue(tree["name"], String::class.java) ?: throw IllegalStateException("name is null")
+			val age = nullSafeValue(tree["age"], Int::class.java) ?: throw IllegalStateException("age is null")
 			return MyObject(name, age)
 		}
 	}

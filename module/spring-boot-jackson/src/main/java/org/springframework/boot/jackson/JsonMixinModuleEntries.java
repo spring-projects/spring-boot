@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -77,8 +79,9 @@ public final class JsonMixinModuleEntries {
 			for (String basePackage : basePackages) {
 				if (StringUtils.hasText(basePackage)) {
 					for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
-						Class<?> mixinClass = ClassUtils.resolveClassName(candidate.getBeanClassName(),
-								context.getClassLoader());
+						String beanClassName = candidate.getBeanClassName();
+						Assert.state(beanClassName != null, "'beanClassName' must not be null");
+						Class<?> mixinClass = ClassUtils.resolveClassName(beanClassName, context.getClassLoader());
 						registerMixinClass(builder, mixinClass);
 					}
 				}
@@ -104,12 +107,12 @@ public final class JsonMixinModuleEntries {
 	 * @param classLoader the classloader to use to resolve class name if necessary
 	 * @param action the action to invoke on each type to mixin class entry
 	 */
-	public void doWithEntry(ClassLoader classLoader, BiConsumer<Class<?>, Class<?>> action) {
+	public void doWithEntry(@Nullable ClassLoader classLoader, BiConsumer<Class<?>, Class<?>> action) {
 		this.entries.forEach((type, mixin) -> action.accept(resolveClassNameIfNecessary(type, classLoader),
 				resolveClassNameIfNecessary(mixin, classLoader)));
 	}
 
-	private Class<?> resolveClassNameIfNecessary(Object nameOrType, ClassLoader classLoader) {
+	private Class<?> resolveClassNameIfNecessary(Object nameOrType, @Nullable ClassLoader classLoader) {
 		return (nameOrType instanceof Class<?> type) ? type
 				: ClassUtils.resolveClassName((String) nameOrType, classLoader);
 	}

@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -86,7 +87,8 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 	 * @return the node value or {@code null}
 	 * @since 3.4.0
 	 */
-	protected final <D, R> R nullSafeValue(JsonNode jsonNode, Class<D> type, Function<D, R> mapper) {
+	protected final <D, R> @Nullable R nullSafeValue(@Nullable JsonNode jsonNode, Class<D> type,
+			Function<D, R> mapper) {
 		D value = nullSafeValue(jsonNode, type);
 		return (value != null) ? mapper.apply(value) : null;
 	}
@@ -102,7 +104,7 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 	 * @return the node value or {@code null}
 	 */
 	@SuppressWarnings({ "unchecked" })
-	protected final <D> D nullSafeValue(JsonNode jsonNode, Class<D> type) {
+	protected final <D> @Nullable D nullSafeValue(@Nullable JsonNode jsonNode, Class<D> type) {
 		Assert.notNull(type, "'type' must not be null");
 		if (jsonNode == null) {
 			return null;
