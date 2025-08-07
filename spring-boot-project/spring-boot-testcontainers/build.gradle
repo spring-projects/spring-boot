@@ -65,7 +65,9 @@ dependencies {
 	dockerTestImplementation("org.springframework.data:spring-data-redis")
 	dockerTestImplementation("org.springframework.kafka:spring-kafka")
 	dockerTestImplementation("org.springframework.ldap:spring-ldap-core")
-	dockerTestImplementation("org.springframework.pulsar:spring-pulsar")
+	dockerTestImplementation("org.springframework.pulsar:spring-pulsar") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
@@ -114,7 +116,9 @@ dependencies {
 	testImplementation("org.springframework.amqp:spring-rabbit")
 	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.springframework.kafka:spring-kafka")
-	testImplementation("org.springframework.pulsar:spring-pulsar")
+	testImplementation("org.springframework.pulsar:spring-pulsar") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	testImplementation("org.testcontainers:junit-jupiter")
 }
 

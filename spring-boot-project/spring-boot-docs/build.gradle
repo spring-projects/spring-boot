@@ -160,8 +160,12 @@ dependencies {
 	implementation("org.springframework.kafka:spring-kafka-test") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	implementation("org.springframework.pulsar:spring-pulsar")
-	implementation("org.springframework.pulsar:spring-pulsar-reactive")
+	implementation("org.springframework.pulsar:spring-pulsar") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	implementation("org.springframework.pulsar:spring-pulsar-reactive") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	implementation("org.springframework.restdocs:spring-restdocs-restassured")
 	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
