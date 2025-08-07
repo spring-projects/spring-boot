@@ -28,6 +28,7 @@ import com.gradle.develocity.agent.gradle.test.DevelocityTestConfiguration;
 import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionConfiguration;
 import com.gradle.develocity.agent.gradle.test.TestRetryConfiguration;
 import io.spring.gradle.nullability.NullabilityPlugin;
+import io.spring.gradle.nullability.NullabilityPluginExtension;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
@@ -340,6 +341,15 @@ class JavaConventions {
 
 	private void configureNullability(Project project) {
 		project.getPlugins().apply(NullabilityPlugin.class);
+		NullabilityPluginExtension extension = project.getExtensions().getByType(NullabilityPluginExtension.class);
+		String nullAwayVersion = (String) project.findProperty("nullAwayVersion");
+		if (nullAwayVersion != null) {
+			extension.getNullAwayVersion().set(nullAwayVersion);
+		}
+		String errorProneVersion = (String) project.findProperty("errorProneVersion");
+		if (errorProneVersion != null) {
+			extension.getErrorProneVersion().set(errorProneVersion);
+		}
 	}
 
 }
