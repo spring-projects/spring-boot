@@ -41,6 +41,7 @@ class ConditionEvaluationDeltaLoggingListener
 
 	private static final Log logger = LogFactory.getLog(ConditionEvaluationDeltaLoggingListener.class);
 
+	@SuppressWarnings("NullAway.Init")
 	private volatile ApplicationContext context;
 
 	@Override

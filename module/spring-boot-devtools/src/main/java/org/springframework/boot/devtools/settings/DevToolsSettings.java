@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.core.io.UrlResource;
@@ -45,7 +46,7 @@ public class DevToolsSettings {
 
 	private static final Log logger = DevToolsLogFactory.getLog(DevToolsSettings.class);
 
-	private static DevToolsSettings settings;
+	private static @Nullable DevToolsSettings settings;
 
 	private final List<Pattern> restartIncludePatterns = new ArrayList<>();
 

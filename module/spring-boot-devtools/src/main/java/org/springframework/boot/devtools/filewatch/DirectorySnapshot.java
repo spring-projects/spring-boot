@@ -27,6 +27,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.util.Assert;
 
@@ -73,7 +75,7 @@ class DirectorySnapshot {
 		}
 	}
 
-	ChangedFiles getChangedFiles(DirectorySnapshot snapshot, FileFilter triggerFilter) {
+	ChangedFiles getChangedFiles(DirectorySnapshot snapshot, @Nullable FileFilter triggerFilter) {
 		Assert.notNull(snapshot, "'snapshot' must not be null");
 		File directory = this.directory;
 		Assert.isTrue(snapshot.directory.equals(directory),
@@ -99,7 +101,7 @@ class DirectorySnapshot {
 		return new ChangedFiles(directory, changes);
 	}
 
-	private boolean acceptChangedFile(FileFilter triggerFilter, FileSnapshot file) {
+	private boolean acceptChangedFile(@Nullable FileFilter triggerFilter, FileSnapshot file) {
 		return (triggerFilter == null || !triggerFilter.accept(file.getFile()));
 	}
 
@@ -112,7 +114,7 @@ class DirectorySnapshot {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -125,7 +127,7 @@ class DirectorySnapshot {
 		return super.equals(obj);
 	}
 
-	boolean equals(DirectorySnapshot other, FileFilter filter) {
+	boolean equals(DirectorySnapshot other, @Nullable FileFilter filter) {
 		if (this.directory.equals(other.directory)) {
 			Set<FileSnapshot> ourFiles = filter(this.files, filter);
 			Set<FileSnapshot> otherFiles = filter(other.files, filter);
@@ -134,7 +136,7 @@ class DirectorySnapshot {
 		return false;
 	}
 
-	private Set<FileSnapshot> filter(Set<FileSnapshot> source, FileFilter filter) {
+	private Set<FileSnapshot> filter(Set<FileSnapshot> source, @Nullable FileFilter filter) {
 		if (filter == null) {
 			return source;
 		}

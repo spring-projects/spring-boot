@@ -17,4 +17,7 @@
 /**
  * Application restart support.
  */
+@NullMarked
 package org.springframework.boot.devtools.restart;
+
+import org.jspecify.annotations.NullMarked;

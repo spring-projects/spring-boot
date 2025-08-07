@@ -17,4 +17,7 @@
 /**
  * Server support for a remotely running Spring Boot application.
  */
+@NullMarked
 package org.springframework.boot.devtools.remote.server;
+
+import org.jspecify.annotations.NullMarked;

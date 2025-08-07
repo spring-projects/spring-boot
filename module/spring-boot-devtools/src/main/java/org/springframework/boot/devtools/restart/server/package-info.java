@@ -17,4 +17,7 @@
 /**
  * Remote restart server.
  */
+@NullMarked
 package org.springframework.boot.devtools.restart.server;
+
+import org.jspecify.annotations.NullMarked;

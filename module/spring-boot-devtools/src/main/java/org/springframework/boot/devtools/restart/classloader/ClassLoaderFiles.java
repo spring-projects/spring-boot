@@ -16,6 +16,7 @@
 
 package org.springframework.boot.devtools.restart.classloader;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +26,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.management.loading.ClassLoaderRepository;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -133,7 +136,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	}
 
 	@Override
-	public ClassLoaderFile getFile(String name) {
+	public @Nullable ClassLoaderFile getFile(String name) {
 		for (SourceDirectory sourceDirectory : this.sourceDirectories.values()) {
 			ClassLoaderFile file = sourceDirectory.get(name);
 			if (file != null) {
@@ -148,6 +151,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 */
 	public static class SourceDirectory implements Serializable {
 
+		@Serial
 		private static final long serialVersionUID = 1;
 
 		private final String name;
@@ -170,7 +174,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 			this.files.remove(name);
 		}
 
-		protected final ClassLoaderFile get(String name) {
+		protected final @Nullable ClassLoaderFile get(String name) {
 			return this.files.get(name);
 		}
 

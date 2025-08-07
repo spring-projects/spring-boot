@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
@@ -123,7 +124,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		return false;
 	}
 
-	private Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
+	private @Nullable Class<?> resolveClassName(String candidate, ClassLoader classLoader) {
 		try {
 			return ClassUtils.resolveClassName(candidate, classLoader);
 		}

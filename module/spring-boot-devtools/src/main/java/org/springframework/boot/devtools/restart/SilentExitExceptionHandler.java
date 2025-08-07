@@ -20,6 +20,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * {@link UncaughtExceptionHandler} decorator that allows a thread to exit silently.
  *
@@ -28,9 +30,9 @@ import java.util.Arrays;
  */
 class SilentExitExceptionHandler implements UncaughtExceptionHandler {
 
-	private final UncaughtExceptionHandler delegate;
+	private final @Nullable UncaughtExceptionHandler delegate;
 
-	SilentExitExceptionHandler(UncaughtExceptionHandler delegate) {
+	SilentExitExceptionHandler(@Nullable UncaughtExceptionHandler delegate) {
 		this.delegate = delegate;
 	}
 

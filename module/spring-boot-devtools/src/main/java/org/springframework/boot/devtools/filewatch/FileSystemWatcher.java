@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -58,11 +60,11 @@ public class FileSystemWatcher {
 
 	private final AtomicInteger remainingScans = new AtomicInteger(-1);
 
-	private final Map<File, DirectorySnapshot> directories = new HashMap<>();
+	private final Map<File, @Nullable DirectorySnapshot> directories = new HashMap<>();
 
-	private Thread watchThread;
+	private @Nullable Thread watchThread;
 
-	private FileFilter triggerFilter;
+	private @Nullable FileFilter triggerFilter;
 
 	private final Object monitor = new Object();
 
@@ -94,7 +96,7 @@ public class FileSystemWatcher {
 	 * @since 2.4.0
 	 */
 	public FileSystemWatcher(boolean daemon, Duration pollInterval, Duration quietPeriod,
-			SnapshotStateRepository snapshotStateRepository) {
+			@Nullable SnapshotStateRepository snapshotStateRepository) {
 		Assert.notNull(pollInterval, "'pollInterval' must not be null");
 		Assert.notNull(quietPeriod, "'quietPeriod' must not be null");
 		Assert.isTrue(pollInterval.toMillis() > 0, "'pollInterval' must be positive");
@@ -151,7 +153,7 @@ public class FileSystemWatcher {
 	 * Set an optional {@link FileFilter} used to limit the files that trigger a change.
 	 * @param triggerFilter a trigger filter or null
 	 */
-	public void setTriggerFilter(FileFilter triggerFilter) {
+	public void setTriggerFilter(@Nullable FileFilter triggerFilter) {
 		synchronized (this.monitor) {
 			this.triggerFilter = triggerFilter;
 		}
@@ -227,7 +229,7 @@ public class FileSystemWatcher {
 
 		private final List<FileChangeListener> listeners;
 
-		private final FileFilter triggerFilter;
+		private final @Nullable FileFilter triggerFilter;
 
 		private final long pollInterval;
 
@@ -237,9 +239,9 @@ public class FileSystemWatcher {
 
 		private final SnapshotStateRepository snapshotStateRepository;
 
-		private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners, FileFilter triggerFilter,
-				long pollInterval, long quietPeriod, Map<File, DirectorySnapshot> directories,
-				SnapshotStateRepository snapshotStateRepository) {
+		private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners,
+				@Nullable FileFilter triggerFilter, long pollInterval, long quietPeriod,
+				Map<File, DirectorySnapshot> directories, SnapshotStateRepository snapshotStateRepository) {
 			this.remainingScans = remainingScans;
 			this.listeners = listeners;
 			this.triggerFilter = triggerFilter;
@@ -289,6 +291,7 @@ public class FileSystemWatcher {
 			for (Map.Entry<File, DirectorySnapshot> entry : previous.entrySet()) {
 				DirectorySnapshot previousDirectory = entry.getValue();
 				DirectorySnapshot currentDirectory = current.get(entry.getKey());
+				Assert.state(currentDirectory != null, "'currentDirectory' must not be null");
 				if (!previousDirectory.equals(currentDirectory, this.triggerFilter)) {
 					return true;
 				}
@@ -310,6 +313,7 @@ public class FileSystemWatcher {
 			for (DirectorySnapshot snapshot : snapshots) {
 				DirectorySnapshot previous = this.directories.get(snapshot.getDirectory());
 				updated.put(snapshot.getDirectory(), snapshot);
+				Assert.state(previous != null, "'previous' must not be null");
 				ChangedFiles changedFiles = previous.getChangedFiles(snapshot, this.triggerFilter);
 				if (!changedFiles.getFiles().isEmpty()) {
 					changeSet.add(changedFiles);

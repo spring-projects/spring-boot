@@ -38,6 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.ObjectFactory;
@@ -86,7 +87,7 @@ public class Restarter {
 
 	private static final String[] NO_ARGS = {};
 
-	private static Restarter instance;
+	private static @Nullable Restarter instance;
 
 	private final Set<URL> urls = new LinkedHashSet<>();
 
@@ -106,9 +107,9 @@ public class Restarter {
 
 	private boolean enabled = true;
 
-	private final URL[] initialUrls;
+	private final URL @Nullable [] initialUrls;
 
-	private final String mainClassName;
+	private final @Nullable String mainClassName;
 
 	private final ClassLoader applicationClassLoader;
 
@@ -145,7 +146,7 @@ public class Restarter {
 		this.leakSafeThreads.add(new LeakSafeThread());
 	}
 
-	private String getMainClassName(Thread thread) {
+	private @Nullable String getMainClassName(Thread thread) {
 		try {
 			return new MainMethod(thread).getDeclaringClassName();
 		}
@@ -170,7 +171,7 @@ public class Restarter {
 			getLeakSafeThread().callAndWait(() -> {
 				start(FailureHandler.NONE);
 				cleanupCaches();
-				return null;
+				return new Object();
 			});
 		}
 		catch (Exception ex) {
@@ -249,7 +250,7 @@ public class Restarter {
 		getLeakSafeThread().call(() -> {
 			Restarter.this.stop();
 			Restarter.this.start(failureHandler);
-			return null;
+			return new Object();
 		});
 	}
 
@@ -271,7 +272,7 @@ public class Restarter {
 		while (true);
 	}
 
-	private Throwable doStart() throws Exception {
+	private @Nullable Throwable doStart() throws Exception {
 		Assert.state(this.mainClassName != null, "Unable to find the main class to restart");
 		URL[] urls = this.urls.toArray(new URL[0]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
@@ -288,7 +289,8 @@ public class Restarter {
 	 * @return any exception that caused the launch to fail or {@code null}
 	 * @throws Exception in case of errors
 	 */
-	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
+	protected @Nullable Throwable relaunch(ClassLoader classLoader) throws Exception {
+		Assert.state(this.mainClassName != null, "'mainClassName' must not be null");
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName, this.args,
 				this.exceptionHandler);
 		launcher.start();
@@ -417,7 +419,7 @@ public class Restarter {
 		this.rootContexts.add(applicationContext);
 	}
 
-	void remove(ConfigurableApplicationContext applicationContext) {
+	void remove(@Nullable ConfigurableApplicationContext applicationContext) {
 		if (applicationContext != null) {
 			this.rootContexts.remove(applicationContext);
 		}
@@ -456,7 +458,7 @@ public class Restarter {
 	 * Return the initial set of URLs as configured by the {@link RestartInitializer}.
 	 * @return the initial URLs or {@code null}
 	 */
-	public URL[] getInitialUrls() {
+	public URL @Nullable [] getInitialUrls() {
 		return this.initialUrls;
 	}
 
@@ -575,9 +577,9 @@ public class Restarter {
 	 */
 	private class LeakSafeThread extends Thread {
 
-		private Callable<?> callable;
+		private @Nullable Callable<?> callable;
 
-		private Object result;
+		private @Nullable Object result;
 
 		LeakSafeThread() {
 			setDaemon(false);
@@ -594,6 +596,7 @@ public class Restarter {
 			start();
 			try {
 				join();
+				Assert.state(this.result != null, "'this.result' must not be null");
 				return (V) this.result;
 			}
 			catch (InterruptedException ex) {
@@ -609,6 +612,7 @@ public class Restarter {
 			// RestartClassLoader
 			try {
 				Restarter.this.leakSafeThreads.put(new LeakSafeThread());
+				Assert.state(this.callable != null, "'callable' must not be null");
 				this.result = this.callable.call();
 			}
 			catch (Exception ex) {

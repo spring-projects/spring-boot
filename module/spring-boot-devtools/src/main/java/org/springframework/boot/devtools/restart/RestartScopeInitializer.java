@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.restart;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 import org.springframework.context.ApplicationContextInitializer;
@@ -54,12 +56,12 @@ public class RestartScopeInitializer implements ApplicationContextInitializer<Co
 		}
 
 		@Override
-		public Object resolveContextualObject(String key) {
+		public @Nullable Object resolveContextualObject(String key) {
 			return null;
 		}
 
 		@Override
-		public String getConversationId() {
+		public @Nullable String getConversationId() {
 			return null;
 		}
 

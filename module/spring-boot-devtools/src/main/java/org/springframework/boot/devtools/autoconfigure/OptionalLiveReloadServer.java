@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.autoconfigure;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
@@ -34,13 +35,13 @@ public class OptionalLiveReloadServer implements InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(OptionalLiveReloadServer.class);
 
-	private LiveReloadServer server;
+	private @Nullable LiveReloadServer server;
 
 	/**
 	 * Create a new {@link OptionalLiveReloadServer} instance.
 	 * @param server the server to manage or {@code null}
 	 */
-	public OptionalLiveReloadServer(LiveReloadServer server) {
+	public OptionalLiveReloadServer(@Nullable LiveReloadServer server) {
 		this.server = server;
 	}
 

@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -46,7 +48,7 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 		return isMatch(sourceDirectory, jarName);
 	}
 
-	private String getJarName(URL url) {
+	private @Nullable String getJarName(URL url) {
 		Matcher matcher = URL_MODULE_PATTERN.matcher(url.toString());
 		if (matcher.find()) {
 			return matcher.group(1);

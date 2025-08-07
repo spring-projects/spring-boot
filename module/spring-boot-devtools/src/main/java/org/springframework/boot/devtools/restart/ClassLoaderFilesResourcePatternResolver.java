@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFileURLStreamHandler;
@@ -77,7 +79,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 			.getResourcePatternResolver(applicationContext, retrieveResourceLoader(applicationContext));
 	}
 
-	private ResourceLoader retrieveResourceLoader(ApplicationContext applicationContext) {
+	private @Nullable ResourceLoader retrieveResourceLoader(ApplicationContext applicationContext) {
 		Field field = ReflectionUtils.findField(applicationContext.getClass(), "resourceLoader", ResourceLoader.class);
 		if (field == null) {
 			return null;
@@ -94,7 +96,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	}
 
 	@Override
-	public ClassLoader getClassLoader() {
+	public @Nullable ClassLoader getClassLoader() {
 		return this.patternResolverDelegate.getClassLoader();
 	}
 
@@ -200,7 +202,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	private static class ResourcePatternResolverFactory {
 
 		ResourcePatternResolver getResourcePatternResolver(AbstractApplicationContext applicationContext,
-				ResourceLoader resourceLoader) {
+				@Nullable ResourceLoader resourceLoader) {
 			ResourceLoader targetResourceLoader = (resourceLoader != null) ? resourceLoader
 					: new ApplicationContextResourceLoader(applicationContext::getProtocolResolvers);
 			return new PathMatchingResourcePatternResolver(targetResourceLoader);
@@ -216,7 +218,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 		@Override
 		public ResourcePatternResolver getResourcePatternResolver(AbstractApplicationContext applicationContext,
-				ResourceLoader resourceLoader) {
+				@Nullable ResourceLoader resourceLoader) {
 			if (applicationContext instanceof WebApplicationContext) {
 				return getServletContextResourcePatternResolver(applicationContext, resourceLoader);
 			}
@@ -224,7 +226,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 		}
 
 		private ResourcePatternResolver getServletContextResourcePatternResolver(
-				AbstractApplicationContext applicationContext, ResourceLoader resourceLoader) {
+				AbstractApplicationContext applicationContext, @Nullable ResourceLoader resourceLoader) {
 			ResourceLoader targetResourceLoader = (resourceLoader != null) ? resourceLoader
 					: new WebApplicationContextResourceLoader(applicationContext::getProtocolResolvers,
 							(WebApplicationContext) applicationContext);

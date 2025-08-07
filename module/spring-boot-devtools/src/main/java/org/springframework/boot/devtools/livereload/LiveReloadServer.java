@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
@@ -63,9 +64,9 @@ public class LiveReloadServer {
 
 	private final ThreadFactory threadFactory;
 
-	private ServerSocket serverSocket;
+	private @Nullable ServerSocket serverSocket;
 
-	private Thread listenThread;
+	private @Nullable Thread listenThread;
 
 	/**
 	 * Create a new {@link LiveReloadServer} listening on the default port.
@@ -140,6 +141,7 @@ public class LiveReloadServer {
 	}
 
 	private void acceptConnections() {
+		Assert.state(this.serverSocket != null, "'serverSocket' must not be null");
 		do {
 			try {
 				Socket socket = this.serverSocket.accept();
@@ -173,6 +175,7 @@ public class LiveReloadServer {
 				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
 				}
+				Assert.state(this.serverSocket != null, "'serverSocket' must not be null");
 				this.serverSocket.close();
 				try {
 					this.listenThread.join();

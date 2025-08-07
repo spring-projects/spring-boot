@@ -18,6 +18,8 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -82,7 +84,7 @@ public final class ChangedFile {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == this) {
 			return true;
 		}

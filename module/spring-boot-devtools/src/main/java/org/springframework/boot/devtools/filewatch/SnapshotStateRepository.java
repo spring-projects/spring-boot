@@ -16,6 +16,8 @@
 
 package org.springframework.boot.devtools.filewatch;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Repository used by {@link FileSystemWatcher} to save file/directory snapshots across
  * restarts.
@@ -35,7 +37,7 @@ public interface SnapshotStateRepository {
 		}
 
 		@Override
-		public Object restore() {
+		public @Nullable Object restore() {
 			return null;
 		}
 
@@ -57,6 +59,6 @@ public interface SnapshotStateRepository {
 	 * Restore any previously saved state.
 	 * @return the previously saved state or {@code null}
 	 */
-	Object restore();
+	@Nullable Object restore();
 
 }

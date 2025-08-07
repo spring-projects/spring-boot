@@ -155,6 +155,7 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 
 	private ClassLoaderFile asClassLoaderFile(ChangedFile changedFile) throws IOException {
 		ClassLoaderFile.Kind kind = TYPE_MAPPINGS.get(changedFile.getType());
+		Assert.state(kind != null, "'kind' must not be null");
 		byte[] bytes = (kind != Kind.DELETED) ? FileCopyUtils.copyToByteArray(changedFile.getFile()) : null;
 		long lastModified = (kind != Kind.DELETED) ? changedFile.getFile().lastModified() : System.currentTimeMillis();
 		return new ClassLoaderFile(kind, lastModified, bytes);

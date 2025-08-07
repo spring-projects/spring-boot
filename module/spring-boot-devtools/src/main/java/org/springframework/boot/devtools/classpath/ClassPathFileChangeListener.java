@@ -18,6 +18,8 @@ package org.springframework.boot.devtools.classpath;
 
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.filewatch.FileChangeListener;
@@ -39,7 +41,7 @@ class ClassPathFileChangeListener implements FileChangeListener {
 
 	private final ClassPathRestartStrategy restartStrategy;
 
-	private final FileSystemWatcher fileSystemWatcherToStop;
+	private final @Nullable FileSystemWatcher fileSystemWatcherToStop;
 
 	/**
 	 * Create a new {@link ClassPathFileChangeListener} instance.
@@ -49,7 +51,7 @@ class ClassPathFileChangeListener implements FileChangeListener {
 	 * {@code null})
 	 */
 	ClassPathFileChangeListener(ApplicationEventPublisher eventPublisher, ClassPathRestartStrategy restartStrategy,
-			FileSystemWatcher fileSystemWatcherToStop) {
+			@Nullable FileSystemWatcher fileSystemWatcherToStop) {
 		Assert.notNull(eventPublisher, "'eventPublisher' must not be null");
 		Assert.notNull(restartStrategy, "'restartStrategy' must not be null");
 		this.eventPublisher = eventPublisher;
