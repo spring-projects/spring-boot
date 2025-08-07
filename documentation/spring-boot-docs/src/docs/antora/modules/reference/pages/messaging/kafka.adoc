@@ -74,6 +74,8 @@ include-code::MyKafkaStreamsConfiguration[]
 By default, the streams managed by the javadoc:org.apache.kafka.streams.StreamsBuilder[] object are started automatically.
 You can customize this behavior using the configprop:spring.kafka.streams.auto-startup[] property.
 
+TIP: You can also register an arbitrary number of beans that implement javadoc:org.springframework.kafka.config.StreamsBuilderFactoryBeanConfigurer[] for more advanced customizations.
+
 
 
 [[messaging.kafka.additional-properties]]

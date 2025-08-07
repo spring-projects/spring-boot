@@ -69,6 +69,8 @@ import org.springframework.kafka.config.ContainerCustomizer;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean.Listener;
+import org.springframework.kafka.config.StreamsBuilderFactoryBeanConfigurer;
 import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -455,6 +457,29 @@ class KafkaAutoConfigurationTests {
 				assertThat(configs).containsEntry("fiz.buz", "fix.fox");
 				assertThat(context.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME))
 					.isNotNull();
+			});
+	}
+
+	@Test
+	void streamsBuilderFactoryBeanConfigurerIsApplied() {
+		Listener listener = mock(Listener.class);
+		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+			// user's StreamsBuilderFactoryBeanConfigurer must be invoked after the
+			// default one
+			.withBean(StreamsBuilderFactoryBeanConfigurer.class, () -> (factoryBean) -> {
+				assertThat(factoryBean.isAutoStartup()).isFalse();
+				assertThat(factoryBean).extracting("cleanupConfig.onStart").isEqualTo(true);
+				assertThat(factoryBean).extracting("cleanupConfig.onStop").isEqualTo(true);
+				factoryBean.addListener(listener);
+			})
+			.withPropertyValues("spring.kafka.client-id=cid",
+					"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.application.name=appName",
+					"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.cleanup.on-shutdown=true",
+					"spring.kafka.streams.cleanup.on-startup=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(StreamsBuilderFactoryBean.class);
+				StreamsBuilderFactoryBean streamsBuilderFactoryBean = context.getBean(StreamsBuilderFactoryBean.class);
+				assertThat(streamsBuilderFactoryBean.getListeners()).hasSize(1);
 			});
 	}
 
