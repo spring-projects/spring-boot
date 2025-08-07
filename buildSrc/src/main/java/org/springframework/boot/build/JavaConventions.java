@@ -256,7 +256,8 @@ class JavaConventions {
 		project.getTasks().withType(Format.class, (Format) -> Format.setEncoding("UTF-8"));
 		project.getPlugins().apply(CheckstylePlugin.class);
 		CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
-		checkstyle.setToolVersion("10.12.4");
+		String checkstyleToolVersion = (String) project.findProperty("checkstyleToolVersion");
+		checkstyle.setToolVersion(checkstyleToolVersion);
 		checkstyle.getConfigDirectory().set(project.getRootProject().file("config/checkstyle"));
 		String version = SpringJavaFormatPlugin.class.getPackage().getImplementationVersion();
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
