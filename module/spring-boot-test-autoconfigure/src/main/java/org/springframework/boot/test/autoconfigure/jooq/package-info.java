@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for jOOQ tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.jooq;
+
+import org.jspecify.annotations.NullMarked;

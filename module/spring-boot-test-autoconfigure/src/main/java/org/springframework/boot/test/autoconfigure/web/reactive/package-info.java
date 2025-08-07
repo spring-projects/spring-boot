@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for reactive web tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.web.reactive;
+
+import org.jspecify.annotations.NullMarked;

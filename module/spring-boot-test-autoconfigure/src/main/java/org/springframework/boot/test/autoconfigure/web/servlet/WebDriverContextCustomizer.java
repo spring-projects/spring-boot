@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -35,7 +37,7 @@ class WebDriverContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == this) {
 			return true;
 		}

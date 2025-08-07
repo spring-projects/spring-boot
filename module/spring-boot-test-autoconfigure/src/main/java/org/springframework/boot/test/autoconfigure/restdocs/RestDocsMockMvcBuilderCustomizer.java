@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcBuilderCustomizer;
@@ -36,10 +38,10 @@ public class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockM
 
 	private final MockMvcRestDocumentationConfigurer delegate;
 
-	private final RestDocumentationResultHandler resultHandler;
+	private final @Nullable RestDocumentationResultHandler resultHandler;
 
 	RestDocsMockMvcBuilderCustomizer(RestDocsProperties properties, MockMvcRestDocumentationConfigurer delegate,
-			RestDocumentationResultHandler resultHandler) {
+			@Nullable RestDocumentationResultHandler resultHandler) {
 		this.properties = properties;
 		this.delegate = delegate;
 		this.resultHandler = resultHandler;

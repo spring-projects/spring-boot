@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for JSON tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.json;
+
+import org.jspecify.annotations.NullMarked;

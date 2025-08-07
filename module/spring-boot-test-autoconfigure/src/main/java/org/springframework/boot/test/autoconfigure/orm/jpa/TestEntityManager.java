@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure.orm.jpa;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceUnitUtil;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.util.Assert;
@@ -55,7 +56,7 @@ public class TestEntityManager {
 	 * @param entity the source entity
 	 * @return the ID of the newly persisted entity
 	 */
-	public Object persistAndGetId(Object entity) {
+	public @Nullable Object persistAndGetId(Object entity) {
 		persist(entity);
 		return getId(entity);
 	}
@@ -72,7 +73,7 @@ public class TestEntityManager {
 	 * @param idType the ID type
 	 * @return the ID of the newly persisted entity
 	 */
-	public <T> T persistAndGetId(Object entity, Class<T> idType) {
+	public <T> @Nullable T persistAndGetId(Object entity, Class<T> idType) {
 		persist(entity);
 		return getId(entity, idType);
 	}
@@ -159,7 +160,7 @@ public class TestEntityManager {
 	 * @return the found entity or {@code null} if the entity does not exist
 	 * @see #getId(Object)
 	 */
-	public <E> E find(Class<E> entityClass, Object primaryKey) {
+	public <E> @Nullable E find(Class<E> entityClass, Object primaryKey) {
 		return getEntityManager().find(entityClass, primaryKey);
 	}
 
@@ -207,7 +208,7 @@ public class TestEntityManager {
 	 * @return the ID of the entity or {@code null}
 	 * @see #getId(Object, Class)
 	 */
-	public Object getId(Object entity) {
+	public @Nullable Object getId(Object entity) {
 		return this.entityManagerFactory.getPersistenceUnitUtil().getIdentifier(entity);
 	}
 
@@ -221,7 +222,7 @@ public class TestEntityManager {
 	 * @see #getId(Object)
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T getId(Object entity, Class<T> idType) {
+	public <T> @Nullable T getId(Object entity, Class<T> idType) {
 		Object id = getId(entity);
 		Assert.isInstanceOf(idType, id, "ID mismatch:");
 		return (T) id;

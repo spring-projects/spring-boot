@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Data Mongo tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.data.mongo;
+
+import org.jspecify.annotations.NullMarked;

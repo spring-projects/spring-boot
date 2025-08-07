@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.web.server.test.client.reactive.WebTestClientBuilderCustomizer;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -57,7 +59,7 @@ class RestDocsWebTestClientBuilderCustomizer implements WebTestClientBuilderCust
 		builder.baseUrl(baseUrl);
 	}
 
-	private boolean isStandardPort(String scheme, Integer port) {
+	private boolean isStandardPort(@Nullable String scheme, @Nullable Integer port) {
 		if (port == null) {
 			return true;
 		}

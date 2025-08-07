@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for web service server tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.webservices.server;
+
+import org.jspecify.annotations.NullMarked;

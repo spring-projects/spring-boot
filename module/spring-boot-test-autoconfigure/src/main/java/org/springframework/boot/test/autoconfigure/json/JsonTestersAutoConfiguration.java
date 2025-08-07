@@ -18,10 +18,12 @@ package org.springframework.boot.test.autoconfigure.json;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
@@ -49,6 +51,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -154,9 +157,9 @@ public final class JsonTestersAutoConfiguration {
 
 		private final Class<?> objectType;
 
-		private final M marshaller;
+		private final @Nullable M marshaller;
 
-		JsonTesterFactoryBean(Class<?> objectType, M marshaller) {
+		JsonTesterFactoryBean(Class<?> objectType, @Nullable M marshaller) {
 			this.objectType = objectType;
 			this.marshaller = marshaller;
 		}
@@ -232,12 +235,12 @@ public final class JsonTestersAutoConfiguration {
 		}
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			ReflectionHints reflection = hints.reflection();
 			reflection.registerType(this.tester, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
-			reflection.registerMethod(
-					ReflectionUtils.findMethod(this.tester, "initialize", Class.class, ResolvableType.class),
-					ExecutableMode.INVOKE);
+			Method method = ReflectionUtils.findMethod(this.tester, "initialize", Class.class, ResolvableType.class);
+			Assert.state(method != null, "'method' must not be null");
+			reflection.registerMethod(method, ExecutableMode.INVOKE);
 		}
 
 	}
@@ -245,11 +248,12 @@ public final class JsonTestersAutoConfiguration {
 	static class BasicJsonTesterRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+		public void registerHints(RuntimeHints hints, @Nullable ClassLoader classLoader) {
 			ReflectionHints reflection = hints.reflection();
 			reflection.registerType(BasicJsonTester.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
-			reflection.registerMethod(ReflectionUtils.findMethod(BasicJsonTester.class, "initialize", Class.class),
-					ExecutableMode.INVOKE);
+			Method method = ReflectionUtils.findMethod(BasicJsonTester.class, "initialize", Class.class);
+			Assert.state(method != null, "'method' must not be null");
+			reflection.registerMethod(method, ExecutableMode.INVOKE);
 		}
 
 	}

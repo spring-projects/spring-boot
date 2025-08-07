@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for web service clients.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.webservices.client;
+
+import org.jspecify.annotations.NullMarked;

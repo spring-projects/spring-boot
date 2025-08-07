@@ -17,4 +17,7 @@
 /**
  * Test auto-configuration support.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure;
+
+import org.jspecify.annotations.NullMarked;

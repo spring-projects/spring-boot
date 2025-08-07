@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotationPredicates;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -152,7 +154,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 	}
 
 	@Override
-	public Object getProperty(String name) {
+	public @Nullable Object getProperty(String name) {
 		return this.properties.get(name);
 	}
 
@@ -166,7 +168,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == this) {
 			return true;
 		}

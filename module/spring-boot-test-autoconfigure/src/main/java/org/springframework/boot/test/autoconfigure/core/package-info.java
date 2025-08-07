@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for core parts common to most Spring Boot applications.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.core;
+
+import org.jspecify.annotations.NullMarked;

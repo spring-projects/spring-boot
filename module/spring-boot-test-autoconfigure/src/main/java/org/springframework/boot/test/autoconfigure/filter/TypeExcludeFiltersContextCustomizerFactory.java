@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -27,7 +29,6 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
-import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ContextCustomizerFactory} to support
@@ -41,17 +42,17 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 	private static final Class<?>[] NO_FILTERS = {};
 
 	@Override
-	public ContextCustomizer createContextCustomizer(Class<?> testClass,
+	public @Nullable ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
 		if (AotDetector.useGeneratedArtifacts()) {
 			return null;
 		}
 		AnnotationDescriptor<TypeExcludeFilters> descriptor = TestContextAnnotationUtils
 			.findAnnotationDescriptor(testClass, TypeExcludeFilters.class);
-		Class<?>[] filterClasses = (descriptor != null) ? descriptor.getAnnotation().value() : NO_FILTERS;
-		if (ObjectUtils.isEmpty(filterClasses)) {
+		if (descriptor == null) {
 			return null;
 		}
+		Class<?>[] filterClasses = descriptor.getAnnotation().value();
 		return createContextCustomizer(descriptor.getRootDeclaringClass(), filterClasses);
 	}
 

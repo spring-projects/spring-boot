@@ -18,6 +18,8 @@ package org.springframework.boot.test.autoconfigure;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -37,7 +39,7 @@ import org.springframework.test.context.TestContextAnnotationUtils;
 class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustomizerFactory {
 
 	@Override
-	public ContextCustomizer createContextCustomizer(Class<?> testClass,
+	public @Nullable ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
 		if (AotDetector.useGeneratedArtifacts()) {
 			return null;
@@ -59,7 +61,7 @@ class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustom
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			return (obj != null) && (obj.getClass() == getClass());
 		}
 

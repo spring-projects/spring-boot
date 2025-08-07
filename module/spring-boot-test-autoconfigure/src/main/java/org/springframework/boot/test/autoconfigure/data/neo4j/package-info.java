@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Data Neo4j tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.data.neo4j;
+
+import org.jspecify.annotations.NullMarked;

@@ -18,11 +18,14 @@ package org.springframework.boot.test.autoconfigure.restdocs;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.restdocs.ManualRestDocumentation;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,10 +39,11 @@ class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionR
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		Map<String, Object> annotationAttributes = importingClassMetadata
+		Map<String, @Nullable Object> annotationAttributes = importingClassMetadata
 			.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
 		BeanDefinitionBuilder definitionBuilder = BeanDefinitionBuilder
 			.rootBeanDefinition(ManualRestDocumentation.class);
+		Assert.state(annotationAttributes != null, "'annotationAttributes' must not be null");
 		String outputDir = (String) annotationAttributes.get("outputDir");
 		if (StringUtils.hasText(outputDir)) {
 			definitionBuilder.addConstructorArgValue(outputDir);

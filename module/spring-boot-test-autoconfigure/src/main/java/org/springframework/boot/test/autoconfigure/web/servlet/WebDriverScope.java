@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.openqa.selenium.WebDriver;
 
 import org.springframework.beans.factory.ObjectFactory;
@@ -78,12 +79,12 @@ public class WebDriverScope implements Scope {
 	}
 
 	@Override
-	public Object resolveContextualObject(String key) {
+	public @Nullable Object resolveContextualObject(String key) {
 		return null;
 	}
 
 	@Override
-	public String getConversationId() {
+	public @Nullable String getConversationId() {
 		return null;
 	}
 
@@ -137,7 +138,7 @@ public class WebDriverScope implements Scope {
 	 * @param context the application context
 	 * @return the web driver scope or {@code null}
 	 */
-	static WebDriverScope getFrom(ApplicationContext context) {
+	static @Nullable WebDriverScope getFrom(ApplicationContext context) {
 		if (context instanceof ConfigurableApplicationContext configurableContext) {
 			Scope scope = configurableContext.getBeanFactory().getRegisteredScope(NAME);
 			return (scope instanceof WebDriverScope webDriverScope) ? webDriverScope : null;

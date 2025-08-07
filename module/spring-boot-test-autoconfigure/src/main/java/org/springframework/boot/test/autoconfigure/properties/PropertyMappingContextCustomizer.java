@@ -19,6 +19,8 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -57,7 +59,7 @@ class PropertyMappingContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return (obj != null) && (getClass() == obj.getClass())
 				&& this.propertySource.equals(((PropertyMappingContextCustomizer) obj).propertySource);
 	}

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Spring MVC tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.web.servlet;
+
+import org.jspecify.annotations.NullMarked;

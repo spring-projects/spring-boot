@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -41,6 +43,7 @@ import org.springframework.util.ObjectUtils;
 public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExcludeFilter
 		implements BeanClassLoaderAware {
 
+	@SuppressWarnings("NullAway.Init")
 	private ClassLoader classLoader;
 
 	@Override
@@ -113,11 +116,11 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (getClass() != obj.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
 		AnnotationCustomizableTypeExcludeFilter other = (AnnotationCustomizableTypeExcludeFilter) obj;

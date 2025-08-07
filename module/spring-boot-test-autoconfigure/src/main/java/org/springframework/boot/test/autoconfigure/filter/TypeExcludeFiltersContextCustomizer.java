@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -70,7 +72,7 @@ class TypeExcludeFiltersContextCustomizer implements ContextCustomizer {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return (obj != null) && (getClass() == obj.getClass())
 				&& this.filters.equals(((TypeExcludeFiltersContextCustomizer) obj).filters);
 	}

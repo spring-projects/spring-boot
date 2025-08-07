@@ -26,6 +26,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.util.Assert;
 
 /**
  * {@link AnnotationCustomizableTypeExcludeFilter} that can be used to any test annotation
@@ -90,7 +91,9 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 	protected Class<A> getAnnotationType() {
 		ResolvableType type = ResolvableType.forClass(StandardAnnotationCustomizableTypeExcludeFilter.class,
 				getClass());
-		return (Class<A>) type.resolveGeneric();
+		Class<A> generic = (Class<A>) type.resolveGeneric();
+		Assert.state(generic != null, "'generic' must not be null");
+		return generic;
 	}
 
 }

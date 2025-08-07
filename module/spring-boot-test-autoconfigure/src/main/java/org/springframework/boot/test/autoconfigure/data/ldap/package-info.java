@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Data LDAP tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.data.ldap;
+
+import org.jspecify.annotations.NullMarked;

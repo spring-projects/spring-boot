@@ -18,6 +18,8 @@ package org.springframework.boot.test.autoconfigure;
 
 import java.lang.annotation.Annotation;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -40,16 +42,17 @@ public abstract class TestSliceTestContextBootstrapper<T extends Annotation> ext
 
 	@SuppressWarnings("unchecked")
 	protected TestSliceTestContextBootstrapper() {
-		this.annotationType = (Class<T>) ResolvableType.forClass(getClass())
+		Class<T> annotationType = (Class<T>) ResolvableType.forClass(getClass())
 			.as(TestSliceTestContextBootstrapper.class)
 			.getGeneric(0)
 			.resolve();
-		Assert.notNull(this.annotationType, "'%s' doesn't contain type parameter of '%s'"
-			.formatted(getClass().getName(), TestSliceTestContextBootstrapper.class.getName()));
+		Assert.notNull(annotationType, "'%s' doesn't contain type parameter of '%s'".formatted(getClass().getName(),
+				TestSliceTestContextBootstrapper.class.getName()));
+		this.annotationType = annotationType;
 	}
 
 	@Override
-	protected String[] getProperties(Class<?> testClass) {
+	protected String @Nullable [] getProperties(Class<?> testClass) {
 		MergedAnnotation<T> annotation = MergedAnnotations.search(SearchStrategy.TYPE_HIERARCHY)
 			.withEnclosingClasses(TestContextAnnotationUtils::searchEnclosingClass)
 			.from(testClass)

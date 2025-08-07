@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for handling observability in tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.actuate.observability;
+
+import org.jspecify.annotations.NullMarked;

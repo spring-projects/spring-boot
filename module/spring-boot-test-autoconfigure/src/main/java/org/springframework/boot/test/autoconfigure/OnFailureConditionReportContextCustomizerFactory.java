@@ -19,6 +19,8 @@ package org.springframework.boot.test.autoconfigure;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -89,7 +91,7 @@ class OnFailureConditionReportContextCustomizerFactory implements ContextCustomi
 			}
 		}
 
-		private static boolean shouldPrintReport(ConfigurableApplicationContext context) {
+		private static boolean shouldPrintReport(@Nullable ConfigurableApplicationContext context) {
 			return (context == null) || context.getEnvironment()
 				.getProperty("spring.test.print-condition-evaluation-report", Boolean.class, true);
 		}

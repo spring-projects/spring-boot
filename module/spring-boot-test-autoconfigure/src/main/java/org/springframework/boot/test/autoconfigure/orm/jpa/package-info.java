@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Data JPA tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.orm.jpa;
+
+import org.jspecify.annotations.NullMarked;

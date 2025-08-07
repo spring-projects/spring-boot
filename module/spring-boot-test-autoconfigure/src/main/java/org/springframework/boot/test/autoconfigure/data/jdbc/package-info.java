@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Data JDBC tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.data.jdbc;
+
+import org.jspecify.annotations.NullMarked;

@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for tests using Spring REST Docs.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.restdocs;
+
+import org.jspecify.annotations.NullMarked;

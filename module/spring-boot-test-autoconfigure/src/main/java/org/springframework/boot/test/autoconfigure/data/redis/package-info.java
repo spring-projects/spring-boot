@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Data Redis tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.data.redis;
+
+import org.jspecify.annotations.NullMarked;

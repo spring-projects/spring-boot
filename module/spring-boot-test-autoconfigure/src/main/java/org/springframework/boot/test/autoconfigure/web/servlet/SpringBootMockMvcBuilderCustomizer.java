@@ -29,6 +29,7 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.annotation.WebInitParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -99,7 +100,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		}
 	}
 
-	private ResultHandler getPrintHandler() {
+	private @Nullable ResultHandler getPrintHandler() {
 		LinesWriter writer = getLinesWriter();
 		if (writer == null) {
 			return null;
@@ -110,7 +111,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		return new LinesWritingResultHandler(writer);
 	}
 
-	private LinesWriter getLinesWriter() {
+	private @Nullable LinesWriter getLinesWriter() {
 		if (this.print == MockMvcPrint.NONE) {
 			return null;
 		}
@@ -129,8 +130,9 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	}
 
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder, AbstractFilterRegistrationBean<?> registration) {
-		Filter filter = registration.getFilter();
 		Collection<String> urls = registration.getUrlPatterns();
+		Filter filter = registration.getFilter();
+		Assert.state(filter != null, "'filter' must not be null");
 		builder.addFilter(filter, registration.getFilterName(), registration.getInitParameters(),
 				registration.determineDispatcherTypes(), StringUtils.toStringArray(urls));
 	}
@@ -199,7 +201,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				}
 
 				@Override
-				public void printValue(String label, Object value) {
+				public void printValue(String label, @Nullable Object value) {
 					if (value != null && value.getClass().isArray()) {
 						value = CollectionUtils.arrayToList(value);
 					}
@@ -259,7 +261,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			this.delegate.write(this.lines.get());
 		}
 
-		static DeferredLinesWriter get(ApplicationContext applicationContext) {
+		static @Nullable DeferredLinesWriter get(ApplicationContext applicationContext) {
 			try {
 				return applicationContext.getBean(BEAN_NAME, DeferredLinesWriter.class);
 			}

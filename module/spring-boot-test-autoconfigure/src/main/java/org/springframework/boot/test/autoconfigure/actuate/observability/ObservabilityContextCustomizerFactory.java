@@ -19,6 +19,8 @@ package org.springframework.boot.test.autoconfigure.actuate.observability;
 import java.util.List;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
@@ -50,9 +52,9 @@ class ObservabilityContextCustomizerFactory implements ContextCustomizerFactory 
 
 	private static class DisableObservabilityContextCustomizer implements ContextCustomizer {
 
-		private final AutoConfigureObservability annotation;
+		private final @Nullable AutoConfigureObservability annotation;
 
-		DisableObservabilityContextCustomizer(AutoConfigureObservability annotation) {
+		DisableObservabilityContextCustomizer(@Nullable AutoConfigureObservability annotation) {
 			this.annotation = annotation;
 		}
 
@@ -85,7 +87,7 @@ class ObservabilityContextCustomizerFactory implements ContextCustomizerFactory 
 		}
 
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(@Nullable Object o) {
 			if (this == o) {
 				return true;
 			}

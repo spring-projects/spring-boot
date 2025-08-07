@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
@@ -64,6 +65,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -153,7 +155,8 @@ public final class TestDatabaseAutoConfiguration {
 			return beanDefinition;
 		}
 
-		private BeanDefinitionHolder getDataSourceBeanDefinition(ConfigurableListableBeanFactory beanFactory) {
+		private @Nullable BeanDefinitionHolder getDataSourceBeanDefinition(
+				ConfigurableListableBeanFactory beanFactory) {
 			String[] beanNames = beanFactory.getBeanNamesForType(DataSource.class);
 			if (ObjectUtils.isEmpty(beanNames)) {
 				logger.warn("No DataSource beans found, embedded version will not be used");
@@ -228,7 +231,7 @@ public final class TestDatabaseAutoConfiguration {
 			return false;
 		}
 
-		private boolean isDynamicValuesPropertySource(PropertySource<?> propertySource) {
+		private boolean isDynamicValuesPropertySource(@Nullable PropertySource<?> propertySource) {
 			return propertySource != null
 					&& DYNAMIC_VALUES_PROPERTY_SOURCE_CLASS.equals(propertySource.getClass().getName());
 		}
@@ -242,8 +245,10 @@ public final class TestDatabaseAutoConfiguration {
 
 	static class EmbeddedDataSourceFactoryBean implements FactoryBean<DataSource>, EnvironmentAware, InitializingBean {
 
+		@SuppressWarnings("NullAway.Init")
 		private EmbeddedDataSourceFactory factory;
 
+		@SuppressWarnings("NullAway.Init")
 		private EmbeddedDatabase embeddedDatabase;
 
 		@Override
@@ -292,7 +297,9 @@ public final class TestDatabaseAutoConfiguration {
 					"Failed to replace DataSource with an embedded database for tests. If "
 							+ "you want an embedded database please put a supported one "
 							+ "on the classpath or tune the replace attribute of @AutoConfigureTestDatabase.");
-			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(connection.getType()).build();
+			EmbeddedDatabaseType type = connection.getType();
+			Assert.state(type != null, "'type' must not be null");
+			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(type).build();
 		}
 
 	}

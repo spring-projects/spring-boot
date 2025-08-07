@@ -17,4 +17,7 @@
 /**
  * Support for mapping annotation attribute values in the Spring {@code Environment}.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.properties;
+
+import org.jspecify.annotations.NullMarked;

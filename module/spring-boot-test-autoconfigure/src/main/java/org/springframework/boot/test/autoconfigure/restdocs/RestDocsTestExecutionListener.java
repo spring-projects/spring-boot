@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.core.Ordered;
 import org.springframework.restdocs.ManualRestDocumentation;
@@ -72,7 +74,7 @@ public class RestDocsTestExecutionListener extends AbstractTestExecutionListener
 			}
 		}
 
-		private ManualRestDocumentation findManualRestDocumentation(TestContext testContext) {
+		private @Nullable ManualRestDocumentation findManualRestDocumentation(TestContext testContext) {
 			try {
 				return testContext.getApplicationContext().getBean(ManualRestDocumentation.class);
 			}

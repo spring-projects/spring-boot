@@ -17,4 +17,7 @@
 /**
  * Auto-configuration for Data Elasticsearch tests.
  */
+@NullMarked
 package org.springframework.boot.test.autoconfigure.data.elasticsearch;
+
+import org.jspecify.annotations.NullMarked;

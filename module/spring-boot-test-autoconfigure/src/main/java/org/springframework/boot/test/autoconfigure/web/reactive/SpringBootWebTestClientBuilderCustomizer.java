@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.web.server.test.client.reactive.WebTestClientBuilderCustomizer;
 import org.springframework.http.codec.ClientCodecConfigurer;
@@ -41,7 +43,7 @@ public class SpringBootWebTestClientBuilderCustomizer implements WebTestClientBu
 
 	private final Collection<CodecCustomizer> codecCustomizers;
 
-	private Duration timeout;
+	private @Nullable Duration timeout;
 
 	/**
 	 * Create a new {@code SpringBootWebTestClientBuilderCustomizer} that will configure
@@ -52,7 +54,7 @@ public class SpringBootWebTestClientBuilderCustomizer implements WebTestClientBu
 		this.codecCustomizers = codecCustomizers;
 	}
 
-	public void setTimeout(Duration timeout) {
+	public void setTimeout(@Nullable Duration timeout) {
 		this.timeout = timeout;
 	}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -32,39 +34,39 @@ public class RestDocsProperties {
 	/**
 	 * The URI scheme for to use (for example http).
 	 */
-	private String uriScheme;
+	private @Nullable String uriScheme;
 
 	/**
 	 * The URI host to use.
 	 */
-	private String uriHost;
+	private @Nullable String uriHost;
 
 	/**
 	 * The URI port to use.
 	 */
-	private Integer uriPort;
+	private @Nullable Integer uriPort;
 
-	public String getUriScheme() {
+	public @Nullable String getUriScheme() {
 		return this.uriScheme;
 	}
 
-	public void setUriScheme(String uriScheme) {
+	public void setUriScheme(@Nullable String uriScheme) {
 		this.uriScheme = uriScheme;
 	}
 
-	public String getUriHost() {
+	public @Nullable String getUriHost() {
 		return this.uriHost;
 	}
 
-	public void setUriHost(String uriHost) {
+	public void setUriHost(@Nullable String uriHost) {
 		this.uriHost = uriHost;
 	}
 
-	public Integer getUriPort() {
+	public @Nullable Integer getUriPort() {
 		return this.uriPort;
 	}
 
-	public void setUriPort(Integer uriPort) {
+	public void setUriPort(@Nullable Integer uriPort) {
 		this.uriPort = uriPort;
 	}
 
