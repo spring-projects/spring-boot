@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurationSupport;
@@ -96,6 +97,7 @@ public final class WebServicesAutoConfiguration {
 	static class WsdlDefinitionBeanFactoryPostProcessor
 			implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
 
+		@SuppressWarnings("NullAway.Init")
 		private ApplicationContext applicationContext;
 
 		@Override
@@ -125,8 +127,9 @@ public final class WebServicesAutoConfiguration {
 				BeanDefinition beanDefinition = BeanDefinitionBuilder
 					.rootBeanDefinition(type, () -> beanSupplier.apply(resource))
 					.getBeanDefinition();
-				registry.registerBeanDefinition(StringUtils.stripFilenameExtension(resource.getFilename()),
-						beanDefinition);
+				String filename = resource.getFilename();
+				Assert.state(filename != null, "'filename' must not be null");
+				registry.registerBeanDefinition(StringUtils.stripFilenameExtension(filename), beanDefinition);
 			}
 		}
 

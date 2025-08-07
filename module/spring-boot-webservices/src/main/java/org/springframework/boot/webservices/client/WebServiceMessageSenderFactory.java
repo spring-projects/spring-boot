@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webservices.client;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -66,7 +68,7 @@ public interface WebServiceMessageSenderFactory {
 	 * @return a new {@link WebServiceMessageSenderFactory}
 	 */
 	static WebServiceMessageSenderFactory http(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
-			ClientHttpRequestFactorySettings requestFactorySettings) {
+			@Nullable ClientHttpRequestFactorySettings requestFactorySettings) {
 		Assert.notNull(requestFactoryBuilder, "'requestFactoryBuilder' must not be null");
 		return () -> new ClientHttpRequestMessageSender(requestFactoryBuilder.build(requestFactorySettings));
 	}
