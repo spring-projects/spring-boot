@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -64,7 +65,7 @@ public final class WebSocketMessagingAutoConfiguration {
 
 		private final ObjectMapper objectMapper;
 
-		private final AsyncTaskExecutor executor;
+		private final @Nullable AsyncTaskExecutor executor;
 
 		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper,
 				Map<String, AsyncTaskExecutor> taskExecutors) {
@@ -72,7 +73,8 @@ public final class WebSocketMessagingAutoConfiguration {
 			this.executor = determineAsyncTaskExecutor(taskExecutors);
 		}
 
-		private static AsyncTaskExecutor determineAsyncTaskExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
+		private static @Nullable AsyncTaskExecutor determineAsyncTaskExecutor(
+				Map<String, AsyncTaskExecutor> taskExecutors) {
 			if (taskExecutors.size() == 1) {
 				return taskExecutors.values().iterator().next();
 			}
