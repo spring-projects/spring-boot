@@ -17,4 +17,7 @@
 /**
  * Support for Docker Compose Zipkin service connections.
  */
+@NullMarked
 package org.springframework.boot.zipkin.docker.compose;
+
+import org.jspecify.annotations.NullMarked;

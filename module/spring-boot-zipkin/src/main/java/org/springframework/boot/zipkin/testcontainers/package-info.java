@@ -17,4 +17,7 @@
 /**
  * Support for testcontainers Zipkin service connections.
  */
+@NullMarked
 package org.springframework.boot.zipkin.testcontainers;
+
+import org.jspecify.annotations.NullMarked;
