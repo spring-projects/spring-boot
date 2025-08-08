@@ -19,6 +19,7 @@ package org.springframework.boot.ant;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.StringUtils;
 
@@ -30,7 +31,7 @@ import org.springframework.util.StringUtils;
  */
 public class ShareAntlibLoader extends Task {
 
-	private String refid;
+	private @Nullable String refid;
 
 	public ShareAntlibLoader(Project project) {
 		setProject(project);
@@ -44,7 +45,7 @@ public class ShareAntlibLoader extends Task {
 		getProject().addReference(this.refid, getClass().getClassLoader());
 	}
 
-	public void setRefid(String refid) {
+	public void setRefid(@Nullable String refid) {
 		this.refid = refid;
 	}
 

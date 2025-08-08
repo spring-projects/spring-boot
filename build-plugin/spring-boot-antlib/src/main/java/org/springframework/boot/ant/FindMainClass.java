@@ -23,6 +23,7 @@ import java.util.jar.JarFile;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.util.StringUtils;
@@ -37,11 +38,11 @@ public class FindMainClass extends Task {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private String mainClass;
+	private @Nullable String mainClass;
 
-	private File classesRoot;
+	private @Nullable File classesRoot;
 
-	private String property;
+	private @Nullable String property;
 
 	public FindMainClass(Project project) {
 		setProject(project);
