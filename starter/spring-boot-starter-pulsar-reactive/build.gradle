@@ -25,7 +25,9 @@ dependencies {
 
 	api(project(":module:spring-boot-pulsar"))
 	api(project(":module:spring-boot-reactor"))
-	api("org.springframework.pulsar:spring-pulsar-reactive")
+	api("org.springframework.pulsar:spring-pulsar-reactive") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 }
 
 checkRuntimeClasspathForConflicts {
