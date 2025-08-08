@@ -19,8 +19,6 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.jetbrains.kotlin.jvm'
-
 dependencyManagement {
 	resolutionStrategy {
 		eachDependency {

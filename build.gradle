@@ -16,7 +16,7 @@
 
 plugins {
 	id "base"
-	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
+	id "org.jetbrains.kotlin.jvm"
 }
 
 description = "Spring Boot Build"

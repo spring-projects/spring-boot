@@ -18,8 +18,6 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-apply plugin: 'org.jetbrains.kotlin.jvm'
-
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 tasks.withType(KotlinCompile) {
