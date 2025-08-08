@@ -33,6 +33,7 @@ import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,7 +61,9 @@ import static org.mockito.Mockito.mock;
 class RabbitStreamConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class))
+		.withClassLoader(
+				new FilteredClassLoader("com.rabbitmq.client.amqp", "org.springframework.amqp.rabbitmq.client"));
 
 	@Test
 	@SuppressWarnings("unchecked")
