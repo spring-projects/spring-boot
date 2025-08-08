@@ -34,8 +34,11 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link HttpComponentsClientHttpRequestFactoryBuilder} and
@@ -91,6 +94,18 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 			.withTlsSocketStrategyFactory(tlsSocketStrategyFactory)
 			.build(settings);
 		assertThat(bundles).contains(settings.sslBundle());
+	}
+
+	@Test
+	void withDnsResolverWhenHostIsBannedThenRequestFails() {
+		BannedHostDnsResolver dnsResolver = new BannedHostDnsResolver("example.com");
+		HttpComponentsClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder.httpComponents()
+				.withDnsResolver(dnsResolver)
+				.build();
+		RestTemplate restTemplate = new RestTemplate(requestFactory);
+		assertThatExceptionOfType(ResourceAccessException.class)
+				.isThrownBy(() -> restTemplate.getForEntity("http://example.com", String.class))
+				.withRootCauseInstanceOf(java.net.UnknownHostException.class);
 	}
 
 	@Override

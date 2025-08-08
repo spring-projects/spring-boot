@@ -37,7 +37,7 @@ public class BannedHostDnsResolver implements DnsResolver {
 	@Override
 	public InetAddress[] resolve(String host) throws UnknownHostException {
 		if (host.equals(bannedHost)) {
-			return new InetAddress[0];
+			throw new UnknownHostException(host);
 		}
 		return this.defaultDnsResolver.resolve(host);
 	}
