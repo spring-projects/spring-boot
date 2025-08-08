@@ -30,20 +30,27 @@ import org.springframework.boot.ssl.SslBundle;
  * @param connectTimeout the connect timeout
  * @param readTimeout the read timeout
  * @param sslBundle the SSL bundle providing SSL configuration
+ * @param bannedHostDnsResolver the banned host dns resolver
  * @author Phillip Webb
  * @since 3.5.0
  */
 public record HttpClientSettings(HttpRedirects redirects, @Nullable Duration connectTimeout,
-		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle, @Nullable BannedHostDnsResolver bannedHostDnsResolver) {
 
-	static final HttpClientSettings DEFAULTS = new HttpClientSettings(null, null, null, null);
+	static final HttpClientSettings DEFAULTS = new HttpClientSettings(null, null, null, null, null);
 
 	public HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
 			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		this(redirects, connectTimeout, readTimeout, sslBundle, null);
+	}
+
+	public HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
+			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle, @Nullable BannedHostDnsResolver bannedHostDnsResolver) {
 		this.redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
 		this.sslBundle = sslBundle;
+		this.bannedHostDnsResolver = bannedHostDnsResolver;
 	}
 
 }

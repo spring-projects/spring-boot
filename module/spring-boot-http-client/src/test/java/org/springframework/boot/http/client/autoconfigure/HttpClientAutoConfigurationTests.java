@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.http.client.BannedHostDnsResolver;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
@@ -78,6 +79,26 @@ class HttpClientAutoConfigurationTests {
 				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
 				assertThat(settings.sslBundle().getKey().getAlias()).isEqualTo("alias1");
 			});
+	}
+
+	@Test
+	void configuresClientHttpRequestFactorySettingsWithBannedHost() {
+		this.contextRunner.withPropertyValues("spring.http.client.dns.banned=localhost")
+			.run((context) -> {
+				BannedHostDnsResolver resolver = context.getBean(BannedHostDnsResolver.class);
+				assertThat(resolver).isNotNull();
+				ClientHttpRequestFactorySettings settings = context.getBean(ClientHttpRequestFactorySettings.class);
+				assertThat(settings.bannedHostDnsResolver()).isEqualTo(resolver);
+			});
+	}
+
+	@Test
+	void doesNotConfigureBannedHostDnsResolverWhenPropertyIsMissing() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(BannedHostDnsResolver.class);
+			ClientHttpRequestFactorySettings settings = context.getBean(ClientHttpRequestFactorySettings.class);
+			assertThat(settings.bannedHostDnsResolver()).isNull();
+		});
 	}
 
 	@Test

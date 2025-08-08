@@ -25,7 +25,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.http.client.BannedHostDnsResolver;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
@@ -33,6 +35,7 @@ import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -50,11 +53,14 @@ public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	private final ClientHttpRequestFactories factories;
 
+	private final HttpClientProperties properties;
+
 	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
 	HttpClientAutoConfiguration(ObjectProvider<SslBundles> sslBundles, HttpClientProperties properties) {
 		this.factories = new ClientHttpRequestFactories(sslBundles, properties);
+		this.properties = properties;
 	}
 
 	@Override
@@ -81,8 +87,17 @@ public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings() {
-		return this.factories.settings();
+	@ConditionalOnProperty(prefix = "spring.http.client.dns", name = "banned")
+	BannedHostDnsResolver bannedHostDnsResolver() {
+		String bannedHost = this.properties.getDns().getBanned();
+		Assert.state(bannedHost != null, "spring.http.client.dns.banned property must not be null");
+		return new BannedHostDnsResolver(bannedHost);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings(ObjectProvider<BannedHostDnsResolver> bannedHostDnsResolver) {
+		return this.factories.settings(bannedHostDnsResolver.getIfAvailable());
 	}
 
 }

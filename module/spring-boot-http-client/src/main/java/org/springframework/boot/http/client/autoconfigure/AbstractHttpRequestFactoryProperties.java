@@ -60,6 +60,11 @@ public abstract class AbstractHttpRequestFactoryProperties {
 	private final Ssl ssl = new Ssl();
 
 	/**
+	 * Default DNS configuration for a client HTTP request.
+	 */
+	private final Dns dns = new Dns();
+
+	/**
 	 * Default factory used for a client HTTP request.
 	 */
 	private @Nullable Factory factory;
@@ -92,6 +97,10 @@ public abstract class AbstractHttpRequestFactoryProperties {
 		return this.ssl;
 	}
 
+	public Dns getDns() {
+		return this.dns;
+	}
+
 	public @Nullable Factory getFactory() {
 		return this.factory;
 	}
@@ -117,6 +126,27 @@ public abstract class AbstractHttpRequestFactoryProperties {
 
 		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
+		}
+
+	}
+
+	/**
+	 * DNS configuration.
+	 */
+	@ConfigurationPropertiesSource
+	public static class Dns {
+
+		/**
+		 * Banned host.
+		 */
+		private @Nullable String banned;
+
+		public @Nullable String getBanned() {
+			return this.banned;
+		}
+
+		public void setBanned(@Nullable String banned) {
+			this.banned = banned;
 		}
 
 	}
