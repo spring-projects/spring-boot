@@ -359,7 +359,7 @@ public class BuildRequest {
 	 * @return an updated build request
 	 * @since 2.6.0
 	 */
-	public BuildRequest withNetwork(String network) {
+	public BuildRequest withNetwork(@Nullable String network) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.trustBuilder, this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, network, this.tags, this.buildWorkspace, this.buildCache,

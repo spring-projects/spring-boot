@@ -46,7 +46,7 @@ public record BuilderDockerConfiguration(@Nullable DockerConnectionConfiguration
 		return withConnection(new DockerConnectionConfiguration.Context(context));
 	}
 
-	public BuilderDockerConfiguration withHost(String address, boolean secure, String certificatePath) {
+	public BuilderDockerConfiguration withHost(String address, boolean secure, @Nullable String certificatePath) {
 		return withConnection(new DockerConnectionConfiguration.Host(address, secure, certificatePath));
 	}
 
