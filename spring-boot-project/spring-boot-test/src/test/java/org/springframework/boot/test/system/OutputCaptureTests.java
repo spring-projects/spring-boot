@@ -22,10 +22,10 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -196,41 +196,21 @@ class OutputCaptureTests {
 
 	@Test
 	void getOutCacheShouldNotReturnStaleDataWhenDataIsLoggedWhileReading() throws Exception {
-		this.output.push();
+		TestLatchedOutputCapture output = new TestLatchedOutputCapture();
+		output.push();
 		System.out.print("A");
-		this.output.waitAfterBuildLatch = new CountDownLatch(1);
-
-		ExecutorService executorService = null;
+		ExecutorService executor = Executors.newFixedThreadPool(2);
 		try {
-			executorService = Executors.newFixedThreadPool(2);
-			var readingThreadFuture = executorService.submit(() -> {
-				// this will release the releaseAfterBuildLatch and block on the waitAfterBuildLatch
-				assertThat(this.output.getOut()).isEqualTo("A");
-			});
-			var writingThreadFuture = executorService.submit(() -> {
-				// wait until we finished building the first result (but did not yet update the cache)
-				try {
-					this.output.releaseAfterBuildLatch.await();
-				}
-				catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
-				// print something else and then release the latch, for the other thread to continue
-				System.out.print("B");
-				this.output.waitAfterBuildLatch.countDown();
-			});
-			readingThreadFuture.get();
-			writingThreadFuture.get();
+			Future<?> reader = executor.submit(output::releaseAfterBuildAndAssertResultIsA);
+			Future<?> writer = executor.submit(output::awaitReleaseAfterBuildThenWriteBAndRelease);
+			reader.get();
+			writer.get();
 		}
 		finally {
-			if (executorService != null) {
-				executorService.shutdown();
-				executorService.awaitTermination(10, TimeUnit.SECONDS);
-			}
+			executor.shutdown();
+			executor.awaitTermination(10, TimeUnit.SECONDS);
 		}
-
-		// If not synchronized correctly this will fail, because the second print did not clear the cache and the cache will return stale data.
-		assertThat(this.output.getOut()).isEqualTo("AB");
+		assertThat(output.getOut()).isEqualTo("AB");
 	}
 
 	private void pushAndPrint() {
@@ -257,26 +237,46 @@ class OutputCaptureTests {
 
 		int buildCount;
 
-		@Nullable
-		CountDownLatch waitAfterBuildLatch = null;
-
-		CountDownLatch releaseAfterBuildLatch = new CountDownLatch(1);
-
 		@Override
 		String build(Predicate<Type> filter) {
 			this.buildCount++;
+			return super.build(filter);
+		}
+
+	}
+
+	static class TestLatchedOutputCapture extends OutputCapture {
+
+		private final CountDownLatch waitAfterBuild = new CountDownLatch(1);
+
+		private final CountDownLatch releaseAfterBuild = new CountDownLatch(1);
+
+		@Override
+		String build(Predicate<Type> filter) {
 			var result = super.build(filter);
-			this.releaseAfterBuildLatch.countDown();
-			if (this.waitAfterBuildLatch != null) {
-				try {
-					this.waitAfterBuildLatch.await();
-				}
-				catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					throw new RuntimeException(e);
-				}
-			}
+			this.releaseAfterBuild.countDown();
+			await(this.waitAfterBuild);
 			return result;
+		}
+
+		void releaseAfterBuildAndAssertResultIsA() {
+			assertThat(getOut()).isEqualTo("A");
+		}
+
+		void awaitReleaseAfterBuildThenWriteBAndRelease() {
+			await(this.releaseAfterBuild);
+			System.out.print("B");
+			this.waitAfterBuild.countDown();
+		}
+
+		private void await(CountDownLatch latch) {
+			try {
+				latch.await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(ex);
+			}
 		}
 
 	}

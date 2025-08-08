@@ -23,7 +23,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -51,14 +50,15 @@ class OutputCapture implements CapturedOutput {
 
 	private AnsiOutputState ansiOutputState;
 
-	private final AtomicLong outVersion = new AtomicLong();
-	private final AtomicReference<VersionedCacheResult> out = new AtomicReference<>(null);
+	private final AtomicReference<Object> out = new AtomicReference<>();
 
-	private final AtomicLong errVersion = new AtomicLong();
-	private final AtomicReference<VersionedCacheResult> err = new AtomicReference<>(null);
+	private final AtomicReference<Object> err = new AtomicReference<>();
 
-	private final AtomicLong allVersion = new AtomicLong();
-	private final AtomicReference<VersionedCacheResult> all = new AtomicReference<>(null);
+	private final AtomicReference<Object> all = new AtomicReference<>();
+
+	OutputCapture() {
+		clearExisting();
+	}
 
 	/**
 	 * Push a new system capture session onto the stack.
@@ -111,7 +111,7 @@ class OutputCapture implements CapturedOutput {
 	 */
 	@Override
 	public String getAll() {
-		return get(this.all, this.allVersion, (type) -> true);
+		return get(this.all, (type) -> true);
 	}
 
 	/**
@@ -120,7 +120,7 @@ class OutputCapture implements CapturedOutput {
 	 */
 	@Override
 	public String getOut() {
-		return get(this.out, this.outVersion, Type.OUT::equals);
+		return get(this.out, Type.OUT::equals);
 	}
 
 	/**
@@ -129,7 +129,7 @@ class OutputCapture implements CapturedOutput {
 	 */
 	@Override
 	public String getErr() {
-		return get(this.err, this.errVersion, Type.ERR::equals);
+		return get(this.err, Type.ERR::equals);
 	}
 
 	/**
@@ -141,25 +141,21 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	void clearExisting() {
-		this.outVersion.incrementAndGet();
-		this.out.set(null);
-		this.errVersion.incrementAndGet();
-		this.err.set(null);
-		this.allVersion.incrementAndGet();
-		this.all.set(null);
+		this.out.set(new NoOutput());
+		this.err.set(new NoOutput());
+		this.all.set(new NoOutput());
 	}
 
-	private String get(AtomicReference<VersionedCacheResult> resultCache, AtomicLong version, Predicate<Type> filter) {
+	private String get(AtomicReference<Object> existing, Predicate<Type> filter) {
 		Assert.state(!this.systemCaptures.isEmpty(),
 				"No system captures found. Please check your output capture registration.");
-		long currentVersion = version.get();
-		VersionedCacheResult cached = resultCache.get();
-		if (cached != null && cached.version == currentVersion) {
-			return cached.result;
+		Object existingOutput = existing.get();
+		if (existingOutput instanceof String) {
+			return (String) existingOutput;
 		}
-		String result = build(filter);
-		resultCache.compareAndSet(null, new VersionedCacheResult(result, currentVersion));
-		return result;
+		String builtOutput = build(filter);
+		existing.compareAndSet(existingOutput, builtOutput);
+		return builtOutput;
 	}
 
 	String build(Predicate<Type> filter) {
@@ -168,10 +164,6 @@ class OutputCapture implements CapturedOutput {
 			systemCapture.append(builder, filter);
 		}
 		return builder.toString();
-	}
-
-	private record VersionedCacheResult(String result, long version) {
-
 	}
 
 	/**
@@ -350,6 +342,10 @@ class OutputCapture implements CapturedOutput {
 			}
 			return new AnsiOutputState();
 		}
+
+	}
+
+	static class NoOutput {
 
 	}
 
