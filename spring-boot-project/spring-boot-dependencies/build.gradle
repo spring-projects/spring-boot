@@ -590,7 +590,7 @@ bom {
 				.formatted(version.major(), version.minor()))
 		}
 	}
-	library("Hibernate Validator", "8.0.2.Final") {
+	library("Hibernate Validator", "8.0.3.Final") {
 		prohibit {
 			versionRange "[9.0.0.Beta2,)"
 			because "it exceeds our Jakarta EE 10 baseline"
