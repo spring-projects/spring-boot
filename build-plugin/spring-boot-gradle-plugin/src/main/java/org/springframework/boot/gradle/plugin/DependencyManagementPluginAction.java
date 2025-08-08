@@ -22,6 +22,8 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
+import org.springframework.util.Assert;
+
 /**
  * {@link Action} that is performed in response to the {@link DependencyManagementPlugin}
  * being applied.
@@ -32,9 +34,10 @@ final class DependencyManagementPluginAction implements PluginApplicationAction 
 
 	@Override
 	public void execute(Project project) {
-		project.getExtensions()
-			.findByType(DependencyManagementExtension.class)
-			.imports((importsHandler) -> importsHandler.mavenBom(SpringBootPlugin.BOM_COORDINATES));
+		DependencyManagementExtension extension = project.getExtensions()
+			.findByType(DependencyManagementExtension.class);
+		Assert.state(extension != null, "'extension' must not be null");
+		extension.imports((importsHandler) -> importsHandler.mavenBom(SpringBootPlugin.BOM_COORDINATES));
 	}
 
 	@Override

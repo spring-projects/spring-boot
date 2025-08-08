@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
@@ -42,7 +43,8 @@ import org.springframework.boot.gradle.util.VersionExtractor;
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
-	private static final String SPRING_BOOT_VERSION = VersionExtractor.forClass(DependencyManagementPluginAction.class);
+	private static final @Nullable String SPRING_BOOT_VERSION = VersionExtractor
+		.forClass(DependencyManagementPluginAction.class);
 
 	/**
 	 * The name of the {@link Configuration} that contains Spring Boot archives.

@@ -32,6 +32,7 @@ import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.LoaderImplementation;
 
@@ -74,7 +75,7 @@ public interface BootArchive extends Task {
 	 */
 	@Nested
 	@Optional
-	LaunchScriptConfiguration getLaunchScript();
+	@Nullable LaunchScriptConfiguration getLaunchScript();
 
 	/**
 	 * Configures the archive to have a prepended launch script.
@@ -94,7 +95,7 @@ public interface BootArchive extends Task {
 	 */
 	@Optional
 	@Classpath
-	FileCollection getClasspath();
+	@Nullable FileCollection getClasspath();
 
 	/**
 	 * Adds files to the classpath to include in the archive. The given {@code classpath}

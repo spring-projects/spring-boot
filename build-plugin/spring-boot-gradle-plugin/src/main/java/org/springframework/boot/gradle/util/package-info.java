@@ -17,4 +17,7 @@
 /**
  * Shared utility classes.
  */
+@NullMarked
 package org.springframework.boot.gradle.util;
+
+import org.jspecify.annotations.NullMarked;

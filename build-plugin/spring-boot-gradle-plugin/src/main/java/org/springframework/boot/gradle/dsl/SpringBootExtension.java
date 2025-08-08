@@ -28,8 +28,10 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
+import org.springframework.util.Assert;
 
 /**
  * Entry point to Spring Boot's Gradle DSL.
@@ -85,7 +87,7 @@ public class SpringBootExtension {
 	 * artifact will be the base name of the {@code bootWar} or {@code bootJar} task.
 	 * @param configurer the task configurer
 	 */
-	public void buildInfo(Action<BuildInfo> configurer) {
+	public void buildInfo(@Nullable Action<BuildInfo> configurer) {
 		TaskContainer tasks = this.project.getTasks();
 		TaskProvider<BuildInfo> bootBuildInfo = tasks.register("bootBuildInfo", BuildInfo.class,
 				this::configureBuildInfoTask);
@@ -109,20 +111,22 @@ public class SpringBootExtension {
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {
-		return this.project.getExtensions()
+		File resourcesDir = this.project.getExtensions()
 			.getByType(JavaPluginExtension.class)
 			.getSourceSets()
 			.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
 			.getOutput()
 			.getResourcesDir();
+		Assert.state(resourcesDir != null, "'resourcesDir' must not be null");
+		return resourcesDir;
 	}
 
-	private String determineArtifactBaseName() {
+	private @Nullable String determineArtifactBaseName() {
 		Jar artifactTask = findArtifactTask();
 		return (artifactTask != null) ? artifactTask.getArchiveBaseName().get() : null;
 	}
 
-	private Jar findArtifactTask() {
+	private @Nullable Jar findArtifactTask() {
 		Jar artifactTask = (Jar) this.project.getTasks().findByName("bootWar");
 		if (artifactTask != null) {
 			return artifactTask;

@@ -36,6 +36,7 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.work.DisableCachingByDefault;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.LoaderImplementation;
 
@@ -72,7 +73,7 @@ public abstract class BootWar extends War implements BootArchive {
 
 	private final ResolvedDependencies resolvedDependencies;
 
-	private FileCollection providedClasspath;
+	private @Nullable FileCollection providedClasspath;
 
 	/**
 	 * Creates a new {@code BootWar} task.
@@ -143,7 +144,7 @@ public abstract class BootWar extends War implements BootArchive {
 	}
 
 	@Override
-	public LaunchScriptConfiguration getLaunchScript() {
+	public @Nullable LaunchScriptConfiguration getLaunchScript() {
 		return this.support.getLaunchScript();
 	}
 
@@ -164,7 +165,7 @@ public abstract class BootWar extends War implements BootArchive {
 	 */
 	@Optional
 	@Classpath
-	public FileCollection getProvidedClasspath() {
+	public @Nullable FileCollection getProvidedClasspath() {
 		return this.providedClasspath;
 	}
 

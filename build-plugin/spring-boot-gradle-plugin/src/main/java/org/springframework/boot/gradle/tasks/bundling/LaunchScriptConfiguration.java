@@ -29,7 +29,9 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.lang.Contract;
 import org.springframework.util.StringUtils;
 
 /**
@@ -49,7 +51,7 @@ public class LaunchScriptConfiguration implements Serializable {
 	// https://github.com/gradle/gradle/pull/17863
 	private final Map<String, String> properties = new TreeMap<>();
 
-	private File script;
+	private @Nullable File script;
 
 	public LaunchScriptConfiguration() {
 	}
@@ -89,7 +91,7 @@ public class LaunchScriptConfiguration implements Serializable {
 	@Optional
 	@InputFile
 	@PathSensitive(PathSensitivity.RELATIVE)
-	public File getScript() {
+	public @Nullable File getScript() {
 		return this.script;
 	}
 
@@ -98,19 +100,21 @@ public class LaunchScriptConfiguration implements Serializable {
 	 * {@code null}, the default launch script will be used.
 	 * @param script the script file
 	 */
-	public void setScript(File script) {
+	public void setScript(@Nullable File script) {
 		this.script = script;
 	}
 
-	private String removeLineBreaks(String string) {
+	@Contract("!null -> !null")
+	private @Nullable String removeLineBreaks(@Nullable String string) {
 		return (string != null) ? WHITE_SPACE_PATTERN.matcher(string).replaceAll(" ") : null;
 	}
 
-	private String augmentLineBreaks(String string) {
+	@Contract("!null -> !null")
+	private @Nullable String augmentLineBreaks(@Nullable String string) {
 		return (string != null) ? LINE_FEED_PATTERN.matcher(string).replaceAll("\n#  ") : null;
 	}
 
-	private void putIfMissing(Map<String, String> properties, String key, String... valueCandidates) {
+	private void putIfMissing(Map<String, String> properties, String key, @Nullable String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
 				if (StringUtils.hasLength(candidate)) {

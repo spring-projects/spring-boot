@@ -31,6 +31,9 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.util.Assert;
 
 /**
  * Custom {@link JavaExec} task for ahead-of-time processing of a Spring Boot
@@ -42,7 +45,7 @@ import org.gradle.api.tasks.TaskAction;
 @CacheableTask
 public class ProcessTestAot extends AbstractAot {
 
-	private FileCollection classpathRoots;
+	private @Nullable FileCollection classpathRoots;
 
 	public ProcessTestAot() {
 		getMainClass().set("org.springframework.boot.test.context.SpringBootTestAotProcessor");
@@ -54,7 +57,7 @@ public class ProcessTestAot extends AbstractAot {
 	 */
 	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
-	public final FileCollection getClasspathRoots() {
+	public final @Nullable FileCollection getClasspathRoots() {
 		return this.classpathRoots;
 	}
 
@@ -71,6 +74,7 @@ public class ProcessTestAot extends AbstractAot {
 	@IgnoreEmptyDirectories
 	@PathSensitive(PathSensitivity.RELATIVE)
 	final FileTree getInputClasses() {
+		Assert.state(this.classpathRoots != null, "'classpathRoots' must not be null");
 		return this.classpathRoots.getAsFileTree();
 	}
 
@@ -78,7 +82,9 @@ public class ProcessTestAot extends AbstractAot {
 	@TaskAction
 	public void exec() {
 		List<String> args = new ArrayList<>();
-		args.add(getClasspathRoots().getFiles()
+		FileCollection classpathRoots = getClasspathRoots();
+		Assert.state(classpathRoots != null, "'classpathRoots' must not be null");
+		args.add(classpathRoots.getFiles()
 			.stream()
 			.filter(File::exists)
 			.map(File::getAbsolutePath)

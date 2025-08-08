@@ -27,6 +27,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.gradle.api.file.FileTreeElement;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.util.StreamUtils;
@@ -42,13 +43,14 @@ class LoaderZipEntries {
 
 	private final LoaderImplementation loaderImplementation;
 
-	private final Long entryTime;
+	private final @Nullable Long entryTime;
 
 	private final int dirMode;
 
 	private final int fileMode;
 
-	LoaderZipEntries(Long entryTime, int dirMode, int fileMode, LoaderImplementation loaderImplementation) {
+	LoaderZipEntries(@Nullable Long entryTime, int dirMode, int fileMode,
+			@Nullable LoaderImplementation loaderImplementation) {
 		this.entryTime = entryTime;
 		this.dirMode = dirMode;
 		this.fileMode = fileMode;

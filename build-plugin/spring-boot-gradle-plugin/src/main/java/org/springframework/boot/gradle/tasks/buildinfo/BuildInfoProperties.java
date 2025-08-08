@@ -35,6 +35,7 @@ import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The properties that are written into the {@code build-info.properties} file.
@@ -107,32 +108,32 @@ public abstract class BuildInfoProperties implements Serializable {
 
 	@Input
 	@Optional
-	String getArtifactIfNotExcluded() {
+	@Nullable String getArtifactIfNotExcluded() {
 		return getIfNotExcluded(getArtifact(), "artifact");
 	}
 
 	@Input
 	@Optional
-	String getGroupIfNotExcluded() {
+	@Nullable String getGroupIfNotExcluded() {
 		return getIfNotExcluded(getGroup(), "group");
 	}
 
 	@Input
 	@Optional
-	String getNameIfNotExcluded() {
+	@Nullable String getNameIfNotExcluded() {
 		return getIfNotExcluded(getName(), "name");
 	}
 
 	@Input
 	@Optional
-	Instant getTimeIfNotExcluded() {
+	@Nullable Instant getTimeIfNotExcluded() {
 		String time = getIfNotExcluded(getTime(), "time", this.creationTime);
 		return (time != null) ? Instant.parse(time) : null;
 	}
 
 	@Input
 	@Optional
-	String getVersionIfNotExcluded() {
+	@Nullable String getVersionIfNotExcluded() {
 		return getIfNotExcluded(getVersion(), "version");
 	}
 
@@ -141,11 +142,11 @@ public abstract class BuildInfoProperties implements Serializable {
 		return coerceToStringValues(applyExclusions(getAdditional().getOrElse(Collections.emptyMap())));
 	}
 
-	private <T> T getIfNotExcluded(Property<T> property, String name) {
+	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name) {
 		return getIfNotExcluded(property, name, () -> null);
 	}
 
-	private <T> T getIfNotExcluded(Property<T> property, String name, Supplier<T> defaultValue) {
+	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name, Supplier<T> defaultValue) {
 		if (this.excludes.getOrElse(Collections.emptySet()).contains(name)) {
 			return null;
 		}

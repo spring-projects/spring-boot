@@ -36,6 +36,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.work.DisableCachingByDefault;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.LoaderImplementation;
 
@@ -73,7 +74,7 @@ public abstract class BootJar extends Jar implements BootArchive {
 
 	private final ResolvedDependencies resolvedDependencies;
 
-	private FileCollection classpath;
+	private @Nullable FileCollection classpath;
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -169,7 +170,7 @@ public abstract class BootJar extends Jar implements BootArchive {
 	}
 
 	@Override
-	public LaunchScriptConfiguration getLaunchScript() {
+	public @Nullable LaunchScriptConfiguration getLaunchScript() {
 		return this.support.getLaunchScript();
 	}
 
@@ -203,7 +204,7 @@ public abstract class BootJar extends Jar implements BootArchive {
 	}
 
 	@Override
-	public FileCollection getClasspath() {
+	public @Nullable FileCollection getClasspath() {
 		return this.classpath;
 	}
 

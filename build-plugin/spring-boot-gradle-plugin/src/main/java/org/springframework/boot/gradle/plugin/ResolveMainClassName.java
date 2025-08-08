@@ -40,8 +40,10 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.MainClassFinder;
+import org.springframework.util.Assert;
 
 /**
  * {@link Task} for resolving the name of the application's main class.
@@ -58,7 +60,7 @@ public class ResolveMainClassName extends DefaultTask {
 
 	private final Property<String> configuredMainClass;
 
-	private FileCollection classpath;
+	private @Nullable FileCollection classpath;
 
 	/**
 	 * Creates a new instance of the {@code ResolveMainClassName} task.
@@ -75,6 +77,7 @@ public class ResolveMainClassName extends DefaultTask {
 	 */
 	@Classpath
 	public FileCollection getClasspath() {
+		Assert.state(this.classpath != null, "'classpath' must not be null");
 		return this.classpath;
 	}
 
@@ -140,7 +143,7 @@ public class ResolveMainClassName extends DefaultTask {
 			.orElse("");
 	}
 
-	private String findMainClass(File file) {
+	private @Nullable String findMainClass(File file) {
 		try {
 			return MainClassFinder.findSingleMainClass(file, SPRING_BOOT_APPLICATION_CLASS_NAME);
 		}

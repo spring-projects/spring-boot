@@ -24,6 +24,8 @@ import java.net.URLConnection;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Extracts version information for a Class.
  *
@@ -41,7 +43,7 @@ public final class VersionExtractor {
 	 * @param cls the Class to retrieve the version for
 	 * @return the version, or {@code null} if a version can not be extracted
 	 */
-	public static String forClass(Class<?> cls) {
+	public static @Nullable String forClass(Class<?> cls) {
 		String implementationVersion = cls.getPackage().getImplementationVersion();
 		if (implementationVersion != null) {
 			return implementationVersion;

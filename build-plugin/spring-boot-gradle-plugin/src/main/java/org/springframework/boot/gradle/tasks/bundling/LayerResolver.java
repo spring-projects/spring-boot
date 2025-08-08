@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.specs.Spec;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.tasks.bundling.ResolvedDependencies.DependencyDescriptor;
 import org.springframework.boot.loader.tools.Layer;
@@ -51,7 +52,7 @@ class LayerResolver {
 		this.librarySpec = librarySpec;
 	}
 
-	Layer getLayer(FileCopyDetails details) {
+	@Nullable Layer getLayer(FileCopyDetails details) {
 		try {
 			if (this.librarySpec.isSatisfiedBy(details)) {
 				return getLayer(asLibrary(details));

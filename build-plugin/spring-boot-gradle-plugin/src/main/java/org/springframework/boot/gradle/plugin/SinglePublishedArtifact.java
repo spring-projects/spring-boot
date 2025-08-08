@@ -24,6 +24,7 @@ import org.gradle.api.artifacts.dsl.ArtifactHandler;
 import org.gradle.api.tasks.TaskDependency;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
@@ -41,7 +42,7 @@ final class SinglePublishedArtifact implements Buildable {
 
 	private final ArtifactHandler handler;
 
-	private PublishArtifact currentArtifact;
+	private @Nullable PublishArtifact currentArtifact;
 
 	SinglePublishedArtifact(Configuration configuration, ArtifactHandler handler) {
 		this.configuration = configuration;

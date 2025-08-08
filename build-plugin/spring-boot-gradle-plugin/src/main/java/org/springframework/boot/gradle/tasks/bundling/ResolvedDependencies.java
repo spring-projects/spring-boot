@@ -35,6 +35,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.internal.component.external.model.ModuleComponentArtifactIdentifier;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.LibraryCoordinates;
 
@@ -90,7 +91,7 @@ class ResolvedDependencies {
 				resolvedArtifacts.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getId).toList()));
 	}
 
-	DependencyDescriptor find(File file) {
+	@Nullable DependencyDescriptor find(File file) {
 		ComponentArtifactIdentifier id = findArtifactIdentifier(file);
 		if (id == null) {
 			return null;
@@ -111,7 +112,7 @@ class ResolvedDependencies {
 		return null;
 	}
 
-	private ComponentArtifactIdentifier findArtifactIdentifier(File file) {
+	private @Nullable ComponentArtifactIdentifier findArtifactIdentifier(File file) {
 		List<File> files = this.artifactFiles.get();
 		for (int i = 0; i < files.size(); i++) {
 			if (file.equals(files.get(i))) {
