@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import kotlinx.serialization.json.Json;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -44,6 +45,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.JsonbHttpMessageConverter;
+import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
@@ -60,6 +62,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Moritz Halbritter
  * @author Sebastien Deleuze
+ * @author Dmitry Sulman
  */
 @SuppressWarnings("removal")
 class HttpMessageConvertersAutoConfigurationTests {
@@ -128,6 +131,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 			assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(KotlinSerializationJsonHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
 		});
 	}
@@ -159,8 +163,39 @@ class HttpMessageConvertersAutoConfigurationTests {
 			assertConverterBeanExists(context, JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, JsonbHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(KotlinSerializationJsonHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
 		});
+	}
+
+	@Test
+	void kotlinSerializationNotAvailable() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(Json.class);
+			assertThat(context).doesNotHaveBean(KotlinSerializationJsonHttpMessageConverter.class);
+		});
+	}
+
+	@Test
+	void kotlinSerializationCustomConverter() {
+		this.contextRunner.withUserConfiguration(KotlinSerializationConverterConfig.class)
+			.withBean(Json.class, () -> Json.Default)
+			.run(assertConverter(KotlinSerializationJsonHttpMessageConverter.class,
+					"customKotlinSerializationJsonHttpMessageConverter"));
+	}
+
+	@Test
+	void kotlinSerializationCanBePreferred() {
+		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:kotlin-serialization")
+			.run((context) -> {
+				assertConverterBeanExists(context, KotlinSerializationJsonHttpMessageConverter.class,
+						"kotlinSerializationJsonHttpMessageConverter");
+				assertConverterBeanRegisteredWithHttpMessageConverters(context,
+						KotlinSerializationJsonHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(MappingJackson2HttpMessageConverter.class);
+			});
 	}
 
 	@Test
@@ -206,6 +241,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, MappingJackson2HttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+			assertThat(context).doesNotHaveBean(KotlinSerializationJsonHttpMessageConverter.class);
 		});
 	}
 
@@ -216,6 +252,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 				assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
 				assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
 				assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(KotlinSerializationJsonHttpMessageConverter.class);
 			});
 	}
 
@@ -267,7 +304,8 @@ class HttpMessageConvertersAutoConfigurationTests {
 	private ApplicationContextRunner allOptionsRunner() {
 		return this.contextRunner.withBean(Gson.class)
 			.withBean(ObjectMapper.class)
-			.withBean(Jsonb.class, JsonbBuilder::create);
+			.withBean(Jsonb.class, JsonbBuilder::create)
+			.withBean(Json.class, () -> Json.Default);
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertConverter(
@@ -347,6 +385,16 @@ class HttpMessageConvertersAutoConfigurationTests {
 			JsonbHttpMessageConverter converter = new JsonbHttpMessageConverter();
 			converter.setJsonb(jsonb);
 			return converter;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class KotlinSerializationConverterConfig {
+
+		@Bean
+		KotlinSerializationJsonHttpMessageConverter customKotlinSerializationJsonHttpMessageConverter(Json json) {
+			return new KotlinSerializationJsonHttpMessageConverter(json);
 		}
 
 	}
