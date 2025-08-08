@@ -19,6 +19,8 @@ package org.springframework.boot.buildpack.platform.build;
 import java.io.PrintStream;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
@@ -52,7 +54,7 @@ public interface BuildLog {
 	 * @param imageType the image type
 	 * @return a consumer for progress update events
 	 */
-	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImagePlatform platform,
+	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, @Nullable ImagePlatform platform,
 			ImageType imageType);
 
 	/**
@@ -124,7 +126,7 @@ public interface BuildLog {
 	 * @param exception any exception that caused the failure
 	 * @since 3.2.6
 	 */
-	void failedCleaningWorkDir(Cache cache, Exception exception);
+	void failedCleaningWorkDir(Cache cache, @Nullable Exception exception);
 
 	/**
 	 * Log that a binding with a sensitive target has been detected.

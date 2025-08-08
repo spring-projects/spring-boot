@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
@@ -137,7 +139,7 @@ public class InspectedContent implements Content {
 
 		private OutputStream delegate;
 
-		private File tempFile;
+		private @Nullable File tempFile;
 
 		private final byte[] singleByteBuffer = new byte[0];
 

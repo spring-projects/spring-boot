@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
+import org.jspecify.annotations.Nullable;
 import org.tomlj.Toml;
 import org.tomlj.TomlParseResult;
 
@@ -39,9 +40,9 @@ final class BuildpackCoordinates {
 
 	private final String id;
 
-	private final String version;
+	private final @Nullable String version;
 
-	private BuildpackCoordinates(String id, String version) {
+	private BuildpackCoordinates(String id, @Nullable String version) {
 		Assert.hasText(id, "'id' must not be empty");
 		this.id = id;
 		this.version = version;
@@ -59,12 +60,12 @@ final class BuildpackCoordinates {
 		return this.id.replace("/", "_");
 	}
 
-	String getVersion() {
+	@Nullable String getVersion() {
 		return this.version;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Errors returned from the Docker API.
@@ -35,7 +36,7 @@ public class Errors implements Iterable<Errors.Error> {
 	private final List<Error> errors;
 
 	@JsonCreator
-	Errors(@JsonProperty("errors") List<Error> errors) {
+	Errors(@JsonProperty("errors") @Nullable List<Error> errors) {
 		this.errors = (errors != null) ? errors : Collections.emptyList();
 	}
 

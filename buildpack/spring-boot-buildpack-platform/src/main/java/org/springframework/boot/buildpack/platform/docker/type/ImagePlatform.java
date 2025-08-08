@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -30,11 +32,11 @@ public class ImagePlatform {
 
 	private final String os;
 
-	private final String architecture;
+	private final @Nullable String architecture;
 
-	private final String variant;
+	private final @Nullable String variant;
 
-	ImagePlatform(String os, String architecture, String variant) {
+	ImagePlatform(String os, @Nullable String architecture, @Nullable String variant) {
 		Assert.hasText(os, "'os' must not be empty");
 		this.os = os;
 		this.architecture = architecture;
@@ -42,7 +44,7 @@ public class ImagePlatform {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

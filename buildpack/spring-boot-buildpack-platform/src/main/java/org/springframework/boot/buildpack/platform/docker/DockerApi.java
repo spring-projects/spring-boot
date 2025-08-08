@@ -27,7 +27,9 @@ import java.util.Objects;
 
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.net.URIBuilder;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.buildpack.platform.docker.PushImageUpdateEvent.ErrorDetail;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport.Response;
@@ -81,7 +83,7 @@ public class DockerApi {
 
 	private final SystemApi system;
 
-	private volatile ApiVersion apiVersion = null;
+	private volatile @Nullable ApiVersion apiVersion;
 
 	/**
 	 * Create a new {@link DockerApi} instance.
@@ -96,7 +98,7 @@ public class DockerApi {
 	 * @param log a logger used to record output
 	 * @since 3.5.0
 	 */
-	public DockerApi(DockerConnectionConfiguration connectionConfiguration, DockerLog log) {
+	public DockerApi(@Nullable DockerConnectionConfiguration connectionConfiguration, DockerLog log) {
 		this(HttpTransport.create(connectionConfiguration), log);
 	}
 
@@ -125,7 +127,7 @@ public class DockerApi {
 		return this.jsonStream;
 	}
 
-	private URI buildUrl(String path, Collection<?> params) {
+	private URI buildUrl(String path, @Nullable Collection<?> params) {
 		return buildUrl(API_VERSION, path, (params != null) ? params.toArray() : null);
 	}
 
@@ -133,7 +135,7 @@ public class DockerApi {
 		return buildUrl(API_VERSION, path, params);
 	}
 
-	private URI buildUrl(ApiVersion apiVersion, String path, Object... params) {
+	private URI buildUrl(ApiVersion apiVersion, String path, Object @Nullable ... params) {
 		verifyApiVersion(apiVersion);
 		try {
 			URIBuilder builder = new URIBuilder("/v" + apiVersion + path);
@@ -158,12 +160,10 @@ public class DockerApi {
 	}
 
 	private ApiVersion getApiVersion() {
-		ApiVersion apiVersion = this.apiVersion;
 		if (this.apiVersion == null) {
-			apiVersion = this.system.getApiVersion();
-			this.apiVersion = apiVersion;
+			this.apiVersion = this.system.getApiVersion();
 		}
-		return apiVersion;
+		return this.apiVersion;
 	}
 
 	/**
@@ -220,8 +220,8 @@ public class DockerApi {
 		 * @return the {@link ImageApi pulled image} instance
 		 * @throws IOException on IO error
 		 */
-		public Image pull(ImageReference reference, ImagePlatform platform,
-				UpdateListener<PullImageUpdateEvent> listener, String registryAuth) throws IOException {
+		public Image pull(ImageReference reference, @Nullable ImagePlatform platform,
+				UpdateListener<PullImageUpdateEvent> listener, @Nullable String registryAuth) throws IOException {
 			Assert.notNull(reference, "'reference' must not be null");
 			Assert.notNull(listener, "'listener' must not be null");
 			URI createUri = (platform != null)
@@ -250,8 +250,8 @@ public class DockerApi {
 		 * @param registryAuth registry authentication credentials
 		 * @throws IOException on IO error
 		 */
-		public void push(ImageReference reference, UpdateListener<PushImageUpdateEvent> listener, String registryAuth)
-				throws IOException {
+		public void push(ImageReference reference, UpdateListener<PushImageUpdateEvent> listener,
+				@Nullable String registryAuth) throws IOException {
 			Assert.notNull(reference, "'reference' must not be null");
 			Assert.notNull(listener, "'listener' must not be null");
 			URI pushUri = buildUrl("/images/" + reference + "/push");
@@ -375,8 +375,8 @@ public class DockerApi {
 		 * @return a {@link ContainerReference} for the newly created container
 		 * @throws IOException on IO error
 		 */
-		public ContainerReference create(ContainerConfig config, ImagePlatform platform, ContainerContent... contents)
-				throws IOException {
+		public ContainerReference create(ContainerConfig config, @Nullable ImagePlatform platform,
+				ContainerContent... contents) throws IOException {
 			Assert.notNull(config, "'config' must not be null");
 			Assert.noNullElements(contents, "'contents' must not contain null elements");
 			ContainerReference containerReference = createContainer(config, platform);
@@ -386,7 +386,8 @@ public class DockerApi {
 			return containerReference;
 		}
 
-		private ContainerReference createContainer(ContainerConfig config, ImagePlatform platform) throws IOException {
+		private ContainerReference createContainer(ContainerConfig config, @Nullable ImagePlatform platform)
+				throws IOException {
 			URI createUri = (platform != null)
 					? buildUrl(PLATFORM_API_VERSION, "/containers/create", "platform", platform)
 					: buildUrl("/containers/create");
@@ -530,7 +531,7 @@ public class DockerApi {
 
 		private static final String PREFIX = "Digest:";
 
-		private String digest;
+		private @Nullable String digest;
 
 		@Override
 		public void onUpdate(ProgressUpdateEvent event) {
@@ -551,7 +552,7 @@ public class DockerApi {
 
 		private final ImageArchive archive;
 
-		private String stream;
+		private @Nullable String stream;
 
 		private LoadImageUpdateListener(ImageArchive archive) {
 			this.archive = archive;
@@ -584,8 +585,11 @@ public class DockerApi {
 
 		@Override
 		public void onUpdate(PushImageUpdateEvent event) {
-			Assert.state(event.getErrorDetail() == null,
-					() -> "Error response received when pushing image: " + event.getErrorDetail().getMessage());
+			ErrorDetail errorDetail = event.getErrorDetail();
+			if (errorDetail != null) {
+				throw new IllegalStateException(
+						"Error response received when pushing image: " + errorDetail.getMessage());
+			}
 		}
 
 	}

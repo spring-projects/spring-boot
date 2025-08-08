@@ -22,6 +22,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -44,11 +46,11 @@ public final class BuildpackReference {
 		return this.value.startsWith(prefix);
 	}
 
-	String getSubReference(String prefix) {
+	@Nullable String getSubReference(String prefix) {
 		return this.value.startsWith(prefix) ? this.value.substring(prefix.length()) : null;
 	}
 
-	Path asPath() {
+	@Nullable Path asPath() {
 		try {
 			URL url = new URL(this.value);
 			if (url.getProtocol().equals("file")) {
@@ -68,7 +70,7 @@ public final class BuildpackReference {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Docker host connection options.
  *
@@ -24,23 +26,23 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
  */
 public class DockerHost {
 
-	private final String address;
+	private final @Nullable String address;
 
 	private final boolean secure;
 
-	private final String certificatePath;
+	private final @Nullable String certificatePath;
 
-	public DockerHost(String address) {
+	public DockerHost(@Nullable String address) {
 		this(address, false, null);
 	}
 
-	public DockerHost(String address, boolean secure, String certificatePath) {
+	public DockerHost(@Nullable String address, boolean secure, @Nullable String certificatePath) {
 		this.address = address;
 		this.secure = secure;
 		this.certificatePath = certificatePath;
 	}
 
-	public String getAddress() {
+	public @Nullable String getAddress() {
 		return this.address;
 	}
 
@@ -48,7 +50,7 @@ public class DockerHost {
 		return this.secure;
 	}
 
-	public String getCertificatePath() {
+	public @Nullable String getCertificatePath() {
 		return this.certificatePath;
 	}
 

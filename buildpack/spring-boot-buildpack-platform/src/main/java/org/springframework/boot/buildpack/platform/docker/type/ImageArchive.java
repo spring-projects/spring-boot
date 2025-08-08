@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -72,20 +73,21 @@ public class ImageArchive implements TarArchive {
 
 	private final Instant createDate;
 
-	private final ImageReference tag;
+	private final @Nullable ImageReference tag;
 
 	private final String os;
 
-	private final String architecture;
+	private final @Nullable String architecture;
 
-	private final String variant;
+	private final @Nullable String variant;
 
 	private final List<LayerId> existingLayers;
 
 	private final List<Layer> newLayers;
 
-	ImageArchive(ObjectMapper objectMapper, ImageConfig imageConfig, Instant createDate, ImageReference tag, String os,
-			String architecture, String variant, List<LayerId> existingLayers, List<Layer> newLayers) {
+	ImageArchive(ObjectMapper objectMapper, ImageConfig imageConfig, Instant createDate, @Nullable ImageReference tag,
+			String os, @Nullable String architecture, @Nullable String variant, List<LayerId> existingLayers,
+			List<Layer> newLayers) {
 		this.objectMapper = objectMapper;
 		this.imageConfig = imageConfig;
 		this.createDate = createDate;
@@ -117,7 +119,7 @@ public class ImageArchive implements TarArchive {
 	 * Return the tag of the archive.
 	 * @return the tag
 	 */
-	public ImageReference getTag() {
+	public @Nullable ImageReference getTag() {
 		return this.tag;
 	}
 
@@ -257,9 +259,9 @@ public class ImageArchive implements TarArchive {
 
 		private ImageConfig config;
 
-		private Instant createDate;
+		private @Nullable Instant createDate;
 
-		private ImageReference tag;
+		private @Nullable ImageReference tag;
 
 		private final List<Layer> newLayers = new ArrayList<>();
 

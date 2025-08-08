@@ -21,6 +21,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Abstract base class for custom socket implementation.
  *
@@ -57,22 +59,22 @@ class AbstractSocket extends Socket {
 	}
 
 	@Override
-	public InetAddress getInetAddress() {
+	public @Nullable InetAddress getInetAddress() {
 		return null;
 	}
 
 	@Override
-	public InetAddress getLocalAddress() {
+	public @Nullable InetAddress getLocalAddress() {
 		return null;
 	}
 
 	@Override
-	public SocketAddress getLocalSocketAddress() {
+	public @Nullable SocketAddress getLocalSocketAddress() {
 		return null;
 	}
 
 	@Override
-	public SocketAddress getRemoteSocketAddress() {
+	public @Nullable SocketAddress getRemoteSocketAddress() {
 		return null;
 	}
 

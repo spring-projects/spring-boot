@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.util.StringUtils;
@@ -43,13 +44,13 @@ public class Image extends MappedObject {
 
 	private final List<LayerId> layers;
 
-	private final String os;
+	private final @Nullable String os;
 
-	private final String architecture;
+	private final @Nullable String architecture;
 
-	private final String variant;
+	private final @Nullable String variant;
 
-	private final String created;
+	private final @Nullable String created;
 
 	Image(JsonNode node) {
 		super(node, MethodHandles.lookup());
@@ -62,7 +63,7 @@ public class Image extends MappedObject {
 		this.created = valueAt("/Created", String.class);
 	}
 
-	private List<LayerId> extractLayers(String[] layers) {
+	private List<LayerId> extractLayers(String @Nullable [] layers) {
 		if (layers == null) {
 			return Collections.emptyList();
 		}
@@ -105,7 +106,7 @@ public class Image extends MappedObject {
 	 * Return the architecture of the image.
 	 * @return the image architecture
 	 */
-	public String getArchitecture() {
+	public @Nullable String getArchitecture() {
 		return this.architecture;
 	}
 
@@ -113,7 +114,7 @@ public class Image extends MappedObject {
 	 * Return the variant of the image.
 	 * @return the image variant
 	 */
-	public String getVariant() {
+	public @Nullable String getVariant() {
 		return this.variant;
 	}
 
@@ -121,7 +122,7 @@ public class Image extends MappedObject {
 	 * Return the created date of the image.
 	 * @return the image created date
 	 */
-	public String getCreated() {
+	public @Nullable String getCreated() {
 		return this.created;
 	}
 

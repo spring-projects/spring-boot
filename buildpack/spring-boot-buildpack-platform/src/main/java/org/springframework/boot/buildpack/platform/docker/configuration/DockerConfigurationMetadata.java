@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
@@ -124,7 +125,7 @@ final class DockerConfigurationMetadata {
 		}
 	}
 
-	private static DockerContext createDockerContext(String configLocation, String currentContext) {
+	private static DockerContext createDockerContext(String configLocation, @Nullable String currentContext) {
 		if (currentContext == null || DEFAULT_CONTEXT.equals(currentContext)) {
 			return DockerContext.empty();
 		}
@@ -145,7 +146,7 @@ final class DockerConfigurationMetadata {
 		}
 	}
 
-	private static String asHash(String currentContext) {
+	private static @Nullable String asHash(String currentContext) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] hash = digest.digest(currentContext.getBytes(StandardCharsets.UTF_8));
@@ -167,9 +168,9 @@ final class DockerConfigurationMetadata {
 
 	static final class DockerConfig extends MappedObject {
 
-		private final String currentContext;
+		private final @Nullable String currentContext;
 
-		private final String credsStore;
+		private final @Nullable String credsStore;
 
 		private final Map<String, String> credHelpers;
 
@@ -183,11 +184,11 @@ final class DockerConfigurationMetadata {
 			this.auths = mapAt("/auths", Auth::new);
 		}
 
-		String getCurrentContext() {
+		@Nullable String getCurrentContext() {
 			return this.currentContext;
 		}
 
-		String getCredsStore() {
+		@Nullable String getCredsStore() {
 			return this.credsStore;
 		}
 
@@ -211,11 +212,11 @@ final class DockerConfigurationMetadata {
 
 	static final class Auth extends MappedObject {
 
-		private final String username;
+		private final @Nullable String username;
 
-		private final String password;
+		private final @Nullable String password;
 
-		private final String email;
+		private final @Nullable String email;
 
 		Auth(JsonNode node) {
 			super(node, MethodHandles.lookup());
@@ -233,15 +234,15 @@ final class DockerConfigurationMetadata {
 			this.email = valueAt("/email", String.class);
 		}
 
-		String getUsername() {
+		@Nullable String getUsername() {
 			return this.username;
 		}
 
-		String getPassword() {
+		@Nullable String getPassword() {
 			return this.password;
 		}
 
-		String getEmail() {
+		@Nullable String getEmail() {
 			return this.email;
 		}
 
@@ -254,20 +255,20 @@ final class DockerConfigurationMetadata {
 
 	static final class DockerContext extends MappedObject {
 
-		private final String dockerHost;
+		private final @Nullable String dockerHost;
 
-		private final Boolean skipTlsVerify;
+		private final @Nullable Boolean skipTlsVerify;
 
-		private final String tlsPath;
+		private final @Nullable String tlsPath;
 
-		private DockerContext(JsonNode node, String tlsPath) {
+		private DockerContext(JsonNode node, @Nullable String tlsPath) {
 			super(node, MethodHandles.lookup());
 			this.dockerHost = valueAt("/Endpoints/" + DOCKER_ENDPOINT + "/Host", String.class);
 			this.skipTlsVerify = valueAt("/Endpoints/" + DOCKER_ENDPOINT + "/SkipTLSVerify", Boolean.class);
 			this.tlsPath = tlsPath;
 		}
 
-		String getDockerHost() {
+		@Nullable String getDockerHost() {
 			return this.dockerHost;
 		}
 
@@ -275,7 +276,7 @@ final class DockerConfigurationMetadata {
 			return this.skipTlsVerify != null && !this.skipTlsVerify;
 		}
 
-		String getTlsPath() {
+		@Nullable String getTlsPath() {
 			return this.tlsPath;
 		}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.docker;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A {@link ProgressUpdateEvent} fired for image events.
  *
@@ -25,9 +27,10 @@ package org.springframework.boot.buildpack.platform.docker;
  */
 public class ImageProgressUpdateEvent extends ProgressUpdateEvent {
 
-	private final String id;
+	private final @Nullable String id;
 
-	protected ImageProgressUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress) {
+	protected ImageProgressUpdateEvent(@Nullable String id, String status, @Nullable ProgressDetail progressDetail,
+			@Nullable String progress) {
 		super(status, progressDetail, progress);
 		this.id = id;
 	}
@@ -36,7 +39,7 @@ public class ImageProgressUpdateEvent extends ProgressUpdateEvent {
 	 * Returns the ID of the image layer being updated if available.
 	 * @return the ID of the updated layer or {@code null}
 	 */
-	public String getId() {
+	public @Nullable String getId() {
 		return this.id;
 	}
 

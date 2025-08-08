@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.util.Assert;
@@ -59,10 +61,10 @@ class BuilderBuildpack implements Buildpack {
 	 * @param reference the buildpack reference
 	 * @return the resolved {@link Buildpack} or {@code null}
 	 */
-	static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
+	static @Nullable Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
 		boolean unambiguous = reference.hasPrefix(PREFIX);
 		BuilderReference builderReference = BuilderReference
-			.of(unambiguous ? reference.getSubReference(PREFIX) : reference.toString());
+			.of(unambiguous ? getSubReference(reference) : reference.toString());
 		BuildpackMetadata buildpackMetadata = findBuildpackMetadata(context, builderReference);
 		if (unambiguous) {
 			Assert.state(buildpackMetadata != null, () -> "Buildpack '" + reference + "' not found in builder");
@@ -70,7 +72,13 @@ class BuilderBuildpack implements Buildpack {
 		return (buildpackMetadata != null) ? new BuilderBuildpack(buildpackMetadata) : null;
 	}
 
-	private static BuildpackMetadata findBuildpackMetadata(BuildpackResolverContext context,
+	private static String getSubReference(BuildpackReference reference) {
+		String result = reference.getSubReference(PREFIX);
+		Assert.state(result != null, "'result' must not be null");
+		return result;
+	}
+
+	private static @Nullable BuildpackMetadata findBuildpackMetadata(BuildpackResolverContext context,
 			BuilderReference builderReference) {
 		for (BuildpackMetadata candidate : context.getBuildpackMetadata()) {
 			if (builderReference.matches(candidate)) {
@@ -87,9 +95,9 @@ class BuilderBuildpack implements Buildpack {
 
 		private final String id;
 
-		private final String version;
+		private final @Nullable String version;
 
-		BuilderReference(String id, String version) {
+		BuilderReference(String id, @Nullable String version) {
 			this.id = id;
 			this.version = version;
 		}

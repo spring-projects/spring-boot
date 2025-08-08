@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Utility class that allows JSON to be parsed and processed as it's received.
@@ -78,7 +79,7 @@ public class JsonStream {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T read(JsonParser parser, Class<T> type) throws IOException {
+	private <T> @Nullable T read(JsonParser parser, Class<T> type) throws IOException {
 		if (ObjectNode.class.isAssignableFrom(type)) {
 			ObjectNode node = this.objectMapper.readTree(parser);
 			if (node == null || node.isMissingNode() || node.isEmpty()) {

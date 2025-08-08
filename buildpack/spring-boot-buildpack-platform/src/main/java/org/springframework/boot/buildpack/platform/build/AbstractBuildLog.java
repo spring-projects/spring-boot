@@ -19,6 +19,8 @@ package org.springframework.boot.buildpack.platform.build;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
@@ -45,7 +47,7 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
-	public Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImagePlatform platform,
+	public Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, @Nullable ImagePlatform platform,
 			ImageType imageType) {
 		return (platform != null)
 				? getProgressConsumer(" > Pulling %s '%s' for platform '%s'".formatted(imageType.getDescription(),
@@ -109,7 +111,7 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
-	public void failedCleaningWorkDir(Cache cache, Exception exception) {
+	public void failedCleaningWorkDir(Cache cache, @Nullable Exception exception) {
 		StringBuilder message = new StringBuilder("Warning: Working location " + cache + " could not be cleaned");
 		if (exception != null) {
 			message.append(": ").append(exception.getMessage());

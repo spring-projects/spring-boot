@@ -16,6 +16,10 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.util.Assert;
@@ -30,21 +34,21 @@ class StackId {
 
 	private static final String LABEL_NAME = "io.buildpacks.stack.id";
 
-	private final String value;
+	private final @Nullable String value;
 
-	StackId(String value) {
+	StackId(@Nullable String value) {
 		this.value = value;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		return this.value.equals(((StackId) obj).value);
+		return Objects.equals(this.value, ((StackId) obj).value);
 	}
 
 	boolean hasId() {
@@ -53,12 +57,12 @@ class StackId {
 
 	@Override
 	public int hashCode() {
-		return this.value.hashCode();
+		return Objects.hashCode(this.value);
 	}
 
 	@Override
 	public String toString() {
-		return this.value;
+		return (this.value != null) ? this.value : "<null>";
 	}
 
 	/**

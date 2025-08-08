@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.docker.transport;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -45,7 +47,7 @@ public class DockerConnectionException extends RuntimeException {
 		return message.toString();
 	}
 
-	private static String getCauseMessage(Exception cause) {
+	private static @Nullable String getCauseMessage(Exception cause) {
 		if (cause.getCause() != null && cause.getCause().getClass().getName().equals(JNA_EXCEPTION_CLASS_NAME)) {
 			return cause.getCause().getMessage();
 		}

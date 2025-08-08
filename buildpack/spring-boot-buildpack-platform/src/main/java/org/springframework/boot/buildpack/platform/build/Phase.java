@@ -22,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -48,7 +50,7 @@ class Phase {
 
 	private final List<String> securityOptions = new ArrayList<>();
 
-	private String networkMode;
+	private @Nullable String networkMode;
 
 	private boolean requiresApp;
 
@@ -152,7 +154,7 @@ class Phase {
 	 * Update this phase with the network the build container will connect to.
 	 * @param networkMode the network
 	 */
-	void withNetworkMode(String networkMode) {
+	void withNetworkMode(@Nullable String networkMode) {
 		this.networkMode = networkMode;
 	}
 

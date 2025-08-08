@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerLog;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
@@ -86,12 +88,12 @@ public class Builder {
 	 * @param dockerConfiguration the docker configuration
 	 * @since 3.5.0
 	 */
-	public Builder(BuildLog log, BuilderDockerConfiguration dockerConfiguration) {
+	public Builder(BuildLog log, @Nullable BuilderDockerConfiguration dockerConfiguration) {
 		this(log, new DockerApi((dockerConfiguration != null) ? dockerConfiguration.connection() : null,
 				BuildLogAdapter.get(log)), dockerConfiguration);
 	}
 
-	Builder(BuildLog log, DockerApi docker, BuilderDockerConfiguration dockerConfiguration) {
+	Builder(BuildLog log, DockerApi docker, @Nullable BuilderDockerConfiguration dockerConfiguration) {
 		Assert.notNull(log, "'log' must not be null");
 		this.log = log;
 		this.docker = docker;
@@ -109,6 +111,7 @@ public class Builder {
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		request = withRunImageIfNeeded(request, builderMetadata);
+		Assert.state(request.getRunImage() != null, "'request.getRunImage()' must not be null");
 		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage());
 		assertStackIdsMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
@@ -181,7 +184,7 @@ public class Builder {
 		}
 	}
 
-	private ResolvedDockerHost getDockerHost() {
+	private @Nullable ResolvedDockerHost getDockerHost() {
 		boolean bindToBuilder = this.dockerConfiguration.bindHostToBuilder();
 		return (bindToBuilder) ? ResolvedDockerHost.from(this.dockerConfiguration.connection()) : null;
 	}
@@ -208,7 +211,8 @@ public class Builder {
 		this.log.pushedImage(reference);
 	}
 
-	private static String authHeader(DockerRegistryAuthentication authentication, ImageReference reference) {
+	private static @Nullable String authHeader(@Nullable DockerRegistryAuthentication authentication,
+			ImageReference reference) {
 		return (authentication != null) ? authentication.getAuthHeader(reference) : null;
 	}
 
@@ -217,14 +221,14 @@ public class Builder {
 	 */
 	private class ImageFetcher {
 
-		private final DockerRegistryAuthentication registryAuthentication;
+		private final @Nullable DockerRegistryAuthentication registryAuthentication;
 
 		private final PullPolicy pullPolicy;
 
-		private ImagePlatform defaultPlatform;
+		private @Nullable ImagePlatform defaultPlatform;
 
-		ImageFetcher(DockerRegistryAuthentication registryAuthentication, PullPolicy pullPolicy,
-				ImagePlatform platform) {
+		ImageFetcher(@Nullable DockerRegistryAuthentication registryAuthentication, PullPolicy pullPolicy,
+				@Nullable ImagePlatform platform) {
 			this.registryAuthentication = registryAuthentication;
 			this.pullPolicy = pullPolicy;
 			this.defaultPlatform = platform;

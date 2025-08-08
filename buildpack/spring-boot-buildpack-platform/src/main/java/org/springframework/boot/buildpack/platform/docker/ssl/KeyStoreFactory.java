@@ -28,6 +28,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Utility methods for creating Java trust material from key and certificate files.
  *
@@ -74,7 +76,7 @@ final class KeyStoreFactory {
 		return keyStore;
 	}
 
-	private static PrivateKey getPrivateKey(Path path) throws IOException {
+	private static @Nullable PrivateKey getPrivateKey(@Nullable Path path) throws IOException {
 		if (path != null && Files.exists(path)) {
 			String text = Files.readString(path);
 			return PemPrivateKeyParser.parse(text);
@@ -82,8 +84,8 @@ final class KeyStoreFactory {
 		return null;
 	}
 
-	private static void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey,
-			String alias) throws KeyStoreException {
+	private static void addCertificates(KeyStore keyStore, X509Certificate[] certificates,
+			@Nullable PrivateKey privateKey, String alias) throws KeyStoreException {
 		if (privateKey != null) {
 			keyStore.setKeyEntry(alias, privateKey, NO_PASSWORD, certificates);
 		}

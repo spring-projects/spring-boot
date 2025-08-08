@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.sun.jna.Platform;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 
@@ -48,7 +49,7 @@ class CredentialHelper {
 		this.executable = executable;
 	}
 
-	Credential get(String serverUrl) throws IOException {
+	@Nullable Credential get(String serverUrl) throws IOException {
 		ProcessBuilder processBuilder = processBuilder("get");
 		Process process = start(processBuilder);
 		try (OutputStream request = process.getOutputStream()) {

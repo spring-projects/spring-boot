@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.docker;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link ProgressUpdateEvent} fired as an image is loaded.
@@ -27,13 +28,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class LoadImageUpdateEvent extends ProgressUpdateEvent {
 
-	private final String stream;
+	private final @Nullable String stream;
 
-	private final ErrorDetail errorDetail;
+	private final @Nullable ErrorDetail errorDetail;
 
 	@JsonCreator
-	public LoadImageUpdateEvent(String stream, String status, ProgressDetail progressDetail, String progress,
-			ErrorDetail errorDetail) {
+	public LoadImageUpdateEvent(@Nullable String stream, String status, ProgressDetail progressDetail, String progress,
+			@Nullable ErrorDetail errorDetail) {
 		super(status, progressDetail, progress);
 		this.stream = stream;
 		this.errorDetail = errorDetail;
@@ -43,7 +44,7 @@ public class LoadImageUpdateEvent extends ProgressUpdateEvent {
 	 * Return the stream response or {@code null} if no response is available.
 	 * @return the stream response.
 	 */
-	public String getStream() {
+	public @Nullable String getStream() {
 		return this.stream;
 	}
 
@@ -52,7 +53,7 @@ public class LoadImageUpdateEvent extends ProgressUpdateEvent {
 	 * @return the error detail, if any
 	 * @since 3.2.12
 	 */
-	public ErrorDetail getErrorDetail() {
+	public @Nullable ErrorDetail getErrorDetail() {
 		return this.errorDetail;
 	}
 

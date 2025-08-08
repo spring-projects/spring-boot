@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.docker;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A {@link ProgressUpdateEvent} fired as an image is pushed to a registry.
@@ -27,11 +28,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class PushImageUpdateEvent extends ImageProgressUpdateEvent {
 
-	private final ErrorDetail errorDetail;
+	private final @Nullable ErrorDetail errorDetail;
 
 	@JsonCreator
 	public PushImageUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress,
-			ErrorDetail errorDetail) {
+			@Nullable ErrorDetail errorDetail) {
 		super(id, status, progressDetail, progress);
 		this.errorDetail = errorDetail;
 	}
@@ -40,7 +41,7 @@ public class PushImageUpdateEvent extends ImageProgressUpdateEvent {
 	 * Returns the details of any error encountered during processing.
 	 * @return the error
 	 */
-	public ErrorDetail getErrorDetail() {
+	public @Nullable ErrorDetail getErrorDetail() {
 		return this.errorDetail;
 	}
 
