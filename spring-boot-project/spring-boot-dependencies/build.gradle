@@ -1041,7 +1041,7 @@ bom {
 			releaseNotes("https://github.com/redis/jedis/releases/tag/v{version}")
 		}
 	}
-	library("Jersey", "3.1.10") {
+	library("Jersey", "3.1.11") {
 		prohibit {
 			versionRange "[4.0.0-M1,)"
 			because "it exceeds our Jakarta EE 10 baseline"
