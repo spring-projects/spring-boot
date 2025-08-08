@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
-import org.eclipse.jetty.server.ConnectionLimit;
+import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.jspecify.annotations.Nullable;
@@ -109,7 +109,7 @@ public class JettyReactiveWebServerFactory extends JettyWebServerFactory
 		server.setHandler(addHandlerWrappers(contextHandler));
 		logger.info("Server initialized with port: " + port);
 		if (this.getMaxConnections() > -1) {
-			server.addBean(new ConnectionLimit(this.getMaxConnections(), server));
+			server.addBean(new NetworkConnectionLimit(this.getMaxConnections(), server));
 		}
 		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);

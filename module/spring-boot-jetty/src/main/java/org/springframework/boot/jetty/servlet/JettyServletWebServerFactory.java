@@ -52,10 +52,10 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.http.MimeTypes.Wrapper;
 import org.eclipse.jetty.http.SetCookieParser;
-import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpCookieUtils;
+import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
@@ -165,7 +165,7 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		server.setHandler(addHandlerWrappers(context));
 		logger.info("Server initialized with port: " + port);
 		if (this.getMaxConnections() > -1) {
-			server.addBean(new ConnectionLimit(this.getMaxConnections(), server.getConnectors()));
+			server.addBean(new NetworkConnectionLimit(this.getMaxConnections(), server.getConnectors()));
 		}
 		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);
