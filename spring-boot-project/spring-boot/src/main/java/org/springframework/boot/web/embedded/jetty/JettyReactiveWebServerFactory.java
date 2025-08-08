@@ -31,10 +31,10 @@ import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.NetworkConnectionLimit;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
@@ -189,7 +189,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		server.setHandler(addHandlerWrappers(contextHandler));
 		JettyReactiveWebServerFactory.logger.info("Server initialized with port: " + port);
 		if (this.maxConnections > -1) {
-			server.addBean(new ConnectionLimit(this.maxConnections, server));
+			server.addBean(new NetworkConnectionLimit(this.maxConnections, server));
 		}
 		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);
