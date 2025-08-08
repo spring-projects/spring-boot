@@ -19,6 +19,11 @@ package org.springframework.boot.test.system;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterEach;
@@ -32,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link OutputCapture}.
  *
  * @author Phillip Webb
+ * @author Daniel Schmidt
  */
 class OutputCaptureTests {
 
@@ -188,6 +194,25 @@ class OutputCaptureTests {
 		assertThat(this.output.buildCount).isEqualTo(2);
 	}
 
+	@Test
+	void getOutCacheShouldNotReturnStaleDataWhenDataIsLoggedWhileReading() throws Exception {
+		TestLatchedOutputCapture output = new TestLatchedOutputCapture();
+		output.push();
+		System.out.print("A");
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+		try {
+			Future<?> reader = executor.submit(output::releaseAfterBuildAndAssertResultIsA);
+			Future<?> writer = executor.submit(output::awaitReleaseAfterBuildThenWriteBAndRelease);
+			reader.get();
+			writer.get();
+		}
+		finally {
+			executor.shutdown();
+			executor.awaitTermination(10, TimeUnit.SECONDS);
+		}
+		assertThat(output.getOut()).isEqualTo("AB");
+	}
+
 	private void pushAndPrint() {
 		this.output.push();
 		System.out.print("A");
@@ -216,6 +241,42 @@ class OutputCaptureTests {
 		String build(Predicate<Type> filter) {
 			this.buildCount++;
 			return super.build(filter);
+		}
+
+	}
+
+	static class TestLatchedOutputCapture extends OutputCapture {
+
+		private final CountDownLatch waitAfterBuild = new CountDownLatch(1);
+
+		private final CountDownLatch releaseAfterBuild = new CountDownLatch(1);
+
+		@Override
+		String build(Predicate<Type> filter) {
+			var result = super.build(filter);
+			this.releaseAfterBuild.countDown();
+			await(this.waitAfterBuild);
+			return result;
+		}
+
+		void releaseAfterBuildAndAssertResultIsA() {
+			assertThat(getOut()).isEqualTo("A");
+		}
+
+		void awaitReleaseAfterBuildThenWriteBAndRelease() {
+			await(this.releaseAfterBuild);
+			System.out.print("B");
+			this.waitAfterBuild.countDown();
+		}
+
+		private void await(CountDownLatch latch) {
+			try {
+				latch.await();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(ex);
+			}
 		}
 
 	}
