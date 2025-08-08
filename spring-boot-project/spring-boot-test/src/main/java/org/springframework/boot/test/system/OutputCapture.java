@@ -40,6 +40,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Sam Brannen
+ * @author Daniel Schmidt
  * @see OutputCaptureExtension
  * @see OutputCaptureRule
  */
@@ -49,11 +50,15 @@ class OutputCapture implements CapturedOutput {
 
 	private AnsiOutputState ansiOutputState;
 
-	private final AtomicReference<String> out = new AtomicReference<>(null);
+	private final AtomicReference<Object> out = new AtomicReference<>();
 
-	private final AtomicReference<String> err = new AtomicReference<>(null);
+	private final AtomicReference<Object> err = new AtomicReference<>();
 
-	private final AtomicReference<String> all = new AtomicReference<>(null);
+	private final AtomicReference<Object> all = new AtomicReference<>();
+
+	OutputCapture() {
+		clearExisting();
+	}
 
 	/**
 	 * Push a new system capture session onto the stack.
@@ -136,20 +141,21 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	void clearExisting() {
-		this.out.set(null);
-		this.err.set(null);
-		this.all.set(null);
+		this.out.set(new NoOutput());
+		this.err.set(new NoOutput());
+		this.all.set(new NoOutput());
 	}
 
-	private String get(AtomicReference<String> existing, Predicate<Type> filter) {
+	private String get(AtomicReference<Object> existing, Predicate<Type> filter) {
 		Assert.state(!this.systemCaptures.isEmpty(),
 				"No system captures found. Please check your output capture registration.");
-		String result = existing.get();
-		if (result == null) {
-			result = build(filter);
-			existing.compareAndSet(null, result);
+		Object existingOutput = existing.get();
+		if (existingOutput instanceof String) {
+			return (String) existingOutput;
 		}
-		return result;
+		String builtOutput = build(filter);
+		existing.compareAndSet(existingOutput, builtOutput);
+		return builtOutput;
 	}
 
 	String build(Predicate<Type> filter) {
@@ -336,6 +342,10 @@ class OutputCapture implements CapturedOutput {
 			}
 			return new AnsiOutputState();
 		}
+
+	}
+
+	static class NoOutput {
 
 	}
 
