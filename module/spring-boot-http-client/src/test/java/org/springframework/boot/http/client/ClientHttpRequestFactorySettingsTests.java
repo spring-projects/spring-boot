@@ -21,8 +21,12 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -41,15 +45,38 @@ class ClientHttpRequestFactorySettingsTests {
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
+		assertThat(settings.bannedHostDnsResolver()).isNull();
 	}
 
 	@Test
 	void createWithNullsUsesDefaults() {
-		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null);
+		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null, null);
 		assertThat(settings.redirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
+		assertThat(settings.bannedHostDnsResolver()).isNull();
+	}
+
+	@Test
+	void createWithBannedHostDnsResolver() {
+		BannedHostDnsResolver dnsResolver = new BannedHostDnsResolver("example.com");
+		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null,
+				dnsResolver);
+		assertThat(settings.bannedHostDnsResolver()).isEqualTo(dnsResolver);
+	}
+
+	@Test
+	void buildClientWithBannedHostDnsResolver() {
+		BannedHostDnsResolver dnsResolver = new BannedHostDnsResolver("example.com");
+		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null,
+				dnsResolver);
+		HttpComponentsClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder.httpComponents()
+			.build(settings);
+		RestTemplate restTemplate = new RestTemplate(requestFactory);
+		assertThatExceptionOfType(ResourceAccessException.class)
+			.isThrownBy(() -> restTemplate.getForEntity("http://example.com", String.class))
+			.withRootCauseInstanceOf(java.net.UnknownHostException.class);
 	}
 
 	@Test
