@@ -26,6 +26,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +36,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.springframework.boot.loader.jar.NestedJarFile;
-import org.springframework.boot.loader.net.util.UrlDecoder;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link java.net.JarURLConnection} alternative to
@@ -341,7 +342,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 				if ("runtime".equals(url.getRef())) {
 					jarFileUrl = new URL(jarFileUrl, "#runtime");
 				}
-				String entryName = UrlDecoder.decode(spec.substring(separator + 2));
+				String entryName = StringUtils.uriDecode(spec.substring(separator + 2), StandardCharsets.UTF_8);
 				JarFile jarFile = jarFiles.getOrCreate(true, jarFileUrl);
 				jarFiles.cacheIfAbsent(true, jarFileUrl, jarFile);
 				if (!hasEntry(jarFile, entryName)) {

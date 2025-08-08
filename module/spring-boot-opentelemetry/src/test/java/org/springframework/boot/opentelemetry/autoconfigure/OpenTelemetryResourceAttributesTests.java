@@ -137,7 +137,7 @@ class OpenTelemetryResourceAttributesTests {
 	void illegalArgumentExceptionShouldBeThrownWhenDecodingIllegalHexCharPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=abc%ß");
 		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
-			.withMessage("Failed to decode percent-encoded characters at index 3 in the value: 'abc%ß'");
+			.withMessage("Incomplete trailing escape (%) pattern");
 	}
 
 	@Test
@@ -150,7 +150,7 @@ class OpenTelemetryResourceAttributesTests {
 	void illegalArgumentExceptionShouldBeThrownWhenDecodingInvalidPercentEncodedValue() {
 		this.environmentVariables.put("OTEL_RESOURCE_ATTRIBUTES", "key=%");
 		assertThatIllegalArgumentException().isThrownBy(this::getAttributes)
-			.withMessage("Failed to decode percent-encoded characters at index 0 in the value: '%'");
+			.withMessage("Incomplete trailing escape (%) pattern");
 	}
 
 	@Test
