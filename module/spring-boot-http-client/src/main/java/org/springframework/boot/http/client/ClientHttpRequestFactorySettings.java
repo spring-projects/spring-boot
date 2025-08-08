@@ -117,6 +117,17 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, @Nullabl
 	}
 
 	/**
+	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
+	 * banned host setting.
+	 * @param host the banned host
+	 * @return a new {@link ClientHttpRequestFactorySettings} instance
+	 */
+	public ClientHttpRequestFactorySettings withBannedHost(String host) {
+		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, this.readTimeout,
+				this.sslBundle, (host != null) ? new BannedHostDnsResolver(host) : null);
+	}
+
+	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} using defaults for all
 	 * settings other than the provided SSL bundle.
 	 * @param sslBundle the SSL bundle setting

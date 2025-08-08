@@ -60,17 +60,15 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void createWithBannedHostDnsResolver() {
-		BannedHostDnsResolver dnsResolver = new BannedHostDnsResolver("example.com");
-		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null,
-				dnsResolver);
-		assertThat(settings.bannedHostDnsResolver()).isEqualTo(dnsResolver);
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withBannedHost("example.com");
+		assertThat(settings.bannedHostDnsResolver()).isNotNull();
 	}
 
 	@Test
 	void buildClientWithBannedHostDnsResolver() {
-		BannedHostDnsResolver dnsResolver = new BannedHostDnsResolver("example.com");
-		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null,
-				dnsResolver);
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withBannedHost("example.com");
 		HttpComponentsClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder.httpComponents()
 			.build(settings);
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
