@@ -16,7 +16,6 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -129,7 +128,7 @@ public class OpenTelemetryResourceAttributes {
 			if (index > 0) {
 				String key = attribute.substring(0, index);
 				String value = attribute.substring(index + 1);
-				attributes.put(key.trim(), decode(value.trim()));
+				attributes.put(key.trim(), StringUtils.uriDecode(value.trim(), StandardCharsets.UTF_8));
 			}
 		}
 		String otelServiceName = getEnv("OTEL_SERVICE_NAME");
@@ -141,45 +140,6 @@ public class OpenTelemetryResourceAttributes {
 
 	private @Nullable String getEnv(String name) {
 		return this.systemEnvironment.apply(name);
-	}
-
-	/**
-	 * Decodes a percent-encoded string. Converts sequences like '%HH' (where HH
-	 * represents hexadecimal digits) back into their literal representations.
-	 * <p>
-	 * Inspired by {@code org.apache.commons.codec.net.PercentCodec}.
-	 * @param value value to decode
-	 * @return the decoded string
-	 */
-	private static String decode(String value) {
-		if (value.indexOf('%') < 0) {
-			return value;
-		}
-		byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-		ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
-		for (int i = 0; i < bytes.length; i++) {
-			byte b = bytes[i];
-			if (b != '%') {
-				out.write(b);
-				continue;
-			}
-			int u = decodeHex(bytes, i + 1);
-			int l = decodeHex(bytes, i + 2);
-			if (u >= 0 && l >= 0) {
-				out.write((u << 4) + l);
-			}
-			else {
-				throw new IllegalArgumentException(
-						"Failed to decode percent-encoded characters at index %d in the value: '%s'".formatted(i,
-								value));
-			}
-			i += 2;
-		}
-		return out.toString(StandardCharsets.UTF_8);
-	}
-
-	private static int decodeHex(byte[] bytes, int index) {
-		return (index < bytes.length) ? Character.digit(bytes[index], 16) : -1;
 	}
 
 }
