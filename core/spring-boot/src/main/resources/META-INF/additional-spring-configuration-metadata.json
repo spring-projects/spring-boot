@@ -476,6 +476,13 @@
       "defaultValue": "application"
     },
     {
+      "name": "spring.configurationproperties.ignore-unresolvable-placeholders",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.springframework.boot.context.properties.ConfigurationPropertiesBinder",
+      "description": "Whether unresolvable placeholders should be ignored or trigger an exception during the binding of configuration properties",
+      "defaultValue": "true"
+    },
+    {
       "name": "spring.jpa.defer-datasource-initialization",
       "type": "java.lang.Boolean",
       "description": "Whether to defer DataSource initialization until after any EntityManagerFactory beans have been created and initialized.",
