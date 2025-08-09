@@ -161,7 +161,7 @@ class RepositoryMetricsAutoConfigurationTests {
 
 	}
 
-	private static final class TestRepositoryTagsProvider implements RepositoryTagsProvider {
+	static final class TestRepositoryTagsProvider implements RepositoryTagsProvider {
 
 		@Override
 		public Iterable<Tag> repositoryTags(RepositoryMethodInvocation invocation) {

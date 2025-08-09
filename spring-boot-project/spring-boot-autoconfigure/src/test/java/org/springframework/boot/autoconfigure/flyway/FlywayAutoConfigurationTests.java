@@ -1340,7 +1340,7 @@ class FlywayAutoConfigurationTests {
 
 	}
 
-	private static final class TestMigration implements JavaMigration {
+	static final class TestMigration implements JavaMigration {
 
 		private final MigrationVersion version;
 

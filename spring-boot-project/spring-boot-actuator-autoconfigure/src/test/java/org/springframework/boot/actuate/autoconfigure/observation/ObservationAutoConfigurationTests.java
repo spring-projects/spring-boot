@@ -566,7 +566,7 @@ class ObservationAutoConfigurationTests {
 
 	}
 
-	private static class CustomTracingObservationHandler implements TracingObservationHandler<Context> {
+	static class CustomTracingObservationHandler implements TracingObservationHandler<Context> {
 
 		private final Tracer tracer = mock(Tracer.class, Answers.RETURNS_MOCKS);
 
@@ -600,7 +600,7 @@ class ObservationAutoConfigurationTests {
 
 	}
 
-	private static class ObservationHandlerWithCustomContext implements ObservationHandler<CustomContext> {
+	static class ObservationHandlerWithCustomContext implements ObservationHandler<CustomContext> {
 
 		private final CalledHandlers calledHandlers;
 
@@ -624,7 +624,7 @@ class ObservationAutoConfigurationTests {
 
 	}
 
-	private static final class CalledHandlers {
+	static final class CalledHandlers {
 
 		private final List<ObservationHandler<?>> calledHandlers = new ArrayList<>();
 

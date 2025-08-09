@@ -530,7 +530,7 @@ class OpenTelemetryTracingAutoConfigurationTests {
 
 	}
 
-	private static final class InMemoryRecordingSpanExporter implements SpanExporter {
+	static final class InMemoryRecordingSpanExporter implements SpanExporter {
 
 		private final List<SpanData> exportedSpans = new ArrayList<>();
 

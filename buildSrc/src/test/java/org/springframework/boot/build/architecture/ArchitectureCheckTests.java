@@ -16,7 +16,9 @@
 
 package org.springframework.boot.build.architecture;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -161,6 +163,17 @@ class ArchitectureCheckTests {
 	}
 
 	@Test
+	void whenBeanMethodExposePrivateTypeeShouldNotFailAndWriteReport() throws IOException {
+		runGradleWithCompiledClasses("beans/privatebean", shouldHaveFailureReportWithMessage(
+				"@Bean methods must not return types declared with the private modifier, as such types are incompatible with Spring AOT processing"));
+	}
+
+	@Test
+	void whenBeanMethodExposeNonPrivateTypeeShouldNotFail() throws IOException {
+		runGradleWithCompiledClasses("beans/regular", shouldHaveEmptyFailureReport());
+	}
+
+	@Test
 	void whenBeanPostProcessorBeanMethodIsNotStaticWithExternalClass() throws IOException {
 		Files.writeString(this.buildFile, """
 				plugins {
@@ -196,9 +209,14 @@ class ArchitectureCheckTests {
 
 	private Consumer<GradleRunner> shouldHaveEmptyFailureReport() {
 		return (gradleRunner) -> {
-			assertThat(gradleRunner.build().getOutput()).contains("BUILD SUCCESSFUL")
-				.contains("Task :checkArchitectureMain");
-			assertThat(failureReport()).isEmptyFile();
+			try {
+				assertThat(gradleRunner.build().getOutput()).contains("BUILD SUCCESSFUL")
+					.contains("Task :checkArchitectureMain");
+				assertThat(failureReport()).isEmpty();
+			}
+			catch (Exception ex) {
+				throw new AssertionError("Expected build to succeed but it failed\n" + failureReport(), ex);
+			}
 		};
 	}
 
@@ -206,7 +224,7 @@ class ArchitectureCheckTests {
 		return (gradleRunner) -> {
 			assertThat(gradleRunner.buildAndFail().getOutput()).contains("BUILD FAILED")
 				.contains("Task :checkArchitectureMain FAILED");
-			assertThat(failureReport()).content().contains(message);
+			assertThat(failureReport()).contains(message);
 		};
 	}
 
@@ -235,8 +253,17 @@ class ArchitectureCheckTests {
 			.withPluginClasspath());
 	}
 
-	private Path failureReport() {
-		return this.projectDir.resolve("build/checkArchitectureMain/failure-report.txt");
+	private String failureReport() {
+		try {
+			Path failureReport = this.projectDir.resolve("build/checkArchitectureMain/failure-report.txt");
+			return Files.readString(failureReport, StandardCharsets.UTF_8);
+		}
+		catch (FileNotFoundException ex) {
+			return "Failure report does not exist";
+		}
+		catch (IOException ex) {
+			return "Failure report could not be read: " + ex.getMessage();
+		}
 	}
 
 }

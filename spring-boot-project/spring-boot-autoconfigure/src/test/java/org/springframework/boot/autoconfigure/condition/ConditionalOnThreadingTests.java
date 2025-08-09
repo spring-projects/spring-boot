@@ -65,7 +65,7 @@ class ConditionalOnThreadingTests {
 			.run((context) -> assertThat(context.getBean(ThreadType.class)).isEqualTo(ThreadType.PLATFORM));
 	}
 
-	private enum ThreadType {
+	enum ThreadType {
 
 		PLATFORM, VIRTUAL
 
