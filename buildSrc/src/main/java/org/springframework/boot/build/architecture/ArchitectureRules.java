@@ -33,6 +33,7 @@ import com.tngtech.archunit.core.domain.JavaCall;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.domain.JavaType;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
@@ -91,6 +92,20 @@ final class ArchitectureRules {
 		rules.add(enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
 		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
 		return List.copyOf(rules);
+	}
+
+	static ArchRule allBeanMethodsShouldReturnNonPrivateType() {
+		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean").should(check(
+				"not return types declared with the %s modifier, as such types are incompatible with Spring AOT processing"
+					.formatted(JavaModifier.PRIVATE),
+				(method, events) -> {
+					JavaClass returnType = method.getRawReturnType();
+					if (returnType.getModifiers().contains(JavaModifier.PRIVATE)) {
+						addViolation(events, method, "%s returns %s which is declared as %s".formatted(
+								method.getDescription(), returnType.getDescription(), returnType.getModifiers()));
+					}
+				}))
+			.allowEmptyShould(true);
 	}
 
 	private static ArchRule allPackagesShouldBeFreeOfTangles() {

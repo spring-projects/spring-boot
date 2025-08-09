@@ -49,6 +49,7 @@ public class ArchitecturePlugin implements Plugin<Project> {
 			TaskProvider<ArchitectureCheck> checkPackageTangles = project.getTasks()
 				.register("checkArchitecture" + StringUtils.capitalize(sourceSet.getName()), ArchitectureCheck.class,
 						(task) -> {
+							task.getSourceSet().set(sourceSet.getName());
 							task.getCompileClasspath().from(sourceSet.getCompileClasspath());
 							task.setClasses(sourceSet.getOutput().getClassesDirs());
 							task.getResourcesDirectory().set(sourceSet.getOutput().getResourcesDir());
