@@ -183,6 +183,7 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	@ConditionalOnClass(Customizer.class)
+	@Configuration(proxyBeanMethods = false)
 	static class CustomizerConfiguration {
 
 		@Bean
@@ -260,7 +261,7 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	@FunctionalInterface
-	private interface SpringLiquibaseCustomizer {
+	interface SpringLiquibaseCustomizer {
 
 		/**
 		 * Customize the given {@link SpringLiquibase} instance.
