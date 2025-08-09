@@ -43,7 +43,7 @@ class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 	}
 
 	@Override
-	protected boolean isClassAvailable(String className) {
+	protected boolean isClassAvailable(ClassLoader classLoader, String className) {
 		return this.availableClasses.contains(className);
 	}
 
