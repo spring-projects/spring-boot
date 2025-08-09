@@ -19,12 +19,11 @@ package org.springframework.boot.loader.net.protocol.nested;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.util.StringUtils;
+import org.springframework.boot.loader.net.util.UrlDecoder;
 
 /**
  * A location obtained from a {@code nested:} {@link URL} consisting of a jar file and an
@@ -76,7 +75,7 @@ public record NestedLocation(Path path, String nestedEntryName) {
 		if (url == null || !"nested".equalsIgnoreCase(url.getProtocol())) {
 			throw new IllegalArgumentException("'url' must not be null and must use 'nested' protocol");
 		}
-		return parse(StringUtils.uriDecode(url.toString().substring(7), StandardCharsets.UTF_8));
+		return parse(UrlDecoder.decode(url.toString().substring(7)));
 	}
 
 	/**

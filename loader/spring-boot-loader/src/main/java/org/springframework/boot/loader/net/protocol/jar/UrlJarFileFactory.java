@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Runtime.Version;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -29,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.jar.JarFile;
 
 import org.springframework.boot.loader.net.protocol.nested.NestedLocation;
-import org.springframework.util.StringUtils;
+import org.springframework.boot.loader.net.util.UrlDecoder;
 
 /**
  * Factory used by {@link UrlJarFiles} to create {@link JarFile} instances.
@@ -77,7 +76,7 @@ class UrlJarFileFactory {
 
 	private JarFile createJarFileForLocalFile(URL url, Runtime.Version version, Consumer<JarFile> closeAction)
 			throws IOException {
-		String path = StringUtils.uriDecode(url.getPath(), StandardCharsets.UTF_8);
+		String path = UrlDecoder.decode(url.getPath());
 		return new UrlJarFile(new File(path), version, closeAction);
 	}
 

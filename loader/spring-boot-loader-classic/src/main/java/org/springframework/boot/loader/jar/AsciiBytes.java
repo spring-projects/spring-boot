@@ -235,6 +235,10 @@ final class AsciiBytes {
 		return this.string;
 	}
 
+	static String toString(byte[] bytes) {
+		return new String(bytes, StandardCharsets.UTF_8);
+	}
+
 	static int hashCode(CharSequence charSequence) {
 		// We're compatible with String's hashCode()
 		if (charSequence instanceof StringSequence) {

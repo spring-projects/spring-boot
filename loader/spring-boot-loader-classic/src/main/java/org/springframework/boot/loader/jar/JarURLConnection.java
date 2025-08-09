@@ -16,17 +16,17 @@
 
 package org.springframework.boot.loader.jar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.net.URLStreamHandler;
 import java.nio.charset.StandardCharsets;
 import java.security.Permission;
-
-import org.springframework.util.StringUtils;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -307,7 +307,41 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			if (source.isEmpty() || (source.indexOf('%') < 0)) {
 				return source;
 			}
-			return new StringSequence(StringUtils.uriDecode(source.toString(), StandardCharsets.UTF_8));
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(source.length());
+			write(source.toString(), bos);
+			// AsciiBytes is what is used to store the JarEntries so make it symmetric
+			return new StringSequence(AsciiBytes.toString(bos.toByteArray()));
+		}
+
+		private void write(String source, ByteArrayOutputStream outputStream) {
+			int length = source.length();
+			for (int i = 0; i < length; i++) {
+				int c = source.charAt(i);
+				if (c > 127) {
+					String encoded = URLEncoder.encode(String.valueOf((char) c), StandardCharsets.UTF_8);
+					write(encoded, outputStream);
+				}
+				else {
+					if (c == '%') {
+						if ((i + 2) >= length) {
+							throw new IllegalArgumentException(
+									"Invalid encoded sequence \"" + source.substring(i) + "\"");
+						}
+						c = decodeEscapeSequence(source, i);
+						i += 2;
+					}
+					outputStream.write(c);
+				}
+			}
+		}
+
+		private char decodeEscapeSequence(String source, int i) {
+			int hi = Character.digit(source.charAt(i + 1), 16);
+			int lo = Character.digit(source.charAt(i + 2), 16);
+			if (hi == -1 || lo == -1) {
+				throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
+			}
+			return ((char) ((hi << 4) + lo));
 		}
 
 		CharSequence toCharSequence() {

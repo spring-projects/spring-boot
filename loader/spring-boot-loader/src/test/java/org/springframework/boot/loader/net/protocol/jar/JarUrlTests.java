@@ -19,14 +19,13 @@ package org.springframework.boot.loader.net.protocol.jar;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.jar.JarEntry;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.util.StringUtils;
+import org.springframework.boot.loader.net.util.UrlDecoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -94,7 +93,7 @@ class JarUrlTests {
 		setup();
 		URL url = JarUrl.create(this.jarFile, "lib.jar", "com/example/My.class");
 		assertThat(url).hasToString("jar:nested:%s/!lib.jar!/com/example/My.class".formatted(this.jarFileUrlPath));
-		assertThat(StringUtils.uriDecode(url.toString(), StandardCharsets.UTF_8)).contains(badFolderName);
+		assertThat(UrlDecoder.decode(url.toString())).contains(badFolderName);
 	}
 
 }
