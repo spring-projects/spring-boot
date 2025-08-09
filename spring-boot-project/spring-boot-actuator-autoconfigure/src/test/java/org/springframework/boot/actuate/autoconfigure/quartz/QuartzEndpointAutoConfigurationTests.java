@@ -124,7 +124,7 @@ class QuartzEndpointAutoConfigurationTests {
 
 	}
 
-	private static final class CustomEndpoint extends QuartzEndpoint {
+	static final class CustomEndpoint extends QuartzEndpoint {
 
 		private CustomEndpoint() {
 			super(mock(Scheduler.class), Collections.emptyList());

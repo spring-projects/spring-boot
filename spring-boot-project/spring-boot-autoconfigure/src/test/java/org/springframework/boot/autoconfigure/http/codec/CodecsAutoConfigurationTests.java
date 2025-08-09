@@ -151,7 +151,7 @@ class CodecsAutoConfigurationTests {
 
 	}
 
-	private static final class CodecCustomizers {
+	static final class CodecCustomizers {
 
 		private final List<CodecCustomizer> codecCustomizers;
 

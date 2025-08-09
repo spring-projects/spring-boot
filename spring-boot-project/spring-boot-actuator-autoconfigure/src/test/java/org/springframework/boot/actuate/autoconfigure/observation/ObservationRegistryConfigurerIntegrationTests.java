@@ -73,7 +73,7 @@ class ObservationRegistryConfigurerIntegrationTests {
 
 	}
 
-	private static final class CalledCustomizers {
+	static final class CalledCustomizers {
 
 		private final List<ObservationRegistryCustomizer<?>> customizers = new ArrayList<>();
 
@@ -87,7 +87,7 @@ class ObservationRegistryConfigurerIntegrationTests {
 
 	}
 
-	private static class Customizer1 implements ObservationRegistryCustomizer<ObservationRegistry> {
+	static class Customizer1 implements ObservationRegistryCustomizer<ObservationRegistry> {
 
 		private final CalledCustomizers calledCustomizers;
 
@@ -102,7 +102,7 @@ class ObservationRegistryConfigurerIntegrationTests {
 
 	}
 
-	private static class Customizer2 implements ObservationRegistryCustomizer<ObservationRegistry> {
+	static class Customizer2 implements ObservationRegistryCustomizer<ObservationRegistry> {
 
 		private final CalledCustomizers calledCustomizers;
 

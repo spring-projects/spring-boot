@@ -33,9 +33,11 @@ import com.tngtech.archunit.core.domain.JavaCall;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.domain.JavaType;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
+import com.tngtech.archunit.core.domain.properties.HasModifiers;
 import com.tngtech.archunit.core.domain.properties.HasName;
 import com.tngtech.archunit.core.domain.properties.HasOwner;
 import com.tngtech.archunit.core.domain.properties.HasOwner.Predicates.With;
@@ -90,6 +92,7 @@ final class ArchitectureRules {
 		rules.add(conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
 		rules.add(enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
 		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
+		rules.add(allBeanMethodsShouldReturnNonPrivateType());
 		return List.copyOf(rules);
 	}
 
@@ -103,6 +106,13 @@ final class ArchitectureRules {
 			.should(onlyHaveParametersThatWillNotCauseEagerInitialization())
 			.andShould()
 			.beStatic()
+			.allowEmptyShould(true);
+	}
+
+	private static ArchRule allBeanMethodsShouldReturnNonPrivateType() {
+		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean").should()
+			.haveRawReturnType(DescribedPredicate.not(HasModifiers.Predicates.modifier(JavaModifier.PRIVATE)))
+			.as("@Bean methods must not return types declared with the private modifier, as such types are incompatible with Spring AOT processing")
 			.allowEmptyShould(true);
 	}
 

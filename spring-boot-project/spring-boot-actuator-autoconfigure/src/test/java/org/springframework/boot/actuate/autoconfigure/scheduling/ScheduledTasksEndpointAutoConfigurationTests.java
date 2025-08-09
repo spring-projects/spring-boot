@@ -72,7 +72,7 @@ class ScheduledTasksEndpointAutoConfigurationTests {
 
 	}
 
-	private static final class CustomEndpoint extends ScheduledTasksEndpoint {
+	static final class CustomEndpoint extends ScheduledTasksEndpoint {
 
 		private CustomEndpoint() {
 			super(Collections.emptyList());

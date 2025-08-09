@@ -260,7 +260,7 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	@FunctionalInterface
-	private interface SpringLiquibaseCustomizer {
+	interface SpringLiquibaseCustomizer {
 
 		/**
 		 * Customize the given {@link SpringLiquibase} instance.

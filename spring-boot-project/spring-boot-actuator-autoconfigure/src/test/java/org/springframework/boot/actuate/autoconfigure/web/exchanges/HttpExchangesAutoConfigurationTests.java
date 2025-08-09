@@ -121,7 +121,7 @@ class HttpExchangesAutoConfigurationTests {
 
 	}
 
-	private static final class CustomHttpExchangesWebFilter extends HttpExchangesWebFilter {
+	static final class CustomHttpExchangesWebFilter extends HttpExchangesWebFilter {
 
 		private CustomHttpExchangesWebFilter(HttpExchangeRepository repository, Set<Include> includes) {
 			super(repository, includes);
@@ -140,7 +140,7 @@ class HttpExchangesAutoConfigurationTests {
 
 	}
 
-	private static final class CustomHttpExchangesFilter extends HttpExchangesFilter {
+	static final class CustomHttpExchangesFilter extends HttpExchangesFilter {
 
 		private CustomHttpExchangesFilter(HttpExchangeRepository repository, Set<Include> includes) {
 			super(repository, includes);

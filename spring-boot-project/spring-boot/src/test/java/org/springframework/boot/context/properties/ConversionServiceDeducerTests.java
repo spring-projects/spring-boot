@@ -114,11 +114,11 @@ class ConversionServiceDeducerTests {
 
 	}
 
-	private static final class TestApplicationConversionService extends ApplicationConversionService {
+	static final class TestApplicationConversionService extends ApplicationConversionService {
 
 	}
 
-	private static final class TestConverter implements Converter<InputStream, OutputStream> {
+	static final class TestConverter implements Converter<InputStream, OutputStream> {
 
 		@Override
 		public OutputStream convert(InputStream source) {
@@ -127,7 +127,7 @@ class ConversionServiceDeducerTests {
 
 	}
 
-	private static final class StringConverter implements Converter<String, InputStream> {
+	static final class StringConverter implements Converter<String, InputStream> {
 
 		@Override
 		public InputStream convert(String source) {
