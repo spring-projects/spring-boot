@@ -34,6 +34,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.test.json.JsonContentAssert;
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -73,6 +74,7 @@ public class ImageAssert extends AbstractAssert<ImageAssert, ImageReference> {
 			super(layer, LayerContentAssert.class);
 		}
 
+		@CheckReturnValue
 		public ListAssert<String> entries() {
 			List<String> entryNames = new ArrayList<>();
 			try {

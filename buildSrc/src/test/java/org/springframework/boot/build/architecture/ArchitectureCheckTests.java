@@ -56,10 +56,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  * @author Ivan Malutin
  * @author Dmytro Nosan
+ * @author Stefano Cordio
  */
 class ArchitectureCheckTests {
 
+	private static final String ASSERTJ_CORE = "org.assertj:assertj-core:3.27.4";
+
 	private static final String SPRING_CONTEXT = "org.springframework:spring-context:6.2.9";
+
+	private static final String SPRING_CORE = "org.springframework:spring-core:6.2.9";
 
 	private static final String JUNIT_JUPITER = "org.junit.jupiter:junit-jupiter:5.12.0";
 
@@ -338,6 +343,22 @@ class ArchitectureCheckTests {
 		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT)
 			.withConditionalOnClassAnnotation(TestConditionalOnClass.class.getName());
 		build(gradleBuild, Task.CHECK_ARCHITECTURE_TEST);
+	}
+
+	@Test
+	void whenCustomAssertionMethodNotReturningSelfIsAnnotatedWithCheckReturnValueSucceedAndWriteEmptyReport()
+			throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "assertj/checkReturnValue");
+		build(this.gradleBuild.withDependencies(ASSERTJ_CORE, SPRING_CORE), Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenCustomAssertionMethodNotReturningSelfIsNotAnnotatedWithCheckReturnValueShouldFailAndWriteReport()
+			throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "assertj/noCheckReturnValue");
+		buildAndFail(this.gradleBuild.withDependencies(ASSERTJ_CORE), Task.CHECK_ARCHITECTURE_MAIN,
+				"methods that are declared in classes that implement org.assertj.core.api.Assert"
+						+ " and are public and don't return self type should be annotated with" + " @CheckReturnValue");
 	}
 
 	private void prepareTask(Task task, String... sourceDirectories) throws IOException {
