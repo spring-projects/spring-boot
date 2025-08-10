@@ -78,6 +78,9 @@ public final class LazyInitializationBeanFactoryPostProcessor implements BeanFac
 		if (lazyInit != null) {
 			return;
 		}
+		if (beanDefinition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE) {
+			return;
+		}
 		Class<?> beanType = getBeanType(beanFactory, beanName);
 		if (!isExcluded(filters, beanName, beanDefinition, beanType)) {
 			beanDefinition.setLazyInit(true);
