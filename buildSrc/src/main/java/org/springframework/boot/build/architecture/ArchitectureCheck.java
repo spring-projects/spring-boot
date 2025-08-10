@@ -68,6 +68,7 @@ import org.gradle.api.tasks.VerificationException;
  * @author Phillip Webb
  * @author Dmytro Nosan
  * @author Moritz Halbritter
+ * @author Stefano Cordio
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -80,6 +81,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		getRules().addAll(ArchitectureRules.standard());
 		getRules().addAll(whenMainSources(
 				() -> Collections.singletonList(ArchitectureRules.allBeanMethodsShouldReturnNonPrivateType())));
+		getRules().addAll(whenMainSources(() -> Collections.singletonList(
+				ArchitectureRules.allCustomAssertionMethodsNotReturningSelfShouldBeAnnotatedWithCheckReturnValue())));
 		getRules().addAll(and(getNullMarked(), isMainSourceSet()).map(whenTrue(
 				() -> Collections.singletonList(ArchitectureRules.packagesShouldBeAnnotatedWithNullMarked()))));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
