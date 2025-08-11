@@ -287,6 +287,7 @@ class BootZipCopyAction implements CopyAction {
 			if (BootZipCopyAction.this.layerResolver != null) {
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(details);
 				Assert.state(this.layerIndex != null, "'layerIndex' must not be null");
+				Assert.state(layer != null, "'layer' must not be null");
 				this.layerIndex.add(layer, name);
 			}
 		}
