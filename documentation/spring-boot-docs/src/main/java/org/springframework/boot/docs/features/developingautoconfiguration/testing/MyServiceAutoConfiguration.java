@@ -27,11 +27,11 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnClass(MyService.class)
 @EnableConfigurationProperties(UserProperties.class)
-public class MyServiceAutoConfiguration {
+public final class MyServiceAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MyService userService(UserProperties properties) {
+	MyService userService(UserProperties properties) {
 		return new MyService(properties.getName());
 	}
 
