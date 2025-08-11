@@ -30,7 +30,6 @@ import org.springframework.core.style.ToStringCreator;
  * Configuration options that should be applied when establishing an SSL connection.
  *
  * @author Scott Frederick
- * @author Jeonghun Kang
  * @since 3.1.0
  * @see SslBundle#getOptions()
  */
@@ -50,7 +49,7 @@ public interface SslOptions {
 	}
 
 	/**
-	 * Return the ciphers that can be used or null. The cipher names in this set
+	 * Return the ciphers that can be used or {@code null}. The cipher names in this set
 	 * should be compatible with those supported by
 	 * {@link SSLEngine#getSupportedCipherSuites()}.
 	 * @return the ciphers that can be used or {@code null}
@@ -58,7 +57,7 @@ public interface SslOptions {
 	String[] getCiphers();
 
 	/**
-	 * Return the protocols that should be enabled or null. The protocols names in
+	 * Return the protocols that should be enabled or {@code null}. The protocols names in
 	 * this set should be compatible with those supported by
 	 * {@link SSLEngine#getSupportedProtocols()}.
 	 * @return the protocols to enable or {@code null}
