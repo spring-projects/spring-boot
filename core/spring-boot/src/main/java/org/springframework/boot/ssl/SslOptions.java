@@ -51,7 +51,7 @@ public interface SslOptions {
 	}
 
 	/**
-	 * Return the ciphers that can be used or an empty set. The cipher names in this set
+	 * Return the ciphers that can be used or {@code null}. The cipher names in this set
 	 * should be compatible with those supported by
 	 * {@link SSLEngine#getSupportedCipherSuites()}.
 	 * @return the ciphers that can be used or {@code null}
@@ -59,7 +59,7 @@ public interface SslOptions {
 	String @Nullable [] getCiphers();
 
 	/**
-	 * Return the protocols that should be enabled or an empty set. The protocols names in
+	 * Return the protocols that should be enabled or {@code null}. The protocols names in
 	 * this set should be compatible with those supported by
 	 * {@link SSLEngine#getSupportedProtocols()}.
 	 * @return the protocols to enable or {@code null}
