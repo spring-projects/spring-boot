@@ -24,10 +24,6 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
-import javax.annotation.Nonnull;
-import javax.annotation.meta.TypeQualifier;
-import javax.annotation.meta.When;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -48,15 +44,6 @@ class OperationMethodParameterTests {
 	private final Method example = ReflectionUtils.findMethod(getClass(), "example", String.class, String.class);
 
 	private final Method exampleSpringNullable = ReflectionUtils.findMethod(getClass(), "exampleSpringNullable",
-			String.class, String.class);
-
-	private final Method exampleJsr305 = ReflectionUtils.findMethod(getClass(), "exampleJsr305", String.class,
-			String.class);
-
-	private final Method exampleMetaJsr305 = ReflectionUtils.findMethod(getClass(), "exampleMetaJsr305", String.class,
-			String.class);
-
-	private final Method exampleJsr305NonNull = ReflectionUtils.findMethod(getClass(), "exampleJsr305NonNull",
 			String.class, String.class);
 
 	private Method exampleAnnotation = ReflectionUtils.findMethod(getClass(), "exampleAnnotation", String.class);
@@ -97,27 +84,6 @@ class OperationMethodParameterTests {
 	}
 
 	@Test
-	void isMandatoryWhenJsrNullableAnnotationShouldReturnFalse() {
-		OperationMethodParameter parameter = new OperationMethodParameter("name", this.exampleJsr305.getParameters()[1],
-				this::isOptionalParameter);
-		assertThat(parameter.isMandatory()).isFalse();
-	}
-
-	@Test
-	void isMandatoryWhenJsrMetaNullableAnnotationShouldReturnFalse() {
-		OperationMethodParameter parameter = new OperationMethodParameter("name",
-				this.exampleMetaJsr305.getParameters()[1], this::isOptionalParameter);
-		assertThat(parameter.isMandatory()).isFalse();
-	}
-
-	@Test
-	void isMandatoryWhenJsrNonnullAnnotationShouldReturnTrue() {
-		OperationMethodParameter parameter = new OperationMethodParameter("name",
-				this.exampleJsr305NonNull.getParameters()[1], this::isOptionalParameter);
-		assertThat(parameter.isMandatory()).isTrue();
-	}
-
-	@Test
 	void getAnnotationShouldReturnAnnotation() {
 		OperationMethodParameter parameter = new OperationMethodParameter("name",
 				this.exampleAnnotation.getParameters()[0], this::isOptionalParameter);
@@ -137,23 +103,7 @@ class OperationMethodParameterTests {
 	void exampleSpringNullable(String one, @org.springframework.lang.Nullable String two) {
 	}
 
-	void exampleJsr305(String one, @javax.annotation.Nullable String two) {
-	}
-
-	void exampleMetaJsr305(String one, @MetaNullable String two) {
-	}
-
-	void exampleJsr305NonNull(String one, @javax.annotation.Nonnull String two) {
-	}
-
 	void exampleAnnotation(@Selector(match = Match.ALL_REMAINING) String allRemaining) {
-	}
-
-	@TypeQualifier
-	@Retention(RetentionPolicy.RUNTIME)
-	@Nonnull(when = When.MAYBE)
-	@interface MetaNullable {
-
 	}
 
 	@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })

@@ -20,13 +20,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.meta.When;
-
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link OperationParameter} created from an {@link OperationMethod}.
@@ -35,8 +29,6 @@ import org.springframework.util.ClassUtils;
  * @author Moritz Halbritter
  */
 class OperationMethodParameter implements OperationParameter {
-
-	private static final boolean jsr305Present = ClassUtils.isPresent("javax.annotation.Nonnull", null);
 
 	private final String name;
 
@@ -68,13 +60,7 @@ class OperationMethodParameter implements OperationParameter {
 
 	@Override
 	public boolean isMandatory() {
-		if (isOptional()) {
-			return false;
-		}
-		if (jsr305Present) {
-			return new Jsr305().isMandatory(this.parameter);
-		}
-		return true;
+		return !isOptional();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -91,15 +77,6 @@ class OperationMethodParameter implements OperationParameter {
 	@Override
 	public String toString() {
 		return this.name + " of type " + this.parameter.getType().getName();
-	}
-
-	private static final class Jsr305 {
-
-		boolean isMandatory(Parameter parameter) {
-			MergedAnnotation<Nonnull> annotation = MergedAnnotations.from(parameter).get(Nonnull.class);
-			return !annotation.isPresent() || annotation.getEnum("when", When.class) == When.ALWAYS;
-		}
-
 	}
 
 }
