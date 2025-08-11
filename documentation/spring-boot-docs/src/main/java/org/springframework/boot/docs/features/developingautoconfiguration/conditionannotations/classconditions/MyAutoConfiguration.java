@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 
 @AutoConfiguration
 // Some conditions ...
-public class MyAutoConfiguration {
+public final class MyAutoConfiguration {
 
 	// Auto-configured beans ...
 
