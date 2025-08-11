@@ -40,7 +40,6 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
@@ -78,7 +77,7 @@ public class HeapDumpWebEndpoint {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Resource> heapDump(@OptionalParameter @Nullable Boolean live) {
+	public WebEndpointResponse<Resource> heapDump(@Nullable Boolean live) {
 		try {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {
 				try {

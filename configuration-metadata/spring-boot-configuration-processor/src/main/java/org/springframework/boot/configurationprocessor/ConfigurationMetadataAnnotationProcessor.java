@@ -109,8 +109,6 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.actuate.endpoint.annotation.ReadOperation";
 
-	static final String OPTIONAL_PARAMETER_ANNOTATION = "org.springframework.boot.actuate.endpoint.annotation.OptionalParameter";
-
 	static final String NAME_ANNOTATION = "org.springframework.boot.context.properties.bind.Name";
 
 	static final String ENDPOINT_ACCESS_ENUM = "org.springframework.boot.actuate.endpoint.Access";
@@ -166,10 +164,6 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return NAME_ANNOTATION;
 	}
 
-	protected String optionalParameterAnnotation() {
-		return OPTIONAL_PARAMETER_ANNOTATION;
-	}
-
 	protected String endpointAccessEnum() {
 		return ENDPOINT_ACCESS_ENUM;
 	}
@@ -194,8 +188,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
 				configurationPropertiesSourceAnnotation(), nestedConfigurationPropertyAnnotation(),
 				deprecatedConfigurationPropertyAnnotation(), constructorBindingAnnotation(), autowiredAnnotation(),
-				defaultValueAnnotation(), endpointAnnotations(), readOperationAnnotation(),
-				optionalParameterAnnotation(), nameAnnotation());
+				defaultValueAnnotation(), endpointAnnotations(), readOperationAnnotation(), nameAnnotation());
 	}
 
 	@Override
@@ -383,16 +376,11 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	private boolean hasNoOrOptionalParameters(ExecutableElement method) {
 		for (VariableElement parameter : method.getParameters()) {
-			if (!isOptionalParameter(parameter)) {
+			if (!this.metadataEnv.hasNullableAnnotation(parameter)) {
 				return false;
 			}
 		}
 		return true;
-	}
-
-	private boolean isOptionalParameter(VariableElement parameter) {
-		return this.metadataEnv.hasNullableAnnotation(parameter)
-				|| this.metadataEnv.hasOptionalParameterAnnotation(parameter);
 	}
 
 	private String getPrefix(AnnotationMirror annotation) {

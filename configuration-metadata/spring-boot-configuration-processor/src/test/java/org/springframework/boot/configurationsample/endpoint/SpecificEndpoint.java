@@ -16,8 +16,9 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.configurationsample.Access;
-import org.springframework.boot.configurationsample.OptionalParameter;
 import org.springframework.boot.configurationsample.ReadOperation;
 import org.springframework.boot.configurationsample.WebEndpoint;
 
@@ -31,7 +32,7 @@ import org.springframework.boot.configurationsample.WebEndpoint;
 public class SpecificEndpoint {
 
 	@ReadOperation
-	String invoke(@OptionalParameter String param) {
+	String invoke(@Nullable String param) {
 		return "test";
 	}
 

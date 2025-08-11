@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jspecify.annotations.Nullable;
@@ -45,26 +44,22 @@ class OperationMethodParameters implements OperationParameters {
 	 * Create a new {@link OperationMethodParameters} instance.
 	 * @param method the source method
 	 * @param parameterNameDiscoverer the parameter name discoverer
-	 * @param optionalParameters predicate to test if a parameter is optional
 	 */
-	OperationMethodParameters(Method method, ParameterNameDiscoverer parameterNameDiscoverer,
-			Predicate<Parameter> optionalParameters) {
+	OperationMethodParameters(Method method, ParameterNameDiscoverer parameterNameDiscoverer) {
 		Assert.notNull(method, "'method' must not be null");
 		Assert.notNull(parameterNameDiscoverer, "'parameterNameDiscoverer' must not be null");
-		Assert.notNull(optionalParameters, "'optionalParameters' must not be null");
 		@Nullable String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
 		Parameter[] parameters = method.getParameters();
 		Assert.state(parameterNames != null, () -> "Failed to extract parameter names for " + method);
-		this.operationParameters = getOperationParameters(parameters, parameterNames, optionalParameters);
+		this.operationParameters = getOperationParameters(parameters, parameterNames);
 	}
 
-	private List<OperationParameter> getOperationParameters(Parameter[] parameters, @Nullable String[] names,
-			Predicate<Parameter> optionalParameters) {
+	private List<OperationParameter> getOperationParameters(Parameter[] parameters, @Nullable String[] names) {
 		List<OperationParameter> operationParameters = new ArrayList<>(parameters.length);
 		for (int i = 0; i < names.length; i++) {
 			String name = names[i];
 			Assert.state(name != null, "'name' must not be null");
-			operationParameters.add(new OperationMethodParameter(name, parameters[i], optionalParameters));
+			operationParameters.add(new OperationMethodParameter(name, parameters[i]));
 		}
 		return Collections.unmodifiableList(operationParameters);
 	}

@@ -29,7 +29,6 @@ import org.springframework.boot.configurationsample.endpoint.CustomPropertiesEnd
 import org.springframework.boot.configurationsample.endpoint.EnabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.NoAccessEndpoint;
 import org.springframework.boot.configurationsample.endpoint.NullableParameterEndpoint;
-import org.springframework.boot.configurationsample.endpoint.OptionalParameterEndpoint;
 import org.springframework.boot.configurationsample.endpoint.ReadOnlyAccessEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint2;
@@ -153,7 +152,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
-		project.replaceText(IncrementalEndpoint.class, "@OptionalParameter String param", "String param");
+		project.replaceText(IncrementalEndpoint.class, "@Nullable String param", "String param");
 		metadata = project.compile();
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
@@ -202,16 +201,6 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 			.has(Metadata.withGroup("management.endpoint.nullable").fromSource(NullableParameterEndpoint.class));
 		assertThat(metadata).has(access("nullable", Access.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("nullable"));
-		assertThat(metadata.getItems()).hasSize(3);
-	}
-
-	@Test
-	void endpointWithOptionalParameter() {
-		ConfigurationMetadata metadata = compile(OptionalParameterEndpoint.class);
-		assertThat(metadata)
-			.has(Metadata.withGroup("management.endpoint.optional").fromSource(OptionalParameterEndpoint.class));
-		assertThat(metadata).has(access("optional", Access.UNRESTRICTED));
-		assertThat(metadata).has(cacheTtl("optional"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 

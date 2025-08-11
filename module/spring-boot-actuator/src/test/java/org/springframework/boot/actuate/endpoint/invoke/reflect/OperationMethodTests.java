@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,39 +34,35 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class OperationMethodTests {
 
-	private static final Predicate<Parameter> NON_OPTIONAL = (parameter) -> false;
-
 	private final Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
 
 	@Test
 	void createWhenMethodIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new OperationMethod(null, OperationType.READ, NON_OPTIONAL))
+		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(null, OperationType.READ))
 			.withMessageContaining("'method' must not be null");
 	}
 
 	@Test
 	void createWhenOperationTypeIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new OperationMethod(this.exampleMethod, null, NON_OPTIONAL))
+		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
 			.withMessageContaining("'operationType' must not be null");
 	}
 
 	@Test
 	void getMethodShouldReturnMethod() {
-		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ, NON_OPTIONAL);
+		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		assertThat(operationMethod.getMethod()).isEqualTo(this.exampleMethod);
 	}
 
 	@Test
 	void getOperationTypeShouldReturnOperationType() {
-		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ, NON_OPTIONAL);
+		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		assertThat(operationMethod.getOperationType()).isEqualTo(OperationType.READ);
 	}
 
 	@Test
 	void getParametersShouldReturnParameters() {
-		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ, NON_OPTIONAL);
+		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		OperationParameters parameters = operationMethod.getParameters();
 		assertThat(parameters.getParameterCount()).isOne();
 		assertThat(parameters.iterator().next().getName()).isEqualTo("name");

@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.cache.Cache;
@@ -82,8 +81,7 @@ public class CachesEndpoint {
 	 * {@code cacheManager} was provided to identify a unique candidate
 	 */
 	@ReadOperation
-	public @Nullable CacheEntryDescriptor cache(@Selector String cache,
-			@OptionalParameter @Nullable String cacheManager) {
+	public @Nullable CacheEntryDescriptor cache(@Selector String cache, @Nullable String cacheManager) {
 		return extractUniqueCacheEntry(cache, getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
 	}
 
@@ -105,7 +103,7 @@ public class CachesEndpoint {
 	 * {@code cacheManager} was provided to identify a unique candidate
 	 */
 	@DeleteOperation
-	public boolean clearCache(@Selector String cache, @OptionalParameter @Nullable String cacheManager) {
+	public boolean clearCache(@Selector String cache, @Nullable String cacheManager) {
 		CacheEntryDescriptor entry = extractUniqueCacheEntry(cache,
 				getCacheEntries((name) -> name.equals(cache), isNameMatch(cacheManager)));
 		return (entry != null && clearCache(entry));

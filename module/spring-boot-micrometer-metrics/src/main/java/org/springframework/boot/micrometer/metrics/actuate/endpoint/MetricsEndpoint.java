@@ -37,7 +37,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 
@@ -78,8 +77,7 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public @Nullable MetricDescriptor metric(@Selector String requiredMetricName,
-			@OptionalParameter @Nullable List<String> tag) {
+	public @Nullable MetricDescriptor metric(@Selector String requiredMetricName, @Nullable List<String> tag) {
 		List<Tag> tags = parseTags(tag);
 		Collection<Meter> meters = findFirstMatchingMeters(this.registry, requiredMetricName, tags);
 		if (meters.isEmpty()) {

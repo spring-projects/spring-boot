@@ -27,6 +27,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,7 +35,6 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
@@ -982,7 +982,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		}
 
 		@WriteOperation
-		void write(@OptionalParameter String foo, @OptionalParameter String bar) {
+		void write(@Nullable String foo, @Nullable String bar) {
 			this.endpointDelegate.write(foo, bar);
 		}
 
@@ -1167,7 +1167,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class RequiredParametersEndpoint {
 
 		@ReadOperation
-		String read(String foo, @OptionalParameter String bar) {
+		String read(String foo, @Nullable String bar) {
 			return foo;
 		}
 
@@ -1177,7 +1177,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	static class PrincipalEndpoint {
 
 		@ReadOperation
-		String read(@OptionalParameter Principal principal) {
+		String read(@Nullable Principal principal) {
 			return (principal != null) ? principal.getName() : "None";
 		}
 

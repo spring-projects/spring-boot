@@ -34,7 +34,6 @@ import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.OptionalParameter;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
@@ -81,7 +80,7 @@ public class EnvironmentEndpoint {
 	}
 
 	@ReadOperation
-	public EnvironmentDescriptor environment(@OptionalParameter @Nullable String pattern) {
+	public EnvironmentDescriptor environment(@Nullable String pattern) {
 		boolean showUnsanitized = this.showValues.isShown(true);
 		return getEnvironmentDescriptor(pattern, showUnsanitized);
 	}
