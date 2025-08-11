@@ -388,13 +388,14 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		}
 
 		private String addNullAwaySuppression(String content) {
-			String[] lines = content.split("\n");
+			String separator = System.lineSeparator();
+			String[] lines = content.split(separator);
 			StringBuilder result = new StringBuilder();
 			for (String line : lines) {
 				if (line.startsWith("public class ")) {
-					result.append("@SuppressWarnings(\"NullAway\")").append("\n");
+					result.append("@SuppressWarnings(\"NullAway\")").append(separator);
 				}
-				result.append(line).append("\n");
+				result.append(line).append(separator);
 			}
 			return result.toString();
 		}
