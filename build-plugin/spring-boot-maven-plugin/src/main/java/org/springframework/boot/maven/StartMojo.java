@@ -36,6 +36,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.toolchain.ToolchainManager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.RunProcess;
 
@@ -62,6 +63,7 @@ public class StartMojo extends AbstractRunMojo {
 	 * spring application.
 	 */
 	@Parameter(defaultValue = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME)
+	@SuppressWarnings("NullAway.Init")
 	private String jmxName;
 
 	/**
@@ -91,7 +93,7 @@ public class StartMojo extends AbstractRunMojo {
 	 * Flag to include the test classpath when running.
 	 */
 	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
-	private Boolean useTestClasspath;
+	private boolean useTestClasspath;
 
 	@Inject
 	public StartMojo(ToolchainManager toolchainManager) {
@@ -154,6 +156,7 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	private void doWaitForSpringApplication(MBeanServerConnection connection)
 			throws MojoExecutionException, MojoFailureException {
 		final SpringApplicationAdminClient client = new SpringApplicationAdminClient(connection, this.jmxName);
@@ -178,7 +181,7 @@ public class StartMojo extends AbstractRunMojo {
 	 * @return the result
 	 * @throws Exception in case of execution errors
 	 */
-	public <T> T execute(long wait, int maxAttempts, Callable<T> callback) throws Exception {
+	public <T> T execute(long wait, int maxAttempts, Callable<@Nullable T> callback) throws Exception {
 		getLog().debug("Waiting for spring application to start...");
 		for (int i = 0; i < maxAttempts; i++) {
 			T result = callback.call();
@@ -206,7 +209,7 @@ public class StartMojo extends AbstractRunMojo {
 		return this.useTestClasspath;
 	}
 
-	private class CreateJmxConnector implements Callable<JMXConnector> {
+	private class CreateJmxConnector implements Callable<@Nullable JMXConnector> {
 
 		private final int port;
 
@@ -215,7 +218,7 @@ public class StartMojo extends AbstractRunMojo {
 		}
 
 		@Override
-		public JMXConnector call() throws Exception {
+		public @Nullable JMXConnector call() throws Exception {
 			try {
 				return SpringApplicationAdminClient.connect(this.port);
 			}

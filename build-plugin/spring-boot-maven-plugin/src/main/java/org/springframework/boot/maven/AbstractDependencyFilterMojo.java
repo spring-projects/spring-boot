@@ -36,6 +36,7 @@ import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatur
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A base mojo filtering the dependencies of the project.
@@ -67,6 +68,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * @since 3.0.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
 	protected MavenProject project;
 
 	/**
@@ -78,7 +80,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * @since 1.2.0
 	 */
 	@Parameter(property = "spring-boot.includes")
-	private List<Include> includes;
+	private @Nullable List<Include> includes;
 
 	/**
 	 * Collection of artifact definitions to exclude. The {@link Exclude} element defines
@@ -89,20 +91,20 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.excludes")
-	private List<Exclude> excludes;
+	private @Nullable List<Exclude> excludes;
 
 	/**
 	 * Comma separated list of groupId names to exclude (exact match).
 	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.excludeGroupIds", defaultValue = "")
-	private String excludeGroupIds;
+	private @Nullable String excludeGroupIds;
 
-	protected void setExcludes(List<Exclude> excludes) {
+	protected void setExcludes(@Nullable List<Exclude> excludes) {
 		this.excludes = excludes;
 	}
 
-	protected void setIncludes(List<Include> includes) {
+	protected void setIncludes(@Nullable List<Include> includes) {
 		this.includes = includes;
 	}
 
@@ -163,7 +165,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		return filters;
 	}
 
-	private String cleanFilterConfig(String content) {
+	private String cleanFilterConfig(@Nullable String content) {
 		if (content == null || content.trim().isEmpty()) {
 			return "";
 		}

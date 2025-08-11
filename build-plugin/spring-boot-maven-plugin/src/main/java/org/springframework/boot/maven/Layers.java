@@ -18,6 +18,8 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Layer configuration options.
  *
@@ -28,7 +30,7 @@ public class Layers {
 
 	private boolean enabled = true;
 
-	private File configuration;
+	private @Nullable File configuration;
 
 	/**
 	 * Whether a {@code layers.idx} file should be added to the jar.
@@ -44,11 +46,11 @@ public class Layers {
 	 * {@code snapshot-dependencies} and {@code dependencies}.
 	 * @return the layers configuration file
 	 */
-	public File getConfiguration() {
+	public @Nullable File getConfiguration() {
 		return this.configuration;
 	}
 
-	public void setConfiguration(File configuration) {
+	public void setConfiguration(@Nullable File configuration) {
 		this.configuration = configuration;
 	}
 

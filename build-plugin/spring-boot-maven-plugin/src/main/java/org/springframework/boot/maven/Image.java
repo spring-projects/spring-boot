@@ -21,15 +21,18 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.maven.artifact.Artifact;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
+import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -45,55 +48,55 @@ import org.springframework.util.StringUtils;
  */
 public class Image {
 
-	String name;
+	@Nullable String name;
 
-	String builder;
+	@Nullable String builder;
 
-	Boolean trustBuilder;
+	@Nullable Boolean trustBuilder;
 
-	String runImage;
+	@Nullable String runImage;
 
-	Map<String, String> env;
+	@Nullable Map<String, String> env;
 
-	Boolean cleanCache;
+	@Nullable Boolean cleanCache;
 
 	boolean verboseLogging;
 
-	PullPolicy pullPolicy;
+	@Nullable PullPolicy pullPolicy;
 
-	Boolean publish;
+	@Nullable Boolean publish;
 
-	List<String> buildpacks;
+	@Nullable List<String> buildpacks;
 
-	List<String> bindings;
+	@Nullable List<String> bindings;
 
-	String network;
+	@Nullable String network;
 
-	List<String> tags;
+	@Nullable List<String> tags;
 
-	CacheInfo buildWorkspace;
+	@Nullable CacheInfo buildWorkspace;
 
-	CacheInfo buildCache;
+	@Nullable CacheInfo buildCache;
 
-	CacheInfo launchCache;
+	@Nullable CacheInfo launchCache;
 
-	String createdDate;
+	@Nullable String createdDate;
 
-	String applicationDirectory;
+	@Nullable String applicationDirectory;
 
-	List<String> securityOptions;
+	@Nullable List<String> securityOptions;
 
-	String imagePlatform;
+	@Nullable String imagePlatform;
 
 	/**
 	 * The name of the created image.
 	 * @return the image name
 	 */
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	void setName(String name) {
+	void setName(@Nullable String name) {
 		this.name = name;
 	}
 
@@ -101,11 +104,11 @@ public class Image {
 	 * The name of the builder image to use to create the image.
 	 * @return the builder image name
 	 */
-	public String getBuilder() {
+	public @Nullable String getBuilder() {
 		return this.builder;
 	}
 
-	void setBuilder(String builder) {
+	void setBuilder(@Nullable String builder) {
 		this.builder = builder;
 	}
 
@@ -113,11 +116,11 @@ public class Image {
 	 * If the builder should be treated as trusted.
 	 * @return {@code true} if the builder should be treated as trusted
 	 */
-	public Boolean getTrustBuilder() {
+	public @Nullable Boolean getTrustBuilder() {
 		return this.trustBuilder;
 	}
 
-	void setTrustBuilder(Boolean trustBuilder) {
+	void setTrustBuilder(@Nullable Boolean trustBuilder) {
 		this.trustBuilder = trustBuilder;
 	}
 
@@ -125,11 +128,11 @@ public class Image {
 	 * The name of the run image to use to create the image.
 	 * @return the builder image name
 	 */
-	public String getRunImage() {
+	public @Nullable String getRunImage() {
 		return this.runImage;
 	}
 
-	void setRunImage(String runImage) {
+	void setRunImage(@Nullable String runImage) {
 		this.runImage = runImage;
 	}
 
@@ -137,7 +140,7 @@ public class Image {
 	 * Environment properties that should be passed to the builder.
 	 * @return the environment properties
 	 */
-	public Map<String, String> getEnv() {
+	public @Nullable Map<String, String> getEnv() {
 		return this.env;
 	}
 
@@ -145,11 +148,11 @@ public class Image {
 	 * If the cache should be cleaned before building.
 	 * @return {@code true} if the cache should be cleaned
 	 */
-	public Boolean getCleanCache() {
+	public @Nullable Boolean getCleanCache() {
 		return this.cleanCache;
 	}
 
-	void setCleanCache(Boolean cleanCache) {
+	void setCleanCache(@Nullable Boolean cleanCache) {
 		this.cleanCache = cleanCache;
 	}
 
@@ -165,11 +168,11 @@ public class Image {
 	 * If images should be pulled from a remote repository during image build.
 	 * @return the pull policy
 	 */
-	public PullPolicy getPullPolicy() {
+	public @Nullable PullPolicy getPullPolicy() {
 		return this.pullPolicy;
 	}
 
-	void setPullPolicy(PullPolicy pullPolicy) {
+	void setPullPolicy(@Nullable PullPolicy pullPolicy) {
 		this.pullPolicy = pullPolicy;
 	}
 
@@ -177,11 +180,11 @@ public class Image {
 	 * If the built image should be pushed to a registry.
 	 * @return {@code true} if the image should be published
 	 */
-	public Boolean getPublish() {
+	public @Nullable Boolean getPublish() {
 		return this.publish;
 	}
 
-	void setPublish(Boolean publish) {
+	void setPublish(@Nullable Boolean publish) {
 		this.publish = publish;
 	}
 
@@ -189,11 +192,11 @@ public class Image {
 	 * Returns the network the build container will connect to.
 	 * @return the network
 	 */
-	public String getNetwork() {
+	public @Nullable String getNetwork() {
 		return this.network;
 	}
 
-	public void setNetwork(String network) {
+	public void setNetwork(@Nullable String network) {
 		this.network = network;
 	}
 
@@ -201,11 +204,11 @@ public class Image {
 	 * Returns the created date for the image.
 	 * @return the created date
 	 */
-	public String getCreatedDate() {
+	public @Nullable String getCreatedDate() {
 		return this.createdDate;
 	}
 
-	public void setCreatedDate(String createdDate) {
+	public void setCreatedDate(@Nullable String createdDate) {
 		this.createdDate = createdDate;
 	}
 
@@ -213,11 +216,11 @@ public class Image {
 	 * Returns the application content directory for the image.
 	 * @return the application directory
 	 */
-	public String getApplicationDirectory() {
+	public @Nullable String getApplicationDirectory() {
 		return this.applicationDirectory;
 	}
 
-	public void setApplicationDirectory(String applicationDirectory) {
+	public void setApplicationDirectory(@Nullable String applicationDirectory) {
 		this.applicationDirectory = applicationDirectory;
 	}
 
@@ -227,11 +230,11 @@ public class Image {
 	 * operating system and architecture.
 	 * @return the image platform
 	 */
-	public String getImagePlatform() {
+	public @Nullable String getImagePlatform() {
 		return this.imagePlatform;
 	}
 
-	public void setImagePlatform(String imagePlatform) {
+	public void setImagePlatform(@Nullable String imagePlatform) {
 		this.imagePlatform = imagePlatform;
 	}
 
@@ -281,13 +284,19 @@ public class Image {
 			request = request.withTags(this.tags.stream().map(ImageReference::of).toList());
 		}
 		if (this.buildWorkspace != null) {
-			request = request.withBuildWorkspace(this.buildWorkspace.asCache());
+			Cache cache = this.buildWorkspace.asCache();
+			Assert.state(cache != null, "'cache' must not be null");
+			request = request.withBuildWorkspace(cache);
 		}
 		if (this.buildCache != null) {
-			request = request.withBuildCache(this.buildCache.asCache());
+			Cache cache = this.buildCache.asCache();
+			Assert.state(cache != null, "'cache' must not be null");
+			request = request.withBuildCache(cache);
 		}
 		if (this.launchCache != null) {
-			request = request.withLaunchCache(this.launchCache.asCache());
+			Cache cache = this.launchCache.asCache();
+			Assert.state(cache != null, "'cache' must not be null");
+			request = request.withLaunchCache(cache);
 		}
 		if (StringUtils.hasText(this.createdDate)) {
 			request = request.withCreatedDate(this.createdDate);

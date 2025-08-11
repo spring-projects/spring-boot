@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Helper class to build the command-line arguments of a java process.
  *
@@ -53,7 +55,7 @@ final class CommandLineBuilder {
 		return this;
 	}
 
-	CommandLineBuilder withSystemProperties(Map<String, String> systemProperties) {
+	CommandLineBuilder withSystemProperties(@Nullable Map<String, String> systemProperties) {
 		if (systemProperties != null) {
 			systemProperties.entrySet()
 				.stream()
@@ -93,7 +95,7 @@ final class CommandLineBuilder {
 	 */
 	private static final class SystemPropertyFormatter {
 
-		static String format(String key, String value) {
+		static String format(@Nullable String key, @Nullable String value) {
 			if (key == null) {
 				return "";
 			}

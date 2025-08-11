@@ -26,6 +26,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.RunProcess;
@@ -43,14 +44,14 @@ class JavaProcessExecutor {
 
 	private final ToolchainManager toolchainManager;
 
-	private final Consumer<RunProcess> runProcessCustomizer;
+	private final @Nullable Consumer<RunProcess> runProcessCustomizer;
 
 	JavaProcessExecutor(MavenSession mavenSession, ToolchainManager toolchainManager) {
 		this(mavenSession, toolchainManager, null);
 	}
 
 	private JavaProcessExecutor(MavenSession mavenSession, ToolchainManager toolchainManager,
-			Consumer<RunProcess> runProcessCustomizer) {
+			@Nullable Consumer<RunProcess> runProcessCustomizer) {
 		this.mavenSession = mavenSession;
 		this.toolchainManager = toolchainManager;
 		this.runProcessCustomizer = runProcessCustomizer;

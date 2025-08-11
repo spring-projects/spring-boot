@@ -44,6 +44,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.toolchain.ToolchainManager;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Abstract base class for AOT processing MOJOs.
@@ -59,6 +60,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	 * The current Maven session. This is used for toolchain manager API calls.
 	 */
 	@Parameter(defaultValue = "${session}", readonly = true)
+	@SuppressWarnings("NullAway.Init")
 	private MavenSession session;
 
 	/**
@@ -76,21 +78,21 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	 * List of JVM system properties to pass to the AOT process.
 	 */
 	@Parameter
-	private Map<String, String> systemPropertyVariables;
+	private @Nullable Map<String, String> systemPropertyVariables;
 
 	/**
 	 * JVM arguments that should be associated with the AOT process. On command line, make
 	 * sure to wrap multiple values between quotes.
 	 */
 	@Parameter(property = "spring-boot.aot.jvmArguments")
-	private String jvmArguments;
+	private @Nullable String jvmArguments;
 
 	/**
 	 * Arguments that should be provided to the AOT compile process. On command line, make
 	 * sure to wrap multiple values between quotes.
 	 */
 	@Parameter(property = "spring-boot.aot.compilerArguments")
-	private String compilerArguments;
+	private @Nullable String compilerArguments;
 
 	protected AbstractAotMojo(ToolchainManager toolchainManager) {
 		this.toolchainManager = toolchainManager;

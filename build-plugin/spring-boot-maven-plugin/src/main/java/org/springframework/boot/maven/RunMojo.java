@@ -59,7 +59,7 @@ public class RunMojo extends AbstractRunMojo {
 	 * @since 1.3.0
 	 */
 	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
-	private Boolean useTestClasspath;
+	private boolean useTestClasspath;
 
 	@Inject
 	public RunMojo(ToolchainManager toolchainManager) {

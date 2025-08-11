@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Parse and expose arguments specified in a single string.
@@ -34,7 +35,7 @@ class RunArguments {
 
 	private final Deque<String> args = new LinkedList<>();
 
-	RunArguments(String arguments) {
+	RunArguments(@Nullable String arguments) {
 		this(parseArgs(arguments));
 	}
 
@@ -52,7 +53,7 @@ class RunArguments {
 		return this.args.toArray(new String[0]);
 	}
 
-	private static String[] parseArgs(String arguments) {
+	private static String[] parseArgs(@Nullable String arguments) {
 		if (arguments == null || arguments.trim().isEmpty()) {
 			return NO_ARGS;
 		}

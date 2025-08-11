@@ -25,6 +25,7 @@ import java.util.jar.JarOutputStream;
 
 import org.apache.maven.plugins.shade.relocation.Relocator;
 import org.apache.maven.plugins.shade.resource.ReproducibleResourceTransformer;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Extension for the <a href="https://maven.apache.org/plugins/maven-shade-plugin/">Maven
@@ -38,7 +39,7 @@ import org.apache.maven.plugins.shade.resource.ReproducibleResourceTransformer;
 public class PropertiesMergingResourceTransformer implements ReproducibleResourceTransformer {
 
 	// Set this in pom configuration with <resource>...</resource>
-	private String resource;
+	private @Nullable String resource;
 
 	private final Properties data = new Properties();
 
@@ -95,11 +96,11 @@ public class PropertiesMergingResourceTransformer implements ReproducibleResourc
 		this.data.clear();
 	}
 
-	public String getResource() {
+	public @Nullable String getResource() {
 		return this.resource;
 	}
 
-	public void setResource(String resource) {
+	public void setResource(@Nullable String resource) {
 		this.resource = resource;
 	}
 

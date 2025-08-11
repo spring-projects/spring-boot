@@ -45,6 +45,7 @@ public class StopMojo extends AbstractMojo {
 	 * @since 1.4.1
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
 	private MavenProject project;
 
 	/**
@@ -52,6 +53,7 @@ public class StopMojo extends AbstractMojo {
 	 * application.
 	 */
 	@Parameter(defaultValue = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME)
+	@SuppressWarnings("NullAway.Init")
 	private String jmxName;
 
 	/**

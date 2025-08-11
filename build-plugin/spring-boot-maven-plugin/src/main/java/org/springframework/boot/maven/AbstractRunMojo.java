@@ -36,6 +36,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.FileUtils;
 
@@ -60,6 +61,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	@SuppressWarnings("NullAway.Init")
 	private MavenProject project;
 
 	/**
@@ -68,6 +70,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${session}", readonly = true)
+	@SuppressWarnings("NullAway.Init")
 	private MavenSession session;
 
 	/**
@@ -95,6 +98,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 2.2.0
 	 */
 	@Parameter(property = "spring-boot.run.agents")
+	@SuppressWarnings("NullAway") // maven-maven-plugin can't handle annotated arrays
 	private File[] agents;
 
 	/**
@@ -112,7 +116,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.5.0
 	 */
 	@Parameter(property = "spring-boot.run.workingDirectory")
-	private File workingDirectory;
+	private @Nullable File workingDirectory;
 
 	/**
 	 * JVM arguments that should be associated with the forked process used to run the
@@ -121,7 +125,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.run.jvmArguments")
-	private String jvmArguments;
+	private @Nullable String jvmArguments;
 
 	/**
 	 * List of JVM system properties to pass to the process.
@@ -129,7 +133,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 2.1.0
 	 */
 	@Parameter
-	private Map<String, String> systemPropertyVariables;
+	private @Nullable Map<String, String> systemPropertyVariables;
 
 	/**
 	 * List of Environment variables that should be associated with the forked process
@@ -138,7 +142,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 2.1.0
 	 */
 	@Parameter
-	private Map<String, String> environmentVariables;
+	private @Nullable Map<String, String> environmentVariables;
 
 	/**
 	 * Arguments that should be passed to the application.
@@ -146,6 +150,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0.0
 	 */
 	@Parameter
+	@SuppressWarnings("NullAway") // maven-maven-plugin can't handle annotated arrays
 	private String[] arguments;
 
 	/**
@@ -156,7 +161,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 2.2.3
 	 */
 	@Parameter(property = "spring-boot.run.arguments")
-	private String commandlineArguments;
+	private @Nullable String commandlineArguments;
 
 	/**
 	 * The spring profiles to activate. Convenience shortcut of specifying the
@@ -166,6 +171,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.3.0
 	 */
 	@Parameter(property = "spring-boot.run.profiles")
+	@SuppressWarnings("NullAway") // maven-maven-plugin can't handle annotated arrays
 	private String[] profiles;
 
 	/**
@@ -175,7 +181,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.run.main-class")
-	private String mainClass;
+	private @Nullable String mainClass;
 
 	/**
 	 * Additional classpath elements that should be added to the classpath. An element can
@@ -184,6 +190,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 3.2.0
 	 */
 	@Parameter(property = "spring-boot.run.additional-classpath-elements")
+	@SuppressWarnings("NullAway") // maven-maven-plugin can't handle annotated arrays
 	private String[] additionalClasspathElements;
 
 	/**
@@ -193,6 +200,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @since 1.0.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+	@SuppressWarnings("NullAway.Init")
 	private File classesDirectory;
 
 	/**
@@ -336,7 +344,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addActiveProfileArgument(RunArguments arguments) {
-		if (this.profiles.length > 0) {
+		if (this.profiles != null && this.profiles.length > 0) {
 			StringBuilder arg = new StringBuilder("--spring.profiles.active=");
 			for (int i = 0; i < this.profiles.length; i++) {
 				arg.append(this.profiles[i]);
@@ -424,7 +432,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	static class SystemPropertyFormatter {
 
-		static String format(String key, String value) {
+		static String format(@Nullable String key, @Nullable String value) {
 			if (key == null) {
 				return "";
 			}
