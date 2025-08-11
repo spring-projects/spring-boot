@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A command that can be launched.
  *
@@ -132,7 +134,7 @@ abstract class Command {
 	 * Returns the deprecation message.
 	 * @return the deprecation message
 	 */
-	String getDeprecationMessage() {
+	@Nullable String getDeprecationMessage() {
 		return null;
 	}
 
@@ -142,7 +144,7 @@ abstract class Command {
 	 * @param name the name of the command to find
 	 * @return a {@link Command} instance or {@code null}.
 	 */
-	static Command find(Collection<? extends Command> commands, String name) {
+	static @Nullable Command find(Collection<? extends Command> commands, String name) {
 		for (Command command : commands) {
 			if (command.getName().equals(name)) {
 				return command;
@@ -206,7 +208,7 @@ abstract class Command {
 			this.values = values;
 		}
 
-		private Option find(String arg) {
+		private @Nullable Option find(String arg) {
 			if (arg.startsWith("--")) {
 				String name = arg.substring(2);
 				for (Option candidate : this.values) {
@@ -264,13 +266,13 @@ abstract class Command {
 
 		private final String name;
 
-		private final String valueDescription;
+		private final @Nullable String valueDescription;
 
 		private final String description;
 
 		private final boolean optionalValue;
 
-		private Option(String name, String valueDescription, String description, boolean optionalValue) {
+		private Option(String name, @Nullable String valueDescription, String description, boolean optionalValue) {
 			this.name = name;
 			this.description = description;
 			this.valueDescription = valueDescription;
@@ -290,7 +292,7 @@ abstract class Command {
 		 * option is a flag/switch.
 		 * @return the option value description
 		 */
-		String getValueDescription() {
+		@Nullable String getValueDescription() {
 			return this.valueDescription;
 		}
 
@@ -310,7 +312,7 @@ abstract class Command {
 			return this.description;
 		}
 
-		private String claimArg(Deque<String> args) {
+		private @Nullable String claimArg(Deque<String> args) {
 			if (this.valueDescription == null) {
 				return null;
 			}

@@ -41,6 +41,8 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.jarmode.tools.JarStructure.Entry;
 import org.springframework.boot.jarmode.tools.JarStructure.Entry.Type;
 import org.springframework.boot.loader.jarmode.JarModeErrorException;
@@ -84,13 +86,13 @@ class ExtractCommand extends Command {
 
 	private final Context context;
 
-	private final Layers layers;
+	private final @Nullable Layers layers;
 
 	ExtractCommand(Context context) {
 		this(context, null);
 	}
 
-	ExtractCommand(Context context, Layers layers) {
+	ExtractCommand(Context context, @Nullable Layers layers) {
 		super("extract", "Extract the contents from the jar", Options.of(LAUNCHER_OPTION, LAYERS_OPTION,
 				DESTINATION_OPTION, LIBRARIES_DIRECTORY_OPTION, APPLICATION_FILENAME_OPTION, FORCE_OPTION),
 				Parameters.none());
@@ -153,7 +155,7 @@ class ExtractCommand extends Command {
 		String librariesDirectory = getLibrariesDirectory(options);
 		extractArchive(fileResolver, (jarEntry) -> {
 			Entry entry = jarStructure.resolve(jarEntry);
-			if (isType(entry, Type.LIBRARY)) {
+			if (entry != null && entry.type() == Type.LIBRARY) {
 				return librariesDirectory + entry.location();
 			}
 			return null;
@@ -269,10 +271,6 @@ class ExtractCommand extends Command {
 		return this.context.getArchiveFile().getName();
 	}
 
-	private static boolean isType(Entry entry, Type type) {
-		return (entry != null) && entry.type() == type;
-	}
-
 	private static void extractEntry(InputStream stream, JarEntry entry, File file) throws IOException {
 		mkdirs(file.getParentFile());
 		try (OutputStream out = new FileOutputStream(file)) {
@@ -287,15 +285,15 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private static FileTime getCreationTime(JarEntry entry) {
+	private static @Nullable FileTime getCreationTime(JarEntry entry) {
 		return (entry.getCreationTime() != null) ? entry.getCreationTime() : entry.getLastModifiedTime();
 	}
 
-	private static FileTime getLastAccessTime(JarEntry entry) {
+	private static @Nullable FileTime getLastAccessTime(JarEntry entry) {
 		return (entry.getLastAccessTime() != null) ? entry.getLastAccessTime() : getLastModifiedTime(entry);
 	}
 
-	private static FileTime getLastModifiedTime(JarEntry entry) {
+	private static @Nullable FileTime getLastModifiedTime(JarEntry entry) {
 		return (entry.getLastModifiedTime() != null) ? entry.getLastModifiedTime() : entry.getCreationTime();
 	}
 
@@ -348,7 +346,7 @@ class ExtractCommand extends Command {
 	@FunctionalInterface
 	private interface EntryNameTransformer {
 
-		String getName(JarEntry entry);
+		@Nullable String getName(JarEntry entry);
 
 	}
 
@@ -375,7 +373,7 @@ class ExtractCommand extends Command {
 		 * should be skipped
 		 * @throws IOException if something went wrong
 		 */
-		default File resolve(JarEntry entry, String newName) throws IOException {
+		default @Nullable File resolve(JarEntry entry, String newName) throws IOException {
 			return resolve(entry.getName(), newName);
 		}
 
@@ -387,7 +385,7 @@ class ExtractCommand extends Command {
 		 * should be skipped
 		 * @throws IOException if something went wrong
 		 */
-		File resolve(String originalName, String newName) throws IOException;
+		@Nullable File resolve(String originalName, String newName) throws IOException;
 
 		/**
 		 * Resolves the file for the application.
@@ -395,7 +393,7 @@ class ExtractCommand extends Command {
 		 * be skipped
 		 * @throws IOException if something went wrong
 		 */
-		File resolveApplication() throws IOException;
+		@Nullable File resolveApplication() throws IOException;
 
 	}
 
@@ -453,7 +451,7 @@ class ExtractCommand extends Command {
 		}
 
 		@Override
-		public File resolve(String originalName, String newName) throws IOException {
+		public @Nullable File resolve(String originalName, String newName) throws IOException {
 			String layer = this.layers.getLayer(originalName);
 			if (shouldExtractLayer(layer)) {
 				File directory = getLayerDirectory(layer);
@@ -463,7 +461,7 @@ class ExtractCommand extends Command {
 		}
 
 		@Override
-		public File resolveApplication() throws IOException {
+		public @Nullable File resolveApplication() throws IOException {
 			String layer = this.layers.getApplicationLayerName();
 			if (shouldExtractLayer(layer)) {
 				File directory = getLayerDirectory(layer);

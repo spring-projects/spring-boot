@@ -20,6 +20,8 @@ import java.util.function.UnaryOperator;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Provide information about a fat jar structure that is meant to be extracted.
  *
@@ -34,7 +36,7 @@ interface JarStructure {
 	 * @param entry the entry to handle
 	 * @return the resolved {@link Entry}
 	 */
-	default Entry resolve(ZipEntry entry) {
+	default @Nullable Entry resolve(ZipEntry entry) {
 		return resolve(entry.getName());
 	}
 
@@ -44,7 +46,7 @@ interface JarStructure {
 	 * @param name the name of the entry to handle
 	 * @return the resolved {@link Entry}
 	 */
-	Entry resolve(String name);
+	@Nullable Entry resolve(String name);
 
 	/**
 	 * Create the {@link Manifest} for the launcher jar, applying the specified operator

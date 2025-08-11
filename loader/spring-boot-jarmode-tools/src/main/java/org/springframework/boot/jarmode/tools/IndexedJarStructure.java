@@ -33,6 +33,8 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.jarmode.tools.JarStructure.Entry.Type;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -92,7 +94,7 @@ class IndexedJarStructure implements JarStructure {
 	}
 
 	@Override
-	public Entry resolve(String name) {
+	public @Nullable Entry resolve(String name) {
 		if (ENTRY_IGNORE_LIST.contains(name)) {
 			return null;
 		}
@@ -138,7 +140,7 @@ class IndexedJarStructure implements JarStructure {
 		return value;
 	}
 
-	static IndexedJarStructure get(File file) {
+	static @Nullable IndexedJarStructure get(File file) {
 		try {
 			try (JarFile jarFile = new JarFile(file)) {
 				Manifest manifest = jarFile.getManifest();

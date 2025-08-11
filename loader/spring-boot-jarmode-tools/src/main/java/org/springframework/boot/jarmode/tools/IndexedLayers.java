@@ -30,6 +30,8 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -98,7 +100,7 @@ class IndexedLayers implements Layers {
 	 * @return an {@link IndexedLayers} instance or {@code null} if this not a layered
 	 * jar.
 	 */
-	static IndexedLayers get(Context context) {
+	static @Nullable IndexedLayers get(Context context) {
 		try (JarFile jarFile = new JarFile(context.getArchiveFile())) {
 			Manifest manifest = jarFile.getManifest();
 			if (manifest == null) {

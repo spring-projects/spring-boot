@@ -18,6 +18,8 @@ package org.springframework.boot.jarmode.tools;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.loader.jarmode.JarMode;
 
 /**
@@ -29,7 +31,7 @@ import org.springframework.boot.loader.jarmode.JarMode;
  */
 public class LayerToolsJarMode implements JarMode {
 
-	static Context contextOverride;
+	static @Nullable Context contextOverride;
 
 	@Override
 	public boolean accepts(String mode) {
