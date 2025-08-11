@@ -60,7 +60,7 @@ public class FindMainClass extends Task {
 		handle(mainClass);
 	}
 
-	private String findMainClass() {
+	private @Nullable String findMainClass() {
 		if (this.classesRoot == null) {
 			throw new BuildException("one of @mainClass or @classesRoot must be specified");
 		}
