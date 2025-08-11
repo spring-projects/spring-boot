@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.Assert;
@@ -54,7 +56,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * Create a new {@link CommandRunner} instance.
 	 * @param name the name of the runner or {@code null}
 	 */
-	public CommandRunner(String name) {
+	public CommandRunner(@Nullable String name) {
 		this.name = StringUtils.hasLength(name) ? name + " " : "";
 	}
 
@@ -146,7 +148,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param name the name of the command
 	 * @return the command or {@code null} if not found
 	 */
-	public Command findCommand(String name) {
+	public @Nullable Command findCommand(String name) {
 		for (Command candidate : this.commands) {
 			String candidateName = candidate.getName();
 			if (candidateName.equals(name) || (isOptionCommand(candidate) && ("--" + candidateName).equals(name))) {
@@ -258,7 +260,7 @@ public class CommandRunner implements Iterable<Command> {
 		return 1;
 	}
 
-	protected boolean errorMessage(String message) {
+	protected boolean errorMessage(@Nullable String message) {
 		Log.error((message != null) ? message : "Unexpected error");
 		return message != null;
 	}

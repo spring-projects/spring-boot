@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cli.command.init;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Provide some basic information about a dependency.
  *
@@ -23,27 +25,27 @@ package org.springframework.boot.cli.command.init;
  */
 final class Dependency {
 
-	private final String id;
+	private final @Nullable String id;
 
-	private final String name;
+	private final @Nullable String name;
 
-	private final String description;
+	private final @Nullable String description;
 
-	Dependency(String id, String name, String description) {
+	Dependency(@Nullable String id, @Nullable String name, @Nullable String description) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 	}
 
-	String getId() {
+	@Nullable String getId() {
 		return this.id;
 	}
 
-	String getName() {
+	@Nullable String getName() {
 		return this.name;
 	}
 
-	String getDescription() {
+	@Nullable String getDescription() {
 		return this.description;
 	}
 

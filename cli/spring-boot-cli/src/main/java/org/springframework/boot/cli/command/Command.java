@@ -18,6 +18,8 @@ package org.springframework.boot.cli.command;
 
 import java.util.Collection;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cli.command.options.OptionHelp;
 import org.springframework.boot.cli.command.status.ExitStatus;
 
@@ -50,14 +52,14 @@ public interface Command {
 	 * the command in this string.
 	 * @return the command's usage help
 	 */
-	String getUsageHelp();
+	@Nullable String getUsageHelp();
 
 	/**
 	 * Gets full help text for the command, e.g. a longer description and one line per
 	 * option.
 	 * @return the command's help text
 	 */
-	String getHelp();
+	@Nullable String getHelp();
 
 	/**
 	 * Returns help for each supported option.
@@ -69,7 +71,7 @@ public interface Command {
 	 * Return some examples for the command.
 	 * @return the command's examples
 	 */
-	Collection<HelpExample> getExamples();
+	@Nullable Collection<HelpExample> getExamples();
 
 	/**
 	 * Run the command.

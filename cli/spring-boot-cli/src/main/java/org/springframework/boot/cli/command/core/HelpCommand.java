@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandRunner;
@@ -53,7 +55,7 @@ public class HelpCommand extends AbstractCommand {
 	}
 
 	@Override
-	public String getHelp() {
+	public @Nullable String getHelp() {
 		return null;
 	}
 

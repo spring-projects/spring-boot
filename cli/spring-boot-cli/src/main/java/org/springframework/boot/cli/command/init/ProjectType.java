@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Represent a project type that is supported by a service.
  *
@@ -37,7 +39,7 @@ class ProjectType {
 
 	private final Map<String, String> tags = new HashMap<>();
 
-	ProjectType(String id, String name, String action, boolean defaultType, Map<String, String> tags) {
+	ProjectType(String id, String name, String action, boolean defaultType, @Nullable Map<String, String> tags) {
 		this.id = id;
 		this.name = name;
 		this.action = action;

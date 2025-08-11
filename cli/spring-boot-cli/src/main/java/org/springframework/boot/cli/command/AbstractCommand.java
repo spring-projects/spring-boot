@@ -19,6 +19,8 @@ package org.springframework.boot.cli.command;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cli.command.options.OptionHelp;
 
 /**
@@ -55,12 +57,12 @@ public abstract class AbstractCommand implements Command {
 	}
 
 	@Override
-	public String getUsageHelp() {
+	public @Nullable String getUsageHelp() {
 		return null;
 	}
 
 	@Override
-	public String getHelp() {
+	public @Nullable String getHelp() {
 		return null;
 	}
 
@@ -70,7 +72,7 @@ public abstract class AbstractCommand implements Command {
 	}
 
 	@Override
-	public Collection<HelpExample> getExamples() {
+	public @Nullable Collection<HelpExample> getExamples() {
 		return null;
 	}
 

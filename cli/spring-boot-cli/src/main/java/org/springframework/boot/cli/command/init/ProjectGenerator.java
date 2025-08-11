@@ -23,7 +23,10 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.cli.util.Log;
+import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -89,7 +92,8 @@ class ProjectGenerator {
 		return false;
 	}
 
-	private void extractProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
+	private void extractProject(ProjectGenerationResponse entity, @Nullable String output, boolean overwrite)
+			throws IOException {
 		File outputDirectory = (output != null) ? new File(output) : new File(System.getProperty("user.dir"));
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs();
@@ -142,7 +146,9 @@ class ProjectGenerator {
 				throw new ReportableException("Failed to delete existing file " + outputFile.getPath());
 			}
 		}
-		FileCopyUtils.copy(entity.getContent(), outputFile);
+		byte[] content = entity.getContent();
+		Assert.state(content != null, "'content' must not be null");
+		FileCopyUtils.copy(content, outputFile);
 		Log.info("Content saved to '" + output + "'");
 	}
 

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cli.util;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Simple logger used by the CLI.
  *
@@ -24,23 +26,23 @@ package org.springframework.boot.cli.util;
  */
 public abstract class Log {
 
-	private static LogListener listener;
+	private static @Nullable LogListener listener;
 
-	public static void info(String message) {
+	public static void info(@Nullable String message) {
 		System.out.println(message);
 		if (listener != null) {
 			listener.info(message);
 		}
 	}
 
-	public static void infoPrint(String message) {
+	public static void infoPrint(@Nullable String message) {
 		System.out.print(message);
 		if (listener != null) {
 			listener.infoPrint(message);
 		}
 	}
 
-	public static void error(String message) {
+	public static void error(@Nullable String message) {
 		System.err.println(message);
 		if (listener != null) {
 			listener.error(message);
@@ -54,7 +56,7 @@ public abstract class Log {
 		}
 	}
 
-	static void setListener(LogListener listener) {
+	static void setListener(@Nullable LogListener listener) {
 		Log.listener = listener;
 	}
 

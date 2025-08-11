@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Runtime exception wrapper that defines additional {@link Option}s that are understood
  * by the {@link CommandRunner}.
@@ -73,7 +75,7 @@ public class CommandException extends RuntimeException {
 		this.options = asEnumSet(options);
 	}
 
-	private EnumSet<Option> asEnumSet(Option[] options) {
+	private EnumSet<Option> asEnumSet(Option @Nullable [] options) {
 		if (options == null || options.length == 0) {
 			return EnumSet.noneOf(Option.class);
 		}

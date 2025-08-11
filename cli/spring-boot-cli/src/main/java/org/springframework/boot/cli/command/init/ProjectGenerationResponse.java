@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command.init;
 
 import org.apache.hc.core5.http.ContentType;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represent the response of a {@link ProjectGenerationRequest}.
@@ -27,9 +28,9 @@ class ProjectGenerationResponse {
 
 	private final ContentType contentType;
 
-	private byte[] content;
+	private byte @Nullable [] content;
 
-	private String fileName;
+	private @Nullable String fileName;
 
 	ProjectGenerationResponse(ContentType contentType) {
 		this.contentType = contentType;
@@ -47,11 +48,11 @@ class ProjectGenerationResponse {
 	 * The generated project archive or file.
 	 * @return the content
 	 */
-	byte[] getContent() {
+	byte @Nullable [] getContent() {
 		return this.content;
 	}
 
-	void setContent(byte[] content) {
+	void setContent(byte @Nullable [] content) {
 		this.content = content;
 	}
 
@@ -60,11 +61,11 @@ class ProjectGenerationResponse {
 	 * preferred value has been set.
 	 * @return the file name, or {@code null}
 	 */
-	String getFileName() {
+	@Nullable String getFileName() {
 		return this.fileName;
 	}
 
-	void setFileName(String fileName) {
+	void setFileName(@Nullable String fileName) {
 		this.fileName = fileName;
 	}
 

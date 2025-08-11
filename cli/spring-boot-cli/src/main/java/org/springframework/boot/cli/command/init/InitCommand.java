@@ -94,40 +94,58 @@ public class InitCommand extends OptionParsingCommand {
 
 		private final ProjectGenerator projectGenerator;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> target;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<Void> listCapabilities;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> groupId;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> artifactId;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> version;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> name;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> description;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> packageName;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> type;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> packaging;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> build;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> format;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> javaVersion;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> language;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> bootVersion;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<String> dependencies;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<Void> extract;
 
+		@SuppressWarnings("NullAway.Init")
 		private OptionSpec<Void> force;
 
 		InitOptionHandler(InitializrService initializrService) {

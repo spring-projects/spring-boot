@@ -35,6 +35,7 @@ import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.message.StatusLine;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.FileCopyUtils;
@@ -64,7 +65,7 @@ class InitializrService {
 	/**
 	 * Late binding HTTP client.
 	 */
-	private HttpClient http;
+	private @Nullable HttpClient http;
 
 	InitializrService() {
 	}
@@ -207,7 +208,7 @@ class InitializrService {
 		throw new ReportableException(message);
 	}
 
-	private String extractMessage(HttpEntity entity) {
+	private @Nullable String extractMessage(@Nullable HttpEntity entity) {
 		if (entity != null) {
 			try {
 				JSONObject error = getContentAsJson(entity);
@@ -234,7 +235,7 @@ class InitializrService {
 		return new String(content, charset);
 	}
 
-	private String extractFileName(Header header) {
+	private @Nullable String extractFileName(@Nullable Header header) {
 		if (header != null) {
 			String value = header.getValue();
 			int start = value.indexOf(FILENAME_HEADER_PREFIX);

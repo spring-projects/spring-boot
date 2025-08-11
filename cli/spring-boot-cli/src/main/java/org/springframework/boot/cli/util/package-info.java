@@ -17,4 +17,7 @@
 /**
  * Utility classes for the CLI.
  */
+@NullMarked
 package org.springframework.boot.cli.util;
+
+import org.jspecify.annotations.NullMarked;
