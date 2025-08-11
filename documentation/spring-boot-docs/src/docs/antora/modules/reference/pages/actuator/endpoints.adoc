@@ -413,7 +413,8 @@ Operations on an endpoint receive input through their parameters.
 When exposed over the web, the values for these parameters are taken from the URL's query parameters and from the JSON request body.
 When exposed over JMX, the parameters are mapped to the parameters of the MBean's operations.
 Parameters are required by default.
-They can be made optional by annotating them with either javadoc:org.springframework.boot.actuate.endpoint.annotation.OptionalParameter[format=annotation] or javadoc:org.springframework.lang.Nullable[format=annotation].
+They can be made optional by annotating them with either javadoc:org.springframework.boot.actuate.endpoint.annotation.OptionalParameter[format=annotation] or JSpecify's javadoc:org.jspecify.annotations.Nullable[format=annotation].
+Kotlin null safety is also supported.
 
 You can map each root property in the JSON request body to a parameter of the endpoint.
 Consider the following JSON request body:
@@ -547,7 +548,7 @@ NOTE: Range requests are not supported when using Jersey.
 ==== Web Endpoint Security
 
 An operation on a web endpoint or a web-specific endpoint extension can receive the current javadoc:java.security.Principal[] or javadoc:org.springframework.boot.actuate.endpoint.SecurityContext[] as a method parameter.
-The former is typically used in conjunction with either javadoc:org.springframework.boot.actuate.endpoint.annotation.OptionalParameter[format=annotation] or javadoc:org.springframework.lang.Nullable[format=annotation] to provide different behavior for authenticated and unauthenticated users.
+The former is typically used in conjunction with either javadoc:org.springframework.boot.actuate.endpoint.annotation.OptionalParameter[format=annotation] or javadoc:org.jspecify.annotations.Nullable[format=annotation] to provide different behavior for authenticated and unauthenticated users.
 The latter is typically used to perform authorization checks by using its `isUserInRole(String)` method.
 
 

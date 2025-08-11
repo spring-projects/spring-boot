@@ -43,6 +43,9 @@ class OperationMethodParameterTests {
 
 	private final Method example = ReflectionUtils.findMethod(getClass(), "example", String.class, String.class);
 
+	private final Method exampleJSpecifyNullable = ReflectionUtils.findMethod(getClass(), "exampleJSpecifyNullable",
+			String.class, String.class);
+
 	private final Method exampleSpringNullable = ReflectionUtils.findMethod(getClass(), "exampleSpringNullable",
 			String.class, String.class);
 
@@ -77,6 +80,13 @@ class OperationMethodParameterTests {
 	}
 
 	@Test
+	void isMandatoryWhenJSpecifyNullableAnnotationShouldReturnFalse() {
+		OperationMethodParameter parameter = new OperationMethodParameter("name",
+				this.exampleJSpecifyNullable.getParameters()[1], this::isOptionalParameter);
+		assertThat(parameter.isMandatory()).isFalse();
+	}
+
+	@Test
 	void isMandatoryWhenSpringNullableAnnotationShouldReturnFalse() {
 		OperationMethodParameter parameter = new OperationMethodParameter("name",
 				this.exampleSpringNullable.getParameters()[1], this::isOptionalParameter);
@@ -97,6 +107,9 @@ class OperationMethodParameterTests {
 	}
 
 	void example(String one, @TestOptional String two) {
+	}
+
+	void exampleJSpecifyNullable(String one, @org.jspecify.annotations.Nullable String two) {
 	}
 
 	@SuppressWarnings("deprecation")
