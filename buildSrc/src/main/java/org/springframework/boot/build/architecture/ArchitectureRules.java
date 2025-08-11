@@ -101,6 +101,20 @@ final class ArchitectureRules {
 		return List.copyOf(rules);
 	}
 
+	static ArchRule allBeanMethodsShouldReturnNonPrivateType() {
+		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean").should(check(
+				"not return types declared with the %s modifier, as such types are incompatible with Spring AOT processing"
+					.formatted(JavaModifier.PRIVATE),
+				(method, events) -> {
+					JavaClass returnType = method.getRawReturnType();
+					if (returnType.getModifiers().contains(JavaModifier.PRIVATE)) {
+						addViolation(events, method, "%s returns %s which is declared as %s".formatted(
+								method.getDescription(), returnType.getDescription(), returnType.getModifiers()));
+					}
+				}))
+			.allowEmptyShould(true);
+	}
+
 	private static ArchRule allPackagesShouldBeFreeOfTangles() {
 		return SlicesRuleDefinition.slices().matching("(**)").should().beFreeOfCycles();
 	}
