@@ -29,7 +29,6 @@ import io.opentelemetry.sdk.resources.Resource;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,7 +49,6 @@ public final class OpenTelemetryMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean({ Clock.class, Resource.class })
 	SdkMeterProvider meterProvider(Clock clock, ExemplarFilter exemplarFilter,
 			OpenTelemetryMetricsProperties properties, Resource resource,
 			ObjectProvider<SdkMeterProviderBuilderCustomizer> customizers) {
@@ -80,7 +78,6 @@ public final class OpenTelemetryMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean(OpenTelemetry.class)
 	Meter meter(OpenTelemetry openTelemetry) {
 		return openTelemetry.getMeter(INSTRUMENTATION_SCOPE_NAME);
 	}
