@@ -97,6 +97,7 @@ import org.springframework.core.CollectionFactory;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 public class MavenPluginPlugin implements Plugin<Project> {
 
@@ -377,11 +378,25 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			Path outputLocation = getOutputDir().getAsFile().get().toPath().resolve(relativePath);
 			try {
 				Files.createDirectories(outputLocation.getParent());
-				Files.writeString(outputLocation, edit.getFormattedContent());
+				String content = edit.getFormattedContent();
+				content = addNullAwaySuppression(content);
+				Files.writeString(outputLocation, content);
 			}
 			catch (Exception ex) {
 				throw new TaskExecutionException(this, ex);
 			}
+		}
+
+		private String addNullAwaySuppression(String content) {
+			String[] lines = content.split("\n");
+			StringBuilder result = new StringBuilder();
+			for (String line : lines) {
+				if (line.startsWith("public class ")) {
+					result.append("@SuppressWarnings(\"NullAway\")").append("\n");
+				}
+				result.append(line).append("\n");
+			}
+			return result.toString();
 		}
 
 	}
