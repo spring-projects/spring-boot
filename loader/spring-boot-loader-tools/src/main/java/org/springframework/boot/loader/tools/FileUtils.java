@@ -23,6 +23,8 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Utilities for manipulating files and directories in Spring Boot tooling.
  *
@@ -61,7 +63,10 @@ public abstract class FileUtils {
 	 * @return if the file has been signed
 	 * @throws IOException on IO error
 	 */
-	public static boolean isSignedJarFile(File file) throws IOException {
+	public static boolean isSignedJarFile(@Nullable File file) throws IOException {
+		if (file == null) {
+			return false;
+		}
 		try (JarFile jarFile = new JarFile(file)) {
 			if (hasDigestEntry(jarFile.getManifest())) {
 				return true;
@@ -70,7 +75,7 @@ public abstract class FileUtils {
 		return false;
 	}
 
-	private static boolean hasDigestEntry(Manifest manifest) {
+	private static boolean hasDigestEntry(@Nullable Manifest manifest) {
 		return (manifest != null) && manifest.getEntries().values().stream().anyMatch(FileUtils::hasDigestName);
 	}
 

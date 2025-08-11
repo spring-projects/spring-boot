@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Utility used to run a process.
  *
@@ -37,11 +39,11 @@ public class RunProcess {
 
 	private static final long JUST_ENDED_LIMIT = 500;
 
-	private final File workingDirectory;
+	private final @Nullable File workingDirectory;
 
 	private final String[] command;
 
-	private volatile Process process;
+	private volatile @Nullable Process process;
 
 	private volatile long endTime;
 
@@ -60,7 +62,7 @@ public class RunProcess {
 	 * to run in the working directory of the current Java process
 	 * @param command the program to execute and its arguments
 	 */
-	public RunProcess(File workingDirectory, String... command) {
+	public RunProcess(@Nullable File workingDirectory, String... command) {
 		this.workingDirectory = workingDirectory;
 		this.command = command;
 	}
@@ -104,7 +106,7 @@ public class RunProcess {
 	 * Return the running process.
 	 * @return the process or {@code null}
 	 */
-	public Process getRunningProcess() {
+	public @Nullable Process getRunningProcess() {
 		return this.process;
 	}
 

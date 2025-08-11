@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.util.Assert;
 
@@ -45,7 +47,7 @@ public class IncludeExcludeContentSelector<T> implements ContentSelector<T> {
 		this(layer, includes, excludes, Function.identity());
 	}
 
-	public <S> IncludeExcludeContentSelector(Layer layer, List<S> includes, List<S> excludes,
+	public <S> IncludeExcludeContentSelector(Layer layer, @Nullable List<S> includes, @Nullable List<S> excludes,
 			Function<S, ContentFilter<T>> filterFactory) {
 		Assert.notNull(layer, "'layer' must not be null");
 		Assert.notNull(filterFactory, "'filterFactory' must not be null");

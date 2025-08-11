@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -74,7 +77,7 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 		return this.size;
 	}
 
-	static EntryWriter get(EntryWriter entryWriter) throws IOException {
+	static @Nullable EntryWriter get(@Nullable EntryWriter entryWriter) throws IOException {
 		if (entryWriter == null || entryWriter.size() != -1) {
 			return entryWriter;
 		}
@@ -88,7 +91,7 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 
 		private int size = 0;
 
-		private File tempFile;
+		private @Nullable File tempFile;
 
 		private OutputStream outputStream;
 
@@ -131,8 +134,10 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 		}
 
 		Object getContent() {
-			return (this.outputStream instanceof ByteArrayOutputStream byteArrayOutputStream)
+			Object result = (this.outputStream instanceof ByteArrayOutputStream byteArrayOutputStream)
 					? byteArrayOutputStream.toByteArray() : this.tempFile;
+			Assert.state(result != null, "'result' must not be null");
+			return result;
 		}
 
 		int getSize() {

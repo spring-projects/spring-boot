@@ -27,7 +27,7 @@ class MyBuildTool {
 
 	@Throws(IOException::class)
 	fun build() {
-		val sourceJarFile: File? =  /**/null
+		val sourceJarFile: File =  /**/File(".")
 		val repackager = Repackager(sourceJarFile)
 		repackager.setBackupSource(false)
 		repackager.repackage { callback: LibraryCallback -> getLibraries(callback) }
@@ -36,14 +36,14 @@ class MyBuildTool {
 	@Throws(IOException::class)
 	private fun getLibraries(callback: LibraryCallback) {
 		// Build system specific implementation, callback for each dependency
-		for (nestedJar in getCompileScopeJars()!!) {
+		for (nestedJar in getCompileScopeJars()) {
 			callback.library(Library(nestedJar, LibraryScope.COMPILE))
 		}
 		// ...
 	}
 
-	private fun getCompileScopeJars(): List<File?>? {
-		return  /**/ null
+	private fun getCompileScopeJars(): List<File> {
+		return  /**/ listOf()
 	}
 
 }

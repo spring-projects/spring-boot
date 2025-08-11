@@ -23,6 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.jar.JarFile;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
@@ -103,7 +105,8 @@ public class Repackager extends Packager {
 	 * @throws IOException if the file cannot be repackaged
 	 * @since 1.3.0
 	 */
-	public void repackage(File destination, Libraries libraries, LaunchScript launchScript) throws IOException {
+	public void repackage(File destination, Libraries libraries, @Nullable LaunchScript launchScript)
+			throws IOException {
 		repackage(destination, libraries, launchScript, null);
 	}
 
@@ -118,8 +121,8 @@ public class Repackager extends Packager {
 	 * @throws IOException if the file cannot be repackaged
 	 * @since 2.3.0
 	 */
-	public void repackage(File destination, Libraries libraries, LaunchScript launchScript, FileTime lastModifiedTime)
-			throws IOException {
+	public void repackage(File destination, Libraries libraries, @Nullable LaunchScript launchScript,
+			@Nullable FileTime lastModifiedTime) throws IOException {
 		Assert.isTrue(destination != null && !destination.isDirectory(), "Invalid destination");
 		getLayout(); // get layout early
 		destination = destination.getAbsoluteFile();
@@ -146,8 +149,8 @@ public class Repackager extends Packager {
 		}
 	}
 
-	private void repackage(JarFile sourceJar, File destination, Libraries libraries, LaunchScript launchScript,
-			FileTime lastModifiedTime) throws IOException {
+	private void repackage(JarFile sourceJar, File destination, Libraries libraries,
+			@Nullable LaunchScript launchScript, @Nullable FileTime lastModifiedTime) throws IOException {
 		try (JarWriter writer = new JarWriter(destination, launchScript, lastModifiedTime)) {
 			write(sourceJar, libraries, writer, lastModifiedTime != null);
 		}

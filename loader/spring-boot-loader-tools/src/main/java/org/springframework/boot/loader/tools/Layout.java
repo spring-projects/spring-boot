@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.tools;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Strategy interface used to determine the layout for a particular type of archive.
  * Layouts may additionally implement {@link CustomLoaderLayout} if they wish to write
@@ -33,7 +35,7 @@ public interface Layout {
 	 * Returns the launcher class name for this layout.
 	 * @return the launcher class name
 	 */
-	String getLauncherClassName();
+	@Nullable String getLauncherClassName();
 
 	/**
 	 * Returns the destination path for a given library.
@@ -42,7 +44,7 @@ public interface Layout {
 	 * @return the location of the library relative to the root of the archive (should end
 	 * with '/') or {@code null} if the library should not be included.
 	 */
-	String getLibraryLocation(String libraryName, LibraryScope scope);
+	@Nullable String getLibraryLocation(String libraryName, @Nullable LibraryScope scope);
 
 	/**
 	 * Returns the location of classes within the archive.
@@ -57,7 +59,7 @@ public interface Layout {
 	 * @return the classpath index file location
 	 * @since 2.5.0
 	 */
-	default String getClasspathIndexFileLocation() {
+	default @Nullable String getClasspathIndexFileLocation() {
 		return null;
 	}
 
@@ -68,7 +70,7 @@ public interface Layout {
 	 * @return the layer index file location
 	 * @since 2.5.0
 	 */
-	default String getLayersIndexFileLocation() {
+	default @Nullable String getLayersIndexFileLocation() {
 		return null;
 	}
 

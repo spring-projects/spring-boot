@@ -42,6 +42,9 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.zip.UnixStat;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.util.Assert;
 
 /**
  * Abstract base class for JAR writers.
@@ -61,16 +64,16 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	private final Set<String> writtenEntries = new HashSet<>();
 
-	private Layers layers;
+	private @Nullable Layers layers;
 
-	private LayersIndex layersIndex;
+	private @Nullable LayersIndex layersIndex;
 
 	/**
 	 * Update this writer to use specific layers.
 	 * @param layers the layers to use
 	 * @param layersIndex the layers index to update
 	 */
-	void useLayers(Layers layers, LayersIndex layersIndex) {
+	void useLayers(@Nullable Layers layers, @Nullable LayersIndex layersIndex) {
 		this.layers = layers;
 		this.layersIndex = layersIndex;
 	}
@@ -86,7 +89,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
-			Function<JarEntry, Library> libraryLookup) throws IOException {
+			Function<JarEntry, @Nullable Library> libraryLookup) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
@@ -98,7 +101,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	private void writeEntry(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
-			JarArchiveEntry entry, Library library) throws IOException {
+			JarArchiveEntry entry, @Nullable Library library) throws IOException {
 		setUpEntry(jarFile, entry, unpackHandler);
 		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
 			EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
@@ -168,7 +171,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * @throws IOException if the write fails
 	 * @since 2.3.0
 	 */
-	public void writeIndexFile(String location, Collection<String> lines) throws IOException {
+	public void writeIndexFile(@Nullable String location, Collection<String> lines) throws IOException {
 		if (location != null) {
 			JarArchiveEntry entry = new JarArchiveEntry(location);
 			writeEntry(entry, (outputStream) -> {
@@ -207,7 +210,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	@Override
-	public void writeLoaderClasses(LoaderImplementation loaderImplementation) throws IOException {
+	public void writeLoaderClasses(@Nullable LoaderImplementation loaderImplementation) throws IOException {
 		writeLoaderClasses((loaderImplementation != null) ? loaderImplementation.getJarResourceName()
 				: LoaderImplementation.DEFAULT.getJarResourceName());
 	}
@@ -255,7 +258,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * @param entryWriter the entry writer or {@code null} if there is no content
 	 * @throws IOException in case of I/O errors
 	 */
-	private void writeEntry(JarArchiveEntry entry, Library library, EntryWriter entryWriter) throws IOException {
+	private void writeEntry(JarArchiveEntry entry, @Nullable Library library, @Nullable EntryWriter entryWriter)
+			throws IOException {
 		String name = entry.getName();
 		if (this.writtenEntries.add(name)) {
 			writeParentDirectoryEntries(name);
@@ -263,6 +267,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 			entry.getGeneralPurposeBit().useUTF8ForNames(true);
 			if (!entry.isDirectory() && entry.getSize() == -1) {
 				entryWriter = SizeCalculatingEntryWriter.get(entryWriter);
+				Assert.state(entryWriter != null, "'entryWriter' must not be null");
 				entry.setSize(entryWriter.size());
 			}
 			updateLayerIndex(entry, library);
@@ -270,14 +275,14 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		}
 	}
 
-	private void updateLayerIndex(JarArchiveEntry entry, Library library) {
-		if (this.layers != null && !entry.getName().endsWith("/")) {
+	private void updateLayerIndex(JarArchiveEntry entry, @Nullable Library library) {
+		if (this.layers != null && this.layersIndex != null && !entry.getName().endsWith("/")) {
 			Layer layer = (library != null) ? this.layers.getLayer(library) : this.layers.getLayer(entry.getName());
 			this.layersIndex.add(layer, entry.getName());
 		}
 	}
 
-	protected abstract void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException;
+	protected abstract void writeToArchive(ZipEntry entry, @Nullable EntryWriter entryWriter) throws IOException;
 
 	private void writeParentDirectoryEntries(String name) throws IOException {
 		String parent = name.endsWith("/") ? name.substring(0, name.length() - 1) : name;
@@ -320,7 +325,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 		private static final int BUFFER_SIZE = 32 * 1024;
 
-		private final MessageDigest messageDigest;
+		private final @Nullable MessageDigest messageDigest;
 
 		private final CRC32 crc = new CRC32();
 
@@ -378,7 +383,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		 */
 		EntryTransformer NONE = (jarEntry) -> jarEntry;
 
-		JarArchiveEntry transform(JarArchiveEntry jarEntry);
+		@Nullable JarArchiveEntry transform(JarArchiveEntry jarEntry);
 
 	}
 

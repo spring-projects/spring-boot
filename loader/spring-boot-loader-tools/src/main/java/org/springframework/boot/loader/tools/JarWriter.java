@@ -26,6 +26,7 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Writes JAR content, ensuring valid directory entries are always created and duplicate
@@ -41,7 +42,7 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 
 	private final JarArchiveOutputStream jarOutputStream;
 
-	private final FileTime lastModifiedTime;
+	private final @Nullable FileTime lastModifiedTime;
 
 	/**
 	 * Create a new {@link JarWriter} instance.
@@ -60,7 +61,7 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 	 * @throws IOException if the file cannot be opened
 	 * @throws FileNotFoundException if the file cannot be found
 	 */
-	public JarWriter(File file, LaunchScript launchScript) throws FileNotFoundException, IOException {
+	public JarWriter(File file, @Nullable LaunchScript launchScript) throws FileNotFoundException, IOException {
 		this(file, launchScript, null);
 	}
 
@@ -74,7 +75,7 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 	 * @throws FileNotFoundException if the file cannot be found
 	 * @since 2.3.0
 	 */
-	public JarWriter(File file, LaunchScript launchScript, FileTime lastModifiedTime)
+	public JarWriter(File file, @Nullable LaunchScript launchScript, @Nullable FileTime lastModifiedTime)
 			throws FileNotFoundException, IOException {
 		this.jarOutputStream = new JarArchiveOutputStream(new FileOutputStream(file));
 		if (launchScript != null) {
@@ -86,7 +87,7 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 	}
 
 	@Override
-	protected void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException {
+	protected void writeToArchive(ZipEntry entry, @Nullable EntryWriter entryWriter) throws IOException {
 		JarArchiveEntry jarEntry = asJarArchiveEntry(entry);
 		if (this.lastModifiedTime != null) {
 			jarEntry.setTime(DefaultTimeZoneOffset.INSTANCE.removeFrom(this.lastModifiedTime).toMillis());
