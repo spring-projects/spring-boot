@@ -17,4 +17,7 @@
 /**
  * Sample used for testing.
  */
+@NullMarked
 package sample;
+
+import org.jspecify.annotations.NullMarked;
