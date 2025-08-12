@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
+@NullMarked
 package smoketest.hateoas.domain;
 
-import java.util.List;
-
-import org.jspecify.annotations.Nullable;
-
-public interface CustomerRepository {
-
-	List<Customer> findAll();
-
-	@Nullable Customer findOne(Long id);
-
-}
+import org.jspecify.annotations.NullMarked;
