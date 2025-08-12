@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
+@NullMarked
 package smoketest.rsocket;
 
-public class Project {
-
-	private final String name;
-
-	public Project(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-}
+import org.jspecify.annotations.NullMarked;
