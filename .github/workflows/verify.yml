@@ -57,7 +57,7 @@ jobs:
         if: ${{ !vars.COMMERCIAL }}
         uses: Homebrew/actions/setup-homebrew@7657c9512f50e1c35b640971116425935bab3eea
       - name: Set Up Gradle
-        uses: gradle/actions/setup-gradle@ac638b010cf58a27ee6c972d7336334ccaf61c96 # v4.4.1
+        uses: gradle/actions/setup-gradle@017a9effdb900e5b5b2fddfb590a105619dca3c3 # v4.4.2
         with:
           cache-read-only: false
       - name: Configure Gradle Properties
