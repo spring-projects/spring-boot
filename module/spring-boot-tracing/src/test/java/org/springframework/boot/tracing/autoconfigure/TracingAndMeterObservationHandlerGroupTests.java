@@ -27,7 +27,7 @@ import io.micrometer.observation.ObservationRegistry.ObservationConfig;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
 import io.micrometer.tracing.handler.TracingObservationHandler;
-import org.assertj.core.extractor.Extractors;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -63,7 +63,6 @@ class TracingAndMeterObservationHandlerGroupTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void registerMembersWrapsMeterObservationHandlersAndRegistersDistinctGroups() {
 		Tracer tracer = mock(Tracer.class);
 		TracingAndMeterObservationHandlerGroup group = new TracingAndMeterObservationHandlerGroup(tracer);
@@ -79,16 +78,14 @@ class TracingAndMeterObservationHandlerGroupTests {
 		List<ObservationHandler<?>> actualComposites = handlerCaptor.getAllValues();
 		assertThat(actualComposites).hasSize(2);
 		ObservationHandler<?> tracingComposite = actualComposites.get(0);
-		assertThat(tracingComposite).isInstanceOf(FirstMatchingCompositeObservationHandler.class);
-		List<ObservationHandler<?>> tracingHandlers = (List<ObservationHandler<?>>) Extractors.byName("handlers")
-			.apply(tracingComposite);
-		assertThat(tracingHandlers).containsExactly(tracingHandler1, tracingHandler2);
+		assertThat(tracingComposite).isInstanceOf(FirstMatchingCompositeObservationHandler.class)
+			.extracting("handlers", InstanceOfAssertFactories.LIST)
+			.containsExactly(tracingHandler1, tracingHandler2);
 		ObservationHandler<?> metricsComposite = actualComposites.get(1);
-		assertThat(metricsComposite).isInstanceOf(FirstMatchingCompositeObservationHandler.class);
-		List<ObservationHandler<?>> metricsHandlers = (List<ObservationHandler<?>>) Extractors.byName("handlers")
-			.apply(metricsComposite);
-		assertThat(metricsHandlers).hasSize(2);
-		assertThat(metricsHandlers).extracting("delegate").containsExactly(meterHandler1, meterHandler2);
+		assertThat(metricsComposite).isInstanceOf(FirstMatchingCompositeObservationHandler.class)
+			.extracting("handlers", InstanceOfAssertFactories.LIST)
+			.extracting("delegate")
+			.containsExactly(meterHandler1, meterHandler2);
 	}
 
 	@Test

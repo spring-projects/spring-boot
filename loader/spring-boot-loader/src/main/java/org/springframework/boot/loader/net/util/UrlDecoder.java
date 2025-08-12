@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 
 /**
- * Utility to decode URL strings. Copied frm Spring Framework's {@code StringUtils} as we
+ * Utility to decode URL strings. Copied from Spring Framework's {@code StringUtils} as we
  * cannot depend on it in the loader.
  *
  * @author Phillip Webb
@@ -52,6 +52,7 @@ public final class UrlDecoder {
 	 * @param charset the character encoding to use to decode the "<i>{@code %xy}</i>"
 	 * sequences
 	 * @return the decoded value
+	 * @since 4.0.0
 	 */
 	public static String decode(String source, Charset charset) {
 		int length = source.length();

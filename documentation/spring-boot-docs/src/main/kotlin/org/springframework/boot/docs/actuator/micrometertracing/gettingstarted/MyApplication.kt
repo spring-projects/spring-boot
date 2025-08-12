@@ -30,7 +30,7 @@ class MyApplication {
 	private val logger: Log = LogFactory.getLog(MyApplication::class.java)
 
 	@RequestMapping("/")
-	fun hello(): String {
+	fun home(): String {
 		logger.info("home() has been called")
 		return "Hello, World!"
 	}
