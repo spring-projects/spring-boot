@@ -36,7 +36,9 @@ import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.apache.hc.core5.reactor.ssl.SSLBufferMode;
 import org.apache.hc.core5.util.Timeout;
@@ -67,6 +69,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Laura Trotta
  */
 class ElasticsearchRestClientConfigurations {
 
@@ -99,6 +102,11 @@ class ElasticsearchRestClientConfigurations {
 				.stream()
 				.map((node) -> new HttpHost(node.protocol().getScheme(), node.hostname(), node.port()))
 				.toArray(HttpHost[]::new));
+			if (connectionDetails.getAPIKey() != null) {
+				builder.setDefaultHeaders(new Header[]{
+						new BasicHeader("Authorization", "ApiKey " + connectionDetails.getAPIKey()),
+				});
+			}
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> builderCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(httpClientBuilder)));
 			builder.setConnectionManagerCallback((connectionManagerBuilder) -> builderCustomizers.orderedStream()
@@ -273,6 +281,11 @@ class ElasticsearchRestClientConfigurations {
 		@Override
 		public @Nullable String getPassword() {
 			return this.properties.getPassword();
+		}
+
+		@Override
+		public @Nullable String getAPIKey() {
+			return this.properties.getAPIKey();
 		}
 
 		@Override
