@@ -18,6 +18,8 @@ package smoketest.parent;
 
 import java.io.File;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -28,9 +30,9 @@ public class ServiceProperties {
 
 	private String greeting = "Hello";
 
-	private File inputDir;
+	private @Nullable File inputDir;
 
-	private File outputDir;
+	private @Nullable File outputDir;
 
 	@ManagedAttribute
 	public String getGreeting() {
@@ -41,19 +43,19 @@ public class ServiceProperties {
 		this.greeting = greeting;
 	}
 
-	public File getInputDir() {
+	public @Nullable File getInputDir() {
 		return this.inputDir;
 	}
 
-	public void setInputDir(File inputDir) {
+	public void setInputDir(@Nullable File inputDir) {
 		this.inputDir = inputDir;
 	}
 
-	public File getOutputDir() {
+	public @Nullable File getOutputDir() {
 		return this.outputDir;
 	}
 
-	public void setOutputDir(File outputDir) {
+	public void setOutputDir(@Nullable File outputDir) {
 		this.outputDir = outputDir;
 	}
 
