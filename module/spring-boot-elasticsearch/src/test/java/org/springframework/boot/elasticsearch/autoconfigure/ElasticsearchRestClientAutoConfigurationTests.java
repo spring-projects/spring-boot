@@ -19,6 +19,7 @@ package org.springframework.boot.elasticsearch.autoconfigure;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import co.elastic.clients.transport.rest5_client.low_level.Node;
 import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
@@ -33,6 +34,7 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.function.Resolver;
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.util.Timeout;
@@ -47,6 +49,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -62,6 +65,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Laura Trotta
  */
 class ElasticsearchRestClientAutoConfigurationTests {
 
@@ -133,6 +137,25 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				.containsExactly("http://localhost:9876");
 		});
 	}
+
+	@Test
+	void configureUriWithAPiKey() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://user@localhost:9200","spring.elasticsearch.apikey=some-apiKey").run((context) -> {
+			Rest5Client client = context.getBean(Rest5Client.class);
+			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+					.containsExactly("http://localhost:9200");
+			assertThat(client)
+					.extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
+					.satisfies(( defaultHeaders) -> {
+						Optional<? extends Header> authHeader = defaultHeaders.stream()
+								.filter(x -> x.getName().equals("Authorization"))
+								.findFirst();
+						assertThat(authHeader).isPresent();
+						assertThat(authHeader.get().getValue()).isEqualTo("ApiKey some-apiKey");
+					});
+		});
+	}
+
 
 	@Test
 	void configureUriWithUsernameOnly() {
