@@ -32,26 +32,33 @@ public class City implements Serializable {
 	@Id
 	@SequenceGenerator(name = "city_generator", sequenceName = "city_sequence", initialValue = 23)
 	@GeneratedValue(generator = "city_generator")
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
 	private String state;
 
 	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
 	private String country;
 
 	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
 	private String map;
 
 	protected City() {
 	}
 
-	public City(String name, String country) {
+	public City(String name, String country, String state, String map) {
 		this.name = name;
 		this.country = country;
+		this.state = state;
+		this.map = map;
 	}
 
 	public String getName() {

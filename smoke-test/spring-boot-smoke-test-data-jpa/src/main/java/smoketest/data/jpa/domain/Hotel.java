@@ -17,6 +17,7 @@
 package smoketest.data.jpa.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -37,31 +38,38 @@ public class Hotel implements Serializable {
 	@Id
 	@SequenceGenerator(name = "hotel_generator", sequenceName = "hotel_sequence", initialValue = 28)
 	@GeneratedValue(generator = "hotel_generator")
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 	@ManyToOne(optional = false)
 	@NaturalId
+	@SuppressWarnings("NullAway.Init")
 	private City city;
 
 	@Column(nullable = false)
 	@NaturalId
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
 	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
 	private String address;
 
 	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
 	private String zip;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "hotel")
-	private Set<Review> reviews;
+	private Set<Review> reviews = new HashSet<>();
 
 	protected Hotel() {
 	}
 
-	public Hotel(City city, String name) {
+	public Hotel(City city, String name, String address, String zip) {
 		this.city = city;
 		this.name = name;
+		this.address = address;
+		this.zip = zip;
 	}
 
 	public City getCity() {

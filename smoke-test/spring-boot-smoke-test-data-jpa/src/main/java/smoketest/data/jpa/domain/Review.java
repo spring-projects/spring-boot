@@ -38,31 +38,38 @@ public class Review implements Serializable {
 	@Id
 	@SequenceGenerator(name = "review_generator", sequenceName = "review_sequence", initialValue = 64)
 	@GeneratedValue(generator = "review_generator")
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 	@ManyToOne(optional = false)
+	@SuppressWarnings("NullAway.Init")
 	private Hotel hotel;
 
 	@Column(nullable = false, name = "idx")
+	@SuppressWarnings("NullAway.Init")
 	private int index;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.ORDINAL)
+	@SuppressWarnings("NullAway.Init")
 	private Rating rating;
 
 	@Column(nullable = false)
 	@jakarta.persistence.Temporal(jakarta.persistence.TemporalType.DATE)
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "NullAway.Init" })
 	private Date checkInDate;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.ORDINAL)
+	@SuppressWarnings("NullAway.Init")
 	private TripType tripType;
 
 	@Column(nullable = false)
+	@SuppressWarnings("NullAway.Init")
 	private String title;
 
 	@Column(nullable = false, length = 5000)
+	@SuppressWarnings("NullAway.Init")
 	private String details;
 
 	protected Review() {
