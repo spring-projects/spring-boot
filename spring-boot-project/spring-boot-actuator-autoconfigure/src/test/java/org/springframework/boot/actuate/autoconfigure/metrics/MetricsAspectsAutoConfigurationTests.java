@@ -29,7 +29,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -77,7 +76,7 @@ class MetricsAspectsAutoConfigurationTests {
 	void shouldConfigureMeterTagAnnotationHandler() {
 		this.contextRunner.withUserConfiguration(MeterTagAnnotationHandlerConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(CountedAspect.class);
-			assertThat(ReflectionTestUtils.getField(context.getBean(TimedAspect.class), "meterTagAnnotationHandler"))
+			assertThat(context.getBean(TimedAspect.class)).extracting("meterTagAnnotationHandler")
 				.isSameAs(context.getBean(MeterTagAnnotationHandler.class));
 		});
 	}
