@@ -16,6 +16,8 @@
 
 package smoketest.data.cassandra;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -23,23 +25,23 @@ import org.springframework.data.cassandra.core.mapping.Table;
 public class SampleEntity {
 
 	@PrimaryKey
-	private String id;
+	private @Nullable String id;
 
-	private String description;
+	private @Nullable String description;
 
-	public String getId() {
+	public @Nullable String getId() {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	public void setId(@Nullable String id) {
 		this.id = id;
 	}
 
-	public String getDescription() {
+	public @Nullable String getDescription() {
 		return this.description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(@Nullable String description) {
 		this.description = description;
 	}
 
