@@ -16,28 +16,34 @@
 
 package smoketest.data.r2dbc;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 
 public class City {
 
 	@Id
-	private Long id;
+	private @Nullable Long id;
 
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
+	@SuppressWarnings("NullAway.Init")
 	private String state;
 
+	@SuppressWarnings("NullAway.Init")
 	private String country;
 
 	protected City() {
 	}
 
-	public City(String name, String country) {
+	public City(String name, String state, String country) {
 		this.name = name;
+		this.state = state;
 		this.country = country;
 	}
 
-	public Long getId() {
+	public @Nullable Long getId() {
 		return this.id;
 	}
 
