@@ -21,6 +21,9 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.util.Assert;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -34,7 +37,7 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 
 	private final int id;
 
-	private Snake snake;
+	private @Nullable Snake snake;
 
 	public static String getRandomHexColor() {
 		float hue = random.nextFloat();
@@ -79,6 +82,7 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+		Assert.state(this.snake != null, "'snake' must not be null");
 		String payload = message.getPayload();
 		switch (payload) {
 			case "west" -> this.snake.setDirection(Direction.WEST);
@@ -90,6 +94,7 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+		Assert.state(this.snake != null, "'snake' must not be null");
 		SnakeTimer.removeSnake(this.snake);
 		SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}", this.id));
 	}

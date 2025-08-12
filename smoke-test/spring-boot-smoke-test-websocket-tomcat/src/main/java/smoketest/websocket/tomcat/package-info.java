@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.websocket.tomcat.echo;
+@NullMarked
+package smoketest.websocket.tomcat;
 
-import org.jspecify.annotations.Nullable;
-
-public class DefaultEchoService implements EchoService {
-
-	private final String echoFormat;
-
-	public DefaultEchoService(@Nullable String echoFormat) {
-		this.echoFormat = (echoFormat != null) ? echoFormat : "%s";
-	}
-
-	@Override
-	public String getMessage(String message) {
-		return String.format(this.echoFormat, message);
-	}
-
-}
+import org.jspecify.annotations.NullMarked;

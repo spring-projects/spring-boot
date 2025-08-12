@@ -26,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Sets up the timer for the multiplayer snake game WebSocket example.
@@ -40,7 +41,7 @@ public final class SnakeTimer {
 
 	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<>();
 
-	private static Timer gameTimer = null;
+	private static @Nullable Timer gameTimer;
 
 	private SnakeTimer() {
 	}
