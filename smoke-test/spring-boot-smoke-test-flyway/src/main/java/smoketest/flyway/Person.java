@@ -20,6 +20,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
+import org.jspecify.annotations.Nullable;
 
 @Entity
 public class Person {
@@ -27,25 +28,25 @@ public class Person {
 	@Id
 	@SequenceGenerator(name = "person_generator", sequenceName = "person_sequence", allocationSize = 1)
 	@GeneratedValue(generator = "person_generator")
-	private Long id;
+	private @Nullable Long id;
 
-	private String firstName;
+	private @Nullable String firstName;
 
-	private String lastName;
+	private @Nullable String lastName;
 
-	public String getFirstName() {
+	public @Nullable String getFirstName() {
 		return this.firstName;
 	}
 
-	public void setFirstName(String firstName) {
+	public void setFirstName(@Nullable String firstName) {
 		this.firstName = firstName;
 	}
 
-	public String getLastName() {
+	public @Nullable String getLastName() {
 		return this.lastName;
 	}
 
-	public void setLastName(String lastname) {
+	public void setLastName(@Nullable String lastname) {
 		this.lastName = lastname;
 	}
 
