@@ -78,7 +78,7 @@ class StackdriverPropertiesConfigAdapterTests
 	}
 
 	@Test
-	void whenPropertiesAutoCreateMetricDescriptorsIsSetAdapterAutoCreateMetricDescriptorReturnsIt() {
+	void whenPropertiesAutoCreateMetricDescriptorsIsSetAdapterAutoCreateMetricDescriptorsReturnsIt() {
 		StackdriverProperties properties = new StackdriverProperties();
 		properties.setAutoCreateMetricDescriptors(false);
 		assertThat(new StackdriverPropertiesConfigAdapter(properties).autoCreateMetricDescriptors()).isFalse();
