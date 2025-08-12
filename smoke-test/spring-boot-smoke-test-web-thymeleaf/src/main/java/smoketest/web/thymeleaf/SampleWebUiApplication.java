@@ -16,6 +16,8 @@
 
 package smoketest.web.thymeleaf;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +35,7 @@ public class SampleWebUiApplication {
 	public Converter<String, Message> messageConverter() {
 		return new Converter<>() {
 			@Override
-			public Message convert(String id) {
+			public @Nullable Message convert(String id) {
 				return messageRepository().findMessage(Long.valueOf(id));
 			}
 		};
