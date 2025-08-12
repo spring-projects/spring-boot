@@ -16,6 +16,8 @@
 
 package smoketest.data.couchbase;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.id.GeneratedValue;
@@ -26,9 +28,10 @@ public class SampleDocument {
 
 	@Id
 	@GeneratedValue(strategy = GenerationStrategy.UNIQUE)
+	@SuppressWarnings("NullAway.Init")
 	private String id;
 
-	private String text;
+	private @Nullable String text;
 
 	public String getId() {
 		return this.id;
@@ -38,11 +41,11 @@ public class SampleDocument {
 		this.id = id;
 	}
 
-	public String getText() {
+	public @Nullable String getText() {
 		return this.text;
 	}
 
-	public void setText(String text) {
+	public void setText(@Nullable String text) {
 		this.text = text;
 	}
 
