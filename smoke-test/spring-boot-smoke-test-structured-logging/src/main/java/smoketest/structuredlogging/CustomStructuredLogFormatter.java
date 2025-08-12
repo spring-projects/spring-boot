@@ -19,13 +19,14 @@ package smoketest.structuredlogging;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.core.env.Environment;
 
 public class CustomStructuredLogFormatter implements StructuredLogFormatter<ILoggingEvent> {
 
-	private final Long pid;
+	private final @Nullable Long pid;
 
 	private final ThrowableProxyConverter throwableProxyConverter;
 
