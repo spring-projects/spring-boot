@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.configurationmetadata.format.property
+package org.springframework.boot.docs.appendix.configurationmetadata.annotationprocessor.automaticmetadatageneration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty
 
-@ConfigurationProperties("my.app")
-class MyProperties(val name: String?) {
+@ConfigurationProperties(prefix = "my.server")
+class MyServerProperties(
 
-	var target: String? = null
-		@Deprecated("") @DeprecatedConfigurationProperty(replacement = "my.app.name") get
-		@Deprecated("") set
+	/**
+	 * Name of the server.
+	 */
+	var name: String,
 
-}
+	/**
+	 * IP address to listen to.
+	 */
+	var ip: String = "127.0.0.1",
+
+	/**
+	 * Port to listen to.
+	 */
+	var port: Int = 9797)
 
