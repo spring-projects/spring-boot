@@ -14,27 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.profile.service;
+@NullMarked
+package smoketest.profile;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-
-@Component
-@Profile({ "generic" })
-public class GenericService implements MessageService {
-
-	@Value("${test.hello:Hello}")
-	@SuppressWarnings("NullAway.Init")
-	private String hello;
-
-	@Value("${test.name:World}")
-	@SuppressWarnings("NullAway.Init")
-	private String name;
-
-	@Override
-	public String getMessage() {
-		return this.hello + " " + this.name;
-	}
-
-}
+import org.jspecify.annotations.NullMarked;
