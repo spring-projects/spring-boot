@@ -21,6 +21,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
@@ -35,11 +36,13 @@ public class User {
 
 	@Id
 	@GeneratedValue
-	private Long id;
+	private @Nullable Long id;
 
 	@Column(unique = true)
+	@SuppressWarnings("NullAway.Init")
 	private String username;
 
+	@SuppressWarnings("NullAway.Init")
 	private VehicleIdentificationNumber vin;
 
 	protected User() {
@@ -52,7 +55,7 @@ public class User {
 		this.vin = vin;
 	}
 
-	public Long getId() {
+	public @Nullable Long getId() {
 		return this.id;
 	}
 

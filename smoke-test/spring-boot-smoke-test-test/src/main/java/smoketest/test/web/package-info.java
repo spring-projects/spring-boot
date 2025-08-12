@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.test.domain;
+@NullMarked
+package smoketest.test.web;
 
-import org.jspecify.annotations.Nullable;
-
-import org.springframework.data.repository.Repository;
-
-/**
- * Domain repository for {@link User}.
- *
- * @author Phillip Webb
- */
-public interface UserRepository extends Repository<User, Long> {
-
-	@Nullable User findByUsername(String username);
-
-}
+import org.jspecify.annotations.NullMarked;
