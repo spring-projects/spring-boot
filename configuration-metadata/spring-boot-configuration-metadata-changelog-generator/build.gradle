@@ -38,6 +38,10 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
+architectureCheck {
+	nullMarked = false
+}
+
 def dependenciesOf(String version) {
 	if (version.startsWith("4.")) {
 		return [

@@ -36,3 +36,7 @@ tasks.configureEach {
 		prohibitObjectsRequireNonNull = false
 	}
 }
+
+architectureCheck {
+	nullMarked = false
+}

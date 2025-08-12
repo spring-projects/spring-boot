@@ -39,10 +39,12 @@ public class ArchitecturePlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> registerTasks(project));
+		ArchitectureCheckExtension extension = project.getExtensions()
+			.create("architectureCheck", ArchitectureCheckExtension.class);
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> registerTasks(project, extension));
 	}
 
-	private void registerTasks(Project project) {
+	private void registerTasks(Project project, ArchitectureCheckExtension extension) {
 		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 		List<TaskProvider<ArchitectureCheck>> packageTangleChecks = new ArrayList<>();
 		for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
@@ -57,6 +59,7 @@ public class ArchitecturePlugin implements Plugin<Project> {
 							task.setDescription("Checks the architecture of the classes of the " + sourceSet.getName()
 									+ " source set.");
 							task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+							task.getNullMarked().set(extension.getNullMarked());
 						});
 			packageTangleChecks.add(checkPackageTangles);
 		}

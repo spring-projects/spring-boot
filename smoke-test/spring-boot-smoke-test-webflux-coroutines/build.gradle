@@ -31,3 +31,7 @@ dependencies {
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("io.projectreactor:reactor-test")
 }
+
+architectureCheck {
+	nullMarked = false
+}

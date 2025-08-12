@@ -35,11 +35,13 @@ import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaCall;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
+import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaConstructor;
 import com.tngtech.archunit.core.domain.JavaField;
 import com.tngtech.archunit.core.domain.JavaMember;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaModifier;
+import com.tngtech.archunit.core.domain.JavaPackage;
 import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.domain.JavaType;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
@@ -48,8 +50,10 @@ import com.tngtech.archunit.core.domain.properties.HasName;
 import com.tngtech.archunit.core.domain.properties.HasOwner;
 import com.tngtech.archunit.core.domain.properties.HasOwner.Predicates.With;
 import com.tngtech.archunit.core.domain.properties.HasParameterTypes;
+import com.tngtech.archunit.lang.AbstractClassesTransformer;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.ClassesTransformer;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
@@ -70,6 +74,7 @@ import org.springframework.util.ResourceUtils;
  * @author Ivan Malutin
  * @author Phillip Webb
  * @author Ngoc Nhan
+ * @author Moritz Halbritter
  */
 final class ArchitectureRules {
 
@@ -242,6 +247,10 @@ final class ArchitectureRules {
 		return methodsThatAreAnnotatedWith("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean")
 			.should(notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType())
 			.allowEmptyShould(true);
+	}
+
+	static ArchRule packagesShouldBeAnnotatedWithNullMarked() {
+		return ArchRuleDefinition.all(packages()).should(beAnnotatedWithNullMarked()).allowEmptyShould(true);
 	}
 
 	private static ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType() {
@@ -469,6 +478,27 @@ final class ArchitectureRules {
 
 	private static String shouldUse(String string) {
 		return string + " should be used instead";
+	}
+
+	static ClassesTransformer<JavaPackage> packages() {
+		return new AbstractClassesTransformer<>("packages") {
+			@Override
+			public Iterable<JavaPackage> doTransform(JavaClasses collection) {
+				return collection.stream().map(JavaClass::getPackage).collect(Collectors.toSet());
+			}
+		};
+	}
+
+	private static ArchCondition<JavaPackage> beAnnotatedWithNullMarked() {
+		return new ArchCondition<>("be annotated with @NullMarked") {
+			@Override
+			public void check(JavaPackage item, ConditionEvents events) {
+				if (!item.isAnnotatedWith("org.jspecify.annotations.NullMarked")) {
+					String message = String.format("Package %s is not annotated with @NullMarked", item.getName());
+					events.add(SimpleConditionEvent.violated(item, message));
+				}
+			}
+		};
 	}
 
 	private static class OverridesPublicMethod<T extends JavaMember> extends DescribedPredicate<T> {

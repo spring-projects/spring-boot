@@ -48,3 +48,7 @@ dependencies {
 	optional("org.testcontainers:redpanda")
 	optional("com.redis:testcontainers-redis")
 }
+
+architectureCheck {
+	nullMarked = false
+}

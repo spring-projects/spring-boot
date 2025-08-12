@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  * @author Ivan Malutin
  * @author Dmytro Nosan
+ * @author Moritz Halbritter
  */
 class ArchitectureCheckTests {
 
@@ -193,6 +194,9 @@ class ArchitectureCheckTests {
 				dependencies {
 					implementation("org.springframework.integration:spring-integration-jmx:6.3.9")
 				}
+				architectureCheck {
+					nullMarked = false
+				}
 				""");
 		Path testClass = this.projectDir.resolve("src/main/java/boot/architecture/bpp/external/TestClass.java");
 		Files.createDirectories(testClass.getParent());
@@ -209,6 +213,31 @@ class ArchitectureCheckTests {
 				""");
 		runGradle(shouldHaveFailureReportWithMessages("methods that are annotated with @Bean and have raw return "
 				+ "type assignable to org.springframework.beans.factory.config.BeanPostProcessor "));
+	}
+
+	@Test
+	void shouldFailIfPackageIsNotAnnotatedWithNullMarked() throws IOException {
+		Files.writeString(this.buildFile, """
+				plugins {
+					id 'java'
+					id 'org.springframework.boot.architecture'
+				}
+				repositories {
+					mavenCentral()
+				}
+				java {
+					sourceCompatibility = 17
+				}
+				""");
+		Path testClass = this.projectDir.resolve("src/main/java/boot/architecture/nullmarked/external/TestClass.java");
+		Files.createDirectories(testClass.getParent());
+		Files.writeString(testClass, """
+				package org.springframework.boot.build.architecture.nullmarked.external;
+				public class TestClass {
+				}
+				""");
+		runGradle(shouldHaveFailureReportWithMessages(
+				"Package org.springframework.boot.build.architecture.nullmarked.external is not annotated with @NullMarked"));
 	}
 
 	private Consumer<GradleRunner> shouldHaveEmptyFailureReport() {
@@ -245,6 +274,9 @@ class ArchitectureCheckTests {
 					main {
 						  output.classesDirs.setFrom(file("classes"))
 					  }
+				}
+				architectureCheck {
+					nullMarked = false
 				}
 				""");
 		runGradle(callback);
