@@ -25,7 +25,6 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link RabbitMetricsAutoConfiguration}.
  *
  * @author Stephane Nicoll
- * @author Eddú Meléndez
  */
 class RabbitMetricsAutoConfigurationTests {
 
@@ -44,9 +42,7 @@ class RabbitMetricsAutoConfigurationTests {
 		.withBean(SimpleMeterRegistry.class)
 		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class, RabbitMetricsAutoConfiguration.class,
 				MetricsAutoConfiguration.class))
-		.withPropertyValues("management.metrics.use-global-registry=false")
-		.withClassLoader(
-				new FilteredClassLoader("com.rabbitmq.client.amqp", "org.springframework.amqp.rabbitmq.client"));
+		.withPropertyValues("management.metrics.use-global-registry=false");
 
 	@Test
 	void autoConfiguredConnectionFactoryIsInstrumented() {

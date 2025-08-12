@@ -29,6 +29,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitMessagingTemplate;
 import org.springframework.amqp.rabbit.core.RabbitOperations;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -36,7 +37,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
@@ -77,8 +77,7 @@ import org.springframework.core.io.ResourceLoader;
  */
 @AutoConfiguration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
-@ConditionalOnMissingClass({ "com.rabbitmq.client.amqp.Connection",
-		"org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate" })
+@ConditionalOnMissingBean(type = "org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate")
 @EnableConfigurationProperties(RabbitProperties.class)
 @Import({ RabbitAnnotationDrivenConfiguration.class, RabbitStreamConfiguration.class })
 public final class RabbitAutoConfiguration {

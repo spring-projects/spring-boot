@@ -115,15 +115,13 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Yanming Zhou
- * @author Eddú Meléndez
  */
 @ExtendWith(OutputCaptureExtension.class)
 class RabbitAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class, SslAutoConfiguration.class))
-		.withClassLoader(new FilteredClassLoader("org.springframework.rabbit.stream", "com.rabbitmq.client.amqp",
-				"org.springframework.amqp.rabbitmq.client")); // gh-38750
+		.withClassLoader(new FilteredClassLoader("org.springframework.rabbit.stream")); // gh-38750
 
 	@Test
 	void testDefaultRabbitConfiguration() {

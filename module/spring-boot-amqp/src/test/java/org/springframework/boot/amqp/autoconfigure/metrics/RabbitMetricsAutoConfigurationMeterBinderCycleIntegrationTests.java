@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration;
 import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,10 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * dependency cycle when used with {@link MeterBinder}.
  *
  * @author Phillip Webb
- * @author Eddú Meléndez
  * @see <a href="https://github.com/spring-projects/spring-boot/issues/30636">gh-30636</a>
  */
-@ClassPathExclusions(files = "spring-rabbitmq-client-*.jar", packages = "com.rabbitmq.client.amqp")
 class RabbitMetricsAutoConfigurationMeterBinderCycleIntegrationTests {
 
 	@Test
