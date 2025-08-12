@@ -16,6 +16,8 @@
 
 package smoketest.websocket.jetty.snake;
 
+import org.jspecify.annotations.Nullable;
+
 public class Location {
 
 	/**
@@ -44,7 +46,7 @@ public class Location {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(@Nullable Object o) {
 		if (this == o) {
 			return true;
 		}
