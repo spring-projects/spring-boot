@@ -18,6 +18,8 @@ package smoketest.bootstrapregistry.external.svn;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.BootstrapContext;
 import org.springframework.boot.BootstrapRegistryInitializer;
 
@@ -38,13 +40,13 @@ public final class SubversionBootstrap {
 	 * @return a {@link BootstrapRegistryInitializer} instance
 	 */
 	public static BootstrapRegistryInitializer withCustomClient(
-			Function<SubversionServerCertificate, SubversionClient> clientFactory) {
+			Function<@Nullable SubversionServerCertificate, SubversionClient> clientFactory) {
 		return (registry) -> registry.register(SubversionClient.class,
 				(bootstrapContext) -> createSubversionClient(bootstrapContext, clientFactory));
 	}
 
 	private static SubversionClient createSubversionClient(BootstrapContext bootstrapContext,
-			Function<SubversionServerCertificate, SubversionClient> clientFactory) {
+			Function<@Nullable SubversionServerCertificate, SubversionClient> clientFactory) {
 		return clientFactory.apply(bootstrapContext.get(SubversionServerCertificate.class));
 	}
 
