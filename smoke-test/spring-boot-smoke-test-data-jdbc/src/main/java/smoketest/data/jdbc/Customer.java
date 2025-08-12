@@ -18,38 +18,40 @@ package smoketest.data.jdbc;
 
 import java.time.LocalDate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 
 public class Customer {
 
 	@Id
-	private Long id;
+	private @Nullable Long id;
 
-	private String firstName;
+	private @Nullable String firstName;
 
-	private LocalDate dateOfBirth;
+	private @Nullable LocalDate dateOfBirth;
 
-	public Long getId() {
+	public @Nullable Long getId() {
 		return this.id;
 	}
 
-	public void setId(Long id) {
+	public void setId(@Nullable Long id) {
 		this.id = id;
 	}
 
-	public String getFirstName() {
+	public @Nullable String getFirstName() {
 		return this.firstName;
 	}
 
-	public void setFirstName(String firstName) {
+	public void setFirstName(@Nullable String firstName) {
 		this.firstName = firstName;
 	}
 
-	public LocalDate getDateOfBirth() {
+	public @Nullable LocalDate getDateOfBirth() {
 		return this.dateOfBirth;
 	}
 
-	public void setDateOfBirth(LocalDate dateOfBirth) {
+	public void setDateOfBirth(@Nullable LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 
