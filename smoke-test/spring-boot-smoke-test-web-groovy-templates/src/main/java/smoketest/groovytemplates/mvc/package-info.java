@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.groovytemplates;
+@NullMarked
+package smoketest.groovytemplates.mvc;
 
-import org.jspecify.annotations.Nullable;
-
-public interface MessageRepository {
-
-	Iterable<Message> findAll();
-
-	Message save(Message message);
-
-	@Nullable Message findMessage(Long id);
-
-}
+import org.jspecify.annotations.NullMarked;
