@@ -18,13 +18,14 @@ package smoketest.structuredlogging.log4j2;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.core.env.Environment;
 
 public class CustomStructuredLogFormatter implements StructuredLogFormatter<LogEvent> {
 
-	private final Long pid;
+	private final @Nullable Long pid;
 
 	public CustomStructuredLogFormatter(Environment environment) {
 		this.pid = environment.getProperty("spring.application.pid", Long.class);
