@@ -24,6 +24,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import jakarta.annotation.Nullable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,7 +41,7 @@ public final class SnakeTimer {
 
 	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<>();
 
-	private static Timer gameTimer = null;
+	private static @Nullable Timer gameTimer;
 
 	private SnakeTimer() {
 	}
