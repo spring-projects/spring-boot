@@ -47,6 +47,11 @@ rootProject.name="spring-boot-build"
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 settings.gradle.projectsLoaded {
+	ensureCompatibleJavaVersion -> {
+		if (!JavaVersion.current().isCompatibleWith(JavaVersion.toVersion(24))) {
+			throw new GradleException("Java 24 or newer is needed to compile. Java version used is ${JavaVersion.current().toString()}.")
+		}
+	}
 	develocity {
 		buildScan {
 			def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
