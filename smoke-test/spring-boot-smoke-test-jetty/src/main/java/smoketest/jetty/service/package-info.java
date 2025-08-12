@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
+@NullMarked
 package smoketest.jetty.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-@Component
-public class HelloWorldService {
-
-	@Value("${test.name:World}")
-	@SuppressWarnings("NullAway.Init")
-	private String name;
-
-	public String getHelloMessage() {
-		return "Hello " + this.name;
-	}
-
-}
+import org.jspecify.annotations.NullMarked;
