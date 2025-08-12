@@ -56,7 +56,7 @@ class ArchitectureCheckTests {
 	@Test
 	void whenPackagesAreTangledTaskFailsAndWritesAReport() throws IOException {
 		runGradleWithCompiledClasses("tangled",
-				shouldHaveFailureReportWithMessage("slices matching '(**)' should be free of cycles"));
+				shouldHaveFailureReportWithMessages("slices matching '(**)' should be free of cycles"));
 	}
 
 	@Test
@@ -67,7 +67,7 @@ class ArchitectureCheckTests {
 	@Test
 	void whenBeanPostProcessorBeanMethodIsNotStaticTaskFailsAndWritesAReport() throws IOException {
 		runGradleWithCompiledClasses("bpp/nonstatic",
-				shouldHaveFailureReportWithMessage(
+				shouldHaveFailureReportWithMessages(
 						"methods that are annotated with @Bean and have raw return type assignable "
 								+ "to org.springframework.beans.factory.config.BeanPostProcessor"));
 	}
@@ -75,7 +75,7 @@ class ArchitectureCheckTests {
 	@Test
 	void whenBeanPostProcessorBeanMethodIsStaticAndHasUnsafeParametersTaskFailsAndWritesAReport() throws IOException {
 		runGradleWithCompiledClasses("bpp/unsafeparameters",
-				shouldHaveFailureReportWithMessage(
+				shouldHaveFailureReportWithMessages(
 						"methods that are annotated with @Bean and have raw return type assignable "
 								+ "to org.springframework.beans.factory.config.BeanPostProcessor"));
 	}
@@ -95,14 +95,14 @@ class ArchitectureCheckTests {
 	@Test
 	void whenBeanFactoryPostProcessorBeanMethodIsNotStaticTaskFailsAndWritesAReport() throws IOException {
 		runGradleWithCompiledClasses("bfpp/nonstatic",
-				shouldHaveFailureReportWithMessage("methods that are annotated with @Bean and have raw return "
+				shouldHaveFailureReportWithMessages("methods that are annotated with @Bean and have raw return "
 						+ "type assignable to org.springframework.beans.factory.config.BeanFactoryPostProcessor"));
 	}
 
 	@Test
 	void whenBeanFactoryPostProcessorBeanMethodIsStaticAndHasParametersTaskFailsAndWritesAReport() throws IOException {
 		runGradleWithCompiledClasses("bfpp/parameters",
-				shouldHaveFailureReportWithMessage("methods that are annotated with @Bean and have raw return "
+				shouldHaveFailureReportWithMessages("methods that are annotated with @Bean and have raw return "
 						+ "type assignable to org.springframework.beans.factory.config.BeanFactoryPostProcessor"));
 	}
 
@@ -114,7 +114,7 @@ class ArchitectureCheckTests {
 
 	@Test
 	void whenClassLoadsResourceUsingResourceUtilsTaskFailsAndWritesReport() throws IOException {
-		runGradleWithCompiledClasses("resources/loads", shouldHaveFailureReportWithMessage(
+		runGradleWithCompiledClasses("resources/loads", shouldHaveFailureReportWithMessages(
 				"no classes should call method where target owner type org.springframework.util.ResourceUtils and target name 'getURL'"));
 	}
 
@@ -130,26 +130,26 @@ class ArchitectureCheckTests {
 
 	@Test
 	void whenClassCallsObjectsRequireNonNullWithMessageTaskFailsAndWritesReport() throws IOException {
-		runGradleWithCompiledClasses("objects/requireNonNullWithString", shouldHaveFailureReportWithMessage(
+		runGradleWithCompiledClasses("objects/requireNonNullWithString", shouldHaveFailureReportWithMessages(
 				"no classes should call method Objects.requireNonNull(Object, String)"));
 	}
 
 	@Test
 	void whenClassCallsObjectsRequireNonNullWithSupplierTaskFailsAndWritesReport() throws IOException {
-		runGradleWithCompiledClasses("objects/requireNonNullWithSupplier", shouldHaveFailureReportWithMessage(
+		runGradleWithCompiledClasses("objects/requireNonNullWithSupplier", shouldHaveFailureReportWithMessages(
 				"no classes should call method Objects.requireNonNull(Object, Supplier)"));
 	}
 
 	@Test
 	void whenClassCallsStringToUpperCaseWithoutLocaleFailsAndWritesReport() throws IOException {
 		runGradleWithCompiledClasses("string/toUpperCase",
-				shouldHaveFailureReportWithMessage("because String.toUpperCase(Locale.ROOT) should be used instead"));
+				shouldHaveFailureReportWithMessages("because String.toUpperCase(Locale.ROOT) should be used instead"));
 	}
 
 	@Test
 	void whenClassCallsStringToLowerCaseWithoutLocaleFailsAndWritesReport() throws IOException {
 		runGradleWithCompiledClasses("string/toLowerCase",
-				shouldHaveFailureReportWithMessage("because String.toLowerCase(Locale.ROOT) should be used instead"));
+				shouldHaveFailureReportWithMessages("because String.toLowerCase(Locale.ROOT) should be used instead"));
 	}
 
 	@Test
@@ -164,7 +164,7 @@ class ArchitectureCheckTests {
 
 	@Test
 	void whenBeanMethodExposePrivateTypeShouldFailAndWriteReport() throws IOException {
-		runGradleWithCompiledClasses("beans/privatebean", shouldHaveFailureReportWithMessage(
+		runGradleWithCompiledClasses("beans/privatebean", shouldHaveFailureReportWithMessages(
 				"methods that are annotated with @Bean should not return types declared with the PRIVATE modifier,"
 						+ " as such types are incompatible with Spring AOT processing",
 				"Method <org.springframework.boot.build.architecture.beans.privatebean.PrivateBean.myBean()> "
@@ -173,7 +173,7 @@ class ArchitectureCheckTests {
 	}
 
 	@Test
-	void whenBeanMethodExposeNonPrivateTypeeShouldNotFail() throws IOException {
+	void whenBeanMethodExposeNonPrivateTypeShouldNotFail() throws IOException {
 		runGradleWithCompiledClasses("beans/regular", shouldHaveEmptyFailureReport());
 	}
 
@@ -207,7 +207,7 @@ class ArchitectureCheckTests {
 					}
 				}
 				""");
-		runGradle(shouldHaveFailureReportWithMessage("methods that are annotated with @Bean and have raw return "
+		runGradle(shouldHaveFailureReportWithMessages("methods that are annotated with @Bean and have raw return "
 				+ "type assignable to org.springframework.beans.factory.config.BeanPostProcessor "));
 	}
 
@@ -224,7 +224,7 @@ class ArchitectureCheckTests {
 		};
 	}
 
-	private Consumer<GradleRunner> shouldHaveFailureReportWithMessage(String... messages) {
+	private Consumer<GradleRunner> shouldHaveFailureReportWithMessages(String... messages) {
 		return (gradleRunner) -> {
 			assertThat(gradleRunner.buildAndFail().getOutput()).contains("BUILD FAILED")
 				.contains("Task :checkArchitectureMain FAILED");
