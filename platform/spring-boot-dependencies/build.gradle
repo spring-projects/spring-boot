@@ -682,10 +682,6 @@ bom {
 		}
 	}
 	library("Jackson Bom", "${jacksonVersion}") {
-		prohibit {
-			contains "-rc"
-			because "we don't want release candidates"
-		}
 		group("com.fasterxml.jackson") {
 			bom("jackson-bom")
 		}
