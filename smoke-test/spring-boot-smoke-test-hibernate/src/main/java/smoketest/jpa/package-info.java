@@ -14,26 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.jpa.repository;
+@NullMarked
+package smoketest.jpa;
 
-import java.util.List;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import smoketest.jpa.domain.Note;
-
-import org.springframework.stereotype.Repository;
-
-@Repository
-class JpaNoteRepository implements NoteRepository {
-
-	@PersistenceContext
-	@SuppressWarnings("NullAway.Init")
-	private EntityManager entityManager;
-
-	@Override
-	public List<Note> findAll() {
-		return this.entityManager.createQuery("SELECT n FROM Note n", Note.class).getResultList();
-	}
-
-}
+import org.jspecify.annotations.NullMarked;
