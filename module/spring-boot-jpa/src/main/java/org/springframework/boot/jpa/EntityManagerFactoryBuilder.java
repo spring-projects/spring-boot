@@ -266,8 +266,8 @@ public class EntityManagerFactoryBuilder {
 			if (this.managedTypes != null) {
 				entityManagerFactoryBean.setManagedTypes(this.managedTypes);
 			}
-			else {
-				setPackagesToScan(entityManagerFactoryBean);
+			else if (this.packagesToScan != null) {
+				entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
 			}
 			Map<String, ?> jpaProperties = EntityManagerFactoryBuilder.this.jpaPropertiesFactory.apply(this.dataSource);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(new LinkedHashMap<>(jpaProperties));
@@ -287,14 +287,6 @@ public class EntityManagerFactoryBuilder {
 					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
 			}
 			return entityManagerFactoryBean;
-		}
-
-		// TODO: Review this. The test
-		// HibernateJpaAutoConfigurationTests.usesManuallyDefinedLocalContainerEntityManagerFactoryBeanUsingBuilder
-		// fails if an non-null assert is added
-		@SuppressWarnings("NullAway")
-		private void setPackagesToScan(LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
-			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
 		}
 
 	}
