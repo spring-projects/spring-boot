@@ -175,13 +175,9 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 			if (columns != 1) {
 				throw new IncorrectResultSetColumnCountException(1, columns);
 			}
-			return getResultSetValue(rs);
-		}
-
-		// RowMapper.mapRow isn't defined as @Nullable return type
-		@SuppressWarnings("NullAway")
-		private Object getResultSetValue(ResultSet rs) throws SQLException {
-			return JdbcUtils.getResultSetValue(rs, 1);
+			Object result = JdbcUtils.getResultSetValue(rs, 1);
+			Assert.state(result != null, "'result' must not be null");
+			return result;
 		}
 
 	}
