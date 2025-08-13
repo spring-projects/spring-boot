@@ -1062,7 +1062,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "12.0.24") {
+	library("Jetty", "12.0.25") {
 		prohibit {
 			contains ".alpha"
 			because "we don't want alpha dependencies"
