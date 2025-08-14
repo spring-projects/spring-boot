@@ -51,6 +51,7 @@ import org.springframework.boot.loader.tools.ImagePackager;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.LoaderImplementation;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -454,11 +455,12 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 			}
 		}
 
-		private void write(ZipEntry jarEntry, EntryWriter entryWriter, TarArchiveOutputStream tar) {
+		private void write(ZipEntry jarEntry, @Nullable EntryWriter entryWriter, TarArchiveOutputStream tar) {
 			try {
 				TarArchiveEntry tarEntry = convert(jarEntry);
 				tar.putArchiveEntry(tarEntry);
 				if (tarEntry.isFile()) {
+					Assert.state(entryWriter != null, "'entryWriter' must not be null");
 					entryWriter.write(tar);
 				}
 				tar.closeArchiveEntry();

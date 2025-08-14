@@ -27,6 +27,8 @@ import org.apache.maven.plugins.shade.relocation.Relocator;
 import org.apache.maven.plugins.shade.resource.ReproducibleResourceTransformer;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.util.Assert;
+
 /**
  * Extension for the <a href="https://maven.apache.org/plugins/maven-shade-plugin/">Maven
  * shade plugin</a> to allow properties files (e.g. {@literal META-INF/spring.factories})
@@ -88,6 +90,7 @@ public class PropertiesMergingResourceTransformer implements ReproducibleResourc
 
 	@Override
 	public void modifyOutputStream(JarOutputStream os) throws IOException {
+		Assert.state(this.resource != null, "'resource' must not be null");
 		JarEntry jarEntry = new JarEntry(this.resource);
 		jarEntry.setTime(this.time);
 		os.putNextEntry(jarEntry);
