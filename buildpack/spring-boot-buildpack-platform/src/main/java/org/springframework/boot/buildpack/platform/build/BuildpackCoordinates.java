@@ -106,15 +106,15 @@ final class BuildpackCoordinates {
 	private static BuildpackCoordinates fromToml(TomlParseResult toml, Path path) {
 		Assert.isTrue(!toml.isEmpty(),
 				() -> "Buildpack descriptor 'buildpack.toml' is required in buildpack '" + path + "'");
-		Assert.hasText(toml.getString("buildpack.id"),
-				() -> "Buildpack descriptor must contain ID in buildpack '" + path + "'");
+		String buildpackId = toml.getString("buildpack.id");
+		Assert.hasText(buildpackId, () -> "Buildpack descriptor must contain ID in buildpack '" + path + "'");
 		Assert.hasText(toml.getString("buildpack.version"),
 				() -> "Buildpack descriptor must contain version in buildpack '" + path + "'");
 		Assert.isTrue(toml.contains("stacks") || toml.contains("order"),
 				() -> "Buildpack descriptor must contain either 'stacks' or 'order' in buildpack '" + path + "'");
 		Assert.isTrue(!(toml.contains("stacks") && toml.contains("order")),
 				() -> "Buildpack descriptor must not contain both 'stacks' and 'order' in buildpack '" + path + "'");
-		return new BuildpackCoordinates(toml.getString("buildpack.id"), toml.getString("buildpack.version"));
+		return new BuildpackCoordinates(buildpackId, toml.getString("buildpack.version"));
 	}
 
 	/**

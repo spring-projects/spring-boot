@@ -89,7 +89,7 @@ final class DockerConfigurationMetadata {
 		return this.context;
 	}
 
-	DockerContext forContext(String context) {
+	DockerContext forContext(@Nullable String context) {
 		return createDockerContext(this.configLocation, context);
 	}
 
@@ -129,8 +129,9 @@ final class DockerConfigurationMetadata {
 		if (currentContext == null || DEFAULT_CONTEXT.equals(currentContext)) {
 			return DockerContext.empty();
 		}
-		Path metaPath = Path.of(configLocation, CONTEXTS_DIR, META_DIR, asHash(currentContext), CONTEXT_FILE_NAME);
-		Path tlsPath = Path.of(configLocation, CONTEXTS_DIR, TLS_DIR, asHash(currentContext), DOCKER_ENDPOINT);
+		String hash = asHash(currentContext);
+		Path metaPath = Path.of(configLocation, CONTEXTS_DIR, META_DIR, hash, CONTEXT_FILE_NAME);
+		Path tlsPath = Path.of(configLocation, CONTEXTS_DIR, TLS_DIR, hash, DOCKER_ENDPOINT);
 		if (!metaPath.toFile().exists()) {
 			throw new IllegalArgumentException("Docker context '" + currentContext + "' does not exist");
 		}
@@ -146,14 +147,14 @@ final class DockerConfigurationMetadata {
 		}
 	}
 
-	private static @Nullable String asHash(String currentContext) {
+	private static String asHash(String currentContext) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
 			byte[] hash = digest.digest(currentContext.getBytes(StandardCharsets.UTF_8));
 			return HexFormat.of().formatHex(hash);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			return null;
+			throw new IllegalStateException("SHA-256 is not available", ex);
 		}
 	}
 

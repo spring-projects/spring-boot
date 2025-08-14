@@ -160,10 +160,12 @@ public class DockerApi {
 	}
 
 	private ApiVersion getApiVersion() {
-		if (this.apiVersion == null) {
-			this.apiVersion = this.system.getApiVersion();
+		ApiVersion apiVersion = this.apiVersion;
+		if (apiVersion == null) {
+			apiVersion = this.system.getApiVersion();
+			this.apiVersion = apiVersion;
 		}
-		return this.apiVersion;
+		return apiVersion;
 	}
 
 	/**

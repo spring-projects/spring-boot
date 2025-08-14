@@ -105,6 +105,9 @@ public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> 
 
 		void update(ImageProgressUpdateEvent event) {
 			String status = event.getStatus();
+			if (status == null) {
+				return;
+			}
 			if (event.getProgressDetail() != null && this.progressByStatus.containsKey(status)) {
 				int current = this.progressByStatus.get(status);
 				this.progressByStatus.put(status, updateProgress(current, event.getProgressDetail()));
