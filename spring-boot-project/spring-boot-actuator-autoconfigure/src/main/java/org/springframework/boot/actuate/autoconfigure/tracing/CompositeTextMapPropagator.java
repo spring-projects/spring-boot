@@ -106,11 +106,14 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 		if (getter == null) {
 			return context;
 		}
-		Context result = this.extractors.stream()
-			.map((extractor) -> extractor.extract(context, carrier, getter))
-			.filter((extracted) -> extracted != context)
-			.findFirst()
-			.orElse(context);
+		Context result = context;
+		for (TextMapPropagator extractor : this.extractors) {
+			Context extracted = extractor.extract(context, carrier, getter);
+			if (extracted != context) {
+				result = extracted;
+				break;
+			}
+		}
 		if (this.baggagePropagator != null) {
 			result = this.baggagePropagator.extract(result, carrier, getter);
 		}
