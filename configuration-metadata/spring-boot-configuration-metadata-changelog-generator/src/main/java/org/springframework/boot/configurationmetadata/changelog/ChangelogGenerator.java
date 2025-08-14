@@ -62,7 +62,11 @@ public final class ChangelogGenerator {
 
 	static ConfigurationMetadataRepository buildRepository(File directory) {
 		ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder.create();
-		for (File file : directory.listFiles()) {
+		File[] files = directory.listFiles();
+		if (files == null) {
+			throw new IllegalStateException("'files' must not be null");
+		}
+		for (File file : files) {
 			try (JarFile jarFile = new JarFile(file)) {
 				JarEntry metadataEntry = jarFile.getJarEntry("META-INF/spring-configuration-metadata.json");
 				if (metadataEntry != null) {
