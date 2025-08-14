@@ -48,7 +48,7 @@ public abstract class BuildInfoProperties implements Serializable {
 
 	private final SetProperty<String> excludes;
 
-	private final Supplier<String> creationTime = () -> DateTimeFormatter.ISO_INSTANT.format(Instant.now());
+	private final Supplier<@Nullable String> creationTime = () -> DateTimeFormatter.ISO_INSTANT.format(Instant.now());
 
 	@Inject
 	public BuildInfoProperties(Project project, SetProperty<String> excludes) {
@@ -142,15 +142,19 @@ public abstract class BuildInfoProperties implements Serializable {
 		return coerceToStringValues(applyExclusions(getAdditional().getOrElse(Collections.emptyMap())));
 	}
 
+	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name) {
 		return getIfNotExcluded(property, name, () -> null);
 	}
 
-	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name, Supplier<T> defaultValue) {
+	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name, Supplier<@Nullable T> defaultValue) {
 		if (this.excludes.getOrElse(Collections.emptySet()).contains(name)) {
 			return null;
 		}
-		return property.getOrElse(defaultValue.get());
+		if (property.isPresent()) {
+			return property.get();
+		}
+		return defaultValue.get();
 	}
 
 	private Map<String, String> coerceToStringValues(Map<String, Object> input) {
@@ -159,7 +163,9 @@ public abstract class BuildInfoProperties implements Serializable {
 			if (value instanceof Provider<?> provider) {
 				value = provider.getOrNull();
 			}
-			output.put(key, (value != null) ? value.toString() : null);
+			if (value != null) {
+				output.put(key, value.toString());
+			}
 		});
 		return output;
 	}
@@ -167,7 +173,12 @@ public abstract class BuildInfoProperties implements Serializable {
 	private Map<String, Object> applyExclusions(Map<String, Object> input) {
 		Map<String, Object> output = new HashMap<>();
 		Set<String> exclusions = this.excludes.getOrElse(Collections.emptySet());
-		input.forEach((key, value) -> output.put(key, (!exclusions.contains(key)) ? value : null));
+		input.forEach((key, value) -> {
+			boolean isExcluded = exclusions.contains(key);
+			if (!isExcluded) {
+				output.put(key, value);
+			}
+		});
 		return output;
 	}
 

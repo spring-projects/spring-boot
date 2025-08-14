@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.concurrent.Callable;
@@ -38,6 +39,7 @@ import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.run.BootRun;
+import org.springframework.util.Assert;
 
 /**
  * Action that is executed in response to the {@link ApplicationPlugin} being applied.
@@ -110,7 +112,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	}
 
 	private String loadResource(String name) {
-		try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(name))) {
+		try (InputStreamReader reader = new InputStreamReader(getResourceAsStream(name))) {
 			char[] buffer = new char[4096];
 			int read;
 			StringWriter writer = new StringWriter();
@@ -122,6 +124,12 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		catch (IOException ex) {
 			throw new GradleException("Failed to read '" + name + "'", ex);
 		}
+	}
+
+	private InputStream getResourceAsStream(String name) {
+		InputStream stream = getClass().getResourceAsStream(name);
+		Assert.state(stream != null, "Resource '%s' not found'".formatted(name));
+		return stream;
 	}
 
 	private void configureFilePermissions(CopySpec copySpec, int mode) {

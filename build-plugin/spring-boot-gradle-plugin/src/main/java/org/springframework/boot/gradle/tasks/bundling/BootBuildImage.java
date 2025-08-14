@@ -41,6 +41,7 @@ import org.gradle.work.DisableCachingByDefault;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
+import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
@@ -460,14 +461,17 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeCaches(BuildRequest request) {
-		if (this.buildWorkspace.asCache() != null) {
-			request = request.withBuildWorkspace((this.buildWorkspace.asCache()));
+		Cache buildWorkspaceCache = this.buildWorkspace.asCache();
+		if (buildWorkspaceCache != null) {
+			request = request.withBuildWorkspace(buildWorkspaceCache);
 		}
-		if (this.buildCache.asCache() != null) {
-			request = request.withBuildCache(this.buildCache.asCache());
+		Cache buildCache = this.buildCache.asCache();
+		if (buildCache != null) {
+			request = request.withBuildCache(buildCache);
 		}
-		if (this.launchCache.asCache() != null) {
-			request = request.withLaunchCache(this.launchCache.asCache());
+		Cache launchCache = this.launchCache.asCache();
+		if (launchCache != null) {
+			request = request.withLaunchCache(launchCache);
 		}
 		return request;
 	}

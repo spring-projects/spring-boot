@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
@@ -111,7 +112,7 @@ class BootZipCopyAction implements CopyAction {
 
 	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
 
-	private final String encoding;
+	private final @Nullable String encoding;
 
 	private final ResolvedDependencies resolvedDependencies;
 
@@ -125,7 +126,7 @@ class BootZipCopyAction implements CopyAction {
 			@Nullable Integer fileMode, boolean includeDefaultLoader, @Nullable String jarmodeToolsLocation,
 			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 			@Nullable LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
-			Function<FileCopyDetails, ZipCompression> compressionResolver, String encoding,
+			Function<FileCopyDetails, ZipCompression> compressionResolver, @Nullable String encoding,
 			ResolvedDependencies resolvedDependencies, boolean supportsSignatureFile,
 			@Nullable LayerResolver layerResolver, LoaderImplementation loaderImplementation) {
 		this.output = output;
@@ -390,7 +391,8 @@ class BootZipCopyAction implements CopyAction {
 			if (classPathIndex != null) {
 				Set<String> libraryNames = this.writtenLibraries.keySet();
 				List<String> lines = libraryNames.stream().map((line) -> "- \"" + line + "\"").toList();
-				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, lines);
+				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines((BootZipCopyAction.this.encoding != null)
+						? BootZipCopyAction.this.encoding : StandardCharsets.UTF_8.name(), lines);
 				writeEntry(classPathIndex, writer, true);
 			}
 		}
@@ -415,7 +417,8 @@ class BootZipCopyAction implements CopyAction {
 			}
 			NativeImageArgFile argFile = new NativeImageArgFile(excludes);
 			argFile.writeIfNecessary((lines) -> {
-				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, lines);
+				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines((BootZipCopyAction.this.encoding != null)
+						? BootZipCopyAction.this.encoding : StandardCharsets.UTF_8.name(), lines);
 				writeEntry(NativeImageArgFile.LOCATION, writer, true);
 			});
 		}

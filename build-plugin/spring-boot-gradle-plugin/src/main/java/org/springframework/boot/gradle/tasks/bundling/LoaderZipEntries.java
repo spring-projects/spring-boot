@@ -30,6 +30,7 @@ import org.gradle.api.file.FileTreeElement;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.loader.tools.LoaderImplementation;
+import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -61,7 +62,7 @@ class LoaderZipEntries {
 	WrittenEntries writeTo(ZipArchiveOutputStream out) throws IOException {
 		WrittenEntries written = new WrittenEntries();
 		try (ZipInputStream loaderJar = new ZipInputStream(
-				getClass().getResourceAsStream("/" + this.loaderImplementation.getJarResourceName()))) {
+				getResourceAsStream("/" + this.loaderImplementation.getJarResourceName()))) {
 			java.util.zip.ZipEntry entry = loaderJar.getNextEntry();
 			while (entry != null) {
 				if (entry.isDirectory() && !entry.getName().equals("META-INF/")) {
@@ -76,6 +77,12 @@ class LoaderZipEntries {
 			}
 		}
 		return written;
+	}
+
+	private InputStream getResourceAsStream(String name) {
+		InputStream stream = getClass().getResourceAsStream(name);
+		Assert.state(stream != null, "Resource '%s not found'".formatted(name));
+		return stream;
 	}
 
 	private void writeDirectory(ZipArchiveEntry entry, ZipArchiveOutputStream out) throws IOException {
