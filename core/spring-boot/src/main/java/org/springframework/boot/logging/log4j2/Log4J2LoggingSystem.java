@@ -90,10 +90,6 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String OPTIONAL_PREFIX = "optional:";
 
-	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
-
-	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
-
 	private static final SpringEnvironmentPropertySource propertySource = new SpringEnvironmentPropertySource();
 
 	static final String ENVIRONMENT_KEY = Conventions.getQualifiedAttributeName(Log4J2LoggingSystem.class,
@@ -124,18 +120,18 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	protected String[] getStandardConfigLocations() {
 		List<String> locations = new ArrayList<>();
 		locations.add("log4j2-test.properties");
-		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
+		if (isClassAvailable(Log4J2RuntimeHints.YAML_TREE_PARSER_V2)) {
 			Collections.addAll(locations, "log4j2-test.yaml", "log4j2-test.yml");
 		}
-		if (isClassAvailable("com.fasterxml.jackson.databind.ObjectMapper")) {
+		if (isClassAvailable(Log4J2RuntimeHints.JSON_TREE_PARSER_V2)) {
 			Collections.addAll(locations, "log4j2-test.json", "log4j2-test.jsn");
 		}
 		locations.add("log4j2-test.xml");
 		locations.add("log4j2.properties");
-		if (isClassAvailable("com.fasterxml.jackson.dataformat.yaml.YAMLParser")) {
+		if (isClassAvailable(Log4J2RuntimeHints.YAML_TREE_PARSER_V2)) {
 			Collections.addAll(locations, "log4j2.yaml", "log4j2.yml");
 		}
-		if (isClassAvailable("com.fasterxml.jackson.databind.ObjectMapper")) {
+		if (isClassAvailable(Log4J2RuntimeHints.JSON_TREE_PARSER_V2)) {
 			Collections.addAll(locations, "log4j2.json", "log4j2.jsn");
 		}
 		locations.add("log4j2.xml");
@@ -186,11 +182,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private boolean isLog4jLogManagerInstalled() {
 		final String logManagerClassName = java.util.logging.LogManager.getLogManager().getClass().getName();
-		return LOG4J_LOG_MANAGER.equals(logManagerClassName);
+		return Log4J2RuntimeHints.LOG4J_LOG_MANAGER.equals(logManagerClassName);
 	}
 
 	private boolean isLog4jBridgeHandlerAvailable() {
-		return ClassUtils.isPresent(LOG4J_BRIDGE_HANDLER, getClassLoader());
+		return ClassUtils.isPresent(Log4J2RuntimeHints.LOG4J_BRIDGE_HANDLER, getClassLoader());
 	}
 
 	private void removeLog4jBridgeHandler() {
