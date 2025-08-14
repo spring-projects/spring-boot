@@ -31,6 +31,7 @@ import org.springframework.boot.cli.command.core.HintCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.shell.ShellCommand;
 import org.springframework.boot.loader.tools.LogbackInitializer;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
@@ -84,7 +85,9 @@ public final class SpringCli {
 		String home = SystemPropertyUtils.resolvePlaceholders("${spring.home:${SPRING_HOME:.}}");
 		File extDirectory = new File(new File(home, "lib"), "ext");
 		if (extDirectory.isDirectory()) {
-			for (File file : extDirectory.listFiles()) {
+			File[] files = extDirectory.listFiles();
+			Assert.state(files != null, "'files' must not be null");
+			for (File file : files) {
 				if (file.getName().endsWith(".jar")) {
 					try {
 						urls.add(file.toURI().toURL());

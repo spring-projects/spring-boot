@@ -52,8 +52,9 @@ class RunProcessCommand extends AbstractCommand {
 	}
 
 	protected ExitStatus run(Collection<String> args) throws IOException {
-		this.process = new RunProcess(this.command);
-		int code = this.process.run(true, StringUtils.toStringArray(args));
+		RunProcess process = new RunProcess(this.command);
+		this.process = process;
+		int code = process.run(true, StringUtils.toStringArray(args));
 		if (code == 0) {
 			return ExitStatus.OK;
 		}
@@ -63,8 +64,9 @@ class RunProcessCommand extends AbstractCommand {
 	}
 
 	boolean handleSigInt() {
-		Assert.state(this.process != null, "'process' must not be null");
-		return this.process.handleSigInt();
+		RunProcess process = this.process;
+		Assert.state(process != null, "'process' must not be null");
+		return process.handleSigInt();
 	}
 
 }

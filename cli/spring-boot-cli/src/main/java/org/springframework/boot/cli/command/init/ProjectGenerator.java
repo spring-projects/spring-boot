@@ -98,7 +98,9 @@ class ProjectGenerator {
 		if (!outputDirectory.exists()) {
 			outputDirectory.mkdirs();
 		}
-		try (ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(entity.getContent()))) {
+		byte[] content = entity.getContent();
+		Assert.state(content != null, "'content' must not be null");
+		try (ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(content))) {
 			extractFromStream(zipStream, overwrite, outputDirectory);
 			fixExecutableFlag(outputDirectory, "mvnw");
 			fixExecutableFlag(outputDirectory, "gradlew");
