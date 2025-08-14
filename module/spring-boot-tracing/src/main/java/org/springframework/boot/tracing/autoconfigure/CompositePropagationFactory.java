@@ -19,7 +19,6 @@ package org.springframework.boot.tracing.autoconfigure;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import brave.propagation.B3Propagation;
@@ -77,11 +76,19 @@ class CompositePropagationFactory extends Propagation.Factory {
 
 	@Override
 	public TraceContext decorate(TraceContext context) {
-		return Stream.concat(this.injectors.stream(), this.extractors.stream())
-			.map((factory) -> factory.decorate(context))
-			.filter((decorated) -> decorated != context)
-			.findFirst()
-			.orElse(context);
+		for (Propagation.Factory factory : this.injectors.factories) {
+			TraceContext decorated = factory.decorate(context);
+			if (decorated != context) {
+				return decorated;
+			}
+		}
+		for (Propagation.Factory factory : this.extractors.factories) {
+			TraceContext decorated = factory.decorate(context);
+			if (decorated != context) {
+				return decorated;
+			}
+		}
+		return context;
 	}
 
 	/**
@@ -180,11 +187,21 @@ class CompositePropagationFactory extends Propagation.Factory {
 		}
 
 		boolean requires128BitTraceId() {
-			return stream().anyMatch(Propagation.Factory::requires128BitTraceId);
+			for (Propagation.Factory factory : this.factories) {
+				if (factory.requires128BitTraceId()) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		boolean supportsJoin() {
-			return stream().allMatch(Propagation.Factory::supportsJoin);
+			for (Propagation.Factory factory : this.factories) {
+				if (!factory.supportsJoin()) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		List<Propagation<String>> get() {
@@ -225,19 +242,24 @@ class CompositePropagationFactory extends Propagation.Factory {
 
 		@Override
 		public <R> TraceContext.Injector<R> injector(Setter<R, String> setter) {
-			return (traceContext, request) -> this.injectors.stream()
-				.map((propagation) -> propagation.injector(setter))
-				.forEach((injector) -> injector.inject(traceContext, request));
+			return (traceContext, request) -> {
+				for (Propagation<String> propagation : this.injectors) {
+					propagation.injector(setter).inject(traceContext, request);
+				}
+			};
 		}
 
 		@Override
 		public <R> TraceContext.Extractor<R> extractor(Getter<R, String> getter) {
-			return (request) -> this.extractors.stream()
-				.map((propagation) -> propagation.extractor(getter))
-				.map((extractor) -> extractor.extract(request))
-				.filter(Predicate.not(TraceContextOrSamplingFlags.EMPTY::equals))
-				.findFirst()
-				.orElse(TraceContextOrSamplingFlags.EMPTY);
+			return (request) -> {
+				for (Propagation<String> propagation : this.extractors) {
+					TraceContextOrSamplingFlags extracted = propagation.extractor(getter).extract(request);
+					if (!TraceContextOrSamplingFlags.EMPTY.equals(extracted)) {
+						return extracted;
+					}
+				}
+				return TraceContextOrSamplingFlags.EMPTY;
+			};
 		}
 
 	}
