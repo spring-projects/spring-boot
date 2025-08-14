@@ -71,9 +71,11 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		MultiValueMap<Class<?>, Class<?>> equivalentConverters = new LinkedMultiValueMap<>();
 		putIfExists(equivalentConverters, "org.springframework.http.converter.json.JacksonJsonHttpMessageConverter",
 				"org.springframework.http.converter.json.MappingJackson2HttpMessageConverter",
-				"org.springframework.http.converter.json.GsonHttpMessageConverter");
+				"org.springframework.http.converter.json.GsonHttpMessageConverter",
+				"org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter");
 		putIfExists(equivalentConverters, "org.springframework.http.converter.json.MappingJackson2HttpMessageConverter",
-				"org.springframework.http.converter.json.GsonHttpMessageConverter");
+				"org.springframework.http.converter.json.GsonHttpMessageConverter",
+				"org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter");
 		EQUIVALENT_CONVERTERS = CollectionUtils.unmodifiableMultiValueMap(equivalentConverters);
 	}
 
