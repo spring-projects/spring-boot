@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.configurationmetadata.annotationprocessor.automaticmetadatageneration
+package org.springframework.boot.docs.appendix.configurationmetadata.manualhints.valuehint
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import java.util.Arrays
 
-@ConfigurationProperties(prefix = "my.messaging")
-class MyMessagingProperties(
-
-	val addresses: List<String> = ArrayList(Arrays.asList("a", "b")),
-
-	var containerType: ContainerType = ContainerType.SIMPLE) {
-
-	enum class ContainerType {
-		SIMPLE, DIRECT
-	}
-}
+@ConfigurationProperties("my")
+class MyProperties(val contexts: Map<String, Int>)
 

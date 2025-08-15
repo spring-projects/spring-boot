@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.configurationmetadata.annotationprocessor.automaticmetadatageneration
+package org.springframework.boot.docs.appendix.configurationmetadata.annotationprocessor.automaticmetadatageneration
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import java.util.Arrays
 
-@ConfigurationProperties(prefix = "my.server")
-class MyServerProperties(
+@ConfigurationProperties(prefix = "my.messaging")
+class MyMessagingProperties(
 
-	/**
-	 * Name of the server.
-	 */
-	var name: String,
+	val addresses: List<String> = ArrayList(Arrays.asList("a", "b")),
 
-	/**
-	 * IP address to listen to.
-	 */
-	var ip: String = "127.0.0.1",
+	var containerType: ContainerType = ContainerType.SIMPLE) {
 
-	/**
-	 * Port to listen to.
-	 */
-	var port: Int = 9797)
+	enum class ContainerType {
+		SIMPLE, DIRECT
+	}
+}
 

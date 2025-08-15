@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.configurationmetadata.manualhints.valuehint
+package org.springframework.boot.docs.appendix.configurationmetadata.format.property
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty
 
-@ConfigurationProperties("my")
-class MyProperties(val contexts: Map<String, Int>)
+@ConfigurationProperties("my.app")
+class MyProperties(val name: String?) {
+
+	var target: String? = null
+		@Deprecated("") @DeprecatedConfigurationProperty(replacement = "my.app.name") get
+		@Deprecated("") set
+
+}
 
