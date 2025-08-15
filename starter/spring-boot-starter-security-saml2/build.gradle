@@ -20,14 +20,6 @@ plugins {
 
 description = "Starter for using Spring Security with SAML2"
 
-configurations.all {
-	resolutionStrategy.eachDependency {
-		if (it.requested.group == 'org.opensaml') {
-			it.useVersion '4.0.1'
-		}
-	}
-}
-
 dependencies {
 	api(project(":starter:spring-boot-starter"))
 	api(project(":starter:spring-boot-starter-security"))

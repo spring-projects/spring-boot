@@ -24,14 +24,6 @@ plugins {
 
 description = "Spring Boot Security"
 
-configurations.all {
-	resolutionStrategy.eachDependency {
-		if (it.requested.group == 'org.opensaml') {
-			it.useVersion '4.0.1'
-		}
-	}
-}
-
 dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework.security:spring-security-config")

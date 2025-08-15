@@ -24,14 +24,6 @@ plugins {
 
 description = "Spring Boot Security SAML2"
 
-configurations.all {
-	resolutionStrategy.eachDependency {
-		if (it.requested.group == 'org.opensaml') {
-			it.useVersion '4.0.1'
-		}
-	}
-}
-
 dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework.security:spring-security-saml2-service-provider")

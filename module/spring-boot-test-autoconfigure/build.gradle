@@ -24,19 +24,11 @@ plugins {
 
 description = "Spring Boot Test AutoConfigure"
 
-configurations.all {
-	resolutionStrategy.eachDependency {
-		if (it.requested.group == 'org.opensaml') {
-			it.useVersion '4.0.1'
-		}
-	}
-}
-
 dependencies {
 	api(project(":core:spring-boot"))
 	api(project(":core:spring-boot-autoconfigure"))
 	api(project(":core:spring-boot-test"))
-	
+
 	compileOnly("org.mockito:mockito-core")
 
 	optional(project(":module:spring-boot-cache"))

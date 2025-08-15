@@ -32,6 +32,14 @@ subprojects {
 
 	repositories {
 		mavenCentral()
+		maven {
+			name "Shibboleth Releases"
+			url "https://build.shibboleth.net/nexus/content/repositories/releases"
+			content {
+				includeGroup "org.opensaml"
+				includeGroup "net.shibboleth"
+			}
+		}
 		spring.mavenRepositories()
 	}
 
