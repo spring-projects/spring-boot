@@ -131,10 +131,10 @@ class LogbackLoggingSystemPropertiesTests {
 	}
 
 	@Test
-	void fileCharsetWhenNoPropertyUsesDefault() {
+	void fileCharsetWhenNoPropertyUsesUtf8() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperty.FILE_CHARSET.getEnvironmentVariableName()))
-			.isEqualTo(Charset.defaultCharset().name());
+			.isEqualTo(StandardCharsets.UTF_8.name());
 	}
 
 }
