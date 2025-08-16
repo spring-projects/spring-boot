@@ -265,6 +265,12 @@ class MetadataGenerationEnvironment {
 					return annotation;
 				}
 			}
+
+			for (AnnotationMirror annotation : element.asType().getAnnotationMirrors()) {
+				if (type.equals(annotation.getAnnotationType().toString())) {
+					return annotation;
+				}
+			}
 		}
 		return null;
 	}
