@@ -52,6 +52,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Wonyong Hwang
  */
 class MetadataGenerationEnvironment {
 
