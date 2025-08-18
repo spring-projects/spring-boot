@@ -45,7 +45,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 
 	private final Class<? extends AvailabilityState> stateType;
 
-	private final Map<AvailabilityState, Status> statusMappings = new HashMap<>();
+	private final Map<@Nullable AvailabilityState, Status> statusMappings = new HashMap<>();
 
 	/**
 	 * Create a new {@link AvailabilityStateHealthIndicator} instance.

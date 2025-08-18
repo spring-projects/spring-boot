@@ -83,7 +83,8 @@ public interface HealthEndpointGroups {
 		Set<HealthEndpointGroup> filteredGroups = new LinkedHashSet<>();
 		getNames().stream()
 			.map(this::get)
-			.filter((group) -> group.getAdditionalPath() != null && group.getAdditionalPath().hasNamespace(namespace))
+			.filter((group) -> group != null && group.getAdditionalPath() != null
+					&& group.getAdditionalPath().hasNamespace(namespace))
 			.forEach(filteredGroups::add);
 		return filteredGroups;
 	}

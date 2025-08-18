@@ -338,7 +338,7 @@ public interface SanitizingFunction {
 	 * @see #filter()
 	 * @see #sanitizeValue()
 	 */
-	default SanitizingFunction ifValueMatches(Predicate<Object> predicate) {
+	default SanitizingFunction ifValueMatches(Predicate<@Nullable Object> predicate) {
 		Assert.notNull(predicate, "'predicate' must not be null");
 		return ifMatches((data) -> predicate.test(data.getValue()));
 	}
@@ -373,12 +373,13 @@ public interface SanitizingFunction {
 	 */
 	default SanitizingFunction ifMatches(Predicate<SanitizableData> predicate) {
 		Assert.notNull(predicate, "'predicate' must not be null");
-		Predicate<SanitizableData> filter = (filter() != null) ? filter().or(predicate) : predicate;
+		Predicate<SanitizableData> filter = filter();
+		Predicate<SanitizableData> newFilter = (filter != null) ? filter.or(predicate) : predicate;
 		return new SanitizingFunction() {
 
 			@Override
 			public Predicate<SanitizableData> filter() {
-				return filter;
+				return newFilter;
 			}
 
 			@Override

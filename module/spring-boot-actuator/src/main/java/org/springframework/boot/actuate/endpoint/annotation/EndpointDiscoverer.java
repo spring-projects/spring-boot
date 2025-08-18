@@ -129,10 +129,12 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	@Override
 	public final Collection<E> getEndpoints() {
-		if (this.endpoints == null) {
-			this.endpoints = discoverEndpoints();
+		Collection<E> endpoints = this.endpoints;
+		if (endpoints == null) {
+			endpoints = discoverEndpoints();
+			this.endpoints = endpoints;
 		}
-		return this.endpoints;
+		return endpoints;
 	}
 
 	private Collection<E> discoverEndpoints() {
@@ -149,8 +151,10 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			if (!ScopedProxyUtils.isScopedTarget(beanName)) {
 				EndpointBean endpointBean = createEndpointBean(beanName);
 				EndpointBean previous = byId.putIfAbsent(endpointBean.getId(), endpointBean);
-				Assert.state(previous == null, () -> "Found two endpoints with the id '" + endpointBean.getId() + "': '"
-						+ endpointBean.getBeanName() + "' and '" + previous.getBeanName() + "'");
+				if (previous != null) {
+					throw new IllegalStateException("Found two endpoints with the id '" + endpointBean.getId() + "': '"
+							+ endpointBean.getBeanName() + "' and '" + previous.getBeanName() + "'");
+				}
 			}
 		}
 		return byId.values();

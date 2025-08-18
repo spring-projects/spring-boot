@@ -113,22 +113,23 @@ public class EnvironmentEndpoint {
 	}
 
 	EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(String propertyName, boolean showUnsanitized) {
-		Map<String, PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(propertyName, showUnsanitized);
+		Map<String, @Nullable PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(propertyName,
+				showUnsanitized);
 		PropertySummaryDescriptor summary = getPropertySummaryDescriptor(descriptors);
 		return new EnvironmentEntryDescriptor(summary, Arrays.asList(this.environment.getActiveProfiles()),
 				Arrays.asList(this.environment.getDefaultProfiles()), toPropertySourceDescriptors(descriptors));
 	}
 
 	private List<PropertySourceEntryDescriptor> toPropertySourceDescriptors(
-			Map<String, PropertyValueDescriptor> descriptors) {
+			Map<String, @Nullable PropertyValueDescriptor> descriptors) {
 		List<PropertySourceEntryDescriptor> result = new ArrayList<>();
 		descriptors.forEach((name, property) -> result.add(new PropertySourceEntryDescriptor(name, property)));
 		return result;
 	}
 
 	private @Nullable PropertySummaryDescriptor getPropertySummaryDescriptor(
-			Map<String, PropertyValueDescriptor> descriptors) {
-		for (Map.Entry<String, PropertyValueDescriptor> entry : descriptors.entrySet()) {
+			Map<String, @Nullable PropertyValueDescriptor> descriptors) {
+		for (Map.Entry<String, @Nullable PropertyValueDescriptor> entry : descriptors.entrySet()) {
 			if (entry.getValue() != null) {
 				return new PropertySummaryDescriptor(entry.getKey(), entry.getValue().getValue());
 			}
@@ -136,9 +137,9 @@ public class EnvironmentEndpoint {
 		return null;
 	}
 
-	private Map<String, PropertyValueDescriptor> getPropertySourceDescriptors(String propertyName,
+	private Map<String, @Nullable PropertyValueDescriptor> getPropertySourceDescriptors(String propertyName,
 			boolean showUnsanitized) {
-		Map<String, PropertyValueDescriptor> propertySources = new LinkedHashMap<>();
+		Map<String, @Nullable PropertyValueDescriptor> propertySources = new LinkedHashMap<>();
 		getPropertySourcesAsMap().forEach((sourceName, source) -> propertySources.put(sourceName,
 				source.containsProperty(propertyName) ? describeValueOf(propertyName, source, showUnsanitized) : null));
 		return propertySources;
@@ -335,9 +336,9 @@ public class EnvironmentEndpoint {
 
 		private final String name;
 
-		private final PropertyValueDescriptor property;
+		private final @Nullable PropertyValueDescriptor property;
 
-		private PropertySourceEntryDescriptor(String name, PropertyValueDescriptor property) {
+		private PropertySourceEntryDescriptor(String name, @Nullable PropertyValueDescriptor property) {
 			this.name = name;
 			this.property = property;
 		}
@@ -346,7 +347,7 @@ public class EnvironmentEndpoint {
 			return this.name;
 		}
 
-		public PropertyValueDescriptor getProperty() {
+		public @Nullable PropertyValueDescriptor getProperty() {
 			return this.property;
 		}
 

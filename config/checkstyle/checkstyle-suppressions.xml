@@ -75,4 +75,5 @@
 	<suppress files="ConditionMessage\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="EntityManagerFactoryBuilder\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="DockerApi\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
+	<suppress files="InvocationContext\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 </suppressions>

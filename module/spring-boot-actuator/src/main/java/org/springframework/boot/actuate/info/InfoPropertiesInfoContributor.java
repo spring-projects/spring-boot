@@ -25,9 +25,11 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.info.InfoProperties;
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -92,8 +94,16 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 	 * @return the raw content
 	 */
 	protected Map<String, Object> extractContent(PropertySource<?> propertySource) {
-		return new Binder(ConfigurationPropertySources.from(propertySource)).bind("", STRING_OBJECT_MAP)
-			.orElseGet(LinkedHashMap::new);
+		Iterable<@Nullable ConfigurationPropertySource> adapted = ConfigurationPropertySources.from(propertySource);
+		return new Binder(ensureNonNullContent(adapted)).bind("", STRING_OBJECT_MAP).orElseGet(LinkedHashMap::new);
+	}
+
+	private Iterable<ConfigurationPropertySource> ensureNonNullContent(
+			Iterable<@Nullable ConfigurationPropertySource> adapted) {
+		for (ConfigurationPropertySource source : adapted) {
+			Assert.state(source != null, "'source' must not be null");
+		}
+		return (Iterable<ConfigurationPropertySource>) adapted;
 	}
 
 	/**

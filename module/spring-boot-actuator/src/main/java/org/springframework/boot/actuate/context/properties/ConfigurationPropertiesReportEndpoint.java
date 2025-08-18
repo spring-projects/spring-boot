@@ -152,7 +152,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	private ConfigurationPropertiesDescriptor getConfigurationProperties(ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		ObjectMapper mapper = getObjectMapper();
-		Map<String, ContextConfigurationPropertiesDescriptor> contexts = new HashMap<>();
+		Map<@Nullable String, ContextConfigurationPropertiesDescriptor> contexts = new HashMap<>();
 		ApplicationContext target = context;
 
 		while (target != null) {
@@ -221,8 +221,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	private ConfigurationPropertiesBeanDescriptor describeBean(ObjectMapper mapper, ConfigurationPropertiesBean bean,
 			boolean showUnsanitized) {
 		String prefix = bean.getAnnotation().prefix();
-		Map<String, Object> serialized = safeSerialize(mapper, bean.getInstance(), prefix);
-		Map<String, Object> properties = sanitize(prefix, serialized, showUnsanitized);
+		Map<String, @Nullable Object> serialized = safeSerialize(mapper, bean.getInstance(), prefix);
+		Map<String, @Nullable Object> properties = sanitize(prefix, serialized, showUnsanitized);
 		Map<String, Object> inputs = getInputs(prefix, serialized, showUnsanitized);
 		return new ConfigurationPropertiesBeanDescriptor(prefix, properties, inputs);
 	}
@@ -236,7 +236,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @return the serialized instance
 	 */
 	@SuppressWarnings({ "unchecked" })
-	private Map<String, Object> safeSerialize(ObjectMapper mapper, @Nullable Object bean, String prefix) {
+	private Map<String, @Nullable Object> safeSerialize(ObjectMapper mapper, @Nullable Object bean, String prefix) {
 		try {
 			return new HashMap<>(mapper.convertValue(bean, Map.class));
 		}
@@ -254,11 +254,12 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @return the sanitized map
 	 */
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> sanitize(String prefix, Map<String, Object> map, boolean showUnsanitized) {
+	private Map<String, @Nullable Object> sanitize(String prefix, Map<String, @Nullable Object> map,
+			boolean showUnsanitized) {
 		map.forEach((key, value) -> {
 			String qualifiedKey = getQualifiedKey(prefix, key);
 			if (value instanceof Map) {
-				map.put(key, sanitize(qualifiedKey, (Map<String, Object>) value, showUnsanitized));
+				map.put(key, sanitize(qualifiedKey, (Map<String, @Nullable Object>) value, showUnsanitized));
 			}
 			else if (value instanceof List) {
 				map.put(key, sanitize(qualifiedKey, (List<Object>) value, showUnsanitized));
@@ -270,7 +271,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return map;
 	}
 
-	private @Nullable Object sanitizeWithPropertySourceIfPresent(String qualifiedKey, Object value,
+	private @Nullable Object sanitizeWithPropertySourceIfPresent(String qualifiedKey, @Nullable Object value,
 			boolean showUnsanitized) {
 		ConfigurationPropertyName currentName = getCurrentName(qualifiedKey);
 		ConfigurationProperty candidate = getCandidate(currentName);
@@ -309,13 +310,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Object> sanitize(String prefix, List<Object> list, boolean showUnsanitized) {
-		List<Object> sanitized = new ArrayList<>();
+	private List<@Nullable Object> sanitize(String prefix, List<Object> list, boolean showUnsanitized) {
+		List<@Nullable Object> sanitized = new ArrayList<>();
 		int index = 0;
 		for (Object item : list) {
 			String name = prefix + "[" + index++ + "]";
 			if (item instanceof Map) {
-				sanitized.add(sanitize(name, (Map<String, Object>) item, showUnsanitized));
+				sanitized.add(sanitize(name, (Map<String, @Nullable Object>) item, showUnsanitized));
 			}
 			else if (item instanceof List) {
 				sanitized.add(sanitize(name, (List<Object>) item, showUnsanitized));
@@ -328,12 +329,12 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> getInputs(String prefix, Map<String, Object> map, boolean showUnsanitized) {
+	private Map<String, Object> getInputs(String prefix, Map<String, @Nullable Object> map, boolean showUnsanitized) {
 		Map<String, Object> augmented = new LinkedHashMap<>(map);
 		map.forEach((key, value) -> {
 			String qualifiedKey = getQualifiedKey(prefix, key);
 			if (value instanceof Map) {
-				augmented.put(key, getInputs(qualifiedKey, (Map<String, Object>) value, showUnsanitized));
+				augmented.put(key, getInputs(qualifiedKey, (Map<String, @Nullable Object>) value, showUnsanitized));
 			}
 			else if (value instanceof List) {
 				augmented.put(key, getInputs(qualifiedKey, (List<Object>) value, showUnsanitized));
@@ -352,7 +353,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		for (Object item : list) {
 			String name = prefix + "[" + index++ + "]";
 			if (item instanceof Map) {
-				augmented.add(getInputs(name, (Map<String, Object>) item, showUnsanitized));
+				augmented.add(getInputs(name, (Map<String, @Nullable Object>) item, showUnsanitized));
 			}
 			else if (item instanceof List) {
 				augmented.add(getInputs(name, (List<Object>) item, showUnsanitized));
@@ -364,7 +365,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return augmented;
 	}
 
-	private Map<String, Object> applyInput(String qualifiedKey, boolean showUnsanitized) {
+	private Map<String, @Nullable Object> applyInput(String qualifiedKey, boolean showUnsanitized) {
 		ConfigurationPropertyName currentName = getCurrentName(qualifiedKey);
 		ConfigurationProperty candidate = getCandidate(currentName);
 		PropertySource<?> propertySource = getPropertySource(candidate);
@@ -377,8 +378,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return Collections.emptyMap();
 	}
 
-	private Map<String, Object> getInput(ConfigurationProperty candidate, @Nullable Object sanitizedValue) {
-		Map<String, Object> input = new LinkedHashMap<>();
+	private Map<String, @Nullable Object> getInput(ConfigurationProperty candidate, @Nullable Object sanitizedValue) {
+		Map<String, @Nullable Object> input = new LinkedHashMap<>();
 		Origin origin = Origin.from(candidate);
 		List<Origin> originParents = Origin.parentsFrom(candidate);
 		input.put("value", sanitizedValue);
@@ -511,7 +512,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				@Nullable Constructor<?> constructor) {
 			if (constructor != null) {
 				Parameter[] parameters = constructor.getParameters();
-				@Nullable String[] names = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
+				@Nullable String @Nullable [] names = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
 				if (names == null) {
 					names = new String[parameters.length];
 				}
@@ -520,7 +521,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 						.get(Name.class)
 						.getValue(MergedAnnotation.VALUE, String.class)
 						.orElse((names[i] != null) ? names[i] : parameters[i].getName());
-					if (name.equals(writer.getName())) {
+					if (name != null && name.equals(writer.getName())) {
 						return true;
 					}
 				}
@@ -576,13 +577,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	public static final class ConfigurationPropertiesDescriptor implements OperationResponseBody {
 
-		private final Map<String, ContextConfigurationPropertiesDescriptor> contexts;
+		private final Map<@Nullable String, ContextConfigurationPropertiesDescriptor> contexts;
 
-		ConfigurationPropertiesDescriptor(Map<String, ContextConfigurationPropertiesDescriptor> contexts) {
+		ConfigurationPropertiesDescriptor(Map<@Nullable String, ContextConfigurationPropertiesDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextConfigurationPropertiesDescriptor> getContexts() {
+		public Map<@Nullable String, ContextConfigurationPropertiesDescriptor> getContexts() {
 			return this.contexts;
 		}
 
@@ -621,11 +622,11 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 		private final String prefix;
 
-		private final Map<String, Object> properties;
+		private final Map<String, @Nullable Object> properties;
 
 		private final Map<String, Object> inputs;
 
-		private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, Object> properties,
+		private ConfigurationPropertiesBeanDescriptor(String prefix, Map<String, @Nullable Object> properties,
 				Map<String, Object> inputs) {
 			this.prefix = prefix;
 			this.properties = properties;
@@ -636,7 +637,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return this.prefix;
 		}
 
-		public Map<String, Object> getProperties() {
+		public Map<String, @Nullable Object> getProperties() {
 			return this.properties;
 		}
 

@@ -105,7 +105,9 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	private boolean isExpiringCertificate(CertificateInfo certificate) {
-		return Instant.now().plus(this.expiryThreshold).isAfter(certificate.getValidityEnds());
+		Instant validityEnds = certificate.getValidityEnds();
+		Assert.state(validityEnds != null, "'validityEnds' must not be null");
+		return Instant.now().plus(this.expiryThreshold).isAfter(validityEnds);
 	}
 
 }

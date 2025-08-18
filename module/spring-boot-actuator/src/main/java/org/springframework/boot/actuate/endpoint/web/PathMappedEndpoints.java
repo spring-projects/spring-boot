@@ -28,6 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -167,6 +168,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 		return this.endpoints.values().iterator();
 	}
 
+	@Contract("!null -> !null")
 	private @Nullable String getPath(@Nullable PathMappedEndpoint endpoint) {
 		if (endpoint == null) {
 			return null;

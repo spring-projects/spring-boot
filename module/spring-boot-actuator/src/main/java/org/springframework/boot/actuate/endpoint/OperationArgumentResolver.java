@@ -54,7 +54,7 @@ public interface OperationArgumentResolver {
 	 * @param supplier the value supplier
 	 * @return an {@link OperationArgumentResolver} instance
 	 */
-	static <T> OperationArgumentResolver of(Class<T> type, Supplier<? extends T> supplier) {
+	static <T> OperationArgumentResolver of(Class<T> type, Supplier<? extends @Nullable T> supplier) {
 		Assert.notNull(type, "'type' must not be null");
 		Assert.notNull(supplier, "'supplier' must not be null");
 		return new OperationArgumentResolver() {
@@ -66,7 +66,7 @@ public interface OperationArgumentResolver {
 
 			@Override
 			@SuppressWarnings("unchecked")
-			public <R> R resolve(Class<R> argumentType) {
+			public <R> @Nullable R resolve(Class<R> argumentType) {
 				return (R) supplier.get();
 			}
 

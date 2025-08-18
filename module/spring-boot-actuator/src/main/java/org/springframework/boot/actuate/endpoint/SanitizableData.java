@@ -38,7 +38,7 @@ public final class SanitizableData {
 
 	private final @Nullable PropertySource<?> propertySource;
 
-	private final String key;
+	private final @Nullable String key;
 
 	private @Nullable String lowerCaseKey;
 
@@ -50,7 +50,7 @@ public final class SanitizableData {
 	 * @param key the data key
 	 * @param value the data value
 	 */
-	public SanitizableData(@Nullable PropertySource<?> propertySource, String key, @Nullable Object value) {
+	public SanitizableData(@Nullable PropertySource<?> propertySource, @Nullable String key, @Nullable Object value) {
 		this.propertySource = propertySource;
 		this.key = key;
 		this.value = value;
@@ -69,7 +69,7 @@ public final class SanitizableData {
 	 * Return the key of the data.
 	 * @return the data key
 	 */
-	public String getKey() {
+	public @Nullable String getKey() {
 		return this.key;
 	}
 

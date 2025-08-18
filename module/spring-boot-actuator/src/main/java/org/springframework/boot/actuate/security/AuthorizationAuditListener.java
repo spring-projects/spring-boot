@@ -50,7 +50,7 @@ public class AuthorizationAuditListener extends AbstractAuthorizationAuditListen
 
 	private void onAuthorizationDeniedEvent(AuthorizationDeniedEvent<?> event) {
 		String name = getName(event.getAuthentication());
-		Map<String, Object> data = new LinkedHashMap<>();
+		Map<String, @Nullable Object> data = new LinkedHashMap<>();
 		Object details = getDetails(event.getAuthentication());
 		if (details != null) {
 			data.put("details", details);
