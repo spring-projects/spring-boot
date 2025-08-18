@@ -16,7 +16,6 @@
 
 plugins {
 	id "base"
-	id "org.jetbrains.kotlin.jvm"
 }
 
 description = "Spring Boot Build"
@@ -39,4 +38,3 @@ subprojects {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
-
