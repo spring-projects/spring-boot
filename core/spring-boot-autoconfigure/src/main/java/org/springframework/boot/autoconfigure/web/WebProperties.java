@@ -188,7 +188,7 @@ public class WebProperties {
 				return this.customized || getStrategy().hasBeenCustomized();
 			}
 
-			public void setEnabled(boolean enabled) {
+			public void setEnabled(Boolean enabled) {
 				this.enabled = enabled;
 				this.customized = true;
 			}
