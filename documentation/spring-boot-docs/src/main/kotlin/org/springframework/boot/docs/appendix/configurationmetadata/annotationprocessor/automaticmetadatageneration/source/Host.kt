@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the License);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.configurationmetadata.annotationprocessor.automaticmetadatageneration
+package org.springframework.boot.docs.appendix.configurationmetadata.annotationprocessor.automaticmetadatageneration.source
 
-import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 
-@ConfigurationProperties("my.server")
-class MyServerProperties(
-
-	/**
-	 * Name of the server.
-	 */
-	var name: String,
+@ConfigurationPropertiesScan
+class Host {
 
 	/**
 	 * IP address to listen to.
 	 */
-	var ip: String = "127.0.0.1",
+	var ip: String = "127.0.0.1"
 
 	/**
-	 * Port to listen to.
+	 * Port to listener to.
 	 */
-	var port: Int = 9797)
+	var port = 9797
 
+}
