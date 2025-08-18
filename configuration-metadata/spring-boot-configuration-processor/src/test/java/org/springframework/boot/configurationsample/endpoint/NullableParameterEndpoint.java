@@ -18,7 +18,7 @@ package org.springframework.boot.configurationsample.endpoint;
 
 import org.springframework.boot.configurationsample.Endpoint;
 import org.springframework.boot.configurationsample.ReadOperation;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An endpoint with @Nullable parameter to test.
