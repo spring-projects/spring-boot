@@ -85,32 +85,35 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 		if (!(this.parentContext instanceof WebServerApplicationContext)) {
 			return;
 		}
-		if (this.managementContext == null) {
-			ConfigurableApplicationContext managementContext = createManagementContext();
+		ConfigurableApplicationContext managementContext = this.managementContext;
+		if (managementContext == null) {
+			managementContext = createManagementContext();
 			registerBeans(managementContext);
 			managementContext.refresh();
 			this.managementContext = managementContext;
 		}
 		else {
-			this.managementContext.start();
+			managementContext.start();
 		}
 	}
 
 	@Override
 	public void stop() {
-		if (this.managementContext != null) {
+		ConfigurableApplicationContext managementContext = this.managementContext;
+		if (managementContext != null) {
 			if (this.parentContext.isClosed()) {
-				this.managementContext.close();
+				managementContext.close();
 			}
 			else {
-				this.managementContext.stop();
+				managementContext.stop();
 			}
 		}
 	}
 
 	@Override
 	public boolean isRunning() {
-		return this.managementContext != null && this.managementContext.isRunning();
+		ConfigurableApplicationContext managementContext = this.managementContext;
+		return managementContext != null && managementContext.isRunning();
 	}
 
 	@Override

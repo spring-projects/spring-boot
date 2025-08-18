@@ -122,7 +122,11 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups, Ad
 		}
 		List<String> additionalPaths = new ArrayList<>();
 		if (this.groups instanceof AdditionalPathsMapper additionalPathsMapper) {
-			additionalPaths.addAll(additionalPathsMapper.getAdditionalPaths(endpointId, webServerNamespace));
+			List<String> mappedAdditionalPaths = getAdditionalPaths(endpointId, webServerNamespace,
+					additionalPathsMapper);
+			if (mappedAdditionalPaths != null) {
+				additionalPaths.addAll(mappedAdditionalPaths);
+			}
 		}
 		additionalPaths.addAll(this.probeGroups.values()
 			.stream()
@@ -132,6 +136,11 @@ class AvailabilityProbesHealthEndpointGroups implements HealthEndpointGroups, Ad
 			.map(AdditionalHealthEndpointPath::getValue)
 			.toList());
 		return additionalPaths;
+	}
+
+	private static @Nullable List<String> getAdditionalPaths(EndpointId endpointId,
+			WebServerNamespace webServerNamespace, AdditionalPathsMapper additionalPathsMapper) {
+		return additionalPathsMapper.getAdditionalPaths(endpointId, webServerNamespace);
 	}
 
 }

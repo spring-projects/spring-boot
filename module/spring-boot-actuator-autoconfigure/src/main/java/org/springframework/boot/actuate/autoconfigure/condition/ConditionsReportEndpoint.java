@@ -63,7 +63,7 @@ public class ConditionsReportEndpoint {
 
 	@ReadOperation
 	public ConditionsDescriptor conditions() {
-		Map<String, ContextConditionsDescriptor> contextConditionEvaluations = new HashMap<>();
+		Map<@Nullable String, ContextConditionsDescriptor> contextConditionEvaluations = new HashMap<>();
 		ConfigurableApplicationContext target = this.context;
 		while (target != null) {
 			contextConditionEvaluations.put(target.getId(), new ContextConditionsDescriptor(target));
@@ -85,13 +85,13 @@ public class ConditionsReportEndpoint {
 	 */
 	public static final class ConditionsDescriptor implements OperationResponseBody {
 
-		private final Map<String, ContextConditionsDescriptor> contexts;
+		private final Map<@Nullable String, ContextConditionsDescriptor> contexts;
 
-		private ConditionsDescriptor(Map<String, ContextConditionsDescriptor> contexts) {
+		private ConditionsDescriptor(Map<@Nullable String, ContextConditionsDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextConditionsDescriptor> getContexts() {
+		public Map<@Nullable String, ContextConditionsDescriptor> getContexts() {
 			return this.contexts;
 		}
 
