@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.io.Console;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -56,7 +57,7 @@ import org.springframework.util.StringUtils;
  */
 class DefaultLogbackConfiguration {
 
-	private static final String DEFAULT_CHARSET = Charset.defaultCharset().name();
+	private static final String DEFAULT_CHARSET = StandardCharsets.UTF_8.name();
 
 	private static final String NAME_AND_GROUP = "%esb(){APPLICATION_NAME}%esb{APPLICATION_GROUP}";
 
