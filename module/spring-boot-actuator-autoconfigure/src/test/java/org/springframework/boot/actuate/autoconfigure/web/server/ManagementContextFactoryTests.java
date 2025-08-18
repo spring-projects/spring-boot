@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
