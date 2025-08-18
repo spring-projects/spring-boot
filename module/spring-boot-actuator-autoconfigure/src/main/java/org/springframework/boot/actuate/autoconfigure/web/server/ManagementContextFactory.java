@@ -30,6 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
 /**
@@ -40,6 +41,7 @@ import org.springframework.util.Assert;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yongjun Hong
  * @since 4.0.0
  */
 public final class ManagementContextFactory {
@@ -63,7 +65,11 @@ public final class ManagementContextFactory {
 			.createEnvironment(this.webApplicationType);
 		Assert.state(childEnvironment != null, "'childEnvironment' must not be null");
 		if (parentEnvironment instanceof ConfigurableEnvironment configurableEnvironment) {
-			childEnvironment.setConversionService((configurableEnvironment).getConversionService());
+			configurableEnvironment.getPropertySources().forEach(propertySource -> {
+				if (isManagementPropertySource(propertySource, childEnvironment)) {
+					childEnvironment.getPropertySources().addLast(propertySource);
+				}
+			});
 		}
 		ConfigurableApplicationContext managementContext = ApplicationContextFactory.DEFAULT
 			.create(this.webApplicationType);
@@ -71,6 +77,11 @@ public final class ManagementContextFactory {
 		managementContext.setEnvironment(childEnvironment);
 		managementContext.setParent(parentContext);
 		return managementContext;
+	}
+
+	private boolean isManagementPropertySource(PropertySource<?> propertySource, ConfigurableEnvironment childEnvironment) {
+		return propertySource.getName().contains("management")
+				&& !childEnvironment.getPropertySources().contains(propertySource.getName());
 	}
 
 	public void registerWebServerFactoryBeans(ApplicationContext parentContext,
