@@ -115,17 +115,18 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 		}
 
 		private OutputStream convertToFileOutputStream(ByteArrayOutputStream byteArrayOutputStream) throws IOException {
-			initializeTempFile();
-			FileOutputStream fileOutputStream = new FileOutputStream(this.tempFile);
+			File tempFile = initializeTempFile();
+			FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
 			StreamUtils.copy(byteArrayOutputStream.toByteArray(), fileOutputStream);
 			return fileOutputStream;
 		}
 
-		private void initializeTempFile() throws IOException {
+		private File initializeTempFile() throws IOException {
 			if (this.tempFile == null) {
 				this.tempFile = File.createTempFile("springboot-", "-entrycontent");
 				this.tempFile.deleteOnExit();
 			}
+			return this.tempFile;
 		}
 
 		@Override

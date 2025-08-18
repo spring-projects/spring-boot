@@ -25,6 +25,8 @@ import java.util.jar.Manifest;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.util.Assert;
+
 /**
  * Utilities for manipulating files and directories in Spring Boot tooling.
  *
@@ -43,7 +45,9 @@ public abstract class FileUtils {
 	 */
 	public static void removeDuplicatesFromOutputDirectory(File outputDirectory, File originDirectory) {
 		if (originDirectory.isDirectory()) {
-			for (String name : originDirectory.list()) {
+			String[] files = originDirectory.list();
+			Assert.state(files != null, "'files' must not be null");
+			for (String name : files) {
 				File targetFile = new File(outputDirectory, name);
 				if (targetFile.exists() && targetFile.canWrite()) {
 					if (!targetFile.isDirectory()) {

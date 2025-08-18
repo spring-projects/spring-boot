@@ -224,6 +224,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	@Override
 	public void writeLoaderClasses(String loaderJarResourceName) throws IOException {
 		URL loaderJar = getClass().getClassLoader().getResource(loaderJarResourceName);
+		Assert.state(loaderJar != null, "Unable to load resource '%s'".formatted(loaderJarResourceName));
 		try (JarInputStream inputStream = new JarInputStream(new BufferedInputStream(loaderJar.openStream()))) {
 			JarEntry entry;
 			while ((entry = inputStream.getNextJarEntry()) != null) {

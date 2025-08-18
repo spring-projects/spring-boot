@@ -109,6 +109,7 @@ public class Library {
 	 * @throws IOException on error
 	 */
 	InputStream openStream() throws IOException {
+		Assert.state(this.file != null, "'file' must not be null");
 		return new FileInputStream(this.file);
 	}
 

@@ -154,7 +154,10 @@ public abstract class MainClassFinder {
 		return null;
 	}
 
-	private static void pushAllSorted(Deque<File> stack, File[] files) {
+	private static void pushAllSorted(Deque<File> stack, File @Nullable [] files) {
+		if (files == null) {
+			return;
+		}
 		Arrays.sort(files, Comparator.comparing(File::getName));
 		for (File file : files) {
 			stack.push(file);
