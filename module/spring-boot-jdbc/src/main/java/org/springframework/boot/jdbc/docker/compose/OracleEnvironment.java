@@ -18,6 +18,8 @@ package org.springframework.boot.jdbc.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -34,13 +36,13 @@ class OracleEnvironment {
 
 	private final String database;
 
-	OracleEnvironment(Map<String, String> env, String defaultDatabase) {
+	OracleEnvironment(Map<String, @Nullable String> env, String defaultDatabase) {
 		this.username = env.getOrDefault("APP_USER", "system");
 		this.password = extractPassword(env);
 		this.database = env.getOrDefault("ORACLE_DATABASE", defaultDatabase);
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	private String extractPassword(Map<String, @Nullable String> env) {
 		if (env.containsKey("APP_USER")) {
 			String password = env.get("APP_USER_PASSWORD");
 			Assert.state(StringUtils.hasLength(password), "No Oracle app password found");

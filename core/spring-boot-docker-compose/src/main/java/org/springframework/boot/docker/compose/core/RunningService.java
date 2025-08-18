@@ -58,7 +58,7 @@ public interface RunningService {
 	 * Return the environment defined for the service.
 	 * @return the service env
 	 */
-	Map<String, String> env();
+	Map<String, @Nullable String> env();
 
 	/**
 	 * Return the labels attached to the service.

@@ -31,7 +31,7 @@ class ActiveMQEnvironment {
 
 	private final @Nullable String password;
 
-	ActiveMQEnvironment(Map<String, String> env) {
+	ActiveMQEnvironment(Map<String, @Nullable String> env) {
 		this.user = env.get("ACTIVEMQ_USERNAME");
 		this.password = env.get("ACTIVEMQ_PASSWORD");
 	}

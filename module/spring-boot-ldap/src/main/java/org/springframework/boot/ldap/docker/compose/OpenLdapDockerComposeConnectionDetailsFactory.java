@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -59,7 +61,7 @@ class OpenLdapDockerComposeConnectionDetailsFactory
 
 		OpenLdapDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			Map<String, String> env = service.env();
+			Map<String, @Nullable String> env = service.env();
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LDAP_TLS", "true"));
 			String ldapPort = usesTls ? env.getOrDefault("LDAPS_PORT", "636") : env.getOrDefault("LDAP_PORT", "389");
 			this.urls = new String[] { "%s://%s:%d".formatted(usesTls ? "ldaps" : "ldap", service.host(),

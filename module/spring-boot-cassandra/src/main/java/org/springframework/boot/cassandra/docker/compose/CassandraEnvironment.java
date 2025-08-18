@@ -18,6 +18,8 @@ package org.springframework.boot.cassandra.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Cassandra environment details.
  *
@@ -27,7 +29,7 @@ class CassandraEnvironment {
 
 	private final String datacenter;
 
-	CassandraEnvironment(Map<String, String> env) {
+	CassandraEnvironment(Map<String, @Nullable String> env) {
 		this.datacenter = env.getOrDefault("CASSANDRA_DC", env.getOrDefault("CASSANDRA_DATACENTER", "datacenter1"));
 	}
 

@@ -32,7 +32,7 @@ class ArtemisEnvironment {
 
 	private final @Nullable String password;
 
-	ArtemisEnvironment(Map<String, String> env) {
+	ArtemisEnvironment(Map<String, @Nullable String> env) {
 		this.user = env.get("ARTEMIS_USER");
 		this.password = env.get("ARTEMIS_PASSWORD");
 	}

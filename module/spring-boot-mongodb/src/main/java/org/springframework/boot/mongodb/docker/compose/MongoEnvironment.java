@@ -38,7 +38,7 @@ class MongoEnvironment {
 
 	private final @Nullable String database;
 
-	MongoEnvironment(Map<String, String> env) {
+	MongoEnvironment(Map<String, @Nullable String> env) {
 		Assert.state(!env.containsKey("MONGO_INITDB_ROOT_USERNAME_FILE"),
 				"MONGO_INITDB_ROOT_USERNAME_FILE is not supported");
 		Assert.state(!env.containsKey("MONGO_INITDB_ROOT_PASSWORD_FILE"),

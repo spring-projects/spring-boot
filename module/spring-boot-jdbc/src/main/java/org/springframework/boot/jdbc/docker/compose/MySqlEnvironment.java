@@ -18,6 +18,8 @@ package org.springframework.boot.jdbc.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -37,13 +39,13 @@ class MySqlEnvironment {
 
 	private final String database;
 
-	MySqlEnvironment(Map<String, String> env) {
+	MySqlEnvironment(Map<String, @Nullable String> env) {
 		this.username = env.getOrDefault("MYSQL_USER", "root");
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	private String extractPassword(Map<String, @Nullable String> env) {
 		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
 		boolean allowEmpty = env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MYSQL_PASSWORD");
@@ -52,7 +54,7 @@ class MySqlEnvironment {
 		return (password != null) ? password : "";
 	}
 
-	private String extractDatabase(Map<String, String> env) {
+	private String extractDatabase(Map<String, @Nullable String> env) {
 		String database = env.get("MYSQL_DATABASE");
 		Assert.state(database != null, "No MYSQL_DATABASE defined");
 		return database;

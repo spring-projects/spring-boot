@@ -18,6 +18,8 @@ package org.springframework.boot.ldap.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -56,7 +58,7 @@ class LLdapDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 
 		LLdapDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			Map<String, String> env = service.env();
+			Map<String, @Nullable String> env = service.env();
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LLDAP_LDAPS_OPTIONS__ENABLED", "false"));
 			String ldapPort = usesTls ? env.getOrDefault("LLDAP_LDAPS_OPTIONS__PORT", "6360")
 					: env.getOrDefault("LLDAP_LDAP_PORT", "3890");

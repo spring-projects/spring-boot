@@ -44,7 +44,7 @@ import org.springframework.util.CollectionUtils;
  */
 class DockerCli {
 
-	private static final Map<File, DockerCommands> dockerCommandsCache = new HashMap<>();
+	private static final Map<@Nullable File, DockerCommands> dockerCommandsCache = new HashMap<>();
 
 	private static final Log logger = LogFactory.getLog(DockerCli.class);
 

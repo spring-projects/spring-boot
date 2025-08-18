@@ -29,7 +29,7 @@ class HazelcastEnvironment {
 
 	private final @Nullable String clusterName;
 
-	HazelcastEnvironment(Map<String, String> env) {
+	HazelcastEnvironment(Map<String, @Nullable String> env) {
 		this.clusterName = env.get("HZ_CLUSTERNAME");
 	}
 

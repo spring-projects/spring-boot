@@ -18,6 +18,8 @@ package org.springframework.boot.amqp.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * RabbitMQ environment details.
  *
@@ -32,7 +34,7 @@ class RabbitEnvironment {
 
 	private final String password;
 
-	RabbitEnvironment(Map<String, String> env) {
+	RabbitEnvironment(Map<String, @Nullable String> env) {
 		this.username = env.getOrDefault("RABBITMQ_DEFAULT_USER", env.getOrDefault("RABBITMQ_USERNAME", "guest"));
 		this.password = env.getOrDefault("RABBITMQ_DEFAULT_PASS", env.getOrDefault("RABBITMQ_PASSWORD", "guest"));
 	}

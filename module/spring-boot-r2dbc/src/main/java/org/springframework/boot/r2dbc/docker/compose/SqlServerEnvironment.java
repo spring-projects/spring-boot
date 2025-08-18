@@ -18,6 +18,8 @@ package org.springframework.boot.r2dbc.docker.compose;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -32,11 +34,11 @@ class SqlServerEnvironment {
 
 	private final String password;
 
-	SqlServerEnvironment(Map<String, String> env) {
+	SqlServerEnvironment(Map<String, @Nullable String> env) {
 		this.password = extractPassword(env);
 	}
 
-	private String extractPassword(Map<String, String> env) {
+	private String extractPassword(Map<String, @Nullable String> env) {
 		String password = env.get("MSSQL_SA_PASSWORD");
 		password = (password != null) ? password : env.get("SA_PASSWORD");
 		Assert.state(StringUtils.hasLength(password), "No MSSQL password found");

@@ -32,7 +32,7 @@ class Neo4jEnvironment {
 
 	private final @Nullable AuthToken authToken;
 
-	Neo4jEnvironment(Map<String, String> env) {
+	Neo4jEnvironment(Map<String, @Nullable String> env) {
 		AuthToken authToken = parse(env.get("NEO4J_AUTH"));
 		if (authToken == null && env.containsKey("NEO4J_PASSWORD")) {
 			authToken = parse("neo4j/" + env.get("NEO4J_PASSWORD"));

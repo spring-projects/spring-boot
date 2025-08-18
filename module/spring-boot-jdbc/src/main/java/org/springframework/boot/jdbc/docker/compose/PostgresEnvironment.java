@@ -49,13 +49,13 @@ class PostgresEnvironment {
 
 	private final String database;
 
-	PostgresEnvironment(Map<String, String> env) {
+	PostgresEnvironment(Map<String, @Nullable String> env) {
 		this.username = extract(env, USERNAME_KEYS, DEFAULT_USERNAME);
 		this.password = extractPassword(env);
 		this.database = extract(env, DATABASE_KEYS, this.username);
 	}
 
-	private String extract(Map<String, String> env, String[] keys, String defaultValue) {
+	private String extract(Map<String, @Nullable String> env, String[] keys, String defaultValue) {
 		for (String key : keys) {
 			if (env.containsKey(key)) {
 				return env.get(key);
@@ -64,7 +64,7 @@ class PostgresEnvironment {
 		return defaultValue;
 	}
 
-	private @Nullable String extractPassword(Map<String, String> env) {
+	private @Nullable String extractPassword(Map<String, @Nullable String> env) {
 		if (isUsingTrustHostAuthMethod(env)) {
 			return null;
 		}
@@ -74,7 +74,7 @@ class PostgresEnvironment {
 		return (password != null) ? password : "";
 	}
 
-	private boolean isUsingTrustHostAuthMethod(Map<String, String> env) {
+	private boolean isUsingTrustHostAuthMethod(Map<String, @Nullable String> env) {
 		String hostAuthMethod = env.get("POSTGRES_HOST_AUTH_METHOD");
 		return "trust".equals(hostAuthMethod);
 	}
