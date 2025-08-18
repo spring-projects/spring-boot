@@ -228,7 +228,7 @@ class SecurityAutoConfigurationTests {
 	}
 
 	@Test
-	void givenACustomPathPatternRequestMatcherBuilderwhenDispatcherServletPathIsSetBuilderBasePathIsNotCustomized() {
+	void givenACustomPathPatternRequestMatcherBuilderWhenDispatcherServletPathIsSetBuilderBasePathIsNotCustomized() {
 		this.contextRunner.withBean(PathPatternRequestMatcherBuilderFactoryBean.class)
 			.withBean(DispatcherServletPath.class, () -> () -> "/dispatcher-servlet")
 			.run((context) -> {

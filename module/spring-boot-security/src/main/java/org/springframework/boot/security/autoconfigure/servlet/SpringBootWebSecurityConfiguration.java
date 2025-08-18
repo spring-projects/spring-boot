@@ -16,9 +16,6 @@
 
 package org.springframework.boot.security.autoconfigure.servlet;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -53,23 +50,12 @@ class SpringBootWebSecurityConfiguration {
 	static class PathPatternRequestMatcherBuilderConfiguration {
 
 		@Bean
-		static BeanPostProcessor pathPatternRequestMatcherBuilderBasePathCustomizer(
-				ObjectProvider<DispatcherServletPath> dispatcherServletPath) {
-			return new BeanPostProcessor() {
-
-				@Override
-				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-					if ("pathPatternRequestMatcherBuilder".equals(beanName)
-							&& bean instanceof PathPatternRequestMatcher.Builder builder) {
-						String path = dispatcherServletPath.getObject().getPath();
-						if (!path.equals("/")) {
-							return builder.basePath(path);
-						}
-					}
-					return bean;
-				}
-
-			};
+		@ConditionalOnMissingBean
+		PathPatternRequestMatcher.Builder pathPatternRequestMatcherBuilder(
+				DispatcherServletPath dispatcherServletPath) {
+			PathPatternRequestMatcher.Builder builder = PathPatternRequestMatcher.withDefaults();
+			String path = dispatcherServletPath.getPath();
+			return (!path.equals("/")) ? builder.basePath(path) : builder;
 		}
 
 	}
