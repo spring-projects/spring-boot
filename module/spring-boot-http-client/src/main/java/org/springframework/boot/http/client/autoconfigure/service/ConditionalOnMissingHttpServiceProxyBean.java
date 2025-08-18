@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Conditional;
  * {@link Conditional @Conditional} that matches when one or more HTTP Service bean has
  * been registered.
  *
- * @author Phillip Webb@
+ * @author Phillip Webb
  * @since 4.0.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
