@@ -129,7 +129,9 @@ class OnClassCondition extends FilteringSpringBootCondition {
 	private void addAll(List<String> list, @Nullable List<@Nullable Object> itemsToAdd) {
 		if (itemsToAdd != null) {
 			for (Object item : itemsToAdd) {
-				Collections.addAll(list, (String[]) item);
+				if (item != null) {
+					Collections.addAll(list, (String[]) item);
+				}
 			}
 		}
 	}

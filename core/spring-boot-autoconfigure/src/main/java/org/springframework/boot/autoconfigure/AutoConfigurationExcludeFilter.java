@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
-import org.springframework.util.Assert;
 
 /**
  * A {@link TypeFilter} implementation that matches registered auto-configuration classes.
@@ -66,12 +65,13 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 	}
 
 	protected List<String> getAutoConfigurations() {
-		if (this.autoConfigurations == null) {
+		List<String> autoConfigurations = this.autoConfigurations;
+		if (autoConfigurations == null) {
 			ImportCandidates importCandidates = ImportCandidates.load(AutoConfiguration.class, this.beanClassLoader);
-			this.autoConfigurations = importCandidates.getCandidates();
+			autoConfigurations = importCandidates.getCandidates();
+			this.autoConfigurations = autoConfigurations;
 		}
-		Assert.state(this.autoConfigurations != null, "'autoConfigurations' must not be null");
-		return this.autoConfigurations;
+		return autoConfigurations;
 	}
 
 }
