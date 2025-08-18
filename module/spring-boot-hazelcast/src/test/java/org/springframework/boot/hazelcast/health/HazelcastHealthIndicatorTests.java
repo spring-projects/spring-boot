@@ -18,6 +18,8 @@ package org.springframework.boot.hazelcast.health;
 
 import com.hazelcast.core.HazelcastException;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.instance.impl.HazelcastInstanceProxy;
+import com.hazelcast.instance.impl.OutOfMemoryHandlerHelper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -37,25 +39,26 @@ import static org.mockito.Mockito.mock;
  *
  * @author Dmytro Nosan
  * @author Stephane Nicoll
+ * @author Tommy Karlsson
  */
+@WithResource(name = "hazelcast.xml", content = """
+		<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+				   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				   xsi:schemaLocation="http://www.hazelcast.com/schema/config
+		           http://www.hazelcast.com/schema/config/hazelcast-config-5.0.xsd">
+			<instance-name>actuator-hazelcast</instance-name>
+			<map name="defaultCache" />
+			<network>
+				<join>
+					<auto-detection enabled="false"/>
+					<multicast enabled="false"/>
+				</join>
+			</network>
+		</hazelcast>
+		""")
 class HazelcastHealthIndicatorTests {
 
 	@Test
-	@WithResource(name = "hazelcast.xml", content = """
-			<hazelcast xmlns="http://www.hazelcast.com/schema/config"
-					   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-					   xsi:schemaLocation="http://www.hazelcast.com/schema/config
-			           http://www.hazelcast.com/schema/config/hazelcast-config-5.0.xsd">
-				<instance-name>actuator-hazelcast</instance-name>
-				<map name="defaultCache" />
-				<network>
-					<join>
-						<auto-detection enabled="false"/>
-						<multicast enabled="false"/>
-					</join>
-				</network>
-			</hazelcast>
-			""")
 	void hazelcastUp() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class))
 			.withPropertyValues("spring.hazelcast.config=hazelcast.xml")
@@ -66,6 +69,32 @@ class HazelcastHealthIndicatorTests {
 				assertThat(health.getDetails()).containsOnlyKeys("name", "uuid")
 					.containsEntry("name", "actuator-hazelcast");
 				assertThat(health.getDetails().get("uuid")).asString().isNotEmpty();
+			});
+	}
+
+	@Test
+	void hazelcastShutdown() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class))
+			.withPropertyValues("spring.hazelcast.config=hazelcast.xml")
+			.run((context) -> {
+				HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
+				hazelcast.shutdown();
+				Health health = new HazelcastHealthIndicator(hazelcast).health();
+				assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+			});
+	}
+
+	@Test
+	void hazelcastOOMShutdown() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class))
+			.withPropertyValues("spring.hazelcast.config=hazelcast.xml")
+			.run((context) -> {
+				HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
+				HazelcastInstance original = ((HazelcastInstanceProxy) hazelcast).getOriginal();
+				OutOfMemoryHandlerHelper.tryCloseConnections(original);
+				OutOfMemoryHandlerHelper.tryShutdown(original);
+				Health health = new HazelcastHealthIndicator(hazelcast).health();
+				assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 			});
 	}
 
