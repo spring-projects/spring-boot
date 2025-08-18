@@ -26,6 +26,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
+import org.springframework.lang.Contract;
 
 /**
  * Converts a Collection to a delimited String.
@@ -56,6 +57,7 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 	}
 
 	@Override
+	@Contract("!null, _, _ -> !null")
 	public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;

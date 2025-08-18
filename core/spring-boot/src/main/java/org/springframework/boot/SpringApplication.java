@@ -1667,7 +1667,7 @@ public class SpringApplication {
 	 */
 	private static final class KeepAlive implements ApplicationListener<ApplicationContextEvent> {
 
-		private final AtomicReference<Thread> thread = new AtomicReference<>();
+		private final AtomicReference<@Nullable Thread> thread = new AtomicReference<>();
 
 		@Override
 		public void onApplicationEvent(ApplicationContextEvent event) {
@@ -1783,8 +1783,8 @@ public class SpringApplication {
 		private final StandardStartup fallback = new StandardStartup();
 
 		@Override
-		protected Long processUptime() {
-			long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
+		protected @Nullable Long processUptime() {
+			Long uptime = CRaCMXBean.getCRaCMXBean().getUptimeSinceRestore();
 			return (uptime >= 0) ? uptime : this.fallback.processUptime();
 		}
 

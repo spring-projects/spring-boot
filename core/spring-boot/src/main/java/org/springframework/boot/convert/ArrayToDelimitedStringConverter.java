@@ -52,7 +52,7 @@ final class ArrayToDelimitedStringConverter implements ConditionalGenericConvert
 	}
 
 	@Override
-	public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		List<Object> list = Arrays.asList(ObjectUtils.toObjectArray(source));
 		return this.delegate.convert(list, sourceType, targetType);
 	}

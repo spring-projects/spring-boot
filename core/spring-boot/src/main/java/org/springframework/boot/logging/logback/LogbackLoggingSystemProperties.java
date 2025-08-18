@@ -54,7 +54,8 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 * @param setter setter used to apply the property
 	 * @since 2.4.3
 	 */
-	public LogbackLoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
+	public LogbackLoggingSystemProperties(Environment environment,
+			@Nullable BiConsumer<String, @Nullable String> setter) {
 		super(environment, setter);
 	}
 
@@ -68,7 +69,7 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 */
 	public LogbackLoggingSystemProperties(Environment environment,
 			Function<@Nullable String, @Nullable String> defaultValueResolver,
-			@Nullable BiConsumer<String, String> setter) {
+			@Nullable BiConsumer<String, @Nullable String> setter) {
 		super(environment, defaultValueResolver, setter);
 	}
 

@@ -79,8 +79,10 @@ class ConfigDataLoaders {
 		return Collections.unmodifiableList(resourceTypes);
 	}
 
-	private @Nullable Class<?> getResourceType(ConfigDataLoader<?> loader) {
-		return ResolvableType.forClass(loader.getClass()).as(ConfigDataLoader.class).resolveGeneric();
+	private Class<?> getResourceType(ConfigDataLoader<?> loader) {
+		Class<?> generic = ResolvableType.forClass(loader.getClass()).as(ConfigDataLoader.class).resolveGeneric();
+		Assert.state(generic != null, "'generic' must not be null");
+		return generic;
 	}
 
 	/**

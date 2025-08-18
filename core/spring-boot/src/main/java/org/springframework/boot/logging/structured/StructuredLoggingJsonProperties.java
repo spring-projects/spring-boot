@@ -59,8 +59,16 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		Map<String, String> add, StackTrace stackTrace, Context context,
 		Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
 
-	StructuredLoggingJsonProperties {
-		customizer = (customizer != null) ? customizer : Collections.emptySet();
+	StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
+			Map<String, String> add, StackTrace stackTrace, Context context,
+			@Nullable Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
+		this.include = include;
+		this.exclude = exclude;
+		this.rename = rename;
+		this.add = add;
+		this.stackTrace = stackTrace;
+		this.context = context;
+		this.customizer = (customizer != null) ? customizer : Collections.emptySet();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

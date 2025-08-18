@@ -23,7 +23,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
-import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
@@ -49,9 +48,9 @@ public class JksSslStoreBundle implements SslStoreBundle {
 
 	private final ResourceLoader resourceLoader;
 
-	private final Supplier<KeyStore> keyStore;
+	private final SingletonSupplier<KeyStore> keyStore;
 
-	private final Supplier<KeyStore> trustStore;
+	private final SingletonSupplier<KeyStore> trustStore;
 
 	/**
 	 * Create a new {@link JksSslStoreBundle} instance.
@@ -80,7 +79,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	}
 
 	@Override
-	public KeyStore getKeyStore() {
+	public @Nullable KeyStore getKeyStore() {
 		return this.keyStore.get();
 	}
 
@@ -90,7 +89,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	}
 
 	@Override
-	public KeyStore getTrustStore() {
+	public @Nullable KeyStore getTrustStore() {
 		return this.trustStore.get();
 	}
 

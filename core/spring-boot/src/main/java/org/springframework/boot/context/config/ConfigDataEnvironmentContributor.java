@@ -36,6 +36,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.lang.Contract;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -245,7 +246,9 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 */
 	ConfigDataEnvironmentContributor withBoundProperties(Iterable<ConfigDataEnvironmentContributor> contributors,
 			@Nullable ConfigDataActivationContext activationContext) {
-		Iterable<ConfigurationPropertySource> sources = Collections.singleton(getConfigurationPropertySource());
+		ConfigurationPropertySource configurationPropertySource = getConfigurationPropertySource();
+		Assert.state(configurationPropertySource != null, "'configurationPropertySource' must not be null");
+		Iterable<ConfigurationPropertySource> sources = Collections.singleton(configurationPropertySource);
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
 				contributors, activationContext, this, true, this.conversionService);
 		Binder binder = new Binder(sources, placeholdersResolver, null, null, null);

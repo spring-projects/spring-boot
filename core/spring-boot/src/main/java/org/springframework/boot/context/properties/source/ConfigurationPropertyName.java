@@ -881,8 +881,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		CharSequence get(int index) {
-			if (this.resolved != null && this.resolved[index] != null) {
-				return this.resolved[index];
+			if (this.resolved != null) {
+				CharSequence element = this.resolved[index];
+				if (element != null) {
+					return element;
+				}
 			}
 			int start = this.start[index];
 			int end = this.end[index];
@@ -890,8 +893,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		int getLength(int index) {
-			if (this.resolved != null && this.resolved[index] != null) {
-				return this.resolved[index].length();
+			if (this.resolved != null) {
+				CharSequence element = this.resolved[index];
+				if (element != null) {
+					return element.length();
+				}
 			}
 			int start = this.start[index];
 			int end = this.end[index];
@@ -899,8 +905,11 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		}
 
 		char charAt(int index, int charIndex) {
-			if (this.resolved != null && this.resolved[index] != null) {
-				return this.resolved[index].charAt(charIndex);
+			if (this.resolved != null) {
+				CharSequence element = this.resolved[index];
+				if (element != null) {
+					return element.charAt(charIndex);
+				}
 			}
 			int start = this.start[index];
 			return this.source.charAt(start + charIndex);

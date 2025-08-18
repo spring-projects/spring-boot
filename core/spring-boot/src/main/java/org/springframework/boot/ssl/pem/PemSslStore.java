@@ -171,7 +171,7 @@ public interface PemSslStore {
 			}
 
 			@Override
-			public @Nullable List<X509Certificate> certificates() {
+			public List<X509Certificate> certificates() {
 				return certificates;
 			}
 

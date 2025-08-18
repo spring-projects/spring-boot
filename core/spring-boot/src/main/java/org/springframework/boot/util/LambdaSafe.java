@@ -176,7 +176,14 @@ public final class LambdaSafe {
 
 		private boolean startsWithArgumentClassName(String message) {
 			Predicate<Object> startsWith = (argument) -> startsWithArgumentClassName(message, argument);
-			return startsWith.test(this.argument) || Stream.of(this.additionalArguments).anyMatch(startsWith);
+			return startsWith.test(this.argument) || additonalArgumentsStartsWith(startsWith);
+		}
+
+		private boolean additonalArgumentsStartsWith(Predicate<Object> startsWith) {
+			if (this.additionalArguments == null) {
+				return false;
+			}
+			return Stream.of(this.additionalArguments).anyMatch(startsWith);
 		}
 
 		private boolean startsWithArgumentClassName(String message, @Nullable Object argument) {

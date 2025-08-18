@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.function.SingletonSupplier;
 import org.springframework.util.function.ThrowingSupplier;
 
@@ -70,9 +69,7 @@ final class LoadedPemSslStore implements PemSslStore {
 		if (pemContent == null) {
 			return new CertificatesHolder(null);
 		}
-		List<X509Certificate> certificates = pemContent.getCertificates();
-		Assert.state(!CollectionUtils.isEmpty(certificates), "Loaded certificates are empty");
-		return new CertificatesHolder(certificates);
+		return new CertificatesHolder(pemContent.getCertificates());
 	}
 
 	private static PrivateKeyHolder loadPrivateKey(PemSslStoreDetails details, ResourceLoader resourceLoader)

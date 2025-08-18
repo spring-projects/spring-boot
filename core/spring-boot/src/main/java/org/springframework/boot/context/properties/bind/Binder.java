@@ -71,11 +71,11 @@ public class Binder {
 
 	private final BindHandler defaultBindHandler;
 
-	private final Map<BindMethod, List<DataObjectBinder>> dataObjectBinders;
+	private final Map<@Nullable BindMethod, List<DataObjectBinder>> dataObjectBinders;
 
 	private final Map<Object, Object> cache = new ConcurrentReferenceHashMap<>();
 
-	private ConfigurationPropertyCaching configurationPropertyCaching;
+	private final ConfigurationPropertyCaching configurationPropertyCaching;
 
 	/**
 	 * Create a new {@link Binder} instance for the specified sources. A
@@ -215,7 +215,7 @@ public class Binder {
 		}
 		ValueObjectBinder valueObjectBinder = new ValueObjectBinder(constructorProvider);
 		JavaBeanBinder javaBeanBinder = JavaBeanBinder.INSTANCE;
-		Map<BindMethod, List<DataObjectBinder>> dataObjectBinders = new HashMap<>();
+		Map<@Nullable BindMethod, List<DataObjectBinder>> dataObjectBinders = new HashMap<>();
 		dataObjectBinders.put(BindMethod.VALUE_OBJECT, List.of(valueObjectBinder));
 		dataObjectBinders.put(BindMethod.JAVA_BEAN, List.of(javaBeanBinder));
 		dataObjectBinders.put(null, List.of(valueObjectBinder, javaBeanBinder));
@@ -459,7 +459,8 @@ public class Binder {
 		return null;
 	}
 
-	private <T> Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
+	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
+	private <T> @Nullable Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
 			Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
 			boolean allowRecursiveBinding = aggregateBinder.isAllowRecursiveBinding(source);
@@ -491,6 +492,7 @@ public class Binder {
 		return result;
 	}
 
+	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 	private @Nullable Object bindDataObject(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler,
 			Context context, boolean allowRecursiveBinding) {
 		if (isUnbindableBean(name, target, context)) {
@@ -610,7 +612,7 @@ public class Binder {
 			}
 		}
 
-		private <T> T withDataObject(Class<?> type, Supplier<T> supplier) {
+		private <T> @Nullable T withDataObject(Class<?> type, Supplier<@Nullable T> supplier) {
 			this.dataObjectBindings.push(type);
 			try {
 				return withIncreasedDepth(supplier);
@@ -624,7 +626,7 @@ public class Binder {
 			return this.dataObjectBindings.contains(type);
 		}
 
-		private <T> T withIncreasedDepth(Supplier<T> supplier) {
+		private <T> @Nullable T withIncreasedDepth(Supplier<@Nullable T> supplier) {
 			increaseDepth();
 			try {
 				return supplier.get();

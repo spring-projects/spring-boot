@@ -348,19 +348,22 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 					assertStillExists();
 					return FileCopyUtils.copyToByteArray(this.resource.getInputStream());
 				}
-				if (this.content == null) {
+				byte[] content = this.content;
+				if (content == null) {
 					assertStillExists();
 					this.resourceLock.lock();
 					try {
-						if (this.content == null) {
-							this.content = FileCopyUtils.copyToByteArray(this.resource.getInputStream());
+						content = this.content;
+						if (content == null) {
+							content = FileCopyUtils.copyToByteArray(this.resource.getInputStream());
+							this.content = content;
 						}
 					}
 					finally {
 						this.resourceLock.unlock();
 					}
 				}
-				return this.content;
+				return content;
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);

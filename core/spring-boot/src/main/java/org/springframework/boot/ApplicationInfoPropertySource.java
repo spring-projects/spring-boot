@@ -64,8 +64,9 @@ class ApplicationInfoPropertySource extends MapPropertySource implements OriginL
 			result.put("spring.application.version", applicationVersion);
 		}
 		ApplicationPid applicationPid = new ApplicationPid();
-		if (applicationPid.isAvailable()) {
-			result.put("spring.application.pid", applicationPid.toLong());
+		Long pid = applicationPid.toLong();
+		if (pid != null) {
+			result.put("spring.application.pid", pid);
 		}
 		return result;
 	}

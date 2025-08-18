@@ -43,7 +43,7 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 
 	private volatile @Nullable Duration timeToLive;
 
-	private volatile SoftReference<T> value = new SoftReference<>(null);
+	private volatile SoftReference<@Nullable T> value = new SoftReference<>(null);
 
 	private volatile @Nullable Instant lastAccessed = now();
 

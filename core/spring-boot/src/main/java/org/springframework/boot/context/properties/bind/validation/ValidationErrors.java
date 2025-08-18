@@ -68,16 +68,16 @@ public class ValidationErrors implements Iterable<ObjectError> {
 		return Collections.unmodifiableList(converted);
 	}
 
-	private @Nullable ObjectError convertError(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> boundProperties, ObjectError error) {
+	private ObjectError convertError(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+			ObjectError error) {
 		if (error instanceof FieldError fieldError) {
 			return convertFieldError(name, boundProperties, fieldError);
 		}
 		return error;
 	}
 
-	private @Nullable FieldError convertFieldError(ConfigurationPropertyName name,
-			Set<ConfigurationProperty> boundProperties, FieldError error) {
+	private FieldError convertFieldError(ConfigurationPropertyName name, Set<ConfigurationProperty> boundProperties,
+			FieldError error) {
 		if (error instanceof OriginProvider) {
 			return error;
 		}

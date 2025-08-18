@@ -90,7 +90,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 
 	private final Map<Integer, String> statuses = new HashMap<>();
 
-	private final Map<Class<?>, String> exceptions = new HashMap<>();
+	private final Map<@Nullable Class<?>, String> exceptions = new HashMap<>();
 
 	private final OncePerRequestFilter delegate = new OncePerRequestFilter() {
 

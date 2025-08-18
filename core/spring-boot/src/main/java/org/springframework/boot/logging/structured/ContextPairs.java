@@ -89,12 +89,12 @@ public class ContextPairs {
 		};
 	}
 
-	private BinaryOperator<@Nullable String> joinWith(String delimeter) {
+	private BinaryOperator<@Nullable String> joinWith(String delimiter) {
 		return (prefix, name) -> {
-			StringBuilder joined = new StringBuilder(prefix.length() + delimeter.length() + name.length());
+			StringBuilder joined = new StringBuilder(prefix.length() + delimiter.length() + name.length());
 			joined.append(prefix);
-			if (!prefix.isEmpty() && !prefix.endsWith(delimeter) && !name.startsWith(delimeter)) {
-				joined.append(delimeter);
+			if (!prefix.isEmpty() && !prefix.endsWith(delimiter) && !name.startsWith(delimiter)) {
+				joined.append(delimiter);
 			}
 			joined.append(name);
 			return joined.toString();
