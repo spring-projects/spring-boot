@@ -139,7 +139,10 @@ class OutputCapture implements CapturedOutput {
 	 */
 	void reset() {
 		clearExisting();
-		this.systemCaptures.peek().reset();
+		SystemCapture peeked = this.systemCaptures.peek();
+		if (peeked != null) {
+			peeked.reset();
+		}
 	}
 
 	void clearExisting() {

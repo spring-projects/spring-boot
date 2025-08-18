@@ -553,7 +553,9 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 				@Override
 				public void failed(@Nullable ConfigurableApplicationContext context, Throwable exception) {
-					ContextLoaderHook.this.failedContexts.add(context);
+					if (context != null) {
+						ContextLoaderHook.this.failedContexts.add(context);
+					}
 				}
 
 			};
