@@ -162,13 +162,16 @@
       ]
     }
   ],
- "ignored": {
+  "ignored": {
     "properties": [
       {
         "name": "spring.datasource.dbcp2.driver"
       },
       {
         "name": "spring.datasource.hikari.credentials"
+      },
+      {
+        "name": "spring.datasource.hikari.credentials-provider"
       },
       {
         "name": "spring.datasource.hikari.exception-override"
