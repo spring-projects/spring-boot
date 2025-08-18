@@ -1447,7 +1447,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-jar-plugin/releases/tag/maven-jar-plugin-{version}")
 		}
 	}
-	library("Maven Javadoc Plugin", "3.11.2") {
+	library("Maven Javadoc Plugin", "3.11.3") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-javadoc-plugin"
