@@ -77,10 +77,12 @@ class RabbitConnectionFactoryMetricsPostProcessor implements BeanPostProcessor, 
 	}
 
 	private MeterRegistry getMeterRegistry() {
-		if (this.meterRegistry == null) {
-			this.meterRegistry = this.context.getBean(MeterRegistry.class);
+		MeterRegistry meterRegistry = this.meterRegistry;
+		if (meterRegistry == null) {
+			meterRegistry = this.context.getBean(MeterRegistry.class);
+			this.meterRegistry = meterRegistry;
 		}
-		return this.meterRegistry;
+		return meterRegistry;
 	}
 
 	@Override
