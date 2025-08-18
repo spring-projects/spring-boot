@@ -65,7 +65,7 @@ public final class ManagementContextFactory {
 			.createEnvironment(this.webApplicationType);
 		Assert.state(childEnvironment != null, "'childEnvironment' must not be null");
 		if (parentEnvironment instanceof ConfigurableEnvironment configurableEnvironment) {
-			configurableEnvironment.getPropertySources().forEach(propertySource -> {
+			configurableEnvironment.getPropertySources().forEach((propertySource) -> {
 				if (isManagementPropertySource(propertySource, childEnvironment)) {
 					childEnvironment.getPropertySources().addLast(propertySource);
 				}
@@ -79,7 +79,8 @@ public final class ManagementContextFactory {
 		return managementContext;
 	}
 
-	private boolean isManagementPropertySource(PropertySource<?> propertySource, ConfigurableEnvironment childEnvironment) {
+	private boolean isManagementPropertySource(PropertySource<?> propertySource,
+			ConfigurableEnvironment childEnvironment) {
 		return propertySource.getName().contains("management")
 				&& !childEnvironment.getPropertySources().contains(propertySource.getName());
 	}

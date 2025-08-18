@@ -25,15 +25,15 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link ManagementContextFactory}.
+ * Tests for {@link ManagementContextFactory}.
  *
  * author Yongjun Hong
  */
-class ManagementContextFactoryTest {
+class ManagementContextFactoryTests {
 
 	@Test
 	void createManagementContextCopiesManagementPropertySources() {
@@ -47,8 +47,8 @@ class ManagementContextFactoryTest {
 			}
 		};
 		parentPropertySources.addLast(managementPropertySource);
-		when(parentEnvironment.getPropertySources()).thenReturn(parentPropertySources);
-		when(parentContext.getEnvironment()).thenReturn(parentEnvironment);
+		given(parentEnvironment.getPropertySources()).willReturn(parentPropertySources);
+		given(parentContext.getEnvironment()).willReturn(parentEnvironment);
 
 		ManagementContextFactory factory = new ManagementContextFactory(WebApplicationType.SERVLET, null);
 
@@ -57,4 +57,5 @@ class ManagementContextFactoryTest {
 		ConfigurableEnvironment childEnvironment = managementContext.getEnvironment();
 		assertThat(childEnvironment.getPropertySources().contains("managementProperty")).isTrue();
 	}
+
 }
