@@ -23,6 +23,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import org.springframework.util.Assert;
+
 /**
  * {@link URLStreamHandler} for the contents of a {@link ClassLoaderFile}.
  *
@@ -54,7 +56,9 @@ public class ClassLoaderFileURLStreamHandler extends URLStreamHandler {
 
 		@Override
 		public InputStream getInputStream() throws IOException {
-			return new ByteArrayInputStream(ClassLoaderFileURLStreamHandler.this.file.getContents());
+			byte[] contents = ClassLoaderFileURLStreamHandler.this.file.getContents();
+			Assert.state(contents != null, "'contents' must not be null");
+			return new ByteArrayInputStream(contents);
 		}
 
 		@Override
