@@ -101,7 +101,7 @@ class ExtractCommand extends Command {
 	}
 
 	@Override
-	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+	void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
 		try {
 			checkJarCompatibility();
 			File destination = getDestination(options);
@@ -122,7 +122,7 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private static void checkDirectoryIsEmpty(Map<Option, String> options, File destination) {
+	private static void checkDirectoryIsEmpty(Map<Option, @Nullable String> options, File destination) {
 		if (options.containsKey(FORCE_OPTION)) {
 			return;
 		}
@@ -150,8 +150,8 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private void extractLibraries(FileResolver fileResolver, JarStructure jarStructure, Map<Option, String> options)
-			throws IOException {
+	private void extractLibraries(FileResolver fileResolver, JarStructure jarStructure,
+			Map<Option, @Nullable String> options) throws IOException {
 		String librariesDirectory = getLibrariesDirectory(options);
 		extractArchive(fileResolver, (jarEntry) -> {
 			Entry entry = jarStructure.resolve(jarEntry);
@@ -162,18 +162,18 @@ class ExtractCommand extends Command {
 		});
 	}
 
-	private static String getLibrariesDirectory(Map<Option, String> options) {
-		if (options.containsKey(LIBRARIES_DIRECTORY_OPTION)) {
-			String value = options.get(LIBRARIES_DIRECTORY_OPTION);
-			if (value.endsWith("/")) {
-				return value;
+	private static String getLibrariesDirectory(Map<Option, @Nullable String> options) {
+		String libraryDirectory = options.get(LIBRARIES_DIRECTORY_OPTION);
+		if (libraryDirectory != null) {
+			if (libraryDirectory.endsWith("/")) {
+				return libraryDirectory;
 			}
-			return value + "/";
+			return libraryDirectory + "/";
 		}
 		return "lib/";
 	}
 
-	private FileResolver getFileResolver(File destination, Map<Option, String> options) {
+	private FileResolver getFileResolver(File destination, Map<Option, @Nullable String> options) {
 		String applicationFilename = getApplicationFilename(options);
 		if (!options.containsKey(LAYERS_OPTION)) {
 			return new NoLayersFileResolver(destination, applicationFilename);
@@ -183,9 +183,10 @@ class ExtractCommand extends Command {
 		return new LayersFileResolver(destination, layers, layersToExtract, applicationFilename);
 	}
 
-	private File getDestination(Map<Option, String> options) {
-		if (options.containsKey(DESTINATION_OPTION)) {
-			File destination = new File(options.get(DESTINATION_OPTION));
+	private File getDestination(Map<Option, @Nullable String> options) {
+		String value = options.get(DESTINATION_OPTION);
+		if (value != null) {
+			File destination = new File(value);
 			if (destination.isAbsolute()) {
 				return destination;
 			}
@@ -232,8 +233,8 @@ class ExtractCommand extends Command {
 		return (this.layers != null) ? this.layers : Layers.get(this.context);
 	}
 
-	private void createApplication(JarStructure jarStructure, FileResolver fileResolver, Map<Option, String> options)
-			throws IOException {
+	private void createApplication(JarStructure jarStructure, FileResolver fileResolver,
+			Map<Option, @Nullable String> options) throws IOException {
 		File file = fileResolver.resolveApplication();
 		if (file == null) {
 			return;
@@ -264,9 +265,10 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private String getApplicationFilename(Map<Option, String> options) {
-		if (options.containsKey(APPLICATION_FILENAME_OPTION)) {
-			return options.get(APPLICATION_FILENAME_OPTION);
+	private String getApplicationFilename(Map<Option, @Nullable String> options) {
+		String value = options.get(APPLICATION_FILENAME_OPTION);
+		if (value != null) {
+			return value;
 		}
 		return this.context.getArchiveFile().getName();
 	}

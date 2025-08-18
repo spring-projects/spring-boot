@@ -49,7 +49,7 @@ class HelpCommand extends Command {
 	}
 
 	@Override
-	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+	void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
 		run(out, parameters);
 	}
 

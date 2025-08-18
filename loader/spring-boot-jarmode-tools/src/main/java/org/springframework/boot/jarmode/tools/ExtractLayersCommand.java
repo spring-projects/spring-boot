@@ -58,8 +58,8 @@ class ExtractLayersCommand extends Command {
 	}
 
 	@Override
-	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
-		Map<Option, String> rewrittenOptions = new HashMap<>();
+	void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
+		Map<Option, @Nullable String> rewrittenOptions = new HashMap<>();
 		rewrittenOptions.put(ExtractCommand.DESTINATION_OPTION, options.getOrDefault(DESTINATION_OPTION, "."));
 		rewrittenOptions.put(ExtractCommand.LAYERS_OPTION, StringUtils.collectionToCommaDelimitedString(parameters));
 		rewrittenOptions.put(ExtractCommand.LAUNCHER_OPTION, null);

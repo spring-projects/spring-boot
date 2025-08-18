@@ -20,6 +20,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The {@code 'list'} tools command.
  *
@@ -48,7 +50,7 @@ class ListCommand extends Command {
 	}
 
 	@Override
-	void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+	void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
 		this.delegate.run(out, options, parameters);
 	}
 

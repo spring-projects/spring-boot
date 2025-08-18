@@ -100,7 +100,7 @@ abstract class Command {
 	 */
 	final void run(PrintStream out, Deque<String> args) {
 		List<String> parameters = new ArrayList<>();
-		Map<Option, String> options = new HashMap<>();
+		Map<Option, @Nullable String> options = new HashMap<>();
 		while (!args.isEmpty()) {
 			String arg = args.removeFirst();
 			Option option = this.options.find(arg);
@@ -120,7 +120,7 @@ abstract class Command {
 	 * @param options any options extracted from the arguments
 	 * @param parameters any parameters extracted from the arguments
 	 */
-	abstract void run(PrintStream out, Map<Option, String> options, List<String> parameters);
+	abstract void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters);
 
 	/**
 	 * Whether the command is deprecated.
