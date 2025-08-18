@@ -270,6 +270,19 @@ class ArchitectureCheckTests {
 		build(this.gradleBuild.withDependencies(SPRING_CONTEXT), task);
 	}
 
+	@Test
+	void whenPackageIsNotAnnotatedWithNullMarkedWithMainSourcesShouldFailAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "nullmarked/notannotated");
+		buildAndFail(this.gradleBuild.withNullMarked(true), Task.CHECK_ARCHITECTURE_MAIN,
+				"Package org.springframework.boot.build.architecture.nullmarked.notannotated is not annotated with @NullMarked");
+	}
+
+	@Test
+	void whenPackageIsNotAnnotatedWithNullMarkedWithTestSourcesShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_TEST, "nullmarked/notannotated");
+		build(this.gradleBuild.withNullMarked(true), Task.CHECK_ARCHITECTURE_TEST);
+	}
+
 	private void prepareTask(Task task, String... sourceDirectories) throws IOException {
 		for (String sourceDirectory : sourceDirectories) {
 			FileSystemUtils.copyRecursively(
