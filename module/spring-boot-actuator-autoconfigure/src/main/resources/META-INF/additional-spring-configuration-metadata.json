@@ -254,7 +254,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -262,7 +262,7 @@
       "type": "org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties$TokenType",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -270,7 +270,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -278,7 +278,7 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -286,7 +286,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -294,7 +294,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -302,7 +302,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -310,7 +310,7 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -318,7 +318,7 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -326,7 +326,7 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -334,7 +334,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -342,7 +342,7 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -350,7 +350,7 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -358,7 +358,7 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -366,7 +366,7 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -374,7 +374,7 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -382,7 +382,7 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -390,7 +390,7 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -398,7 +398,7 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -406,7 +406,7 @@
       "type": "org.springframework.util.unit.DataSize",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -414,7 +414,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -422,7 +422,7 @@
       "type": "java.util.Set<java.lang.String>",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -430,7 +430,7 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     },
     {
@@ -438,7 +438,7 @@
       "type": "java.net.URI",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-live."
+        "reason": "Wavefront is end-of-life."
       }
     }
   ],
