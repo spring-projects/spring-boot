@@ -193,12 +193,13 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		 * @return the container instance
 		 */
 		protected final C getContainer() {
-			Assert.state(this.container != null,
+			C container = this.container;
+			Assert.state(container != null,
 					"Container cannot be obtained before the connection details bean has been initialized");
-			if (this.container instanceof Startable startable) {
+			if (container instanceof Startable startable) {
 				TestcontainersStartup.start(startable);
 			}
-			return this.container;
+			return container;
 		}
 
 		/**
