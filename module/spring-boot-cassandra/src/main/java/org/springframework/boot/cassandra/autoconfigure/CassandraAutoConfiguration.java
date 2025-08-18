@@ -260,7 +260,7 @@ public final class CassandraAutoConfiguration {
 
 	private static final class CassandraDriverOptions {
 
-		private final Map<String, String> options = new LinkedHashMap<>();
+		private final Map<String, @Nullable String> options = new LinkedHashMap<>();
 
 		private CassandraDriverOptions add(DriverOption option, @Nullable String value) {
 			String key = createKeyFor(option);
