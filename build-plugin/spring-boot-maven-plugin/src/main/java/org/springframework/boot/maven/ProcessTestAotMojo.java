@@ -124,7 +124,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 			getLog().debug("process-test-aot goal could not be applied to pom project.");
 			return;
 		}
-		if (Boolean.getBoolean("skipTests") || Boolean.getBoolean("maven.test.skip")) {
+		if (Boolean.getBoolean("maven.test.skip")) {
 			getLog().info("Skipping AOT test processing since tests are skipped");
 			return;
 		}
