@@ -19,7 +19,6 @@ package org.springframework.boot.webclient.autoconfigure.service;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.http.client.autoconfigure.reactive.HttpReactiveClientProperties;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.ssl.SslBundles;
@@ -53,15 +52,13 @@ final class WebClientHttpServiceClientConfiguration implements BeanClassLoaderAw
 
 	@Bean
 	WebClientPropertiesHttpServiceGroupConfigurer webClientPropertiesHttpServiceGroupConfigurer(
-			ObjectProvider<SslBundles> sslBundles, HttpReactiveClientProperties httpReactiveClientProperties,
-			ReactiveHttpClientServiceProperties serviceProperties,
+			ObjectProvider<SslBundles> sslBundles, ReactiveHttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpConnectorBuilder<?>> clientConnectorBuilder,
 			ObjectProvider<ClientHttpConnectorSettings> clientConnectorSettings,
 			ObjectProvider<ApiVersionInserter> apiVersionInserter,
 			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
-		return new WebClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles,
-				httpReactiveClientProperties, serviceProperties, clientConnectorBuilder, clientConnectorSettings,
-				apiVersionInserter, apiVersionFormatter);
+		return new WebClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles, serviceProperties,
+				clientConnectorBuilder, clientConnectorSettings, apiVersionInserter, apiVersionFormatter);
 	}
 
 	@Bean

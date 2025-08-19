@@ -46,37 +46,64 @@ public final class ClientHttpRequestFactories {
 
 	private final @Nullable AbstractHttpRequestFactoryProperties[] orderedProperties;
 
+	private final @Nullable ClientHttpRequestFactoryBuilder<?> fallbackBuilder;
+
+	private final @Nullable ClientHttpRequestFactorySettings fallbackSettings;
+
 	public ClientHttpRequestFactories(ObjectFactory<SslBundles> sslBundles,
 			@Nullable AbstractHttpRequestFactoryProperties... orderedProperties) {
+		this(null, null, sslBundles, orderedProperties);
+	}
+
+	public ClientHttpRequestFactories(@Nullable ClientHttpRequestFactoryBuilder<?> fallbackBuilder,
+			@Nullable ClientHttpRequestFactorySettings fallbackSettings, ObjectFactory<SslBundles> sslBundles,
+			@Nullable AbstractHttpRequestFactoryProperties... orderedProperties) {
+		this.fallbackBuilder = fallbackBuilder;
+		this.fallbackSettings = fallbackSettings;
 		this.sslBundles = sslBundles;
 		this.orderedProperties = orderedProperties;
 	}
 
 	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public ClientHttpRequestFactoryBuilder<?> builder(@Nullable ClassLoader classLoader) {
-		Factory factory = getProperty(AbstractHttpRequestFactoryProperties::getFactory);
-		return (factory != null) ? factory.builder() : ClientHttpRequestFactoryBuilder.detect(classLoader);
+		Factory factory = getProperty(AbstractHttpRequestFactoryProperties::getFactory, Objects::nonNull, null,
+				Function.identity());
+		if (factory != null) {
+			return factory.builder();
+		}
+		return (this.fallbackBuilder != null) ? this.fallbackBuilder
+				: ClientHttpRequestFactoryBuilder.detect(classLoader);
 	}
 
 	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public ClientHttpRequestFactorySettings settings() {
-		HttpRedirects redirects = getProperty(AbstractHttpRequestFactoryProperties::getRedirects);
-		Duration connectTimeout = getProperty(AbstractHttpRequestFactoryProperties::getConnectTimeout);
-		Duration readTimeout = getProperty(AbstractHttpRequestFactoryProperties::getReadTimeout);
+		HttpRedirects redirects = getProperty(AbstractHttpRequestFactoryProperties::getRedirects, Objects::nonNull,
+				this.fallbackSettings, ClientHttpRequestFactorySettings::redirects);
+		Duration connectTimeout = getProperty(AbstractHttpRequestFactoryProperties::getConnectTimeout, Objects::nonNull,
+				this.fallbackSettings, ClientHttpRequestFactorySettings::connectTimeout);
+		Duration readTimeout = getProperty(AbstractHttpRequestFactoryProperties::getReadTimeout, Objects::nonNull,
+				this.fallbackSettings, ClientHttpRequestFactorySettings::readTimeout);
 		String sslBundleName = getProperty(AbstractHttpRequestFactoryProperties::getSsl, Ssl::getBundle,
-				StringUtils::hasLength);
+				StringUtils::hasLength, null, Function.identity());
 		SslBundle sslBundle = (StringUtils.hasLength(sslBundleName))
-				? this.sslBundles.getObject().getBundle(sslBundleName) : null;
+				? this.sslBundles.getObject().getBundle(sslBundleName) : fallbackSslBundle();
 		return new ClientHttpRequestFactorySettings(redirects, connectTimeout, readTimeout, sslBundle);
 	}
 
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
-	private <T> @Nullable T getProperty(Function<AbstractHttpRequestFactoryProperties, @Nullable T> accessor) {
-		return getProperty(accessor, Function.identity(), Objects::nonNull);
+	private @Nullable SslBundle fallbackSslBundle() {
+		return (this.fallbackSettings != null) ? this.fallbackSettings.sslBundle() : null;
 	}
 
-	private <P, T> @Nullable T getProperty(Function<AbstractHttpRequestFactoryProperties, @Nullable P> accessor,
-			Function<P, T> extractor, Predicate<@Nullable T> predicate) {
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private <T, F> @Nullable T getProperty(Function<AbstractHttpRequestFactoryProperties, @Nullable T> accessor,
+			Predicate<@Nullable T> predicate, @Nullable F fallback, Function<F, @Nullable T> fallbackAccessor) {
+		return getProperty(accessor, Function.identity(), predicate, fallback, fallbackAccessor);
+	}
+
+	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
+	private <P, T, F> @Nullable T getProperty(Function<AbstractHttpRequestFactoryProperties, @Nullable P> accessor,
+			Function<@Nullable P, @Nullable T> extractor, Predicate<@Nullable T> predicate, @Nullable F fallback,
+			Function<F, @Nullable T> fallbackAccessor) {
 		for (AbstractHttpRequestFactoryProperties properties : this.orderedProperties) {
 			if (properties != null) {
 				P value = accessor.apply(properties);
@@ -86,7 +113,7 @@ public final class ClientHttpRequestFactories {
 				}
 			}
 		}
-		return null;
+		return (fallback != null) ? fallbackAccessor.apply(fallback) : null;
 	}
 
 }

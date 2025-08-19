@@ -20,11 +20,13 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import org.springframework.aop.Advisor;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
@@ -40,15 +42,23 @@ import org.springframework.boot.webclient.autoconfigure.service.scan.TestHttpSer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.registry.HttpServiceGroup;
 import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
+import org.springframework.web.service.registry.HttpServiceGroupConfigurer.ClientCallback;
+import org.springframework.web.service.registry.HttpServiceGroupConfigurer.Groups;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ReactiveHttpServiceClientAutoConfiguration},
@@ -85,6 +95,39 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 				assertThat(getHttpHeaders(webClientTwo).headerSet())
 					.containsExactlyInAnyOrder(Map.entry("test", List.of("true")), Map.entry("two", List.of("iam2")));
 			});
+	}
+
+	@Test // gh-46915
+	void configuresClientFromPropertiesWhenHasHttpConnectorAutoConfiguration() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class))
+			.withPropertyValues("spring.http.reactiveclient.service.connect-timeout=10s",
+					"spring.http.reactiveclient.service.group.one.connect-timeout=5s",
+					"spring.http.reactiveclient.connector=jdk")
+			.withUserConfiguration(HttpClientConfiguration.class)
+			.run((context) -> {
+				WebClientPropertiesHttpServiceGroupConfigurer configurer = context
+					.getBean(WebClientPropertiesHttpServiceGroupConfigurer.class);
+				Groups<WebClient.Builder> groups = mock();
+				configurer.configureGroups(groups);
+				ArgumentCaptor<ClientCallback<WebClient.Builder>> callbackCaptor = ArgumentCaptor.captor();
+				then(groups).should().forEachClient(callbackCaptor.capture());
+				ClientCallback<WebClient.Builder> callback = callbackCaptor.getValue();
+				assertConnectTimeout(callback, "one", Duration.ofSeconds(5));
+				assertConnectTimeout(callback, "two", Duration.ofSeconds(10));
+			});
+	}
+
+	private void assertConnectTimeout(ClientCallback<WebClient.Builder> callback, String name,
+			Duration expectedReadTimeout) {
+		HttpServiceGroup group = mock();
+		given(group.name()).willReturn(name);
+		WebClient.Builder builder = mock();
+		callback.withClient(group, builder);
+		ArgumentCaptor<ClientHttpConnector> connectorCaptor = ArgumentCaptor.captor();
+		then(builder).should().clientConnector(connectorCaptor.capture());
+		ClientHttpConnector client = connectorCaptor.getValue();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(client, "httpClient");
+		assertThat(httpClient.connectTimeout()).contains(expectedReadTimeout);
 	}
 
 	@Test

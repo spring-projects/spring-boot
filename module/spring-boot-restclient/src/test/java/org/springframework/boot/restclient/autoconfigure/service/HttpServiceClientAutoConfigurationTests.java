@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import org.springframework.aop.Advisor;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
@@ -39,16 +40,22 @@ import org.springframework.boot.restclient.autoconfigure.service.scan.TestHttpSe
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.registry.HttpServiceGroup;
+import org.springframework.web.service.registry.HttpServiceGroupConfigurer.ClientCallback;
+import org.springframework.web.service.registry.HttpServiceGroupConfigurer.Groups;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -93,6 +100,37 @@ class HttpServiceClientAutoConfigurationTests {
 				TestClientTwo clientTwo = context.getBean(TestClientTwo.class);
 				assertThat(clientTwo.there()).isEqualTo("boot!");
 			});
+	}
+
+	@Test // gh-46915
+	void configuresClientFromPropertiesWhenHasHttpClientAutoConfiguration() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpClientAutoConfiguration.class))
+			.withPropertyValues("spring.http.client.service.connect-timeout=10s",
+					"spring.http.client.service.group.one.connect-timeout=5s")
+			.withUserConfiguration(HttpClientConfiguration.class, MockRestServiceServerConfiguration.class)
+			.run((context) -> {
+				RestClientPropertiesHttpServiceGroupConfigurer configurer = context
+					.getBean(RestClientPropertiesHttpServiceGroupConfigurer.class);
+				Groups<RestClient.Builder> groups = mock();
+				configurer.configureGroups(groups);
+				ArgumentCaptor<ClientCallback<RestClient.Builder>> callbackCaptor = ArgumentCaptor.captor();
+				then(groups).should().forEachClient(callbackCaptor.capture());
+				ClientCallback<RestClient.Builder> callback = callbackCaptor.getValue();
+				assertConnectTimeout(callback, "one", 5000);
+				assertConnectTimeout(callback, "two", 10000);
+			});
+	}
+
+	private void assertConnectTimeout(ClientCallback<RestClient.Builder> callback, String name,
+			long expectedReadTimeout) {
+		HttpServiceGroup group = mock();
+		given(group.name()).willReturn(name);
+		RestClient.Builder builder = mock();
+		callback.withClient(group, builder);
+		ArgumentCaptor<ClientHttpRequestFactory> requestFactoryCaptor = ArgumentCaptor.captor();
+		then(builder).should().requestFactory(requestFactoryCaptor.capture());
+		ClientHttpRequestFactory client = requestFactoryCaptor.getValue();
+		assertThat(client).extracting("connectTimeout").isEqualTo(expectedReadTimeout);
 	}
 
 	@Test

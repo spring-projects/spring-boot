@@ -48,8 +48,6 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	private final ObjectProvider<SslBundles> sslBundles;
 
-	private final HttpReactiveClientProperties clientProperties;
-
 	private final ReactiveHttpClientServiceProperties serviceProperties;
 
 	private final ObjectProvider<ClientHttpConnectorBuilder<?>> clientConnectorBuilder;
@@ -61,14 +59,13 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 	private final @Nullable ApiVersionFormatter apiVersionFormatter;
 
 	WebClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, ObjectProvider<SslBundles> sslBundles,
-			HttpReactiveClientProperties clientProperties, ReactiveHttpClientServiceProperties serviceProperties,
+			ReactiveHttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpConnectorBuilder<?>> clientConnectorBuilder,
 			ObjectProvider<ClientHttpConnectorSettings> clientConnectorSettings,
 			ObjectProvider<ApiVersionInserter> apiVersionInserter,
 			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
 		this.classLoader = classLoader;
 		this.sslBundles = sslBundles;
-		this.clientProperties = clientProperties;
 		this.serviceProperties = serviceProperties;
 		this.clientConnectorBuilder = clientConnectorBuilder;
 		this.clientConnectorSettings = clientConnectorSettings;
@@ -100,11 +97,11 @@ class WebClientPropertiesHttpServiceGroupConfigurer implements WebClientHttpServ
 
 	private ClientHttpConnector getClientConnector(
 			ReactiveHttpClientServiceProperties.@Nullable Group groupProperties) {
-		ClientHttpConnectors connectors = new ClientHttpConnectors(this.sslBundles, groupProperties,
-				this.serviceProperties, this.clientProperties);
-		ClientHttpConnectorBuilder<?> builder = this.clientConnectorBuilder
-			.getIfAvailable(() -> connectors.builder(this.classLoader));
-		ClientHttpConnectorSettings settings = this.clientConnectorSettings.getIfAvailable(connectors::settings);
+		ClientHttpConnectors connectors = new ClientHttpConnectors(this.clientConnectorBuilder.getIfAvailable(),
+				this.clientConnectorSettings.getIfAvailable(), this.sslBundles, groupProperties,
+				this.serviceProperties);
+		ClientHttpConnectorBuilder<?> builder = connectors.builder(this.classLoader);
+		ClientHttpConnectorSettings settings = connectors.settings();
 		return builder.build(settings);
 	}
 

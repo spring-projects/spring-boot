@@ -46,8 +46,6 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 
 	private final ObjectProvider<SslBundles> sslBundles;
 
-	private final @Nullable HttpClientProperties clientProperties;
-
 	private final HttpClientServiceProperties serviceProperties;
 
 	private final ObjectProvider<ClientHttpRequestFactoryBuilder<?>> requestFactoryBuilder;
@@ -59,14 +57,13 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 	private final @Nullable ApiVersionFormatter apiVersionFormatter;
 
 	RestClientPropertiesHttpServiceGroupConfigurer(ClassLoader classLoader, ObjectProvider<SslBundles> sslBundles,
-			@Nullable HttpClientProperties clientProperties, HttpClientServiceProperties serviceProperties,
+			HttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> requestFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> requestFactorySettings,
 			ObjectProvider<ApiVersionInserter> apiVersionInserter,
 			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
 		this.classLoader = classLoader;
 		this.sslBundles = sslBundles;
-		this.clientProperties = clientProperties;
 		this.serviceProperties = serviceProperties;
 		this.requestFactoryBuilder = requestFactoryBuilder;
 		this.requestFactorySettings = requestFactorySettings;
@@ -97,11 +94,11 @@ class RestClientPropertiesHttpServiceGroupConfigurer implements RestClientHttpSe
 	}
 
 	private ClientHttpRequestFactory getRequestFactory(HttpClientServiceProperties.@Nullable Group groupProperties) {
-		ClientHttpRequestFactories factories = new ClientHttpRequestFactories(this.sslBundles, groupProperties,
-				this.serviceProperties, this.clientProperties);
-		ClientHttpRequestFactoryBuilder<?> builder = this.requestFactoryBuilder
-			.getIfAvailable(() -> factories.builder(this.classLoader));
-		ClientHttpRequestFactorySettings settings = this.requestFactorySettings.getIfAvailable(factories::settings);
+		ClientHttpRequestFactories factories = new ClientHttpRequestFactories(
+				this.requestFactoryBuilder.getIfAvailable(), this.requestFactorySettings.getIfAvailable(),
+				this.sslBundles, groupProperties, this.serviceProperties);
+		ClientHttpRequestFactoryBuilder<?> builder = factories.builder(this.classLoader);
+		ClientHttpRequestFactorySettings settings = factories.settings();
 		return builder.build(settings);
 	}
 

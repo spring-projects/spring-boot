@@ -21,7 +21,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
@@ -53,15 +52,13 @@ class RestClientHttpServiceClientConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	RestClientPropertiesHttpServiceGroupConfigurer restClientPropertiesHttpServiceGroupConfigurer(
-			ObjectProvider<SslBundles> sslBundles, ObjectProvider<HttpClientProperties> httpClientProperties,
-			HttpClientServiceProperties serviceProperties,
+			ObjectProvider<SslBundles> sslBundles, HttpClientServiceProperties serviceProperties,
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientFactoryBuilder,
 			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings,
 			ObjectProvider<ApiVersionInserter> apiVersionInserter,
 			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
-		return new RestClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles,
-				httpClientProperties.getIfAvailable(), serviceProperties, clientFactoryBuilder,
-				clientHttpRequestFactorySettings, apiVersionInserter, apiVersionFormatter);
+		return new RestClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles, serviceProperties,
+				clientFactoryBuilder, clientHttpRequestFactorySettings, apiVersionInserter, apiVersionFormatter);
 	}
 
 	@Bean
