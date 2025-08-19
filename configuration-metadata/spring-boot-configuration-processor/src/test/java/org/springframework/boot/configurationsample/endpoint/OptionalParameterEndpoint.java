@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
- package org.springframework.boot.configurationsample.endpoint;
+package org.springframework.boot.configurationsample.endpoint;
 
- import org.springframework.boot.configurationsample.Endpoint;
- import org.springframework.boot.configurationsample.ReadOperation;
- import org.springframework.boot.configurationsample.OptionalParameter;
- 
- /**
-  * An endpoint with @OptionalParameter to compare with @Nullable behavior.
-  *
-  * @author Wonyong Hwang
-  */
- @Endpoint(id = "optional")
- public class OptionalParameterEndpoint {
- 
-     @ReadOperation
-     public String invoke(@OptionalParameter String parameter) {
-         return "test with " + parameter;
-     }
- 
- }
+import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.OptionalParameter;
+import org.springframework.boot.configurationsample.ReadOperation;
+
+/**
+ * An endpoint that uses {@code OptionalParameter} to signal an optional parameter.
+ *
+ * @author Wonyong Hwang
+ */
+@Endpoint(id = "optional")
+public class OptionalParameterEndpoint {
+
+	@ReadOperation
+	public String invoke(@OptionalParameter String parameter) {
+		return "test with " + parameter;
+	}
+
+}

@@ -16,12 +16,13 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.ReadOperation;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.ReadOperation;
+
 /**
- * An endpoint with @Nullable parameter to test.
+ * An endpoint that uses {@code Nullable} to signal an optional parameter.
  *
  * @author Wonyong Hwang
  */

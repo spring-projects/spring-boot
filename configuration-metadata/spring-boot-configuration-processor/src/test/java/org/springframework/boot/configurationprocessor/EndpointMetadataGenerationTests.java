@@ -28,6 +28,8 @@ import org.springframework.boot.configurationsample.endpoint.CamelCaseEndpoint;
 import org.springframework.boot.configurationsample.endpoint.CustomPropertiesEndpoint;
 import org.springframework.boot.configurationsample.endpoint.EnabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.NoAccessEndpoint;
+import org.springframework.boot.configurationsample.endpoint.NullableParameterEndpoint;
+import org.springframework.boot.configurationsample.endpoint.OptionalParameterEndpoint;
 import org.springframework.boot.configurationsample.endpoint.ReadOnlyAccessEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint2;
@@ -35,8 +37,6 @@ import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint3;
 import org.springframework.boot.configurationsample.endpoint.SpecificEndpoint;
 import org.springframework.boot.configurationsample.endpoint.UnrestrictedAccessEndpoint;
 import org.springframework.boot.configurationsample.endpoint.incremental.IncrementalEndpoint;
-import org.springframework.boot.configurationsample.endpoint.NullableParameterEndpoint;
-import org.springframework.boot.configurationsample.endpoint.OptionalParameterEndpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatRuntimeException;
@@ -196,35 +196,23 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	@Test
-	void nullableParameterEndpoint() {
+	void endpointWithNullableParameter() {
 		ConfigurationMetadata metadata = compile(NullableParameterEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.nullable").fromSource(NullableParameterEndpoint.class));
+		assertThat(metadata)
+			.has(Metadata.withGroup("management.endpoint.nullable").fromSource(NullableParameterEndpoint.class));
 		assertThat(metadata).has(access("nullable", Access.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("nullable"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	@Test
-	void optionalParameterEndpoint() {
+	void endpointWithOptionalParameter() {
 		ConfigurationMetadata metadata = compile(OptionalParameterEndpoint.class);
-		assertThat(metadata).has(Metadata.withGroup("management.endpoint.optional").fromSource(OptionalParameterEndpoint.class));
+		assertThat(metadata)
+			.has(Metadata.withGroup("management.endpoint.optional").fromSource(OptionalParameterEndpoint.class));
 		assertThat(metadata).has(access("optional", Access.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("optional"));
 		assertThat(metadata.getItems()).hasSize(3);
-	}
-
-	@Test
-	void nullableAndOptionalParameterEquivalence() {
-		ConfigurationMetadata nullableMetadata = compile(NullableParameterEndpoint.class);
-		ConfigurationMetadata optionalMetadata = compile(OptionalParameterEndpoint.class);
-
-		assertThat(nullableMetadata.getItems()).hasSize(3);
-		assertThat(optionalMetadata.getItems()).hasSize(3);
-
-		assertThat(nullableMetadata).has(access("nullable", Access.UNRESTRICTED));
-		assertThat(optionalMetadata).has(access("optional", Access.UNRESTRICTED));
-		assertThat(nullableMetadata).has(cacheTtl("nullable"));
-		assertThat(optionalMetadata).has(cacheTtl("optional"));
 	}
 
 	private Metadata.MetadataItemCondition access(String endpointId, Access defaultValue) {
