@@ -603,7 +603,7 @@ bom {
 			]
 		}
 	}
-	library("HtmlUnit", "4.14.0") {
+	library("HtmlUnit", "4.15.0") {
 		group("org.htmlunit") {
 			modules = [
 				"htmlunit"
