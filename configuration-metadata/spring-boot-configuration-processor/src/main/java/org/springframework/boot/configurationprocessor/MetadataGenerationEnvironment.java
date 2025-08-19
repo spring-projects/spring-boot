@@ -55,7 +55,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  */
 class MetadataGenerationEnvironment {
 
-	private static final String NULLABLE_ANNOTATION = "org.springframework.lang.Nullable";
+	private static final String NULLABLE_ANNOTATION = "org.jspecify.annotations.Nullable";
 
 	private static final Set<String> TYPE_EXCLUDES = Set.of("com.zaxxer.hikari.IConnectionCustomizer",
 			"groovy.lang.MetaClass", "groovy.text.markup.MarkupTemplateEngine", "java.io.Writer", "java.io.PrintWriter",
@@ -269,6 +269,17 @@ class MetadataGenerationEnvironment {
 		return null;
 	}
 
+	private AnnotationMirror getTypeUseAnnotation(Element element, String type) {
+		if (element != null) {
+			for (AnnotationMirror annotation : element.asType().getAnnotationMirrors()) {
+				if (type.equals(annotation.getAnnotationType().toString())) {
+					return annotation;
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Collect the annotations that are annotated or meta-annotated with the specified
 	 * {@link TypeElement annotation}.
@@ -368,7 +379,7 @@ class MetadataGenerationEnvironment {
 	}
 
 	boolean hasNullableAnnotation(Element element) {
-		return getAnnotation(element, NULLABLE_ANNOTATION) != null;
+		return getTypeUseAnnotation(element, NULLABLE_ANNOTATION) != null;
 	}
 
 	boolean hasOptionalParameterAnnotation(Element element) {

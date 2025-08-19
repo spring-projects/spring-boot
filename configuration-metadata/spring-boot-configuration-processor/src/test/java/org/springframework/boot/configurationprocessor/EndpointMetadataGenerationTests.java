@@ -28,6 +28,8 @@ import org.springframework.boot.configurationsample.endpoint.CamelCaseEndpoint;
 import org.springframework.boot.configurationsample.endpoint.CustomPropertiesEndpoint;
 import org.springframework.boot.configurationsample.endpoint.EnabledEndpoint;
 import org.springframework.boot.configurationsample.endpoint.NoAccessEndpoint;
+import org.springframework.boot.configurationsample.endpoint.NullableParameterEndpoint;
+import org.springframework.boot.configurationsample.endpoint.OptionalParameterEndpoint;
 import org.springframework.boot.configurationsample.endpoint.ReadOnlyAccessEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint;
 import org.springframework.boot.configurationsample.endpoint.SimpleEndpoint2;
@@ -45,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatRuntimeException;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Wonyong Hwang
  */
 class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
@@ -190,6 +193,26 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 			.isInstanceOf(IllegalStateException.class)
 			.withMessage(
 					"Existing property 'management.endpoint.simple.access' from type org.springframework.boot.configurationsample.endpoint.SimpleEndpoint has a conflicting value. Existing value: unrestricted, new value from type org.springframework.boot.configurationsample.endpoint.SimpleEndpoint3: none");
+	}
+
+	@Test
+	void endpointWithNullableParameter() {
+		ConfigurationMetadata metadata = compile(NullableParameterEndpoint.class);
+		assertThat(metadata)
+			.has(Metadata.withGroup("management.endpoint.nullable").fromSource(NullableParameterEndpoint.class));
+		assertThat(metadata).has(access("nullable", Access.UNRESTRICTED));
+		assertThat(metadata).has(cacheTtl("nullable"));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	void endpointWithOptionalParameter() {
+		ConfigurationMetadata metadata = compile(OptionalParameterEndpoint.class);
+		assertThat(metadata)
+			.has(Metadata.withGroup("management.endpoint.optional").fromSource(OptionalParameterEndpoint.class));
+		assertThat(metadata).has(access("optional", Access.UNRESTRICTED));
+		assertThat(metadata).has(cacheTtl("optional"));
+		assertThat(metadata.getItems()).hasSize(3);
 	}
 
 	private Metadata.MetadataItemCondition access(String endpointId, Access defaultValue) {

@@ -36,6 +36,7 @@ architectureCheck {
 
 dependencies {
 	testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
+	testCompileOnly("org.jspecify:jspecify")
 
 	testImplementation(enforcedPlatform(project(":platform:spring-boot-dependencies")))
 	testImplementation(project(":test-support:spring-boot-test-support"))
