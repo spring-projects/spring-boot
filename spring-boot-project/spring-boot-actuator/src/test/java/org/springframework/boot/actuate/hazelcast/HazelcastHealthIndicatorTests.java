@@ -18,8 +18,7 @@ package org.springframework.boot.actuate.hazelcast;
 
 import com.hazelcast.core.HazelcastException;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.instance.impl.HazelcastInstanceProxy;
-import com.hazelcast.instance.impl.OutOfMemoryHandlerHelper;
+import com.hazelcast.core.LifecycleService;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
@@ -32,6 +31,7 @@ import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -85,25 +85,31 @@ class HazelcastHealthIndicatorTests {
 	}
 
 	@Test
-	void hazelcastOOMShutdown() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class))
-			.withPropertyValues("spring.hazelcast.config=hazelcast.xml")
-			.run((context) -> {
-				HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
-				HazelcastInstance original = ((HazelcastInstanceProxy) hazelcast).getOriginal();
-				OutOfMemoryHandlerHelper.tryCloseConnections(original);
-				OutOfMemoryHandlerHelper.tryShutdown(original);
-				Health health = new HazelcastHealthIndicator(hazelcast).health();
-				assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-			});
+	void hazelcastLifecycleNotRunning() {
+		HazelcastInstance hazelcast = mockHazelcastInstance(false);
+		Health health = new HazelcastHealthIndicator(hazelcast).health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		then(hazelcast).should().getLifecycleService();
+		then(hazelcast).shouldHaveNoMoreInteractions();
 	}
 
 	@Test
 	void hazelcastDown() {
-		HazelcastInstance hazelcast = mock(HazelcastInstance.class);
+		HazelcastInstance hazelcast = mockHazelcastInstance(true);
 		given(hazelcast.executeTransaction(any())).willThrow(new HazelcastException());
 		Health health = new HazelcastHealthIndicator(hazelcast).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		then(hazelcast).should().getLifecycleService();
+		then(hazelcast).should().executeTransaction(any());
+		then(hazelcast).shouldHaveNoMoreInteractions();
+	}
+
+	private static HazelcastInstance mockHazelcastInstance(boolean isRunning) {
+		LifecycleService lifecycleService = mock(LifecycleService.class);
+		given(lifecycleService.isRunning()).willReturn(isRunning);
+		HazelcastInstance hazelcastInstance = mock(HazelcastInstance.class);
+		given(hazelcastInstance.getLifecycleService()).willReturn(lifecycleService);
+		return hazelcastInstance;
 	}
 
 }
