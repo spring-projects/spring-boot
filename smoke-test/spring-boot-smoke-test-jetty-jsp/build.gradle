@@ -33,7 +33,7 @@ dependencies {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 
-	providedRuntime("org.eclipse.jetty.ee10:jetty-ee10-apache-jsp")
+	providedRuntime("org.eclipse.jetty.ee11:jetty-ee11-apache-jsp")
 
 	runtimeOnly("org.glassfish.web:jakarta.servlet.jsp.jstl")
 

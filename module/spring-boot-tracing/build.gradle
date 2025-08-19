@@ -60,7 +60,7 @@ dependencies {
 	testImplementation("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("io.opentelemetry:opentelemetry-exporter-common")
 	testImplementation("io.prometheus:prometheus-metrics-exposition-formats")
-	testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	testImplementation("org.eclipse.jetty.ee11:jetty-ee11-webapp")
 	testImplementation("org.eclipse.jetty.http2:jetty-http2-server")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

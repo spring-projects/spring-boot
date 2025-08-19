@@ -19,7 +19,7 @@ package org.springframework.boot.jetty.autoconfigure.servlet;
 import java.util.Map;
 
 import jakarta.servlet.Filter;
-import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
+import org.eclipse.jetty.ee11.websocket.servlet.WebSocketUpgradeFilter;
 import org.eclipse.jetty.server.Server;
 import org.junit.jupiter.api.Test;
 

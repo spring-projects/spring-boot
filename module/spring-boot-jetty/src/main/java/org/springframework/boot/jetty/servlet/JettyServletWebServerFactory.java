@@ -31,18 +31,18 @@ import java.util.UUID;
 import jakarta.servlet.http.Cookie;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.ee10.servlet.ErrorHandler;
-import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
-import org.eclipse.jetty.ee10.servlet.ListenerHolder;
-import org.eclipse.jetty.ee10.servlet.ServletHandler;
-import org.eclipse.jetty.ee10.servlet.ServletHolder;
-import org.eclipse.jetty.ee10.servlet.ServletMapping;
-import org.eclipse.jetty.ee10.servlet.SessionHandler;
-import org.eclipse.jetty.ee10.servlet.Source;
-import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
-import org.eclipse.jetty.ee10.webapp.Configuration;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
-import org.eclipse.jetty.ee10.webapp.WebInfConfiguration;
+import org.eclipse.jetty.ee11.servlet.ErrorHandler;
+import org.eclipse.jetty.ee11.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee11.servlet.ListenerHolder;
+import org.eclipse.jetty.ee11.servlet.ServletHandler;
+import org.eclipse.jetty.ee11.servlet.ServletHolder;
+import org.eclipse.jetty.ee11.servlet.ServletMapping;
+import org.eclipse.jetty.ee11.servlet.SessionHandler;
+import org.eclipse.jetty.ee11.servlet.Source;
+import org.eclipse.jetty.ee11.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee11.webapp.Configuration;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.webapp.WebInfConfiguration;
 import org.eclipse.jetty.http.CookieCompliance;
 import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.http.HttpField;
@@ -50,7 +50,6 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpFields.Mutable;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.http.MimeTypes.Wrapper;
 import org.eclipse.jetty.http.SetCookieParser;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -336,7 +335,7 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		Assert.notNull(context, "'context' must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("default");
-		holder.setClassName("org.eclipse.jetty.ee10.servlet.DefaultServlet");
+		holder.setClassName("org.eclipse.jetty.ee11.servlet.DefaultServlet");
 		holder.setInitParameter("dirAllowed", "false");
 		holder.setInitOrder(1);
 		context.getServletHandler().addServletWithMapping(holder, "/");
@@ -406,8 +405,8 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
-				MimeTypes.Wrapper mimeTypes = (Wrapper) context.getMimeTypes();
-				mimeTypes.setWrapped(new MimeTypes(null));
+				MimeTypes.Mutable mimeTypes = context.getMimeTypes();
+				mimeTypes.clear();
 				for (MimeMappings.Mapping mapping : getSettings().getMimeMappings()) {
 					mimeTypes.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 				}

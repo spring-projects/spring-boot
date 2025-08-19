@@ -26,16 +26,16 @@ description = "Spring Boot Jetty"
 
 dependencies {
 	api(project(":module:spring-boot-web-server"))
-	api("org.eclipse.jetty.ee10:jetty-ee10-servlets")
-	api("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	api("org.eclipse.jetty.ee11:jetty-ee11-servlets")
+	api("org.eclipse.jetty.ee11:jetty-ee11-webapp")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-metrics"))
 	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
 	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server")
-	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
-	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server")
+	optional("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jakarta-server")
+	optional("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jetty-server")
 	optional("org.eclipse.jetty.http2:jetty-http2-server")
 	optional("org.springframework:spring-webflux")
 

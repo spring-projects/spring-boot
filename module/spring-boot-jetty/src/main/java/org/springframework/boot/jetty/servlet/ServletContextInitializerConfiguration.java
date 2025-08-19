@@ -17,9 +17,9 @@
 package org.springframework.boot.jetty.servlet;
 
 import jakarta.servlet.ServletException;
-import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
-import org.eclipse.jetty.ee10.webapp.Configuration;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee11.webapp.Configuration;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
 
 import org.springframework.boot.web.server.servlet.ServletContextInitializers;
 import org.springframework.boot.web.servlet.ServletContextInitializer;

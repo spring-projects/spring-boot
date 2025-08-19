@@ -24,7 +24,7 @@ import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 import jakarta.servlet.ServletContainerInitializer;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.jspecify.annotations.Nullable;
 

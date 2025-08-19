@@ -37,8 +37,8 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.undertow:undertow-servlet")
-	testRuntimeOnly("org.eclipse.jetty.ee10:jetty-ee10-servlets")
-	testRuntimeOnly("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	testRuntimeOnly("org.eclipse.jetty.ee11:jetty-ee11-servlets")
+	testRuntimeOnly("org.eclipse.jetty.ee11:jetty-ee11-webapp")
 }
 
 test {

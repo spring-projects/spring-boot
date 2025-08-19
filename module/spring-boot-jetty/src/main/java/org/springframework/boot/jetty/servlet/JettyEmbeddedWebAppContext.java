@@ -16,8 +16,8 @@
 
 package org.springframework.boot.jetty.servlet;
 
-import org.eclipse.jetty.ee10.servlet.ServletHandler;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.servlet.ServletHandler;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
 import org.eclipse.jetty.util.ClassMatcher;
 
 import org.springframework.boot.jetty.JettyWebServer;

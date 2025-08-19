@@ -21,9 +21,9 @@ import java.util.EnumSet;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterRegistration.Dynamic;
 import jakarta.servlet.ServletRequest;
-import org.eclipse.jetty.ee10.webapp.WebAppContext;
-import org.eclipse.jetty.ee10.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
-import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
+import org.eclipse.jetty.ee11.webapp.WebAppContext;
+import org.eclipse.jetty.ee11.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
+import org.eclipse.jetty.ee11.websocket.servlet.WebSocketUpgradeFilter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
 

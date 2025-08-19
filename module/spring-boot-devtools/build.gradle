@@ -94,7 +94,7 @@ dependencies {
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-websocket")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation("org.apache.tomcat.embed:tomcat-embed-jasper")
-	testImplementation("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-client")
+	testImplementation("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jakarta-client")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.postgresql:postgresql")
 	testImplementation("org.springframework:spring-webmvc")

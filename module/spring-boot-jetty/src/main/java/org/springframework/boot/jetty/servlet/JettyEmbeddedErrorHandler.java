@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jetty.servlet;
 
-import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee11.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.http.HttpMethod;
 
 /**
