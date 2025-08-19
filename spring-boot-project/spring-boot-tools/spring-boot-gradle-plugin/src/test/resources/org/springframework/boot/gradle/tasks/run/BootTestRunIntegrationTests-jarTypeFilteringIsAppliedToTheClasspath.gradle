@@ -26,6 +26,6 @@ repositories {
 }
 
 dependencies {
-	implementation(name: "standard")
-	implementation(name: "starter")
+	implementation(":standard:")
+	implementation(":starter:")
 }
