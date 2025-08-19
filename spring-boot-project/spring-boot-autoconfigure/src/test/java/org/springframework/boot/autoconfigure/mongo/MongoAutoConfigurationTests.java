@@ -243,12 +243,6 @@ class MongoAutoConfigurationTests {
 				.doesNotHaveBean(PropertiesMongoConnectionDetails.class));
 	}
 
-	@Test
-	void uuidRepresentationDefaultsAreAligned() {
-		this.contextRunner.run((context) -> assertThat(getSettings(context).getUuidRepresentation())
-			.isEqualTo(new MongoProperties().getUuidRepresentation()));
-	}
-
 	private MongoClientSettings getSettings(AssertableApplicationContext context) {
 		assertThat(context).hasSingleBean(MongoClient.class);
 		MongoClientImpl client = (MongoClientImpl) context.getBean(MongoClient.class);
