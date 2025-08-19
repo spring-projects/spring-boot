@@ -73,7 +73,7 @@ public class JettyServerProperties {
 	/**
 	 * Maximum size of the HTTP response header.
 	 */
-	private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(8);
+	private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(16);
 
 	/**
 	 * Maximum number of connections that the server accepts and processes at any given
