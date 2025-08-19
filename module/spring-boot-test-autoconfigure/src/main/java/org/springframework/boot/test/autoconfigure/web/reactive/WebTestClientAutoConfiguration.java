@@ -44,7 +44,7 @@ import org.springframework.web.server.WebHandler;
  */
 @AutoConfiguration(afterName = { "org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration",
 		"org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration" })
-@ConditionalOnClass({ WebClient.class, WebTestClient.class })
+@ConditionalOnClass({ CodecCustomizer.class, WebClient.class, WebTestClient.class })
 @Import(WebTestClientSecurityConfiguration.class)
 @EnableConfigurationProperties
 public final class WebTestClientAutoConfiguration {

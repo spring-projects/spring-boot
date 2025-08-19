@@ -119,6 +119,14 @@ class WebTestClientAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void shouldBackOffWithoutCodecCustomizer() {
+		FilteredClassLoader classLoader = new FilteredClassLoader(CodecCustomizer.class);
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withClassLoader(classLoader)
+			.run((context) -> assertThat(context).doesNotHaveBean(WebTestClient.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
