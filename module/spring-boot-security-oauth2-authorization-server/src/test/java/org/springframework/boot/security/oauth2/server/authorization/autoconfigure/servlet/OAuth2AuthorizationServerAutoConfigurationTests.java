@@ -19,6 +19,7 @@ package org.springframework.boot.security.oauth2.server.authorization.autoconfig
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.security.autoconfigure.actuate.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -163,6 +164,19 @@ class OAuth2AuthorizationServerAutoConfigurationTests {
 				AuthorizationServerSettings settings = context.getBean(AuthorizationServerSettings.class);
 				assertThat(settings.getIssuer()).isEqualTo("https://example.com");
 			});
+	}
+
+	@Test
+	void causesManagementWebSecurityAutoConfigurationToBackOff() {
+		this.contextRunner
+			.withPropertyValues(CLIENT_PREFIX + ".foo.registration.client-id=abcd",
+					CLIENT_PREFIX + ".foo.registration.client-secret=secret",
+					CLIENT_PREFIX + ".foo.registration.client-authentication-methods=client_secret_basic",
+					CLIENT_PREFIX + ".foo.registration.authorization-grant-types=client_credentials",
+					CLIENT_PREFIX + ".foo.registration.scopes=test")
+			.withConfiguration(AutoConfigurations.of(ManagementWebSecurityAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
+				.doesNotHaveBean("managementSecurityFilterChain"));
 	}
 
 	@Configuration
