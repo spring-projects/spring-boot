@@ -114,7 +114,7 @@ public class MongoProperties {
 	/**
 	 * Representation to use when converting a UUID to a BSON binary value.
 	 */
-	private UuidRepresentation uuidRepresentation = UuidRepresentation.JAVA_LEGACY;
+	private UuidRepresentation uuidRepresentation = UuidRepresentation.STANDARD;
 
 	private final Ssl ssl = new Ssl();
 
