@@ -60,14 +60,6 @@ jobs:
         env:
           BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
           BUILD_VERSION: ${{ github.event.inputs.build-version }}
-      - name: Bust OSS Cloudflare Cache
-        if: ${{ !vars.COMMERCIAL }}
-        uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.20
-        with:
-          context-root: spring-boot
-          context-path: /
-          cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
-          cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
       - name: Authenticate for commercial distribution
         if: ${{ vars.COMMERCIAL }}
         uses: 'google-github-actions/auth@v2.1.0'
@@ -80,6 +72,13 @@ jobs:
           path: 'build/site'
           destination: '${{ vars.COMMERCIAL_DOCS_HOST }}/spring-boot'
           parent: false
+      - name: Bust Cloudflare Cache
+        uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.20
+        with:
+          context-root: spring-boot
+          context-path: /
+          cloudflare-zone-id: ${{ (vars.COMMERCIAL && secrets.COMMERCIAL_CLOUDFLARE_ZONE_ID) || secrets.CLOUDFLARE_ZONE_ID }}
+          cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
       - name: Send Notification
         if: failure()
         uses: ./.github/actions/send-notification
