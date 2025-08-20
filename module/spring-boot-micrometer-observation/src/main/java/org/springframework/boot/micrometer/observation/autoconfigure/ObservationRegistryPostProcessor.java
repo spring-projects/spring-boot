@@ -73,12 +73,14 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 	}
 
 	private ObservationRegistryConfigurer getConfigurer() {
-		if (this.configurer == null) {
-			this.configurer = new ObservationRegistryConfigurer(this.observationRegistryCustomizers,
+		ObservationRegistryConfigurer configurer = this.configurer;
+		if (configurer == null) {
+			configurer = new ObservationRegistryConfigurer(this.observationRegistryCustomizers,
 					this.observationPredicates, this.observationConventions, this.observationHandlers,
 					this.observationHandlerGroups, this.observationFilters);
+			this.configurer = configurer;
 		}
-		return this.configurer;
+		return configurer;
 	}
 
 }
