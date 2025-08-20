@@ -24,17 +24,18 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
-import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.thread.Threading;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.env.Environment;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
@@ -42,6 +43,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * {@link ClientHttpRequestFactoryBuilder} and {@link ClientHttpRequestFactorySettings}.
  *
  * @author Phillip Webb
+ * @author Sangmin Park
  * @since 4.0.0
  */
 @SuppressWarnings("removal")
@@ -53,10 +55,14 @@ public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	private final ClientHttpRequestFactories factories;
 
+	private final Environment environment;
+
 	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
-	HttpClientAutoConfiguration(ObjectProvider<SslBundles> sslBundles, HttpClientProperties properties) {
+	HttpClientAutoConfiguration(Environment environment, ObjectProvider<SslBundles> sslBundles,
+			HttpClientProperties properties) {
+		this.environment = environment;
 		this.factories = new ClientHttpRequestFactories(sslBundles, properties);
 	}
 
@@ -67,21 +73,11 @@ public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnThreading(Threading.PLATFORM)
 	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilderOnPlatform(
 			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
 		ClientHttpRequestFactoryBuilder<?> builder = this.factories.builder(this.beanClassLoader);
-		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	@ConditionalOnThreading(Threading.VIRTUAL)
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilderOnVirtual(
-			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
-		ClientHttpRequestFactoryBuilder<?> builder = this.factories.builder(this.beanClassLoader);
-		if (builder instanceof JdkClientHttpRequestFactoryBuilder jdk) {
-			return customize(jdk.enableVirtualThreadExecutor(), clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
+		if (builder instanceof JdkClientHttpRequestFactoryBuilder jdk && Threading.VIRTUAL.isActive(this.environment)) {
+			builder = jdk.withExecutor(new VirtualThreadTaskExecutor("httpclient-"));
 		}
 		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
 	}
@@ -91,7 +87,7 @@ public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 			List<ClientHttpRequestFactoryBuilderCustomizer<?>> customizers) {
 		ClientHttpRequestFactoryBuilder<?>[] builderReference = { builder };
 		LambdaSafe.callbacks(ClientHttpRequestFactoryBuilderCustomizer.class, customizers, builderReference[0])
-				.invoke((customizer) -> builderReference[0] = customizer.customize(builderReference[0]));
+			.invoke((customizer) -> builderReference[0] = customizer.customize(builderReference[0]));
 		return builderReference[0];
 	}
 

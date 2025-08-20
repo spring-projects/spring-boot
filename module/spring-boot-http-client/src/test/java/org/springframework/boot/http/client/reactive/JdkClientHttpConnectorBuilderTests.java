@@ -18,12 +18,16 @@ package org.springframework.boot.http.client.reactive;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.concurrent.Executor;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.JdkHttpClientBuilder;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JdkClientHttpConnectorBuilder} and {@link JdkHttpClientBuilder}.
@@ -46,6 +50,14 @@ class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuil
 			.build();
 		httpClientCustomizer1.assertCalled();
 		httpClientCustomizer2.assertCalled();
+	}
+
+	@Test
+	void withExecutor() {
+		Executor executor = new SimpleAsyncTaskExecutor();
+		JdkClientHttpConnector connector = ClientHttpConnectorBuilder.jdk().withExecutor(executor).build();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient.executor()).containsSame(executor);
 	}
 
 	@Override

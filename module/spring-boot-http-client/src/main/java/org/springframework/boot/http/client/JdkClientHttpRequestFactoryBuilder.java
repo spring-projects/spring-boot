@@ -19,7 +19,7 @@ package org.springframework.boot.http.client;
 import java.net.http.HttpClient;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -35,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Sangmin Park
  * @since 3.4.0
  */
 public final class JdkClientHttpRequestFactoryBuilder
@@ -64,6 +65,17 @@ public final class JdkClientHttpRequestFactoryBuilder
 	}
 
 	/**
+	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} uses the given executor
+	 * with the underlying {@link java.net.http.HttpClient.Builder}.
+	 * @param executor the executor to use
+	 * @return a new {@link JdkClientHttpRequestFactoryBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JdkClientHttpRequestFactoryBuilder withExecutor(Executor executor) {
+		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientBuilder.withExecutor(executor));
+	}
+
+	/**
 	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} that applies additional
 	 * customization to the underlying {@link java.net.http.HttpClient.Builder}.
 	 * @param httpClientCustomizer the customizer to apply
@@ -74,12 +86,6 @@ public final class JdkClientHttpRequestFactoryBuilder
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
-	}
-
-	public JdkClientHttpRequestFactoryBuilder enableVirtualThreadExecutor() {
-		return this.withHttpClientCustomizer(builder ->
-				builder.executor(Executors.newVirtualThreadPerTaskExecutor())
-		);
 	}
 
 	@Override
