@@ -29,6 +29,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,6 +77,7 @@ class StaticResourceJarsTests {
 	}
 
 	@Test
+	@DisabledForJreRange(min = JRE.JAVA_25) // Requires -Djdk.net.file.ftpfallback=true
 	void uncPathsAreTolerated() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL(),

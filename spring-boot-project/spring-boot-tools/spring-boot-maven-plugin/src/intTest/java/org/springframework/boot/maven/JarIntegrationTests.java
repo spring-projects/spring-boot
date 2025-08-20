@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
 
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.loader.tools.JarModeLibrary;
@@ -323,6 +325,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	@DisabledForJreRange(min = JRE.JAVA_25) // Kotlin Maven integration does not support
+											// Java 25
 	void whenAProjectUsesKotlinItsModuleMetadataIsRepackagedIntoBootInfClasses(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-with-kotlin-module").execute((project) -> {
 			File main = new File(project, "target/jar-with-kotlin-module-0.0.1.BUILD-SNAPSHOT.jar");
