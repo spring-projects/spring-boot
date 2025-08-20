@@ -1,0 +1,2 @@
+org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration
+org.springframework.boot.micrometer.observation.autoconfigure.ScheduledTasksObservabilityAutoConfiguration

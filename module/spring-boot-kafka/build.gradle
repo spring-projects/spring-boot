@@ -31,7 +31,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("org.apache.kafka:kafka-streams")
 	optional("org.testcontainers:kafka")
 	optional("org.testcontainers:redpanda")

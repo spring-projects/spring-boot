@@ -42,7 +42,7 @@ import org.springframework.boot.r2dbc.metrics.ConnectionPoolMetrics;
  * @since 4.0.0
  */
 @AutoConfiguration(after = R2dbcAutoConfiguration.class,
-		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
+		afterName = "org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ ConnectionPool.class, MeterRegistry.class })
 @ConditionalOnBean({ ConnectionFactory.class, MeterRegistry.class })
 public final class ConnectionPoolMetricsAutoConfiguration {

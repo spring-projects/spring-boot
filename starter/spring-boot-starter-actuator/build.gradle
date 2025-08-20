@@ -25,8 +25,8 @@ dependencies {
 
 	api(project(":module:spring-boot-actuator-autoconfigure"))
 	api(project(":module:spring-boot-health"))
-	api(project(":module:spring-boot-metrics"))
-	api(project(":module:spring-boot-tracing"))
+	api(project(":module:spring-boot-micrometer-metrics"))
+	api(project(":module:spring-boot-micrometer-tracing"))
 
 	api("io.micrometer:micrometer-observation")
 	api("io.micrometer:micrometer-jakarta9")

@@ -29,9 +29,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.metrics.OnlyOnceLoggingDenyMeterFilter;
-import org.springframework.boot.metrics.autoconfigure.MetricsProperties;
-import org.springframework.boot.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.micrometer.metrics.OnlyOnceLoggingDenyMeterFilter;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
@@ -48,8 +48,8 @@ import org.springframework.http.server.reactive.observation.ServerRequestObserva
  * @since 4.0.0
  */
 @AutoConfiguration(afterName = {
-		"org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
-		"org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration" })
+		"org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
+		"org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration" })
 @ConditionalOnClass({ Observation.class, MeterRegistry.class })
 @ConditionalOnBean({ ObservationRegistry.class, MeterRegistry.class })
 @ConditionalOnWebApplication(type = Type.REACTIVE)

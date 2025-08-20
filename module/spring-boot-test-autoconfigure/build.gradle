@@ -56,9 +56,10 @@ dependencies {
 	optional(project(":module:spring-boot-liquibase")) {
 		exclude(group: "org.liquibase")
 	}
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
+	optional(project(":module:spring-boot-micrometer-observation"))
+	optional(project(":module:spring-boot-micrometer-tracing"))
 	optional(project(":module:spring-boot-mongodb"))
-	optional(project(":module:spring-boot-observation"))
 	optional(project(":module:spring-boot-r2dbc"))
 	optional(project(":module:spring-boot-reactor-netty"))
 	optional(project(":module:spring-boot-restclient"))
@@ -67,7 +68,6 @@ dependencies {
 	optional(project(":module:spring-boot-security-oauth2-client"))
 	optional(project(":module:spring-boot-security-oauth2-resource-server"))
 	optional(project(":module:spring-boot-security-saml2"))
-	optional(project(":module:spring-boot-tracing"))
 	optional(project(":module:spring-boot-tx"))
 	optional(project(":module:spring-boot-validation"))
 	optional(project(":module:spring-boot-web-server-test"))

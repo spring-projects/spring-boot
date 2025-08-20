@@ -36,7 +36,7 @@ import org.springframework.boot.data.metrics.AutoTimer;
 import org.springframework.boot.data.metrics.DefaultRepositoryTagsProvider;
 import org.springframework.boot.data.metrics.MetricsRepositoryMethodInvocationListener;
 import org.springframework.boot.data.metrics.RepositoryTagsProvider;
-import org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;

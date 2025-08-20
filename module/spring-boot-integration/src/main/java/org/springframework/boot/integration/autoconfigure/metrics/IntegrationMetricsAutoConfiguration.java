@@ -32,7 +32,7 @@ import org.springframework.boot.integration.autoconfigure.IntegrationAutoConfigu
  * @since 4.0.0
  */
 @AutoConfiguration(before = IntegrationAutoConfiguration.class,
-		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
+		afterName = "org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 public final class IntegrationMetricsAutoConfiguration {
 
 }

@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Bean;
  * @since 4.0.0
  */
 @AutoConfiguration(before = MongoAutoConfiguration.class,
-		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
+		afterName = "org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ MongoClientSettings.class, MeterRegistry.class })
 @ConditionalOnBean(MeterRegistry.class)
 public final class MongoMetricsAutoConfiguration {

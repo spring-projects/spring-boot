@@ -38,10 +38,10 @@ import org.springframework.util.function.SingletonSupplier;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(
-		afterName = { "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
-				"org.springframework.boot.metrics.autoconfigure.MetricsAutoConfiguration",
-				"org.springframework.boot.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration" })
+@AutoConfiguration(afterName = {
+		"org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration",
+		"org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration",
+		"org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration" })
 @ConditionalOnClass(org.springframework.data.repository.Repository.class)
 @ConditionalOnBean(MeterRegistry.class)
 @EnableConfigurationProperties(DataMetricsProperties.class)

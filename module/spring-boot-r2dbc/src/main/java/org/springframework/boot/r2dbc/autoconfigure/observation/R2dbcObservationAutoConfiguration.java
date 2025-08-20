@@ -43,7 +43,8 @@ import org.springframework.core.annotation.Order;
  * @author Tadaya Tsuyukubo
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.observation.autoconfigure.ObservationAutoConfiguration")
+@AutoConfiguration(
+		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
 @ConditionalOnClass({ ConnectionFactory.class, ProxyConnectionFactory.class, ObservationRegistry.class })
 @ConditionalOnBean(ObservationRegistry.class)
 @EnableConfigurationProperties(R2dbcObservationProperties.class)

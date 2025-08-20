@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Bean;
  * @since 4.0.0
  */
 @AutoConfiguration(before = RedisAutoConfiguration.class,
-		afterName = "org.springframework.boot.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
+		afterName = "org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterRegistryAutoConfiguration")
 @ConditionalOnClass({ RedisClient.class, MicrometerCommandLatencyRecorder.class, MeterRegistry.class })
 @ConditionalOnBean(MeterRegistry.class)
 public final class LettuceMetricsAutoConfiguration {

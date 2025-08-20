@@ -1,0 +1,9 @@
+# Connection Details Factories
+org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.micrometer.metrics.docker.compose.otlp.OpenTelemetryMetricsDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.micrometer.metrics.testcontainers.otlp.GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory,\
+org.springframework.boot.micrometer.metrics.testcontainers.otlp.OpenTelemetryMetricsContainerConnectionDetailsFactory
+
+# Failure Analyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.micrometer.metrics.ValidationFailureAnalyzer

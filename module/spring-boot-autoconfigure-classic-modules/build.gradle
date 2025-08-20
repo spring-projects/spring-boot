@@ -166,7 +166,13 @@ dependencies {
 	api(project(":module:spring-boot-mail")) {
 		transitive = false
 	}
-	api(project(":module:spring-boot-metrics")) {
+	api(project(":module:spring-boot-micrometer-metrics")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-micrometer-observation")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-micrometer-tracing")) {
 		transitive = false
 	}
 	api(project(":module:spring-boot-mongodb")) {
@@ -179,9 +185,6 @@ dependencies {
 		transitive = false
 	}
 	api(project(":module:spring-boot-netty")) {
-		transitive = false
-	}
-	api(project(":module:spring-boot-observation")) {
 		transitive = false
 	}
 	api(project(":module:spring-boot-opentelemetry")) {
@@ -251,9 +254,6 @@ dependencies {
 		transitive = false
 	}
 	api(project(":module:spring-boot-tomcat")) {
-		transitive = false
-	}
-	api(project(":module:spring-boot-tracing")) {
 		transitive = false
 	}
 	api(project(":module:spring-boot-tx")) {

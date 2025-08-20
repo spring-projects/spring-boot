@@ -35,7 +35,7 @@ dependencies {
 	optional(project(":module:spring-boot-data-redis"))
 	optional(project(":module:spring-boot-hazelcast"))
 	optional(project(":module:spring-boot-hibernate"))
-	optional(project(":module:spring-boot-metrics"))
+	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional("com.hazelcast:hazelcast-spring")
 	optional("io.micrometer:micrometer-core")
 	optional("javax.cache:cache-api")

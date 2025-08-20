@@ -33,7 +33,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-hibernate"))
-	optional(project(":module:spring-boot-observation"))
+	optional(project(":module:spring-boot-micrometer-observation"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-flyway"))

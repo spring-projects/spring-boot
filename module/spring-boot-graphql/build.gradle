@@ -32,7 +32,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-http-converter"))
-	optional(project(":module:spring-boot-observation"))
+	optional(project(":module:spring-boot-micrometer-observation"))
 	optional(project(":module:spring-boot-rsocket"))
 	optional(project(":module:spring-boot-security"))
 	optional(project(":module:spring-boot-webflux"))
