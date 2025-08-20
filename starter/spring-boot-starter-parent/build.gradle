@@ -303,10 +303,6 @@ publishing.publications.withType(MavenPublication) {
 												delegate.groupId('org.springframework.boot')
 												delegate.artifactId('spring-boot-devtools')
 											}
-											exclusion {
-												delegate.groupId('org.springframework.boot')
-												delegate.artifactId('spring-boot-docker-compose')
-											}
 										}
 									}
 									executions {
@@ -356,10 +352,6 @@ publishing.publications.withType(MavenPublication) {
 											exclusion {
 												delegate.groupId('org.springframework.boot')
 												delegate.artifactId('spring-boot-devtools')
-											}
-											exclusion {
-												delegate.groupId('org.springframework.boot')
-												delegate.artifactId('spring-boot-docker-compose')
 											}
 										}
 									}

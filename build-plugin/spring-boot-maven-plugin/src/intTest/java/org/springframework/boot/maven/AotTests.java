@@ -198,14 +198,8 @@ class AotTests {
 	@TestTemplate
 	void whenAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-exclude-devtools").goals("package").execute((project) -> {
-			// The test passes if the build completes successfully.
-			// If devtools were included, the AOT processing would fail because devtools
-			// uses features (like class proxies) that are not compatible with native
-			// images.
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
 			assertThat(aotDirectory).exists();
-			// Verify that source files were generated, indicating successful AOT
-			// processing
 			Path sourcesDirectory = aotDirectory.resolve("sources");
 			assertThat(sourcesDirectory).exists();
 			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
@@ -215,15 +209,8 @@ class AotTests {
 	@TestTemplate
 	void whenTestAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-test-exclude-devtools").goals("process-test-classes").execute((project) -> {
-			// The test passes if the build completes successfully.
-			// If devtools were included, the test AOT processing would fail because
-			// devtools
-			// uses features (like class proxies) that are not compatible with native
-			// images.
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
 			assertThat(aotDirectory).exists();
-			// Verify that source files were generated, indicating successful AOT
-			// processing
 			Path sourcesDirectory = aotDirectory.resolve("sources");
 			assertThat(sourcesDirectory).exists();
 			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
