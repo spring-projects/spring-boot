@@ -93,7 +93,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	private final @Nullable ClassLoader classLoader;
 
-	private final Map<DataSourceProperty, String> values = new HashMap<>();
+	private final Map<DataSourceProperty, @Nullable String> values = new HashMap<>();
 
 	private @Nullable Class<T> type;
 

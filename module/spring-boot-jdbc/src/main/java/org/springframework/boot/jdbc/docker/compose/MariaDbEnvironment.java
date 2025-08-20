@@ -47,7 +47,10 @@ class MariaDbEnvironment {
 
 	private String extractUsername(Map<String, @Nullable String> env) {
 		String user = env.get("MARIADB_USER");
-		return (user != null) ? user : env.getOrDefault("MYSQL_USER", "root");
+		if (user == null) {
+			user = env.get("MYSQL_USER");
+		}
+		return (user != null) ? user : "root";
 	}
 
 	private String extractPassword(Map<String, @Nullable String> env) {
