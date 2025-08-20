@@ -51,7 +51,7 @@ import org.springframework.core.task.VirtualThreadTaskExecutor;
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
 		after = MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
-@ConditionalOnClass(OtlpMeterRegistry.class)
+@ConditionalOnClass({ OtlpMeterRegistry.class, OpenTelemetryProperties.class })
 @ConditionalOnEnabledMetricsExport("otlp")
 @EnableConfigurationProperties({ OtlpMetricsProperties.class, OpenTelemetryProperties.class })
 public final class OtlpMetricsExportAutoConfiguration {

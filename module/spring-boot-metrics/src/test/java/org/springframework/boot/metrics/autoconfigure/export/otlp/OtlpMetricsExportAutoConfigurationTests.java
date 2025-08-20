@@ -28,6 +28,7 @@ import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.metrics.autoconfigure.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.assertj.ScheduledExecutorServiceAssert;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OtlpMetricsExportAutoConfiguration}.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class OtlpMetricsExportAutoConfigurationTests {
 
@@ -146,6 +148,13 @@ class OtlpMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class, CustomMetricsSenderConfiguration.class)
 			.withPropertyValues("spring.threads.virtual.enabled=true")
 			.run(this::assertHasCustomMetricsSender);
+	}
+
+	@Test
+	void shouldBackOffIfSpringBootOpenTelemetryIsMissing() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withClassLoader(new FilteredClassLoader("org.springframework.boot.opentelemetry"))
+			.run((context) -> assertThat(context).doesNotHaveBean(OtlpMetricsExportAutoConfiguration.class));
 	}
 
 	private void assertHasCustomMetricsSender(AssertableApplicationContext context) {
