@@ -36,6 +36,7 @@ import org.apache.pulsar.client.api.PulsarClientException.UnsupportedAuthenticat
 import org.apache.pulsar.client.api.ReaderBuilder;
 import org.apache.pulsar.client.api.ServiceUrlProvider;
 import org.apache.pulsar.client.impl.AutoClusterFailover.AutoClusterFailoverBuilderImpl;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.json.JsonWriter;
@@ -85,7 +86,7 @@ final class PulsarPropertiesMapper {
 			serviceUrlConsumer.accept(connectionDetails.getBrokerUrl());
 			return;
 		}
-		Map<String, Authentication> secondaryAuths = getSecondaryAuths(failoverProperties);
+		Map<String, @Nullable Authentication> secondaryAuths = getSecondaryAuths(failoverProperties);
 		AutoClusterFailoverBuilder autoClusterFailoverBuilder = new AutoClusterFailoverBuilderImpl();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(connectionDetails::getBrokerUrl).to(autoClusterFailoverBuilder::primary);
@@ -99,8 +100,8 @@ final class PulsarPropertiesMapper {
 		serviceUrlProviderConsumer.accept(autoClusterFailoverBuilder.build());
 	}
 
-	private Map<String, Authentication> getSecondaryAuths(PulsarProperties.Failover properties) {
-		Map<String, Authentication> secondaryAuths = new LinkedHashMap<>();
+	private Map<String, @Nullable Authentication> getSecondaryAuths(PulsarProperties.Failover properties) {
+		Map<String, @Nullable Authentication> secondaryAuths = new LinkedHashMap<>();
 		properties.getBackupClusters().forEach((backupCluster) -> {
 			PulsarProperties.Authentication authenticationProperties = backupCluster.getAuthentication();
 			if (authenticationProperties.getPluginClassName() == null) {
