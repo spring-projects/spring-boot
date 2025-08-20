@@ -195,13 +195,13 @@ public class MustacheProperties {
 		 */
 		private boolean exposeSpringMacroHelpers = true;
 
-		private final Supplier<Charset> charset;
+		private final Supplier<@Nullable Charset> charset;
 
 		public Servlet() {
 			this.charset = () -> null;
 		}
 
-		private Servlet(Supplier<Charset> charset) {
+		private Servlet(Supplier<@Nullable Charset> charset) {
 			this.charset = charset;
 		}
 
