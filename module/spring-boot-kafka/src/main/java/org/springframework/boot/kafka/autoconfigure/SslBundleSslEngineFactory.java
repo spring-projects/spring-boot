@@ -59,8 +59,9 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	@Override
 	public SSLEngine createClientSslEngine(String peerHost, int peerPort, String endpointIdentification) {
-		Assert.state(this.sslBundle != null, "'sslBundle' must not be null");
-		SSLEngine sslEngine = this.sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
+		SSLEngine sslEngine = sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
 		sslEngine.setUseClientMode(true);
 		SSLParameters sslParams = sslEngine.getSSLParameters();
 		sslParams.setEndpointIdentificationAlgorithm(endpointIdentification);
@@ -70,8 +71,9 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	@Override
 	public SSLEngine createServerSslEngine(String peerHost, int peerPort) {
-		Assert.state(this.sslBundle != null, "'sslBundle' must not be null");
-		SSLEngine sslEngine = this.sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
+		SSLEngine sslEngine = sslBundle.createSslContext().createSSLEngine(peerHost, peerPort);
 		sslEngine.setUseClientMode(false);
 		return sslEngine;
 	}
@@ -88,14 +90,16 @@ public class SslBundleSslEngineFactory implements SslEngineFactory {
 
 	@Override
 	public @Nullable KeyStore keystore() {
-		Assert.state(this.sslBundle != null, "'sslBundle' must not be null");
-		return this.sslBundle.getStores().getKeyStore();
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
+		return sslBundle.getStores().getKeyStore();
 	}
 
 	@Override
 	public @Nullable KeyStore truststore() {
-		Assert.state(this.sslBundle != null, "'sslBundle' must not be null");
-		return this.sslBundle.getStores().getTrustStore();
+		SslBundle sslBundle = this.sslBundle;
+		Assert.state(sslBundle != null, "'sslBundle' must not be null");
+		return sslBundle.getStores().getTrustStore();
 	}
 
 }
