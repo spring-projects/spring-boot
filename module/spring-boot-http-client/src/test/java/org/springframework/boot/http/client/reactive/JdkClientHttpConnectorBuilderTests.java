@@ -21,7 +21,6 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.JdkHttpClientBuilder;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -41,7 +40,7 @@ class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuil
 	void withCustomizers() {
 		TestCustomizer<HttpClient.Builder> httpClientCustomizer1 = new TestCustomizer<>();
 		TestCustomizer<HttpClient.Builder> httpClientCustomizer2 = new TestCustomizer<>();
-		ClientHttpRequestFactoryBuilder.jdk()
+		ClientHttpConnectorBuilder.jdk()
 			.withHttpClientCustomizer(httpClientCustomizer1)
 			.withHttpClientCustomizer(httpClientCustomizer2)
 			.build();

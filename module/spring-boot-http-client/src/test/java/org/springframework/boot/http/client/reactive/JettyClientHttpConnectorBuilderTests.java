@@ -23,7 +23,6 @@ import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.io.ClientConnector;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.JettyHttpClientBuilder;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -45,7 +44,7 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 		TestCustomizer<HttpClient> httpClientCustomizer2 = new TestCustomizer<>();
 		TestCustomizer<HttpClientTransport> httpClientTransportCustomizer = new TestCustomizer<>();
 		TestCustomizer<ClientConnector> clientConnectorCustomizerCustomizer = new TestCustomizer<>();
-		ClientHttpRequestFactoryBuilder.jetty()
+		ClientHttpConnectorBuilder.jetty()
 			.withHttpClientCustomizer(httpClientCustomizer1)
 			.withHttpClientCustomizer(httpClientCustomizer2)
 			.withHttpClientTransportCustomizer(httpClientTransportCustomizer)
