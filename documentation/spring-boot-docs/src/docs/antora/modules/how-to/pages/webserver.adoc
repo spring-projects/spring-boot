@@ -258,7 +258,7 @@ You may, for example, want to use `h2c` when your application is xref:webserver.
 [[howto.webserver.configure-http2.tomcat]]
 === HTTP/2 With Tomcat
 
-Spring Boot ships by default with Tomcat 10.1.x which supports `h2c` and `h2` out of the box.
+Spring Boot ships by default with Tomcat 11.0.x which supports `h2c` and `h2` out of the box.
 Alternatively, you can use `libtcnative` for `h2` support if the library and its dependencies are installed on the host operating system.
 
 The library directory must be made available, if not already, to the JVM library path.
