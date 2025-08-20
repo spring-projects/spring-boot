@@ -54,7 +54,7 @@ public class FlywayEndpoint {
 	@ReadOperation
 	public FlywayBeansDescriptor flywayBeans() {
 		ApplicationContext target = this.context;
-		Map<String, ContextFlywayBeansDescriptor> contextFlywayBeans = new HashMap<>();
+		Map<@Nullable String, ContextFlywayBeansDescriptor> contextFlywayBeans = new HashMap<>();
 		while (target != null) {
 			Map<String, FlywayDescriptor> flywayBeans = new HashMap<>();
 			target.getBeansOfType(Flyway.class)
@@ -72,13 +72,13 @@ public class FlywayEndpoint {
 	 */
 	public static final class FlywayBeansDescriptor implements OperationResponseBody {
 
-		private final Map<String, ContextFlywayBeansDescriptor> contexts;
+		private final Map<@Nullable String, ContextFlywayBeansDescriptor> contexts;
 
-		private FlywayBeansDescriptor(Map<String, ContextFlywayBeansDescriptor> contexts) {
+		private FlywayBeansDescriptor(Map<@Nullable String, ContextFlywayBeansDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextFlywayBeansDescriptor> getContexts() {
+		public Map<@Nullable String, ContextFlywayBeansDescriptor> getContexts() {
 			return this.contexts;
 		}
 
