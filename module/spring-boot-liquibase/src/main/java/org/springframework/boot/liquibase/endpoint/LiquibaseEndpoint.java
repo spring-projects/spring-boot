@@ -59,7 +59,7 @@ public class LiquibaseEndpoint {
 	@ReadOperation
 	public LiquibaseBeansDescriptor liquibaseBeans() {
 		ApplicationContext target = this.context;
-		Map<String, ContextLiquibaseBeansDescriptor> contextBeans = new HashMap<>();
+		Map<@Nullable String, ContextLiquibaseBeansDescriptor> contextBeans = new HashMap<>();
 		while (target != null) {
 			Map<String, LiquibaseBeanDescriptor> liquibaseBeans = new HashMap<>();
 			DatabaseFactory factory = DatabaseFactory.getInstance();
@@ -110,13 +110,13 @@ public class LiquibaseEndpoint {
 	 */
 	public static final class LiquibaseBeansDescriptor implements OperationResponseBody {
 
-		private final Map<String, ContextLiquibaseBeansDescriptor> contexts;
+		private final Map<@Nullable String, ContextLiquibaseBeansDescriptor> contexts;
 
-		private LiquibaseBeansDescriptor(Map<String, ContextLiquibaseBeansDescriptor> contexts) {
+		private LiquibaseBeansDescriptor(Map<@Nullable String, ContextLiquibaseBeansDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextLiquibaseBeansDescriptor> getContexts() {
+		public Map<@Nullable String, ContextLiquibaseBeansDescriptor> getContexts() {
 			return this.contexts;
 		}
 
