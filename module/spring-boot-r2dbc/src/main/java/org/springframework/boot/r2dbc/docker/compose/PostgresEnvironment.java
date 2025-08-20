@@ -57,8 +57,9 @@ class PostgresEnvironment {
 
 	private String extract(Map<String, @Nullable String> env, String[] keys, String defaultValue) {
 		for (String key : keys) {
-			if (env.containsKey(key)) {
-				return env.get(key);
+			String value = env.get(key);
+			if (value != null) {
+				return value;
 			}
 		}
 		return defaultValue;

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.r2dbc.autoconfigure;
 
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.r2dbc.spi.ConnectionFactory;
@@ -34,6 +33,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -72,26 +72,43 @@ public final class R2dbcAutoConfiguration {
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(this.properties.getUrl());
+			String url = this.properties.getUrl();
+			Assert.state(url != null, "'url' must not be null");
+			ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(url);
 			Builder optionsBuilder = urlOptions.mutate();
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, this.properties::getUsername,
-					StringUtils::hasText);
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, this.properties::getPassword,
-					StringUtils::hasText);
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE,
-					() -> determineDatabaseName(this.properties), StringUtils::hasText);
+			configureUser(optionsBuilder, urlOptions);
+			configurePassword(optionsBuilder, urlOptions);
+			configureDatabase(optionsBuilder, urlOptions);
 			this.properties.getProperties().forEach((key, value) -> optionsBuilder.option(Option.valueOf(key), value));
 			return optionsBuilder.build();
 		}
 
+		// Lambda isn't detected with the correct nullability
+		@SuppressWarnings("NullAway")
+		private void configureDatabase(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE,
+					() -> determineDatabaseName(this.properties));
+		}
+
+		// Lambda isn't detected with the correct nullability
+		@SuppressWarnings("NullAway")
+		private void configurePassword(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, this.properties::getPassword);
+		}
+
+		// Lambda isn't detected with the correct nullability
+		@SuppressWarnings("NullAway")
+		private void configureUser(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, this.properties::getUsername);
+		}
+
 		private <T extends CharSequence> void configureIf(Builder optionsBuilder,
-				ConnectionFactoryOptions originalOptions, Option<T> option, Supplier<T> valueSupplier,
-				Predicate<T> setIf) {
+				ConnectionFactoryOptions originalOptions, Option<T> option, Supplier<@Nullable T> valueSupplier) {
 			if (originalOptions.hasOption(option)) {
 				return;
 			}
 			T value = valueSupplier.get();
-			if (setIf.test(value)) {
+			if (StringUtils.hasText(value)) {
 				optionsBuilder.option(option, value);
 			}
 		}

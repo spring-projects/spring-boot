@@ -40,9 +40,14 @@ class MySqlEnvironment {
 	private final String database;
 
 	MySqlEnvironment(Map<String, @Nullable String> env) {
-		this.username = env.getOrDefault("MYSQL_USER", "root");
+		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
+	}
+
+	private static String extractUsername(Map<String, @Nullable String> env) {
+		String result = env.get("MYSQL_USER");
+		return (result != null) ? result : "root";
 	}
 
 	private String extractPassword(Map<String, @Nullable String> env) {
