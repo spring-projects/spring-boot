@@ -37,7 +37,7 @@ import org.jspecify.annotations.Nullable;
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
 public final class WhitespaceThrowablePatternConverter extends LogEventPatternConverter {
 
-	private final LogEventPatternConverter delegate;
+	private final ExtendedThrowablePatternConverter delegate;
 
 	private final String separator;
 
@@ -45,7 +45,7 @@ public final class WhitespaceThrowablePatternConverter extends LogEventPatternCo
 	private WhitespaceThrowablePatternConverter(Configuration configuration, @Nullable String[] options) {
 		super("WhitespaceThrowable", "throwable");
 		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
-		this.separator = ((ExtendedThrowablePatternConverter) this.delegate).getOptions().getSeparator();
+		this.separator = this.delegate.getOptions().getSeparator();
 	}
 
 	@Override
