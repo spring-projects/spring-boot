@@ -2153,7 +2153,6 @@ bom {
 				"spring-boot-starter-test",
 				"spring-boot-starter-thymeleaf",
 				"spring-boot-starter-tomcat",
-				"spring-boot-starter-undertow",
 				"spring-boot-starter-validation",
 				"spring-boot-starter-web",
 				"spring-boot-starter-web-services",
@@ -2170,7 +2169,6 @@ bom {
 				"spring-boot-tomcat",
 				"spring-boot-tracing",
 				"spring-boot-tx",
-				"spring-boot-undertow",
 				"spring-boot-validation",
 				"spring-boot-webclient",
 				"spring-boot-webflux",
@@ -2650,18 +2648,6 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/pingidentity/ldapsdk/releases/tag/{version}")
-		}
-	}
-	library("Undertow", "2.3.18.Final") {
-		group("io.undertow") {
-			modules = [
-				"undertow-core",
-				"undertow-servlet",
-				"undertow-websockets-jsr"
-			]
-		}
-		links {
-			releaseNotes("https://github.com/undertow-io/undertow/releases/tag/{version}")
 		}
 	}
 	library("Versions Maven Plugin", "2.18.0") {

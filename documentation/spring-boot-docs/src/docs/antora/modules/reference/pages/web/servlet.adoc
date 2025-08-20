@@ -537,7 +537,7 @@ Both the servlet and the filter registrations can be given init parameters by us
 [[web.servlet.embedded-container]]
 == Embedded Servlet Container Support
 
-For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
+For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat] and https://www.eclipse.org/jetty/[Jetty] servers.
 Most developers use the appropriate starter to obtain a fully configured instance.
 By default, the embedded server listens for HTTP requests on port `8080`.
 
@@ -605,7 +605,7 @@ TIP: javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=an
 
 Under the hood, Spring Boot uses a different type of javadoc:org.springframework.context.ApplicationContext[] for embedded servlet container support.
 The javadoc:org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext[] is a special type of javadoc:org.springframework.web.context.WebApplicationContext[] that bootstraps itself by searching for a single javadoc:org.springframework.boot.web.servlet.server.ServletWebServerFactory[] bean.
-Usually a javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[], or javadoc:org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory[] has been auto-configured.
+Usually a javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], or javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[] has been auto-configured.
 
 NOTE: You usually do not need to be aware of these implementation classes.
 Most applications are auto-configured, and the appropriate javadoc:org.springframework.context.ApplicationContext[] and javadoc:org.springframework.boot.web.servlet.server.ServletWebServerFactory[] are created on your behalf.
@@ -635,7 +635,7 @@ Common server settings include:
 * xref:how-to:webserver.adoc#howto.webserver.enable-response-compression[HTTP compression]
 
 Spring Boot tries as much as possible to expose common settings, but this is not always possible.
-For those cases, dedicated namespaces offer server-specific customizations (see `server.tomcat` and `server.undertow`).
+For those cases, dedicated namespaces offer server-specific customizations (see `server.tomcat`).
 For instance, xref:how-to:webserver.adoc#howto.webserver.configure-access-logs[access logs] can be configured with specific features of the embedded servlet container.
 
 TIP: See the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class for a complete list.
@@ -649,7 +649,7 @@ The `SameSite` cookie attribute can be used by web browsers to control if and ho
 The attribute is particularly relevant for modern web browsers which have started to change the default value that is used when the attribute is missing.
 
 If you want to change the `SameSite` attribute of your session cookie, you can use the configprop:server.servlet.session.cookie.same-site[] property.
-This property is supported by auto-configured Tomcat, Jetty and Undertow servers.
+This property is supported by auto-configured Tomcat and Jetty servers.
 It is also used to configure Spring Session servlet based javadoc:org.springframework.session.SessionRepository[] beans.
 
 For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to your `application.properties` or `application.yaml` file:
@@ -705,7 +705,7 @@ The following example shows programmatically setting the port:
 
 include-code::MyWebServerFactoryCustomizer[]
 
-javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[] and javadoc:org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory[] are dedicated variants of javadoc:org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory[] that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
+javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], and javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[] are dedicated variants of javadoc:org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory[] that have additional customization setter methods for Tomcat, and Jetty respectively.
 The following example shows how to customize javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[] that provides access to Tomcat-specific configuration options:
 
 include-code::MyTomcatWebServerFactoryCustomizer[]
@@ -733,8 +733,6 @@ When running a Spring Boot application that uses an embedded servlet container (
 * With Jetty and Tomcat, it should work if you use war packaging.
 An executable war will work when launched with `java -jar`, and will also be deployable to any standard container.
 JSPs are not supported when using an executable jar.
-
-* Undertow does not support JSPs.
 
 * Creating a custom `error.jsp` page does not override the default view for xref:web/servlet.adoc#web.servlet.spring-mvc.error-handling[error handling].
   xref:web/servlet.adoc#web.servlet.spring-mvc.error-handling.error-pages[Custom error pages] should be used instead.

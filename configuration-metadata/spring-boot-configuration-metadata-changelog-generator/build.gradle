@@ -128,7 +128,6 @@ def dependenciesOf(String version) {
 			"spring-boot-tomcat",
 			"spring-boot-tracing",
 			"spring-boot-tx",
-			"spring-boot-undertow",
 			"spring-boot-validation",
 			"spring-boot-web-server",
 			"spring-boot-webclient",

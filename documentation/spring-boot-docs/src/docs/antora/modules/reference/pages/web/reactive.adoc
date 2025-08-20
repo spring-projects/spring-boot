@@ -310,7 +310,7 @@ See xref:io/rest-client.adoc#io.rest-client.apiversioning[] for details.
 [[web.reactive.reactive-server]]
 == Embedded Reactive Server Support
 
-Spring Boot includes support for the following embedded reactive web servers: Reactor Netty, Tomcat, Jetty, and Undertow.
+Spring Boot includes support for the following embedded reactive web servers: Reactor Netty, Tomcat, and Jetty.
 Most developers use the appropriate starter to obtain a fully configured instance.
 By default, the embedded server listens for HTTP requests on port 8080.
 
@@ -345,7 +345,7 @@ The following example shows programmatically setting the port:
 
 include-code::MyWebServerFactoryCustomizer[]
 
-javadoc:org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory[], javadoc:org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory[], javadoc:org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory[], and javadoc:org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory[] are dedicated variants of javadoc:org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory[] that have additional customization setter methods for Jetty, Reactor Netty, Tomcat, and Undertow respectively.
+javadoc:org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory[], javadoc:org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory[], and javadoc:org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory[] are dedicated variants of javadoc:org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory[] that have additional customization setter methods for Jetty, Reactor Netty, and Tomcat respectively.
 The following example shows how to customize javadoc:org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory[] that provides access to Reactor Netty-specific configuration options:
 
 include-code::MyNettyWebServerFactoryCustomizer[]

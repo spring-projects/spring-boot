@@ -21,14 +21,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import io.undertow.servlet.api.DeploymentManager;
 import jakarta.servlet.ServletException;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardWrapper;
 
 import org.springframework.boot.tomcat.TomcatWebServer;
-import org.springframework.boot.undertow.servlet.UndertowServletWebServer;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.util.ClassUtils;
@@ -47,10 +45,6 @@ final class DispatcherServletHandlerMappings {
 
 	private static final boolean TOMCAT_WEB_SERVER_PRESENT = ClassUtils.isPresent(
 			"org.springframework.boot.tomcat.TomcatWebServer", DispatcherServletHandlerMappings.class.getClassLoader());
-
-	private static final boolean UNDERTOW_WEB_SERVER_PRESENT = ClassUtils.isPresent(
-			"org.springframework.boot.undertow.UndertowWebServer",
-			DispatcherServletHandlerMappings.class.getClassLoader());
 
 	private final String name;
 
@@ -79,10 +73,7 @@ final class DispatcherServletHandlerMappings {
 			return;
 		}
 		WebServer webServer = webServerApplicationContext.getWebServer();
-		if (UNDERTOW_WEB_SERVER_PRESENT && webServer instanceof UndertowServletWebServer undertowServletWebServer) {
-			new UndertowServletInitializer(undertowServletWebServer).initializeServlet(this.name);
-		}
-		else if (TOMCAT_WEB_SERVER_PRESENT && webServer instanceof TomcatWebServer tomcatWebServer) {
+		if (TOMCAT_WEB_SERVER_PRESENT && webServer instanceof TomcatWebServer tomcatWebServer) {
 			new TomcatServletInitializer(tomcatWebServer).initializeServlet(this.name);
 		}
 	}
@@ -119,28 +110,6 @@ final class DispatcherServletHandlerMappings {
 				catch (ServletException ex) {
 					// Continue
 				}
-			}
-		}
-
-	}
-
-	private static final class UndertowServletInitializer {
-
-		private final UndertowServletWebServer webServer;
-
-		private UndertowServletInitializer(UndertowServletWebServer webServer) {
-			this.webServer = webServer;
-		}
-
-		void initializeServlet(String name) {
-			try {
-				DeploymentManager deploymentManager = this.webServer.getDeploymentManager();
-				if (deploymentManager != null) {
-					deploymentManager.getDeployment().getServlets().getManagedServlet(name).forceInit();
-				}
-			}
-			catch (ServletException ex) {
-				// Continue
 			}
 		}
 

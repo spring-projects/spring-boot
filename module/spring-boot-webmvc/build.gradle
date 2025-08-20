@@ -40,7 +40,6 @@ dependencies {
 	optional(project(":module:spring-boot-metrics"))
 	optional(project(":module:spring-boot-observation"))
 	optional(project(":module:spring-boot-tomcat"))
-	optional(project(":module:spring-boot-undertow"))
 	optional(project(":module:spring-boot-validation"))
 	optional(project(":module:spring-boot-web-server"))
 	optional("com.fasterxml.jackson.core:jackson-databind")

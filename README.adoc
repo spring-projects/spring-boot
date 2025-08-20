@@ -116,7 +116,7 @@ The main library providing features that support the other parts of Spring Boot.
 
 * The `SpringApplication` class, providing static convenience methods that can be used to write a stand-alone Spring Application.
   Its sole job is to create and refresh an appropriate Spring `ApplicationContext`.
-* Embedded web applications with a choice of container (Tomcat, Jetty, or Undertow).
+* Embedded web applications with a choice of container (Tomcat, Jetty).
 * First-class externalized configuration support.
 * Convenience `ApplicationContext` initializers, including support for sensible logging defaults.
 

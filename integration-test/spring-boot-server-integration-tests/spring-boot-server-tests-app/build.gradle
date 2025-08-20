@@ -44,9 +44,6 @@ configurations {
 	tomcat {
 		extendsFrom(app)
 	}
-	undertow {
-		extendsFrom(app)
-	}
 }
 
 tasks.register("resourcesJar", Jar) { jar ->
@@ -77,14 +74,13 @@ dependencies {
 	app("org.springframework:spring-web")
 	jetty("org.springframework.boot:spring-boot-starter-jetty")
 	tomcat("org.springframework.boot:spring-boot-starter-tomcat")
-	undertow("org.springframework.boot:spring-boot-starter-undertow")
 }
 
 static boolean isWindows() {
 	return File.separatorChar == '\\'
 }
 
-["jetty", "tomcat", "undertow"].each { webServer ->
+["jetty", "tomcat"].each { webServer ->
 	def configurer = { task ->
 		task.dependsOn resourcesJar
 		task.mainClass = "com.example.ResourceHandlingApplication"
