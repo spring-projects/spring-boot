@@ -60,13 +60,18 @@ class LLdapDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 			super(service);
 			Map<String, @Nullable String> env = service.env();
 			boolean usesTls = Boolean.parseBoolean(env.getOrDefault("LLDAP_LDAPS_OPTIONS__ENABLED", "false"));
-			String ldapPort = usesTls ? env.getOrDefault("LLDAP_LDAPS_OPTIONS__PORT", "6360")
-					: env.getOrDefault("LLDAP_LDAP_PORT", "3890");
+			String ldapPort = usesTls ? getFromEnv(env, "LLDAP_LDAPS_OPTIONS__PORT", "6360")
+					: getFromEnv(env, "LLDAP_LDAP_PORT", "3890");
 			this.urls = new String[] { "%s://%s:%d".formatted(usesTls ? "ldaps" : "ldap", service.host(),
 					service.ports().get(Integer.parseInt(ldapPort))) };
-			this.base = env.getOrDefault("LLDAP_LDAP_BASE_DN", "dc=example,dc=com");
-			this.password = env.getOrDefault("LLDAP_LDAP_USER_PASS", "password");
+			this.base = getFromEnv(env, "LLDAP_LDAP_BASE_DN", "dc=example,dc=com");
+			this.password = getFromEnv(env, "LLDAP_LDAP_USER_PASS", "password");
 			this.username = "cn=admin,ou=people,%s".formatted(this.base);
+		}
+
+		private static String getFromEnv(Map<String, @Nullable String> env, String key, String defaultValue) {
+			String result = env.get(key);
+			return (result != null) ? result : defaultValue;
 		}
 
 		@Override
