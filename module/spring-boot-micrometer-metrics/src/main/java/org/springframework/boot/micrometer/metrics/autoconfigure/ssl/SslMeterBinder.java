@@ -42,6 +42,7 @@ import org.springframework.boot.info.SslInfo.BundleInfo;
 import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.info.SslInfo.CertificateInfo;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.util.Assert;
 
 /**
  * {@link MeterBinder} which registers the SSL chain expiry (soonest to expire certificate
@@ -102,7 +103,8 @@ class SslMeterBinder implements MeterBinder {
 	private @Nullable Row<CertificateInfo> createRowForChain(BundleInfo bundle, CertificateChainInfo chain) {
 		CertificateInfo leastValidCertificate = chain.getCertificates()
 			.stream()
-			.min(Comparator.comparing(CertificateInfo::getValidityEnds))
+			.filter((c) -> c.getValidityEnds() != null)
+			.min(Comparator.comparing(this::getValidityEnds))
 			.orElse(null);
 		if (leastValidCertificate == null) {
 			return null;
@@ -114,8 +116,14 @@ class SslMeterBinder implements MeterBinder {
 	}
 
 	private long getChainExpiry(CertificateInfo certificate) {
-		Duration valid = Duration.between(Instant.now(this.clock), certificate.getValidityEnds());
+		Duration valid = Duration.between(Instant.now(this.clock), getValidityEnds(certificate));
 		return valid.get(ChronoUnit.SECONDS);
+	}
+
+	private Instant getValidityEnds(CertificateInfo certificate) {
+		Instant validityEnds = certificate.getValidityEnds();
+		Assert.state(validityEnds != null, "'validityEnds' must not be null");
+		return validityEnds;
 	}
 
 	/**

@@ -43,21 +43,18 @@ public abstract class PushRegistryPropertiesConfigAdapter<T extends PushRegistry
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public Duration step() {
-		return get(T::getStep, PushRegistryConfig.super::step);
+		return getRequired(T::getStep, PushRegistryConfig.super::step);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public boolean enabled() {
-		return get(T::isEnabled, PushRegistryConfig.super::enabled);
+		return getRequired(T::isEnabled, PushRegistryConfig.super::enabled);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public int batchSize() {
-		return get(T::getBatchSize, PushRegistryConfig.super::batchSize);
+		return getRequired(T::getBatchSize, PushRegistryConfig.super::batchSize);
 	}
 
 }
