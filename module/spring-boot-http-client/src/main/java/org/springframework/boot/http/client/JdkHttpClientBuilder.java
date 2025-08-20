@@ -18,6 +18,7 @@ package org.springframework.boot.http.client;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import javax.net.ssl.SSLParameters;
@@ -47,6 +48,18 @@ public final class JdkHttpClientBuilder {
 
 	private JdkHttpClientBuilder(Consumer<HttpClient.Builder> customizer) {
 		this.customizer = customizer;
+	}
+
+	/**
+	 * Return a new {@link JdkHttpClientBuilder} uses the given executor with the
+	 * underlying {@link java.net.http.HttpClient.Builder}.
+	 * @param executor the executor to use
+	 * @return a new {@link JdkHttpClientBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JdkHttpClientBuilder withExecutor(Executor executor) {
+		Assert.notNull(executor, "'executor' must not be null");
+		return withCustomizer((httpClient) -> httpClient.executor(executor));
 	}
 
 	/**

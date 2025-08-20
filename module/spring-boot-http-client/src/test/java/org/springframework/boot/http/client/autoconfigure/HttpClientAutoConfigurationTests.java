@@ -16,11 +16,14 @@
 
 package org.springframework.boot.http.client.autoconfigure;
 
+import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
@@ -37,7 +40,9 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -143,6 +148,17 @@ class HttpClientAutoConfigurationTests {
 			.run((context) -> {
 				ClientHttpRequestFactory factory = context.getBean(ClientHttpRequestFactoryBuilder.class).build();
 				assertThat(factory).extracting("connectTimeout").isEqualTo(5L);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenVirtualThreadsEnabledAndUsingJdkHttpClientUsesVirtualThreadExecutor() {
+		this.contextRunner.withPropertyValues("spring.http.client.factory=jdk", "spring.threads.virtual.enabled=true")
+			.run((context) -> {
+				ClientHttpRequestFactory factory = context.getBean(ClientHttpRequestFactoryBuilder.class).build();
+				HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");
+				assertThat(httpClient.executor().get()).isInstanceOf(VirtualThreadTaskExecutor.class);
 			});
 	}
 

@@ -28,10 +28,14 @@ import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.thread.Threading;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.env.Environment;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
@@ -39,6 +43,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * {@link ClientHttpRequestFactoryBuilder} and {@link ClientHttpRequestFactorySettings}.
  *
  * @author Phillip Webb
+ * @author Sangmin Park
  * @since 4.0.0
  */
 @SuppressWarnings("removal")
@@ -50,10 +55,14 @@ public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	private final ClientHttpRequestFactories factories;
 
+	private final Environment environment;
+
 	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
 
-	HttpClientAutoConfiguration(ObjectProvider<SslBundles> sslBundles, HttpClientProperties properties) {
+	HttpClientAutoConfiguration(Environment environment, ObjectProvider<SslBundles> sslBundles,
+			HttpClientProperties properties) {
+		this.environment = environment;
 		this.factories = new ClientHttpRequestFactories(sslBundles, properties);
 	}
 
@@ -64,9 +73,12 @@ public final class HttpClientAutoConfiguration implements BeanClassLoaderAware {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(
+	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilderOnPlatform(
 			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
 		ClientHttpRequestFactoryBuilder<?> builder = this.factories.builder(this.beanClassLoader);
+		if (builder instanceof JdkClientHttpRequestFactoryBuilder jdk && Threading.VIRTUAL.isActive(this.environment)) {
+			builder = jdk.withExecutor(new VirtualThreadTaskExecutor("httpclient-"));
+		}
 		return customize(builder, clientHttpRequestFactoryBuilderCustomizers.orderedStream().toList());
 	}
 

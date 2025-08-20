@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.LoopResources;
 
@@ -38,8 +40,10 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -169,6 +173,19 @@ class ClientHttpConnectorAutoConfigurationTests {
 			.isThrownBy(() -> ClientHttpConnectorBuilder.detect(classLoader));
 		this.contextRunner.withClassLoader(classLoader)
 			.run((context) -> assertThat(context).doesNotHaveBean(ClientHttpConnectorSettings.class));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenVirtualThreadsEnabledAndUsingJdkHttpClientUsesVirtualThreadExecutor() {
+		this.contextRunner
+			.withPropertyValues("spring.http.reactiveclient.connector=jdk", "spring.threads.virtual.enabled=true")
+			.run((context) -> {
+				ClientHttpConnector connector = context.getBean(ClientHttpConnectorBuilder.class).build();
+				java.net.http.HttpClient httpClient = (java.net.http.HttpClient) ReflectionTestUtils.getField(connector,
+						"httpClient");
+				assertThat(httpClient.executor().get()).isInstanceOf(VirtualThreadTaskExecutor.class);
+			});
 	}
 
 	private List<String> sslPropertyValues() {

@@ -19,6 +19,7 @@ package org.springframework.boot.http.client;
 import java.net.http.HttpClient;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -34,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Sangmin Park
  * @since 3.4.0
  */
 public final class JdkClientHttpRequestFactoryBuilder
@@ -60,6 +62,17 @@ public final class JdkClientHttpRequestFactoryBuilder
 	public JdkClientHttpRequestFactoryBuilder withCustomizers(
 			Collection<Consumer<JdkClientHttpRequestFactory>> customizers) {
 		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
+	}
+
+	/**
+	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} uses the given executor
+	 * with the underlying {@link java.net.http.HttpClient.Builder}.
+	 * @param executor the executor to use
+	 * @return a new {@link JdkClientHttpRequestFactoryBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JdkClientHttpRequestFactoryBuilder withExecutor(Executor executor) {
+		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientBuilder.withExecutor(executor));
 	}
 
 	/**

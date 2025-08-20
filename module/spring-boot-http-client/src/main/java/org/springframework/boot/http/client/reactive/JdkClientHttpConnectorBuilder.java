@@ -19,6 +19,7 @@ package org.springframework.boot.http.client.reactive;
 import java.net.http.HttpClient;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -57,6 +58,17 @@ public final class JdkClientHttpConnectorBuilder extends AbstractClientHttpConne
 	@Override
 	public JdkClientHttpConnectorBuilder withCustomizers(Collection<Consumer<JdkClientHttpConnector>> customizers) {
 		return new JdkClientHttpConnectorBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
+	}
+
+	/**
+	 * Return a new {@link JdkClientHttpConnectorBuilder} uses the given executor with the
+	 * underlying {@link java.net.http.HttpClient.Builder}.
+	 * @param executor the executor to use
+	 * @return a new {@link JdkClientHttpConnectorBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JdkClientHttpConnectorBuilder withExecutor(Executor executor) {
+		return new JdkClientHttpConnectorBuilder(getCustomizers(), this.httpClientBuilder.withExecutor(executor));
 	}
 
 	/**
