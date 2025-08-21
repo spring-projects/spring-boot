@@ -143,6 +143,9 @@ public class LoggingSystemProperties {
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
+		if (!this.environment.getProperty("logging.console.enabled", Boolean.class, true)) {
+			setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD.getEnvironmentVariableName(), "OFF");
+		}
 	}
 
 	/**

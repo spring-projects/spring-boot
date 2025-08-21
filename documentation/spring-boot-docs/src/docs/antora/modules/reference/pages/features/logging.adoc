@@ -71,6 +71,8 @@ Enabling the debug mode does _not_ configure your application to log all message
 Alternatively, you can enable a "`trace`" mode by starting your application with a `--trace` flag (or `trace=true` in your `application.properties`).
 Doing so enables trace logging for a selection of core loggers (embedded container, Hibernate schema generation, and the whole Spring portfolio).
 
+If you wan to disable console based logging, you can set the configprop:logging.console.enabled[] property to `false`.
+
 
 
 [[features.logging.console-output.color-coded]]
