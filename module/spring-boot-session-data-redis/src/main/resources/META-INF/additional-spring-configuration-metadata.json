@@ -1,8 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "spring.session.redis.cleanup-cron",
-      "defaultValue": "0 * * * * *"
-    }
-  ]
-}

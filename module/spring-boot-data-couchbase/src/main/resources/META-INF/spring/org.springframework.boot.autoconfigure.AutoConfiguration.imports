@@ -1,4 +1,0 @@
-org.springframework.boot.data.couchbase.autoconfigure.CouchbaseDataAutoConfiguration
-org.springframework.boot.data.couchbase.autoconfigure.CouchbaseReactiveDataAutoConfiguration
-org.springframework.boot.data.couchbase.autoconfigure.CouchbaseReactiveRepositoriesAutoConfiguration
-org.springframework.boot.data.couchbase.autoconfigure.CouchbaseRepositoriesAutoConfiguration

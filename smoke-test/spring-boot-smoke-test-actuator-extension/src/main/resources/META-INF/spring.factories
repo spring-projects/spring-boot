@@ -1,2 +1,0 @@
-org.springframework.boot.actuate.autoconfigure.endpoint.condition.EndpointExposureOutcomeContributor=\
-smoketest.actuator.extension.MyExtensionEndpointExposureOutcomeContributor

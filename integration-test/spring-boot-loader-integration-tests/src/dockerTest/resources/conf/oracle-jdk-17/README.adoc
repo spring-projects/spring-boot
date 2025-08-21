@@ -1,5 +1,0 @@
-This folder contains a Dockerfile that will create an Oracle JDK instance for use in integration tests.
-The resulting Docker image should not be published.
-
-Oracle JDK is subject to the https://www.oracle.com/downloads/licenses/no-fee-license.html["Oracle No-Fee Terms and Conditions" License (NFTC)] license.
-We are specifically using the unmodified JDK for the purposes of developing and testing.

@@ -1,3 +1,0 @@
-org.springframework.boot.couchbase.autoconfigure.CouchbaseAutoConfiguration
-org.springframework.boot.couchbase.autoconfigure.health.CouchbaseHealthContributorAutoConfiguration
-org.springframework.boot.couchbase.autoconfigure.health.CouchbaseReactiveHealthContributorAutoConfiguration

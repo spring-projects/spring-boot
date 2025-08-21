@@ -1,2 +1,0 @@
-org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration
-org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingExportAutoConfiguration

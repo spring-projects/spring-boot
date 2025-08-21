@@ -1,2 +1,0 @@
-org.springframework.boot.servlet.autoconfigure.actuate.web.ServletEndpointManagementContextConfiguration
-org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagementChildContextConfiguration

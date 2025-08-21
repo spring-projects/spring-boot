@@ -1,8 +1,0 @@
-# Application Context Initializers
-org.springframework.context.ApplicationContextInitializer=\
-org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer
-
-# Spring Test ContextCustomizerFactories
-org.springframework.test.context.ContextCustomizerFactory=\
-org.springframework.boot.testcontainers.service.connection.ServiceConnectionContextCustomizerFactory
-

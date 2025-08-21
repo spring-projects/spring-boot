@@ -1,4 +1,0 @@
-org.springframework.boot.data.neo4j.autoconfigure.Neo4jDataAutoConfiguration
-org.springframework.boot.data.neo4j.autoconfigure.Neo4jReactiveDataAutoConfiguration
-org.springframework.boot.data.neo4j.autoconfigure.Neo4jReactiveRepositoriesAutoConfiguration
-org.springframework.boot.data.neo4j.autoconfigure.Neo4jRepositoriesAutoConfiguration
