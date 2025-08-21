@@ -136,18 +136,21 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		String fullMessage = (String) deserialized.get("full_message");
 		String stackTrace = (String) deserialized.get("_error_stack_trace");
 		assertThat(fullMessage).startsWith(
-				"message\n\njava.lang.RuntimeException: Boom%n\tat org.springframework.boot.logging.log4j2.GraylogExtendedLogFormatStructuredLogFormatterTests.shouldFormatException"
-					.formatted());
+				"""
+						message
+
+						java.lang.RuntimeException: Boom
+						\tat org.springframework.boot.logging.log4j2.GraylogExtendedLogFormatStructuredLogFormatterTests.shouldFormatException""");
+		assertThat(stackTrace).startsWith(
+				"""
+						java.lang.RuntimeException: Boom
+						\tat org.springframework.boot.logging.log4j2.GraylogExtendedLogFormatStructuredLogFormatterTests.shouldFormatException""");
+
 		assertThat(deserialized)
 			.containsAllEntriesOf(map("_error_type", "java.lang.RuntimeException", "_error_message", "Boom"));
-		assertThat(stackTrace).startsWith(
-				"java.lang.RuntimeException: Boom%n\tat org.springframework.boot.logging.log4j2.GraylogExtendedLogFormatStructuredLogFormatterTests.shouldFormatException"
-					.formatted());
 		assertThat(json).contains(
-				"java.lang.RuntimeException: Boom%n\\tat org.springframework.boot.logging.log4j2.GraylogExtendedLogFormatStructuredLogFormatterTests.shouldFormatException"
-					.formatted()
-					.replace("\n", "\\n")
-					.replace("\r", "\\r"));
+				"""
+						message\\n\\njava.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.GraylogExtendedLogFormatStructuredLogFormatterTests.shouldFormatException""");
 	}
 
 	@Test

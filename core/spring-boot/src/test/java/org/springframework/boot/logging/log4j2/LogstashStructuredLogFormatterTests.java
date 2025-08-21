@@ -80,13 +80,12 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 		Map<String, Object> deserialized = deserialize(json);
 		String stackTrace = (String) deserialized.get("stack_trace");
 		assertThat(stackTrace).startsWith(
-				"java.lang.RuntimeException: Boom%n\tat org.springframework.boot.logging.log4j2.LogstashStructuredLogFormatterTests.shouldFormatException"
-					.formatted());
+				"""
+						java.lang.RuntimeException: Boom
+						\tat org.springframework.boot.logging.log4j2.LogstashStructuredLogFormatterTests.shouldFormatException""");
 		assertThat(json).contains(
-				"java.lang.RuntimeException: Boom%n\\tat org.springframework.boot.logging.log4j2.LogstashStructuredLogFormatterTests.shouldFormatException"
-					.formatted()
-					.replace("\n", "\\n")
-					.replace("\r", "\\r"));
+				"""
+						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.LogstashStructuredLogFormatterTests.shouldFormatException""");
 	}
 
 	@Test

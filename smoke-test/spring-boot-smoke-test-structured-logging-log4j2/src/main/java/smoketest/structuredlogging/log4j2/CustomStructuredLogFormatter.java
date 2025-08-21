@@ -16,10 +16,8 @@
 
 package smoketest.structuredlogging.log4j2;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
@@ -41,11 +39,9 @@ public class CustomStructuredLogFormatter implements StructuredLogFormatter<LogE
 			result.append(" pid=").append(this.pid);
 		}
 		result.append(" msg=\"").append(event.getMessage().getFormattedMessage()).append('"');
-		Throwable throwable = event.getThrown();
+		ThrowableProxy throwable = event.getThrownProxy();
 		if (throwable != null) {
-			StringWriter stackTrace = new StringWriter();
-			throwable.printStackTrace(new PrintWriter(stackTrace));
-			result.append(" error=\"").append(stackTrace).append('"');
+			result.append(" error=\"").append(throwable.getExtendedStackTraceAsString()).append('"');
 		}
 		result.append('\n');
 		return result.toString();

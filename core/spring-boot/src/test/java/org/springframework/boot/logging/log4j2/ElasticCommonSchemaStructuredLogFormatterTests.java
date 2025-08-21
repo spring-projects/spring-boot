@@ -101,14 +101,13 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		expectedError.put("message", "Boom");
 		assertThat(error).containsAllEntriesOf(expectedError);
 		String stackTrace = (String) error.get("stack_trace");
-		assertThat(stackTrace)
-			.startsWith(String.format("java.lang.RuntimeException: Boom%n\tat org.springframework.boot.logging.log4j2."
-					+ "ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException"));
-		assertThat(json).contains(String
-			.format("java.lang.RuntimeException: Boom%n\\tat org.springframework.boot.logging.log4j2."
-					+ "ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException")
-			.replace("\n", "\\n")
-			.replace("\r", "\\r"));
+		assertThat(stackTrace).startsWith(
+				"""
+						java.lang.RuntimeException: Boom
+						\tat org.springframework.boot.logging.log4j2.ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException""");
+		assertThat(json).contains(
+				"""
+						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException""");
 	}
 
 	@Test

@@ -87,12 +87,12 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		@SuppressWarnings("NullAway.Init")
 		private String charset = StandardCharsets.UTF_8.name();
 
-		public Builder setFormat(String format) {
+		Builder setFormat(String format) {
 			this.format = format;
 			return this;
 		}
 
-		public Builder setCharset(String charset) {
+		Builder setCharset(String charset) {
 			this.charset = charset;
 			return this;
 		}

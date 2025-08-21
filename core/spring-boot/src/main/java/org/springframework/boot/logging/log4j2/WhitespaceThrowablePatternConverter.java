@@ -20,8 +20,6 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.pattern.ConverterKeys;
-import org.apache.logging.log4j.core.pattern.ExtendedThrowablePatternConverter;
-import org.apache.logging.log4j.core.pattern.LogEventPatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
 import org.jspecify.annotations.Nullable;
@@ -35,31 +33,19 @@ import org.jspecify.annotations.Nullable;
  */
 @Plugin(name = "WhitespaceThrowablePatternConverter", category = PatternConverter.CATEGORY)
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
-public final class WhitespaceThrowablePatternConverter extends LogEventPatternConverter {
+public final class WhitespaceThrowablePatternConverter extends ThrowablePatternConverter {
 
-	private final ExtendedThrowablePatternConverter delegate;
-
-	private final String separator;
-
-	@SuppressWarnings("deprecation") // https://github.com/apache/logging-log4j2/issues/3809
-	private WhitespaceThrowablePatternConverter(Configuration configuration, @Nullable String[] options) {
-		super("WhitespaceThrowable", "throwable");
-		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
-		this.separator = this.delegate.getOptions().getSeparator();
+	private WhitespaceThrowablePatternConverter(Configuration configuration, String @Nullable [] options) {
+		super("WhitespaceThrowable", "throwable", options, configuration);
 	}
 
 	@Override
 	public void format(LogEvent event, StringBuilder buffer) {
 		if (event.getThrown() != null) {
-			buffer.append(this.separator);
-			this.delegate.format(event, buffer);
-			buffer.append(this.separator);
+			buffer.append(this.options.getSeparator());
+			super.format(event, buffer);
+			buffer.append(this.options.getSeparator());
 		}
-	}
-
-	@Override
-	public boolean handlesThrowable() {
-		return true;
 	}
 
 	/**
@@ -70,7 +56,7 @@ public final class WhitespaceThrowablePatternConverter extends LogEventPatternCo
 	 * @return a new {@code WhitespaceThrowablePatternConverter}
 	 */
 	public static WhitespaceThrowablePatternConverter newInstance(Configuration configuration,
-			@Nullable String[] options) {
+			String @Nullable [] options) {
 		return new WhitespaceThrowablePatternConverter(configuration, options);
 	}
 
