@@ -20,8 +20,7 @@ import org.springframework.pulsar.config.PulsarContainerFactory;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize a
- * {@link PulsarContainerFactory} before it is fully initialized, in particular to tune
- * its configuration.
+ * {@link PulsarContainerFactory} to fine-tune its auto-configuration.
  *
  * @param <T> the type of the {@link PulsarContainerFactory}
  * @author Chris Bono

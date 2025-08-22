@@ -20,7 +20,8 @@ import java.util.Map;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the Hibernate
- * properties before it is used by an auto-configured {@code EntityManagerFactory}.
+ * properties to customize their auto-configuration prior to use by the auto-configured
+ * {@code EntityManagerFactory}.
  *
  * @author Stephane Nicoll
  * @since 4.0.0

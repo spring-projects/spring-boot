@@ -21,8 +21,8 @@ import org.springframework.data.couchbase.cache.CouchbaseCacheManager.CouchbaseC
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link CouchbaseCacheManagerBuilder} before it is used to build the auto-configured
- * {@link CouchbaseCacheManager}.
+ * {@link CouchbaseCacheManagerBuilder} to fine-tune its auto-configuration before it is
+ * used to build the auto-configured {@link CouchbaseCacheManager}.
  *
  * @author Stephane Nicoll
  * @since 4.0.0

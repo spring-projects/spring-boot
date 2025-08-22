@@ -21,7 +21,8 @@ import com.rabbitmq.stream.EnvironmentBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * auto-configured {@link Environment} that is created by an {@link EnvironmentBuilder}.
+ * {@link EnvironmentBuilder} to fine-tune its auto-configuration before it creates an
+ * {@link Environment}.
  *
  * @author Andy Wilkinson
  * @since 4.0.0

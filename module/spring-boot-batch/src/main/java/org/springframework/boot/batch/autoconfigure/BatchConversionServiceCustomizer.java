@@ -20,8 +20,8 @@ import org.springframework.core.convert.support.ConfigurableConversionService;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link ConfigurableConversionService} that is used by the batch infrastructure while
- * retaining its default auto-configuration.
+ * {@link ConfigurableConversionService} to fine-tune its auto-configuration. The
+ * conversion service is used by the Spring Batch infrastructure.
  *
  * @author Claudio Nave
  * @since 4.0.0

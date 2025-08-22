@@ -20,7 +20,7 @@ import org.springframework.integration.scheduling.PollerMetadata;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link PollerMetadata} whilst retaining default auto-configuration.
+ * {@link PollerMetadata} to fine-tune its auto-configuration.
  *
  * @author Yanming Zhou
  * @since 4.0.0

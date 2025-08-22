@@ -20,7 +20,7 @@ import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link OtlpGrpcSpanExporterBuilder} whilst retaining default auto-configuration.
+ * {@link OtlpGrpcSpanExporterBuilder} to fine-tune its auto-configuration.
  *
  * @author Dmytro Nosan
  * @since 4.0.0
