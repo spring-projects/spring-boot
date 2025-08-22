@@ -119,17 +119,20 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 
 	@Override
 	protected boolean isMultiRelease() {
-		if (this.multiRelease == null) {
+		Boolean multiRelease = this.multiRelease;
+		if (multiRelease == null) {
 			synchronized (this.archiveLock) {
-				if (this.multiRelease == null) {
+				multiRelease = this.multiRelease;
+				if (multiRelease == null) {
 					// JarFile.isMultiRelease() is final so we must go to the manifest
 					Manifest manifest = getManifest();
 					Attributes attributes = (manifest != null) ? manifest.getMainAttributes() : null;
-					this.multiRelease = (attributes != null) && attributes.containsKey(MULTI_RELEASE);
+					multiRelease = (attributes != null) && attributes.containsKey(MULTI_RELEASE);
+					this.multiRelease = multiRelease;
 				}
 			}
 		}
-		return this.multiRelease;
+		return multiRelease;
 	}
 
 	@Override

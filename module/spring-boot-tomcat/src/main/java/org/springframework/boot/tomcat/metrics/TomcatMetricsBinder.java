@@ -61,8 +61,9 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 	public void onApplicationEvent(ApplicationStartedEvent event) {
 		ApplicationContext applicationContext = event.getApplicationContext();
 		Manager manager = findManager(applicationContext);
-		this.tomcatMetrics = new TomcatMetrics(manager, this.tags);
-		this.tomcatMetrics.bindTo(this.meterRegistry);
+		TomcatMetrics tomcatMetrics = new TomcatMetrics(manager, this.tags);
+		tomcatMetrics.bindTo(this.meterRegistry);
+		this.tomcatMetrics = tomcatMetrics;
 	}
 
 	private @Nullable Manager findManager(ApplicationContext applicationContext) {
@@ -89,8 +90,9 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 
 	@Override
 	public void destroy() {
-		if (this.tomcatMetrics != null) {
-			this.tomcatMetrics.close();
+		TomcatMetrics tomcatMetrics = this.tomcatMetrics;
+		if (tomcatMetrics != null) {
+			tomcatMetrics.close();
 		}
 	}
 
