@@ -27,8 +27,8 @@ import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBu
 
 /**
  * Callback interface that can be implemented by beans wishing to further customize the
- * {@link Rest5Client} through a {@link Rest5ClientBuilder} whilst retaining default
- * auto-configuration.
+ * {@link Rest5Client} through a {@link Rest5ClientBuilder} to fine-tune
+ * its auto-configuration.
  *
  * @author Brian Clozel
  * @author Vedran Pavic

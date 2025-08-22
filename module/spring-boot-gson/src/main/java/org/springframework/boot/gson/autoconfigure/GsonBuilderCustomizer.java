@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to further customize the
- * {@link Gson} through {@link GsonBuilder} retaining its default auto-configuration.
+ * {@link Gson} through {@link GsonBuilder} to fine-tune its auto-configuration.
  *
  * @author Ivan Golovko
  * @since 4.0.0

@@ -20,8 +20,7 @@ import org.springframework.transaction.TransactionManager;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize
- * {@link TransactionManager TransactionManagers} while retaining default
- * auto-configuration.
+ * {@link TransactionManager TransactionManagers} to fine-tune its auto-configuration.
  *
  * @param <T> the transaction manager type
  * @author Andy Wilkinson
