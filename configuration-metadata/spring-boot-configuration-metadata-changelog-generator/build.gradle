@@ -44,7 +44,7 @@ architectureCheck {
 
 def dependenciesOf(String version) {
 	if (version.startsWith("4.")) {
-		return [
+		def modules = [
 			"spring-boot",
 			"spring-boot-activemq",
 			"spring-boot-actuator",
@@ -95,9 +95,6 @@ def dependenciesOf(String version) {
 			"spring-boot-ldap",
 			"spring-boot-liquibase",
 			"spring-boot-mail",
-			"spring-boot-micrometer-metrics",
-			"spring-boot-micrometer-observation",
-			"spring-boot-micrometer-tracing",
 			"spring-boot-mongodb",
 			"spring-boot-mustache",
 			"spring-boot-neo4j",
@@ -136,6 +133,21 @@ def dependenciesOf(String version) {
 			"spring-boot-webservices",
 			"spring-boot-zipkin"
 		]
+		if (version.equals("4.0.0-M1")) {
+			modules += [
+				"spring-boot-metrics",
+				"spring-boot-observation",
+				"spring-boot-tracing"
+			]
+		}
+		else {
+			modules += [
+				"spring-boot-micrometer-metrics",
+				"spring-boot-micrometer-observation",
+				"spring-boot-micrometer-tracing"
+			]
+		}
+		return modules
 	}
 	return [
 		"spring-boot",
