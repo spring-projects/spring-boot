@@ -187,12 +187,12 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
 			ServletWebServerFactory factory = getWebServerFactory();
 			createWebServer.tag("factory", factory.getClass().toString());
-			this.webServer = factory.getWebServer(getSelfInitializer());
+			webServer = factory.getWebServer(getSelfInitializer());
+			this.webServer = webServer;
 			createWebServer.end();
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
-					new WebServerGracefulShutdownLifecycle(this.webServer));
-			getBeanFactory().registerSingleton("webServerStartStop",
-					new WebServerStartStopLifecycle(this, this.webServer));
+					new WebServerGracefulShutdownLifecycle(webServer));
+			getBeanFactory().registerSingleton("webServerStartStop", new WebServerStartStopLifecycle(this, webServer));
 		}
 		else if (servletContext != null) {
 			try {

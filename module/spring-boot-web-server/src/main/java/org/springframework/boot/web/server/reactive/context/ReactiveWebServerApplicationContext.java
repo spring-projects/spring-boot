@@ -102,11 +102,11 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
 			createWebServer.tag("factory", webServerFactory.getClass().toString());
 			boolean lazyInit = getBeanFactory().getBeanDefinition(webServerFactoryBeanName).isLazyInit();
-			this.serverManager = new WebServerManager(this, webServerFactory, this::getHttpHandler, lazyInit);
+			serverManager = new WebServerManager(this, webServerFactory, this::getHttpHandler, lazyInit);
+			this.serverManager = serverManager;
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
-					new WebServerGracefulShutdownLifecycle(this.serverManager.getWebServer()));
-			getBeanFactory().registerSingleton("webServerStartStop",
-					new WebServerStartStopLifecycle(this.serverManager));
+					new WebServerGracefulShutdownLifecycle(serverManager.getWebServer()));
+			getBeanFactory().registerSingleton("webServerStartStop", new WebServerStartStopLifecycle(serverManager));
 			createWebServer.end();
 		}
 		initPropertySources();
