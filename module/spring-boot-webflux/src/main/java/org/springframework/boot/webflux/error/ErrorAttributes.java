@@ -43,7 +43,7 @@ public interface ErrorAttributes {
 	 * @param options options for error attribute contents
 	 * @return a map of error attributes
 	 */
-	default Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+	default Map<String, @Nullable Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		return Collections.emptyMap();
 	}
 

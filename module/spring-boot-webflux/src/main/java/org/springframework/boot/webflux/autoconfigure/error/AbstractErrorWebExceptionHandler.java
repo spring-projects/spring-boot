@@ -127,7 +127,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * @param options options to control error attributes
 	 * @return the error attributes as a Map
 	 */
-	protected Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+	protected Map<String, @Nullable Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		return this.errorAttributes.getErrorAttributes(request, options);
 	}
 
@@ -194,7 +194,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * @return a Publisher of the {@link ServerResponse}
 	 */
 	protected Mono<ServerResponse> renderErrorView(String viewName, ServerResponse.BodyBuilder responseBody,
-			Map<String, Object> error) {
+			Map<String, @Nullable Object> error) {
 		if (isTemplateAvailable(viewName)) {
 			return responseBody.render(viewName, error);
 		}
@@ -234,7 +234,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * @return a Publisher of the {@link ServerResponse}
 	 */
 	protected Mono<ServerResponse> renderDefaultErrorView(ServerResponse.BodyBuilder responseBody,
-			Map<String, Object> error) {
+			Map<String, @Nullable Object> error) {
 		StringBuilder builder = new StringBuilder();
 		Date timestamp = (Date) error.get("timestamp");
 		Object message = error.get("message");
