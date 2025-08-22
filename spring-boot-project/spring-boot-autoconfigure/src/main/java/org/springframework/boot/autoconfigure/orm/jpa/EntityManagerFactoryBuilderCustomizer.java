@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 
 /**
- * Callback interface that can be used to customize the auto-configured
- * {@link EntityManagerFactoryBuilder}.
+ * Callback interface that can be used to customize the
+ * {@link EntityManagerFactoryBuilder} to fine-tune its auto-configuration.
  *
  * @author Andy Wilkinson
  * @since 2.1.0

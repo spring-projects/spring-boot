@@ -21,7 +21,8 @@ import io.lettuce.core.resource.ClientResources.Builder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link ClientResources} through a {@link Builder} to fine-tune its auto-configuration.
+ * {@link Builder} to fine-tune its auto-configuration before it creates the
+ * {@link ClientResources}.
  *
  * @author Stephane Nicoll
  * @since 2.6.0

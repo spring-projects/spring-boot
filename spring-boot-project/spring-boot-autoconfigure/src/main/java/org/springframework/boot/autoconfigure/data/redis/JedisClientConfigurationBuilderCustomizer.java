@@ -21,9 +21,8 @@ import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link JedisClientConfiguration} through a {@link JedisClientConfigurationBuilder
- * JedisClientConfiguration.JedisClientConfigurationBuilder} to fine-tune
- * its auto-configuration.
+ * {@link JedisClientConfigurationBuilder} to fine-tune its auto-configuration before it
+ * creates the {@link JedisClientConfiguration}.
  *
  * @author Mark Paluch
  * @since 2.0.0
