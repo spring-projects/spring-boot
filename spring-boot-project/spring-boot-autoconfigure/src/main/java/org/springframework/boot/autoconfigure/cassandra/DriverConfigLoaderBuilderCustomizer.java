@@ -21,8 +21,8 @@ import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBui
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link DriverConfigLoader} through a {@link DriverConfigLoaderBuilderCustomizer} whilst
- * retaining default auto-configuration.
+ * {@link DriverConfigLoader} through a {@link DriverConfigLoaderBuilderCustomizer}
+ * to fine-tune its auto-configuration.
  *
  * @author Stephane Nicoll
  * @since 2.3.0

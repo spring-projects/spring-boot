@@ -22,8 +22,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to further customize the
- * {@link ObjectMapper} through {@link Jackson2ObjectMapperBuilder} retaining its default
- * auto-configuration.
+ * {@link ObjectMapper} through {@link Jackson2ObjectMapperBuilder} to fine-tune
+ * its auto-configuration.
  *
  * @author Grzegorz Poznachowski
  * @since 1.4.0
