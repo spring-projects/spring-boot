@@ -62,6 +62,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -212,6 +213,7 @@ public final class GraphQlWebMvcAutoConfiguration {
 		@Bean
 		HandlerMapping graphQlWebSocketMapping(GraphQlWebSocketHandler handler, GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
+			Assert.state(path != null, "'path' must not be null");
 			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
 			WebSocketHandlerMapping mapping = new WebSocketHandlerMapping();
 			mapping.setWebSocketUpgradeMatch(true);

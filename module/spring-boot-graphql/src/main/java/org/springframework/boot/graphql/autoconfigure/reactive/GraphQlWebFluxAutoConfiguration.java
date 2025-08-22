@@ -59,6 +59,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.config.CorsRegistry;
@@ -190,6 +191,7 @@ public final class GraphQlWebFluxAutoConfiguration {
 		HandlerMapping graphQlWebSocketEndpoint(GraphQlWebSocketHandler graphQlWebSocketHandler,
 				GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
+			Assert.state(path != null, "'path' must not be null");
 			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));
 			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
 			mapping.setHandlerPredicate(new WebSocketUpgradeHandlerPredicate());
