@@ -21,8 +21,8 @@ import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the Artemis
- * JMS server {@link Configuration} before it is used by an auto-configured
- * {@link EmbeddedActiveMQ} instance.
+ * JMS server {@link Configuration} to fine-tune its auto-configuration before it is used
+ * by the auto-configured {@link EmbeddedActiveMQ} instance.
  *
  * @author Eddú Meléndez
  * @author Phillip Webb

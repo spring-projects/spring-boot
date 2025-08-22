@@ -23,8 +23,8 @@ import org.elasticsearch.client.RestClientBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to further customize the
- * {@link org.elasticsearch.client.RestClient} through a {@link RestClientBuilder} whilst
- * retaining default auto-configuration.
+ * {@link RestClientBuilder} to fine-tune its auto-configuration before it creates the
+ * {@link org.elasticsearch.client.RestClient}.
  *
  * @author Brian Clozel
  * @author Vedran Pavic
