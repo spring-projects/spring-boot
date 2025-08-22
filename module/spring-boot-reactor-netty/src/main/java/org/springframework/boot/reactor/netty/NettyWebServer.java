@@ -112,9 +112,11 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public void start() throws WebServerException {
-		if (this.disposableServer == null) {
+		DisposableServer disposableServer = this.disposableServer;
+		if (disposableServer == null) {
 			try {
-				this.disposableServer = startHttpServer();
+				disposableServer = startHttpServer();
+				this.disposableServer = disposableServer;
 			}
 			catch (Exception ex) {
 				PortInUseException.ifCausedBy(ex, ChannelBindException.class, (bindException) -> {
@@ -124,10 +126,8 @@ public class NettyWebServer implements WebServer {
 				});
 				throw new WebServerException("Unable to start Netty", ex);
 			}
-			if (this.disposableServer != null) {
-				logger.info(getStartedOnMessage(this.disposableServer));
-			}
-			startDaemonAwaitThread(this.disposableServer);
+			logger.info(getStartedOnMessage(disposableServer));
+			startDaemonAwaitThread(disposableServer);
 		}
 	}
 
@@ -140,8 +140,9 @@ public class NettyWebServer implements WebServer {
 	}
 
 	protected String getStartedLogMessage() {
-		Assert.state(this.disposableServer != null, "'disposableServer' must not be null");
-		return getStartedOnMessage(this.disposableServer);
+		DisposableServer disposableServer = this.disposableServer;
+		Assert.state(disposableServer != null, "'disposableServer' must not be null");
+		return getStartedOnMessage(disposableServer);
 	}
 
 	private void tryAppend(StringBuilder message, String format, Supplier<Object> supplier) {
@@ -225,16 +226,17 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public void stop() throws WebServerException {
-		if (this.disposableServer != null) {
+		DisposableServer disposableServer = this.disposableServer;
+		if (disposableServer != null) {
 			if (this.gracefulShutdown != null) {
 				this.gracefulShutdown.abort();
 			}
 			try {
 				if (this.lifecycleTimeout != null) {
-					this.disposableServer.disposeNow(this.lifecycleTimeout);
+					disposableServer.disposeNow(this.lifecycleTimeout);
 				}
 				else {
-					this.disposableServer.disposeNow();
+					disposableServer.disposeNow();
 				}
 			}
 			catch (IllegalStateException ex) {
@@ -246,9 +248,10 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public int getPort() {
-		if (this.disposableServer != null) {
+		DisposableServer disposableServer = this.disposableServer;
+		if (disposableServer != null) {
 			try {
-				return this.disposableServer.port();
+				return disposableServer.port();
 			}
 			catch (UnsupportedOperationException ex) {
 				return -1;
