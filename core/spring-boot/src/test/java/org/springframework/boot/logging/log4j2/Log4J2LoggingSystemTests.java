@@ -309,7 +309,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void configLocationsWithJacksonDataformatYaml() {
-		this.loggingSystem.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLParser");
+		this.loggingSystem.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLMapper");
 		assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("log4j2-test.properties",
 				"log4j2-test.yaml", "log4j2-test.yml", "log4j2-test.xml", "log4j2.properties", "log4j2.yaml",
 				"log4j2.yml", "log4j2.xml");
@@ -317,7 +317,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void configLocationsWithJacksonDatabindAndDataformatYaml() {
-		this.loggingSystem.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLParser",
+		this.loggingSystem.availableClasses("com.fasterxml.jackson.dataformat.yaml.YAMLMapper",
 				ObjectMapper.class.getName());
 		assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("log4j2-test.properties",
 				"log4j2-test.yaml", "log4j2-test.yml", "log4j2-test.json", "log4j2-test.jsn", "log4j2-test.xml",
