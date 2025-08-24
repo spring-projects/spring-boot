@@ -32,7 +32,7 @@ jobs:
           - os:
               name: Linux
             java:
-              version: 24
+              version: 25
           - os:
               name: ${{ github.repository == 'spring-projects/spring-boot-commercial' && 'Windows' }}
     steps:
