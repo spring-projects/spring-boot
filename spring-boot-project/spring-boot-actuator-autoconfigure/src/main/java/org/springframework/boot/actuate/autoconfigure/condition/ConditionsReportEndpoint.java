@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.condition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,12 +64,34 @@ public class ConditionsReportEndpoint {
 	@ReadOperation
 	public ConditionsDescriptor conditions() {
 		Map<String, ContextConditionsDescriptor> contextConditionEvaluations = new HashMap<>();
-		ConfigurableApplicationContext target = this.context;
-		while (target != null) {
-			contextConditionEvaluations.put(target.getId(), new ContextConditionsDescriptor(target));
-			target = getConfigurableParent(target);
+		List<ConfigurableApplicationContext> allContexts = collectAllContexts(this.context);
+		for (ConfigurableApplicationContext ctx : allContexts) {
+			contextConditionEvaluations.put(ctx.getId(), new ContextConditionsDescriptor(ctx));
 		}
 		return new ConditionsDescriptor(contextConditionEvaluations);
+	}
+
+	List<ConfigurableApplicationContext> collectAllContexts(ConfigurableApplicationContext rootContext) {
+		List<ConfigurableApplicationContext> contexts = new ArrayList<>();
+		Set<String> seenIds = new HashSet<>();
+		ConfigurableApplicationContext current = rootContext;
+
+		while (current != null && seenIds.add(current.getId())) {
+			contexts.add(current);
+			current = getConfigurableParent(current);
+		}
+
+		if (rootContext != null) {
+			Map<String, ConfigurableApplicationContext> found = rootContext
+				.getBeansOfType(ConfigurableApplicationContext.class, false, false);
+			for (ConfigurableApplicationContext ctx : found.values()) {
+				String ctxId = ctx.getId();
+				if (seenIds.add(ctxId)) {
+					contexts.add(ctx);
+				}
+			}
+		}
+		return contexts;
 	}
 
 	private ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
