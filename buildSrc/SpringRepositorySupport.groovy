@@ -156,5 +156,4 @@ class SpringRepositoriesExtension {
 	static def addTo(repositories, version, buildType) {
 		repositories.extensions.create("spring", SpringRepositoriesExtension.class, repositories, version, buildType)
 	}
-
 }
