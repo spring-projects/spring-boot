@@ -19,7 +19,6 @@ package org.springframework.boot.elasticsearch.autoconfigure;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import co.elastic.clients.transport.rest5_client.low_level.Node;
 import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
@@ -49,7 +48,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -139,25 +137,6 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
-	void configureUriWithAPiKey() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://user@localhost:9200","spring.elasticsearch.apikey=some-apiKey").run((context) -> {
-			Rest5Client client = context.getBean(Rest5Client.class);
-			assertThat(client.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
-					.containsExactly("http://localhost:9200");
-			assertThat(client)
-					.extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
-					.satisfies(( defaultHeaders) -> {
-						Optional<? extends Header> authHeader = defaultHeaders.stream()
-								.filter(x -> x.getName().equals("Authorization"))
-								.findFirst();
-						assertThat(authHeader).isPresent();
-						assertThat(authHeader.get().getValue()).isEqualTo("ApiKey some-apiKey");
-					});
-		});
-	}
-
-
-	@Test
 	void configureUriWithUsernameOnly() {
 		this.contextRunner.withPropertyValues("spring.elasticsearch.uris=http://user@localhost:9200").run((context) -> {
 			Rest5Client client = context.getBean(Rest5Client.class);
@@ -212,6 +191,41 @@ class ElasticsearchRestClientAutoConfigurationTests {
 							.getCredentials(new AuthScope("localhost", 9201), null);
 						assertThat(defaultCredentials.getUserPrincipal().getName()).isEqualTo("admin");
 						assertThat(defaultCredentials.getUserPassword()).containsExactly("admin".toCharArray());
+					});
+			});
+	}
+
+	@Test
+	void whenApiKeyIsConfiguredThenAuthorizationHeaderIsPresent() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.api-key=some-api-key").run((context) -> {
+			Rest5Client client = context.getBean(Rest5Client.class);
+			assertThat(client).extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
+				.satisfiesOnlyOnce((header) -> {
+					assertThat(header.getName().equals("Authorization"));
+					assertThat(header.getValue().equals("ApiKey some-api-key"));
+				});
+		});
+	}
+
+	@Test
+	void whenApiKeyAndUsernameAndPasswordAreConfiguredThenBothFormsOfCredentialsArePresent() {
+		this.contextRunner
+			.withPropertyValues("spring.elasticsearch.api-key=some-api-key", "spring.elasticsearch.username=alice",
+					"spring.elasticsearch.password=secret")
+			.run((context) -> {
+				Rest5Client client = context.getBean(Rest5Client.class);
+				assertThat(client).extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
+					.satisfiesOnlyOnce((header) -> {
+						assertThat(header.getName().equals("Authorization"));
+						assertThat(header.getValue().equals("ApiKey some-api-key"));
+					});
+				assertThat(client)
+					.extracting("client.credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
+					.satisfies((credentialsProvider) -> {
+						UsernamePasswordCredentials defaultCredentials = (UsernamePasswordCredentials) credentialsProvider
+							.getCredentials(new AuthScope(null, -1), null);
+						assertThat(defaultCredentials.getUserPrincipal().getName()).isEqualTo("alice");
+						assertThat(defaultCredentials.getUserPassword()).containsExactly("secret".toCharArray());
 					});
 			});
 	}

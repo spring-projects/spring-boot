@@ -102,10 +102,9 @@ class ElasticsearchRestClientConfigurations {
 				.stream()
 				.map((node) -> new HttpHost(node.protocol().getScheme(), node.hostname(), node.port()))
 				.toArray(HttpHost[]::new));
-			if (connectionDetails.getAPIKey() != null) {
-				builder.setDefaultHeaders(new Header[]{
-						new BasicHeader("Authorization", "ApiKey " + connectionDetails.getAPIKey()),
-				});
+			if (connectionDetails.getApiKey() != null) {
+				builder.setDefaultHeaders(
+						new Header[] { new BasicHeader("Authorization", "ApiKey " + connectionDetails.getApiKey()), });
 			}
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> builderCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(httpClientBuilder)));
@@ -284,8 +283,8 @@ class ElasticsearchRestClientConfigurations {
 		}
 
 		@Override
-		public @Nullable String getAPIKey() {
-			return this.properties.getAPIKey();
+		public @Nullable String getApiKey() {
+			return this.properties.getApiKey();
 		}
 
 		@Override

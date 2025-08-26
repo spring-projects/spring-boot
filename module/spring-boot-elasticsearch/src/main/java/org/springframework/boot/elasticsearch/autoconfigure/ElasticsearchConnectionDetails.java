@@ -59,9 +59,9 @@ public interface ElasticsearchConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * APIKey for authentication with Elasticsearch.
-	 * @return APIKey for authentication with Elasticsearch or {@code null}
+	 * @return the API key for authentication with Elasticsearch or {@code null}
 	 */
-	default @Nullable String getAPIKey() {
+	default @Nullable String getApiKey() {
 		return null;
 	}
 
