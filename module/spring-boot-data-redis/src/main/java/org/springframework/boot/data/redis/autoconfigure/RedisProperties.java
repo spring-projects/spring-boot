@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Yanming Zhou
+ * @author Yong-Hyun Kim
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.redis")
@@ -93,6 +94,8 @@ public class RedisProperties {
 	private @Nullable Sentinel sentinel;
 
 	private @Nullable Cluster cluster;
+
+	private @Nullable StaticMasterReplica staticMasterReplica;
 
 	private final Ssl ssl = new Ssl();
 
@@ -198,6 +201,14 @@ public class RedisProperties {
 
 	public void setCluster(@Nullable Cluster cluster) {
 		this.cluster = cluster;
+	}
+
+	public @Nullable StaticMasterReplica getStaticMasterReplica() {
+		return this.staticMasterReplica;
+	}
+
+	public void setStaticMasterReplica(@Nullable StaticMasterReplica staticMasterReplica) {
+		this.staticMasterReplica = staticMasterReplica;
 	}
 
 	public Jedis getJedis() {
@@ -409,6 +420,27 @@ public class RedisProperties {
 
 		public void setPassword(@Nullable String password) {
 			this.password = password;
+		}
+
+	}
+
+	/**
+	 * Redis static master-replica properties.
+	 */
+	public static class StaticMasterReplica {
+
+		/**
+		 * List of "host:port" pairs regardless of role as the actual roles are determined
+		 * by querying each node's ROLE command.
+		 */
+		private @Nullable List<String> nodes;
+
+		public @Nullable List<String> getNodes() {
+			return this.nodes;
+		}
+
+		public void setNodes(@Nullable List<String> nodes) {
+			this.nodes = nodes;
 		}
 
 	}
