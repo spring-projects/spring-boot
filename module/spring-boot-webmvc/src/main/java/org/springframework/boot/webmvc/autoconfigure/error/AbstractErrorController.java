@@ -72,7 +72,8 @@ public abstract class AbstractErrorController implements ErrorController {
 		return sorted;
 	}
 
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, ErrorAttributeOptions options) {
+	protected Map<String, @Nullable Object> getErrorAttributes(HttpServletRequest request,
+			ErrorAttributeOptions options) {
 		WebRequest webRequest = new ServletWebRequest(request);
 		return this.errorAttributes.getErrorAttributes(webRequest, options);
 	}

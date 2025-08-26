@@ -18,6 +18,8 @@ package org.springframework.boot.webmvc.autoconfigure.actuate.web;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
@@ -55,7 +57,7 @@ public class ManagementErrorEndpoint {
 
 	@RequestMapping("${server.error.path:${error.path:/error}}")
 	@ResponseBody
-	public Map<String, Object> invoke(ServletWebRequest request) {
+	public Map<String, @Nullable Object> invoke(ServletWebRequest request) {
 		return this.errorAttributes.getErrorAttributes(request, getErrorAttributeOptions(request));
 	}
 

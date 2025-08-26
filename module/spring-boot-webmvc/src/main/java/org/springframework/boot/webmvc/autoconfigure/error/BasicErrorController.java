@@ -22,6 +22,7 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -99,7 +100,8 @@ public class BasicErrorController extends AbstractErrorController {
 		if (status == HttpStatus.NO_CONTENT) {
 			return new ResponseEntity<>(status);
 		}
-		Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
+		Map<String, @Nullable Object> body = getErrorAttributes(request,
+				getErrorAttributeOptions(request, MediaType.ALL));
 		return new ResponseEntity<>(body, status);
 	}
 
