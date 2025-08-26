@@ -6,3 +6,9 @@ updates:
       interval: "weekly"
     labels:
       - "type: task"
+  - package-ecosystem: "npm"
+    directory: "/antora"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "type: task"
