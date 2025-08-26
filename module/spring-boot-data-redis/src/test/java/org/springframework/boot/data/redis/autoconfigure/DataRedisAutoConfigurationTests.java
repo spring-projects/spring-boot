@@ -91,6 +91,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yong-Hyun Kim
  */
 class DataRedisAutoConfigurationTests {
 
@@ -502,6 +503,38 @@ class DataRedisAutoConfigurationTests {
 	}
 
 	@Test
+	void testRedisConfigurationWithStaticMasterReplica() {
+		List<String> staticMasterReplicaNodes = Arrays.asList("127.0.0.1:28319", "127.0.0.1:28320", "[::1]:28321");
+		this.contextRunner
+			.withPropertyValues(
+					"spring.data.redis.lettuce.static-master-replica.nodes[0]:" + staticMasterReplicaNodes.get(0),
+					"spring.data.redis.lettuce.static-master-replica.nodes[1]:" + staticMasterReplicaNodes.get(1),
+					"spring.data.redis.lettuce.static-master-replica.nodes[2]:" + staticMasterReplicaNodes.get(2))
+			.run((context) -> {
+				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+				assertThat(connectionFactory.getSentinelConfiguration()).isNull();
+				assertThat(connectionFactory.getClusterConfiguration()).isNull();
+				assertThat(isStaticMasterReplicaAware(connectionFactory)).isTrue();
+			});
+	}
+
+	@Test
+	void testRedisConfigurationWithStaticMasterReplicaAndAuthenticationAndDatabase() {
+		List<String> staticMasterReplicaNodes = Arrays.asList("127.0.0.1:28319", "127.0.0.1:28320");
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.username=user", "spring.data.redis.password=password",
+					"spring.data.redis.database=1",
+					"spring.data.redis.lettuce.static-master-replica.nodes[0]:" + staticMasterReplicaNodes.get(0),
+					"spring.data.redis.lettuce.static-master-replica.nodes[1]:" + staticMasterReplicaNodes.get(1))
+			.run((context) -> {
+				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+				assertThat(getUserName(connectionFactory)).isEqualTo("user");
+				assertThat(connectionFactory.getPassword()).isEqualTo("password");
+				assertThat(connectionFactory.getDatabase()).isOne();
+			});
+	}
+
+	@Test
 	void testRedisConfigurationCreateClientOptionsByDefault() {
 		this.contextRunner.run(assertClientOptions(ClientOptions.class, (options) -> {
 			assertThat(options.getTimeoutOptions().isApplyConnectionTimeout()).isTrue();
@@ -703,6 +736,10 @@ class DataRedisAutoConfigurationTests {
 		RedisClusterNode node = new RedisClusterNode();
 		node.setUri(RedisURI.Builder.redis(host).build());
 		return node;
+	}
+
+	private boolean isStaticMasterReplicaAware(LettuceConnectionFactory factory) {
+		return ReflectionTestUtils.invokeMethod(factory, "isStaticMasterReplicaAware");
 	}
 
 	private static final class RedisNodes implements Nodes {

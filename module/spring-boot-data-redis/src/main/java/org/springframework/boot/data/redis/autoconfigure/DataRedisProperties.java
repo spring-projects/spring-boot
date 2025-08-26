@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Yanming Zhou
+ * @author Yong-Hyun Kim
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.redis")
@@ -481,6 +482,20 @@ public class DataRedisProperties {
 		private final Pool pool = new Pool();
 
 		private final Cluster cluster = new Cluster();
+
+		/**
+		 * List of static master-replica "host:port" pairs regardless of role
+		 * as the actual roles are determined by querying each node's ROLE command.
+		 */
+		private @Nullable List<String> nodes;
+
+		public @Nullable List<String> getNodes() {
+			return this.nodes;
+		}
+
+		public void setNodes(@Nullable List<String> nodes) {
+			this.nodes = nodes;
+		}
 
 		public Duration getShutdownTimeout() {
 			return this.shutdownTimeout;

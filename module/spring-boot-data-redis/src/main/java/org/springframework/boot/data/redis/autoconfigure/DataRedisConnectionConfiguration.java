@@ -35,6 +35,7 @@ import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Base Redis connection configuration.
@@ -48,6 +49,7 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Yanming Zhou
+ * @author Yong-Hyun Kim
  */
 abstract class DataRedisConnectionConfiguration {
 
@@ -191,12 +193,15 @@ abstract class DataRedisConnectionConfiguration {
 		if (getClusterConfiguration() != null) {
 			return Mode.CLUSTER;
 		}
+		if (!CollectionUtils.isEmpty(this.properties.getLettuce().getNodes())) {
+			return Mode.STATIC_MASTER_REPLICA;
+		}
 		return Mode.STANDALONE;
 	}
 
 	enum Mode {
 
-		STANDALONE, CLUSTER, SENTINEL
+		STANDALONE, CLUSTER, SENTINEL, STATIC_MASTER_REPLICA
 
 	}
 

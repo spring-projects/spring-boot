@@ -104,6 +104,7 @@ class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 				Assert.state(sentinelConfig != null, "'sentinelConfig' must not be null");
 				yield new JedisConnectionFactory(sentinelConfig, clientConfiguration);
 			}
+			case STATIC_MASTER_REPLICA -> throw new IllegalStateException("Static master replica is not supported for Jedis");
 		};
 	}
 
