@@ -61,6 +61,7 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
@@ -91,6 +92,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yong-Hyun Kim
  */
 class RedisAutoConfigurationTests {
 
@@ -676,6 +678,50 @@ class RedisAutoConfigurationTests {
 				.satisfies((executor) -> SimpleAsyncTaskExecutorAssert.assertThat((SimpleAsyncTaskExecutor) executor)
 					.usesVirtualThreads());
 		});
+	}
+
+	@Test
+	void testRedisConfigurationWithStaticMasterReplica() {
+		this.contextRunner
+				.withPropertyValues("spring.data.redis.static-master-replica.nodes=127.0.0.1:27379,127.0.0.1:27380")
+				.run((context) -> {
+					LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+					Object configuration = ReflectionTestUtils.getField(connectionFactory, "configuration");
+					assertThat(configuration)
+							.isInstanceOf(RedisStaticMasterReplicaConfiguration.class);
+					assertThat(connectionFactory.getSentinelConfiguration()).isNull();
+					assertThat(connectionFactory.getClusterConfiguration()).isNull();
+				});
+	}
+
+	@Test
+	void testRedisConfigurationWithStaticMasterReplicaAndDatabaseAndAuthentication() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.data.redis.static-master-replica.nodes:127.0.0.1:27379,127.0.0.1:27380",
+						"spring.data.redis.database:1",
+						"spring.data.redis.username:user",
+						"spring.data.redis.password:password")
+				.run((context) -> {
+					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getDatabase()).isOne();
+					assertThat(getUserName(cf)).isEqualTo("user");
+					assertThat(cf.getPassword()).isEqualTo("password");
+				});
+	}
+
+	@Test
+	void testRedisConfigurationWithStaticMasterReplicaDatabaseAndCredentialsFromUrl() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.data.redis.url:redis://user:password@localhost:6379/5",
+						"spring.data.redis.static-master-replica.nodes:127.0.0.1:27379,127.0.0.1:27380")
+				.run((context) -> {
+					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getDatabase()).isEqualTo(5);
+					assertThat(getUserName(cf)).isEqualTo("user");
+					assertThat(cf.getPassword()).isEqualTo("password");
+				});
 	}
 
 	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(

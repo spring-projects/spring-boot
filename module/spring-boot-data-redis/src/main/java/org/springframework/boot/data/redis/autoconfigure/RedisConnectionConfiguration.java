@@ -33,6 +33,7 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -48,6 +49,7 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Yanming Zhou
+ * @author Yong-Hyun Kim
  */
 abstract class RedisConnectionConfiguration {
 
@@ -62,6 +64,8 @@ abstract class RedisConnectionConfiguration {
 
 	private final @Nullable RedisClusterConfiguration clusterConfiguration;
 
+	private final @Nullable RedisStaticMasterReplicaConfiguration staticMasterReplicaConfiguration;
+
 	private final RedisConnectionDetails connectionDetails;
 
 	protected final Mode mode;
@@ -69,12 +73,14 @@ abstract class RedisConnectionConfiguration {
 	protected RedisConnectionConfiguration(RedisProperties properties, RedisConnectionDetails connectionDetails,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
+			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
+			ObjectProvider<RedisStaticMasterReplicaConfiguration> staticMasterReplicaConfigurationProvider) {
 		this.properties = properties;
 		this.standaloneConfiguration = standaloneConfigurationProvider.getIfAvailable();
 		this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
 		this.connectionDetails = connectionDetails;
+		this.staticMasterReplicaConfiguration = staticMasterReplicaConfigurationProvider.getIfAvailable();
 		this.mode = determineMode();
 	}
 
@@ -142,6 +148,31 @@ abstract class RedisConnectionConfiguration {
 		return null;
 	}
 
+	/**
+	 * Create a {@link RedisStaticMasterReplicaConfiguration} if necessary.
+	 * @return {@literal null} if no static master-replica settings are set.
+	 */
+	protected final @Nullable RedisStaticMasterReplicaConfiguration getStaticMasterReplicaConfiguration() {
+		if (this.staticMasterReplicaConfiguration != null) {
+			return this.staticMasterReplicaConfiguration;
+		}
+		if (this.connectionDetails.getStaticMasterReplica() != null) {
+			List<Node> nodes = this.connectionDetails.getStaticMasterReplica().getNodes();
+			Assert.notEmpty(nodes, "'staticMasterReplica.nodes' must not be empty'");
+			Node firstNode = nodes.get(0);
+			RedisStaticMasterReplicaConfiguration config = new RedisStaticMasterReplicaConfiguration(firstNode.host(), firstNode.port());
+			nodes.stream().skip(1).forEach(node -> config.addNode(node.host(), node.port()));
+			config.setUsername(this.connectionDetails.getUsername());
+			String password = this.connectionDetails.getPassword();
+			if (password != null) {
+				config.setPassword(RedisPassword.of(password));
+			}
+			config.setDatabase(this.connectionDetails.getStaticMasterReplica().getDatabase());
+			return config;
+		}
+		return null;
+	}
+
 	private List<RedisNode> getNodes(Cluster cluster) {
 		return cluster.getNodes().stream().map(this::asRedisNode).toList();
 	}
@@ -162,6 +193,8 @@ abstract class RedisConnectionConfiguration {
 					? this.connectionDetails.getCluster().getSslBundle() : null;
 			case SENTINEL -> (this.connectionDetails.getSentinel() != null)
 					? this.connectionDetails.getSentinel().getSslBundle() : null;
+			case STATIC_MASTER_REPLICA -> (this.connectionDetails.getStaticMasterReplica() != null)
+					? this.connectionDetails.getStaticMasterReplica().getSslBundle() : null;
 		};
 	}
 
@@ -197,12 +230,15 @@ abstract class RedisConnectionConfiguration {
 		if (getClusterConfiguration() != null) {
 			return Mode.CLUSTER;
 		}
+		if (getStaticMasterReplicaConfiguration() != null) {
+			return Mode.STATIC_MASTER_REPLICA;
+		}
 		return Mode.STANDALONE;
 	}
 
 	enum Mode {
 
-		STANDALONE, CLUSTER, SENTINEL
+		STANDALONE, CLUSTER, SENTINEL, STATIC_MASTER_REPLICA
 
 	}
 

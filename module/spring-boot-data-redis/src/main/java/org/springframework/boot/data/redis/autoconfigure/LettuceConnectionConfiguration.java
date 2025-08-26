@@ -49,6 +49,7 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -64,6 +65,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yong-Hyun Kim
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
@@ -74,9 +76,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
+			ObjectProvider<RedisStaticMasterReplicaConfiguration> staticMasterReplicaConfigurationProvider,
 			RedisConnectionDetails connectionDetails) {
 		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfigurationProvider,
-				clusterConfigurationProvider);
+				clusterConfigurationProvider, staticMasterReplicaConfigurationProvider);
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -131,6 +134,12 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 				RedisSentinelConfiguration sentinelConfig = getSentinelConfig();
 				Assert.state(sentinelConfig != null, "'sentinelConfig' must not be null");
 				yield new LettuceConnectionFactory(sentinelConfig, clientConfiguration);
+			}
+			case STATIC_MASTER_REPLICA -> {
+				RedisStaticMasterReplicaConfiguration staticMasterReplicaConfiguration = getStaticMasterReplicaConfiguration();
+				Assert.state(staticMasterReplicaConfiguration != null,
+						"'staticMasterReplicaConfiguration' must not be null");
+				yield new LettuceConnectionFactory(staticMasterReplicaConfiguration, clientConfiguration);
 			}
 		};
 	}
