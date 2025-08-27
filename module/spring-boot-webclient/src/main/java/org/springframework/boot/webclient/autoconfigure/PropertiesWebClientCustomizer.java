@@ -73,7 +73,10 @@ public class PropertiesWebClientCustomizer implements WebClientCustomizer {
 
 	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	private void setDefaultApiVersion(Builder builder, PropertyMapper map, AbstractWebClientProperties properties) {
-		map.from(properties.getApiversion()).as(ApiversionProperties::getDefaultVersion).to(builder::defaultApiVersion);
+		map.from(properties.getApiversion())
+			.as(ApiversionProperties::getDefaultVersion)
+			.whenNonNull()
+			.to(builder::defaultApiVersion);
 	}
 
 	private Consumer<HttpHeaders> putAllHeaders(Map<String, List<String>> defaultHeaders) {
