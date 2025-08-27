@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
@@ -575,7 +576,7 @@ public final class FlywayAutoConfiguration {
 	 */
 	static class Extension<E extends ConfigurationExtension> {
 
-		private final SingletonSupplier<E> extension;
+		private final Supplier<E> extension;
 
 		Extension(FluentConfiguration configuration, Class<E> type, String name) {
 			this.extension = SingletonSupplier.of(() -> {
