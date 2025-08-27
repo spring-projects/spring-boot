@@ -19,6 +19,7 @@ package org.springframework.boot.hibernate;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.UserTransaction;
 import org.hibernate.engine.transaction.jta.platform.internal.AbstractJtaPlatform;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.Assert;
@@ -44,14 +45,12 @@ public class SpringJtaPlatform extends AbstractJtaPlatform {
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // TODO: Not sure about returning nullness here
-	protected TransactionManager locateTransactionManager() {
+	protected @Nullable TransactionManager locateTransactionManager() {
 		return this.transactionManager.getTransactionManager();
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // TODO: Not sure about returning nullness here
-	protected UserTransaction locateUserTransaction() {
+	protected @Nullable UserTransaction locateUserTransaction() {
 		return this.transactionManager.getUserTransaction();
 	}
 
