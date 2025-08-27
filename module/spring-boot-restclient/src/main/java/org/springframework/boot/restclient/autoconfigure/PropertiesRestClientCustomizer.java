@@ -73,7 +73,10 @@ public class PropertiesRestClientCustomizer implements RestClientCustomizer {
 
 	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	private void setDefaultApiVersion(Builder builder, PropertyMapper map, AbstractRestClientProperties properties) {
-		map.from(properties.getApiversion()).as(ApiversionProperties::getDefaultVersion).to(builder::defaultApiVersion);
+		map.from(properties.getApiversion())
+			.as(ApiversionProperties::getDefaultVersion)
+			.whenNonNull()
+			.to(builder::defaultApiVersion);
 	}
 
 	private Consumer<HttpHeaders> putAllHeaders(Map<String, List<String>> defaultHeaders) {
