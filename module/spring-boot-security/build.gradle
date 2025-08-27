@@ -32,7 +32,6 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-h2console"))
-	optional(project(":module:spring-boot-jersey"))
 	optional(project(":module:spring-boot-reactor"))
 	optional(project(":module:spring-boot-rsocket"))
 	optional(project(":module:spring-boot-webmvc"))

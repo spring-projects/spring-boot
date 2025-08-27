@@ -988,16 +988,6 @@ bom {
 			releaseNotes("https://github.com/redis/jedis/releases/tag/v{version}")
 		}
 	}
-	library("Jersey", "4.0.0-M2") {
-		group("org.glassfish.jersey") {
-			bom("jersey-bom")
-		}
-		links {
-			site("https://github.com/eclipse-ee4j/jersey")
-			javadoc("https://javadoc.io/doc/org.glassfish.jersey.core/jersey-server/{version}", "org.glassfish.jersey.server")
-			releaseNotes("https://github.com/eclipse-ee4j/jersey/releases/tag/{version}")
-		}
-	}
 	library("Jetty Reactive HTTPClient", "4.0.11") {
 		group("org.eclipse.jetty") {
 			modules = [
@@ -2031,7 +2021,6 @@ bom {
 				"spring-boot-jackson",
 				"spring-boot-jarmode-tools",
 				"spring-boot-jdbc",
-				"spring-boot-jersey",
 				"spring-boot-jetty",
 				"spring-boot-jms",
 				"spring-boot-jooq",
@@ -2112,7 +2101,6 @@ bom {
 				"spring-boot-starter-integration",
 				"spring-boot-starter-jackson",
 				"spring-boot-starter-jdbc",
-				"spring-boot-starter-jersey",
 				"spring-boot-starter-jetty",
 				"spring-boot-starter-jms",
 				"spring-boot-starter-jooq",

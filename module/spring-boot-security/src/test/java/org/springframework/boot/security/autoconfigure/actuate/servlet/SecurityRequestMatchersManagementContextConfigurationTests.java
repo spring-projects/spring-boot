@@ -19,7 +19,6 @@ package org.springframework.boot.security.autoconfigure.actuate.servlet;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.jersey.autoconfigure.JerseyApplicationPath;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -68,19 +67,6 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 	}
 
 	@Test
-	void registersRequestMatcherForJerseyProviderIfJerseyPresentAndMvcAbsent() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
-			.withUserConfiguration(TestJerseyConfiguration.class)
-			.run((context) -> {
-				PathPatternRequestMatcherProvider matcherProvider = context
-					.getBean(PathPatternRequestMatcherProvider.class);
-				RequestMatcher requestMatcher = matcherProvider.getRequestMatcher("/example", null);
-				assertThat(requestMatcher).extracting("pattern")
-					.isEqualTo(PathPatternParser.defaultInstance.parse("/admin/example"));
-			});
-	}
-
-	@Test
 	void mvcRequestMatcherProviderConditionalOnDispatcherServletClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.web.servlet.DispatcherServlet"))
 			.run((context) -> assertThat(context).doesNotHaveBean(PathPatternRequestMatcherProvider.class));
@@ -113,16 +99,6 @@ class SecurityRequestMatchersManagementContextConfigurationTests {
 		@Bean
 		DispatcherServletPath dispatcherServletPath() {
 			return () -> "/custom";
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestJerseyConfiguration {
-
-		@Bean
-		JerseyApplicationPath jerseyApplicationPath() {
-			return () -> "/admin";
 		}
 
 	}

@@ -33,8 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Integration tests for {@link SessionsEndpoint} exposed by Jersey, Spring MVC, and
- * WebFlux.
+ * Integration tests for {@link SessionsEndpoint} exposed by Spring MVC and WebFlux.
  *
  * @author Vedran Pavic
  */
@@ -46,7 +45,7 @@ class SessionsEndpointWebIntegrationTests {
 	private static final FindByIndexNameSessionRepository<Session> repository = mock(
 			FindByIndexNameSessionRepository.class);
 
-	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
+	@WebEndpointTest(infrastructure = Infrastructure.MVC)
 	void sessionsForUsernameWithoutUsernameParam(WebTestClient client) {
 		client.get()
 			.uri((builder) -> builder.path("/actuator/sessions").build())
@@ -55,7 +54,7 @@ class SessionsEndpointWebIntegrationTests {
 			.isBadRequest();
 	}
 
-	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
+	@WebEndpointTest(infrastructure = Infrastructure.MVC)
 	void sessionsForUsernameNoResults(WebTestClient client) {
 		given(repository.findByPrincipalName("user")).willReturn(Collections.emptyMap());
 		client.get()
@@ -68,7 +67,7 @@ class SessionsEndpointWebIntegrationTests {
 			.isEmpty();
 	}
 
-	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
+	@WebEndpointTest(infrastructure = Infrastructure.MVC)
 	void sessionsForUsernameFound(WebTestClient client) {
 		given(repository.findByPrincipalName("user")).willReturn(Collections.singletonMap(session.getId(), session));
 		client.get()
@@ -81,7 +80,7 @@ class SessionsEndpointWebIntegrationTests {
 			.isEqualTo(new JSONArray().appendElement(session.getId()));
 	}
 
-	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
+	@WebEndpointTest(infrastructure = Infrastructure.MVC)
 	void sessionForIdNotFound(WebTestClient client) {
 		client.get()
 			.uri((builder) -> builder.path("/actuator/sessions/session-id-not-found").build())
@@ -90,7 +89,7 @@ class SessionsEndpointWebIntegrationTests {
 			.isNotFound();
 	}
 
-	@WebEndpointTest(infrastructure = { Infrastructure.JERSEY, Infrastructure.MVC })
+	@WebEndpointTest(infrastructure = Infrastructure.MVC)
 	void deleteSession(WebTestClient client) {
 		client.delete()
 			.uri((builder) -> builder.path("/actuator/sessions/{id}").build(session.getId()))
