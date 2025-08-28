@@ -34,7 +34,7 @@ runs:
         tool-cache: true
         docker-images: false
     - name: Set Up Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: ${{ inputs.java-early-access == 'true' && 'temurin' || (inputs.java-distribution || 'liberica') }}
         java-version: |

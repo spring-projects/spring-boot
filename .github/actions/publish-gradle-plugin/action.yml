@@ -28,7 +28,7 @@ runs:
       shell: bash
       run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=${{ format('spring-boot-{0}', inputs.plugin-version) }};buildNumber=${{ inputs.build-number }}'
     - name: Set Up Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'liberica'
         java-version: '17'
