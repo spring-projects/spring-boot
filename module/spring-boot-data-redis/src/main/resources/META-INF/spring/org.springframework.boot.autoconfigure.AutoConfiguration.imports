@@ -1,4 +1,5 @@
 org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.LettuceTracingAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.DataRedisReactiveAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.DataRedisRepositoriesAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.health.DataRedisHealthContributorAutoConfiguration
