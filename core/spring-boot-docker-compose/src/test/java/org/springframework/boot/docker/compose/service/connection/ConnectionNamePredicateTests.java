@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 class ConnectionNamePredicateTests {
 
 	@Test
-	void offical() {
+	void official() {
 		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("elasticsearch"));
 		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("library/elasticsearch"));
 		assertThat(predicateOf("elasticsearch")).accepts(sourceOf("docker.io/library/elasticsearch"));
@@ -85,15 +85,15 @@ class ConnectionNamePredicateTests {
 		return new ConnectionNamePredicate(required);
 	}
 
-	private DockerComposeConnectionSource sourceOf(String connectioName) {
-		return sourceOf(connectioName, null);
+	private DockerComposeConnectionSource sourceOf(String connectionName) {
+		return sourceOf(connectionName, null);
 	}
 
-	private DockerComposeConnectionSource sourceOf(String connectioName, String label) {
+	private DockerComposeConnectionSource sourceOf(String connectionName, String label) {
 		DockerComposeConnectionSource source = mock(DockerComposeConnectionSource.class);
 		RunningService runningService = mock(RunningService.class);
 		given(source.getRunningService()).willReturn(runningService);
-		given(runningService.image()).willReturn(ImageReference.of(connectioName));
+		given(runningService.image()).willReturn(ImageReference.of(connectionName));
 		if (label != null) {
 			given(runningService.labels()).willReturn(Map.of("org.springframework.boot.service-connection", label));
 		}
