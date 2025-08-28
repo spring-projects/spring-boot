@@ -77,8 +77,9 @@ public class MapConfigurationPropertySource implements IterableConfigurationProp
 	 * @param name the name
 	 * @param value the value
 	 */
-	public void put(@Nullable Object name, Object value) {
-		this.source.put((name != null) ? name.toString() : null, value);
+	public void put(Object name, Object value) {
+		Assert.notNull(name, "'name' must not be null");
+		this.source.put(name.toString(), value);
 	}
 
 	@Override
