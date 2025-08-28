@@ -320,7 +320,6 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getSkipExecutingMigrations())
 				.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
 			map.from(properties.getIgnoreMigrationPatterns())
-				.whenNot(List::isEmpty)
 				.to((ignoreMigrationPatterns) -> configuration
 					.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
 			map.from(properties.getDetectEncoding())
