@@ -18,6 +18,8 @@ package org.springframework.boot.data.redis.docker.compose;
 
 import javax.net.ssl.SSLContext;
 
+import org.junit.jupiter.api.Disabled;
+
 import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
 import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails.Standalone;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
@@ -54,6 +56,7 @@ class RedisDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@DockerComposeTest(composeFile = "redis-bitnami-compose.yaml", image = TestImage.BITNAMI_REDIS)
+	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
 	void runWithBitnamiImageCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 	}
