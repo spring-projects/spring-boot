@@ -1,4 +1,5 @@
 org.springframework.boot.data.redis.autoconfigure.LettuceMetricsAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.LettuceTracingAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.RedisReactiveAutoConfiguration
 org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration
