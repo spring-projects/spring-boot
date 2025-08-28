@@ -131,8 +131,6 @@ public final class GraphQlWebFluxAutoConfiguration {
 		return builder.build();
 	}
 
-	// https://github.com/spring-projects/spring-graphql/issues/1276
-	@SuppressWarnings("NullAway")
 	private GraphiQlHandler createGraphQlHandler(GraphQlProperties properties, String path) {
 		return new GraphiQlHandler(path, properties.getWebsocket().getPath());
 	}
