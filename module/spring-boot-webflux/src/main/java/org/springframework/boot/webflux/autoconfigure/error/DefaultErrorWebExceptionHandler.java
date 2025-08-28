@@ -130,8 +130,13 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		return Flux.just(getData(status).toArray(new String[] {}))
 			.flatMap((viewName) -> renderErrorView(viewName, responseBody, errorAttributes))
 			.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
-					? renderDefaultErrorView(responseBody, errorAttributes) : Mono.error(getError(request)))
+					? renderDefaultErrorView(responseBody, errorAttributes) : getErrorMono(request))
 			.next();
+	}
+
+	private Mono<ServerResponse> getErrorMono(ServerRequest request) {
+		Throwable error = getError(request);
+		return (error != null) ? Mono.error(error) : Mono.empty();
 	}
 
 	private List<String> getData(int errorStatus) {

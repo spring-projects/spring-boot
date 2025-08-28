@@ -433,8 +433,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			if (result instanceof Flux) {
 				result = ((Flux<?>) result).collectList();
 			}
-			return Mono.from(result)
-				.map(this::toResponseEntity)
+			Mono<?> mono = (result != null) ? Mono.from(result) : Mono.empty();
+			return mono.map(this::toResponseEntity)
 				.onErrorMap(InvalidEndpointRequestException.class,
 						(ex) -> new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getReason()))
 				.defaultIfEmpty(new ResponseEntity<>(
