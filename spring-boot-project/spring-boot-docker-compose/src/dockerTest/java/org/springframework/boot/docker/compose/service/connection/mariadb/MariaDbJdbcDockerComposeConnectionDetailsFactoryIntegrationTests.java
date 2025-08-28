@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.mariadb;
 
+import org.junit.jupiter.api.Disabled;
+
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -38,6 +40,7 @@ class MariaDbJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@DockerComposeTest(composeFile = "mariadb-bitnami-compose.yaml", image = TestImage.BITNAMI_MARIADB)
+	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
 	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 	}
