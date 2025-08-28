@@ -897,6 +897,14 @@ class FlywayAutoConfigurationTests {
 				.containsExactly(ValidatePattern.fromPattern("*:missing")));
 	}
 
+	@Test
+	void ignoreMigrationPatternsIsEmpty() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.ignore-migration-patterns=")
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getIgnoreMigrationPatterns())
+				.isEmpty());
+	}
+
 	private ContextConsumer<AssertableApplicationContext> validateFlywayTeamsPropertyOnly(String propertyName) {
 		return (context) -> {
 			assertThat(context).hasFailed();
