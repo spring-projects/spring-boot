@@ -20,21 +20,21 @@ import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.micrometer.observation.autoconfigure.ScheduledTasksObservabilityAutoConfiguration.ObservabilitySchedulingConfigurer;
+import org.springframework.boot.micrometer.observation.autoconfigure.ScheduledTasksObservationAutoConfiguration.ObservabilitySchedulingConfigurer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ScheduledTasksObservabilityAutoConfiguration}.
+ * Tests for {@link ScheduledTasksObservationAutoConfiguration}.
  *
  * @author Moritz Halbritter
  */
-class ScheduledTasksObservabilityAutoConfigurationTests {
+class ScheduledTasksObservationAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-		.of(ObservationAutoConfiguration.class, ScheduledTasksObservabilityAutoConfiguration.class));
+		.of(ObservationAutoConfiguration.class, ScheduledTasksObservationAutoConfiguration.class));
 
 	@Test
 	void shouldProvideObservabilitySchedulingConfigurer() {
