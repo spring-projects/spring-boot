@@ -82,7 +82,7 @@ class HttpHandlerAutoConfigurationTests {
 				ServerHttpRequest request = MockServerHttpRequest.get("").build();
 				ServerHttpResponse response = new MockServerHttpResponse();
 				httpHandler.handle(request, response).block();
-				assertThat(response.getStatusCode()).isEqualTo(HttpStatus.I_AM_A_TEAPOT);
+				assertThat(response.getStatusCode()).isEqualTo(HttpStatus.EXPECTATION_FAILED);
 			});
 	}
 
@@ -131,7 +131,7 @@ class HttpHandlerAutoConfigurationTests {
 		WebHttpHandlerBuilderCustomizer customizerDecorator() {
 			return (webHttpHandlerBuilder) -> webHttpHandlerBuilder
 				.httpHandlerDecorator(((httpHandler) -> (request, response) -> {
-					response.setStatusCode(HttpStatus.I_AM_A_TEAPOT);
+					response.setStatusCode(HttpStatus.EXPECTATION_FAILED);
 					return response.setComplete();
 				}));
 		}

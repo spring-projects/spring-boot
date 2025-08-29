@@ -98,9 +98,9 @@ class DefaultErrorAttributesTests {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes).containsEntry("error", HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes).containsEntry("error", HttpStatus.EXPECTATION_FAILED.getReasonPhrase());
 		assertThat(attributes).doesNotContainKey("message");
-		assertThat(attributes).containsEntry("status", HttpStatus.I_AM_A_TEAPOT.value());
+		assertThat(attributes).containsEntry("status", HttpStatus.EXPECTATION_FAILED.value());
 	}
 
 	@Test
@@ -109,9 +109,9 @@ class DefaultErrorAttributesTests {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
 				ErrorAttributeOptions.of(Include.MESSAGE, Include.STATUS, Include.ERROR));
-		assertThat(attributes).containsEntry("error", HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes).containsEntry("error", HttpStatus.EXPECTATION_FAILED.getReasonPhrase());
 		assertThat(attributes).containsEntry("message", "Test Message");
-		assertThat(attributes).containsEntry("status", HttpStatus.I_AM_A_TEAPOT.value());
+		assertThat(attributes).containsEntry("status", HttpStatus.EXPECTATION_FAILED.value());
 	}
 
 	@Test
@@ -120,8 +120,8 @@ class DefaultErrorAttributesTests {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
 				ErrorAttributeOptions.of(Include.MESSAGE, Include.STATUS, Include.ERROR));
-		assertThat(attributes).containsEntry("error", HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
-		assertThat(attributes).containsEntry("status", HttpStatus.I_AM_A_TEAPOT.value());
+		assertThat(attributes).containsEntry("error", HttpStatus.EXPECTATION_FAILED.getReasonPhrase());
+		assertThat(attributes).containsEntry("status", HttpStatus.EXPECTATION_FAILED.value());
 		assertThat(attributes).containsEntry("message", "Nope!");
 	}
 
@@ -385,7 +385,7 @@ class DefaultErrorAttributesTests {
 		return 42;
 	}
 
-	@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+	@ResponseStatus(HttpStatus.EXPECTATION_FAILED)
 	static class CustomException extends RuntimeException {
 
 		CustomException() {
@@ -397,7 +397,7 @@ class DefaultErrorAttributesTests {
 
 	}
 
-	@ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT, reason = "Nope!")
+	@ResponseStatus(value = HttpStatus.EXPECTATION_FAILED, reason = "Nope!")
 	static class Custom2Exception extends RuntimeException {
 
 	}
