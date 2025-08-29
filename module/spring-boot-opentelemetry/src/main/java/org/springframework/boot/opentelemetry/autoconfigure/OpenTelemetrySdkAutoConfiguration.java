@@ -20,6 +20,7 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.OpenTelemetrySdkBuilder;
+import io.opentelemetry.sdk.common.Clock;
 import io.opentelemetry.sdk.logs.LogRecordProcessor;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 import io.opentelemetry.sdk.logs.SdkLoggerProviderBuilder;
@@ -44,6 +45,7 @@ import org.springframework.core.env.Environment;
  * {@link EnableAutoConfiguration Auto-configuration} for the OpenTelemetry SDK.
  *
  * @author Moritz Halbritter
+ * @author Thomas Vitale
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -66,6 +68,12 @@ public final class OpenTelemetrySdkAutoConfiguration {
 		openTelemetrySdkLoggerProvider.ifAvailable(builder::setLoggerProvider);
 		openTelemetrySdkMeterProvider.ifAvailable(builder::setMeterProvider);
 		return builder.build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	Clock clock() {
+		return Clock.getDefault();
 	}
 
 	@Bean
