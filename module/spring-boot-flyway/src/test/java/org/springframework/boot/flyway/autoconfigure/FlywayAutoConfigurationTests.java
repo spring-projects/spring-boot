@@ -898,7 +898,14 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void ignoreMigrationPatternsIsEmpty() {
+	void ignoreMigrationPatternsUsesDefaultValuesWhenNotSet() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getIgnoreMigrationPatterns())
+				.containsExactly(new FluentConfiguration().getIgnoreMigrationPatterns()));
+	}
+
+	@Test
+	void ignoreMigrationPatternsWhenEmpty() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.ignore-migration-patterns=")
 			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getIgnoreMigrationPatterns())
