@@ -158,16 +158,21 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	@Override
 	protected String[] getStandardConfigLocations() {
 		List<String> locations = new ArrayList<>();
-		// The `log4j2.configurationFile` and `log4j.configuration.location` properties
-		// should be checked first, as they can be set to a custom location.
-		for (String property : new String[] { "log4j2.configurationFile", "log4j.configuration.location" }) {
+		addLocationsFromProperties(locations);
+		addStandardLocations(locations);
+		return StringUtils.toStringArray(locations);
+	}
+
+	private void addLocationsFromProperties(List<String> locations) {
+		for (String property : List.of("log4j2.configurationFile", "log4j.configuration.location")) {
 			String propertyDefinedLocation = PropertiesUtil.getProperties().getStringProperty(property);
 			if (propertyDefinedLocation != null) {
 				locations.add(propertyDefinedLocation);
 			}
 		}
+	}
 
-		// If no custom location is defined, we use the standard locations.
+	private void addStandardLocations(List<String> locations) {
 		LoggerContext loggerContext = getLoggerContext();
 		String contextName = loggerContext.getName();
 		List<String> extensions = getStandardConfigExtensions();
@@ -175,40 +180,41 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		extensions.forEach((e) -> locations.add("log4j2-test" + e));
 		extensions.forEach((e) -> locations.add("log4j2" + contextName + e));
 		extensions.forEach((e) -> locations.add("log4j2" + e));
-
-		return StringUtils.toStringArray(locations);
 	}
 
 	private List<String> getStandardConfigExtensions() {
 		List<String> extensions = new ArrayList<>();
 		// These classes need to be visible by the classloader that loads Log4j Core.
 		ClassLoader classLoader = LoggerContext.class.getClassLoader();
-		// The order of the extensions corresponds to the order
-		// in which Log4j Core 2 and 3 will try to load them,
-		// in decreasing value of `@Order`.
+		// The order of the extensions corresponds to the order in which Log4j Core 2 and
+		// 3 will try to load them, in decreasing value of @Order.
 		if (isClassAvailable(classLoader, PROPS_CONFIGURATION_FACTORY_V2)
 				|| isClassAvailable(classLoader, PROPS_CONFIGURATION_FACTORY_V3)) {
 			extensions.add(".properties");
 		}
-		if (areClassesAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V2, YAML_TREE_PARSER_V2)
+		if (areAllClassesAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V2, YAML_TREE_PARSER_V2)
 				|| isClassAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V3)) {
 			Collections.addAll(extensions, ".yaml", ".yml");
 		}
 		if (isClassAvailable(classLoader, JSON_TREE_PARSER_V2) || isClassAvailable(classLoader, JSON_TREE_PARSER_V3)) {
 			Collections.addAll(extensions, ".json", ".jsn");
 		}
-		// We assume the `java.xml` module is always available.
 		extensions.add(".xml");
 		return extensions;
 	}
 
-	private boolean areClassesAvailable(ClassLoader classLoader, String... classNames) {
+	private boolean areAllClassesAvailable(ClassLoader classLoader, String... classNames) {
 		for (String className : classNames) {
 			if (!isClassAvailable(classLoader, className)) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	protected boolean isClassAvailable(String className) {
+		return ClassUtils.isPresent(className, getClassLoader());
 	}
 
 	protected boolean isClassAvailable(ClassLoader classLoader, String className) {
