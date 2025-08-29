@@ -323,7 +323,7 @@ public class FlywayProperties {
 	/**
 	 * List of patterns that identify migrations to ignore when performing validation.
 	 */
-	private @Nullable List<String> ignoreMigrationPatterns;
+	private List<String> ignoreMigrationPatterns = Collections.singletonList("*:future");
 
 	/**
 	 * Whether to attempt to automatically detect SQL migration file encoding.
@@ -757,11 +757,11 @@ public class FlywayProperties {
 		this.skipExecutingMigrations = skipExecutingMigrations;
 	}
 
-	public @Nullable List<String> getIgnoreMigrationPatterns() {
+	public List<String> getIgnoreMigrationPatterns() {
 		return this.ignoreMigrationPatterns;
 	}
 
-	public void setIgnoreMigrationPatterns(@Nullable List<String> ignoreMigrationPatterns) {
+	public void setIgnoreMigrationPatterns(List<String> ignoreMigrationPatterns) {
 		this.ignoreMigrationPatterns = ignoreMigrationPatterns;
 	}
 
