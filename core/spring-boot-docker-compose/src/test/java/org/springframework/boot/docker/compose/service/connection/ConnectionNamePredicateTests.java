@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ConnectionNamePredicate}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConnectionNamePredicateTests {
 
@@ -63,7 +64,7 @@ class ConnectionNamePredicateTests {
 		assertThat(predicateOf("redis")).accepts(sourceOf("internalhost:8080/library/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com/library/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com:8080/library/redis"));
-		assertThat(predicateOf("redis")).rejects(sourceOf("internalhost:8080/redis"));
+		assertThat(predicateOf("redis")).accepts(sourceOf("internalhost:8080/redis"));
 	}
 
 	@Test
