@@ -30,6 +30,7 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.configuration.ClassicConfiguration;
 import org.flywaydb.core.api.configuration.Configuration;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.flywaydb.core.api.pattern.ValidatePattern;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeanWrapper;
@@ -95,8 +96,8 @@ class FlywayPropertiesTests {
 		assertThat(properties.getScriptPlaceholderSuffix()).isEqualTo(configuration.getScriptPlaceholderSuffix());
 		assertThat(properties.isExecuteInTransaction()).isEqualTo(configuration.isExecuteInTransaction());
 		assertThat(properties.getCommunityDbSupportEnabled()).isNull();
-		assertThat(configuration.getIgnoreMigrationPatterns()).extracting(Object::toString)
-			.isEqualTo(properties.getIgnoreMigrationPatterns());
+		assertThat(properties.getIgnoreMigrationPatterns().stream().map(ValidatePattern::fromPattern))
+			.containsExactly(configuration.getIgnoreMigrationPatterns());
 	}
 
 	@Test
