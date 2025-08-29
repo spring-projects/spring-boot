@@ -42,6 +42,7 @@ import org.springframework.util.Assert;
  */
 public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1;
 
 	private final Map<String, SourceDirectory> sourceDirectories;
@@ -142,7 +143,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	}
 
 	@Override
-	public ClassLoaderFile getFile(String name) {
+	public @Nullable ClassLoaderFile getFile(String name) {
 		return this.filesByName.get(name);
 	}
 
@@ -150,6 +151,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * Returns a set of all file entries across all source directories for efficient
 	 * iteration.
 	 * @return a set of all file entries
+	 * @since 4.0.0
 	 */
 	public Set<Entry<String, ClassLoaderFile>> getFileEntries() {
 		return Collections.unmodifiableSet(this.filesByName.entrySet());
