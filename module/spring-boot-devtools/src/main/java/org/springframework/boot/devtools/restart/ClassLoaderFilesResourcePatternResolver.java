@@ -33,7 +33,6 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFileURLStreamHandler;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceDirectory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.AbstractResource;
@@ -125,15 +124,13 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	private List<Resource> getAdditionalResources(String locationPattern) throws MalformedURLException {
 		List<Resource> additionalResources = new ArrayList<>();
 		String trimmedLocationPattern = trimLocationPattern(locationPattern);
-		for (SourceDirectory sourceDirectory : this.classLoaderFiles.getSourceDirectories()) {
-			for (Entry<String, ClassLoaderFile> entry : sourceDirectory.getFilesEntrySet()) {
-				String name = entry.getKey();
-				ClassLoaderFile file = entry.getValue();
-				if (file.getKind() != Kind.DELETED && this.antPathMatcher.match(trimmedLocationPattern, name)) {
-					URL url = new URL("reloaded", null, -1, "/" + name, new ClassLoaderFileURLStreamHandler(file));
-					UrlResource resource = new UrlResource(url);
-					additionalResources.add(resource);
-				}
+		for (Entry<String, ClassLoaderFile> entry : this.classLoaderFiles.getFileEntries()) {
+			String name = entry.getKey();
+			ClassLoaderFile file = entry.getValue();
+			if (file.getKind() != Kind.DELETED && this.antPathMatcher.match(trimmedLocationPattern, name)) {
+				URL url = new URL("reloaded", null, -1, "/" + name, new ClassLoaderFileURLStreamHandler(file));
+				UrlResource resource = new UrlResource(url);
+				additionalResources.add(resource);
 			}
 		}
 		return additionalResources;
@@ -149,19 +146,17 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 	}
 
 	private boolean isDeleted(Resource resource) {
-		for (SourceDirectory sourceDirectory : this.classLoaderFiles.getSourceDirectories()) {
-			for (Entry<String, ClassLoaderFile> entry : sourceDirectory.getFilesEntrySet()) {
-				try {
-					String name = entry.getKey();
-					ClassLoaderFile file = entry.getValue();
-					if (file.getKind() == Kind.DELETED && resource.exists()
-							&& resource.getURI().toString().endsWith(name)) {
-						return true;
-					}
+		for (Entry<String, ClassLoaderFile> entry : this.classLoaderFiles.getFileEntries()) {
+			try {
+				String name = entry.getKey();
+				ClassLoaderFile file = entry.getValue();
+				if (file.getKind() == Kind.DELETED && resource.exists()
+						&& resource.getURI().toString().endsWith(name)) {
+					return true;
 				}
-				catch (IOException ex) {
-					throw new IllegalStateException("Failed to retrieve URI from '" + resource + "'", ex);
-				}
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException("Failed to retrieve URI from '" + resource + "'", ex);
 			}
 		}
 		return false;
