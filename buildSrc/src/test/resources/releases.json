@@ -122,8 +122,8 @@
     {
         "allDay": true,
         "start": "2023-09-19",
-        "title": "Spring Authorization Server 1.2.0-M1",
-        "url": "https://github.com/spring-projects/spring-authorization-server/milestone/34"
+        "title": "Spring Authorization Server 2.0.0-M3",
+        "url": "https://github.com/spring-projects/spring-authorization-server/releases/tag/2.0.0-M3"
     },
     {
         "allDay": true,
