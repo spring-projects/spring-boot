@@ -38,7 +38,7 @@ class Neo4jDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "neo4j-compose.yaml", image = TestImage.NEO4J)
 	void runCreatesConnectionDetailsThatCanAccessNeo4j(Neo4jConnectionDetails connectionDetails) {
-		assertConnectionDetailsWithPassword(connectionDetails, "secret");
+		assertConnectionDetailsWithPassword(connectionDetails, "absolutelysecret");
 	}
 
 	@DockerComposeTest(composeFile = "neo4j-bitnami-compose.yaml", image = TestImage.BITNAMI_NEO4J)
