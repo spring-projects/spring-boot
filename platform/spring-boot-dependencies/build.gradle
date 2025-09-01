@@ -2279,8 +2279,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
-	library("Spring Authorization Server", "2.0.0-SNAPSHOT") {
-		considerSnapshots()
+	library("Spring Authorization Server", "2.0.0-M3") {
 		group("org.springframework.security") {
 			modules = [
 					"spring-security-oauth2-authorization-server"
