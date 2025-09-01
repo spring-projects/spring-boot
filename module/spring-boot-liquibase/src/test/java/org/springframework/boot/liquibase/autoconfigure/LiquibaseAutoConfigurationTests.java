@@ -637,7 +637,7 @@ class LiquibaseAutoConfigurationTests {
 
 		private final String name = UUID.randomUUID().toString();
 
-		@Bean(destroyMethod = "shutdown")
+		@Bean
 		EmbeddedDatabase dataSource() throws SQLException {
 			EmbeddedDatabase database = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
 				.setName(this.name)

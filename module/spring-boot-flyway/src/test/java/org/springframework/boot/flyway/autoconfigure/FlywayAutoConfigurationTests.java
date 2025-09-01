@@ -1163,7 +1163,7 @@ class FlywayAutoConfigurationTests {
 	@EnableConfigurationProperties(DataSourceProperties.class)
 	abstract static class AbstractUserH2DataSourceConfiguration {
 
-		@Bean(destroyMethod = "shutdown")
+		@Bean
 		EmbeddedDatabase dataSource(DataSourceProperties properties) throws SQLException {
 			EmbeddedDatabase database = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
 				.setName(getDatabaseName(properties))

@@ -46,7 +46,7 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 		this.classLoader = classLoader;
 	}
 
-	@Bean(destroyMethod = "shutdown")
+	@Bean
 	public EmbeddedDatabase dataSource(DataSourceProperties properties) {
 		EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(this.classLoader).getType();
 		String databaseName = properties.determineDatabaseName();
