@@ -17,7 +17,7 @@
 package smoketest.data.jpa.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class ReviewDetails implements Serializable {
 
@@ -25,7 +25,7 @@ public class ReviewDetails implements Serializable {
 
 	private final Rating rating;
 
-	private final Date checkInDate;
+	private final LocalDate checkInDate;
 
 	private final TripType tripType;
 
@@ -33,7 +33,7 @@ public class ReviewDetails implements Serializable {
 
 	private final String details;
 
-	public ReviewDetails(Rating rating, Date checkInDate, TripType tripType, String title, String details) {
+	public ReviewDetails(Rating rating, LocalDate checkInDate, TripType tripType, String title, String details) {
 		this.rating = rating;
 		this.checkInDate = checkInDate;
 		this.tripType = tripType;
@@ -45,7 +45,7 @@ public class ReviewDetails implements Serializable {
 		return this.rating;
 	}
 
-	public Date getCheckInDate() {
+	public LocalDate getCheckInDate() {
 		return this.checkInDate;
 	}
 
