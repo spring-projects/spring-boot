@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ConnectionNamePredicate}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConnectionNamePredicateTests {
 
@@ -60,11 +61,16 @@ class ConnectionNamePredicateTests {
 
 	@Test
 	void customDomain() {
+		assertThat(predicateOf("redis")).accepts(sourceOf("internalhost:8080/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("internalhost:8080/library/redis"));
+		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com/library/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com:8080/library/redis"));
-		assertThat(predicateOf("redis")).rejects(sourceOf("internalhost:8080/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("docker.my-company.com/library/redis:latest"));
+		assertThat(predicateOf("openzipkin/zipkin")).rejects(sourceOf("myhost.com:8080/zipkin"));
+		assertThat(predicateOf("openzipkin/zipkin")).rejects(sourceOf("myhost.com:8080/library/zipkin"));
+		assertThat(predicateOf("openzipkin/zipkin")).accepts(sourceOf("myhost.com:8080/openzipkin/zipkin"));
+		assertThat(predicateOf("postgres")).accepts(sourceOf("docker.my-company.com/postgres:latest"));
 	}
 
 	@Test
