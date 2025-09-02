@@ -61,10 +61,15 @@ class ConnectionNamePredicateTests {
 
 	@Test
 	void customDomain() {
+		assertThat(predicateOf("redis")).accepts(sourceOf("internalhost:8080/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("internalhost:8080/library/redis"));
+		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com/library/redis"));
 		assertThat(predicateOf("redis")).accepts(sourceOf("myhost.com:8080/library/redis"));
-		assertThat(predicateOf("redis")).accepts(sourceOf("internalhost:8080/redis"));
+		assertThat(predicateOf("openzipkin/zipkin")).rejects(sourceOf("myhost.com:8080/zipkin"));
+		assertThat(predicateOf("openzipkin/zipkin")).rejects(sourceOf("myhost.com:8080/library/zipkin"));
+		assertThat(predicateOf("openzipkin/zipkin")).accepts(sourceOf("myhost.com:8080/openzipkin/zipkin"));
+		assertThat(predicateOf("postgres")).accepts(sourceOf("docker.my-company.com/postgres:latest"));
 	}
 
 	@Test
