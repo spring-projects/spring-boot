@@ -1,0 +1,166 @@
+= bootusage
+
+The `bootusage` endpoint exposes an experimental structured report describing runtime usage of Spring Boot auto-configuration and starter dependencies.
+
+[NOTE]
+====
+This endpoint is experimental; its schema may evolve between minor releases. It is disabled by default and must be explicitly enabled.
+====
+
+== Enabling
+
+Add the following property:
+
+[source,properties]
+----
+spring.boot.usage.report.enabled=true
+----
+
+Then expose the endpoint (if you use the web actuator exposure include list):
+
+[source,properties]
+----
+management.endpoints.web.exposure.include=bootusage
+----
+
+You can disable the endpoint independently (defaults to enabled when the usage report feature is on):
+
+[source,properties]
+----
+management.endpoint.bootusage.enabled=false
+----
+
+== Operations
+
+|===
+|HTTP Method|Path|Description
+|GET|/actuator/bootusage|Returns the current (possibly cached) usage report.
+|GET|/actuator/bootusage?force=true|Forces regeneration bypassing the cache.
+|===
+
+== Payload (Schema Version 1)
+
+The response is a JSON object containing (fields may expand in the future):
+
+[source,json]
+----
+{
+  "schemaVersion": 1,
+  "timestamp": 1730000000000,
+  "starters": {
+    "declared": [ "spring-boot-starter-web", "spring-boot-starter-actuator" ],
+    "used": [ "spring-boot-starter-web", "spring-boot-starter-actuator" ],
+    "unused": []
+  },
+  "autoConfiguration": {
+    "appliedCount": 123,
+    "skippedCount": 45
+  },
+  "suggestions": {
+    "removeStarters": [],
+    "removeDependencies": [],
+    "confidence": { "removeStarters": 0.9, "removeDependencies": 0.9 },
+    "unusedJars": [ "example-unused.jar" ]
+  },
+  "policies": {
+    "warnings": ["Example warning"],
+    "violations": ["Example violation"]
+  },
+  "beanOrigins": {
+    "myService": "com.example:demo:1.0.0",
+    "objectMapper": "com.fasterxml.jackson.core:jackson-databind"
+  }
+}
+----
+
+Field notes:
+
+- schemaVersion: Integer for compatibility negotiation.
+- timestamp: Milliseconds since epoch when the report (or cached copy) was produced.
+- starters: High-level starter dependency usage classification; `unused` suggests removal candidates.
+- autoConfiguration: Counts of applied and skipped auto-configurations (details may be extended later).
+- suggestions: Machine-generated advisory actions (list may grow; treat as hints, not directives).
+  - confidence: Basic confidence scores for certain suggestion lists (experimental heuristic).
+  - unusedJars: Experimental heuristic list of jars on the classpath not linked to any bean origin.
+  - policies: Policy evaluation output with warnings and violations.
+- beanOrigins: Mapping of bean names to inferred coordinates or code source locations (sanitized).
+
+=== Schema Features
+
+The `suggestions.schemaFeatures` array advertises feature flags present in the payload to enable forward-compatible clients:
+
+[cols="1,3"]
+|===
+|Feature|Meaning
+|starter-usage|Starter dependency usage classification (declared/used/unused)
+|bean-origins|`beanOrigins` section included
+|coordinates|Dependency coordinates inferred for bean origins where possible
+|suggestions-basic|Basic suggestions (e.g. removeStarters)
+|suggestions-confidence|Confidence score map present
+|unused-jars|Heuristic `unusedJars` list present
+|policies-basic|Policy evaluation results included
+|===
+
+JSON schema (informative) is available in the distribution sources at: `examples/bootusage-schema-v1.json`.
+
+=== Extension SPIs (Experimental)
+
+You can extend or govern the report via two experimental SPIs:
+
+* `UsageReportCustomizer` – mutate the structured `Map<String,Object>` after it is assembled, before caching.
+* `UsagePolicy` – evaluate the structured map and return warnings/violations; with `spring.boot.usage.report.policies.fail-on-violation=true` any violation fails startup.
+
+Register beans of these types in your application context; ordering follows standard Spring bean ordering semantics.
+
+=== Property Summary
+
+[source,properties]
+----
+spring.boot.usage.report.enabled=false
+spring.boot.usage.report.output-dir=build/boot-usage
+spring.boot.usage.report.markdown-summary=true
+spring.boot.usage.report.include-skipped-details=true
+spring.boot.usage.report.fail-on-unused=false
+spring.boot.usage.report.fail-on-error=false
+spring.boot.usage.report.cache-ttl=5m
+spring.boot.usage.report.include-origins=true
+spring.boot.usage.report.include-confidence=true
+spring.boot.usage.report.detect-unused-jars=false
+spring.boot.usage.report.policies.fail-on-violation=false
+----
+
+== Caching & Forcing Refresh
+
+Responses are cached for the duration specified by `spring.boot.usage.report.cache-ttl` (default `5m`). Supplying the `force=true` query parameter skips the cache and regenerates the report.
+
+== Failure Modes
+
+If `spring.boot.usage.report.fail-on-error=true`, any failure to write the on-disk report at application start will fail the application.
+If `spring.boot.usage.report.fail-on-unused=true` and unused starters are detected, startup fails (future expansion may refine this behavior).
+
+== Security Considerations
+
+The report may reveal dependency coordinates and bean names. Evaluate sensitivity before exposing it in production. You can:
+
+* Restrict exposure using standard actuator security.
+* Disable or minimize emission of potentially sensitive fields:
+
+[source,properties]
+----
+spring.boot.usage.report.include-origins=false   # removes beanOrigins & coordinates
+spring.boot.usage.report.include-confidence=false
+spring.boot.usage.report.detect-unused-jars=false
+spring.boot.usage.report.policies.fail-on-violation=true
+----
+
+== Evolution Roadmap (Informative)
+
+Future schema additions under consideration:
+
+- Confidence scores for suggestions.
+- Size / initialization time impact estimates.
+- Unused transitive dependency insights.
+- Policy-driven warnings (organization rules).
+ - Rich unused jar analysis (current heuristic is simplistic).
+
+Treat unknown fields as ignorable for forward compatibility.

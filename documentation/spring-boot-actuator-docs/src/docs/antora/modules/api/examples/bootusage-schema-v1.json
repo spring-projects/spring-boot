@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/spring/bootusage-schema-v1.json",
+  "title": "Spring Boot Usage Report",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schemaVersion", "timestamp", "starters", "autoConfiguration", "suggestions"],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "timestamp": {"type": "integer", "description": "Epoch milliseconds when the report was generated."},
+    "starters": {
+      "type": "object",
+      "required": ["declared", "used", "unused"],
+      "properties": {
+        "declared": {"type": "array", "items": {"type": "string"}},
+        "used": {"type": "array", "items": {"type": "string"}},
+        "unused": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "autoConfiguration": {
+      "type": "object",
+      "properties": {
+        "appliedCount": {"type": "integer"},
+        "skippedCount": {"type": "integer"}
+      }
+    },
+    "suggestions": {
+      "type": "object",
+      "properties": {
+        "removeStarters": {"type": "array", "items": {"type": "string"}},
+        "removeDependencies": {"type": "array", "items": {"type": "string"}},
+        "confidence": {"type": "object", "additionalProperties": {"type": "number"}},
+        "unusedJars": {"type": "array", "items": {"type": "string"}},
+        "schemaFeatures": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "policies": {
+      "type": "object",
+      "properties": {
+        "warnings": {"type": "array", "items": {"type": "string"}},
+        "violations": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "beanOrigins": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "location": {"type": "string"},
+          "sanitizedLocation": {"type": "string"},
+          "coordinate": {"type": "string"}
+        }
+      }
+    }
+  }
+}
