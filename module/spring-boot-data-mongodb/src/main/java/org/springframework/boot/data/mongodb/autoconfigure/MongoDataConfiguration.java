@@ -61,7 +61,7 @@ class MongoDataConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	MongoMappingContext mongoMappingContext(MongoCustomConversions conversions, MongoManagedTypes managedTypes) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		MongoMappingContext context = new MongoMappingContext();
 		map.from(this.properties.isAutoIndexCreation()).to(context::setAutoIndexCreation);
 		context.setManagedTypes(managedTypes);

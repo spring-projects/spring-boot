@@ -82,7 +82,7 @@ public class JettyWebServerFactoryCustomizer
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
 		JettyServerProperties.Threads threadProperties = this.jettyProperties.getThreads();
 		factory.setThreadPool(JettyThreadPool.create(this.jettyProperties.getThreads()));
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.jettyProperties::getMaxConnections).to(factory::setMaxConnections);
 		map.from(threadProperties::getAcceptors).to(factory::setAcceptors);
 		map.from(threadProperties::getSelectors).to(factory::setSelectors);

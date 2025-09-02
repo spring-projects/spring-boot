@@ -87,10 +87,8 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 			.map((address) -> address.host() + ":" + address.port())
 			.collect(Collectors.joining(","));
 		map.from(addresses).to(connectionFactory::setAddresses);
-		map.from(this.rabbitProperties::getAddressShuffleMode)
-			.whenNonNull()
-			.to(connectionFactory::setAddressShuffleMode);
-		map.from(this.connectionNameStrategy).whenNonNull().to(connectionFactory::setConnectionNameStrategy);
+		map.from(this.rabbitProperties::getAddressShuffleMode).to(connectionFactory::setAddressShuffleMode);
+		map.from(this.connectionNameStrategy).to(connectionFactory::setConnectionNameStrategy);
 		configure(connectionFactory, this.rabbitProperties);
 	}
 

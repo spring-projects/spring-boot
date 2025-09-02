@@ -150,8 +150,8 @@ public class GraphQlCorsProperties {
 		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty).to(config::setAllowedHeaders);
 		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty).to(config::setAllowedMethods);
 		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty).to(config::setExposedHeaders);
-		map.from(this::getMaxAge).whenNonNull().as(Duration::getSeconds).to(config::setMaxAge);
-		map.from(this::getAllowCredentials).whenNonNull().to(config::setAllowCredentials);
+		map.from(this::getMaxAge).as(Duration::getSeconds).to(config::setMaxAge);
+		map.from(this::getAllowCredentials).to(config::setAllowCredentials);
 		return config;
 	}
 

@@ -102,7 +102,7 @@ public final class ReactorHttpClientBuilder {
 	public HttpClient build(@Nullable HttpClientSettings settings) {
 		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
 		HttpClient httpClient = applyDefaults(this.factory.get());
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		httpClient = map.from(settings::connectTimeout).to(httpClient, this::setConnectTimeout);
 		httpClient = map.from(settings::readTimeout).to(httpClient, HttpClient::responseTimeout);
 		httpClient = map.from(settings::redirects).as(this::followRedirects).to(httpClient, HttpClient::followRedirect);

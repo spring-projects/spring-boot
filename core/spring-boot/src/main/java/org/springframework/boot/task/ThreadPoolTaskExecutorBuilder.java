@@ -324,7 +324,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	 * @see #build(Class)
 	 */
 	public <T extends ThreadPoolTaskExecutor> T configure(T taskExecutor) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.queueCapacity).to(taskExecutor::setQueueCapacity);
 		map.from(this.corePoolSize).to(taskExecutor::setCorePoolSize);
 		map.from(this.maxPoolSize).to(taskExecutor::setMaxPoolSize);

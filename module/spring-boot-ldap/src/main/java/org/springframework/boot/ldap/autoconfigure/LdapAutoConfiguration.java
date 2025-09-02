@@ -64,7 +64,7 @@ public final class LdapAutoConfiguration {
 			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
 		LdapContextSource source = new LdapContextSource();
 		dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
-		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(connectionDetails.getUsername()).to(source::setUserDn);
 		propertyMapper.from(connectionDetails.getPassword()).to(source::setPassword);
 		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
@@ -93,7 +93,7 @@ public final class LdapAutoConfiguration {
 	LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource,
 			ObjectDirectoryMapper objectDirectoryMapper) {
 		Template template = properties.getTemplate();
-		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper propertyMapper = PropertyMapper.get();
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		ldapTemplate.setObjectDirectoryMapper(objectDirectoryMapper);
 		propertyMapper.from(template.isIgnorePartialResultException())

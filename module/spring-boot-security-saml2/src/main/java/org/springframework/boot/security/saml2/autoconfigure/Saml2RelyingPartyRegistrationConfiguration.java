@@ -135,7 +135,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	private Consumer<AssertingPartyMetadata.Builder<?>> mapAssertingParty(AssertingParty assertingParty) {
 		return (details) -> {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(assertingParty::getEntityId).to(details::entityId);
 			map.from(assertingParty.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
 			map.from(assertingParty.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);

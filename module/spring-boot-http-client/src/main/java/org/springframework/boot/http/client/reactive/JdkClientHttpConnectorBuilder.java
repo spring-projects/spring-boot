@@ -87,7 +87,7 @@ public final class JdkClientHttpConnectorBuilder extends AbstractClientHttpConne
 	protected JdkClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withReadTimeout(null)));
 		JdkClientHttpConnector connector = new JdkClientHttpConnector(httpClient);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::readTimeout).to(connector::setReadTimeout);
 		return connector;
 	}

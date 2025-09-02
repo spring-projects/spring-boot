@@ -90,7 +90,7 @@ public final class PropertiesApiVersionInserter implements ApiVersionInserter {
 		if (apiVersionInserter != null) {
 			inserters.add(apiVersionInserter);
 		}
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		propertiesStream.forEach((properties) -> {
 			if (properties != null && properties.getInsert() != null) {
 				Insert insert = properties.getInsert();

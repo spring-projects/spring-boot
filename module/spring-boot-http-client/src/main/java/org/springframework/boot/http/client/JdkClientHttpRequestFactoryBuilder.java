@@ -92,7 +92,7 @@ public final class JdkClientHttpRequestFactoryBuilder
 	protected JdkClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withReadTimeout(null)));
 		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::readTimeout).to(requestFactory::setReadTimeout);
 		return requestFactory;
 	}

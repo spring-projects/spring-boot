@@ -144,7 +144,7 @@ class ElasticsearchRestClientConfigurations {
 		@ConditionalOnMissingBean
 		Sniffer elasticsearchSniffer(Rest5Client client, ElasticsearchProperties properties) {
 			SnifferBuilder builder = Sniffer.builder(client);
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			Duration interval = properties.getRestclient().getSniffer().getInterval();
 			map.from(interval).asInt(Duration::toMillis).to(builder::setSniffIntervalMillis);
 			Duration delayAfterFailure = properties.getRestclient().getSniffer().getDelayAfterFailure();
@@ -155,8 +155,6 @@ class ElasticsearchRestClientConfigurations {
 	}
 
 	static class DefaultRest5ClientBuilderCustomizer implements Rest5ClientBuilderCustomizer, Ordered {
-
-		private static final PropertyMapper map = PropertyMapper.get();
 
 		private final ElasticsearchProperties properties;
 
@@ -176,6 +174,7 @@ class ElasticsearchRestClientConfigurations {
 		public void customize(HttpAsyncClientBuilder httpClientBuilder) {
 			httpClientBuilder
 				.setDefaultCredentialsProvider(new ConnectionDetailsCredentialsProvider(this.connectionDetails));
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this.properties::isSocketKeepAlive)
 				.to((keepAlive) -> httpClientBuilder
 					.setIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
@@ -183,14 +182,11 @@ class ElasticsearchRestClientConfigurations {
 
 		@Override
 		public void customize(ConnectionConfig.Builder connectionConfigBuilder) {
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this.properties::getConnectionTimeout)
-				.whenNonNull()
 				.as(Timeout::of)
 				.to(connectionConfigBuilder::setConnectTimeout);
-			map.from(this.properties::getSocketTimeout)
-				.whenNonNull()
-				.as(Timeout::of)
-				.to(connectionConfigBuilder::setSocketTimeout);
+			map.from(this.properties::getSocketTimeout).as(Timeout::of).to(connectionConfigBuilder::setSocketTimeout);
 		}
 
 		@Override

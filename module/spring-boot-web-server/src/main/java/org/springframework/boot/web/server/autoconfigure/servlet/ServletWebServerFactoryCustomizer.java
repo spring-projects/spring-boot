@@ -74,7 +74,7 @@ public class ServletWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableServletWebServerFactory factory) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.serverProperties::getPort).to(factory::setPort);
 		map.from(this.serverProperties::getAddress).to(factory::setAddress);
 		map.from(this.serverProperties.getServlet()::getContextPath).to(factory::setContextPath);

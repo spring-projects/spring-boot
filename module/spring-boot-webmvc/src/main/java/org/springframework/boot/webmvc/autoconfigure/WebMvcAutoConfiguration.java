@@ -400,7 +400,7 @@ public final class WebMvcAutoConfiguration {
 
 		@Override
 		public void configureApiVersioning(ApiVersionConfigurer configurer) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			Apiversion properties = this.mvcProperties.getApiversion();
 			map.from(properties::getRequired).to(configurer::setVersionRequired);
 			map.from(properties::getDefaultVersion).to(configurer::setDefaultVersion);
@@ -413,7 +413,7 @@ public final class WebMvcAutoConfiguration {
 		}
 
 		private void configureApiVersioningUse(ApiVersionConfigurer configurer, Use use) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(use::getHeader).whenHasText().to(configurer::useRequestHeader);
 			map.from(use::getQueryParameter).whenHasText().to(configurer::useQueryParam);
 			map.from(use::getPathSegment).to(configurer::usePathSegment);

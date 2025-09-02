@@ -229,7 +229,7 @@ public final class FlywayAutoConfiguration {
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
 			// NOTE: Using method references in the mapper methods can break
 			// back-compatibility (see gh-38164)
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			String[] locations = new LocationResolver(configuration.getDataSource())
 				.resolveLocations(properties.getLocations())
 				.toArray(new String[0]);
@@ -511,7 +511,7 @@ public final class FlywayAutoConfiguration {
 			Extension<OracleConfigurationExtension> extension = new Extension<>(configuration,
 					OracleConfigurationExtension.class, "Oracle");
 			Oracle properties = this.properties.getOracle();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getSqlplus).to(extension.via((ext, sqlplus) -> ext.setSqlplus(sqlplus)));
 			map.from(properties::getSqlplusWarn)
 				.to(extension.via((ext, sqlplusWarn) -> ext.setSqlplusWarn(sqlplusWarn)));
@@ -537,7 +537,7 @@ public final class FlywayAutoConfiguration {
 			Extension<PostgreSQLConfigurationExtension> extension = new Extension<>(configuration,
 					PostgreSQLConfigurationExtension.class, "PostgreSQL");
 			Postgresql properties = this.properties.getPostgresql();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getTransactionalLock)
 				.to(extension.via((ext, transactionalLock) -> ext.setTransactionalLock(transactionalLock)));
 		}
@@ -558,7 +558,7 @@ public final class FlywayAutoConfiguration {
 			Extension<SQLServerConfigurationExtension> extension = new Extension<>(configuration,
 					SQLServerConfigurationExtension.class, "SQL Server");
 			Sqlserver properties = this.properties.getSqlserver();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getKerberosLoginFile).to(extension.via(this::setKerberosLoginFile));
 		}
 

@@ -576,13 +576,10 @@ public class WebProperties {
 					map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
 					map.from(this::getProxyRevalidate).whenTrue().toCall(control::proxyRevalidate);
 					map.from(this::getStaleWhileRevalidate)
-						.whenNonNull()
 						.to((duration) -> control.staleWhileRevalidate(duration.getSeconds(), TimeUnit.SECONDS));
 					map.from(this::getStaleIfError)
-						.whenNonNull()
 						.to((duration) -> control.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
 					map.from(this::getSMaxAge)
-						.whenNonNull()
 						.to((duration) -> control.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
 					// check if cacheControl remained untouched
 					if (control.getHeaderValue() == null) {

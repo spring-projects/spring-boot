@@ -167,7 +167,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	private void configureServer(io.rsocket.core.RSocketServer server) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.fragmentSize).asInt(DataSize::toBytes).to(server::fragment);
 		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
 	}

@@ -104,7 +104,7 @@ abstract class ConnectionFactoryConfigurations {
 						connectionDetails.getIfAvailable(), resourceLoader.getClassLoader(),
 						customizers.orderedStream().toList(), decorators.orderedStream().toList());
 				R2dbcProperties.Pool pool = properties.getPool();
-				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				PropertyMapper map = PropertyMapper.get();
 				ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
 				map.from(pool.getMaxIdleTime()).to(builder::maxIdleTime);
 				map.from(pool.getMaxLifeTime()).to(builder::maxLifeTime);

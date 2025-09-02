@@ -104,7 +104,7 @@ public final class KafkaAutoConfiguration {
 	KafkaTemplate<?, ?> kafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory,
 			ProducerListener<Object, Object> kafkaProducerListener,
 			ObjectProvider<RecordMessageConverter> messageConverter) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		KafkaTemplate<Object, Object> kafkaTemplate = new KafkaTemplate<>(kafkaProducerFactory);
 		messageConverter.ifUnique(kafkaTemplate::setMessageConverter);
 		map.from(kafkaProducerListener).to(kafkaTemplate::setProducerListener);

@@ -112,7 +112,7 @@ public final class ReactorClientHttpRequestFactoryBuilder
 			ClientHttpRequestFactorySettings settings) {
 		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withTimeouts(null, null)));
 		ReactorClientHttpRequestFactory requestFactory = new ReactorClientHttpRequestFactory(httpClient);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		return requestFactory;

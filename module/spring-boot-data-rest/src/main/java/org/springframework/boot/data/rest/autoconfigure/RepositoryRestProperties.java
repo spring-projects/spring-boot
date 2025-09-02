@@ -180,7 +180,7 @@ public class RepositoryRestProperties {
 	}
 
 	public void applyTo(RepositoryRestConfiguration rest) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this::getBasePath).to(rest::setBasePath);
 		map.from(this::getDefaultPageSize).to(rest::setDefaultPageSize);
 		map.from(this::getMaxPageSize).to(rest::setMaxPageSize);

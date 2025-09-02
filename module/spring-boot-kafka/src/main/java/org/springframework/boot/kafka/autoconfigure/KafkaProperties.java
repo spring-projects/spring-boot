@@ -446,7 +446,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getAutoCommitInterval)
 				.asInt(Duration::toMillis)
 				.to(properties.in(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG));
@@ -636,7 +636,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
 			map.from(this::getBatchSize).asInt(DataSize::toBytes).to(properties.in(ProducerConfig.BATCH_SIZE_CONFIG));
 			map.from(this::getBootstrapServers).to(properties.in(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
@@ -757,7 +757,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
 			return properties.with(this.ssl, this.security, this.properties);
 		}
@@ -891,7 +891,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getApplicationId).to(properties.in("application.id"));
 			map.from(this::getBootstrapServers).to(properties.in(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG));
 			map.from(this::getStateStoreCacheMaxSize)
@@ -1401,7 +1401,7 @@ public class KafkaProperties {
 			if (StringUtils.hasText(bundleName)) {
 				return properties;
 			}
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
 			map.from(this::getKeyStoreCertificateChain)
 				.to(properties.in(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG));
@@ -1539,7 +1539,7 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties() {
 			Properties properties = new Properties();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this::getProtocol).to(properties.in(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
 			return properties;
 		}

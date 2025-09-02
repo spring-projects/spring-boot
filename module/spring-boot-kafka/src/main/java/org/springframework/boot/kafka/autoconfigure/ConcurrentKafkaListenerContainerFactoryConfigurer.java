@@ -201,7 +201,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	private void configureListenerFactory(ConcurrentKafkaListenerContainerFactory<Object, Object> factory) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		Assert.state(this.properties != null, "'properties' must not be null");
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
@@ -222,7 +222,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	private void configureContainer(ContainerProperties container) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		Assert.state(this.properties != null, "'properties' must not be null");
 		Listener properties = this.properties.getListener();
 		map.from(properties::getAckMode).to(container::setAckMode);

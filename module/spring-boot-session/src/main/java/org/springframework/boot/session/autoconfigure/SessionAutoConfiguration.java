@@ -72,23 +72,17 @@ public final class SessionAutoConfiguration {
 				ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers) {
 			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
 			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(cookie::getName).to(cookieSerializer::setCookieName);
 			map.from(cookie::getDomain).to(cookieSerializer::setDomainName);
 			map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
 			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
 			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
-			setSameSite(map, cookie, cookieSerializer);
+			map.from(cookie::getSameSite).as(SameSite::attributeValue).always().to(cookieSerializer::setSameSite);
 			map.from(cookie::getPartitioned).to(cookieSerializer::setPartitioned);
 			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
 			return cookieSerializer;
-		}
-
-		@SuppressWarnings("NullAway") // Lambda isn't detected with the correct
-										// nullability
-		private void setSameSite(PropertyMapper map, Cookie cookie, DefaultCookieSerializer cookieSerializer) {
-			map.from(cookie::getSameSite).as(SameSite::attributeValue).to(cookieSerializer::setSameSite);
 		}
 
 		@Configuration(proxyBeanMethods = false)

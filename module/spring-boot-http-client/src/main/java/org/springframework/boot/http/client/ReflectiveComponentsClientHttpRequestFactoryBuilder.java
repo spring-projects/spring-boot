@@ -79,7 +79,7 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 		Assert.state(settings.redirects() == HttpRedirects.FOLLOW_WHEN_POSSIBLE,
 				"Unable to set redirect follow using reflection");
 		ClientHttpRequestFactory unwrapped = unwrapRequestFactoryIfNecessary(requestFactory);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).to((connectTimeout) -> setConnectTimeout(unwrapped, connectTimeout));
 		map.from(settings::readTimeout).to((readTimeout) -> setReadTimeout(unwrapped, readTimeout));
 	}

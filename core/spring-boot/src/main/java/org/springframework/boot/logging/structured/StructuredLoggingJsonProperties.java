@@ -136,7 +136,7 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		private StandardStackTracePrinter createStandardPrinter() {
 			StandardStackTracePrinter printer = (root() == Root.FIRST) ? StandardStackTracePrinter.rootFirst()
 					: StandardStackTracePrinter.rootLast();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			printer = map.from(this::maxLength).to(printer, StandardStackTracePrinter::withMaximumLength);
 			printer = map.from(this::maxThrowableDepth)
 				.to(printer, StandardStackTracePrinter::withMaximumThrowableDepth);

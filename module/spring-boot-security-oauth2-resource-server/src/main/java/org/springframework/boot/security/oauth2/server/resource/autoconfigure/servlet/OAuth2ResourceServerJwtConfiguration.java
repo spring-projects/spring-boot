@@ -203,7 +203,7 @@ class OAuth2ResourceServerJwtConfiguration {
 		@Bean
 		JwtAuthenticationConverter getJwtAuthenticationConverter() {
 			JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(this.properties.getAuthorityPrefix()).to(grantedAuthoritiesConverter::setAuthorityPrefix);
 			map.from(this.properties.getAuthoritiesClaimDelimiter())
 				.to(grantedAuthoritiesConverter::setAuthoritiesClaimDelimiter);

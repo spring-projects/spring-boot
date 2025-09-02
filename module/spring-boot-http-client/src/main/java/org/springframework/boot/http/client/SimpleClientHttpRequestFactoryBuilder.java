@@ -70,7 +70,7 @@ public final class SimpleClientHttpRequestFactoryBuilder
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpsRequestFactory(settings);
 		Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
 				"SSL Options cannot be specified with Java connections");
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		return requestFactory;

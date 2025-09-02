@@ -74,7 +74,7 @@ public final class OAuth2ClientPropertiesMapper {
 		if (builder == null) {
 			builder = getBuilder(registrationId, properties.getProvider(), providers);
 		}
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getClientId).to(builder::clientId);
 		map.from(properties::getClientSecret).to(builder::clientSecret);
 		map.from(properties::getClientAuthenticationMethod)
@@ -124,7 +124,7 @@ public final class OAuth2ClientPropertiesMapper {
 	}
 
 	private static Builder getBuilder(Builder builder, Provider provider) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(provider::getAuthorizationUri).to(builder::authorizationUri);
 		map.from(provider::getTokenUri).to(builder::tokenUri);
 		map.from(provider::getUserInfoUri).to(builder::userInfoUri);

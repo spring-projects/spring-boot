@@ -43,7 +43,7 @@ final class PulsarReactivePropertiesMapper {
 
 	<T> void customizeMessageSenderBuilder(ReactiveMessageSenderBuilder<T> builder) {
 		PulsarProperties.Producer properties = this.properties.getProducer();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getName).to(builder::producerName);
 		map.from(properties::getTopicName).to(builder::topic);
 		map.from(properties::getSendTimeout).to(builder::sendTimeout);
@@ -57,7 +57,7 @@ final class PulsarReactivePropertiesMapper {
 
 	<T> void customizeMessageConsumerBuilder(ReactiveMessageConsumerBuilder<T> builder) {
 		PulsarProperties.Consumer properties = this.properties.getConsumer();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getName).to(builder::consumerName);
 		map.from(properties::getTopics).as(ArrayList::new).to(builder::topics);
 		map.from(properties::getTopicsPattern).to(builder::topicsPattern);
@@ -70,7 +70,7 @@ final class PulsarReactivePropertiesMapper {
 
 	private <T> void customizerMessageConsumerBuilderSubscription(ReactiveMessageConsumerBuilder<T> builder) {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getName).to(builder::subscriptionName);
 		map.from(properties::getInitialPosition).to(builder::subscriptionInitialPosition);
 		map.from(properties::getMode).to(builder::subscriptionMode);
@@ -86,21 +86,21 @@ final class PulsarReactivePropertiesMapper {
 	private void customizePulsarContainerConsumerSubscriptionProperties(
 			ReactivePulsarContainerProperties<?> containerProperties) {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getType).to(containerProperties::setSubscriptionType);
 		map.from(properties::getName).to(containerProperties::setSubscriptionName);
 	}
 
 	private void customizePulsarContainerListenerProperties(ReactivePulsarContainerProperties<?> containerProperties) {
 		PulsarProperties.Listener properties = this.properties.getListener();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(properties::getConcurrency).to(containerProperties::setConcurrency);
 	}
 
 	void customizeMessageReaderBuilder(ReactiveMessageReaderBuilder<?> builder) {
 		PulsarProperties.Reader properties = this.properties.getReader();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getName).to(builder::readerName);
 		map.from(properties::getTopics).to(builder::topics);
 		map.from(properties::getSubscriptionName).to(builder::subscriptionName);

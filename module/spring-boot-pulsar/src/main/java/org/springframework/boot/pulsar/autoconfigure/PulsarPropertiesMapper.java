@@ -66,7 +66,7 @@ final class PulsarPropertiesMapper {
 
 	void customizeClientBuilder(ClientBuilder clientBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Client properties = this.properties.getClient();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
@@ -88,7 +88,7 @@ final class PulsarPropertiesMapper {
 		}
 		Map<String, @Nullable Authentication> secondaryAuths = getSecondaryAuths(failoverProperties);
 		AutoClusterFailoverBuilder autoClusterFailoverBuilder = new AutoClusterFailoverBuilderImpl();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(connectionDetails::getBrokerUrl).to(autoClusterFailoverBuilder::primary);
 		map.from(secondaryAuths::keySet).as(ArrayList::new).to(autoClusterFailoverBuilder::secondary);
 		map.from(failoverProperties::getPolicy).to(autoClusterFailoverBuilder::failoverPolicy);
@@ -119,7 +119,7 @@ final class PulsarPropertiesMapper {
 
 	void customizeAdminBuilder(PulsarAdminBuilder adminBuilder, PulsarConnectionDetails connectionDetails) {
 		PulsarProperties.Admin properties = this.properties.getAdmin();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(connectionDetails::getAdminUrl).to(adminBuilder::serviceHttpUrl);
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(adminBuilder::connectionTimeout));
 		map.from(properties::getReadTimeout).to(timeoutProperty(adminBuilder::readTimeout));
@@ -141,7 +141,7 @@ final class PulsarPropertiesMapper {
 
 	<T> void customizeProducerBuilder(ProducerBuilder<T> producerBuilder) {
 		PulsarProperties.Producer properties = this.properties.getProducer();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getName).to(producerBuilder::producerName);
 		map.from(properties::getTopicName).to(producerBuilder::topic);
 		map.from(properties::getSendTimeout).to(timeoutProperty(producerBuilder::sendTimeout));
@@ -159,7 +159,7 @@ final class PulsarPropertiesMapper {
 
 	<T> void customizeConsumerBuilder(ConsumerBuilder<T> consumerBuilder) {
 		PulsarProperties.Consumer properties = this.properties.getConsumer();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getName).to(consumerBuilder::consumerName);
 		map.from(properties::getTopics).as(ArrayList::new).to(consumerBuilder::topics);
 		map.from(properties::getTopicsPattern).to(consumerBuilder::topicsPattern);
@@ -172,7 +172,7 @@ final class PulsarPropertiesMapper {
 
 	private void customizeConsumerBuilderSubscription(ConsumerBuilder<?> consumerBuilder) {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getName).to(consumerBuilder::subscriptionName);
 		map.from(properties::getInitialPosition).to(consumerBuilder::subscriptionInitialPosition);
 		map.from(properties::getMode).to(consumerBuilder::subscriptionMode);
@@ -188,14 +188,14 @@ final class PulsarPropertiesMapper {
 
 	private void customizePulsarContainerConsumerSubscriptionProperties(PulsarContainerProperties containerProperties) {
 		PulsarProperties.Consumer.Subscription properties = this.properties.getConsumer().getSubscription();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getType).to(containerProperties::setSubscriptionType);
 		map.from(properties::getName).to(containerProperties::setSubscriptionName);
 	}
 
 	private void customizePulsarContainerListenerProperties(PulsarContainerProperties containerProperties) {
 		PulsarProperties.Listener properties = this.properties.getListener();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(properties::getConcurrency).to(containerProperties::setConcurrency);
 		map.from(properties::isObservationEnabled).to(containerProperties::setObservationEnabled);
@@ -203,7 +203,7 @@ final class PulsarPropertiesMapper {
 
 	<T> void customizeReaderBuilder(ReaderBuilder<T> readerBuilder) {
 		PulsarProperties.Reader properties = this.properties.getReader();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getName).to(readerBuilder::readerName);
 		map.from(properties::getTopics).to(readerBuilder::topics);
 		map.from(properties::getSubscriptionName).to(readerBuilder::subscriptionName);
@@ -213,7 +213,7 @@ final class PulsarPropertiesMapper {
 
 	void customizeReaderContainerProperties(PulsarReaderContainerProperties readerContainerProperties) {
 		PulsarProperties.Reader properties = this.properties.getReader();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties::getTopics).to(readerContainerProperties::setTopics);
 	}
 

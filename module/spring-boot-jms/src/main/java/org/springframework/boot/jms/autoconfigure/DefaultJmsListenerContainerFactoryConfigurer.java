@@ -124,7 +124,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		JmsProperties.Listener listenerProperties = this.jmsProperties.getListener();
 		Session sessionProperties = listenerProperties.getSession();
 		factory.setConnectionFactory(connectionFactory);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.jmsProperties::isPubSubDomain).to(factory::setPubSubDomain);
 		map.from(this.jmsProperties::isSubscriptionDurable).to(factory::setSubscriptionDurable);
 		map.from(this.jmsProperties::getClientId).to(factory::setClientId);

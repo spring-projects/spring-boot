@@ -201,7 +201,7 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	 * @see #build()
 	 */
 	public <T extends SimpleAsyncTaskScheduler> T configure(T taskScheduler) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
 		map.from(this.concurrencyLimit).to(taskScheduler::setConcurrencyLimit);
 		map.from(this.virtualThreads).to(taskScheduler::setVirtualThreads);

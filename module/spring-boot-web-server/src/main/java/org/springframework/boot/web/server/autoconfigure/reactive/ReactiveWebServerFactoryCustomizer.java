@@ -67,7 +67,7 @@ public class ReactiveWebServerFactoryCustomizer
 
 	@Override
 	public void customize(ConfigurableReactiveWebServerFactory factory) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.serverProperties::getPort).to(factory::setPort);
 		map.from(this.serverProperties::getAddress).to(factory::setAddress);
 		map.from(this.serverProperties::getSsl).to(factory::setSsl);

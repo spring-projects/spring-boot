@@ -92,10 +92,7 @@ public final class CodecsAutoConfiguration {
 				PropertyMapper map = PropertyMapper.get();
 				CodecConfigurer.DefaultCodecs defaultCodecs = configurer.defaultCodecs();
 				defaultCodecs.enableLoggingRequestDetails(this.logRequestDetails);
-				map.from(this.maxInMemorySize)
-					.whenNonNull()
-					.asInt(DataSize::toBytes)
-					.to(defaultCodecs::maxInMemorySize);
+				map.from(this.maxInMemorySize).asInt(DataSize::toBytes).to(defaultCodecs::maxInMemorySize);
 			}
 
 			@Override

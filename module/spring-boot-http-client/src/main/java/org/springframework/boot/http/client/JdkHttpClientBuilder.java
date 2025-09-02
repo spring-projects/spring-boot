@@ -82,7 +82,7 @@ public final class JdkHttpClientBuilder {
 		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
 		Assert.isTrue(settings.readTimeout() == null, "'settings' must not have a 'readTimeout'");
 		HttpClient.Builder builder = HttpClient.newBuilder();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
 		map.from(settings::connectTimeout).to(builder::connectTimeout);
 		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);

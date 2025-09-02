@@ -48,9 +48,9 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer
 		PropertyMapper map = PropertyMapper.get();
 		RabbitProperties.SimpleContainer config = getRabbitProperties().getListener().getSimple();
 		configure(factory, connectionFactory, config);
-		map.from(config::getConcurrency).whenNonNull().to(factory::setConcurrentConsumers);
-		map.from(config::getMaxConcurrency).whenNonNull().to(factory::setMaxConcurrentConsumers);
-		map.from(config::getBatchSize).whenNonNull().to(factory::setBatchSize);
+		map.from(config::getConcurrency).to(factory::setConcurrentConsumers);
+		map.from(config::getMaxConcurrency).to(factory::setMaxConcurrentConsumers);
+		map.from(config::getBatchSize).to(factory::setBatchSize);
 		map.from(config::isConsumerBatchEnabled).to(factory::setConsumerBatchEnabled);
 	}
 

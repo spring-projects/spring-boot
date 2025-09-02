@@ -37,7 +37,7 @@ final class DeadLetterPolicyMapper {
 	static DeadLetterPolicy map(PulsarProperties.Consumer.DeadLetterPolicy policy) {
 		Assert.state(policy.getMaxRedeliverCount() > 0,
 				"Pulsar DeadLetterPolicy must have a positive 'max-redelivery-count' property value");
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		DeadLetterPolicyBuilder builder = DeadLetterPolicy.builder();
 		map.from(policy::getMaxRedeliverCount).to(builder::maxRedeliverCount);
 		map.from(policy::getRetryLetterTopic).to(builder::retryLetterTopic);

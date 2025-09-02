@@ -49,7 +49,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 	}
 
 	AuthorizationServerSettings asAuthorizationServerSettings() {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		OAuth2AuthorizationServerProperties.Endpoint endpoint = this.properties.getEndpoint();
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoint.getOidc();
 		AuthorizationServerSettings.Builder builder = AuthorizationServerSettings.builder();
@@ -78,7 +78,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 
 	private RegisteredClient getRegisteredClient(String registrationId, Client client) {
 		Registration registration = client.getRegistration();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		RegisteredClient.Builder builder = RegisteredClient.withId(registrationId);
 		map.from(registration::getClientId).to(builder::clientId);
 		map.from(registration::getClientSecret).to(builder::clientSecret);

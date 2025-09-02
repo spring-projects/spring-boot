@@ -102,7 +102,7 @@ public final class RedisSessionAutoConfiguration {
 									+ "spring.session.redis.repository-type is set to indexed.");
 				}
 				return (sessionRepository) -> {
-					PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+					PropertyMapper map = PropertyMapper.get();
 					map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);
@@ -134,7 +134,7 @@ public final class RedisSessionAutoConfiguration {
 					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 					ServerProperties serverProperties) {
 				return (sessionRepository) -> {
-					PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+					PropertyMapper map = PropertyMapper.get();
 					map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);
@@ -167,7 +167,7 @@ public final class RedisSessionAutoConfiguration {
 					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 					ServerProperties serverProperties) {
 				return (sessionRepository) -> {
-					PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+					PropertyMapper map = PropertyMapper.get();
 					map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);
@@ -197,7 +197,7 @@ public final class RedisSessionAutoConfiguration {
 					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 					ServerProperties serverProperties) {
 				return (sessionRepository) -> {
-					PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+					PropertyMapper map = PropertyMapper.get();
 					map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);

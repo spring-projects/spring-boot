@@ -243,7 +243,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @see #build(Class)
 	 */
 	public <T extends SimpleAsyncTaskExecutor> T configure(T taskExecutor) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.virtualThreads).to(taskExecutor::setVirtualThreads);
 		map.from(this.threadNamePrefix).whenHasText().to(taskExecutor::setThreadNamePrefix);
 		map.from(this.rejectTasksWhenLimitReached).to(taskExecutor::setRejectTasksWhenLimitReached);

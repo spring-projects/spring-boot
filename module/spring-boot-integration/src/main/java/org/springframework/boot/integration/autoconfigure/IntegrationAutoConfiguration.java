@@ -41,7 +41,6 @@ import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfigurati
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
-import org.springframework.boot.integration.autoconfigure.IntegrationProperties.Poller;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.autoconfigure.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
@@ -101,7 +100,7 @@ public final class IntegrationAutoConfiguration {
 	static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
 			IntegrationProperties properties) {
 		org.springframework.integration.context.IntegrationProperties integrationProperties = new org.springframework.integration.context.IntegrationProperties();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(properties.getChannel().isAutoCreate()).to(integrationProperties::setChannelsAutoCreate);
 		map.from(properties.getChannel().getMaxUnicastSubscribers())
 			.to(integrationProperties::setChannelsMaxUnicastSubscribers);
@@ -143,18 +142,12 @@ public final class IntegrationAutoConfiguration {
 				entries.put("spring.integration.poller.fixed-rate", poller.getFixedRate());
 			});
 			PollerMetadata pollerMetadata = new PollerMetadata();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(poller::getMaxMessagesPerPoll).to(pollerMetadata::setMaxMessagesPerPoll);
 			map.from(poller::getReceiveTimeout).as(Duration::toMillis).to(pollerMetadata::setReceiveTimeout);
-			setTrigger(map, poller, pollerMetadata);
+			map.from(poller).as(this::asTrigger).to(pollerMetadata::setTrigger);
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(pollerMetadata));
 			return pollerMetadata;
-		}
-
-		@SuppressWarnings("NullAway") // Lambda isn't detected with the correct
-										// nullability
-		private void setTrigger(PropertyMapper map, Poller poller, PollerMetadata pollerMetadata) {
-			map.from(poller).as(this::asTrigger).to(pollerMetadata::setTrigger);
 		}
 
 		private @Nullable Trigger asTrigger(IntegrationProperties.Poller poller) {

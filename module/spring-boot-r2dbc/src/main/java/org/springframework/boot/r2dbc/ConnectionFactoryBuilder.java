@@ -263,7 +263,7 @@ public final class ConnectionFactoryBuilder {
 		ConnectionPoolConfiguration connectionPoolConfiguration(ConnectionFactoryOptions options,
 				ConnectionFactory connectionFactory) {
 			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(options.getValue(PoolingConnectionFactoryProvider.BACKGROUND_EVICTION_INTERVAL))
 				.as(this::toDuration)
 				.to(builder::backgroundEvictionInterval);

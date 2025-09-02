@@ -207,7 +207,7 @@ public final class ThymeleafAutoConfiguration {
 
 		private void mapReactiveProperties(Reactive properties, ThymeleafReactiveViewResolver resolver) {
 			PropertyMapper map = PropertyMapper.get();
-			map.from(properties::getMediaTypes).whenNonNull().to(resolver::setSupportedMediaTypes);
+			map.from(properties::getMediaTypes).to(resolver::setSupportedMediaTypes);
 			map.from(properties::getMaxChunkSize)
 				.asInt(DataSize::toBytes)
 				.when((size) -> size > 0)

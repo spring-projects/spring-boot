@@ -149,7 +149,7 @@ public class MultipartProperties {
 	 */
 	public MultipartConfigElement createMultipartConfig() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.fileSizeThreshold).to(factory::setFileSizeThreshold);
 		map.from(this.location).whenHasText().to(factory::setLocation);
 		map.from(this.maxRequestSize).to(factory::setMaxRequestSize);

@@ -18,18 +18,17 @@ package org.springframework.boot.http.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.HttpComponentsHttpClientBuilder.TlsSocketStrategyFactory;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -83,7 +82,7 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 	void withTlsSocketStrategyFactory() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(sslBundle());
 		List<SslBundle> bundles = new ArrayList<>();
-		Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory = (bundle) -> {
+		TlsSocketStrategyFactory tlsSocketStrategyFactory = (bundle) -> {
 			bundles.add(bundle);
 			return (socket, target, port, attachment, context) -> null;
 		};

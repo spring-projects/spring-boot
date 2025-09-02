@@ -31,7 +31,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClient.Builder;
 
 /**
  * {@link WebClientCustomizer} to apply {@link AbstractWebClientProperties}.
@@ -59,24 +58,18 @@ public class PropertiesWebClientCustomizer implements WebClientCustomizer {
 
 	@Override
 	public void customize(WebClient.Builder builder) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(this.apiVersionInserter).to(builder::apiVersionInserter);
 		for (int i = this.orderedProperties.length - 1; i >= 0; i--) {
 			AbstractWebClientProperties properties = this.orderedProperties[i];
 			if (properties != null) {
 				map.from(properties::getBaseUrl).whenHasText().to(builder::baseUrl);
 				map.from(properties::getDefaultHeader).as(this::putAllHeaders).to(builder::defaultHeaders);
-				setDefaultApiVersion(builder, map, properties);
+				map.from(properties::getApiversion)
+					.as(ApiversionProperties::getDefaultVersion)
+					.to(builder::defaultApiVersion);
 			}
 		}
-	}
-
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
-	private void setDefaultApiVersion(Builder builder, PropertyMapper map, AbstractWebClientProperties properties) {
-		map.from(properties.getApiversion())
-			.as(ApiversionProperties::getDefaultVersion)
-			.whenNonNull()
-			.to(builder::defaultApiVersion);
 	}
 
 	private Consumer<HttpHeaders> putAllHeaders(Map<String, List<String>> defaultHeaders) {

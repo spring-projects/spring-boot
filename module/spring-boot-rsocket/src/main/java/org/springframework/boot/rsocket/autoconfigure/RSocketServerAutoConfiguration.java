@@ -87,7 +87,7 @@ public final class RSocketServerAutoConfiguration {
 
 		private Consumer<Builder> customizeWebsocketServerSpec(Spec spec) {
 			return (builder) -> {
-				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+				PropertyMapper map = PropertyMapper.get();
 				map.from(spec.getProtocols()).to(builder::protocols);
 				map.from(spec.getMaxFramePayloadLength()).asInt(DataSize::toBytes).to(builder::maxFramePayloadLength);
 				map.from(spec.isHandlePing()).to(builder::handlePing);
@@ -110,7 +110,7 @@ public final class RSocketServerAutoConfiguration {
 			NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
 			factory.setResourceFactory(resourceFactory);
 			factory.setTransport(properties.getServer().getTransport());
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties.getServer().getAddress()).to(factory::setAddress);
 			map.from(properties.getServer().getPort()).to(factory::setPort);
 			map.from(properties.getServer().getFragmentSize()).to(factory::setFragmentSize);

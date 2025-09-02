@@ -37,7 +37,7 @@ class MustacheReactiveWebConfiguration {
 	@ConditionalOnBooleanProperty(name = "spring.mustache.enabled", matchIfMissing = true)
 	MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(mustache::getPrefix).to(resolver::setPrefix);
 		map.from(mustache::getSuffix).to(resolver::setSuffix);
 		map.from(mustache::getViewNames).to(resolver::setViewNames);

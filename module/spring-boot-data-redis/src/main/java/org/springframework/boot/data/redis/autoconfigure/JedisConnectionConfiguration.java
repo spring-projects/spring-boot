@@ -123,7 +123,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
 		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
@@ -139,7 +139,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		sslBuilder.sslSocketFactory(sslBundle.createSslContext().getSocketFactory());
 		SslOptions sslOptions = sslBundle.getOptions();
 		SSLParameters sslParameters = new SSLParameters();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(sslOptions.getCiphers()).to(sslParameters::setCipherSuites);
 		map.from(sslOptions.getEnabledProtocols()).to(sslParameters::setProtocols);
 		sslBuilder.sslParameters(sslParameters);

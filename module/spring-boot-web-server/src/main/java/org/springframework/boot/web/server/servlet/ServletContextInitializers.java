@@ -90,7 +90,7 @@ public final class ServletContextInitializers implements Iterable<ServletContext
 
 		private void configureSessionCookie(SessionCookieConfig config) {
 			Cookie cookie = this.session.getCookie();
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(cookie::getName).to(config::setName);
 			map.from(cookie::getDomain).to(config::setDomain);
 			map.from(cookie::getPath).to(config::setPath);

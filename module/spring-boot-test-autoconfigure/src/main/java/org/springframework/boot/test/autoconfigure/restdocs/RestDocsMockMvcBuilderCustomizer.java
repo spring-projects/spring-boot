@@ -54,7 +54,7 @@ public class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockM
 		UriConfigurer uri = this.delegate.uris();
 		map.from(properties::getUriScheme).whenHasText().to(uri::withScheme);
 		map.from(properties::getUriHost).whenHasText().to(uri::withHost);
-		map.from(properties::getUriPort).whenNonNull().to(uri::withPort);
+		map.from(properties::getUriPort).to(uri::withPort);
 	}
 
 	@Override

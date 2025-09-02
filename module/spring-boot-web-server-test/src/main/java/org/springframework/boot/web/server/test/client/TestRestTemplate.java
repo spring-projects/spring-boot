@@ -24,7 +24,6 @@ import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import javax.net.ssl.SSLContext;
@@ -41,6 +40,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.HttpComponentsHttpClientBuilder.TlsSocketStrategyFactory;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RootUriTemplateHandler;
@@ -1054,13 +1054,12 @@ public class TestRestTemplate {
 	 * Factory used to create a {@link TlsSocketStrategy} supporting self-signed
 	 * certificates.
 	 */
-	private static final class SelfSignedTlsSocketStrategyFactory
-			implements Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> {
+	private static final class SelfSignedTlsSocketStrategyFactory implements TlsSocketStrategyFactory {
 
 		private static final String[] SUPPORTED_PROTOCOLS = { TLS.V_1_3.getId(), TLS.V_1_2.getId() };
 
 		@Override
-		public TlsSocketStrategy apply(@Nullable SslBundle sslBundle) {
+		public TlsSocketStrategy getTlsSocketStrategy(@Nullable SslBundle sslBundle) {
 			try {
 				TrustSelfSignedStrategy trustStrategy = new TrustSelfSignedStrategy();
 				SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, trustStrategy).build();

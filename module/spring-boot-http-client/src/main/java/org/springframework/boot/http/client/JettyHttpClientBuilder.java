@@ -113,7 +113,7 @@ public final class JettyHttpClientBuilder {
 		HttpClientTransport transport = createTransport(settings);
 		this.httpClientTransportCustomizer.accept(transport);
 		HttpClient httpClient = createHttpClient(settings.readTimeout(), transport);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).as(Duration::toMillis).to(httpClient::setConnectTimeout);
 		map.from(settings::redirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
 		this.customizer.accept(httpClient);
