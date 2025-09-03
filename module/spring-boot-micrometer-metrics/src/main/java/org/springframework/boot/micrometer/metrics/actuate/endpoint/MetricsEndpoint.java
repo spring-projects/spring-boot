@@ -78,7 +78,8 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public @Nullable MetricDescriptor metric(@Selector String requiredMetricName, @OptionalParameter List<String> tag) {
+	public @Nullable MetricDescriptor metric(@Selector String requiredMetricName,
+			@OptionalParameter @Nullable List<String> tag) {
 		List<Tag> tags = parseTags(tag);
 		Collection<Meter> meters = findFirstMatchingMeters(this.registry, requiredMetricName, tags);
 		if (meters.isEmpty()) {
