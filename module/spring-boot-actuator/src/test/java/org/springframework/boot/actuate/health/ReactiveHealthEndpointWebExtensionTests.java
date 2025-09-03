@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -56,7 +57,9 @@ class ReactiveHealthEndpointWebExtensionTests extends
 		WebEndpointResponse<? extends HealthDescriptor> response = endpoint
 			.health(ApiVersion.LATEST, null, SecurityContext.NONE)
 			.block();
+		assertThat(response).isNotNull();
 		HealthDescriptor descriptor = response.getBody();
+		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
 		assertThat(descriptor).isInstanceOf(SystemHealthDescriptor.class);
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -70,8 +73,10 @@ class ReactiveHealthEndpointWebExtensionTests extends
 		WebEndpointResponse<? extends HealthDescriptor> response = endpoint
 			.health(ApiVersion.LATEST, null, SecurityContext.NONE)
 			.block();
+		assertThat(response).isNotNull();
 		assertThat(response.getStatus()).isEqualTo(200);
 		HealthDescriptor descriptor = response.getBody();
+		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
 		assertThat(descriptor).isInstanceOf(IndicatedHealthDescriptor.class);
 	}
@@ -83,6 +88,7 @@ class ReactiveHealthEndpointWebExtensionTests extends
 		WebEndpointResponse<? extends HealthDescriptor> response = endpoint
 			.health(ApiVersion.LATEST, null, SecurityContext.NONE, "missing")
 			.block();
+		assertThat(response).isNotNull();
 		assertThat(response.getBody()).isNull();
 		assertThat(response.getStatus()).isEqualTo(404);
 	}
@@ -94,7 +100,9 @@ class ReactiveHealthEndpointWebExtensionTests extends
 		WebEndpointResponse<? extends HealthDescriptor> response = endpoint
 			.health(ApiVersion.LATEST, null, SecurityContext.NONE, "test")
 			.block();
+		assertThat(response).isNotNull();
 		IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) response.getBody();
+		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
 		assertThat(descriptor.getDetails()).containsEntry("spring", "boot");
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -102,13 +110,13 @@ class ReactiveHealthEndpointWebExtensionTests extends
 
 	@Override
 	protected ReactiveHealthEndpointWebExtension create(ReactiveHealthContributorRegistry registry,
-			HealthEndpointGroups groups, Duration slowContributorLoggingThreshold) {
+			HealthEndpointGroups groups, @Nullable Duration slowContributorLoggingThreshold) {
 		return new ReactiveHealthEndpointWebExtension(registry, null, groups, slowContributorLoggingThreshold);
 	}
 
 	@Override
 	protected ReactiveHealthContributorRegistry createRegistry(
-			Consumer<BiConsumer<String, ReactiveHealthContributor>> initialRegistrations) {
+			@Nullable Consumer<BiConsumer<String, ReactiveHealthContributor>> initialRegistrations) {
 		return new DefaultReactiveHealthContributorRegistry(Collections.emptyList(), initialRegistrations);
 	}
 
@@ -125,7 +133,9 @@ class ReactiveHealthEndpointWebExtensionTests extends
 
 	@Override
 	protected HealthDescriptor getDescriptor(Result<Mono<? extends HealthDescriptor>> result) {
-		return result.descriptor().block();
+		HealthDescriptor descriptor = result.descriptor().block();
+		assertThat(descriptor).isNotNull();
+		return descriptor;
 	}
 
 }

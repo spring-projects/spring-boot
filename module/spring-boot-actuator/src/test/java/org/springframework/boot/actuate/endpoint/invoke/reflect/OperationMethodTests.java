@@ -34,15 +34,17 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class OperationMethodTests {
 
-	private final Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
+	private final Method exampleMethod = findMethod("example", String.class);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(null, OperationType.READ))
 			.withMessageContaining("'method' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenOperationTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
 			.withMessageContaining("'operationType' must not be null");
@@ -70,6 +72,12 @@ class OperationMethodTests {
 
 	String example(String name) {
 		return name;
+	}
+
+	private Method findMethod(String name, Class<?>... parameters) {
+		Method method = ReflectionUtils.findMethod(getClass(), name, parameters);
+		assertThat(method).as("Method '%s'", name).isNotNull();
+		return method;
 	}
 
 }

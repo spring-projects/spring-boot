@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.ObjectAssert;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -306,7 +307,8 @@ class SanitizingFunctionTests {
 		return assertThatApplying(function, data(key));
 	}
 
-	private ObjectAssert<SanitizableData> assertThatApplyingToValue(SanitizingFunction function, Object value) {
+	private ObjectAssert<SanitizableData> assertThatApplyingToValue(SanitizingFunction function,
+			@Nullable Object value) {
 		return assertThatApplying(function, data("key", value));
 	}
 
@@ -328,7 +330,7 @@ class SanitizingFunctionTests {
 		return data(key, "value");
 	}
 
-	private static SanitizableData data(String key, Object value) {
+	private static SanitizableData data(String key, @Nullable Object value) {
 		return new SanitizableData(null, key, value);
 	}
 

@@ -41,6 +41,7 @@ import static org.mockito.Mockito.mock;
 class DiscovererEndpointFilterTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenDiscovererIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestDiscovererEndpointFilter(null))
 			.withMessageContaining("'discoverer' must not be null");

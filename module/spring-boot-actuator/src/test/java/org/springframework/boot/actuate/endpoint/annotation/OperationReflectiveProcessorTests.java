@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -46,6 +47,7 @@ class OperationReflectiveProcessorTests {
 	@Test
 	void shouldRegisterMethodAsInvokable() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "string");
+		assertThat(method).isNotNull();
 		runProcessor(method);
 		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(method)).accepts(this.runtimeHints);
 	}
@@ -53,6 +55,7 @@ class OperationReflectiveProcessorTests {
 	@Test
 	void shouldRegisterReturnType() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "dto");
+		assertThat(method).isNotNull();
 		runProcessor(method);
 		assertHintsForDto();
 	}
@@ -60,6 +63,7 @@ class OperationReflectiveProcessorTests {
 	@Test
 	void shouldRegisterMapValueFromReturnType() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "dtos");
+		assertThat(method).isNotNull();
 		runProcessor(method);
 		assertHintsForDto();
 	}
@@ -67,6 +71,7 @@ class OperationReflectiveProcessorTests {
 	@Test
 	void shouldRegisterWebEndpointResponseReturnType() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "webEndpointResponse");
+		assertThat(method).isNotNull();
 		runProcessor(method);
 		assertHintsForDto();
 		assertThat(RuntimeHintsPredicates.reflection().onType(WebEndpointResponse.class)).rejects(this.runtimeHints);
@@ -75,6 +80,7 @@ class OperationReflectiveProcessorTests {
 	@Test
 	void shouldNotRegisterResourceReturnType() {
 		Method method = ReflectionUtils.findMethod(Methods.class, "resource");
+		assertThat(method).isNotNull();
 		runProcessor(method);
 		assertThat(RuntimeHintsPredicates.reflection().onType(Resource.class)).rejects(this.runtimeHints);
 	}
@@ -95,23 +101,23 @@ class OperationReflectiveProcessorTests {
 	@SuppressWarnings("unused")
 	private static final class Methods {
 
-		private String string() {
+		private @Nullable String string() {
 			return null;
 		}
 
-		private Map<String, List<Dto>> dtos() {
+		private @Nullable Map<String, List<Dto>> dtos() {
 			return null;
 		}
 
-		private Dto dto() {
+		private @Nullable Dto dto() {
 			return null;
 		}
 
-		private WebEndpointResponse<Dto> webEndpointResponse() {
+		private @Nullable WebEndpointResponse<Dto> webEndpointResponse() {
 			return null;
 		}
 
-		private Resource resource() {
+		private @Nullable Resource resource() {
 			return null;
 		}
 

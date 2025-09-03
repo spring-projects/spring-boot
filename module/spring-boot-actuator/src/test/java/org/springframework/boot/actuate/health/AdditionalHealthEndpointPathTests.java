@@ -45,6 +45,7 @@ class AdditionalHealthEndpointPathTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromNullPathShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> AdditionalHealthEndpointPath.from(null));
 	}
@@ -95,11 +96,13 @@ class AdditionalHealthEndpointPathTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWithNullNamespaceShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> AdditionalHealthEndpointPath.of(null, "my-sub-path"));
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWithNullPathShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, null));

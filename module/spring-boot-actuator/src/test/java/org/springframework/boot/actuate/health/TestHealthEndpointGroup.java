@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 
 /**
@@ -33,11 +35,11 @@ class TestHealthEndpointGroup implements HealthEndpointGroup {
 
 	private final Predicate<String> memberPredicate;
 
-	private Boolean showComponents;
+	private @Nullable Boolean showComponents;
 
 	private boolean showDetails = true;
 
-	private AdditionalHealthEndpointPath additionalPath;
+	private @Nullable AdditionalHealthEndpointPath additionalPath;
 
 	TestHealthEndpointGroup() {
 		this((name) -> true);
@@ -81,7 +83,7 @@ class TestHealthEndpointGroup implements HealthEndpointGroup {
 	}
 
 	@Override
-	public AdditionalHealthEndpointPath getAdditionalPath() {
+	public @Nullable AdditionalHealthEndpointPath getAdditionalPath() {
 		return this.additionalPath;
 	}
 

@@ -50,20 +50,25 @@ import static org.mockito.Mockito.never;
 class PrometheusPushGatewayManagerTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private PushGateway pushGateway;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private TaskScheduler scheduler;
 
 	private final Duration pushRate = Duration.ofSeconds(1);
 
 	@Captor
+	@SuppressWarnings("NullAway.Init")
 	private ArgumentCaptor<Runnable> task;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ScheduledFuture<Object> future;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPushGatewayIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PrometheusPushGatewayManager(null, this.scheduler, this.pushRate, null))
@@ -71,6 +76,7 @@ class PrometheusPushGatewayManagerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSchedulerIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, null, this.pushRate, null))
@@ -78,6 +84,7 @@ class PrometheusPushGatewayManagerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPushRateIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, this.scheduler, null, null))

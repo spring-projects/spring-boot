@@ -40,12 +40,14 @@ import static org.assertj.core.api.Assertions.entry;
 class EndpointServletTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenServletClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointServlet((Class<Servlet>) null))
 			.withMessageContaining("'servlet' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenServletIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointServlet((Servlet) null))
 			.withMessageContaining("'servlet' must not be null");
@@ -65,6 +67,7 @@ class EndpointServletTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void withInitParameterNullName() {
 		EndpointServlet endpointServlet = new EndpointServlet(TestServlet.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> endpointServlet.withInitParameter(null, "value"));

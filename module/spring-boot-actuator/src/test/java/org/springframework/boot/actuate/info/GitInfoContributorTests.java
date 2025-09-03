@@ -78,6 +78,7 @@ class GitInfoContributorTests {
 		GitInfoContributor contributor = new GitInfoContributor(new GitProperties(properties), Mode.FULL);
 		Map<String, Object> content = contributor.generateContent();
 		Map<String, Object> commit = (Map<String, Object>) content.get("commit");
+		assertThat(commit).isNotNull();
 		assertThat(commit.get("id")).isInstanceOf(Map.class);
 		Map<String, Object> id = (Map<String, Object>) commit.get("id");
 		assertThat(id).containsEntry("full", "1b3cec34f7ca0a021244452f2cae07a80497a7c7");

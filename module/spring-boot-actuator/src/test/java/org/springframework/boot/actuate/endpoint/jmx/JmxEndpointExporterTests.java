@@ -59,9 +59,11 @@ class JmxEndpointExporterTests {
 	private final List<ExposableJmxEndpoint> endpoints = new ArrayList<>();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private MBeanServer mBeanServer;
 
 	@Spy
+	@SuppressWarnings("NullAway.Init")
 	private EndpointObjectNameFactory objectNameFactory = new TestEndpointObjectNameFactory();
 
 	private JmxEndpointExporter exporter;
@@ -73,6 +75,7 @@ class JmxEndpointExporterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenMBeanServerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -81,6 +84,7 @@ class JmxEndpointExporterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenObjectNameFactoryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, null, this.responseMapper, this.endpoints))
@@ -88,6 +92,7 @@ class JmxEndpointExporterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenResponseMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, null, this.endpoints))
@@ -95,6 +100,7 @@ class JmxEndpointExporterTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenEndpointsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -120,9 +126,9 @@ class JmxEndpointExporterTests {
 
 	@Test
 	void registerWhenObjectNameIsMalformedShouldThrowException() throws Exception {
-		given(this.objectNameFactory.getObjectName(any(ExposableJmxEndpoint.class)))
-			.willThrow(MalformedObjectNameException.class);
-		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
+		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(new TestJmxOperation());
+		given(this.objectNameFactory.getObjectName(endpoint)).willThrow(MalformedObjectNameException.class);
+		this.endpoints.add(endpoint);
 		assertThatIllegalStateException().isThrownBy(this.exporter::afterPropertiesSet)
 			.withMessageContaining("Invalid ObjectName for endpoint 'test'");
 	}
@@ -178,7 +184,7 @@ class JmxEndpointExporterTests {
 
 		@Override
 		public ObjectName getObjectName(ExposableJmxEndpoint endpoint) throws MalformedObjectNameException {
-			return (endpoint != null) ? new ObjectName("boot:type=Endpoint,name=" + endpoint.getEndpointId()) : null;
+			return new ObjectName("boot:type=Endpoint,name=" + endpoint.getEndpointId());
 		}
 
 	}

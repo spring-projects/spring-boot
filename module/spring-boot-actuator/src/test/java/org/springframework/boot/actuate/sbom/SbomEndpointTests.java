@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.sbom.SbomEndpoint.SbomEndpointRuntimeHin
 import org.springframework.boot.actuate.sbom.SbomEndpoint.Sboms;
 import org.springframework.boot.actuate.sbom.SbomProperties.Sbom;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -70,7 +71,9 @@ class SbomEndpointTests {
 	@Test
 	void shouldUseLocationFromProperties() throws IOException {
 		this.properties.getApplication().setLocation("classpath:org/springframework/boot/actuate/sbom/cyclonedx.json");
-		String content = createEndpoint().sbom("application").getContentAsString(StandardCharsets.UTF_8);
+		Resource sbom = createEndpoint().sbom("application");
+		assertThat(sbom).isNotNull();
+		String content = sbom.getContentAsString(StandardCharsets.UTF_8);
 		assertThat(content).contains("\"bomFormat\" : \"CycloneDX\"");
 	}
 

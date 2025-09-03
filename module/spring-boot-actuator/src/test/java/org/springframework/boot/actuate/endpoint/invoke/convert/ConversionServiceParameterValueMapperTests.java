@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.invoke.convert;
 import java.lang.annotation.Annotation;
 import java.time.OffsetDateTime;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
@@ -107,7 +108,7 @@ class ConversionServiceParameterValueMapperTests {
 		}
 
 		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotation) {
+		public <T extends Annotation> @Nullable T getAnnotation(Class<T> annotation) {
 			return null;
 		}
 

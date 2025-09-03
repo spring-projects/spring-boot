@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,9 +41,11 @@ import static org.mockito.BDDMockito.given;
 class AvailabilityStateHealthIndicatorTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ApplicationAvailability applicationAvailability;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenApplicationAvailabilityIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new AvailabilityStateHealthIndicator(null, LivenessState.class, (statusMappings) -> {
@@ -51,6 +54,7 @@ class AvailabilityStateHealthIndicatorTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenStateTypeIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> new AvailabilityStateHealthIndicator(this.applicationAvailability, null, (statusMappings) -> {
@@ -59,6 +63,7 @@ class AvailabilityStateHealthIndicatorTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenStatusMappingIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -82,7 +87,9 @@ class AvailabilityStateHealthIndicatorTests {
 					statusMappings.add(LivenessState.BROKEN, Status.DOWN);
 				});
 		given(this.applicationAvailability.getState(LivenessState.class)).willReturn(LivenessState.BROKEN);
-		assertThat(indicator.health(false).getStatus()).isEqualTo(Status.DOWN);
+		Health health = indicator.health(false);
+		assertThat(health).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	@Test
@@ -93,7 +100,9 @@ class AvailabilityStateHealthIndicatorTests {
 					statusMappings.addDefaultStatus(Status.UNKNOWN);
 				});
 		given(this.applicationAvailability.getState(LivenessState.class)).willReturn(LivenessState.BROKEN);
-		assertThat(indicator.health(false).getStatus()).isEqualTo(Status.UNKNOWN);
+		Health health = indicator.health(false);
+		assertThat(health).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.UNKNOWN);
 	}
 
 	@Test
@@ -104,7 +113,9 @@ class AvailabilityStateHealthIndicatorTests {
 					statusMappings.addDefaultStatus(Status.DOWN);
 				});
 		given(this.applicationAvailability.getState(TestAvailabilityState.class)).willReturn(TestAvailabilityState.TWO);
-		assertThat(indicator.health(false).getStatus()).isEqualTo(Status.DOWN);
+		Health health = indicator.health(false);
+		assertThat(health).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	static class TestAvailabilityState implements AvailabilityState {

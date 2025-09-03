@@ -51,10 +51,12 @@ import static org.mockito.BDDMockito.then;
 class CachingOperationInvokerAdvisorTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private OperationInvoker invoker;
 
 	@Mock
-	private Function<EndpointId, Long> timeToLive;
+	@SuppressWarnings("NullAway.Init")
+	private Function<EndpointId, @Nullable Long> timeToLive;
 
 	private CachingOperationInvokerAdvisor advisor;
 
@@ -158,6 +160,7 @@ class CachingOperationInvokerAdvisorTests {
 
 	private OperationMethod getOperationMethod(String methodName, Class<?>... parameterTypes) {
 		Method method = ReflectionUtils.findMethod(TestOperations.class, methodName, parameterTypes);
+		assertThat(method).as("Method '%s'", method).isNotNull();
 		return new OperationMethod(method, OperationType.READ);
 	}
 

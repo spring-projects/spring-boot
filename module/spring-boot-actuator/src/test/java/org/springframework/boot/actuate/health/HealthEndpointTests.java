@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -81,6 +82,7 @@ class HealthEndpointTests extends
 		HealthContributorRegistry registry = createRegistry("test", createContributor(this.up));
 		HealthEndpoint endpoint = create(registry, this.groups);
 		IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) endpoint.healthForPath("test");
+		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
 		assertThat(descriptor.getDetails()).containsEntry("spring", "boot");
 	}
@@ -105,13 +107,13 @@ class HealthEndpointTests extends
 
 	@Override
 	protected HealthEndpoint create(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			Duration slowContributorLoggingThreshold) {
+			@Nullable Duration slowContributorLoggingThreshold) {
 		return new HealthEndpoint(registry, null, groups, slowContributorLoggingThreshold);
 	}
 
 	@Override
 	protected HealthContributorRegistry createRegistry(
-			Consumer<BiConsumer<String, HealthContributor>> initialRegistrations) {
+			@Nullable Consumer<BiConsumer<String, HealthContributor>> initialRegistrations) {
 		return new DefaultHealthContributorRegistry(Collections.emptyList(), initialRegistrations);
 	}
 

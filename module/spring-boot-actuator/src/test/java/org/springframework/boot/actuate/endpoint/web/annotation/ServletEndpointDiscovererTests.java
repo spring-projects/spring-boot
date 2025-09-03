@@ -27,6 +27,7 @@ import jakarta.servlet.GenericServlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -230,7 +231,7 @@ class ServletEndpointDiscovererTests {
 	static class TestServletEndpointSupplierOfNull implements Supplier<EndpointServlet> {
 
 		@Override
-		public EndpointServlet get() {
+		public @Nullable EndpointServlet get() {
 			return null;
 		}
 

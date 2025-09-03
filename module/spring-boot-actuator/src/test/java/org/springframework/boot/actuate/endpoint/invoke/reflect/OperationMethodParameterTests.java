@@ -34,12 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class OperationMethodParameterTests {
 
-	private final Method example = ReflectionUtils.findMethod(getClass(), "example", String.class, String.class);
+	private final Method example = findMethod("example", String.class, String.class);
 
-	private final Method exampleSpringNullable = ReflectionUtils.findMethod(getClass(), "exampleSpringNullable",
-			String.class, String.class);
+	private final Method exampleSpringNullable = findMethod("exampleSpringNullable", String.class, String.class);
 
-	private final Method exampleAnnotation = ReflectionUtils.findMethod(getClass(), "exampleAnnotation", String.class);
+	private final Method exampleAnnotation = findMethod("exampleAnnotation", String.class);
 
 	@Test
 	void getNameShouldReturnName() {
@@ -80,6 +79,12 @@ class OperationMethodParameterTests {
 		Selector annotation = parameter.getAnnotation(Selector.class);
 		assertThat(annotation).isNotNull();
 		assertThat(annotation.match()).isEqualTo(Match.ALL_REMAINING);
+	}
+
+	private Method findMethod(String name, Class<?>... parameters) {
+		Method method = ReflectionUtils.findMethod(getClass(), name, parameters);
+		assertThat(method).as("Method '%s'", name).isNotNull();
+		return method;
 	}
 
 	void example(String one, @org.jspecify.annotations.Nullable String two) {

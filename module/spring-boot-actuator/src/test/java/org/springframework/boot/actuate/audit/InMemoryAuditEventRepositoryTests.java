@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +61,7 @@ class InMemoryAuditEventRepositoryTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullAuditEvent() {
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		assertThatIllegalArgumentException().isThrownBy(() -> repository.add(null))
@@ -95,7 +97,7 @@ class InMemoryAuditEventRepositoryTests {
 	@Test
 	void findByDate() {
 		Instant instant = Instant.now();
-		Map<String, Object> data = new HashMap<>();
+		Map<String, @Nullable Object> data = new HashMap<>();
 		InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 		repository.add(new AuditEvent(instant, "dave", "a", data));
 		repository.add(new AuditEvent(instant.plus(1, ChronoUnit.DAYS), "phil", "b", data));

@@ -56,6 +56,7 @@ class AuditEventTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nullTimestamp() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN", Collections.singletonMap("a", "b")))
@@ -63,6 +64,7 @@ class AuditEventTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nullType() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new AuditEvent("phil", null, Collections.singletonMap("a", "b")))

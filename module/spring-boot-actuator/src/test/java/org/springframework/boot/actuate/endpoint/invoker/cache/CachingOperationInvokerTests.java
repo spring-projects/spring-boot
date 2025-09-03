@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -85,8 +86,8 @@ class CachingOperationInvokerTests {
 		MonoOperationInvoker target = new MonoOperationInvoker();
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);
-		Object response = ((Mono<?>) invoker.invoke(context)).block();
-		Object cachedResponse = ((Mono<?>) invoker.invoke(context)).block();
+		Object response = invokeMono(invoker, context).block();
+		Object cachedResponse = invokeMono(invoker, context).block();
 		assertThat(MonoOperationInvoker.invocations).hasValue(1);
 		assertThat(response).isSameAs(cachedResponse);
 	}
@@ -97,8 +98,8 @@ class CachingOperationInvokerTests {
 		FluxOperationInvoker target = new FluxOperationInvoker();
 		InvocationContext context = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap());
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);
-		Object response = ((Flux<?>) invoker.invoke(context)).blockLast();
-		Object cachedResponse = ((Flux<?>) invoker.invoke(context)).blockLast();
+		Object response = invokeFlux(invoker, context).blockLast();
+		Object cachedResponse = invokeFlux(invoker, context).blockLast();
 		assertThat(FluxOperationInvoker.invocations).hasValue(1);
 		assertThat(response).isSameAs(cachedResponse);
 	}
@@ -124,14 +125,14 @@ class CachingOperationInvokerTests {
 		Principal principal = mock(Principal.class);
 		given(securityContext.getPrincipal()).willReturn(principal);
 		InvocationContext context = new InvocationContext(securityContext, Collections.emptyMap());
-		((Mono<?>) invoker.invoke(context)).block();
+		invokeMono(invoker, context).block();
 	}
 
 	private void assertCacheIsUsed(Map<String, Object> parameters) {
 		assertCacheIsUsed(parameters, null);
 	}
 
-	private void assertCacheIsUsed(Map<String, Object> parameters, Principal principal) {
+	private void assertCacheIsUsed(Map<String, Object> parameters, @Nullable Principal principal) {
 		OperationInvoker target = mock(OperationInvoker.class);
 		Object expected = new Object();
 		SecurityContext securityContext = mock(SecurityContext.class);
@@ -259,6 +260,18 @@ class CachingOperationInvokerTests {
 		Object responseManagement = invoker.invoke(contextManagement);
 		assertThat(responseManagement).isNotSameAs(responseServer);
 		then(target).should(times(1)).invoke(contextManagement);
+	}
+
+	private Mono<?> invokeMono(CachingOperationInvoker invoker, InvocationContext context) {
+		Mono<?> result = (Mono<?>) invoker.invoke(context);
+		assertThat(result).isNotNull();
+		return result;
+	}
+
+	private Flux<?> invokeFlux(CachingOperationInvoker invoker, InvocationContext context) {
+		Flux<?> result = (Flux<?>) invoker.invoke(context);
+		assertThat(result).isNotNull();
+		return result;
 	}
 
 	private static final class MonoOperationInvoker implements OperationInvoker {
