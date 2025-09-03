@@ -83,8 +83,8 @@ public class ItemMetadataAssert extends AbstractAssert<ItemMetadataAssert, ItemM
 		return hasSourceType(type.getName());
 	}
 
-	public ItemMetadataAssert hasSourceMethod(String type) {
-		extracting(ItemMetadata::getSourceMethod).isEqualTo(type);
+	public ItemMetadataAssert hasSourceMethod(String method) {
+		extracting(ItemMetadata::getSourceMethod).isEqualTo(method);
 		return this;
 	}
 
@@ -120,7 +120,7 @@ public class ItemMetadataAssert extends AbstractAssert<ItemMetadataAssert, ItemM
 	}
 
 	private <T> ObjectAssert<T> extracting(Function<ItemMetadata, T> extractor) {
-		return super.extracting(extractor, Assertions::assertThat);
+		return extracting(extractor, Assertions::assertThat);
 	}
 
 	@Override
