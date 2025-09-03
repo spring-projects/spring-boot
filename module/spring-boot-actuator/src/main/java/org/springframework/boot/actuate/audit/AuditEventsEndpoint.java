@@ -45,8 +45,8 @@ public class AuditEventsEndpoint {
 	}
 
 	@ReadOperation
-	public AuditEventsDescriptor events(@OptionalParameter String principal, @OptionalParameter OffsetDateTime after,
-			@OptionalParameter String type) {
+	public AuditEventsDescriptor events(@OptionalParameter @Nullable String principal,
+			@OptionalParameter @Nullable OffsetDateTime after, @OptionalParameter @Nullable String type) {
 		List<AuditEvent> events = this.auditEventRepository.find(principal, getInstant(after), type);
 		return new AuditEventsDescriptor(events);
 	}

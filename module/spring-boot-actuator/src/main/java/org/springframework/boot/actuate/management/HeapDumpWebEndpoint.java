@@ -78,7 +78,7 @@ public class HeapDumpWebEndpoint {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Resource> heapDump(@OptionalParameter Boolean live) {
+	public WebEndpointResponse<Resource> heapDump(@OptionalParameter @Nullable Boolean live) {
 		try {
 			if (this.lock.tryLock(this.timeout, TimeUnit.MILLISECONDS)) {
 				try {
@@ -101,7 +101,7 @@ public class HeapDumpWebEndpoint {
 		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_TOO_MANY_REQUESTS);
 	}
 
-	private Resource dumpHeap(Boolean live) throws IOException, InterruptedException {
+	private Resource dumpHeap(@Nullable Boolean live) throws IOException, InterruptedException {
 		if (this.heapDumper == null) {
 			this.heapDumper = createHeapDumper();
 		}

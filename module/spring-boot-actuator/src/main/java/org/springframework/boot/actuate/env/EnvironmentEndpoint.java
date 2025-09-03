@@ -81,12 +81,12 @@ public class EnvironmentEndpoint {
 	}
 
 	@ReadOperation
-	public EnvironmentDescriptor environment(@OptionalParameter String pattern) {
+	public EnvironmentDescriptor environment(@OptionalParameter @Nullable String pattern) {
 		boolean showUnsanitized = this.showValues.isShown(true);
 		return getEnvironmentDescriptor(pattern, showUnsanitized);
 	}
 
-	EnvironmentDescriptor getEnvironmentDescriptor(String pattern, boolean showUnsanitized) {
+	EnvironmentDescriptor getEnvironmentDescriptor(@Nullable String pattern, boolean showUnsanitized) {
 		if (StringUtils.hasText(pattern)) {
 			return getEnvironmentDescriptor(Pattern.compile(pattern).asPredicate(), showUnsanitized);
 		}

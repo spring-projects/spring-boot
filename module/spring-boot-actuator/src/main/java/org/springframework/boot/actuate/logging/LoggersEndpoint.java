@@ -100,7 +100,7 @@ public class LoggersEndpoint {
 	}
 
 	@WriteOperation
-	public void configureLogLevel(@Selector String name, @OptionalParameter LogLevel configuredLevel) {
+	public void configureLogLevel(@Selector String name, @OptionalParameter @Nullable LogLevel configuredLevel) {
 		Assert.notNull(name, "'name' must not be empty");
 		LoggerGroup group = this.loggerGroups.get(name);
 		if (group != null && group.hasMembers()) {

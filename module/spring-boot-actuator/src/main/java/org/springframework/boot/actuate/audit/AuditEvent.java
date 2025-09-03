@@ -61,7 +61,7 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data the event data
 	 */
-	public AuditEvent(String principal, String type, Map<String, @Nullable Object> data) {
+	public AuditEvent(@Nullable String principal, String type, Map<String, @Nullable Object> data) {
 		this(Instant.now(), principal, type, data);
 	}
 
@@ -72,7 +72,7 @@ public class AuditEvent implements Serializable {
 	 * @param type the event type
 	 * @param data the event data in the form 'key=value' or simply 'key'
 	 */
-	public AuditEvent(String principal, String type, String... data) {
+	public AuditEvent(@Nullable String principal, String type, String... data) {
 		this(Instant.now(), principal, type, convert(data));
 	}
 
