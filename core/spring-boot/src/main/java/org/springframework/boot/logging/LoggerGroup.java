@@ -59,7 +59,7 @@ public final class LoggerGroup {
 		return this.configuredLevel;
 	}
 
-	public void configureLogLevel(LogLevel level, BiConsumer<String, LogLevel> configurer) {
+	public void configureLogLevel(@Nullable LogLevel level, BiConsumer<String, @Nullable LogLevel> configurer) {
 		this.configuredLevel = level;
 		this.members.forEach((name) -> configurer.accept(name, level));
 	}
