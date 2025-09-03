@@ -60,7 +60,7 @@ class LogCorrelationEnvironmentPostProcessorTests {
 
 	@Test
 	void getExpectCorrelationIdPropertyWhenTracingDisabledReturnsFalse() {
-		TestPropertyValues.of("management.tracing.enabled=false").applyTo(this.environment);
+		TestPropertyValues.of("management.tracing.export.enabled=false").applyTo(this.environment);
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, false))
 			.isFalse();

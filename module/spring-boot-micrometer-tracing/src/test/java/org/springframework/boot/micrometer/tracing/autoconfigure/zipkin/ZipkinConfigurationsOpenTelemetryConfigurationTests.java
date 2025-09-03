@@ -99,7 +99,7 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 
 	@Test
 	void shouldNotSupplyZipkinSpanExporterIfGlobalTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+		this.contextRunner.withPropertyValues("management.tracing.export.enabled=false")
 			.withUserConfiguration(SenderConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
 	}

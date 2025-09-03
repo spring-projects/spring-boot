@@ -50,7 +50,7 @@ class AutoConfigureObservabilityMissingIntegrationTests {
 	void customizerRunsAndSetsExclusionPropertiesWhenNoAnnotationPresent(@Autowired Environment environment) {
 		assertThat(environment.getProperty("management.defaults.metrics.export.enabled")).isEqualTo("false");
 		assertThat(environment.getProperty("management.simple.metrics.export.enabled")).isEqualTo("true");
-		assertThat(environment.getProperty("management.tracing.enabled")).isEqualTo("false");
+		assertThat(environment.getProperty("management.tracing.export.enabled")).isEqualTo("false");
 	}
 
 }

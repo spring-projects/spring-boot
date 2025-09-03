@@ -350,7 +350,7 @@ class BraveAutoConfigurationTests {
 
 	@Test
 	void shouldDisablePropagationIfTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false").run((context) -> {
+		this.contextRunner.withPropertyValues("management.tracing.export.enabled=false").run((context) -> {
 			assertThat(context).hasSingleBean(Factory.class);
 			Factory factory = context.getBean(Factory.class);
 			Propagation<String> propagation = factory.get();

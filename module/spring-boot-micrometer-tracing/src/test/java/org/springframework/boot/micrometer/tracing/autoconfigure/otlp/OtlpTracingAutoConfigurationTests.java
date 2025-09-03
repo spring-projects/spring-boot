@@ -51,7 +51,7 @@ class OtlpTracingAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class));
 
 	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
-		.withPropertyValues("management.tracing.enabled=false");
+		.withPropertyValues("management.tracing.export.enabled=false");
 
 	@Test
 	void shouldNotSupplyBeansIfPropertyIsNotSet() {
@@ -125,7 +125,7 @@ class OtlpTracingAutoConfigurationTests {
 
 	@Test
 	void shouldNotSupplyBeansIfGlobalTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+		this.contextRunner.withPropertyValues("management.tracing.export.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(SpanExporter.class));
 	}
 
