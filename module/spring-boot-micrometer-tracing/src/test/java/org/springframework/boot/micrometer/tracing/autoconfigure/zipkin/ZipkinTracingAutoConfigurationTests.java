@@ -54,7 +54,7 @@ class ZipkinTracingAutoConfigurationTests {
 
 	@Test
 	void shouldNotSupplyBeansIfTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+		this.contextRunner.withPropertyValues("management.tracing.export.enabled=false")
 			.withConfiguration(AutoConfigurations.of(ZipkinAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(SpanExporter.class);

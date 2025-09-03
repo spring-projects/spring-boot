@@ -28,7 +28,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracing;
+import org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracingExport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
@@ -79,7 +79,7 @@ final class OtlpTracingConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean({ OtlpGrpcSpanExporter.class, OtlpHttpSpanExporter.class })
 	@ConditionalOnBean(OtlpTracingConnectionDetails.class)
-	@ConditionalOnEnabledTracing("otlp")
+	@ConditionalOnEnabledTracingExport("otlp")
 	static class Exporters {
 
 		@Bean

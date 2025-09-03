@@ -31,11 +31,11 @@ import org.springframework.util.StringUtils;
  * {@link SpringBootCondition} to check whether tracing is enabled.
  *
  * @author Moritz Halbritter
- * @see ConditionalOnEnabledTracing
+ * @see ConditionalOnEnabledTracingExport
  */
-class OnEnabledTracingCondition extends SpringBootCondition {
+class OnEnabledTracingExportCondition extends SpringBootCondition {
 
-	private static final String GLOBAL_PROPERTY = "management.tracing.enabled";
+	private static final String GLOBAL_PROPERTY = "management.tracing.export.enabled";
 
 	private static final String EXPORTER_PROPERTY = "management.%s.tracing.export.enabled";
 
@@ -47,23 +47,23 @@ class OnEnabledTracingCondition extends SpringBootCondition {
 				.getProperty(EXPORTER_PROPERTY.formatted(tracingExporter), Boolean.class);
 			if (exporterTracingEnabled != null) {
 				return new ConditionOutcome(exporterTracingEnabled,
-						ConditionMessage.forCondition(ConditionalOnEnabledTracing.class)
+						ConditionMessage.forCondition(ConditionalOnEnabledTracingExport.class)
 							.because(EXPORTER_PROPERTY.formatted(tracingExporter) + " is " + exporterTracingEnabled));
 			}
 		}
 		Boolean globalTracingEnabled = context.getEnvironment().getProperty(GLOBAL_PROPERTY, Boolean.class);
 		if (globalTracingEnabled != null) {
 			return new ConditionOutcome(globalTracingEnabled,
-					ConditionMessage.forCondition(ConditionalOnEnabledTracing.class)
+					ConditionMessage.forCondition(ConditionalOnEnabledTracingExport.class)
 						.because(GLOBAL_PROPERTY + " is " + globalTracingEnabled));
 		}
-		return ConditionOutcome.match(ConditionMessage.forCondition(ConditionalOnEnabledTracing.class)
+		return ConditionOutcome.match(ConditionMessage.forCondition(ConditionalOnEnabledTracingExport.class)
 			.because("tracing is enabled by default"));
 	}
 
 	private static @Nullable String getExporterName(AnnotatedTypeMetadata metadata) {
 		Map<String, @Nullable Object> attributes = metadata
-			.getAnnotationAttributes(ConditionalOnEnabledTracing.class.getName());
+			.getAnnotationAttributes(ConditionalOnEnabledTracingExport.class.getName());
 		if (attributes == null) {
 			return null;
 		}

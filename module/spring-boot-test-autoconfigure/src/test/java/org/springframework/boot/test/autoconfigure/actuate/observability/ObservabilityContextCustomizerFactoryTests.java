@@ -148,7 +148,7 @@ class ObservabilityContextCustomizerFactoryTests {
 	}
 
 	private void assertThatTracingIsDisabled(ConfigurableApplicationContext context) {
-		assertThat(context.getEnvironment().getProperty("management.tracing.enabled")).isEqualTo("false");
+		assertThat(context.getEnvironment().getProperty("management.tracing.export.enabled")).isEqualTo("false");
 	}
 
 	private void assertThatMetricsAreDisabled(ConfigurableApplicationContext context) {
@@ -158,7 +158,7 @@ class ObservabilityContextCustomizerFactoryTests {
 	}
 
 	private void assertThatTracingIsEnabled(ConfigurableApplicationContext context) {
-		assertThat(context.getEnvironment().getProperty("management.tracing.enabled")).isNull();
+		assertThat(context.getEnvironment().getProperty("management.tracing.export.enabled")).isNull();
 	}
 
 	private void assertThatMetricsAreEnabled(ConfigurableApplicationContext context) {

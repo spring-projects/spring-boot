@@ -47,7 +47,7 @@ class OpenTelemetryPropagationConfigurations {
 	static class PropagationWithoutBaggage {
 
 		@Bean
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracingExport
 		TextMapPropagator textMapPropagator(TracingProperties properties) {
 			return CompositeTextMapPropagator.create(properties.getPropagation(), null);
 		}
@@ -69,7 +69,7 @@ class OpenTelemetryPropagationConfigurations {
 		}
 
 		@Bean
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracingExport
 		TextMapPropagator textMapPropagatorWithBaggage(OtelCurrentTraceContext otelCurrentTraceContext) {
 			List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
 			List<String> tagFields = this.tracingProperties.getBaggage().getTagFields();

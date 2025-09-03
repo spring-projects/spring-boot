@@ -58,7 +58,7 @@ class BravePropagationConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(Factory.class)
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracingExport
 		CompositePropagationFactory propagationFactory(TracingProperties properties) {
 			return CompositePropagationFactory.create(properties.getPropagation());
 		}
@@ -127,7 +127,7 @@ class BravePropagationConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracingExport
 		Factory propagationFactory(BaggagePropagation.FactoryBuilder factoryBuilder) {
 			return factoryBuilder.build();
 		}

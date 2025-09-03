@@ -68,7 +68,7 @@ class ObservabilityContextCustomizerFactory implements ContextCustomizerFactory 
 					.applyTo(context);
 			}
 			if (isTracingDisabled(context.getEnvironment())) {
-				TestPropertyValues.of("management.tracing.enabled=false").applyTo(context);
+				TestPropertyValues.of("management.tracing.export.enabled=false").applyTo(context);
 			}
 		}
 
