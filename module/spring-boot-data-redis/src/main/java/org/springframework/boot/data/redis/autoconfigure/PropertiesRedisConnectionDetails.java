@@ -35,7 +35,6 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Yanming Zhou
  * @author Phillip Webb
- * @author Yong-Hyun Kim
  */
 class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
@@ -91,12 +90,6 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	public @Nullable Cluster getCluster() {
 		RedisProperties.Cluster cluster = this.properties.getCluster();
 		return (cluster != null) ? new PropertiesCluster(cluster) : null;
-	}
-
-	@Override
-	public @Nullable StaticMasterReplica getStaticMasterReplica() {
-		RedisProperties.StaticMasterReplica staticMasterReplica = this.properties.getStaticMasterReplica();
-		return (staticMasterReplica != null) ? new PropertiesStaticMasterReplica(getStandalone().getDatabase(), staticMasterReplica) : null;
 	}
 
 	private @Nullable RedisUrl getRedisUrl() {
@@ -179,37 +172,6 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		@Override
 		public @Nullable String getPassword() {
 			return this.properties.getPassword();
-		}
-
-		@Override
-		public @Nullable SslBundle getSslBundle() {
-			return PropertiesRedisConnectionDetails.this.getSslBundle();
-		}
-
-	}
-
-	/**
-	 * {@link StaticMasterReplica} implementation backed by properties.
-	 */
-	private class PropertiesStaticMasterReplica implements StaticMasterReplica {
-
-		private final int database;
-
-		private final RedisProperties.StaticMasterReplica properties;
-
-		PropertiesStaticMasterReplica(int database, RedisProperties.StaticMasterReplica properties) {
-			this.database = database;
-			this.properties = properties;
-		}
-
-		@Override
-		public int getDatabase() {
-			return this.database;
-		}
-
-		@Override
-		public List<Node> getNodes() {
-			return asNodes(this.properties.getNodes());
 		}
 
 		@Override
