@@ -71,9 +71,9 @@ public class IntegrationGraphEndpoint {
 		private final Collection<LinkNode> links;
 
 		GraphDescriptor(Graph graph) {
-			this.contentDescriptor = graph.getContentDescriptor();
-			this.nodes = graph.getNodes();
-			this.links = graph.getLinks();
+			this.contentDescriptor = graph.contentDescriptor();
+			this.nodes = graph.nodes();
+			this.links = graph.links();
 		}
 
 		public Map<String, Object> getContentDescriptor() {

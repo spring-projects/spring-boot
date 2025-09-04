@@ -52,9 +52,9 @@ class IntegrationGraphEndpointTests {
 		Map<String, Object> contentDescriptor = new LinkedHashMap<>();
 		Collection<IntegrationNode> nodes = new ArrayList<>();
 		Collection<LinkNode> links = new ArrayList<>();
-		given(graph.getContentDescriptor()).willReturn(contentDescriptor);
-		given(graph.getNodes()).willReturn(nodes);
-		given(graph.getLinks()).willReturn(links);
+		given(graph.contentDescriptor()).willReturn(contentDescriptor);
+		given(graph.nodes()).willReturn(nodes);
+		given(graph.links()).willReturn(links);
 		given(this.server.getGraph()).willReturn(graph);
 		GraphDescriptor descriptor = this.endpoint.graph();
 		then(this.server).should().getGraph();
