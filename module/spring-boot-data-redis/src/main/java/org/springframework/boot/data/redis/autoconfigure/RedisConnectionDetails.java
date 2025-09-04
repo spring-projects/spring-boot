@@ -29,7 +29,6 @@ import org.springframework.util.Assert;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
- * @author Yong-Hyun Kim
  * @since 4.0.0
  */
 public interface RedisConnectionDetails extends ConnectionDetails {
@@ -51,8 +50,8 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * Redis standalone configuration. Mutually exclusive with {@link #getSentinel()},
-	 * {@link #getCluster()} and {@link #getStaticMasterReplica()}.
+	 * Redis standalone configuration. Mutually exclusive with {@link #getSentinel()} and
+	 * {@link #getCluster()}.
 	 * @return the Redis standalone configuration
 	 */
 	default @Nullable Standalone getStandalone() {
@@ -60,8 +59,8 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * Redis sentinel configuration. Mutually exclusive with {@link #getStandalone()},
-	 * {@link #getCluster()} and {@link #getStaticMasterReplica()}.
+	 * Redis sentinel configuration. Mutually exclusive with {@link #getStandalone()} and
+	 * {@link #getCluster()}.
 	 * @return the Redis sentinel configuration
 	 */
 	default @Nullable Sentinel getSentinel() {
@@ -69,20 +68,11 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * Redis cluster configuration. Mutually exclusive with {@link #getStandalone()},
-	 * {@link #getSentinel()} and {@link #getStaticMasterReplica()}.
+	 * Redis cluster configuration. Mutually exclusive with {@link #getStandalone()} and
+	 * {@link #getSentinel()}.
 	 * @return the Redis cluster configuration
 	 */
 	default @Nullable Cluster getCluster() {
-		return null;
-	}
-
-	/**
-	 * Redis static Master / Replica configuration. Mutually exclusive with {@link #getStandalone()},
-	 * {@link #getSentinel()} and {@link #getCluster()}.
-	 * @return the Redis static Master / Replica configuration
-	 */
-	default @Nullable StaticMasterReplica getStaticMasterReplica() {
 		return null;
 	}
 
@@ -255,39 +245,7 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * Redis static Master / Replica configuration.
-	 */
-	interface StaticMasterReplica {
-
-		/**
-		 * Database index used by the connection factory.
-		 * @return the database index used by the connection factory
-		 */
-		default int getDatabase() {
-			return 0;
-		}
-
-		/**
-		 * List of Master and Replica nodes for the static configuration. This represents
-		 * the nodes to be used in a static Master/Replica setup and is required to have
-		 * at least one entry. The first node does not need to be the master, as the actual
-		 * roles are determined by querying each node's ROLE command.
-		 * @return the list of nodes for Master/Replica configuration
-		 */
-		List<Node> getNodes();
-
-		/**
-		 * SSL bundle to use.
-		 * @return the SSL bundle to use
-		 */
-		default @Nullable SslBundle getSslBundle() {
-			return null;
-		}
-
-	}
-
-	/**
-	 * A node in a sentinel, cluster or static master-replica configuration.
+	 * A node in a sentinel or cluster configuration.
 	 *
 	 * @param host the hostname of the node
 	 * @param port the port of the node

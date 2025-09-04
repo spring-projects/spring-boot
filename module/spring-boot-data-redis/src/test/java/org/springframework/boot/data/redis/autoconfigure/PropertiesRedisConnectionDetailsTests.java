@@ -33,7 +33,6 @@ import static org.mockito.Mockito.mock;
  *
  * @author Scott Frederick
  * @author Moritz Halbritter
- * @author Yong-Hyun Kim
  */
 class PropertiesRedisConnectionDetailsTests {
 
@@ -162,19 +161,6 @@ class PropertiesRedisConnectionDetailsTests {
 	}
 
 	@Test
-	void staticMasterReplicaIsConfigured() {
-		RedisProperties.StaticMasterReplica staticMasterReplica = new RedisProperties.StaticMasterReplica();
-		staticMasterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
-		this.properties.setStaticMasterReplica(staticMasterReplica);
-		this.properties.setDatabase(5);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
-				null);
-		assertThat(connectionDetails.getStaticMasterReplica().getNodes()).containsExactly(new Node("localhost", 1111),
-				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
-		assertThat(connectionDetails.getStaticMasterReplica().getDatabase()).isEqualTo(5);
-	}
-
-	@Test
 	void sentinelDatabaseIsConfiguredFromUrl() {
 		RedisProperties.Sentinel sentinel = new RedisProperties.Sentinel();
 		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
@@ -184,18 +170,6 @@ class PropertiesRedisConnectionDetailsTests {
 		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
 				null);
 		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(9999);
-	}
-
-	@Test
-	void staticMasterReplicaDatabaseIsConfiguredFromUrl() {
-		RedisProperties.StaticMasterReplica staticMasterReplica = new RedisProperties.StaticMasterReplica();
-		staticMasterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
-		this.properties.setStaticMasterReplica(staticMasterReplica);
-		this.properties.setUrl("redis://example.com:1234/9999");
-		this.properties.setDatabase(5);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
-				null);
-		assertThat(connectionDetails.getStaticMasterReplica().getDatabase()).isEqualTo(9999);
 	}
 
 	@Test

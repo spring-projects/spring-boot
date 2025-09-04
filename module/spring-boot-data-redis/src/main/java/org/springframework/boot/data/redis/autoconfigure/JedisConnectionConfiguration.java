@@ -38,7 +38,6 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisSslClientConfigurationBuilder;
@@ -56,7 +55,6 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
- * @author Yong-Hyun Kim
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
@@ -66,12 +64,10 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
-			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			ObjectProvider<RedisStaticMasterReplicaConfiguration> staticMasterReplicaConfigurationProvider,
-			RedisConnectionDetails connectionDetails) {
-		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfigurationProvider,
-				clusterConfigurationProvider, staticMasterReplicaConfigurationProvider);
+			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails) {
+		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
+				clusterConfiguration);
 	}
 
 	@Bean
@@ -107,7 +103,6 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 				Assert.state(sentinelConfig != null, "'sentinelConfig' must not be null");
 				yield new JedisConnectionFactory(sentinelConfig, clientConfiguration);
 			}
-			case STATIC_MASTER_REPLICA -> throw new IllegalStateException("Static master-replica mode is not supported by Jedis");
 		};
 	}
 
