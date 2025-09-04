@@ -101,12 +101,6 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	}
 
 	@Override
-	public GridFs getGridFs() {
-		return GridFs.of(PropertiesMongoConnectionDetails.this.properties.getGridfs().getDatabase(),
-				PropertiesMongoConnectionDetails.this.properties.getGridfs().getBucket());
-	}
-
-	@Override
 	public @Nullable SslBundle getSslBundle() {
 		Ssl ssl = this.properties.getSsl();
 		if (!ssl.isEnabled()) {

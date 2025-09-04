@@ -18,7 +18,6 @@ package org.springframework.boot.data.mongodb.autoconfigure;
 
 import java.time.Duration;
 
-import com.mongodb.ConnectionString;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import org.junit.jupiter.api.Test;
@@ -26,12 +25,9 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
 import org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
@@ -72,18 +68,6 @@ class MongoReactiveDataAutoConfigurationTests {
 	void whenGridFsDatabaseIsConfiguredThenGridFsTemplateUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.database:grid")
 			.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid"));
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	void usesMongoConnectionDetailsIfAvailable() {
-		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
-			assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid-database-1");
-			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-			GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
-				.block(Duration.ofSeconds(30));
-			assertThat(bucket.getBucketName()).isEqualTo("connection-details-bucket");
-		});
 	}
 
 	@Test
@@ -179,40 +163,6 @@ class MongoReactiveDataAutoConfigurationTests {
 			.block(Duration.ofSeconds(30));
 		MongoCollection<?> collection = (MongoCollection<?>) ReflectionTestUtils.getField(bucket, "filesCollection");
 		return collection.getNamespace().getDatabaseName();
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ConnectionDetailsConfiguration {
-
-		@Bean
-		MongoConnectionDetails mongoConnectionDetails() {
-			return new MongoConnectionDetails() {
-
-				@Override
-				public ConnectionString getConnectionString() {
-					return new ConnectionString("mongodb://localhost/db");
-				}
-
-				@Override
-				public GridFs getGridFs() {
-					return new GridFs() {
-
-						@Override
-						public String getDatabase() {
-							return "grid-database-1";
-						}
-
-						@Override
-						public String getBucket() {
-							return "connection-details-bucket";
-						}
-
-					};
-				}
-
-			};
-		}
-
 	}
 
 }

@@ -99,21 +99,6 @@ class MongoDataAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void usesMongoConnectionDetailsIfAvailable() {
-		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(GridFsTemplate.class);
-			GridFsTemplate template = context.getBean(GridFsTemplate.class);
-			GridFSBucket bucket = ((Supplier<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
-				.get();
-			assertThat(bucket.getBucketName()).isEqualTo("connection-details-bucket");
-			assertThat(bucket).extracting("filesCollection", InstanceOfAssertFactories.type(MongoCollection.class))
-				.extracting((collection) -> collection.getNamespace().getDatabaseName())
-				.isEqualTo("grid-database-1");
-		});
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
 	void whenGridFsBucketIsConfiguredThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
 			assertThat(context).hasSingleBean(GridFsTemplate.class);
@@ -366,28 +351,6 @@ class MongoDataAutoConfigurationTests {
 		@Bean
 		MongoDatabaseFactory mongoDatabaseFactory() {
 			return new SimpleMongoClientDatabaseFactory(MongoClients.create(), "test");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ConnectionDetailsConfiguration {
-
-		@Bean
-		MongoConnectionDetails mongoConnectionDetails() {
-			return new MongoConnectionDetails() {
-
-				@Override
-				public ConnectionString getConnectionString() {
-					return new ConnectionString("mongodb://localhost/db");
-				}
-
-				@Override
-				public GridFs getGridFs() {
-					return GridFs.of("grid-database-1", "connection-details-bucket");
-				}
-
-			};
 		}
 
 	}

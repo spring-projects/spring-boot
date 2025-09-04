@@ -55,7 +55,6 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionString.getCredential().getPassword()).isEqualTo("secret".toCharArray());
 		assertThat(connectionString.getCredential().getSource()).isEqualTo("admin");
 		assertThat(connectionString.getDatabase()).isEqualTo(database);
-		assertThat(connectionDetails.getGridFs()).isNull();
 	}
 
 }
