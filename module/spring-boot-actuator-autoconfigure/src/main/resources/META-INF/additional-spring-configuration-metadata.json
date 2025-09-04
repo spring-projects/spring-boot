@@ -112,14 +112,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.health.influxdb.enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error",
-        "reason": "InfluxDB support has been removed."
-      }
-    },
-    {
       "name": "management.health.livenessstate.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable liveness state health check.",
