@@ -60,9 +60,10 @@ import org.springframework.kafka.support.LoggingProducerListener;
 import org.springframework.kafka.support.ProducerListener;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.retry.backoff.BackOffPolicyBuilder;
-import org.springframework.retry.backoff.SleepingBackOffPolicy;
 import org.springframework.util.StringUtils;
+import org.springframework.util.backoff.BackOff;
+import org.springframework.util.backoff.ExponentialBackOff;
+import org.springframework.util.backoff.FixedBackOff;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
@@ -192,13 +193,13 @@ public final class KafkaAutoConfiguration {
 	@ConditionalOnSingleCandidate(KafkaTemplate.class)
 	RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaTemplate<?, ?> kafkaTemplate) {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
-		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
+		return RetryTopicConfigurationBuilder.newInstance()
 			.maxAttempts(retryTopic.getAttempts())
 			.useSingleTopicForSameIntervals()
 			.suffixTopicsWithIndexValues()
-			.doNotAutoCreateRetryTopics();
-		setBackOffPolicy(builder, retryTopic.getBackoff());
-		return builder.create(kafkaTemplate);
+			.doNotAutoCreateRetryTopics()
+			.customBackoff(getBackOffPolicy(retryTopic.getBackoff()))
+			.create(kafkaTemplate);
 	}
 
 	private void applyKafkaConnectionDetailsForConsumer(Map<String, Object> properties,
@@ -225,20 +226,28 @@ public final class KafkaAutoConfiguration {
 		applySslBundle(properties, admin.getSslBundle());
 	}
 
-	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Backoff retryTopicBackoff) {
-		long delay = (retryTopicBackoff.getDelay() != null) ? retryTopicBackoff.getDelay().toMillis() : 0;
-		if (delay > 0) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			BackOffPolicyBuilder backOffPolicy = BackOffPolicyBuilder.newBuilder();
-			map.from(delay).to(backOffPolicy::delay);
-			map.from(retryTopicBackoff.getMaxDelay()).as(Duration::toMillis).to(backOffPolicy::maxDelay);
-			map.from(retryTopicBackoff.getMultiplier()).to(backOffPolicy::multiplier);
-			map.from(retryTopicBackoff.isRandom()).to(backOffPolicy::random);
-			builder.customBackoff((SleepingBackOffPolicy<?>) backOffPolicy.build());
+	private BackOff getBackOffPolicy(Backoff properties) {
+		Duration delay = properties.getDelay();
+		Duration maxDelay = properties.getMaxDelay();
+		if (delay == null || Duration.ZERO.equals(delay)) {
+			return new FixedBackOff(0);
 		}
-		else {
-			builder.noBackoff();
+		if (properties.getMultiplier() > 0 || (maxDelay != null && maxDelay.toMillis() > delay.toMillis())) {
+			long jitter = 0;
+			if (properties.isRandom() && maxDelay != null) {
+				jitter = (maxDelay.toMillis() - delay.toMillis()) / 2;
+			}
+			ExponentialBackOff backOff = new ExponentialBackOff();
+			backOff.setInitialInterval(delay.toMillis() + jitter);
+			backOff.setJitter(jitter);
+			backOff.setMultiplier(properties.getMultiplier());
+			if (maxDelay != null && maxDelay.toMillis() > delay.toMillis()) {
+				backOff.setMaxInterval(properties.getMaxDelay().toMillis());
+			}
+			return backOff;
 		}
+		return new FixedBackOff(delay.toMillis());
+
 	}
 
 	static void applySslBundle(Map<String, Object> properties, @Nullable SslBundle sslBundle) {
