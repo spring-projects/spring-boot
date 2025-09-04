@@ -103,6 +103,12 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	public abstract Property<String> getLibraries();
 
 	@Input
+	@Optional
+	@Option(option = "dry-run-upgrades",
+			description = "Whether to perform a dry run that doesn't open issues or change the bom")
+	public abstract Property<Boolean> getDryRun();
+
+	@Input
 	abstract ListProperty<String> getRepositoryNames();
 
 	@TaskAction
@@ -112,7 +118,14 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		List<String> issueLabels = verifyLabels(repository);
 		Milestone milestone = determineMilestone(repository);
 		List<Upgrade> upgrades = resolveUpgrades(milestone);
-		applyUpgrades(repository, issueLabels, milestone, upgrades);
+		if (!getDryRun().getOrElse(false)) {
+			applyUpgrades(repository, issueLabels, milestone, upgrades);
+		}
+		upgradesApplied(upgrades);
+	}
+
+	protected void upgradesApplied(List<Upgrade> upgrades) {
+
 	}
 
 	private void applyUpgrades(GitHubRepository repository, List<String> issueLabels, Milestone milestone,

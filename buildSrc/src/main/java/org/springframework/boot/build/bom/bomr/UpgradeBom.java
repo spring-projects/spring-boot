@@ -16,6 +16,8 @@
 
 package org.springframework.boot.build.bom.bomr;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.gradle.api.Task;
@@ -24,6 +26,7 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import org.springframework.boot.build.bom.BomExtension;
+import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.properties.BuildProperties;
 
 /**
@@ -61,6 +64,27 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 	@Override
 	protected String commitMessage(Upgrade upgrade, int issueNumber) {
 		return issueTitle(upgrade) + "\n\nCloses gh-" + issueNumber;
+	}
+
+	@Override
+	protected void upgradesApplied(List<Upgrade> upgrades) {
+		if (upgrades.isEmpty()) {
+			return;
+		}
+		System.out.println();
+		System.out.println("Upgrade release notes:");
+		System.out.println();
+		for (Upgrade upgrade : upgrades) {
+			Library library = upgrade.toRelease();
+			String releaseNotes = library.getLinkUrl("releaseNotes");
+			if (releaseNotes != null) {
+				System.out.println("* " + releaseNotes + "[" + library.getNameAndVersion() + "]");
+			}
+			else {
+				System.out.println("* " + library.getNameAndVersion());
+			}
+		}
+		System.out.println();
 	}
 
 }
