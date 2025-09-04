@@ -33,6 +33,7 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.function.Resolver;
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.util.Timeout;
@@ -62,6 +63,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Laura Trotta
  */
 class ElasticsearchRestClientAutoConfigurationTests {
 
@@ -189,6 +191,41 @@ class ElasticsearchRestClientAutoConfigurationTests {
 							.getCredentials(new AuthScope("localhost", 9201), null);
 						assertThat(defaultCredentials.getUserPrincipal().getName()).isEqualTo("admin");
 						assertThat(defaultCredentials.getUserPassword()).containsExactly("admin".toCharArray());
+					});
+			});
+	}
+
+	@Test
+	void whenApiKeyIsConfiguredThenAuthorizationHeaderIsPresent() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.api-key=some-api-key").run((context) -> {
+			Rest5Client client = context.getBean(Rest5Client.class);
+			assertThat(client).extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
+				.satisfiesOnlyOnce((header) -> {
+					assertThat(header.getName().equals("Authorization"));
+					assertThat(header.getValue().equals("ApiKey some-api-key"));
+				});
+		});
+	}
+
+	@Test
+	void whenApiKeyAndUsernameAndPasswordAreConfiguredThenBothFormsOfCredentialsArePresent() {
+		this.contextRunner
+			.withPropertyValues("spring.elasticsearch.api-key=some-api-key", "spring.elasticsearch.username=alice",
+					"spring.elasticsearch.password=secret")
+			.run((context) -> {
+				Rest5Client client = context.getBean(Rest5Client.class);
+				assertThat(client).extracting("defaultHeaders", InstanceOfAssertFactories.list(Header.class))
+					.satisfiesOnlyOnce((header) -> {
+						assertThat(header.getName().equals("Authorization"));
+						assertThat(header.getValue().equals("ApiKey some-api-key"));
+					});
+				assertThat(client)
+					.extracting("client.credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
+					.satisfies((credentialsProvider) -> {
+						UsernamePasswordCredentials defaultCredentials = (UsernamePasswordCredentials) credentialsProvider
+							.getCredentials(new AuthScope(null, -1), null);
+						assertThat(defaultCredentials.getUserPrincipal().getName()).isEqualTo("alice");
+						assertThat(defaultCredentials.getUserPassword()).containsExactly("secret".toCharArray());
 					});
 			});
 	}
