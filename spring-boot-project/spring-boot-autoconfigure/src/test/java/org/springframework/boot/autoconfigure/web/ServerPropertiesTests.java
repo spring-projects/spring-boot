@@ -30,6 +30,7 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http11.Http11Nio2Protocol;
 import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.Server;
@@ -218,6 +219,12 @@ class ServerPropertiesTests {
 	void testCustomizeMaxHttpRequestHeaderSizeUseBytesByDefault() {
 		bind("server.max-http-request-header-size", "1024");
 		assertThat(this.properties.getMaxHttpRequestHeaderSize()).isEqualTo(DataSize.ofKilobytes(1));
+	}
+
+	@Test
+	void defaultMaxHttpRequestHeaderSizeMatchesTomcatsDefault() {
+		assertThat(this.properties.getMaxHttpRequestHeaderSize().toBytes())
+			.isEqualTo(new Http11Nio2Protocol().getMaxHttpRequestHeaderSize());
 	}
 
 	@Test
