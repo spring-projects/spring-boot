@@ -40,6 +40,7 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -66,6 +67,7 @@ public abstract class DocumentAutoConfigurationClasses extends DefaultTask {
 
 	@TaskAction
 	void documentAutoConfigurationClasses() throws IOException {
+		FileSystemUtils.deleteRecursively(getOutputDir().getAsFile().get());
 		List<AutoConfiguration> autoConfigurations = load();
 		autoConfigurations.forEach(this::writeModuleAdoc);
 		for (File metadataFile : this.autoConfiguration) {
