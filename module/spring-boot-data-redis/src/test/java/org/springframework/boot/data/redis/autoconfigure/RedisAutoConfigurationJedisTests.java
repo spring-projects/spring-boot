@@ -49,7 +49,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
- * @author Yong-Hyun Kim
  */
 @ClassPathExclusions("lettuce-core-*.jar")
 class RedisAutoConfigurationJedisTests {
@@ -243,14 +242,6 @@ class RedisAutoConfigurationJedisTests {
 	@Test
 	void testRedisConfigurationWithCluster() {
 		this.contextRunner.withPropertyValues("spring.data.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380")
-			.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class)
-			.run((context) -> assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisClusterAware())
-				.isTrue());
-	}
-
-	@Test
-	void testRedisConfigurationWithStaticMasterReplica() {
-		this.contextRunner.withPropertyValues("spring.data.redis.static-master-replica.nodes=127.0.0.1:27379,127.0.0.1:27380")
 			.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class)
 			.run((context) -> assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisClusterAware())
 				.isTrue());
