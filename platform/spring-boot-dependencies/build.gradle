@@ -333,7 +333,7 @@ bom {
 			]
 		}
 	}
-	library("Ehcache3", "3.10.8") {
+	library("Ehcache3", "3.11.1") {
 		group("org.ehcache") {
 			modules = [
 					"ehcache",
