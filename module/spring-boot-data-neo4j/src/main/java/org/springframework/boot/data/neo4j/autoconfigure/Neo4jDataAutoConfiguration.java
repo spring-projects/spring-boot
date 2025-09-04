@@ -62,7 +62,7 @@ import org.springframework.transaction.TransactionManager;
 @AutoConfiguration(before = TransactionAutoConfiguration.class,
 		after = { Neo4jAutoConfiguration.class, TransactionManagerCustomizationAutoConfiguration.class })
 @ConditionalOnClass({ Driver.class, Neo4jTransactionManager.class, PlatformTransactionManager.class })
-@EnableConfigurationProperties(Neo4jDataProperties.class)
+@EnableConfigurationProperties(DataNeo4jProperties.class)
 @ConditionalOnBean(Driver.class)
 public final class Neo4jDataAutoConfiguration {
 
@@ -90,7 +90,7 @@ public final class Neo4jDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	DatabaseSelectionProvider databaseSelectionProvider(Neo4jDataProperties properties) {
+	DatabaseSelectionProvider databaseSelectionProvider(DataNeo4jProperties properties) {
 		String database = properties.getDatabase();
 		return (database != null) ? DatabaseSelectionProvider.createStaticDatabaseSelectionProvider(database)
 				: DatabaseSelectionProvider.getDefaultSelectionProvider();

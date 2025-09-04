@@ -41,7 +41,7 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
 @AutoConfiguration(after = CouchbaseAutoConfiguration.class,
 		afterName = "org.springframework.boot.validation.autoconfigure.ValidationAutoConfiguration")
 @ConditionalOnClass({ Bucket.class, CouchbaseRepository.class })
-@EnableConfigurationProperties(CouchbaseDataProperties.class)
+@EnableConfigurationProperties(DataCouchbaseProperties.class)
 @Import({ CouchbaseDataConfiguration.class, CouchbaseClientFactoryConfiguration.class,
 		CouchbaseClientFactoryDependentConfiguration.class })
 public final class CouchbaseDataAutoConfiguration {

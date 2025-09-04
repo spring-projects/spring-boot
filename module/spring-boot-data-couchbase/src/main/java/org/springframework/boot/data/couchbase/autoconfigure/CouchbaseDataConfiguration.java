@@ -43,7 +43,7 @@ class CouchbaseDataConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	MappingCouchbaseConverter couchbaseMappingConverter(CouchbaseDataProperties properties,
+	MappingCouchbaseConverter couchbaseMappingConverter(DataCouchbaseProperties properties,
 			CouchbaseMappingContext couchbaseMappingContext, CouchbaseCustomConversions couchbaseCustomConversions) {
 		MappingCouchbaseConverter converter = new MappingCouchbaseConverter(couchbaseMappingContext,
 				properties.getTypeKey());
@@ -59,7 +59,7 @@ class CouchbaseDataConfiguration {
 
 	@Bean(name = BeanNames.COUCHBASE_MAPPING_CONTEXT)
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_MAPPING_CONTEXT)
-	CouchbaseMappingContext couchbaseMappingContext(CouchbaseDataProperties properties,
+	CouchbaseMappingContext couchbaseMappingContext(DataCouchbaseProperties properties,
 			ApplicationContext applicationContext, CouchbaseCustomConversions couchbaseCustomConversions)
 			throws ClassNotFoundException {
 		CouchbaseMappingContext mappingContext = new CouchbaseMappingContext();

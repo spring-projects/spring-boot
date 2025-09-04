@@ -45,13 +45,13 @@ import org.springframework.transaction.ReactiveTransactionManager;
 @AutoConfiguration(after = Neo4jDataAutoConfiguration.class)
 @ConditionalOnClass({ Driver.class, ReactiveNeo4jTemplate.class, ReactiveTransactionManager.class, Flux.class })
 @ConditionalOnBean(Driver.class)
-@EnableConfigurationProperties(Neo4jDataProperties.class)
+@EnableConfigurationProperties(DataNeo4jProperties.class)
 public final class Neo4jReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ReactiveDatabaseSelectionProvider reactiveDatabaseSelectionProvider(Neo4jDataProperties dataProperties) {
-		String database = dataProperties.getDatabase();
+	ReactiveDatabaseSelectionProvider reactiveDatabaseSelectionProvider(DataNeo4jProperties properties) {
+		String database = properties.getDatabase();
 		return (database != null) ? ReactiveDatabaseSelectionProvider.createStaticDatabaseSelectionProvider(database)
 				: ReactiveDatabaseSelectionProvider.getDefaultSelectionProvider();
 	}

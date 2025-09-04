@@ -14,24 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.data.couchbase.autoconfigure;
+package org.springframework.boot.data.neo4j.autoconfigure;
 
-import org.junit.jupiter.api.Test;
+import org.jspecify.annotations.Nullable;
 
-import org.springframework.data.couchbase.core.convert.DefaultCouchbaseTypeMapper;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Tests for {@link CouchbaseDataProperties}.
+ * Configuration properties for Spring Data Neo4j.
  *
- * @author Stephane Nicoll
+ * @author Michael J. Simons
+ * @since 4.0.0
  */
-class CouchbaseDataPropertiesTests {
+@ConfigurationProperties("spring.data.neo4j")
+public class DataNeo4jProperties {
 
-	@Test
-	void typeKeyHasConsistentDefault() {
-		assertThat(new CouchbaseDataProperties().getTypeKey()).isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY);
+	/**
+	 * Database name to use. By default, the server decides the default database to use.
+	 */
+	private @Nullable String database;
+
+	public @Nullable String getDatabase() {
+		return this.database;
+	}
+
+	public void setDatabase(@Nullable String database) {
+		this.database = database;
 	}
 
 }

@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.couchbase")
-public class CouchbaseDataProperties {
+public class DataCouchbaseProperties {
 
 	/**
 	 * Automatically create views and indexes. Use the meta-data provided by

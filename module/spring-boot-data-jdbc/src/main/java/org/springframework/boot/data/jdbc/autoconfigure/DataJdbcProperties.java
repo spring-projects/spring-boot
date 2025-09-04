@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.data.neo4j.autoconfigure;
+package org.springframework.boot.data.jdbc.autoconfigure;
 
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for Spring Data Neo4j.
+ * Configuration properties for Spring Data JDBC.
  *
- * @author Michael J. Simons
+ * @author Jens Schauder
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.data.neo4j")
-public class Neo4jDataProperties {
+@ConfigurationProperties("spring.data.jdbc")
+public class DataJdbcProperties {
 
 	/**
-	 * Database name to use. By default, the server decides the default database to use.
+	 * Dialect to use. By default, the dialect is determined by inspecting the database
+	 * connection.
 	 */
-	private @Nullable String database;
+	private @Nullable JdbcDatabaseDialect dialect;
 
-	public @Nullable String getDatabase() {
-		return this.database;
+	public @Nullable JdbcDatabaseDialect getDialect() {
+		return this.dialect;
 	}
 
-	public void setDatabase(@Nullable String database) {
-		this.database = database;
+	public void setDialect(@Nullable JdbcDatabaseDialect dialect) {
+		this.dialect = dialect;
 	}
 
 }
