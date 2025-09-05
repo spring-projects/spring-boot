@@ -58,7 +58,7 @@ class MongoReactiveHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.mongo.enabled:false")
+		this.contextRunner.withPropertyValues("management.health.mongodb.enabled:false")
 			.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveHealthIndicator.class)
 				.doesNotHaveBean("mongoHealthContributor"));
 	}

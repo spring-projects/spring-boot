@@ -996,7 +996,7 @@ To disable the auto-configured command metrics, set the following property:
 ----
 management:
   metrics:
-    mongo:
+    mongodb:
       command:
         enabled: false
 ----
@@ -1035,7 +1035,7 @@ To disable the auto-configured connection pool metrics, set the following proper
 ----
 management:
   metrics:
-    mongo:
+    mongodb:
       connectionpool:
         enabled: false
 ----

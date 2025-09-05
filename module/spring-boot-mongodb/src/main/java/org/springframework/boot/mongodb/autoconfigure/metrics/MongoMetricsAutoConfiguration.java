@@ -49,7 +49,7 @@ import org.springframework.context.annotation.Bean;
 public final class MongoMetricsAutoConfiguration {
 
 	@ConditionalOnClass(MongoMetricsCommandListener.class)
-	@ConditionalOnBooleanProperty(name = "management.metrics.mongo.command.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "management.metrics.mongodb.command.enabled", matchIfMissing = true)
 	static class MongoCommandMetricsConfiguration {
 
 		@Bean
@@ -74,7 +74,7 @@ public final class MongoMetricsAutoConfiguration {
 	}
 
 	@ConditionalOnClass(MongoMetricsConnectionPoolListener.class)
-	@ConditionalOnBooleanProperty(name = "management.metrics.mongo.connectionpool.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "management.metrics.mongodb.connectionpool.enabled", matchIfMissing = true)
 	static class MongoConnectionPoolMetricsConfiguration {
 
 		@Bean

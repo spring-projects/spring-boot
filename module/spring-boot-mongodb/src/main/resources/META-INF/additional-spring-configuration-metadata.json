@@ -3,11 +3,27 @@
   "properties": [
     {
       "name": "management.metrics.mongo.command.enabled",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.metrics.mongodb.command.enabled",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.metrics.mongo.connectionpool.enabled",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.metrics.mongodb.connectionpool.enabled",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "management.metrics.mongodb.command.enabled",
       "description": "Whether to enable Mongo client command metrics.",
       "defaultValue": true
     },
     {
-      "name": "management.metrics.mongo.connectionpool.enabled",
+      "name": "management.metrics.mongodb.connectionpool.enabled",
       "description": "Whether to enable Mongo connection pool metrics.",
       "defaultValue": true
     },

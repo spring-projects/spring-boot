@@ -152,7 +152,7 @@ class MongoMetricsAutoConfigurationTests {
 	void whenMetricsCommandListenerEnabledPropertyFalseThenNoMetricsCommandListenerIsAdded() {
 		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-			.withPropertyValues("management.metrics.mongo.command.enabled:false")
+			.withPropertyValues("management.metrics.mongodb.command.enabled:false")
 			.run(assertThatMetricsCommandListenerNotAdded());
 	}
 
@@ -160,7 +160,7 @@ class MongoMetricsAutoConfigurationTests {
 	void whenMetricsConnectionPoolListenerEnabledPropertyFalseThenNoMetricsConnectionPoolListenerIsAdded() {
 		this.contextRunner.withBean(SimpleMeterRegistry.class)
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-			.withPropertyValues("management.metrics.mongo.connectionpool.enabled:false")
+			.withPropertyValues("management.metrics.mongodb.connectionpool.enabled:false")
 			.run(assertThatMetricsConnectionPoolListenerNotAdded());
 	}
 
