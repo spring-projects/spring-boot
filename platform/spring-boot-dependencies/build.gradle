@@ -2648,7 +2648,7 @@ bom {
 			releaseNotes("https://github.com/pingidentity/ldapsdk/releases/tag/{version}")
 		}
 	}
-	library("Versions Maven Plugin", "2.18.0") {
+	library("Versions Maven Plugin", "2.19.0") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"versions-maven-plugin"
