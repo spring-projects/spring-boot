@@ -431,6 +431,56 @@ class NestedJarFileTests {
 			.hasMessage("Content mismatch when reading security info for entry 'content' (content check)");
 	}
 
+	@Test
+	void readingToEndOfStoredContentCausesAvailableToReachZero() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			JarEntry entry = jar.getEntry("nested.jar");
+			try (InputStream input = jar.getInputStream(entry)) {
+				assertThat(input.available()).isGreaterThan(0);
+				StreamUtils.copyToByteArray(input);
+				assertThat(input.available()).isZero();
+			}
+		}
+	}
+
+	@Test
+	void readingToEndOfDeflatedContentCausesAvailableToReachZero() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			JarEntry entry = jar.getEntry("d/9.dat");
+			try (InputStream input = jar.getInputStream(entry)) {
+				assertThat(input.available()).isGreaterThan(0);
+				StreamUtils.copyToByteArray(input);
+				assertThat(input.available()).isZero();
+			}
+		}
+	}
+
+	@Test
+	void skippingBeyondEndOfStoredContentCausesAvailableToReachZero() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			JarEntry entry = jar.getEntry("nested.jar");
+			try (InputStream input = jar.getInputStream(entry)) {
+				assertThat(input.available()).isGreaterThan(0);
+				long skipped = input.skip(1000);
+				assertThat(skipped).isLessThan(1000);
+				assertThat(input.available()).isZero();
+			}
+		}
+	}
+
+	@Test
+	void skippingBeyondEndOfDeflatedContentCausesAvailableToReachZero() throws IOException {
+		try (NestedJarFile jar = new NestedJarFile(this.file)) {
+			JarEntry entry = jar.getEntry("d/9.dat");
+			try (InputStream input = jar.getInputStream(entry)) {
+				assertThat(input.available()).isGreaterThan(0);
+				long skipped = input.skip(1000);
+				assertThat(skipped).isLessThan(1000);
+				assertThat(input.available()).isZero();
+			}
+		}
+	}
+
 	private List<String> collectComments(JarFile jarFile) throws IOException {
 		try (jarFile) {
 			List<String> comments = new ArrayList<>();
