@@ -770,7 +770,7 @@ bom {
 				.formatted(version.major(), version.minor()), "jakarta.json.bind")
 		}
 	}
-	library("Jakarta Mail", "2.1.3") {
+	library("Jakarta Mail", "2.1.4") {
 		group("jakarta.mail") {
 			modules = [
 				"jakarta.mail-api"
