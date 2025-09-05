@@ -252,12 +252,23 @@
         "level": "error"
       }
     },
-    {
+  {
       "name": "spring.threads.virtual.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to use virtual threads.",
       "defaultValue": false
-    }
+  },
+  {"name":"spring.boot.usage.report.enabled","type":"java.lang.Boolean","description":"Enable generation of the experimental runtime usage report.","defaultValue":false},
+  {"name":"spring.boot.usage.report.output-dir","type":"java.lang.String","description":"Output directory for usage-report.json and usage-summary.md.","defaultValue":"build/boot-usage"},
+  {"name":"spring.boot.usage.report.markdown-summary","type":"java.lang.Boolean","description":"Write a Markdown summary alongside the JSON report.","defaultValue":true},
+  {"name":"spring.boot.usage.report.include-skipped-details","type":"java.lang.Boolean","description":"Include skipped auto-configuration reason details in JSON.","defaultValue":true},
+  {"name":"spring.boot.usage.report.fail-on-unused","type":"java.lang.Boolean","description":"Fail application startup when unused starters are detected.","defaultValue":false},
+  {"name":"spring.boot.usage.report.fail-on-error","type":"java.lang.Boolean","description":"Fail application startup if writing the usage report fails.","defaultValue":false}
+  ,{"name":"spring.boot.usage.report.cache-ttl","type":"java.time.Duration","description":"Cache TTL for the generated usage report served via the actuator endpoint (0 disables caching).","defaultValue":"PT5M"}
+  ,{"name":"spring.boot.usage.report.include-origins","type":"java.lang.Boolean","description":"Include bean origin details in the usage report (may reveal artifact coordinates). Disable to reduce potentially sensitive information.","defaultValue":true}
+  ,{"name":"spring.boot.usage.report.include-confidence","type":"java.lang.Boolean","description":"Include a basic confidence score map for dependency usage suggestions.","defaultValue":true}
+  ,{"name":"spring.boot.usage.report.detect-unused-jars","type":"java.lang.Boolean","description":"Attempt a lightweight heuristic to list potentially unused jars on the classpath (experimental; may produce false positives).","defaultValue":false}
+  ,{"name":"spring.boot.usage.report.policies.fail-on-violation","type":"java.lang.Boolean","description":"Fail application startup if any usage policy reports a violation.","defaultValue":false}
   ],
   "hints": [
     {
