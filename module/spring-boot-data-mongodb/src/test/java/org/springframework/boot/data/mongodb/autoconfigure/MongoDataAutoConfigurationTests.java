@@ -119,6 +119,26 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
+	void customBigDecimalRepresentation() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.representation.big-decimal=string")
+			.run((context) -> assertThat(context.getBean(MongoCustomConversions.class)).extracting("converters")
+				.asInstanceOf(InstanceOfAssertFactories.LIST)
+				.map((converter) -> converter.getClass().getName())
+				.anySatisfy((className) -> assertThat(className).contains("BigDecimalToStringConverter"))
+				.anySatisfy((className) -> assertThat(className).contains("BigIntegerToStringConverter")));
+	}
+
+	@Test
+	void defaultBigDecimalRepresentation() {
+		this.contextRunner
+			.run((context) -> assertThat(context.getBean(MongoCustomConversions.class)).extracting("converters")
+				.asInstanceOf(InstanceOfAssertFactories.LIST)
+				.map((converter) -> converter.getClass().getName())
+				.noneSatisfy((className) -> assertThat(className).contains("BigDecimalToStringConverter"))
+				.noneSatisfy((className) -> assertThat(className).contains("BigIntegerToStringConverter")));
+	}
+
+	@Test
 	void usesAutoConfigurationPackageToPickUpDocumentTypes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		String cityPackage = City.class.getPackage().getName();

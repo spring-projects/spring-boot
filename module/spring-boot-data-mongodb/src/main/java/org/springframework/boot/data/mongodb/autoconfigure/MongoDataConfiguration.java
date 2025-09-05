@@ -16,8 +16,6 @@
 
 package org.springframework.boot.data.mongodb.autoconfigure;
 
-import java.util.Collections;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -48,6 +46,12 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @Configuration(proxyBeanMethods = false)
 class MongoDataConfiguration {
 
+	private final DataMongoProperties properties;
+
+	MongoDataConfiguration(DataMongoProperties properties) {
+		this.properties = properties;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean
 	static MongoManagedTypes mongoManagedTypes(ApplicationContext applicationContext) throws ClassNotFoundException {
@@ -56,13 +60,12 @@ class MongoDataConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	MongoMappingContext mongoMappingContext(DataMongoProperties properties, MongoCustomConversions conversions,
-			MongoManagedTypes managedTypes) {
+	MongoMappingContext mongoMappingContext(MongoCustomConversions conversions, MongoManagedTypes managedTypes) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		MongoMappingContext context = new MongoMappingContext();
-		map.from(properties.isAutoIndexCreation()).to(context::setAutoIndexCreation);
+		map.from(this.properties.isAutoIndexCreation()).to(context::setAutoIndexCreation);
 		context.setManagedTypes(managedTypes);
-		Class<?> strategyClass = properties.getFieldNamingStrategy();
+		Class<?> strategyClass = this.properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
 			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));
 		}
@@ -73,7 +76,8 @@ class MongoDataConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	MongoCustomConversions mongoCustomConversions() {
-		return new MongoCustomConversions(Collections.emptyList());
+		return MongoCustomConversions
+			.create((configurer) -> configurer.bigDecimal(this.properties.getRepresentation().getBigDecimal()));
 	}
 
 	@Bean

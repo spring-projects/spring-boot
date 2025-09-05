@@ -20,6 +20,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions.BigDecimalRepresentation;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions.MongoConverterConfigurationAdapter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +41,18 @@ class DataMongoPropertiesTests {
 				DataMongoProperties properties = context.getBean(DataMongoProperties.class);
 				assertThat(properties.isAutoIndexCreation()).isTrue();
 			});
+	}
+
+	@Test
+	void defaultBigDecimalRepresentationIsAlignedWithSpringData() {
+		BigDecimalRepresentation springDataDefault = springDataDefaultBigDecimalRepresentation();
+		BigDecimalRepresentation springBootDefault = new DataMongoProperties().getRepresentation().getBigDecimal();
+		assertThat(springBootDefault).isEqualTo(springDataDefault);
+	}
+
+	private BigDecimalRepresentation springDataDefaultBigDecimalRepresentation() {
+		return (BigDecimalRepresentation) ReflectionTestUtils.getField(new MongoConverterConfigurationAdapter(),
+				"bigDecimals");
 	}
 
 }

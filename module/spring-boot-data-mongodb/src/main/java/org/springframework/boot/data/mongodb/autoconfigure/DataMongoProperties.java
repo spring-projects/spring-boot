@@ -19,6 +19,7 @@ package org.springframework.boot.data.mongodb.autoconfigure;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions.BigDecimalRepresentation;
 
 /**
  * Configuration properties for Spring Data MongoDB.
@@ -41,6 +42,8 @@ public class DataMongoProperties {
 
 	private final Gridfs gridfs = new Gridfs();
 
+	private final Representation representation = new Representation();
+
 	public @Nullable Boolean isAutoIndexCreation() {
 		return this.autoIndexCreation;
 	}
@@ -59,6 +62,10 @@ public class DataMongoProperties {
 
 	public Gridfs getGridfs() {
 		return this.gridfs;
+	}
+
+	public Representation getRepresentation() {
+		return this.representation;
 	}
 
 	public static class Gridfs {
@@ -87,6 +94,23 @@ public class DataMongoProperties {
 
 		public void setBucket(@Nullable String bucket) {
 			this.bucket = bucket;
+		}
+
+	}
+
+	public static class Representation {
+
+		/**
+		 * Representation to use when converting a BigDecimal.
+		 */
+		private BigDecimalRepresentation bigDecimal = BigDecimalRepresentation.DECIMAL128;
+
+		public BigDecimalRepresentation getBigDecimal() {
+			return this.bigDecimal;
+		}
+
+		public void setBigDecimal(BigDecimalRepresentation bigDecimal) {
+			this.bigDecimal = bigDecimal;
 		}
 
 	}
