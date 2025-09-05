@@ -38,6 +38,7 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
@@ -62,6 +63,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  * @author Rafael Ceccone
+ * @author Yanming Zhou
  */
 @GradleCompatibility(configurationCache = true)
 @DisabledIfDockerUnavailable
@@ -318,7 +320,7 @@ class BootBuildImageIntegrationTests {
 	@TestTemplate
 	@EnabledOnOs(value = OS.LINUX, disabledReason = "Works with Docker Engine on Linux but is not reliable with "
 			+ "Docker Desktop on other OSs")
-	void buildsImageWithBindCaches() throws IOException {
+	void buildsImageWithBindCaches(@TempDir Path tempDir) throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
@@ -328,9 +330,8 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		removeImages(projectName);
-		String tempDir = System.getProperty("java.io.tmpdir");
-		Path buildCachePath = Paths.get(tempDir, "junit-image-cache-" + projectName + "-build");
-		Path launchCachePath = Paths.get(tempDir, "junit-image-cache-" + projectName + "-launch");
+		Path buildCachePath = tempDir.resolve("junit-image-cache-" + projectName + "-build");
+		Path launchCachePath = tempDir.resolve("junit-image-cache-" + projectName + "-launch");
 		assertThat(buildCachePath).exists().isDirectory();
 		assertThat(launchCachePath).exists().isDirectory();
 		cleanupCache(buildCachePath);

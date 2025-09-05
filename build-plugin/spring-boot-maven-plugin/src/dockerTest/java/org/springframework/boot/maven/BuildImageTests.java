@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
@@ -49,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Rafael Ceccone
+ * @author Yanming Zhou
  */
 @ExtendWith(MavenBuildExtension.class)
 @DisabledIfDockerUnavailable
@@ -443,7 +445,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	@EnabledOnOs(value = OS.LINUX, disabledReason = "Works with Docker Engine on Linux but is not reliable with "
 			+ "Docker Desktop on other OSs")
-	void whenBuildImageIsInvokedWithBindCaches(MavenBuild mavenBuild) {
+	void whenBuildImageIsInvokedWithBindCaches(MavenBuild mavenBuild, @TempDir Path tempDir) {
 		String testBuildId = randomString();
 		mavenBuild.project("dockerTest", "build-image-bind-caches")
 			.goals("package")
@@ -454,9 +456,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					.contains("docker.io/library/build-image-bind-caches:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 				removeImage("build-image-bind-caches", "0.0.1.BUILD-SNAPSHOT");
-				String tempDir = System.getProperty("java.io.tmpdir");
-				Path buildCachePath = Paths.get(tempDir, "junit-image-cache-" + testBuildId + "-build");
-				Path launchCachePath = Paths.get(tempDir, "junit-image-cache-" + testBuildId + "-launch");
+				Path buildCachePath = tempDir.resolve("junit-image-cache-" + testBuildId + "-build");
+				Path launchCachePath = tempDir.resolve("junit-image-cache-" + testBuildId + "-launch");
 				assertThat(buildCachePath).exists().isDirectory();
 				assertThat(launchCachePath).exists().isDirectory();
 				cleanupCache(buildCachePath);
