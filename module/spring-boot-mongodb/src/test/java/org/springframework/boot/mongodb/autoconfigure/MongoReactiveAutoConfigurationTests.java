@@ -254,7 +254,7 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	void uuidRepresentationDefaultsAreAligned() {
 		this.contextRunner.run((context) -> assertThat(getSettings(context).getUuidRepresentation())
-			.isEqualTo(new MongoProperties().getUuidRepresentation()));
+			.isEqualTo(new MongoProperties().getRepresentation().getUuid()));
 	}
 
 	private MongoClientSettings getSettings(ApplicationContext context) {

@@ -127,7 +127,7 @@
       "name": "spring.data.mongodb.uuid-representation",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.mongodb.uuid-representation",
+        "replacement": "spring.mongodb.representation.uuid",
         "since": "4.0.0"
       }
     },

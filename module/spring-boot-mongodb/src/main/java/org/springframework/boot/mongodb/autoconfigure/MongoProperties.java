@@ -104,10 +104,7 @@ public class MongoProperties {
 	 */
 	private @Nullable String replicaSetName;
 
-	/**
-	 * Representation to use when converting a UUID to a BSON binary value.
-	 */
-	private UuidRepresentation uuidRepresentation = UuidRepresentation.STANDARD;
+	private final Representation representation = new Representation();
 
 	private final Ssl ssl = new Ssl();
 
@@ -167,14 +164,6 @@ public class MongoProperties {
 		this.replicaSetName = replicaSetName;
 	}
 
-	public UuidRepresentation getUuidRepresentation() {
-		return this.uuidRepresentation;
-	}
-
-	public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
-		this.uuidRepresentation = uuidRepresentation;
-	}
-
 	public @Nullable String getUri() {
 		return this.uri;
 	}
@@ -210,8 +199,29 @@ public class MongoProperties {
 		this.additionalHosts = additionalHosts;
 	}
 
+	public Representation getRepresentation() {
+		return this.representation;
+	}
+
 	public Ssl getSsl() {
 		return this.ssl;
+	}
+
+	public static class Representation {
+
+		/**
+		 * Representation to use when converting a UUID to a BSON binary value.
+		 */
+		private UuidRepresentation uuid = UuidRepresentation.STANDARD;
+
+		public UuidRepresentation getUuid() {
+			return this.uuid;
+		}
+
+		public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
+			this.uuid = uuidRepresentation;
+		}
+
 	}
 
 	public static class Ssl {

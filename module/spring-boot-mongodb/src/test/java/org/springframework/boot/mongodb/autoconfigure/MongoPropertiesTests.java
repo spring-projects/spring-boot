@@ -35,7 +35,7 @@ class MongoPropertiesTests {
 	@Test
 	void defaultUUidRepresentationIsAlignedWithSpringData() {
 		UuidRepresentation springDataDefault = springDataDefaultUuidRepresentation();
-		UuidRepresentation springBootDefault = new MongoProperties().getUuidRepresentation();
+		UuidRepresentation springBootDefault = new MongoProperties().getRepresentation().getUuid();
 		assertThat(springBootDefault).isEqualTo(springDataDefault);
 	}
 
