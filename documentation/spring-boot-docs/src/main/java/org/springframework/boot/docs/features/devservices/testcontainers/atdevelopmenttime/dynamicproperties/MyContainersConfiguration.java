@@ -33,8 +33,8 @@ public class MyContainersConfiguration {
 	@Bean
 	public DynamicPropertyRegistrar mongoDbProperties(MongoDBContainer container) {
 		return (properties) -> {
-			properties.add("spring.data.mongodb.host", container::getHost);
-			properties.add("spring.data.mongodb.port", container::getFirstMappedPort);
+			properties.add("spring.mongodb.host", container::getHost);
+			properties.add("spring.mongodb.port", container::getFirstMappedPort);
 		};
 	}
 

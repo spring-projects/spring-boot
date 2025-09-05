@@ -59,7 +59,7 @@ class MongoReactiveAutoConfigurationTests {
 
 	@Test
 	void settingsAdded() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.host:localhost")
+		this.contextRunner.withPropertyValues("spring.mongodb.host:localhost")
 			.withUserConfiguration(SettingsConfig.class)
 			.run((context) -> assertThat(getSettings(context).getSocketSettings().getReadTimeout(TimeUnit.SECONDS))
 				.isEqualTo(300));
@@ -67,14 +67,14 @@ class MongoReactiveAutoConfigurationTests {
 
 	@Test
 	void settingsAddedButNoHost() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
+		this.contextRunner.withPropertyValues("spring.mongodb.uri:mongodb://localhost/test")
 			.withUserConfiguration(SettingsConfig.class)
 			.run((context) -> assertThat(getSettings(context).getReadPreference()).isEqualTo(ReadPreference.nearest()));
 	}
 
 	@Test
 	void settingsSslConfig() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test")
+		this.contextRunner.withPropertyValues("spring.mongodb.uri:mongodb://localhost/test")
 			.withUserConfiguration(SslSettingsConfig.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(MongoClient.class);
@@ -86,7 +86,7 @@ class MongoReactiveAutoConfigurationTests {
 
 	@Test
 	void configuresSslWhenEnabled() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.ssl.enabled=true").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.mongodb.ssl.enabled=true").run((context) -> {
 			SslSettings sslSettings = getSettings(context).getSslSettings();
 			assertThat(sslSettings.isEnabled()).isTrue();
 			assertThat(sslSettings.getContext()).isNotNull();
@@ -97,7 +97,7 @@ class MongoReactiveAutoConfigurationTests {
 	@WithPackageResources("test.jks")
 	void configuresSslWithBundle() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.ssl.bundle=test-bundle",
+			.withPropertyValues("spring.mongodb.ssl.bundle=test-bundle",
 					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
 					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
 					"spring.ssl.bundle.jks.test-bundle.key.password=password")
@@ -111,7 +111,7 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	void configuresWithoutSslWhenDisabledWithBundle() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.ssl.enabled=false", "spring.data.mongodb.ssl.bundle=test-bundle")
+			.withPropertyValues("spring.mongodb.ssl.enabled=false", "spring.mongodb.ssl.bundle=test-bundle")
 			.run((context) -> {
 				SslSettings sslSettings = getSettings(context).getSslSettings();
 				assertThat(sslSettings.isEnabled()).isFalse();
@@ -121,15 +121,13 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	void doesNotConfigureCredentialsWithoutUsername() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.password=secret",
-					"spring.data.mongodb.authentication-database=authdb")
+			.withPropertyValues("spring.mongodb.password=secret", "spring.mongodb.authentication-database=authdb")
 			.run((context) -> assertThat(getSettings(context).getCredential()).isNull());
 	}
 
 	@Test
 	void configuresCredentialsFromPropertiesWithDefaultDatabase() {
-		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.username=user", "spring.data.mongodb.password=secret")
+		this.contextRunner.withPropertyValues("spring.mongodb.username=user", "spring.mongodb.password=secret")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
 				assertThat(credential.getUserName()).isEqualTo("user");
@@ -141,8 +139,8 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	void configuresCredentialsFromPropertiesWithDatabase() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.username=user", "spring.data.mongodb.password=secret",
-					"spring.data.mongodb.database=mydb")
+			.withPropertyValues("spring.mongodb.username=user", "spring.mongodb.password=secret",
+					"spring.mongodb.database=mydb")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
 				assertThat(credential.getUserName()).isEqualTo("user");
@@ -154,8 +152,8 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	void configuresCredentialsFromPropertiesWithAuthDatabase() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.username=user", "spring.data.mongodb.password=secret",
-					"spring.data.mongodb.database=mydb", "spring.data.mongodb.authentication-database=authdb")
+			.withPropertyValues("spring.mongodb.username=user", "spring.mongodb.password=secret",
+					"spring.mongodb.database=mydb", "spring.mongodb.authentication-database=authdb")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
 				assertThat(credential.getUserName()).isEqualTo("user");
@@ -166,26 +164,25 @@ class MongoReactiveAutoConfigurationTests {
 
 	@Test
 	void doesNotConfigureCredentialsWithoutUsernameInUri() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://localhost/mydb?authSource=authdb")
+		this.contextRunner.withPropertyValues("spring.mongodb.uri=mongodb://localhost/mydb?authSource=authdb")
 			.run((context) -> assertThat(getSettings(context).getCredential()).isNull());
 	}
 
 	@Test
 	void configuresCredentialsFromUriPropertyWithDefaultDatabase() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://user:secret@localhost/")
-			.run((context) -> {
-				MongoCredential credential = getSettings(context).getCredential();
-				assertThat(credential.getUserName()).isEqualTo("user");
-				assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
-				assertThat(credential.getSource()).isEqualTo("admin");
-			});
+		this.contextRunner.withPropertyValues("spring.mongodb.uri=mongodb://user:secret@localhost/").run((context) -> {
+			MongoCredential credential = getSettings(context).getCredential();
+			assertThat(credential.getUserName()).isEqualTo("user");
+			assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
+			assertThat(credential.getSource()).isEqualTo("admin");
+		});
 	}
 
 	@Test
 	void configuresCredentialsFromUriPropertyWithDatabase() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.uri=mongodb://user:secret@localhost/mydb",
-					"spring.data.mongodb.database=notused", "spring.data.mongodb.authentication-database=notused")
+			.withPropertyValues("spring.mongodb.uri=mongodb://user:secret@localhost/mydb",
+					"spring.mongodb.database=notused", "spring.mongodb.authentication-database=notused")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
 				assertThat(credential.getUserName()).isEqualTo("user");
@@ -197,8 +194,8 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	void configuresCredentialsFromUriPropertyWithAuthDatabase() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.uri=mongodb://user:secret@localhost/mydb?authSource=authdb",
-					"spring.data.mongodb.database=notused", "spring.data.mongodb.authentication-database=notused")
+			.withPropertyValues("spring.mongodb.uri=mongodb://user:secret@localhost/mydb?authSource=authdb",
+					"spring.mongodb.database=notused", "spring.mongodb.authentication-database=notused")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
 				assertThat(credential.getUserName()).isEqualTo("user");
@@ -224,7 +221,7 @@ class MongoReactiveAutoConfigurationTests {
 	@Test
 	@SuppressWarnings("deprecation")
 	void customizerWithTransportSettingsOverridesAutoConfig() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
+		this.contextRunner.withPropertyValues("spring.mongodb.uri:mongodb://localhost/test?appname=auto-config")
 			.withUserConfiguration(SimpleTransportSettingsCustomizerConfig.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(MongoClient.class);

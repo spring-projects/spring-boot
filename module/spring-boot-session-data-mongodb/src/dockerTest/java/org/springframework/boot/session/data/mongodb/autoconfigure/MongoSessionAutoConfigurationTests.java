@@ -57,7 +57,7 @@ class MongoSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 		this.contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 					SessionAutoConfiguration.class, MongoSessionAutoConfiguration.class))
-			.withPropertyValues("spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl());
+			.withPropertyValues("spring.mongodb.uri=" + mongoDb.getReplicaSetUrl());
 	}
 
 	@Test

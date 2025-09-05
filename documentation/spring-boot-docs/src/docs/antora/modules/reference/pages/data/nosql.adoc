@@ -130,14 +130,13 @@ Otherwise a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSet
 In either case, you can declare one or more javadoc:org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer[] beans to fine-tune the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] configuration.
 Each will be called in order with the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings$Builder[] that is used to build the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[].
 
-You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
+You can set the configprop:spring.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
 [configprops,yaml]
 ----
 spring:
-  data:
-    mongodb:
-      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+  mongodb:
+    uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
 ----
 
 Alternatively, you can specify connection details using discrete properties.
@@ -146,15 +145,14 @@ For example, you might declare the following settings in your `application.prope
 [configprops,yaml]
 ----
 spring:
-  data:
-    mongodb:
-      host: "mongoserver1.example.com"
-      port: 27017
-      additional-hosts:
-      - "mongoserver2.example.com:23456"
-      database: "test"
-      username: "user"
-      password: "secret"
+  mongodb:
+    host: "mongoserver1.example.com"
+    port: 27017
+    additional-hosts:
+    - "mongoserver2.example.com:23456"
+    database: "test"
+    username: "user"
+    password: "secret"
 ----
 
 The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] can be configured to use SSL for communication with the server by setting the properties as shown in this example:
@@ -162,11 +160,10 @@ The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client
 [configprops,yaml]
 ----
 spring:
-  data:
-    mongodb:
-      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
-      ssl:
-        enabled: true
+  mongodb:
+    uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+    ssl:
+      enabled: true
 ----
 
 Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] as shown in this example:
@@ -174,17 +171,16 @@ Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bun
 [configprops,yaml]
 ----
 spring:
-  data:
-    mongodb:
-      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
-      ssl:
-        bundle: "example"
+  mongodb:
+    uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+    ssl:
+      bundle: "example"
 ----
 
 
 [TIP]
 ====
-If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
+If configprop:spring.mongodb.port[] is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.
 
 You can also specify the port as part of the host address by using the `host:port` syntax.

@@ -32,8 +32,8 @@ class MyContainersConfiguration {
 	@Bean
 	fun mongoDbProperties(container: MongoDBContainer): DynamicPropertyRegistrar {
 		return DynamicPropertyRegistrar { properties ->
-			properties.add("spring.data.mongodb.host") { container.host }
-			properties.add("spring.data.mongodb.port") { container.firstMappedPort }
+			properties.add("spring.mongodb.host") { container.host }
+			properties.add("spring.mongodb.port") { container.firstMappedPort }
 		}
 	}
 

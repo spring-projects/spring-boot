@@ -62,14 +62,14 @@ class MongoReactiveSessionAutoConfigurationTests extends AbstractReactiveSession
 
 	@Test
 	void defaultConfig() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+		this.contextRunner.withPropertyValues("spring.mongodb.uri=" + mongoDb.getReplicaSetUrl())
 			.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
 	void defaultConfigWithCustomTimeout() {
 		this.contextRunner
-			.withPropertyValues("spring.session.timeout=1m", "spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+			.withPropertyValues("spring.session.timeout=1m", "spring.mongodb.uri=" + mongoDb.getReplicaSetUrl())
 			.run((context) -> {
 				ReactiveMongoSessionRepository repository = validateSessionRepository(context,
 						ReactiveMongoSessionRepository.class);
@@ -81,7 +81,7 @@ class MongoReactiveSessionAutoConfigurationTests extends AbstractReactiveSession
 	void defaultConfigWithCustomSessionTimeout() {
 		this.contextRunner
 			.withPropertyValues("server.reactive.session.timeout=1m",
-					"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+					"spring.mongodb.uri=" + mongoDb.getReplicaSetUrl())
 			.run((context) -> {
 				ReactiveMongoSessionRepository repository = validateSessionRepository(context,
 						ReactiveMongoSessionRepository.class);
@@ -93,7 +93,7 @@ class MongoReactiveSessionAutoConfigurationTests extends AbstractReactiveSession
 	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
 			.withPropertyValues("spring.session.mongodb.collection-name=foo",
-					"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+					"spring.mongodb.uri=" + mongoDb.getReplicaSetUrl())
 			.run(validateSpringSessionUsesMongo("foo"));
 	}
 
@@ -106,7 +106,7 @@ class MongoReactiveSessionAutoConfigurationTests extends AbstractReactiveSession
 					"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
 					"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",
 					"server.reactive.session.cookie.same-site:strict",
-					"spring.data.mongodb.uri=" + mongoDb.getReplicaSetUrl())
+					"spring.mongodb.uri=" + mongoDb.getReplicaSetUrl())
 			.run(assertExchangeWithSession((exchange) -> {
 				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 				assertThat(cookies).isNotEmpty();

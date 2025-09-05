@@ -33,9 +33,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.data.mongodb.autoconfigure.DataMongoProperties.Gridfs;
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
 import org.springframework.boot.mongodb.autoconfigure.MongoProperties;
-import org.springframework.boot.mongodb.autoconfigure.MongoProperties.Gridfs;
 import org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
@@ -72,21 +72,15 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration(after = MongoReactiveAutoConfiguration.class)
 @ConditionalOnClass({ MongoClient.class, ReactiveMongoTemplate.class })
 @ConditionalOnBean(MongoClient.class)
-@EnableConfigurationProperties(MongoProperties.class)
+@EnableConfigurationProperties({ MongoProperties.class, DataMongoProperties.class })
 @Import(MongoDataConfiguration.class)
 public final class MongoReactiveDataAutoConfiguration {
 
-	private final MongoProperties properties;
-
-	MongoReactiveDataAutoConfiguration(MongoProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
-	SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongo,
+	SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoProperties properties, MongoClient mongo,
 			MongoConnectionDetails connectionDetails) {
-		String database = this.properties.getDatabase();
+		String database = properties.getDatabase();
 		if (database == null) {
 			database = connectionDetails.getConnectionString().getDatabase();
 		}
@@ -109,11 +103,12 @@ public final class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveGridFsOperations.class)
-	ReactiveGridFsTemplate reactiveGridFsTemplate(ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory,
-			MappingMongoConverter mappingMongoConverter, DataBufferFactory dataBufferFactory) {
+	ReactiveGridFsTemplate reactiveGridFsTemplate(DataMongoProperties dataProperties,
+			ReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory, MappingMongoConverter mappingMongoConverter,
+			DataBufferFactory dataBufferFactory) {
 		return new ReactiveGridFsTemplate(dataBufferFactory,
-				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, this.properties),
-				mappingMongoConverter, this.properties.getGridfs().getBucket());
+				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, dataProperties),
+				mappingMongoConverter, dataProperties.getGridfs().getBucket());
 	}
 
 	/**
@@ -124,9 +119,9 @@ public final class MongoReactiveDataAutoConfiguration {
 
 		private final ReactiveMongoDatabaseFactory delegate;
 
-		private final MongoProperties properties;
+		private final DataMongoProperties properties;
 
-		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate, MongoProperties properties) {
+		GridFsReactiveMongoDatabaseFactory(ReactiveMongoDatabaseFactory delegate, DataMongoProperties properties) {
 			this.delegate = delegate;
 			this.properties = properties;
 		}

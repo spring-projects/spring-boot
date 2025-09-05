@@ -23,8 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.mongodb.autoconfigure.MongoProperties;
-import org.springframework.boot.mongodb.autoconfigure.MongoProperties.Gridfs;
+import org.springframework.boot.data.mongodb.autoconfigure.DataMongoProperties.Gridfs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
@@ -57,7 +56,7 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(GridFsOperations.class)
-	GridFsTemplate gridFsTemplate(MongoProperties properties, MongoDatabaseFactory factory,
+	GridFsTemplate gridFsTemplate(DataMongoProperties properties, MongoDatabaseFactory factory,
 			MongoTemplate mongoTemplate) {
 		return new GridFsTemplate(new GridFsMongoDatabaseFactory(factory, properties), mongoTemplate.getConverter(),
 				properties.getGridfs().getBucket());
@@ -71,9 +70,9 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 		private final MongoDatabaseFactory mongoDatabaseFactory;
 
-		private final MongoProperties properties;
+		private final DataMongoProperties properties;
 
-		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory, MongoProperties properties) {
+		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory, DataMongoProperties properties) {
 			Assert.notNull(mongoDatabaseFactory, "'mongoDatabaseFactory' must not be null");
 			Assert.notNull(properties, "'properties' must not be null");
 			this.mongoDatabaseFactory = mongoDatabaseFactory;

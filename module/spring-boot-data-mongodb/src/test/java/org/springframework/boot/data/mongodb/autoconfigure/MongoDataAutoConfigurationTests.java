@@ -240,7 +240,7 @@ class MongoDataAutoConfigurationTests {
 
 	@Test
 	void databasePropertyIsUsed() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.database=mydb").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.mongodb.database=mydb").run((context) -> {
 			MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
 			assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
 			assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
@@ -249,19 +249,18 @@ class MongoDataAutoConfigurationTests {
 
 	@Test
 	void databaseInUriPropertyIsUsed() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/mydb")
-			.run((context) -> {
-				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
-				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
-				assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
-			});
+		this.contextRunner.withPropertyValues("spring.mongodb.uri=mongodb://mongo.example.com/mydb").run((context) -> {
+			MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+			assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+			assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+		});
 	}
 
 	@Test
 	void databasePropertyOverridesUriProperty() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/notused",
-					"spring.data.mongodb.database=mydb")
+			.withPropertyValues("spring.mongodb.uri=mongodb://mongo.example.com/notused",
+					"spring.mongodb.database=mydb")
 			.run((context) -> {
 				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
 				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
@@ -272,8 +271,7 @@ class MongoDataAutoConfigurationTests {
 	@Test
 	void databasePropertyIsUsedWhenNoDatabaseInUri() {
 		this.contextRunner
-			.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/",
-					"spring.data.mongodb.database=mydb")
+			.withPropertyValues("spring.mongodb.uri=mongodb://mongo.example.com/", "spring.mongodb.database=mydb")
 			.run((context) -> {
 				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
 				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
@@ -283,7 +281,7 @@ class MongoDataAutoConfigurationTests {
 
 	@Test
 	void contextFailsWhenDatabaseNotSet() {
-		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/")
+		this.contextRunner.withPropertyValues("spring.mongodb.uri=mongodb://mongo.example.com/")
 			.run((context) -> assertThat(context).getFailure().hasMessageContaining("Database name must not be empty"));
 	}
 

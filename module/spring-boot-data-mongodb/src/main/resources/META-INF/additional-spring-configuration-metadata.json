@@ -5,6 +5,20 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable MongoDB health check.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.data.mongodb.grid-fs-database",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "spring.data.mongodb.gridfs.database",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.mongodb.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Mongo repositories to enable.",
+      "defaultValue": "auto"
     }
   ],
   "hints": [
@@ -16,22 +30,6 @@
           "parameters": {
             "target": "org.springframework.data.mapping.model.FieldNamingStrategy"
           }
-        }
-      ]
-    },
-    {
-      "name": "spring.data.mongodb.protocol",
-      "values": [
-        {
-          "value": "mongodb"
-        },
-        {
-          "value": "mongodb+srv"
-        }
-      ],
-      "providers": [
-        {
-          "name": "any"
         }
       ]
     }

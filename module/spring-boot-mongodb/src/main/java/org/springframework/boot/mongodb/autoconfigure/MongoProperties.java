@@ -39,7 +39,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Safeer Ansari
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.data.mongodb")
+@ConfigurationProperties("spring.mongodb")
 public class MongoProperties {
 
 	/**
@@ -89,8 +89,6 @@ public class MongoProperties {
 	 */
 	private @Nullable String authenticationDatabase;
 
-	private final Gridfs gridfs = new Gridfs();
-
 	/**
 	 * Login user of the mongo server. Ignored if 'uri' is set.
 	 */
@@ -107,21 +105,11 @@ public class MongoProperties {
 	private @Nullable String replicaSetName;
 
 	/**
-	 * Fully qualified name of the FieldNamingStrategy to use.
-	 */
-	private @Nullable Class<?> fieldNamingStrategy;
-
-	/**
 	 * Representation to use when converting a UUID to a BSON binary value.
 	 */
 	private UuidRepresentation uuidRepresentation = UuidRepresentation.STANDARD;
 
 	private final Ssl ssl = new Ssl();
-
-	/**
-	 * Whether to enable auto-index creation.
-	 */
-	private @Nullable Boolean autoIndexCreation;
 
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
@@ -179,14 +167,6 @@ public class MongoProperties {
 		this.replicaSetName = replicaSetName;
 	}
 
-	public @Nullable Class<?> getFieldNamingStrategy() {
-		return this.fieldNamingStrategy;
-	}
-
-	public void setFieldNamingStrategy(@Nullable Class<?> fieldNamingStrategy) {
-		this.fieldNamingStrategy = fieldNamingStrategy;
-	}
-
 	public UuidRepresentation getUuidRepresentation() {
 		return this.uuidRepresentation;
 	}
@@ -215,23 +195,11 @@ public class MongoProperties {
 		this.port = port;
 	}
 
-	public Gridfs getGridfs() {
-		return this.gridfs;
-	}
-
 	public @Nullable String getMongoClientDatabase() {
 		if (this.database != null) {
 			return this.database;
 		}
 		return new ConnectionString(determineUri()).getDatabase();
-	}
-
-	public @Nullable Boolean isAutoIndexCreation() {
-		return this.autoIndexCreation;
-	}
-
-	public void setAutoIndexCreation(@Nullable Boolean autoIndexCreation) {
-		this.autoIndexCreation = autoIndexCreation;
 	}
 
 	public @Nullable List<String> getAdditionalHosts() {
@@ -244,36 +212,6 @@ public class MongoProperties {
 
 	public Ssl getSsl() {
 		return this.ssl;
-	}
-
-	public static class Gridfs {
-
-		/**
-		 * GridFS database name.
-		 */
-		private @Nullable String database;
-
-		/**
-		 * GridFS bucket name.
-		 */
-		private @Nullable String bucket;
-
-		public @Nullable String getDatabase() {
-			return this.database;
-		}
-
-		public void setDatabase(@Nullable String database) {
-			this.database = database;
-		}
-
-		public @Nullable String getBucket() {
-			return this.bucket;
-		}
-
-		public void setBucket(@Nullable String bucket) {
-			this.bucket = bucket;
-		}
-
 	}
 
 	public static class Ssl {

@@ -35,13 +35,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's mongo support.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's MongoDB support.
  * <p>
  * Registers a {@link MongoTemplate} and {@link GridFsTemplate} beans if no other beans of
  * the same type are configured.
  * <p>
- * Honors the {@literal spring.data.mongodb.database} property if set, otherwise connects
- * to the {@literal test} database.
+ * Honors the {@literal spring.mongodb.database} property if set, otherwise connects to
+ * the {@literal test} database.
  *
  * @author Dave Syer
  * @author Oliver Gierke
@@ -54,7 +54,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
  */
 @AutoConfiguration(after = MongoAutoConfiguration.class)
 @ConditionalOnClass({ MongoClient.class, MongoTemplate.class })
-@EnableConfigurationProperties(MongoProperties.class)
+@EnableConfigurationProperties({ MongoProperties.class, DataMongoProperties.class })
 @Import({ MongoDataConfiguration.class, MongoDatabaseFactoryConfiguration.class,
 		MongoDatabaseFactoryDependentConfiguration.class })
 public final class MongoDataAutoConfiguration {
