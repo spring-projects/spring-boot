@@ -19,7 +19,6 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -35,17 +34,9 @@ dependencies {
 	compileOnly("com.google.code.findbugs:jsr305")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-reactor"))
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
-
-	dockerTestImplementation(project(":core:spring-boot-test"))
-	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
-	dockerTestImplementation("ch.qos.logback:logback-classic")
-	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:mongodb")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
 

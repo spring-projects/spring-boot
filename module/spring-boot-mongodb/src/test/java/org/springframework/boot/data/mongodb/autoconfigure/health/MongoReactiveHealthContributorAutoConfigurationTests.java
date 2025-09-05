@@ -19,13 +19,13 @@ package org.springframework.boot.data.mongodb.autoconfigure.health;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.data.mongodb.autoconfigure.MongoDataAutoConfiguration;
-import org.springframework.boot.data.mongodb.autoconfigure.MongoReactiveDataAutoConfiguration;
-import org.springframework.boot.data.mongodb.health.MongoHealthIndicator;
-import org.springframework.boot.data.mongodb.health.MongoReactiveHealthIndicator;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.health.MongoHealthContributorAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.health.MongoReactiveHealthContributorAutoConfiguration;
+import org.springframework.boot.mongodb.health.MongoHealthIndicator;
+import org.springframework.boot.mongodb.health.MongoReactiveHealthIndicator;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,8 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoReactiveHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-				MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoReactiveAutoConfiguration.class,
 				MongoReactiveHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test

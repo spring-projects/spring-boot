@@ -14,51 +14,67 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.data.mongodb.health;
+package org.springframework.boot.mongodb.health;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 import com.mongodb.MongoException;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.Status;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
  *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  */
 class MongoHealthIndicatorTests {
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void mongoIsUp() {
 		Document commandResult = mock(Document.class);
 		given(commandResult.getInteger("maxWireVersion")).willReturn(10);
-		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
-		given(mongoTemplate.executeCommand("{ hello: 1 }")).willReturn(commandResult);
-		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
+		MongoClient mongoClient = mock(MongoClient.class);
+		MongoIterable<String> databaseNames = mock(MongoIterable.class);
+		willAnswer((invocation) -> {
+			((Consumer<String>) invocation.getArgument(0)).accept("db");
+			return null;
+		}).given(databaseNames).forEach(any());
+		given(mongoClient.listDatabaseNames()).willReturn(databaseNames);
+		MongoDatabase mongoDatabase = mock(MongoDatabase.class);
+		given(mongoClient.getDatabase("db")).willReturn(mongoDatabase);
+		given(mongoDatabase.runCommand(Document.parse("{ hello: 1 }"))).willReturn(commandResult);
+		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("maxWireVersion", 10);
+		assertThat(health.getDetails()).containsEntry("databases", List.of("db"));
 		then(commandResult).should().getInteger("maxWireVersion");
-		then(mongoTemplate).should().executeCommand("{ hello: 1 }");
 	}
 
 	@Test
 	void mongoIsDown() {
-		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
-		given(mongoTemplate.executeCommand("{ hello: 1 }")).willThrow(new MongoException("Connection failed"));
-		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
+		MongoClient mongoClient = mock(MongoClient.class);
+		given(mongoClient.listDatabaseNames()).willThrow(new MongoException("Connection failed"));
+		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		then(mongoTemplate).should().executeCommand("{ hello: 1 }");
 	}
 
 }

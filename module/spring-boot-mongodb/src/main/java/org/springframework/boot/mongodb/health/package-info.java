@@ -15,9 +15,9 @@
  */
 
 /**
- * Auto-configuration for Spring Data MongoDB health.
+ * MongoDB health integration using Spring Data MongoDB.
  */
 @NullMarked
-package org.springframework.boot.data.mongodb.autoconfigure.health;
+package org.springframework.boot.mongodb.health;
 
 import org.jspecify.annotations.NullMarked;

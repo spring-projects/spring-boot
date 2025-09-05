@@ -33,6 +33,7 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
+	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional(project(":module:spring-boot-reactor"))
 	optional("io.netty:netty-transport")
@@ -49,6 +50,7 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-testcontainers")))
+	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.springframework.data:spring-data-mongodb")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

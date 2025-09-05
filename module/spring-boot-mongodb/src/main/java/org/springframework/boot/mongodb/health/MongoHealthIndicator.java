@@ -14,37 +14,51 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.data.mongodb.health;
+package org.springframework.boot.mongodb.health;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.mongodb.client.MongoClient;
 import org.bson.Document;
 
 import org.springframework.boot.health.contributor.AbstractHealthIndicator;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.Assert;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
- * Mongo data stores.
+ * MongoDB.
  *
  * @author Christian Dupuis
  * @since 4.0.0
  */
 public class MongoHealthIndicator extends AbstractHealthIndicator {
 
-	private final MongoTemplate mongoTemplate;
+	private static final Document HELLO_COMMAND = Document.parse("{ hello: 1 }");
 
-	public MongoHealthIndicator(MongoTemplate mongoTemplate) {
+	private final MongoClient mongoClient;
+
+	public MongoHealthIndicator(MongoClient mongoClient) {
 		super("MongoDB health check failed");
-		Assert.notNull(mongoTemplate, "'mongoTemplate' must not be null");
-		this.mongoTemplate = mongoTemplate;
+		Assert.notNull(mongoClient, "'mongoClient' must not be null");
+		this.mongoClient = mongoClient;
 	}
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Document result = this.mongoTemplate.executeCommand("{ hello: 1 }");
-		builder.up().withDetail("maxWireVersion", result.getInteger("maxWireVersion"));
+		Map<String, Object> details = new LinkedHashMap<>();
+		List<String> databases = new ArrayList<>();
+		details.put("databases", databases);
+		this.mongoClient.listDatabaseNames().forEach((database) -> {
+			Document result = this.mongoClient.getDatabase(database).runCommand(HELLO_COMMAND);
+			databases.add(database);
+			details.putIfAbsent("maxWireVersion", result.getInteger("maxWireVersion"));
+		});
+		builder.up().withDetails(details);
 	}
 
 }

@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.data.mongodb.health;
+package org.springframework.boot.mongodb.health;
 
 import java.time.Duration;
+import java.util.List;
 
 import com.mongodb.MongoException;
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -26,7 +29,6 @@ import reactor.test.StepVerifier;
 
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.Status;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -40,27 +42,29 @@ import static org.mockito.Mockito.mock;
 class MongoReactiveHealthIndicatorTests {
 
 	@Test
-	void testMongoIsUp() {
-		Document buildInfo = mock(Document.class);
-		given(buildInfo.getInteger("maxWireVersion")).willReturn(10);
-		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ hello: 1 }")).willReturn(Mono.just(buildInfo));
-		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(
-				reactiveMongoTemplate);
+	void mongoIsUp() {
+		MongoClient mongoClient = mock(MongoClient.class);
+		given(mongoClient.listDatabaseNames()).willReturn(Mono.just("db"));
+		MongoDatabase mongoDatabase = mock(MongoDatabase.class);
+		given(mongoClient.getDatabase("db")).willReturn(mongoDatabase);
+		Document commandResult = mock(Document.class);
+		given(mongoDatabase.runCommand(Document.parse("{ hello: 1 }"))).willReturn(Mono.just(commandResult));
+		given(commandResult.getInteger("maxWireVersion")).willReturn(10);
+		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(mongoClient);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails()).containsOnlyKeys("maxWireVersion");
+			assertThat(h.getDetails()).containsOnlyKeys("maxWireVersion", "databases");
 			assertThat(h.getDetails()).containsEntry("maxWireVersion", 10);
+			assertThat(h.getDetails()).containsEntry("databases", List.of("db"));
 		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
-	void testMongoIsDown() {
-		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ hello: 1 }")).willThrow(new MongoException("Connection failed"));
-		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(
-				reactiveMongoTemplate);
+	void mongoIsDown() {
+		MongoClient mongoClient = mock(MongoClient.class);
+		given(mongoClient.listDatabaseNames()).willThrow(new MongoException("Connection failed"));
+		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(mongoClient);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);

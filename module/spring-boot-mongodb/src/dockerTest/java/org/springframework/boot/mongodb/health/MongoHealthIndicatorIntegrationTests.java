@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.data.mongodb.health;
-
-import java.time.Duration;
+package org.springframework.boot.mongodb.health;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.ServerApi;
 import com.mongodb.ServerApiVersion;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -33,17 +32,16 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.Status;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link MongoReactiveHealthIndicator}.
+ * Integration tests for {@link MongoHealthIndicator}.
  *
  * @author Andy Wilkinson
  */
 @Testcontainers(disabledWithoutDocker = true)
-class MongoReactiveHealthIndicatorIntegrationTests {
+class MongoHealthIndicatorIntegrationTests {
 
 	@Container
 	static MongoDBContainer mongo = TestImage.container(MongoDBContainer.class);
@@ -51,13 +49,21 @@ class MongoReactiveHealthIndicatorIntegrationTests {
 	@Test
 	void standardApi() {
 		Health health = mongoHealth();
-		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertHealth(health);
 	}
 
 	@Test
 	void strictV1Api() {
 		Health health = mongoHealth(ServerApi.builder().strict(true).version(ServerApiVersion.V1).build());
+		assertHealth(health);
+	}
+
+	private void assertHealth(Health health) {
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsKey("maxWireVersion");
+		assertThat(health.getDetails()).hasEntrySatisfying("databases",
+				(databases) -> assertThat(databases).asInstanceOf(InstanceOfAssertFactories.LIST)
+					.containsExactlyInAnyOrder("local", "admin", "config"));
 	}
 
 	private Health mongoHealth() {
@@ -72,9 +78,8 @@ class MongoReactiveHealthIndicatorIntegrationTests {
 		}
 		MongoClientSettings settings = settingsBuilder.build();
 		MongoClient mongoClient = MongoClients.create(settings);
-		MongoReactiveHealthIndicator healthIndicator = new MongoReactiveHealthIndicator(
-				new ReactiveMongoTemplate(mongoClient, "db"));
-		return healthIndicator.health(true).block(Duration.ofSeconds(30));
+		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoClient);
+		return healthIndicator.health(true);
 	}
 
 }
