@@ -17,7 +17,7 @@
 package smoketest.data.jpa.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,9 +55,8 @@ public class Review implements Serializable {
 	private Rating rating;
 
 	@Column(nullable = false)
-	@jakarta.persistence.Temporal(jakarta.persistence.TemporalType.DATE)
-	@SuppressWarnings({ "deprecation", "NullAway.Init" })
-	private Date checkInDate;
+	@SuppressWarnings("NullAway.Init")
+	private LocalDate checkInDate;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.ORDINAL)
@@ -103,11 +102,11 @@ public class Review implements Serializable {
 		this.rating = rating;
 	}
 
-	public Date getCheckInDate() {
+	public LocalDate getCheckInDate() {
 		return this.checkInDate;
 	}
 
-	public void setCheckInDate(Date checkInDate) {
+	public void setCheckInDate(LocalDate checkInDate) {
 		this.checkInDate = checkInDate;
 	}
 
