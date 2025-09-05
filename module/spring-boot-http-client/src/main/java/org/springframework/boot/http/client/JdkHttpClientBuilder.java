@@ -51,7 +51,7 @@ public final class JdkHttpClientBuilder {
 	}
 
 	/**
-	 * Return a new {@link JdkHttpClientBuilder} uses the given executor with the
+	 * Return a new {@link JdkHttpClientBuilder} that uses the given executor with the
 	 * underlying {@link java.net.http.HttpClient.Builder}.
 	 * @param executor the executor to use
 	 * @return a new {@link JdkHttpClientBuilder} instance

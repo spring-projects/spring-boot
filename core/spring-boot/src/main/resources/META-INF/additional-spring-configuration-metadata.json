@@ -32,7 +32,7 @@
     {
       "name": "logging.console.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable console based logging",
+      "description": "Whether to enable console-based logging.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {

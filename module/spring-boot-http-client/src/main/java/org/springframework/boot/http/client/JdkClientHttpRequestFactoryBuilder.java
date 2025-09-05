@@ -65,8 +65,8 @@ public final class JdkClientHttpRequestFactoryBuilder
 	}
 
 	/**
-	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} uses the given executor
-	 * with the underlying {@link java.net.http.HttpClient.Builder}.
+	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} that uses the given
+	 * executor with the underlying {@link java.net.http.HttpClient.Builder}.
 	 * @param executor the executor to use
 	 * @return a new {@link JdkClientHttpRequestFactoryBuilder} instance
 	 * @since 4.0.0

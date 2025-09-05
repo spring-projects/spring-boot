@@ -158,7 +158,7 @@ class HttpClientAutoConfigurationTests {
 			.run((context) -> {
 				ClientHttpRequestFactory factory = context.getBean(ClientHttpRequestFactoryBuilder.class).build();
 				HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");
-				assertThat(httpClient.executor().get()).isInstanceOf(VirtualThreadTaskExecutor.class);
+				assertThat(httpClient.executor()).containsInstanceOf(VirtualThreadTaskExecutor.class);
 			});
 	}
 

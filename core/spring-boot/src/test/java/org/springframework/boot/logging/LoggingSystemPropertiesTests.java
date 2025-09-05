@@ -233,14 +233,14 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
-	void shouldSetConsoleLevelThreshholdToOffWhenConsoleLoggingDisabled() {
+	void shouldSetConsoleLevelThresholdToOffWhenConsoleLoggingDisabled() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.console.enabled", "false")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_THRESHOLD.getEnvironmentVariableName()))
 			.isEqualTo("OFF");
 	}
 
 	@Test
-	void shouldNotChangeConsoleLevelThreshholdWhenConsoleLoggingEnabled() {
+	void shouldNotChangeConsoleLevelThresholdWhenConsoleLoggingEnabled() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.console.enabled", "true")
 			.withProperty("logging.threshold.console", "TRACE")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_THRESHOLD.getEnvironmentVariableName()))

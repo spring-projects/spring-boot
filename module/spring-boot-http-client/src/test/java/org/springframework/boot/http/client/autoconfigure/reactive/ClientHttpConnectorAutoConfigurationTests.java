@@ -184,7 +184,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 				ClientHttpConnector connector = context.getBean(ClientHttpConnectorBuilder.class).build();
 				java.net.http.HttpClient httpClient = (java.net.http.HttpClient) ReflectionTestUtils.getField(connector,
 						"httpClient");
-				assertThat(httpClient.executor().get()).isInstanceOf(VirtualThreadTaskExecutor.class);
+				assertThat(httpClient.executor()).containsInstanceOf(VirtualThreadTaskExecutor.class);
 			});
 	}
 
