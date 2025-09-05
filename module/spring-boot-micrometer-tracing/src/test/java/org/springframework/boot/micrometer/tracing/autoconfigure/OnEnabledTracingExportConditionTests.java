@@ -31,80 +31,82 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link OnEnabledTracingCondition}.
+ * Tests for {@link OnEnabledTracingExportCondition}.
  *
  * @author Moritz Halbritter
  */
-class OnEnabledTracingConditionTests {
+class OnEnabledTracingExportConditionTests {
 
 	@Test
 	void shouldMatchIfNoPropertyIsSet() {
-		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
+		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(), mockMetadata(""));
 		assertThat(outcome.isMatch()).isTrue();
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledTracing tracing is enabled by default");
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledTracingExport tracing is enabled by default");
 	}
 
 	@Test
 	void shouldNotMatchIfGlobalPropertyIsFalse() {
-		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
-		ConditionOutcome outcome = condition
-			.getMatchOutcome(mockConditionContext(Map.of("management.tracing.enabled", "false")), mockMetadata(""));
+		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
+		ConditionOutcome outcome = condition.getMatchOutcome(
+				mockConditionContext(Map.of("management.tracing.export.enabled", "false")), mockMetadata(""));
 		assertThat(outcome.isMatch()).isFalse();
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledTracing management.tracing.enabled is false");
+		assertThat(outcome.getMessage())
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.tracing.export.enabled is false");
 	}
 
 	@Test
 	void shouldMatchIfGlobalPropertyIsTrue() {
-		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
-		ConditionOutcome outcome = condition
-			.getMatchOutcome(mockConditionContext(Map.of("management.tracing.enabled", "true")), mockMetadata(""));
+		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
+		ConditionOutcome outcome = condition.getMatchOutcome(
+				mockConditionContext(Map.of("management.tracing.export.enabled", "true")), mockMetadata(""));
 		assertThat(outcome.isMatch()).isTrue();
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledTracing management.tracing.enabled is true");
+		assertThat(outcome.getMessage())
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.tracing.export.enabled is true");
 	}
 
 	@Test
 	void shouldNotMatchIfExporterPropertyIsFalse() {
-		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
+		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
 				mockConditionContext(Map.of("management.zipkin.tracing.export.enabled", "false")),
 				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledTracing management.zipkin.tracing.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.zipkin.tracing.export.enabled is false");
 	}
 
 	@Test
 	void shouldMatchIfExporterPropertyIsTrue() {
-		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
+		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
 				mockConditionContext(Map.of("management.zipkin.tracing.export.enabled", "true")),
 				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledTracing management.zipkin.tracing.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.zipkin.tracing.export.enabled is true");
 	}
 
 	@Test
 	void exporterPropertyShouldOverrideGlobalPropertyIfTrue() {
-		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
-				Map.of("management.tracing.enabled", "false", "management.zipkin.tracing.export.enabled", "true")),
+		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
+		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(Map
+			.of("management.tracing.export.enabled", "false", "management.zipkin.tracing.export.enabled", "true")),
 				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledTracing management.zipkin.tracing.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.zipkin.tracing.export.enabled is true");
 	}
 
 	@Test
 	void exporterPropertyShouldOverrideGlobalPropertyIfFalse() {
-		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
-				Map.of("management.tracing.enabled", "true", "management.zipkin.tracing.export.enabled", "false")),
+		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
+		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(Map
+			.of("management.tracing.export.enabled", "true", "management.zipkin.tracing.export.enabled", "false")),
 				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledTracing management.zipkin.tracing.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.zipkin.tracing.export.enabled is false");
 	}
 
 	private ConditionContext mockConditionContext() {
@@ -121,7 +123,7 @@ class OnEnabledTracingConditionTests {
 
 	private AnnotatedTypeMetadata mockMetadata(String exporter) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-		given(metadata.getAnnotationAttributes(ConditionalOnEnabledTracing.class.getName()))
+		given(metadata.getAnnotationAttributes(ConditionalOnEnabledTracingExport.class.getName()))
 			.willReturn(Map.of("value", exporter));
 		return metadata;
 	}

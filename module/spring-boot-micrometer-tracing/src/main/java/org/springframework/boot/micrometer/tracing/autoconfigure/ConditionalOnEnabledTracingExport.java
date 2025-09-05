@@ -26,8 +26,8 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional @Conditional} that checks whether tracing is enabled. It matches if
- * the value of the {@code management.tracing.enabled} property is {@code true} or if it
- * is not configured. If the {@link #value() tracing exporter name} is set, the
+ * the value of the {@code management.tracing.export.enabled} property is {@code true} or
+ * if it is not configured. If the {@link #value() tracing exporter name} is set, the
  * {@code management.<name>.tracing.export.enabled} property can be used to control the
  * behavior for the specific tracing exporter. In that case, the exporter specific
  * property takes precedence over the global property.
@@ -38,8 +38,8 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@Conditional(OnEnabledTracingCondition.class)
-public @interface ConditionalOnEnabledTracing {
+@Conditional(OnEnabledTracingExportCondition.class)
+public @interface ConditionalOnEnabledTracingExport {
 
 	/**
 	 * Name of the tracing exporter.

@@ -89,7 +89,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 
 	@Test
 	void shouldNotSupplyAsyncZipkinSpanHandlerIfGlobalTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+		this.contextRunner.withPropertyValues("management.tracing.export.enabled=false")
 			.withUserConfiguration(SenderConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(AsyncZipkinSpanHandler.class));
 	}

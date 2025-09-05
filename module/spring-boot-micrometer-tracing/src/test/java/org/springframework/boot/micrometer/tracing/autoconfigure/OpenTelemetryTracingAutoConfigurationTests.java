@@ -317,7 +317,7 @@ class OpenTelemetryTracingAutoConfigurationTests {
 
 	@Test
 	void shouldDisablePropagationIfTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false").run((context) -> {
+		this.contextRunner.withPropertyValues("management.tracing.export.enabled=false").run((context) -> {
 			assertThat(context).hasSingleBean(TextMapPropagator.class);
 			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
 			assertThat(propagator.fields()).isEmpty();

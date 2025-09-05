@@ -34,7 +34,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracing;
+import org.springframework.boot.micrometer.tracing.autoconfigure.ConditionalOnEnabledTracingExport;
 import org.springframework.boot.micrometer.tracing.autoconfigure.zipkin.ZipkinTracingAutoConfiguration.BraveConfiguration;
 import org.springframework.boot.micrometer.tracing.autoconfigure.zipkin.ZipkinTracingAutoConfiguration.OpenTelemetryConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -71,7 +71,7 @@ public final class ZipkinTracingAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(BytesMessageSender.class)
-		@ConditionalOnEnabledTracing("zipkin")
+		@ConditionalOnEnabledTracingExport("zipkin")
 		AsyncZipkinSpanHandler asyncZipkinSpanHandler(BytesMessageSender sender,
 				BytesEncoder<MutableSpan> mutableSpanBytesEncoder) {
 			return AsyncZipkinSpanHandler.newBuilder(sender).build(mutableSpanBytesEncoder);
@@ -93,7 +93,7 @@ public final class ZipkinTracingAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(BytesMessageSender.class)
-		@ConditionalOnEnabledTracing("zipkin")
+		@ConditionalOnEnabledTracingExport("zipkin")
 		ZipkinSpanExporter zipkinSpanExporter(BytesMessageSender sender, BytesEncoder<Span> spanBytesEncoder) {
 			return ZipkinSpanExporter.builder().setSender(sender).setEncoder(spanBytesEncoder).build();
 		}
