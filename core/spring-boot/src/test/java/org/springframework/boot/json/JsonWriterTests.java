@@ -28,6 +28,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.json.JsonWriter.Extractor;
 import org.springframework.boot.json.JsonWriter.Member;
 import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.Members;
@@ -320,21 +321,21 @@ class JsonWriterTests {
 
 		@Test
 		void chainedAs() {
-			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
+			Extractor<Integer, Boolean> booleanExtractor = (integer) -> integer != 0;
 			JsonWriter<String> writer = JsonWriter
-				.of((members) -> members.add().as(Integer::valueOf).as(booleanAdapter));
+				.of((members) -> members.add().as(Integer::valueOf).as(booleanExtractor));
 			assertThat(writer.writeToString("0")).isEqualTo("false");
 			assertThat(writer.writeToString("1")).isEqualTo("true");
 		}
 
 		@Test
 		void chainedAsAndPredicates() {
-			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
+			Extractor<Integer, Boolean> booleanExtractor = (integer) -> integer != 0;
 			JsonWriter<String> writer = JsonWriter.of((members) -> members.add()
 				.whenNot(String::isEmpty)
 				.as(Integer::valueOf)
 				.when((integer) -> integer < 2)
-				.as(booleanAdapter));
+				.as(booleanExtractor));
 			assertThat(writer.writeToString("")).isEmpty();
 			assertThat(writer.writeToString("0")).isEqualTo("false");
 			assertThat(writer.writeToString("1")).isEqualTo("true");

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -64,7 +63,7 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 			log.add("logger", LogEvent::getLoggerName);
 		});
 		members.add("process").usingMembers((process) -> {
-			process.add("pid", environment.getProperty("spring.application.pid", Long.class)).when(Objects::nonNull);
+			process.add("pid", environment.getProperty("spring.application.pid", Long.class)).whenNotNull();
 			process.add("thread").usingMembers((thread) -> thread.add("name", LogEvent::getThreadName));
 		});
 		ElasticCommonSchemaProperties.get(environment).jsonMembers(members);

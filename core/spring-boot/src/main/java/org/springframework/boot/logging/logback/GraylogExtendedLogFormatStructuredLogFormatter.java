@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
@@ -93,8 +92,7 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 			.as(GraylogExtendedLogFormatStructuredLogFormatter::formatTimeStamp);
 		members.add("level", LevelToSyslogSeverity::convert);
 		members.add("_level_name", ILoggingEvent::getLevel);
-		members.add("_process_pid", environment.getProperty("spring.application.pid", Long.class))
-			.when(Objects::nonNull);
+		members.add("_process_pid", environment.getProperty("spring.application.pid", Long.class)).whenNotNull();
 		members.add("_process_thread_name", ILoggingEvent::getThreadName);
 		GraylogExtendedLogFormatProperties.get(environment).jsonMembers(members);
 		members.add("_log_logger", ILoggingEvent::getLoggerName);

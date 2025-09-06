@@ -257,7 +257,7 @@ class JsonValueWriter {
 			append(":");
 			write(value);
 		}
-		this.path = this.path.parent();
+		this.path = (this.path.parent() != null) ? this.path.parent() : MemberPath.ROOT;
 	}
 
 	private void writeString(Object value) {
@@ -400,11 +400,17 @@ class JsonValueWriter {
 		}
 
 		MemberPath updatePath(MemberPath path) {
-			return (this.series != Series.ARRAY) ? path : path.child(this.index);
+			if (this.series != Series.ARRAY) {
+				return path;
+			}
+			return path.child(this.index);
 		}
 
 		MemberPath restorePath(MemberPath path) {
-			return (this.series != Series.ARRAY) ? path : path.parent();
+			if (this.series != Series.ARRAY) {
+				return path;
+			}
+			return (path.parent() != null) ? path.parent() : MemberPath.ROOT;
 		}
 
 		void incrementIndexAndAddCommaIfRequired() {
