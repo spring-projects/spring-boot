@@ -195,4 +195,26 @@ class AotTests {
 		return contentOf(new File(project, "target/build.log"));
 	}
 
+	@TestTemplate
+	void whenAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-exclude-devtools").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(aotDirectory).exists();
+			Path sourcesDirectory = aotDirectory.resolve("sources");
+			assertThat(sourcesDirectory).exists();
+			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
+		});
+	}
+
+	@TestTemplate
+	void whenTestAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-test-exclude-devtools").goals("process-test-classes").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
+			assertThat(aotDirectory).exists();
+			Path sourcesDirectory = aotDirectory.resolve("sources");
+			assertThat(sourcesDirectory).exists();
+			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
+		});
+	}
+
 }
