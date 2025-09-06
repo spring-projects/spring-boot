@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
+package smoketest.amqp;
 
-description = "Starter for using Spring AMQP with Rabbit MQ over AMQP 1.0 protocol"
+import org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 
-dependencies {
-	api(project(":starter:spring-boot-starter"))
+public class Sender {
 
-	api(project(":module:spring-boot-amqp"))
+	@Autowired
+	private RabbitAmqpTemplate rabbitAmqpTemplate;
+
+	public void send(String message) {
+		this.rabbitAmqpTemplate.convertAndSend("foo", message);
+	}
+
 }
