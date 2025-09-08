@@ -70,7 +70,7 @@ public final class LambdaSafe {
 	 * @return a {@link Callback} instance that can be invoked.
 	 */
 	public static <C, A> Callback<C, A> callback(Class<C> callbackType, C callbackInstance, A argument,
-			Object @Nullable ... additionalArguments) {
+			@Nullable Object @Nullable ... additionalArguments) {
 		Assert.notNull(callbackType, "'callbackType' must not be null");
 		Assert.notNull(callbackInstance, "'callbackInstance' must not be null");
 		return new Callback<>(callbackType, callbackInstance, argument, additionalArguments);
@@ -108,13 +108,13 @@ public final class LambdaSafe {
 
 		private final A argument;
 
-		private final Object @Nullable [] additionalArguments;
+		private final @Nullable Object @Nullable [] additionalArguments;
 
 		private Log logger;
 
 		private Filter<C, A> filter = new GenericTypeFilter<>();
 
-		LambdaSafeCallback(Class<C> callbackType, A argument, Object @Nullable [] additionalArguments) {
+		LambdaSafeCallback(Class<C> callbackType, A argument, @Nullable Object @Nullable [] additionalArguments) {
 			this.callbackType = callbackType;
 			this.argument = argument;
 			this.additionalArguments = additionalArguments;
@@ -175,11 +175,11 @@ public final class LambdaSafe {
 		}
 
 		private boolean startsWithArgumentClassName(String message) {
-			Predicate<Object> startsWith = (argument) -> startsWithArgumentClassName(message, argument);
-			return startsWith.test(this.argument) || additonalArgumentsStartsWith(startsWith);
+			Predicate<@Nullable Object> startsWith = (argument) -> startsWithArgumentClassName(message, argument);
+			return startsWith.test(this.argument) || additionalArgumentsStartsWith(startsWith);
 		}
 
-		private boolean additonalArgumentsStartsWith(Predicate<Object> startsWith) {
+		private boolean additionalArgumentsStartsWith(Predicate<@Nullable Object> startsWith) {
 			if (this.additionalArguments == null) {
 				return false;
 			}
@@ -243,7 +243,7 @@ public final class LambdaSafe {
 		private final C callbackInstance;
 
 		private Callback(Class<C> callbackType, C callbackInstance, A argument,
-				Object @Nullable [] additionalArguments) {
+				@Nullable Object @Nullable [] additionalArguments) {
 			super(callbackType, argument, additionalArguments);
 			this.callbackInstance = callbackInstance;
 		}
@@ -343,7 +343,8 @@ public final class LambdaSafe {
 		 * @param additionalArguments any additional arguments
 		 * @return if the callback matches and should be invoked
 		 */
-		boolean match(Class<C> callbackType, C callbackInstance, A argument, Object @Nullable [] additionalArguments);
+		boolean match(Class<C> callbackType, C callbackInstance, A argument,
+				@Nullable Object @Nullable [] additionalArguments);
 
 		/**
 		 * Return a {@link Filter} that allows all callbacks to be invoked.
@@ -365,7 +366,7 @@ public final class LambdaSafe {
 
 		@Override
 		public boolean match(Class<C> callbackType, C callbackInstance, A argument,
-				Object @Nullable [] additionalArguments) {
+				@Nullable Object @Nullable [] additionalArguments) {
 			ResolvableType type = ResolvableType.forClass(callbackType, callbackInstance.getClass());
 			if (type.getGenerics().length != 1) {
 				return true;

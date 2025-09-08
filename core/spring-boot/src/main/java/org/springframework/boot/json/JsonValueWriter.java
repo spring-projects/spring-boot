@@ -149,7 +149,7 @@ class JsonValueWriter {
 		}
 	}
 
-	private <V> boolean canWriteAsArray(Iterable<?> iterable) {
+	private boolean canWriteAsArray(Iterable<?> iterable) {
 		return !(iterable instanceof Path);
 	}
 
@@ -349,7 +349,8 @@ class JsonValueWriter {
 	// Lambda isn't detected with the correct nullability
 	@SuppressWarnings({ "unchecked", "NullAway" })
 	private <V> @Nullable V processValue(@Nullable V value, ValueProcessor<?> valueProcessor) {
-		return (V) LambdaSafe.callback(ValueProcessor.class, valueProcessor, this.path, new Object[] { value })
+		return (V) LambdaSafe
+			.callback(ValueProcessor.class, valueProcessor, this.path, new @Nullable Object[] { value })
 			.invokeAnd((call) -> call.processValue(this.path, value))
 			.get(value);
 	}
@@ -389,7 +390,7 @@ class JsonValueWriter {
 
 		private int index;
 
-		private Set<String> names = new HashSet<>();
+		private final Set<String> names = new HashSet<>();
 
 		private ActiveSeries(Series series) {
 			this.series = series;
