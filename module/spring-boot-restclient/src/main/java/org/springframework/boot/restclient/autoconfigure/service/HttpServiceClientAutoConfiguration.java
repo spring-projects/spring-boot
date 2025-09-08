@@ -16,14 +16,24 @@
 
 package org.springframework.boot.restclient.autoconfigure.service;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
+import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Import;
+import org.springframework.web.client.ApiVersionFormatter;
+import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
 
 /**
@@ -39,9 +49,37 @@ import org.springframework.web.service.registry.ImportHttpServices;
  */
 @AutoConfiguration(after = { HttpClientAutoConfiguration.class, RestClientAutoConfiguration.class })
 @ConditionalOnClass(RestClientAdapter.class)
+@ConditionalOnBean(HttpServiceProxyRegistry.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @EnableConfigurationProperties(HttpClientServiceProperties.class)
-@Import({ ImportHttpServiceClientsConfiguration.class, RestClientHttpServiceClientConfiguration.class })
-public final class HttpServiceClientAutoConfiguration {
+public final class HttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
+
+	@SuppressWarnings("NullAway.Init")
+	private ClassLoader beanClassLoader;
+
+	HttpServiceClientAutoConfiguration() {
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
+	}
+
+	@Bean
+	RestClientPropertiesHttpServiceGroupConfigurer restClientPropertiesHttpServiceGroupConfigurer(
+			ObjectProvider<SslBundles> sslBundles, HttpClientServiceProperties serviceProperties,
+			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientFactoryBuilder,
+			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings,
+			ObjectProvider<ApiVersionInserter> apiVersionInserter,
+			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
+		return new RestClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles, serviceProperties,
+				clientFactoryBuilder, clientHttpRequestFactorySettings, apiVersionInserter, apiVersionFormatter);
+	}
+
+	@Bean
+	RestClientCustomizerHttpServiceGroupConfigurer restClientCustomizerHttpServiceGroupConfigurer(
+			ObjectProvider<RestClientCustomizer> customizers) {
+		return new RestClientCustomizerHttpServiceGroupConfigurer(customizers);
+	}
 
 }
