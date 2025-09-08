@@ -2433,6 +2433,10 @@ bom {
 		}
 	}
 	library("Tomcat", "${tomcatVersion}") {
+		prohibit {
+			versionRange "[10.1.45]"
+			because "it contains a filestore regression"
+		}
 		group("org.apache.tomcat") {
 			modules = [
 				"tomcat-annotations-api",
