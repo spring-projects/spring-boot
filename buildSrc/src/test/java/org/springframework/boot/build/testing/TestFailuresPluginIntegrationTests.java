@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integrations tests for {@link TestFailuresPlugin}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 class TestFailuresPluginIntegrationTests {
 
@@ -166,6 +167,7 @@ class TestFailuresPluginIntegrationTests {
 			writer.println("dependencies {");
 			writer.println("	testImplementation 'org.junit.jupiter:junit-jupiter:5.6.0'");
 			writer.println("	testImplementation 'org.assertj:assertj-core:3.11.1'");
+			writer.println("	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'");
 			writer.println("}");
 			writer.println();
 			writer.println("test {");
