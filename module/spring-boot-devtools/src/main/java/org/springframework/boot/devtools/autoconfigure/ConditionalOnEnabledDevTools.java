@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Conditional;
  * @author Andy Wilkinson
  * @since 3.5.0
  */
-@SuppressWarnings("removal")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented

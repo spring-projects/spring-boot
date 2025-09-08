@@ -65,7 +65,6 @@ class OnEnabledDevToolsConditionTests {
 	static class TestConfiguration {
 
 		@Bean
-		@SuppressWarnings("removal")
 		@Conditional(OnEnabledDevToolsCondition.class)
 		String test() {
 			return "hello";

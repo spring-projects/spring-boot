@@ -621,7 +621,6 @@ class EndpointDiscovererTests {
 
 	static class SpecializedExposableEndpoint extends AbstractDiscoveredEndpoint<SpecializedOperation> {
 
-		@SuppressWarnings("removal")
 		SpecializedExposableEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
 				Access defaultAccess, Collection<? extends SpecializedOperation> operations) {
 			super(discoverer, endpointBean, id, defaultAccess, operations);

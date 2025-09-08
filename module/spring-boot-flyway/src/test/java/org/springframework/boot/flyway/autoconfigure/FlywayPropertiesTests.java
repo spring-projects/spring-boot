@@ -47,7 +47,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FlywayPropertiesTests {
 
 	@Test
-	@SuppressWarnings("removal")
 	void defaultValuesAreConsistent() {
 		FlywayProperties properties = new FlywayProperties();
 		Configuration configuration = new FluentConfiguration();

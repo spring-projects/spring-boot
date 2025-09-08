@@ -90,7 +90,6 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	@Override
-	@SuppressWarnings("removal")
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.tomcatProperties::getBasedir).to(factory::setBaseDirectory);

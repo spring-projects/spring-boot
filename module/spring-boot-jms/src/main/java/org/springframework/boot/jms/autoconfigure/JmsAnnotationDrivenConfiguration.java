@@ -73,7 +73,6 @@ class JmsAnnotationDrivenConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@SuppressWarnings("removal")
 	DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
 		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
 		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());

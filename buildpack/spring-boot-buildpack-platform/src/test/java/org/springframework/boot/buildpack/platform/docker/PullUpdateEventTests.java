@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PullUpdateEventTests extends AbstractJsonTests {
 
 	@Test
-	@SuppressWarnings("removal")
 	void readValueWhenFullDeserializesJson() throws Exception {
 		PullImageUpdateEvent event = getObjectMapper().readValue(getContent("pull-update-full.json"),
 				PullImageUpdateEvent.class);

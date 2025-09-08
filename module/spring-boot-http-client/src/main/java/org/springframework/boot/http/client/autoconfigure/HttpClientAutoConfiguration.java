@@ -46,7 +46,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Sangmin Park
  * @since 4.0.0
  */
-@SuppressWarnings("removal")
 @AutoConfiguration(after = SslAutoConfiguration.class)
 @ConditionalOnClass(ClientHttpRequestFactory.class)
 @Conditional(NotReactiveWebApplicationCondition.class)

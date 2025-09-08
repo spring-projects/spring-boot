@@ -32,7 +32,6 @@ import org.springframework.boot.actuate.endpoint.jmx.JmxOperation;
  */
 class DiscoveredJmxEndpoint extends AbstractDiscoveredEndpoint<JmxOperation> implements ExposableJmxEndpoint {
 
-	@SuppressWarnings("removal")
 	DiscoveredJmxEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, Access defaultAccess,
 			Collection<JmxOperation> operations) {
 		super(discoverer, endpointBean, id, defaultAccess, operations);

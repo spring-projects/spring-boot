@@ -156,7 +156,6 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void httpComponentsAreBuiltConsideringSettingsInRestTemplateBuilder() {
 		RestTemplateBuilder builder = new RestTemplateBuilder()
 			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
