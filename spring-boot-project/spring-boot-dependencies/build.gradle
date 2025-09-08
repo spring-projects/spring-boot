@@ -1351,7 +1351,7 @@ bom {
 			javadoc("https://logback.qos.ch/apidocs/ch.qos.logback.core", "ch.qos.logback")
 		}
 	}
-	library("Lombok", "1.18.38") {
+	library("Lombok", "1.18.40") {
 		group("org.projectlombok") {
 			modules = [
 				"lombok"
