@@ -17,42 +17,25 @@
 package org.springframework.boot.amqp.autoconfigure;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.AbstractMessageListenerContainer;
-import org.springframework.retry.support.RetryTemplate;
+import org.springframework.core.retry.RetryTemplate;
 
 /**
- * Callback interface that can be used to customize a {@link RetryTemplate} used as part
- * of the Rabbit infrastructure.
+ * Callback interface that can be used to customize
+ * {@linkplain RabbitRetryTemplateSettings retry settings} used by {@link RabbitTemplate}.
  *
  * @author Stephane Nicoll
  * @since 4.0.0
+ * @see RabbitTemplateConfigurer
+ * @see RetryTemplate
  */
 @FunctionalInterface
-public interface RabbitRetryTemplateCustomizer {
+public interface RabbitTemplateRetrySettingsCustomizer {
 
 	/**
-	 * Callback to customize a {@link RetryTemplate} instance used in the context of the
-	 * specified {@link Target}.
-	 * @param target the {@link Target} of the retry template
-	 * @param retryTemplate the template to customize
+	 * Callback to customize the {@link RabbitRetryTemplateSettings} to create the
+	 * {@link RetryTemplate} used as part of {@link RabbitTemplate} operations.
+	 * @param retrySettings the settings to customize
 	 */
-	void customize(Target target, RetryTemplate retryTemplate);
-
-	/**
-	 * Define the available target for a {@link RetryTemplate}.
-	 */
-	enum Target {
-
-		/**
-		 * {@link RabbitTemplate} target.
-		 */
-		SENDER,
-
-		/**
-		 * {@link AbstractMessageListenerContainer} target.
-		 */
-		LISTENER
-
-	}
+	void customize(RabbitRetryTemplateSettings retrySettings);
 
 }

@@ -28,7 +28,9 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.amqp.autoconfigure.RabbitProperties.ListenerRetry;
-import org.springframework.retry.support.RetryTemplate;
+import org.springframework.boot.amqp.autoconfigure.RabbitProperties.Retry;
+import org.springframework.boot.retry.RetryPolicySettings;
+import org.springframework.core.retry.RetryPolicy;
 import org.springframework.util.Assert;
 
 /**
@@ -46,7 +48,7 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 
 	private @Nullable MessageRecoverer messageRecoverer;
 
-	private @Nullable List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
+	private @Nullable List<RabbitListenerRetrySettingsCustomizer> retrySettingsCustomizers;
 
 	private final RabbitProperties rabbitProperties;
 
@@ -78,11 +80,12 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 	}
 
 	/**
-	 * Set the {@link RabbitRetryTemplateCustomizer} instances to use.
-	 * @param retryTemplateCustomizers the retry template customizers
+	 * Set the {@link RabbitListenerRetrySettingsCustomizer} instances to use.
+	 * @param retrySettingsCustomizers the retry settings customizers
 	 */
-	protected void setRetryTemplateCustomizers(@Nullable List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
-		this.retryTemplateCustomizers = retryTemplateCustomizers;
+	protected void setRetrySettingsCustomizers(
+			@Nullable List<RabbitListenerRetrySettingsCustomizer> retrySettingsCustomizers) {
+		this.retrySettingsCustomizers = retrySettingsCustomizers;
 	}
 
 	/**
@@ -139,14 +142,22 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 		if (retryConfig.isEnabled()) {
 			RetryInterceptorBuilder<?, ?> builder = (retryConfig.isStateless()) ? RetryInterceptorBuilder.stateless()
 					: RetryInterceptorBuilder.stateful();
-			RetryTemplate retryTemplate = new RetryTemplateFactory(this.retryTemplateCustomizers)
-				.createRetryTemplate(retryConfig, RabbitRetryTemplateCustomizer.Target.LISTENER);
-			builder.retryOperations(retryTemplate);
+			builder.retryPolicy(createRetryPolicy(retryConfig));
 			MessageRecoverer recoverer = (this.messageRecoverer != null) ? this.messageRecoverer
 					: new RejectAndDontRequeueRecoverer();
 			builder.recoverer(recoverer);
 			factory.setAdviceChain(builder.build());
 		}
+	}
+
+	private RetryPolicy createRetryPolicy(Retry retryProperties) {
+		RetryPolicySettings retrySettings = retryProperties.initializeRetryPolicySettings();
+		if (this.retrySettingsCustomizers != null) {
+			for (RabbitListenerRetrySettingsCustomizer customizer : this.retrySettingsCustomizers) {
+				customizer.customize(retrySettings);
+			}
+		}
+		return retrySettings.createRetryPolicy();
 	}
 
 }

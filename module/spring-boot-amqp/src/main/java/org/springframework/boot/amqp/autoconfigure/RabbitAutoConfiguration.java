@@ -143,10 +143,10 @@ public final class RabbitAutoConfiguration {
 		@ConditionalOnMissingBean
 		public RabbitTemplateConfigurer rabbitTemplateConfigurer(RabbitProperties properties,
 				ObjectProvider<MessageConverter> messageConverter,
-				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
+				ObjectProvider<RabbitTemplateRetrySettingsCustomizer> retrySettingsCustomizers) {
 			RabbitTemplateConfigurer configurer = new RabbitTemplateConfigurer(properties);
 			configurer.setMessageConverter(messageConverter.getIfUnique());
-			configurer.setRetryTemplateCustomizers(retryTemplateCustomizers.orderedStream().toList());
+			configurer.setRetrySettingsCustomizers(retrySettingsCustomizers.orderedStream().toList());
 			return configurer;
 		}
 
