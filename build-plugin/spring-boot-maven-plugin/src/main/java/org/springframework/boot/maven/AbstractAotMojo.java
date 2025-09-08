@@ -149,8 +149,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null)) {
 			JavaCompilerPluginConfiguration compilerConfiguration = new JavaCompilerPluginConfiguration(this.project);
-			List<String> args = new ArrayList<>();
-			args.addAll(ClassPath.of(classPath).args(false));
+			List<String> args = new ArrayList<>(ClassPath.of(classPath).args(false));
 			args.add("-d");
 			args.add(outputDirectory.toPath().toAbsolutePath().toString());
 			String releaseVersion = compilerConfiguration.getReleaseVersion();
