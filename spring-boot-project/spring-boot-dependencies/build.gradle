@@ -2465,7 +2465,7 @@ bom {
 			releaseNotes("https://github.com/pingidentity/ldapsdk/releases/tag/{version}")
 		}
 	}
-	library("Undertow", "2.3.18.Final") {
+	library("Undertow", "2.3.19.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
