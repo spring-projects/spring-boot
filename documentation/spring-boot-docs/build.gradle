@@ -295,6 +295,130 @@ def configurationPropertiesMetadataAggregate = aggregates.create("configurationP
 tasks.register("documentConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
 	outputDir = layout.buildDirectory.dir("generated/docs/application-properties")
+
+	// Configure property sections declaratively
+	propertySections.set([
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.core",
+			"Core Properties",
+			["debug", "trace", "logging", "spring.aop", "spring.application", "spring.autoconfigure",
+			 "spring.banner", "spring.beaninfo", "spring.config", "spring.info", "spring.jmx",
+			 "spring.lifecycle", "spring.main", "spring.messages", "spring.pid", "spring.profiles",
+			 "spring.quartz", "spring.reactor", "spring.ssl", "spring.task", "spring.threads",
+			 "spring.validation", "spring.mandatory-file-encoding", "info", "spring.output.ansi.enabled"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.cache",
+			"Cache Properties",
+			["spring.cache"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.mail",
+			"Mail Properties",
+			["spring.mail", "spring.sendgrid"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.json",
+			"JSON Properties",
+			["spring.jackson", "spring.gson"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.data",
+			"Data Properties",
+			["spring.couchbase", "spring.cassandra", "spring.elasticsearch", "spring.h2",
+			 "spring.influx", "spring.ldap", "spring.mongodb", "spring.neo4j", "spring.dao",
+			 "spring.data", "spring.datasource", "spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc",
+			 "spring.datasource.oracleucp", "spring.datasource.dbcp2", "spring.datasource.tomcat", "spring.datasource.hikari"],
+			["spring.datasource.oracleucp": "Oracle UCP specific settings bound to an instance of Oracle UCP's PoolDataSource",
+			 "spring.datasource.dbcp2": "Commons DBCP2 specific settings bound to an instance of DBCP2's BasicDataSource",
+			 "spring.datasource.tomcat": "Tomcat datasource specific settings bound to an instance of Tomcat JDBC's DataSource",
+			 "spring.datasource.hikari": "Hikari specific settings bound to an instance of Hikari's HikariDataSource"]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.transaction",
+			"Transaction Properties",
+			["spring.jta", "spring.transaction"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.data-migration",
+			"Data Migration Properties",
+			["spring.flyway", "spring.liquibase", "spring.sql.init"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.integration",
+			"Integration Properties",
+			["spring.activemq", "spring.artemis", "spring.batch", "spring.integration", "spring.jms",
+			 "spring.kafka", "spring.pulsar", "spring.rabbitmq", "spring.hazelcast", "spring.webservices"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.web",
+			"Web Properties",
+			["spring.graphql", "spring.hateoas", "spring.http", "spring.jersey", "spring.mvc",
+			 "spring.netty", "spring.resources", "spring.servlet", "spring.session", "spring.web", "spring.webflux"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.templating",
+			"Templating Properties",
+			["spring.freemarker", "spring.groovy", "spring.mustache", "spring.thymeleaf"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.server",
+			"Server Properties",
+			["server"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.security",
+			"Security Properties",
+			["spring.security"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.rsocket",
+			"RSocket Properties",
+			["spring.rsocket"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.actuator",
+			"Actuator Properties",
+			["management", "micrometer"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.devtools",
+			"Devtools Properties",
+			["spring.devtools"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.docker-compose",
+			"Docker Compose Properties",
+			["spring.docker.compose"],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.testcontainers",
+			"Testcontainers Properties",
+			["spring.testcontainers."],
+			[:]
+		),
+		new org.springframework.boot.build.context.properties.DocumentConfigurationProperties.PropertySectionDefinition(
+			"application-properties.testing",
+			"Testing Properties",
+			["spring.test."],
+			[:]
+		)
+	])
 }
 
 tasks.register("documentDevtoolsPropertyDefaults", org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {}
