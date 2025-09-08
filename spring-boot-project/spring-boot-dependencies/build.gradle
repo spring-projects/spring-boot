@@ -2576,6 +2576,10 @@ bom {
 			versionRange "[11.0.0-M1,)"
 			because "it exceeds our Jakarte EE 10 baseline"
 		}
+		prohibit {
+			versionRange "[10.1.45]"
+			because "it contains a filestore regression"
+		}
 		group("org.apache.tomcat") {
 			modules = [
 				"tomcat-annotations-api",
