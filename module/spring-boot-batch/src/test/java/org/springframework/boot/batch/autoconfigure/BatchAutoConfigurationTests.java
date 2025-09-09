@@ -119,8 +119,6 @@ class BatchAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(JobRepository.class);
 			assertThat(context).hasSingleBean(JobOperator.class);
-			assertThat(context).hasSingleBean(JobRegistry.class);
-			assertThat(context).hasSingleBean(JobOperator.class);
 			assertThat(context.getBean(BatchProperties.class).getJdbc().getInitializeSchema())
 				.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 			assertThat(new JdbcTemplate(context.getBean(DataSource.class))
