@@ -117,21 +117,21 @@ public class PropertiesMeterFilter implements MeterFilter {
 		return (value != null) ? MeterValue.valueOf(value).getValue(meterType) : null;
 	}
 
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	private <T> @Nullable T lookup(Map<String, T> values, Id id, @Nullable T defaultValue) {
 		if (values.isEmpty()) {
 			return defaultValue;
 		}
-		return doLookup(values, id, () -> defaultValue);
+		Supplier<@Nullable T> getDefaultValue = () -> defaultValue;
+		return doLookup(values, id, getDefaultValue);
 	}
 
 	@Contract("_, _, !null -> !null")
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	private <T> @Nullable T lookupWithFallbackToAll(Map<String, T> values, Id id, @Nullable T defaultValue) {
 		if (values.isEmpty()) {
 			return defaultValue;
 		}
-		return doLookup(values, id, () -> values.getOrDefault("all", defaultValue));
+		Supplier<@Nullable T> getAllOrDefaultValue = () -> values.getOrDefault("all", defaultValue);
+		return doLookup(values, id, getAllOrDefaultValue);
 	}
 
 	private <T> @Nullable T doLookup(Map<String, T> values, Id id, Supplier<@Nullable T> defaultValue) {

@@ -91,9 +91,9 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 	public <T> @Nullable T getOrElse(Class<T> type, @Nullable T other) {
-		return getOrElseSupply(type, () -> other);
+		Supplier<@Nullable T> supplier = () -> other;
+		return getOrElseSupply(type, supplier);
 	}
 
 	@Override

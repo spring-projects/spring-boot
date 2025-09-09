@@ -81,7 +81,6 @@ public class DataSourcePoolMetrics implements MeterBinder {
 		}
 	}
 
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	private <N extends Number> void bindPoolMetadata(MeterRegistry registry, String metricName, String description,
 			Function<DataSourcePoolMetadata, @Nullable N> function) {
 		bindDataSource(registry, metricName, description, this.metadataProvider.getValueFunction(function));

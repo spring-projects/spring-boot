@@ -252,13 +252,12 @@ public final class LambdaSafe {
 		 * Invoke the callback instance where the callback method returns void.
 		 * @param invoker the invoker used to invoke the callback
 		 */
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		public void invoke(Consumer<C> invoker) {
-			invoke(this.callbackInstance, () -> {
+			Supplier<@Nullable Void> supplier = () -> {
 				invoker.accept(this.callbackInstance);
 				return null;
-			});
+			};
+			invoke(this.callbackInstance, supplier);
 		}
 
 		/**
@@ -268,10 +267,9 @@ public final class LambdaSafe {
 		 * @return the result of the invocation (may be {@link InvocationResult#noResult}
 		 * if the callback was not invoked)
 		 */
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		public <R> InvocationResult<R> invokeAnd(Function<C, @Nullable R> invoker) {
-			return invoke(this.callbackInstance, () -> invoker.apply(this.callbackInstance));
+			Supplier<@Nullable R> supplier = () -> invoker.apply(this.callbackInstance);
+			return invoke(this.callbackInstance, supplier);
 		}
 
 	}
@@ -296,13 +294,14 @@ public final class LambdaSafe {
 		 * Invoke the callback instances where the callback method returns void.
 		 * @param invoker the invoker used to invoke the callback
 		 */
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		public void invoke(Consumer<C> invoker) {
-			this.callbackInstances.forEach((callbackInstance) -> invoke(callbackInstance, () -> {
-				invoker.accept(callbackInstance);
-				return null;
-			}));
+			this.callbackInstances.forEach((callbackInstance) -> {
+				Supplier<@Nullable Void> supplier = () -> {
+					invoker.accept(callbackInstance);
+					return null;
+				};
+				invoke(callbackInstance, supplier);
+			});
 		}
 
 		/**
@@ -312,11 +311,11 @@ public final class LambdaSafe {
 		 * @return the results of the invocation (may be an empty stream if no callbacks
 		 * could be called)
 		 */
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		public <R> Stream<R> invokeAnd(Function<C, @Nullable R> invoker) {
-			Function<C, InvocationResult<R>> mapper = (callbackInstance) -> invoke(callbackInstance,
-					() -> invoker.apply(callbackInstance));
+			Function<C, InvocationResult<R>> mapper = (callbackInstance) -> {
+				Supplier<@Nullable R> supplier = () -> invoker.apply(callbackInstance);
+				return invoke(callbackInstance, supplier);
+			};
 			return this.callbackInstances.stream()
 				.map(mapper)
 				.filter(InvocationResult::hasResult)
