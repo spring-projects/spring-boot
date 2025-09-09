@@ -70,6 +70,10 @@ These features are described in several enums (in Jackson) that map onto propert
 | `spring.jackson.datatype.json-node.<feature_name>`
 | `true`, `false`
 
+| javadoc:tools.jackson.databind.DateTimeFeature[]
+| `spring.jackson.datetime.<feature_name>`
+| `true`, `false`
+
 | javadoc:tools.jackson.databind.DeserializationFeature[]
 | `spring.jackson.deserialization.<feature_name>`
 | `true`, `false`
