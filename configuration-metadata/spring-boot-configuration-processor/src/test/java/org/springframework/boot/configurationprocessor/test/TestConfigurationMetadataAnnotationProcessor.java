@@ -126,12 +126,12 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	}
 
 	@Override
-	protected String readOperationAnnotation() {
+	protected String endpointReadOperationAnnotation() {
 		return READ_OPERATION_ANNOTATION;
 	}
 
 	@Override
-	protected String optionalParameterAnnotation() {
+	protected String endpointOptionalParameterAnnotation() {
 		return OPTIONAL_PARAMETER_ANNOTATION;
 	}
 

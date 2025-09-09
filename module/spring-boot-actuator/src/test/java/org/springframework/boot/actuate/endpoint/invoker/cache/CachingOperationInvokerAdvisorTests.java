@@ -37,6 +37,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
+import org.springframework.boot.actuate.endpoint.invoke.reflect.TestOperationMethod;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ReflectionUtils;
@@ -163,7 +164,7 @@ class CachingOperationInvokerAdvisorTests {
 
 	private OperationMethod getOperationMethod(String methodName, Class<?>... parameterTypes) {
 		Method method = ReflectionUtils.findMethod(TestOperations.class, methodName, parameterTypes);
-		return new OperationMethod(method, OperationType.READ,
+		return new TestOperationMethod(method, OperationType.READ,
 				(parameter) -> MergedAnnotations.from(parameter).isPresent(TestOptional.class));
 	}
 
