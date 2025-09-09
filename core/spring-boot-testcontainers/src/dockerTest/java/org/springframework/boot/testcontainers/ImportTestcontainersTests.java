@@ -19,6 +19,7 @@ package org.springframework.boot.testcontainers;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Container;
@@ -43,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 @DisabledIfDockerUnavailable
 class ImportTestcontainersTests {
 
-	private AnnotationConfigApplicationContext applicationContext;
+	private @Nullable AnnotationConfigApplicationContext applicationContext;
 
 	@AfterEach
 	void teardown() {
@@ -143,7 +144,7 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class NullContainer {
 
-		static PostgreSQLContainer<?> container = null;
+		static @Nullable PostgreSQLContainer<?> container = null;
 
 	}
 

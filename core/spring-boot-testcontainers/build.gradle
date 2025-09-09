@@ -61,3 +61,11 @@ dependencies {
 dockerTest {
 	jvmArgs += "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED"
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}

@@ -18,6 +18,7 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,9 @@ class ServiceConnectionContextCustomizerTests {
 		then(beanFactory).should()
 			.registerBeanDefinition(eq("testConnectionDetailsForTest"),
 					ArgumentMatchers.<RootBeanDefinition>assertArg((beanDefinition) -> {
-						assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
+						Supplier<?> instanceSupplier = beanDefinition.getInstanceSupplier();
+						assertThat(instanceSupplier).isNotNull();
+						assertThat(instanceSupplier.get()).isSameAs(connectionDetails);
 						assertThat(beanDefinition.getBeanClass()).isEqualTo(TestConnectionDetails.class);
 					}));
 	}
@@ -141,7 +144,7 @@ class ServiceConnectionContextCustomizerTests {
 
 		@Override
 		public String getJdbcUrl() {
-			return null;
+			return "";
 		}
 
 	}
