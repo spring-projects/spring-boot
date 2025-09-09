@@ -36,6 +36,7 @@ final class JettyHandlerWrappers {
 	private JettyHandlerWrappers() {
 	}
 
+	@SuppressWarnings("removal")
 	static Handler.Wrapper createGzipHandlerWrapper(Compression compression) {
 		GzipHandler handler = new GzipHandler();
 		handler.setMinGzipSize((int) compression.getMinResponseSize().toBytes());
