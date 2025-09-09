@@ -18,9 +18,9 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.dialect.IDialect;
+import tools.jackson.databind.module.SimpleModule;
 
 import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.ComponentScan.Filter;

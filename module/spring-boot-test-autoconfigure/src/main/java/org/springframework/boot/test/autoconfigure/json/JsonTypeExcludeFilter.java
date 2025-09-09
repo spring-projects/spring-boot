@@ -33,7 +33,7 @@ import org.springframework.util.ClassUtils;
  */
 public final class JsonTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<JsonTest> {
 
-	private static final String JACKSON_MODULE = "com.fasterxml.jackson.databind.Module";
+	private static final String JACKSON_MODULE = "tools.jackson.databind.JacksonModule";
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 
