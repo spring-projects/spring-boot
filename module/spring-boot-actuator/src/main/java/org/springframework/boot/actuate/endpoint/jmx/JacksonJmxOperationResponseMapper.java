@@ -24,6 +24,8 @@ import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
 
+import org.springframework.lang.Contract;
+
 /**
  * {@link JmxOperationResponseMapper} that delegates to a Jackson {@link ObjectMapper} to
  * return a JSON response.
@@ -58,6 +60,7 @@ public class JacksonJmxOperationResponseMapper implements JmxOperationResponseMa
 	}
 
 	@Override
+	@Contract("!null -> !null")
 	public @Nullable Object mapResponse(@Nullable Object response) {
 		if (response == null) {
 			return null;
