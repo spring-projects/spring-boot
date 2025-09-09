@@ -19,6 +19,7 @@ package org.springframework.boot.kafka.autoconfigure;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -47,6 +48,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.retry.RetryPolicy;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -62,8 +64,6 @@ import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.util.StringUtils;
 import org.springframework.util.backoff.BackOff;
-import org.springframework.util.backoff.ExponentialBackOff;
-import org.springframework.util.backoff.FixedBackOff;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Kafka.
@@ -193,13 +193,13 @@ public final class KafkaAutoConfiguration {
 	@ConditionalOnSingleCandidate(KafkaTemplate.class)
 	RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaTemplate<?, ?> kafkaTemplate) {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
-		return RetryTopicConfigurationBuilder.newInstance()
+		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
 			.maxAttempts(retryTopic.getAttempts())
 			.useSingleTopicForSameIntervals()
 			.suffixTopicsWithIndexValues()
 			.doNotAutoCreateRetryTopics()
-			.customBackoff(getBackOffPolicy(retryTopic.getBackoff()))
-			.create(kafkaTemplate);
+			.customBackoff(getBackOff(retryTopic.getBackoff()));
+		return builder.create(kafkaTemplate);
 	}
 
 	private void applyKafkaConnectionDetailsForConsumer(Map<String, Object> properties,
@@ -226,28 +226,14 @@ public final class KafkaAutoConfiguration {
 		applySslBundle(properties, admin.getSslBundle());
 	}
 
-	private BackOff getBackOffPolicy(Backoff properties) {
-		Duration delay = properties.getDelay();
-		Duration maxDelay = properties.getMaxDelay();
-		if (delay == null || Duration.ZERO.equals(delay)) {
-			return new FixedBackOff(0);
-		}
-		if (properties.getMultiplier() > 0 || (maxDelay != null && maxDelay.toMillis() > delay.toMillis())) {
-			long jitter = 0;
-			if (properties.isRandom() && maxDelay != null) {
-				jitter = (maxDelay.toMillis() - delay.toMillis()) / 2;
-			}
-			ExponentialBackOff backOff = new ExponentialBackOff();
-			backOff.setInitialInterval(delay.toMillis() + jitter);
-			backOff.setJitter(jitter);
-			backOff.setMultiplier(properties.getMultiplier());
-			if (maxDelay != null && maxDelay.toMillis() > delay.toMillis()) {
-				backOff.setMaxInterval(properties.getMaxDelay().toMillis());
-			}
-			return backOff;
-		}
-		return new FixedBackOff(delay.toMillis());
-
+	static BackOff getBackOff(Backoff retryTopicBackoff) {
+		PropertyMapper map = PropertyMapper.get();
+		RetryPolicy.Builder builder = RetryPolicy.builder().maxAttempts(Long.MAX_VALUE);
+		map.from(retryTopicBackoff.getDelay()).to(builder::delay);
+		map.from(retryTopicBackoff.getMaxDelay()).when(Predicate.not(Duration::isZero)).to(builder::maxDelay);
+		map.from(retryTopicBackoff.getMultiplier()).to(builder::multiplier);
+		map.from(retryTopicBackoff.getJitter()).when((Predicate.not(Duration::isZero))).to(builder::jitter);
+		return builder.build().getBackOff();
 	}
 
 	static void applySslBundle(Map<String, Object> properties, @Nullable SslBundle sslBundle) {

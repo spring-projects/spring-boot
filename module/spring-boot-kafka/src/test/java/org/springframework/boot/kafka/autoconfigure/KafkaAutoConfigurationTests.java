@@ -50,6 +50,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties.Retry;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -96,6 +97,7 @@ import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.backoff.ExponentialBackOff;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -566,6 +568,18 @@ class KafkaAutoConfigurationTests {
 						"localhost:9094, localhost:9095");
 				assertThat(configs).containsEntry(StreamsConfig.APPLICATION_ID_CONFIG, "test-id");
 			});
+	}
+
+	@Test
+	void getBackOffWithDefaultsMatchesMapping() {
+		Retry.Topic.Backoff properties = new Retry.Topic.Backoff();
+		assertThat(KafkaAutoConfiguration.getBackOff(properties)).isInstanceOfSatisfying(ExponentialBackOff.class,
+				(backOff) -> {
+					assertThat(backOff.getInitialInterval()).isEqualTo(properties.getDelay().toMillis());
+					assertThat(backOff.getMultiplier()).isEqualTo(properties.getMultiplier());
+					assertThat(backOff.getMaxInterval()).isEqualTo(properties.getMaxDelay().toMillis());
+					assertThat(backOff.getJitter()).isEqualTo(properties.getJitter().toMillis());
+				});
 	}
 
 	@Test

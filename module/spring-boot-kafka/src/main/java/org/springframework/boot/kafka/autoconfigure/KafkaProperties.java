@@ -1595,26 +1595,31 @@ public class KafkaProperties {
 			public static class Backoff {
 
 				/**
-				 * Canonical backoff period. Used as an initial value in the exponential
-				 * case, and as a minimum value in the uniform case.
+				 * Base delay after the initial invocation. Can be combined with a
+				 * "multiplier" to use an exponential back off strategy.
 				 */
 				private Duration delay = Duration.ofSeconds(1);
 
 				/**
-				 * Multiplier to use for generating the next backoff delay.
+				 * Multiplier for a delay for the next retry attempt, applied to the
+				 * previous delay, starting with the initial delay as well as to the
+				 * applicable jitter for each attempt. Fixed delay by default.
 				 */
-				private double multiplier = 0.0;
+				private double multiplier = 1.0;
 
 				/**
-				 * Maximum wait between retries. If less than the delay then the default
-				 * of 30 seconds is applied.
+				 * Maximum delay for any retry attempt, limiting how far jitter and the
+				 * multiplier can increase the delay.
 				 */
-				private Duration maxDelay = Duration.ZERO;
+				private Duration maxDelay = Duration.ofSeconds(30);
 
 				/**
-				 * Whether to have the backoff delays.
+				 * Jitter value for the base retry attempt, randomly subtracted or added
+				 * to the calculated delay, resulting in a value between 'delay - jitter'
+				 * and 'delay + jitter' but never below the base delay or above the max
+				 * delay.
 				 */
-				private boolean random = false;
+				private Duration jitter = Duration.ZERO;
 
 				public Duration getDelay() {
 					return this.delay;
@@ -1640,12 +1645,12 @@ public class KafkaProperties {
 					this.maxDelay = maxDelay;
 				}
 
-				public boolean isRandom() {
-					return this.random;
+				public Duration getJitter() {
+					return this.jitter;
 				}
 
-				public void setRandom(boolean random) {
-					this.random = random;
+				public void setJitter(Duration jitter) {
+					this.jitter = jitter;
 				}
 
 			}
