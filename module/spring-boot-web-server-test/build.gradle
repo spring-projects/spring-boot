@@ -20,6 +20,7 @@ plugins {
 	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot Web Server Test"
@@ -31,20 +32,22 @@ dependencies {
 
 	optional(project(":module:spring-boot-http-codec"))
 	optional(project(":module:spring-boot-restclient"))
+	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-web-server"))
 	optional(project(":module:spring-boot-webclient"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.apache.httpcomponents.client5:httpclient5")
+	optional("org.htmlunit:htmlunit")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
-	optional("org.springframework:spring-test")
-	optional("org.springframework:spring-web")
-	optional("org.springframework:spring-webflux")
-	optional("org.htmlunit:htmlunit")
 	optional("org.seleniumhq.selenium:htmlunit3-driver") {
 		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 	optional("org.seleniumhq.selenium:selenium-api")
+	optional("org.springframework:spring-test")
+	optional("org.springframework:spring-web")
+	optional("org.springframework:spring-webflux")
+	optional("org.springframework.security:spring-security-test")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-tomcat"))

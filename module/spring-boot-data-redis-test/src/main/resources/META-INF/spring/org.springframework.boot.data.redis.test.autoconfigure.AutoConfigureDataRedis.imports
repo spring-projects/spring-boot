@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.RedisReactiveAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration
+optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

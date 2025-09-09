@@ -6,7 +6,10 @@
 	<module name="SuppressionFilter">
 		<property name="file" value="${config_loc}/checkstyle-suppressions.xml"/>
 	</module>
-	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
+	<module name="io.spring.javaformat.checkstyle.SpringChecks">
+		<property name="avoidStaticImportExcludes"
+			value="org.springframework.boot.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration" />
+	</module>
 	<module name="io.spring.javaformat.checkstyle.check.SpringHeaderCheck">
 		<property name="headerFile" value="${config_loc}/checkstyle-header.txt"/>
 	</module>

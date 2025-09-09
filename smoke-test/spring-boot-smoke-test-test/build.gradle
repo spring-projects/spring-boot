@@ -28,6 +28,11 @@ dependencies {
 	runtimeOnly("com.h2database:h2")
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":module:spring-boot-data-jpa-test"))
+	testImplementation(project(":module:spring-boot-jdbc-test"))
+	testImplementation(project(":module:spring-boot-json-test"))
+	testImplementation(project(":module:spring-boot-restclient-test"))
+	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation("org.htmlunit:htmlunit")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.seleniumhq.selenium:selenium-api")

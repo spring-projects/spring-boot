@@ -1,0 +1,4 @@
+optional:org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration
+optional:org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration
+optional:org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration
+optional:org.springframework.boot.kotlin.serialization.autoconfigure.KotlinSerializationAutoConfiguration

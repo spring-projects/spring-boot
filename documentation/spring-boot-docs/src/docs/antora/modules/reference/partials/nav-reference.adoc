@@ -57,6 +57,7 @@
 *** xref:reference:messaging/websockets.adoc[]
 
 ** xref:reference:testing/index.adoc[]
+*** xref:reference:testing/test-modules.adoc[]
 *** xref:reference:testing/test-scope-dependencies.adoc[]
 *** xref:reference:testing/spring-applications.adoc[]
 *** xref:reference:testing/spring-boot-applications.adoc[]

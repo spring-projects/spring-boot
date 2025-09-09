@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withrestassured
 
-import org.springframework.boot.test.autoconfigure.restdocs.RestDocsRestAssuredConfigurationCustomizer
+import org.springframework.boot.restdocs.test.autoconfigure.RestDocsRestAssuredConfigurationCustomizer
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer
 import org.springframework.restdocs.templates.TemplateFormats

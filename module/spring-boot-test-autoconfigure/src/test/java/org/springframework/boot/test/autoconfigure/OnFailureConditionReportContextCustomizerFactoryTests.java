@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -56,7 +56,7 @@ class OnFailureConditionReportContextCustomizerFactoryTests {
 	@Test
 	void loadFailureShouldPrintReport(CapturedOutput output) {
 		load();
-		assertThat(output.getErr()).contains("JacksonAutoConfiguration matched");
+		assertThat(output.getErr()).contains("TestAutoConfiguration matched");
 		assertThat(output).contains("Error creating bean with name 'faultyBean'");
 	}
 
@@ -64,7 +64,7 @@ class OnFailureConditionReportContextCustomizerFactoryTests {
 	@WithResource(name = "application.xml", content = "invalid xml")
 	void loadFailureShouldNotPrintReportWhenApplicationPropertiesIsBroken(CapturedOutput output) {
 		load();
-		assertThat(output).doesNotContain("JacksonAutoConfiguration matched")
+		assertThat(output).doesNotContain("TestAutoConfiguration matched")
 			.doesNotContain("Error creating bean with name 'faultyBean'")
 			.contains("java.util.InvalidPropertiesFormatException");
 	}
@@ -73,7 +73,7 @@ class OnFailureConditionReportContextCustomizerFactoryTests {
 	@WithResource(name = "application.properties", content = "spring.test.print-condition-evaluation-report=false")
 	void loadFailureShouldNotPrintReportWhenDisabled(CapturedOutput output) {
 		load();
-		assertThat(output).doesNotContain("JacksonAutoConfiguration matched")
+		assertThat(output).doesNotContain("TestAutoConfiguration matched")
 			.contains("Error creating bean with name 'faultyBean'");
 	}
 
@@ -86,7 +86,7 @@ class OnFailureConditionReportContextCustomizerFactoryTests {
 	static class FailingTests {
 
 		@Configuration(proxyBeanMethods = false)
-		@ImportAutoConfiguration(JacksonAutoConfiguration.class)
+		@ImportAutoConfiguration(TestAutoConfiguration.class)
 		static class TestConfig {
 
 			@Bean
@@ -95,6 +95,11 @@ class OnFailureConditionReportContextCustomizerFactoryTests {
 			}
 
 		}
+
+	}
+
+	@ConditionalOnProperty(value = "com.example.test.enabled", matchIfMissing = true)
+	static class TestAutoConfiguration {
 
 	}
 

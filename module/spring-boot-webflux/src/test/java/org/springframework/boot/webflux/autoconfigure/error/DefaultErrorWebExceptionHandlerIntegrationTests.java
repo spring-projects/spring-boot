@@ -33,13 +33,11 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.mustache.autoconfigure.MustacheAutoConfiguration;
 import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
@@ -88,7 +86,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(NettyReactiveWebServerAutoConfiguration.class,
 				HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class, ErrorWebFluxAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, MustacheAutoConfiguration.class))
+				PropertyPlaceholderAutoConfiguration.class))
 		.withPropertyValues("spring.main.web-application-type=reactive", "server.port=0")
 		.withUserConfiguration(Application.class);
 
@@ -147,36 +145,6 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 				.doesNotExist()
 				.jsonPath("requestId")
 				.isEqualTo(this.logIdFilter.getLogId());
-		});
-	}
-
-	@Test
-	@WithResource(name = "templates/error/error.mustache", content = """
-			<html>
-			<body>
-			<ul>
-				<li>status: {{status}}</li>
-				<li>message: {{message}}</li>
-			</ul>
-			</body>
-			</html>
-			""")
-	void htmlError() {
-		Schedulers.shutdownNow();
-		this.contextRunner.withPropertyValues("server.error.include-message=always").run((context) -> {
-			WebTestClient client = getWebClient(context);
-			String body = client.get()
-				.uri("/")
-				.accept(MediaType.TEXT_HTML)
-				.exchange()
-				.expectStatus()
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-				.expectHeader()
-				.contentType(TEXT_HTML_UTF8)
-				.expectBody(String.class)
-				.returnResult()
-				.getResponseBody();
-			assertThat(body).contains("status: 500").contains("message: Expected!");
 		});
 	}
 
@@ -510,46 +478,6 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	void exactStatusTemplateErrorPage() {
-		this.contextRunner
-			.withPropertyValues("server.error.whitelabel.enabled=false",
-					"spring.mustache.prefix=" + getErrorTemplatesLocation())
-			.run((context) -> {
-				WebTestClient client = getWebClient(context);
-				String body = client.get()
-					.uri("/notfound")
-					.accept(MediaType.TEXT_HTML)
-					.exchange()
-					.expectStatus()
-					.isNotFound()
-					.expectBody(String.class)
-					.returnResult()
-					.getResponseBody();
-				assertThat(body).contains("404 page");
-			});
-	}
-
-	@Test
-	void seriesStatusTemplateErrorPage() {
-		this.contextRunner
-			.withPropertyValues("server.error.whitelabel.enabled=false",
-					"spring.mustache.prefix=" + getErrorTemplatesLocation())
-			.run((context) -> {
-				WebTestClient client = getWebClient(context);
-				String body = client.get()
-					.uri("/badRequest")
-					.accept(MediaType.TEXT_HTML)
-					.exchange()
-					.expectStatus()
-					.isBadRequest()
-					.expectBody(String.class)
-					.returnResult()
-					.getResponseBody();
-				assertThat(body).contains("4xx page");
-			});
-	}
-
-	@Test
 	void invalidAcceptMediaType() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = getWebClient(context);
@@ -632,11 +560,6 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 				.jsonPath("status")
 				.doesNotExist();
 		});
-	}
-
-	private String getErrorTemplatesLocation() {
-		String packageName = getClass().getPackage().getName();
-		return "classpath:/" + packageName.replace('.', '/') + "/templates/";
 	}
 
 	private WebTestClient getWebClient(AssertableReactiveWebApplicationContext context) {

@@ -267,7 +267,7 @@ This is similar to the way the "real" cache providers behave if you use an undec
 
 When javadoc:org.springframework.cache.annotation.EnableCaching[format=annotation] is present in your configuration, a suitable cache configuration is expected as well.
 If you have a custom ` org.springframework.cache.CacheManager`, consider defining it in a separate javadoc:org.springframework.context.annotation.Configuration[format=annotation] class so that you can override it if necessary.
-None uses a no-op implementation that is useful in tests, and slice tests use that by default via javadoc:org.springframework.boot.test.autoconfigure.core.AutoConfigureCache[format=annotation].
+None uses a no-op implementation that is useful in tests, and slice tests use that by default through javadoc:org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache[format=annotation] when the `spring-boot-cache-test` module is present.
 
 If you need to use a no-op cache rather than the auto-configured cache manager in a certain environment, set the cache type to `none`, as shown in the following example:
 

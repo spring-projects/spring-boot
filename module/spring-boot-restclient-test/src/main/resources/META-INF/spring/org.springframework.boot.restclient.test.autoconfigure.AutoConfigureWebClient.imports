@@ -1,0 +1,6 @@
+org.springframework.boot.restclient.test.autoconfigure.WebClientRestTemplateAutoConfiguration
+optional:org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration
+optional:org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration
+optional:org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration
+optional:org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration
+optional:org.springframework.boot.webclient.WebClientAutoConfiguration

@@ -21,6 +21,7 @@ plugins {
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot Flyway"
@@ -32,6 +33,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
+	optional(project(":module:spring-boot-jdbc-test"))
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional("org.flywaydb:flyway-database-oracle")
@@ -49,6 +51,7 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-jooq"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("jakarta.persistence:jakarta.persistence-api")
 	testImplementation("org.hibernate.orm:hibernate-core")
 	testImplementation("org.hsqldb:hsqldb")

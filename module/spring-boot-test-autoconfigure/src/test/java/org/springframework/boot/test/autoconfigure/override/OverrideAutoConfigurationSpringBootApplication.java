@@ -19,7 +19,6 @@ package org.springframework.boot.test.autoconfigure.override;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.cassandra.autoconfigure.CassandraAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 
 /**
@@ -29,7 +28,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
  * @author Andy Wilkinson
  */
 @SpringBootConfiguration
-@EnableAutoConfiguration(exclude = CassandraAutoConfiguration.class)
+@EnableAutoConfiguration
 public class OverrideAutoConfigurationSpringBootApplication {
 
 }

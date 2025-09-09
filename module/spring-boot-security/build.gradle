@@ -20,6 +20,7 @@ plugins {
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot Security"
@@ -34,9 +35,10 @@ dependencies {
 	optional(project(":module:spring-boot-h2console"))
 	optional(project(":module:spring-boot-reactor"))
 	optional(project(":module:spring-boot-rsocket"))
-	optional(project(":module:spring-boot-webmvc"))
 	optional(project(":module:spring-boot-webflux"))
+	optional(project(":module:spring-boot-webmvc"))
 	optional(project(":module:spring-boot-web-server"))
+	optional(project(":module:spring-boot-web-server-test"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-webflux")

@@ -39,8 +39,6 @@ import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDes
  */
 class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFactory {
 
-	private static final Class<?>[] NO_FILTERS = {};
-
 	@Override
 	public @Nullable ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {

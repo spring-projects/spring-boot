@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringdataldap.inmemory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
+import org.springframework.boot.data.ldap.test.autoconfigure.DataLdapTest;
 import org.springframework.ldap.core.LdapTemplate;
 
 @DataLdapTest

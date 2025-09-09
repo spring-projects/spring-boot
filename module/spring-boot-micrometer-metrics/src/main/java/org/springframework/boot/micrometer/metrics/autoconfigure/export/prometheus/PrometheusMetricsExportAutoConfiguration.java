@@ -84,6 +84,7 @@ public final class PrometheusMetricsExportAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ PrometheusScrapeEndpoint.class, ConditionalOnAvailableEndpoint.class })
 	@ConditionalOnAvailableEndpoint(PrometheusScrapeEndpoint.class)
 	static class PrometheusScrapeEndpointConfiguration {
 
@@ -101,7 +102,7 @@ public final class PrometheusMetricsExportAutoConfiguration {
 	 * Pushgateway</a>.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(PushGateway.class)
+	@ConditionalOnClass({ PushGateway.class, PrometheusPushGatewayManager.class })
 	@ConditionalOnBooleanProperty("management.prometheus.metrics.export.pushgateway.enabled")
 	static class PrometheusPushGatewayConfiguration {
 

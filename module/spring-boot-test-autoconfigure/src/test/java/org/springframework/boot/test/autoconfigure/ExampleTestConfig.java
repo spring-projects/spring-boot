@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.autoconfigure;
 
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.TestConfiguration;
 
 /**
@@ -26,7 +25,6 @@ import org.springframework.boot.test.context.TestConfiguration;
  * @author Phillip Webb
  */
 @TestConfiguration(proxyBeanMethods = false)
-@EntityScan("some.other.package")
 public class ExampleTestConfig {
 
 }

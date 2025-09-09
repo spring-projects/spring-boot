@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "spring.test.jsontesters.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of JSON testers is enabled.",
+      "defaultValue": "true"
+    }
+  ]
+}

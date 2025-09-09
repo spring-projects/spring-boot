@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {
+      "name": "spring.test.mockmvc.webclient.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether HTMLUnit's WebClient should be auto-configured when it's on the classpath.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.test.mockmvc.webdriver.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether Selenium's WebDriver should be auto-configured when it's on the classpath.",
+      "defaultValue": true
+    }
+  ]
+}

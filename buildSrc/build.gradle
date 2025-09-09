@@ -133,10 +133,6 @@ gradlePlugin {
 			id = "org.springframework.boot.integration-test"
 			implementationClass = "org.springframework.boot.build.test.IntegrationTestPlugin"
 		}
-		systemTestPlugin {
-			id = "org.springframework.boot.system-test"
-			implementationClass = "org.springframework.boot.build.test.SystemTestPlugin"
-		}
 		mavenPluginPlugin {
 			id = "org.springframework.boot.maven-plugin"
 			implementationClass = "org.springframework.boot.build.mavenplugin.MavenPluginPlugin"
@@ -153,9 +149,21 @@ gradlePlugin {
 			id = "org.springframework.boot.starter"
 			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
 		}
+		systemTestPlugin {
+			id = "org.springframework.boot.system-test"
+			implementationClass = "org.springframework.boot.build.test.SystemTestPlugin"
+		}
+		testAutoConfigurationPlugin {
+			id = "org.springframework.boot.test-auto-configuration"
+			implementationClass = "org.springframework.boot.build.test.autoconfigure.TestAutoConfigurationPlugin"
+		}
 		testFailuresPlugin {
 			id = "org.springframework.boot.test-failures"
 			implementationClass = "org.springframework.boot.build.testing.TestFailuresPlugin"
+		}
+		testSlicePlugin {
+			id = "org.springframework.boot.test-slice"
+			implementationClass = "org.springframework.boot.build.test.autoconfigure.TestSlicePlugin"
 		}
 	}
 }

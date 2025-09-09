@@ -65,4 +65,17 @@ class SampleWebFreeMarkerApplicationTests {
 		assertThat(responseEntity.getBody()).contains("Something went wrong: 404 Not Found");
 	}
 
+	@Test
+	void templateErrorPageForSpecificStatusCode() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+		ResponseEntity<String> responseEntity = this.testRestTemplate.exchange("/insufficient-storage", HttpMethod.GET,
+				requestEntity, String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.INSUFFICIENT_STORAGE);
+		assertThat(responseEntity.getBody()).contains("We are out of storage");
+	}
+
 }

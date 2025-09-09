@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
+import org.springframework.boot.data.cassandra.test.autoconfigure.DataCassandraTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.JksKeyStore;
 import org.springframework.boot.testcontainers.service.connection.JksTrustStore;

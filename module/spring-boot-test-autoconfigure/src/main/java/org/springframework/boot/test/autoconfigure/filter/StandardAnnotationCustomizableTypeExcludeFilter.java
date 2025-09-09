@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.filter;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -78,7 +79,14 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 	}
 
 	@Override
-	protected Set<Class<?>> getDefaultIncludes() {
+	protected final Set<Class<?>> getDefaultIncludes() {
+		Set<Class<?>> defaultIncludes = new HashSet<>();
+		defaultIncludes.addAll(getKnownIncludes());
+		defaultIncludes.addAll(TypeIncludes.load(this.annotation.getType(), getClass().getClassLoader()).getIncludes());
+		return defaultIncludes;
+	}
+
+	protected Set<Class<?>> getKnownIncludes() {
 		return Collections.emptySet();
 	}
 

@@ -28,5 +28,5 @@ dependencies {
 	runtimeOnly("wsdl4j:wsdl4j")
 	
 	testImplementation(project(":starter:spring-boot-starter-test"))
-	testImplementation("org.springframework.ws:spring-ws-test")
+	testImplementation(project(":module:spring-boot-webservices-test"))
 }

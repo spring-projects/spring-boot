@@ -25,10 +25,11 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-data-mongodb"))
 	implementation(project(":starter:spring-boot-starter-data-mongodb-reactive"))
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-test"))
-	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":module:spring-boot-data-mongodb-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("io.projectreactor:reactor-test")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-engine")

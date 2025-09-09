@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringdatajpa;
 
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
