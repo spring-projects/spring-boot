@@ -2457,19 +2457,6 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
-	library("Spring Retry", "2.0.12") {
-		considerSnapshots()
-		group("org.springframework.retry") {
-			modules = [
-				"spring-retry"
-			]
-		}
-		links {
-			site("https://github.com/spring-projects/spring-retry")
-			javadoc("https://docs.spring.io/spring-retry/docs/{version}/apidocs", "org.springframework.retry")
-			releaseNotes("https://github.com/spring-projects/spring-retry/releases/tag/v{version}")
-		}
-	}
 	library("Spring Security", "7.0.0-M2") {
 		considerSnapshots()
 		group("org.springframework.security") {
