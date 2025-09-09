@@ -119,7 +119,8 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
-	void customBigDecimalRepresentation() {
+	@Deprecated(since = "4.0.0")
+	void customBigDecimalDeprecatedRepresentation() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.representation.big-decimal=string")
 			.run((context) -> assertThat(context.getBean(MongoCustomConversions.class)).extracting("converters")
 				.asInstanceOf(InstanceOfAssertFactories.LIST)
@@ -129,13 +130,24 @@ class MongoDataAutoConfigurationTests {
 	}
 
 	@Test
+	void customBigDecimalRepresentation() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.representation.big-decimal=decimal128")
+			.run((context) -> assertThat(context.getBean(MongoCustomConversions.class)).extracting("converters")
+				.asInstanceOf(InstanceOfAssertFactories.LIST)
+				.map((converter) -> converter.getClass().getName())
+				.anySatisfy((className) -> assertThat(className).contains("BigDecimalToDecimal128Converter"))
+				.anySatisfy((className) -> assertThat(className).contains("BigIntegerToDecimal128Converter")));
+	}
+
+	@Test
 	void defaultBigDecimalRepresentation() {
 		this.contextRunner
 			.run((context) -> assertThat(context.getBean(MongoCustomConversions.class)).extracting("converters")
 				.asInstanceOf(InstanceOfAssertFactories.LIST)
 				.map((converter) -> converter.getClass().getName())
-				.noneSatisfy((className) -> assertThat(className).contains("BigDecimalToStringConverter"))
-				.noneSatisfy((className) -> assertThat(className).contains("BigIntegerToStringConverter")));
+				.filteredOn((className) -> className.startsWith("org.springframework.data.mongodb"))
+				.noneSatisfy((className) -> assertThat(className).contains("BigDecimalTo"))
+				.noneSatisfy((className) -> assertThat(className).contains("BigIntegerTo")));
 	}
 
 	@Test

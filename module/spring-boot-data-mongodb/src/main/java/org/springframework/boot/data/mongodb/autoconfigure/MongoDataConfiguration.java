@@ -32,6 +32,7 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions.BigDecimalRepresentation;
 import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
@@ -76,8 +77,12 @@ class MongoDataConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	MongoCustomConversions mongoCustomConversions() {
-		return MongoCustomConversions
-			.create((configurer) -> configurer.bigDecimal(this.properties.getRepresentation().getBigDecimal()));
+		return MongoCustomConversions.create((configurer) -> {
+			BigDecimalRepresentation bigDecimaRepresentation = this.properties.getRepresentation().getBigDecimal();
+			if (bigDecimaRepresentation != null) {
+				configurer.bigDecimal(bigDecimaRepresentation);
+			}
+		});
 	}
 
 	@Bean

@@ -103,13 +103,13 @@ public class DataMongoProperties {
 		/**
 		 * Representation to use when converting a BigDecimal.
 		 */
-		private BigDecimalRepresentation bigDecimal = BigDecimalRepresentation.DECIMAL128;
+		private @Nullable BigDecimalRepresentation bigDecimal;
 
-		public BigDecimalRepresentation getBigDecimal() {
+		public @Nullable BigDecimalRepresentation getBigDecimal() {
 			return this.bigDecimal;
 		}
 
-		public void setBigDecimal(BigDecimalRepresentation bigDecimal) {
+		public void setBigDecimal(@Nullable BigDecimalRepresentation bigDecimal) {
 			this.bigDecimal = bigDecimal;
 		}
 
