@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.web.server;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -36,10 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LocalManagementPortTests {
 
 	@Value("${local.management.port}")
-	private String fromValue;
+	private @Nullable String fromValue;
 
 	@LocalManagementPort
-	private String fromAnnotation;
+	private @Nullable String fromAnnotation;
 
 	@Test
 	void testLocalManagementPortAnnotation() {

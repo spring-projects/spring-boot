@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class AnnotationsPropertySourceTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new AnnotationsPropertySource(null))
 			.withMessageContaining("Property source must not be null");

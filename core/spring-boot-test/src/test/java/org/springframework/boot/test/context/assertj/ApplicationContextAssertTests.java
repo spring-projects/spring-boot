@@ -60,6 +60,7 @@ class ApplicationContextAssertTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ApplicationContextAssert<>(null, null))
 			.withMessageContaining("'applicationContext' must not be null");

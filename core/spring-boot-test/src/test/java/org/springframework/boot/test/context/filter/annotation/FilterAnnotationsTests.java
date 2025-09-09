@@ -80,6 +80,7 @@ class FilterAnnotationsTests {
 
 	private FilterAnnotations get(Class<?> type) {
 		Filters filters = AnnotatedElementUtils.getMergedAnnotation(type, Filters.class);
+		assertThat(filters).isNotNull();
 		return new FilterAnnotations(getClass().getClassLoader(), filters.value());
 	}
 

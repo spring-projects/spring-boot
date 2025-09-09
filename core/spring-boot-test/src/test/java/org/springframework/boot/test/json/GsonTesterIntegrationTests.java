@@ -35,12 +35,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class GsonTesterIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	private GsonTester<ExampleObject> simpleJson;
 
+	@SuppressWarnings("NullAway.Init")
 	private GsonTester<List<ExampleObject>> listJson;
 
+	@SuppressWarnings("NullAway.Init")
 	private GsonTester<Map<String, Integer>> mapJson;
 
+	@SuppressWarnings("NullAway.Init")
 	private GsonTester<String> stringJson;
 
 	private Gson gson;

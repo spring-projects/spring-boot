@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -288,6 +289,7 @@ class SpringBootContextLoaderTests {
 		TestContext context = new ExposedTestContextManager(testClass).getExposedTestContext();
 		MergedContextConfiguration config = (MergedContextConfiguration) ReflectionTestUtils.getField(context,
 				"mergedConfig");
+		assertThat(config).isNotNull();
 		return TestPropertySourceUtils.convertInlinedPropertiesToMap(config.getPropertySourceProperties());
 	}
 
@@ -494,12 +496,12 @@ class SpringBootContextLoaderTests {
 	private static final class ContextLoaderApplicationContextFailureProcessor
 			implements ApplicationContextFailureProcessor {
 
-		static ApplicationContext failedContext;
+		static @Nullable ApplicationContext failedContext;
 
-		static Throwable contextLoadException;
+		static @Nullable Throwable contextLoadException;
 
 		@Override
-		public void processLoadFailure(ApplicationContext context, Throwable exception) {
+		public void processLoadFailure(ApplicationContext context, @Nullable Throwable exception) {
 			failedContext = context;
 			contextLoadException = exception;
 		}

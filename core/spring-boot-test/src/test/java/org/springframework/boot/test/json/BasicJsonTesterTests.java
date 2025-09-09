@@ -43,6 +43,7 @@ class BasicJsonTesterTests {
 	private final BasicJsonTester json = new BasicJsonTester(getClass());
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenResourceLoadClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new BasicJsonTester(null))
 			.withMessageContaining("'resourceLoadClass' must not be null");

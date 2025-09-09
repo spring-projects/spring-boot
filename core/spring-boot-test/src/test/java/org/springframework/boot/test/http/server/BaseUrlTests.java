@@ -62,6 +62,7 @@ class BaseUrlTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenUrlIssNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BaseUrl.of(null)).withMessage("'url' must not be null");
 	}
@@ -77,6 +78,7 @@ class BaseUrlTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenResolverIsNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BaseUrl.of(true, null))
 			.withMessage("'resolver' must not be null");

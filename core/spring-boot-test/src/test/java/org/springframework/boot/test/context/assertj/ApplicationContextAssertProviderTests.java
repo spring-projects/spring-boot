@@ -43,6 +43,7 @@ import static org.mockito.BDDMockito.then;
 class ApplicationContextAssertProviderTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ConfigurableApplicationContext mockContext;
 
 	private RuntimeException startupFailure;
@@ -61,6 +62,7 @@ class ApplicationContextAssertProviderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class, this.mockContextSupplier))
@@ -68,6 +70,7 @@ class ApplicationContextAssertProviderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getWhenTypeIsClassShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class, this.mockContextSupplier))
@@ -83,6 +86,7 @@ class ApplicationContextAssertProviderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getWhenContextTypeIsClassShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class, null,

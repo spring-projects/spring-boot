@@ -40,14 +40,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JacksonTesterIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	private JacksonTester<ExampleObject> simpleJson;
 
+	@SuppressWarnings("NullAway.Init")
 	private JacksonTester<ExampleObjectWithView> jsonWithView;
 
+	@SuppressWarnings("NullAway.Init")
 	private JacksonTester<List<ExampleObject>> listJson;
 
+	@SuppressWarnings("NullAway.Init")
 	private JacksonTester<Map<String, Integer>> mapJson;
 
+	@SuppressWarnings("NullAway.Init")
 	private JacksonTester<String> stringJson;
 
 	private static final String JSON = "{\"name\":\"Spring\",\"age\":123}";
@@ -55,8 +60,7 @@ class JacksonTesterIntegrationTests {
 	@Test
 	void typicalTest() throws Exception {
 		JacksonTester.initFields(this, new JsonMapper());
-		String example = JSON;
-		assertThat(this.simpleJson.parse(example).getObject().getName()).isEqualTo("Spring");
+		assertThat(this.simpleJson.parse(JSON).getObject().getName()).isEqualTo("Spring");
 	}
 
 	@Test

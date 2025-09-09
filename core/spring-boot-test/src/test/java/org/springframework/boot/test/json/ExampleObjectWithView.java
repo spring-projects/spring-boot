@@ -17,6 +17,7 @@
 package org.springframework.boot.test.json;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.ObjectUtils;
 
@@ -28,15 +29,15 @@ import org.springframework.util.ObjectUtils;
 public class ExampleObjectWithView {
 
 	@JsonView(TestView.class)
-	private String name;
+	private @Nullable String name;
 
 	private int age;
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 

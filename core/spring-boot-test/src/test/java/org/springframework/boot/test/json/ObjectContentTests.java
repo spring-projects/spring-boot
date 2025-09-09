@@ -35,6 +35,7 @@ class ObjectContentTests {
 	private static final ResolvableType TYPE = ResolvableType.forClass(ExampleObject.class);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenObjectIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ObjectContent<ExampleObject>(TYPE, null))
 			.withMessageContaining("'object' must not be null");

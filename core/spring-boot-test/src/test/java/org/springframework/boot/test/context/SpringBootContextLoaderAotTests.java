@@ -73,6 +73,7 @@ class SpringBootContextLoaderAotTests {
 			MergedContextConfiguration mergedConfig = testContextBootstrapper.buildMergedContextConfiguration();
 			ApplicationContextInitializer<ConfigurableApplicationContext> contextInitializer = aotContextInitializers
 				.getContextInitializer(testClass);
+			assertThat(contextInitializer).isNotNull();
 			ConfigurableApplicationContext context = (ConfigurableApplicationContext) ((AotContextLoader) mergedConfig
 				.getContextLoader()).loadContextForAotRuntime(mergedConfig, contextInitializer);
 			assertThat(context).isExactlyInstanceOf(GenericApplicationContext.class);

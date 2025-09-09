@@ -16,6 +16,9 @@
 
 package org.springframework.boot.test.context.filter.annotation;
 
+import java.util.Collections;
+
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.TypeExcludeFilter;
@@ -46,35 +49,42 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 
 	@Test
 	void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class,
+				Collections.emptyList());
 		assertThat(customizer).isNull();
 	}
 
 	@Test
 	void getContextCustomizerWhenHasAnnotationShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(WithExcludeFilters.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithExcludeFilters.class,
+				Collections.emptyList());
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	void getContextCustomizerWhenEnclosingClassHasAnnotationShouldReturnCustomizer() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(WithEnclosingClassExcludeFilters.class,
-				null);
+				Collections.emptyList());
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	void hashCodeAndEquals() {
-		ContextCustomizer customizer1 = this.factory.createContextCustomizer(WithExcludeFilters.class, null);
-		ContextCustomizer customizer2 = this.factory.createContextCustomizer(WithSameExcludeFilters.class, null);
-		ContextCustomizer customizer3 = this.factory.createContextCustomizer(WithDifferentExcludeFilters.class, null);
+		ContextCustomizer customizer1 = this.factory.createContextCustomizer(WithExcludeFilters.class,
+				Collections.emptyList());
+		ContextCustomizer customizer2 = this.factory.createContextCustomizer(WithSameExcludeFilters.class,
+				Collections.emptyList());
+		ContextCustomizer customizer3 = this.factory.createContextCustomizer(WithDifferentExcludeFilters.class,
+				Collections.emptyList());
 		assertThat(customizer1).hasSameHashCodeAs(customizer2);
 		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2).isNotEqualTo(customizer3);
 	}
 
 	@Test
 	void getContextCustomizerShouldAddExcludeFilters() throws Exception {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(WithExcludeFilters.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithExcludeFilters.class,
+				Collections.emptyList());
+		assertThat(customizer).isNotNull();
 		customizer.customizeContext(this.context, this.mergedContextConfiguration);
 		this.context.refresh();
 		TypeExcludeFilter filter = this.context.getBean(TypeExcludeFilter.class);
@@ -123,8 +133,8 @@ class TypeExcludeFiltersContextCustomizerFactoryTests {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			return obj.getClass() == getClass();
+		public boolean equals(@Nullable Object obj) {
+			return obj != null && obj.getClass() == getClass();
 		}
 
 		@Override
