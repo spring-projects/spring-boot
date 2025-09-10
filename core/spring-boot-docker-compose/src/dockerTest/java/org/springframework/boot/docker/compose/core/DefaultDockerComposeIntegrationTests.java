@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -88,7 +89,7 @@ class DefaultDockerComposeIntegrationTests {
 		}
 	}
 
-	private RunningService findService(List<RunningService> runningServices, String serviceName) {
+	private @Nullable RunningService findService(List<RunningService> runningServices, String serviceName) {
 		for (RunningService runningService : runningServices) {
 			if (runningService.name().contains(serviceName)) {
 				return runningService;

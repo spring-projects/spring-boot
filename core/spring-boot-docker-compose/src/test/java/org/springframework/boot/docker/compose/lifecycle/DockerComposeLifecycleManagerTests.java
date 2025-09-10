@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,15 +69,16 @@ import static org.mockito.Mockito.never;
 class DockerComposeLifecycleManagerTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private DockerComposeFile dockerComposeFile;
 
 	private DockerCompose dockerCompose;
 
-	private Set<String> activeProfiles;
+	private @Nullable Set<String> activeProfiles;
 
-	private List<String> arguments;
+	private @Nullable List<String> arguments;
 
 	private GenericApplicationContext applicationContext;
 
@@ -84,7 +86,7 @@ class DockerComposeLifecycleManagerTests {
 
 	private ServiceReadinessChecks serviceReadinessChecks;
 
-	private List<RunningService> runningServices;
+	private @Nullable List<RunningService> runningServices;
 
 	private DockerComposeProperties properties;
 
@@ -316,6 +318,7 @@ class DockerComposeLifecycleManagerTests {
 		setUpRunningServices();
 		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
+		assertThat(this.runningServices).isNotNull();
 		then(this.serviceReadinessChecks).should().waitUntilReady(this.runningServices);
 	}
 
@@ -327,6 +330,7 @@ class DockerComposeLifecycleManagerTests {
 		setUpRunningServices();
 		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
+		assertThat(this.runningServices).isNotNull();
 		then(this.serviceReadinessChecks).should(never()).waitUntilReady(this.runningServices);
 	}
 
@@ -339,6 +343,7 @@ class DockerComposeLifecycleManagerTests {
 		setUpRunningServices();
 		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
+		assertThat(this.runningServices).isNotNull();
 		then(this.serviceReadinessChecks).should(never()).waitUntilReady(this.runningServices);
 	}
 
@@ -350,6 +355,7 @@ class DockerComposeLifecycleManagerTests {
 		setUpRunningServices(false);
 		this.lifecycleManager.start();
 		this.shutdownHandlers.run();
+		assertThat(this.runningServices).isNotNull();
 		then(this.serviceReadinessChecks).should().waitUntilReady(this.runningServices);
 	}
 
@@ -498,14 +504,14 @@ class DockerComposeLifecycleManagerTests {
 	 */
 	static class EventCapturingListener implements ApplicationListener<DockerComposeServicesReadyEvent> {
 
-		private DockerComposeServicesReadyEvent event;
+		private @Nullable DockerComposeServicesReadyEvent event;
 
 		@Override
 		public void onApplicationEvent(DockerComposeServicesReadyEvent event) {
 			this.event = event;
 		}
 
-		DockerComposeServicesReadyEvent getEvent() {
+		@Nullable DockerComposeServicesReadyEvent getEvent() {
 			return this.event;
 		}
 

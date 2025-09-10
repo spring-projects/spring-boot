@@ -47,6 +47,7 @@ import static org.assertj.core.api.Assertions.entry;
 class DefaultRunningServiceTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private DefaultRunningService runningService;
@@ -126,7 +127,7 @@ class DefaultRunningServiceTests {
 		Map<String, ExposedPort> exposedPorts = Map.of("8080/tcp", new ExposedPort());
 		List<String> env = List.of("a=b");
 		Config config = new Config(image, labels, exposedPorts, env);
-		Map<String, List<HostPort>> ports = Map.of("8080/tcp", List.of(new HostPort(null, "9090")));
+		Map<String, List<HostPort>> ports = Map.of("8080/tcp", List.of(new HostPort("127.0.0.1", "9090")));
 		NetworkSettings networkSettings = new NetworkSettings(ports);
 		HostConfig hostConfig = new HostConfig("bridge");
 		DockerCliInspectResponse inspectResponse = new DockerCliInspectResponse(id, config, networkSettings,

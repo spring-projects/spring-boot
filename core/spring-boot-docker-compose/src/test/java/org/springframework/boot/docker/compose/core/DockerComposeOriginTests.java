@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DockerComposeOriginTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test

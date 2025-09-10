@@ -116,6 +116,7 @@ class ImageNameTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of(null))
 			.withMessage("'value' must not be empty");
