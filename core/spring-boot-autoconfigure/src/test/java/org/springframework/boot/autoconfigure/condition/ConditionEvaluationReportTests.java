@@ -20,12 +20,14 @@ import java.time.Duration;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -61,19 +63,22 @@ class ConditionEvaluationReportTests {
 	private ConditionEvaluationReport report;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Condition condition1;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Condition condition2;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Condition condition3;
 
-	private ConditionOutcome outcome1;
+	private @Nullable ConditionOutcome outcome1;
 
-	private ConditionOutcome outcome2;
+	private @Nullable ConditionOutcome outcome2;
 
-	private ConditionOutcome outcome3;
+	private @Nullable ConditionOutcome outcome3;
 
 	@BeforeEach
 	void setup() {
@@ -90,21 +95,25 @@ class ConditionEvaluationReportTests {
 	@Test
 	void parent() {
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
-		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
+		BeanFactory parentBeanFactory = this.beanFactory.getParentBeanFactory();
+		assertThat(parentBeanFactory).isNotNull();
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) parentBeanFactory);
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 		assertThat(this.report).isNotNull();
 		assertThat(this.report.getParent()).isNotNull();
-		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) parentBeanFactory);
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
-		assertThat(this.report.getParent()).isSameAs(ConditionEvaluationReport
-			.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory()));
+		assertThat(this.report.getParent())
+			.isSameAs(ConditionEvaluationReport.get((ConfigurableListableBeanFactory) parentBeanFactory));
 	}
 
 	@Test
 	void parentBottomUp() {
 		this.beanFactory = new DefaultListableBeanFactory(); // NB: overrides setup
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
-		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
+		BeanFactory parentBeanFactory = this.beanFactory.getParentBeanFactory();
+		assertThat(parentBeanFactory).isNotNull();
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) parentBeanFactory);
 		this.report = ConditionEvaluationReport.get(this.beanFactory);
 		assertThat(this.report).isNotNull();
 		assertThat(this.report).isNotSameAs(this.report.getParent());
@@ -122,7 +131,9 @@ class ConditionEvaluationReportTests {
 		this.report.recordConditionEvaluation("b", this.condition3, this.outcome3);
 		Map<String, ConditionAndOutcomes> map = this.report.getConditionAndOutcomesBySource();
 		assertThat(map).hasSize(2);
-		Iterator<ConditionAndOutcome> iterator = map.get("a").iterator();
+		ConditionAndOutcomes a = map.get("a");
+		assertThat(a).isNotNull();
+		Iterator<ConditionAndOutcome> iterator = a.iterator();
 		ConditionAndOutcome conditionAndOutcome = iterator.next();
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition1);
 		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome1);
@@ -130,7 +141,9 @@ class ConditionEvaluationReportTests {
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition2);
 		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome2);
 		assertThat(iterator.hasNext()).isFalse();
-		iterator = map.get("b").iterator();
+		ConditionAndOutcomes b = map.get("b");
+		assertThat(b).isNotNull();
+		iterator = b.iterator();
 		conditionAndOutcome = iterator.next();
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition3);
 		assertThat(conditionAndOutcome.getOutcome()).isEqualTo(this.outcome3);
@@ -140,13 +153,17 @@ class ConditionEvaluationReportTests {
 	@Test
 	void fullMatch() {
 		prepareMatches(true, true, true);
-		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch()).isTrue();
+		ConditionAndOutcomes a = this.report.getConditionAndOutcomesBySource().get("a");
+		assertThat(a).isNotNull();
+		assertThat(a.isFullMatch()).isTrue();
 	}
 
 	@Test
 	void notFullMatch() {
 		prepareMatches(true, false, true);
-		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch()).isFalse();
+		ConditionAndOutcomes a = this.report.getConditionAndOutcomesBySource().get("a");
+		assertThat(a).isNotNull();
+		assertThat(a.isFullMatch()).isFalse();
 	}
 
 	private void prepareMatches(boolean m1, boolean m2, boolean m3) {
@@ -203,9 +220,13 @@ class ConditionEvaluationReportTests {
 		Map<String, ConditionAndOutcomes> sourceOutcomes = report.getConditionAndOutcomesBySource();
 		assertThat(context.containsBean("negativeOuterPositiveInnerBean")).isFalse();
 		String negativeConfig = NegativeOuterConfig.class.getName();
-		assertThat(sourceOutcomes.get(negativeConfig).isFullMatch()).isFalse();
+		ConditionAndOutcomes negativeOutcome = sourceOutcomes.get(negativeConfig);
+		assertThat(negativeOutcome).isNotNull();
+		assertThat(negativeOutcome.isFullMatch()).isFalse();
 		String positiveConfig = NegativeOuterConfig.PositiveInnerConfig.class.getName();
-		assertThat(sourceOutcomes.get(positiveConfig).isFullMatch()).isFalse();
+		ConditionAndOutcomes positiveOutcome = sourceOutcomes.get(positiveConfig);
+		assertThat(positiveOutcome).isNotNull();
+		assertThat(positiveOutcome.isFullMatch()).isFalse();
 	}
 
 	@Test

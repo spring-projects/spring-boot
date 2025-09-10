@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ResourceConditionTests {
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@AfterEach
 	void tearDown() {
@@ -49,19 +50,19 @@ class ResourceConditionTests {
 	@WithResource(name = "logging.properties")
 	void defaultResourceAndNoExplicitKey() {
 		load(DefaultLocationConfiguration.class);
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(isContainsBean()).isTrue();
 	}
 
 	@Test
 	void unknownDefaultLocationAndNoExplicitKey() {
 		load(UnknownDefaultLocationConfiguration.class);
-		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(isContainsBean()).isFalse();
 	}
 
 	@Test
 	void unknownDefaultLocationAndExplicitKeyToResource() {
 		load(UnknownDefaultLocationConfiguration.class, "spring.foo.test.config=logging.properties");
-		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(isContainsBean()).isTrue();
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -70,6 +71,11 @@ class ResourceConditionTests {
 		applicationContext.register(config);
 		applicationContext.refresh();
 		this.context = applicationContext;
+	}
+
+	private boolean isContainsBean() {
+		assertThat(this.context).isNotNull();
+		return this.context.containsBean("foo");
 	}
 
 	@Configuration(proxyBeanMethods = false)

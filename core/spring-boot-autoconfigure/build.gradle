@@ -56,3 +56,7 @@ dependencies {
 test {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

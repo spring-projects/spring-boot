@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.naming.Context;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoad
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
@@ -47,7 +49,7 @@ class ConditionalOnJndiTests {
 
 	private ClassLoader threadContextClassLoader;
 
-	private String initialContextFactory;
+	private @Nullable String initialContextFactory;
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
@@ -101,14 +103,16 @@ class ConditionalOnJndiTests {
 
 	@Test
 	void jndiLocationNotFound() {
-		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetadata("java:/a"));
+		ConditionOutcome outcome = this.condition.getMatchOutcome(mock(ConditionContext.class),
+				mockMetadata("java:/a"));
 		assertThat(outcome.isMatch()).isFalse();
 	}
 
 	@Test
 	void jndiLocationFound() {
 		this.condition.setFoundLocation("java:/b");
-		ConditionOutcome outcome = this.condition.getMatchOutcome(null, mockMetadata("java:/a", "java:/b"));
+		ConditionOutcome outcome = this.condition.getMatchOutcome(mock(ConditionContext.class),
+				mockMetadata("java:/a", "java:/b"));
 		assertThat(outcome.isMatch()).isTrue();
 	}
 
@@ -151,7 +155,7 @@ class ConditionalOnJndiTests {
 
 		private final boolean jndiAvailable = true;
 
-		private String foundLocation;
+		private @Nullable String foundLocation;
 
 		@Override
 		protected boolean isJndiAvailable() {
@@ -162,7 +166,7 @@ class ConditionalOnJndiTests {
 		protected JndiLocator getJndiLocator(String[] locations) {
 			return new JndiLocator(locations) {
 				@Override
-				public String lookupFirstLocation() {
+				public @Nullable String lookupFirstLocation() {
 					return MockableOnJndi.this.foundLocation;
 				}
 			};

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConfigurationPropertiesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void tearDown() {
@@ -47,13 +48,13 @@ class ConfigurationPropertiesAutoConfigurationTests {
 	@Test
 	void processAnnotatedBean() {
 		load(new Class<?>[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
-		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("test");
+		assertThat(getBean().getName()).isEqualTo("test");
 	}
 
 	@Test
 	void processAnnotatedBeanNoAutoConfig() {
 		load(new Class<?>[] { SampleBean.class }, "foo.name:test");
-		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("default");
+		assertThat(getBean().getName()).isEqualTo("default");
 	}
 
 	private void load(Class<?>[] configs, String... environment) {
@@ -61,6 +62,11 @@ class ConfigurationPropertiesAutoConfigurationTests {
 		this.context.register(configs);
 		TestPropertyValues.of(environment).applyTo(this.context);
 		this.context.refresh();
+	}
+
+	private SampleBean getBean() {
+		assertThat(this.context).isNotNull();
+		return this.context.getBean(SampleBean.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)

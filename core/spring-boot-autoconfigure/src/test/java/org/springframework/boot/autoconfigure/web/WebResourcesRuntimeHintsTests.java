@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.ResourcePatternHint;
@@ -79,7 +80,7 @@ class WebResourcesRuntimeHintsTests {
 		}
 
 		@Override
-		public URL getResource(String name) {
+		public @Nullable URL getResource(String name) {
 			return (this.availableResources.contains(name)) ? super.getResource("web/custom-resource.txt") : null;
 		}
 

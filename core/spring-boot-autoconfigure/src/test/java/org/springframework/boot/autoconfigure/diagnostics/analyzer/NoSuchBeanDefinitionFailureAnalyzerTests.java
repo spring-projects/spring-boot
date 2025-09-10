@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.diagnostics.analyzer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.FatalBeanException;
@@ -64,6 +65,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForNoMatchType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringHandler.class));
+		assertThat(analysis).isNotNull();
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertThat(analysis.getDescription())
 			.doesNotContain("No matching auto-configuration has been found for this type.");
@@ -74,6 +76,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForMissingPropertyExactType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringPropertyTypeConfiguration.class));
+		assertThat(analysis).isNotNull();
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertBeanMethodDisabled(analysis, "did not find property 'spring.string.enabled'",
 				TestPropertyAutoConfiguration.class, "string");
@@ -93,6 +96,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForMissingClassOnAutoConfigurationType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(MissingClassOnAutoConfigurationConfiguration.class));
+		assertThat(analysis).isNotNull();
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertClassDisabled(analysis, "did not find required class 'com.example.FooBar'", "string",
 				ClassUtils.getShortName(TestTypeClassAutoConfiguration.class));
@@ -104,6 +108,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 		FatalBeanException failure = createFailure(StringHandler.class);
 		addExclusions(this.analyzer, TestPropertyAutoConfiguration.class);
 		FailureAnalysis analysis = analyzeFailure(failure);
+		assertThat(analysis).isNotNull();
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		String configClass = ClassUtils.getShortName(TestPropertyAutoConfiguration.class.getName());
 		assertClassDisabled(analysis, String.format("auto-configuration '%s' was excluded", configClass), "string",
@@ -114,6 +119,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForSeveralConditionsType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(SeveralAutoConfigurationTypeConfiguration.class));
+		assertThat(analysis).isNotNull();
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertBeanMethodDisabled(analysis, "did not find property 'spring.string.enabled'",
 				TestPropertyAutoConfiguration.class, "string");
@@ -125,6 +131,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForNoMatchName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNameHandler.class));
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 			.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
 					StringNameHandler.class.getName(), "test-string"));
@@ -135,6 +142,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForMissingBeanName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringMissingBeanNameConfiguration.class));
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 			.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
 					StringNameHandler.class.getName(), "test-string"));
@@ -147,6 +155,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForNullBeanByType() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNullBeanConfiguration.class));
+		assertThat(analysis).isNotNull();
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertUserDefinedBean(analysis, "as the bean value is null", TestNullBeanConfiguration.class, "string");
 		assertActionMissingType(analysis, String.class);
@@ -155,6 +164,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForUnmatchedQualifier() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(QualifiedBeanConfiguration.class));
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 			.containsPattern("@org.springframework.beans.factory.annotation.Qualifier\\(\"*alpha\"*\\)");
 	}
@@ -204,6 +214,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 
 	private static void addExclusions(NoSuchBeanDefinitionFailureAnalyzer analyzer, Class<?>... classes) {
 		ConditionEvaluationReport report = (ConditionEvaluationReport) ReflectionTestUtils.getField(analyzer, "report");
+		assertThat(report).isNotNull();
 		List<String> exclusions = new ArrayList<>(report.getExclusions());
 		for (Class<?> c : classes) {
 			exclusions.add(c.getName());
@@ -216,14 +227,14 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 			TestPropertyValues.of(environment).applyTo(this.context);
 			this.context.register(config);
 			this.context.refresh();
-			return null;
+			throw new IllegalStateException("This should not be reached");
 		}
 		catch (FatalBeanException ex) {
 			return ex;
 		}
 	}
 
-	private FailureAnalysis analyzeFailure(Exception failure) {
+	private @Nullable FailureAnalysis analyzeFailure(Exception failure) {
 		FailureAnalysis analysis = this.analyzer.analyze(failure);
 		if (analysis != null) {
 			new LoggingFailureAnalysisReporter().report(analysis);
@@ -316,7 +327,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	static class TestNullBeanConfiguration {
 
 		@Bean
-		String string() {
+		@Nullable String string() {
 			return null;
 		}
 

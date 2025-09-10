@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import java.util.Properties;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -99,6 +101,7 @@ class PropertyPlaceholderAutoConfigurationTests {
 	static class PlaceholderConfig {
 
 		@Value("${fruit:apple}")
+		@SuppressWarnings("NullAway.Init")
 		private String fruit;
 
 	}
@@ -119,8 +122,9 @@ class PropertyPlaceholderAutoConfigurationTests {
 		@Bean
 		static PropertySourcesPlaceholderConfigurer morePlaceholders() {
 			PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-			configurer
-				.setProperties(StringUtils.splitArrayElementsIntoProperties(new String[] { "fruit=orange" }, "="));
+			Properties properties = StringUtils.splitArrayElementsIntoProperties(new String[] { "fruit=orange" }, "=");
+			assertThat(properties).isNotNull();
+			configurer.setProperties(properties);
 			configurer.setLocalOverride(true);
 			configurer.setOrder(0);
 			return configurer;

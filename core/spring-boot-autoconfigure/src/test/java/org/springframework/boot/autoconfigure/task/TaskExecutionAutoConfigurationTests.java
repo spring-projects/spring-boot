@@ -525,6 +525,7 @@ class TaskExecutionAutoConfigurationTests {
 		});
 		assertThat(latch.await(30, TimeUnit.SECONDS)).isTrue();
 		Thread thread = threadReference.get();
+		assertThat(thread).isNotNull();
 		assertThat(thread).extracting("virtual").as("%s is virtual", thread).isEqualTo(true);
 		return thread.getName();
 	}
