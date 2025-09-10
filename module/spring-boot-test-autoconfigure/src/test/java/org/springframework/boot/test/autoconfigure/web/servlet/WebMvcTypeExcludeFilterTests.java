@@ -28,6 +28,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -186,8 +187,7 @@ class WebMvcTypeExcludeFilterTests {
 	}
 
 	@SuppressWarnings("removal")
-	static class ExampleMessageConverter
-			extends org.springframework.http.converter.json.MappingJackson2HttpMessageConverter {
+	static class ExampleMessageConverter extends JacksonJsonHttpMessageConverter {
 
 	}
 

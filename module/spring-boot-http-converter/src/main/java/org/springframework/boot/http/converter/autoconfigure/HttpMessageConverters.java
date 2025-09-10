@@ -61,7 +61,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	static {
 		List<Class<?>> nonReplacingConverters = new ArrayList<>();
 		addClassIfExists(nonReplacingConverters,
-				"org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter");
+				"org.springframework.hateoas.server.mvc.TypeConstrainedJacksonJsonHttpMessageConverter");
 		NON_REPLACING_CONVERTERS = Collections.unmodifiableList(nonReplacingConverters);
 	}
 
