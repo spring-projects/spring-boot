@@ -255,18 +255,6 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		super.portClashOfSecondaryConnectorResultsInPortInUseException();
 	}
 
-	@Test
-	@Override
-	@Disabled("Restart after stop is not supported with Undertow")
-	protected void restartAfterStop() {
-	}
-
-	@Test
-	@Override
-	@Disabled("Undertow's architecture prevents separating stop and destroy")
-	protected void servletContextListenerContextDestroyedIsNotCalledWhenContainerIsStopped() {
-	}
-
 	private void testAccessLog(String prefix, String suffix, String expectedFile)
 			throws IOException, URISyntaxException {
 		UndertowServletWebServerFactory factory = getFactory();

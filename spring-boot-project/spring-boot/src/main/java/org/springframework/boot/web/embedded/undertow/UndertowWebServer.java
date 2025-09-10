@@ -278,13 +278,30 @@ public class UndertowWebServer implements WebServer {
 				notifyGracefulCallback(false);
 			}
 			try {
-				this.undertow.stop();
+				if (this.undertow != null) {
+					this.undertow.stop();
+				}
+			}
+			catch (Exception ex) {
+				throw new WebServerException("Unable to stop embedded Undertow", ex);
+			}
+		}
+	}
+
+	@Override
+	public void destroy() {
+		synchronized (this.monitor) {
+			try {
+				if (this.started && this.undertow != null) {
+					this.started = false;
+					this.undertow.stop();
+				}
 				for (Closeable closeable : this.closeables) {
 					closeable.close();
 				}
 			}
 			catch (Exception ex) {
-				throw new WebServerException("Unable to stop Undertow", ex);
+				throw new WebServerException("Unable to stop embedded Undertow", ex);
 			}
 		}
 	}
