@@ -96,9 +96,9 @@ class MetadataGenerationEnvironment {
 
 	private final Set<String> endpointAnnotations;
 
-	private final String endpointReadOperationAnnotation;
+	private final String readOperationAnnotation;
 
-	private final String endpointOptionalParameterAnnotation;
+	private final String optionalParameterAnnotation;
 
 	private final String nameAnnotation;
 
@@ -108,7 +108,7 @@ class MetadataGenerationEnvironment {
 			String configurationPropertiesSourceAnnotation, String nestedConfigurationPropertyAnnotation,
 			String deprecatedConfigurationPropertyAnnotation, String constructorBindingAnnotation,
 			String autowiredAnnotation, String defaultValueAnnotation, Set<String> endpointAnnotations,
-			String endpointReadOperationAnnotation, String endpointOptionalParameterAnnotation, String nameAnnotation) {
+			String readOperationAnnotation, String optionalParameterAnnotation, String nameAnnotation) {
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
@@ -122,8 +122,8 @@ class MetadataGenerationEnvironment {
 		this.autowiredAnnotation = autowiredAnnotation;
 		this.defaultValueAnnotation = defaultValueAnnotation;
 		this.endpointAnnotations = endpointAnnotations;
-		this.endpointReadOperationAnnotation = endpointReadOperationAnnotation;
-		this.endpointOptionalParameterAnnotation = endpointOptionalParameterAnnotation;
+		this.readOperationAnnotation = readOperationAnnotation;
+		this.optionalParameterAnnotation = optionalParameterAnnotation;
 		this.nameAnnotation = nameAnnotation;
 	}
 
@@ -370,8 +370,8 @@ class MetadataGenerationEnvironment {
 			.collect(Collectors.toSet());
 	}
 
-	boolean isEndpointReadOperation(Element element) {
-		return getAnnotation(element, this.endpointReadOperationAnnotation) != null;
+	AnnotationMirror getReadOperationAnnotation(Element element) {
+		return getAnnotation(element, this.readOperationAnnotation);
 	}
 
 	AnnotationMirror getNameAnnotation(Element element) {
@@ -382,8 +382,8 @@ class MetadataGenerationEnvironment {
 		return getTypeUseAnnotation(element, NULLABLE_ANNOTATION) != null;
 	}
 
-	boolean hasEndpointOptionalParameterAnnotation(Element element) {
-		return getAnnotation(element, this.endpointOptionalParameterAnnotation) != null;
+	boolean hasOptionalParameterAnnotation(Element element) {
+		return getAnnotation(element, this.optionalParameterAnnotation) != null;
 	}
 
 	private boolean isElementDeprecated(Element element) {

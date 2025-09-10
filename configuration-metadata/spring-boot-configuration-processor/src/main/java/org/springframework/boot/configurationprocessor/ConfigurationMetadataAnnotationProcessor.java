@@ -107,9 +107,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String WEB_ENDPOINT_ANNOTATION = "org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint";
 
-	static final String ENDPOINT_READ_OPERATION_ANNOTATION = "org.springframework.boot.actuate.endpoint.annotation.ReadOperation";
+	static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.actuate.endpoint.annotation.ReadOperation";
 
-	static final String ENDPOINT_OPTIONAL_PARAMETER_ANNOTATION = "org.springframework.boot.actuate.endpoint.annotation.OptionalParameter";
+	static final String OPTIONAL_PARAMETER_ANNOTATION = "org.springframework.boot.actuate.endpoint.annotation.OptionalParameter";
 
 	static final String NAME_ANNOTATION = "org.springframework.boot.context.properties.bind.Name";
 
@@ -158,16 +158,16 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				REST_CONTROLLER_ENDPOINT_ANNOTATION, SERVLET_ENDPOINT_ANNOTATION, WEB_ENDPOINT_ANNOTATION);
 	}
 
-	protected String endpointReadOperationAnnotation() {
-		return ENDPOINT_READ_OPERATION_ANNOTATION;
+	protected String readOperationAnnotation() {
+		return READ_OPERATION_ANNOTATION;
 	}
 
 	protected String nameAnnotation() {
 		return NAME_ANNOTATION;
 	}
 
-	protected String endpointOptionalParameterAnnotation() {
-		return ENDPOINT_OPTIONAL_PARAMETER_ANNOTATION;
+	protected String optionalParameterAnnotation() {
+		return OPTIONAL_PARAMETER_ANNOTATION;
 	}
 
 	protected String endpointAccessEnum() {
@@ -194,8 +194,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
 				configurationPropertiesSourceAnnotation(), nestedConfigurationPropertyAnnotation(),
 				deprecatedConfigurationPropertyAnnotation(), constructorBindingAnnotation(), autowiredAnnotation(),
-				defaultValueAnnotation(), endpointAnnotations(), endpointReadOperationAnnotation(),
-				endpointOptionalParameterAnnotation(), nameAnnotation());
+				defaultValueAnnotation(), endpointAnnotations(), readOperationAnnotation(),
+				optionalParameterAnnotation(), nameAnnotation());
 	}
 
 	@Override
@@ -271,7 +271,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	}
 
 	private void processExecutableElement(String prefix, ExecutableElement element, Deque<TypeElement> seen) {
-		if ((!element.getModifiers().contains(Modifier.PRIVATE)) && returnsVoid(element)) {
+		if ((!element.getModifiers().contains(Modifier.PRIVATE))
+				&& (TypeKind.VOID != element.getReturnType().getKind())) {
 			Element returns = this.processingEnv.getTypeUtils().asElement(element.getReturnType());
 			if (returns instanceof TypeElement typeElement) {
 				ItemMetadata group = ItemMetadata.newGroup(prefix,
@@ -353,7 +354,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 				"Permitted level of access for the %s endpoint.".formatted(endpointId), defaultAccess, null);
 		this.metadataCollector.add(accessProperty,
 				(existing) -> checkDefaultAccessValueMatchesExisting(existing, defaultAccess, type));
-		if (isCachableEndpoint(element)) {
+		if (hasMainReadOperation(element)) {
 			this.metadataCollector.addIfAbsent(ItemMetadata.newProperty(endpointKey, "cache.time-to-live",
 					Duration.class.getName(), type, null, "Maximum time that a response can be cached.", "0ms", null));
 		}
@@ -370,27 +371,28 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private boolean isCachableEndpoint(TypeElement element) {
+	private boolean hasMainReadOperation(TypeElement element) {
 		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
-			if (this.metadataEnv.isEndpointReadOperation(method) && returnsVoid(method)
-					&& !hasMandatoryEndpointParameter(method)) {
+			if (this.metadataEnv.getReadOperationAnnotation(method) != null
+					&& (TypeKind.VOID != method.getReturnType().getKind()) && hasNoOrOptionalParameters(method)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private boolean returnsVoid(ExecutableElement method) {
-		return TypeKind.VOID != method.getReturnType().getKind();
-	}
-
-	private boolean hasMandatoryEndpointParameter(ExecutableElement method) {
+	private boolean hasNoOrOptionalParameters(ExecutableElement method) {
 		for (VariableElement parameter : method.getParameters()) {
-			if (!this.metadataEnv.hasEndpointOptionalParameterAnnotation(parameter)) {
-				return true;
+			if (!isOptionalParameter(parameter)) {
+				return false;
 			}
 		}
-		return false;
+		return true;
+	}
+
+	private boolean isOptionalParameter(VariableElement parameter) {
+		return this.metadataEnv.hasNullableAnnotation(parameter)
+				|| this.metadataEnv.hasOptionalParameterAnnotation(parameter);
 	}
 
 	private String getPrefix(AnnotationMirror annotation) {

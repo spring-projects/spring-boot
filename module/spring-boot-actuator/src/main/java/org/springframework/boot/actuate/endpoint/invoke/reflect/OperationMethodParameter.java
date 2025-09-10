@@ -21,6 +21,7 @@ import java.lang.reflect.Parameter;
 import java.util.function.Predicate;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
+import org.springframework.core.Nullness;
 
 /**
  * {@link OperationParameter} created from an {@link OperationMethod}.
@@ -60,7 +61,11 @@ class OperationMethodParameter implements OperationParameter {
 
 	@Override
 	public boolean isMandatory() {
-		return !this.optional.test(this.parameter);
+		return !isOptional();
+	}
+
+	private boolean isOptional() {
+		return Nullness.NULLABLE == Nullness.forParameter(this.parameter) || this.optional.test(this.parameter);
 	}
 
 	@Override

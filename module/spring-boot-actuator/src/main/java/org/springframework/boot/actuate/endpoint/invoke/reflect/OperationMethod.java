@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  * @see ReflectiveOperationInvoker
  */
-public abstract class OperationMethod {
+public class OperationMethod {
 
 	private static final ParameterNameDiscoverer DEFAULT_PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
 
@@ -48,10 +48,22 @@ public abstract class OperationMethod {
 	 * Create a new {@link OperationMethod} instance.
 	 * @param method the source method
 	 * @param operationType the operation type
+	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of
+	 * {@link #OperationMethod(Method, OperationType, Predicate)}
+	 */
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	public OperationMethod(Method method, OperationType operationType) {
+		this(method, operationType, (parameter) -> false);
+	}
+
+	/**
+	 * Create a new {@link OperationMethod} instance.
+	 * @param method the source method
+	 * @param operationType the operation type
 	 * @param optionalParameters predicate to test if a parameter is optional
 	 * @since 4.0.0
 	 */
-	protected OperationMethod(Method method, OperationType operationType, Predicate<Parameter> optionalParameters) {
+	public OperationMethod(Method method, OperationType operationType, Predicate<Parameter> optionalParameters) {
 		Assert.notNull(method, "'method' must not be null");
 		Assert.notNull(operationType, "'operationType' must not be null");
 		this.method = method;

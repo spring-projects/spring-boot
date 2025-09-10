@@ -57,7 +57,7 @@ class ReflectiveOperationInvokerTests {
 	@BeforeEach
 	void setup() {
 		this.target = new Example();
-		this.operationMethod = new TestOperationMethod(ReflectionUtils.findMethod(Example.class, "reverse",
+		this.operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class, "reverse",
 				ApiVersion.class, SecurityContext.class, String.class), OperationType.READ, this::isOptional);
 		this.parameterValueMapper = (parameter, value) -> (value != null) ? value.toString() : null;
 	}
@@ -102,7 +102,7 @@ class ReflectiveOperationInvokerTests {
 
 	@Test
 	void invokeWhenMissingOptionalArgumentShouldInvoke() {
-		OperationMethod operationMethod = new TestOperationMethod(ReflectionUtils.findMethod(Example.class,
+		OperationMethod operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class,
 				"reverseOptional", ApiVersion.class, SecurityContext.class, String.class), OperationType.READ,
 				this::isOptional);
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, operationMethod,
