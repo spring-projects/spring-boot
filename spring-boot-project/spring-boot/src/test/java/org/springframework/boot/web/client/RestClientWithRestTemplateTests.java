@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.client;
+package org.springframework.boot.web.client;
 
 import org.junit.jupiter.api.Test;
 
