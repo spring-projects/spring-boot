@@ -42,7 +42,7 @@ class JsonbHttpMessageConvertersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Jsonb.class)
-	@Conditional(PreferJsonbOrMissingJacksonAndGsonCondition.class)
+	@Conditional(PreferJsonbOrOtherJsonLibrariesMissingCondition.class)
 	static class JsonbHttpMessageConverterConfiguration {
 
 		@Bean
@@ -55,9 +55,9 @@ class JsonbHttpMessageConvertersConfiguration {
 
 	}
 
-	private static class PreferJsonbOrMissingJacksonAndGsonCondition extends AnyNestedCondition {
+	private static class PreferJsonbOrOtherJsonLibrariesMissingCondition extends AnyNestedCondition {
 
-		PreferJsonbOrMissingJacksonAndGsonCondition() {
+		PreferJsonbOrOtherJsonLibrariesMissingCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
@@ -67,16 +67,16 @@ class JsonbHttpMessageConvertersConfiguration {
 
 		}
 
-		@Conditional(JacksonAndGsonAndKotlinSerializationMissingCondition.class)
-		static class JacksonAndGsonAndKotlinSerializationMissing {
+		@Conditional(OtherJsonLibrariesMissingMissingCondition.class)
+		static class OtherJsonLibrariesMissingMissing {
 
 		}
 
 	}
 
-	private static class JacksonAndGsonAndKotlinSerializationMissingCondition extends NoneNestedConditions {
+	private static class OtherJsonLibrariesMissingMissingCondition extends NoneNestedConditions {
 
-		JacksonAndGsonAndKotlinSerializationMissingCondition() {
+		OtherJsonLibrariesMissingMissingCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
@@ -92,7 +92,7 @@ class JsonbHttpMessageConvertersConfiguration {
 
 		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "kotlin-serialization")
-		static class KotlinxPreferred {
+		static class KotlinPreferred {
 
 		}
 

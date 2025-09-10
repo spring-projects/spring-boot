@@ -42,14 +42,14 @@ class KotlinSerializationAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(KotlinSerializationAutoConfiguration::class.java))
 
 	@Test
-	fun shouldSupplyBean() {
+	fun shouldSupplyJsonBean() {
 		this.contextRunner.run { context ->
 			assertThat(context).hasSingleBean(Json::class.java)
 		}
 	}
 
 	@Test
-	fun shouldNotSupplyBean() {
+	fun shouldNotSupplyJsonBean() {
 		this.contextRunner
 			.withClassLoader(FilteredClassLoader(Json::class.java))
 			.run { context ->
@@ -90,7 +90,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializeSnakeCase() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.naming-strategy=snake_case")
+			.withPropertyValues("spring.kotlin.serialization.naming-strategy=snake_case")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.encodeToString(DataObject("hello")))
@@ -101,7 +101,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializeKebabCase() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.naming-strategy=kebab_case")
+			.withPropertyValues("spring.kotlin.serialization.naming-strategy=kebab_case")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.encodeToString(DataObject("hello")))
@@ -112,7 +112,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializePrettyPrint() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.pretty-print=true")
+			.withPropertyValues("spring.kotlin.serialization.pretty-print=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.encodeToString(DataObject("hello")))
@@ -130,7 +130,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Suppress("JsonStandardCompliance")
 	fun deserializeLenient() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.lenient=true")
+			.withPropertyValues("spring.kotlin.serialization.lenient=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.decodeFromString<DataObject>("""{"stringField":hello}"""))
@@ -141,7 +141,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun deserializeIgnoreUnknownKeys() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.ignore-unknown-keys=true")
+			.withPropertyValues("spring.kotlin.serialization.ignore-unknown-keys=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.decodeFromString<DataObject>("""{"stringField":"hello", "anotherField":"value"}"""))
@@ -152,7 +152,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializeDefaults() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.encode-defaults=true")
+			.withPropertyValues("spring.kotlin.serialization.encode-defaults=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.encodeToString(DataObjectWithDefault("hello")))
@@ -163,7 +163,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializeExplicitNullsFalse() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.explicit-nulls=false")
+			.withPropertyValues("spring.kotlin.serialization.explicit-nulls=false")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.encodeToString(DataObjectWithDefault(null, "hello")))
@@ -174,7 +174,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun deserializeCoerceInputValues() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.coerce-input-values=true")
+			.withPropertyValues("spring.kotlin.serialization.coerce-input-values=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.decodeFromString<DataObjectWithDefault>("""{"stringField":"hello", "defaultField":null}"""))
@@ -185,7 +185,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializeStructuredMapKeys() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.allow-structured-map-keys=true")
+			.withPropertyValues("spring.kotlin.serialization.allow-structured-map-keys=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				val map = mapOf(
@@ -200,7 +200,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializeSpecialFloatingPointValues() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.allow-special-floating-point-values=true")
+			.withPropertyValues("spring.kotlin.serialization.allow-special-floating-point-values=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.encodeToString(DataObjectDouble(Double.NaN)))
@@ -211,7 +211,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializeClassDiscriminator() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.class-discriminator=class")
+			.withPropertyValues("spring.kotlin.serialization.class-discriminator=class")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				val value: BaseClass = ChildClass("value")
@@ -223,7 +223,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun serializeClassDiscriminatorNone() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.class-discriminator-mode=none")
+			.withPropertyValues("spring.kotlin.serialization.class-discriminator-mode=none")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				val value: BaseClass = ChildClass("value")
@@ -235,7 +235,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun deserializeEnumsCaseInsensitive() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.decode-enums-case-insensitive=true")
+			.withPropertyValues("spring.kotlin.serialization.decode-enums-case-insensitive=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.decodeFromString<DataObjectEnumValues>("""{"values":["value_A", "alternative"]}"""))
@@ -246,7 +246,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Test
 	fun deserializeAlternativeNames() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.use-alternative-names=false")
+			.withPropertyValues("spring.kotlin.serialization.use-alternative-names=false")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThatExceptionOfType(SerializationException::class.java).isThrownBy {
@@ -259,7 +259,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Suppress("JsonStandardCompliance")
 	fun deserializeTrailingComma() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.allow-trailing-comma=true")
+			.withPropertyValues("spring.kotlin.serialization.allow-trailing-comma=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.decodeFromString<DataObject>("""{"stringField":"hello",}"""))
@@ -271,7 +271,7 @@ class KotlinSerializationAutoConfigurationTests {
 	@Suppress("JsonStandardCompliance")
 	fun deserializeComments() {
 		this.contextRunner
-			.withPropertyValues("spring.kotlin-serialization.allow-comments=true")
+			.withPropertyValues("spring.kotlin.serialization.allow-comments=true")
 			.run { context ->
 				val json = context.getBean(Json::class.java)
 				assertThat(json.decodeFromString<DataObject>("""{"stringField":"hello" /*comment*/}"""))

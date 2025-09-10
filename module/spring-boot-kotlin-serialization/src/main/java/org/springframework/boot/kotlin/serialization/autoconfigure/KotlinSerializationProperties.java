@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dmitry Sulman
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.kotlin-serialization")
+@ConfigurationProperties("spring.kotlin.serialization")
 public class KotlinSerializationProperties {
 
 	/**

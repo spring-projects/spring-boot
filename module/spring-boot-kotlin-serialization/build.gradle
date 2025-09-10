@@ -40,9 +40,3 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")
 }
-
-tasks.named("checkAutoConfigurationClasses", CheckAutoConfigurationClasses.class) {
-	doFirst {
-		classpath = classpath.filter { !it.path.contains('/build/classes/kotlin/main') }
-	}
-}

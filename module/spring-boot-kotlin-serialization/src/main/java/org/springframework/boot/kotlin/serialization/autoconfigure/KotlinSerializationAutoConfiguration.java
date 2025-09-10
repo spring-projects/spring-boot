@@ -79,7 +79,7 @@ public final class KotlinSerializationAutoConfiguration {
 		@Override
 		public void customize(JsonBuilder jsonBuilder) {
 			KotlinSerializationProperties properties = this.properties;
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getNamingStrategy).to(setNamingStrategy(jsonBuilder));
 			map.from(properties::getPrettyPrint).to(jsonBuilder::setPrettyPrint);
 			map.from(properties::getLenient).to(jsonBuilder::setLenient);

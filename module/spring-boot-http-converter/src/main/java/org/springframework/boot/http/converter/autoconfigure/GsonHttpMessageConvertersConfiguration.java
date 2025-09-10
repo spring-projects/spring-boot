@@ -42,7 +42,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Gson.class)
-	@Conditional(PreferGsonOrJacksonAndJsonbUnavailableCondition.class)
+	@Conditional(PreferGsonOrOtherJsonLibraryUnavailableCondition.class)
 	static class GsonHttpMessageConverterConfiguration {
 
 		@Bean
@@ -55,9 +55,9 @@ class GsonHttpMessageConvertersConfiguration {
 
 	}
 
-	private static class PreferGsonOrJacksonAndJsonbUnavailableCondition extends AnyNestedCondition {
+	private static class PreferGsonOrOtherJsonLibraryUnavailableCondition extends AnyNestedCondition {
 
-		PreferGsonOrJacksonAndJsonbUnavailableCondition() {
+		PreferGsonOrOtherJsonLibraryUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
@@ -67,16 +67,16 @@ class GsonHttpMessageConvertersConfiguration {
 
 		}
 
-		@Conditional(JacksonAndJsonbUnavailableCondition.class)
+		@Conditional(OtherJsonLibrariesUnavailableCondition.class)
 		static class JacksonJsonbUnavailable {
 
 		}
 
 	}
 
-	private static class JacksonAndJsonbUnavailableCondition extends NoneNestedConditions {
+	private static class OtherJsonLibrariesUnavailableCondition extends NoneNestedConditions {
 
-		JacksonAndJsonbUnavailableCondition() {
+		OtherJsonLibrariesUnavailableCondition() {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
@@ -93,7 +93,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "kotlin-serialization")
-		static class KotlinxSerialization {
+		static class KotlinSerializationPreferred {
 
 		}
 

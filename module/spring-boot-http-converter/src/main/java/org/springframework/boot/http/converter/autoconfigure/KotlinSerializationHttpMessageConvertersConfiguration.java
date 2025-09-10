@@ -18,12 +18,17 @@ package org.springframework.boot.http.converter.autoconfigure;
 
 import kotlinx.serialization.json.Json;
 
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.http.converter.json.JsonbHttpMessageConverter;
 import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter;
 
 /**
@@ -37,14 +42,33 @@ class KotlinSerializationHttpMessageConvertersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Json.class)
-	@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
-			havingValue = "kotlin-serialization")
+	@Conditional(PreferKotlinSerializationOrOtherJsonLibrariesUnavailableCondition.class)
 	static class KotlinSerializationHttpMessageConverterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
 		KotlinSerializationJsonHttpMessageConverter kotlinSerializationJsonHttpMessageConverter(Json json) {
 			return new KotlinSerializationJsonHttpMessageConverter(json);
+		}
+
+	}
+
+	private static class PreferKotlinSerializationOrOtherJsonLibrariesUnavailableCondition extends AnyNestedCondition {
+
+		PreferKotlinSerializationOrOtherJsonLibrariesUnavailableCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
+				havingValue = "kotlin-serialization")
+		static class KotlinSerializationPreferred {
+
+		}
+
+		@ConditionalOnMissingBean({ JacksonJsonHttpMessageConverter.class, JsonbHttpMessageConverter.class,
+				GsonHttpMessageConverter.class })
+		static class OtherJsonLibrariesUnavailable {
+
 		}
 
 	}
