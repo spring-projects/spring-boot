@@ -22,7 +22,6 @@ import java.util.TreeSet;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.core.time.Instant;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 import org.jspecify.annotations.Nullable;
@@ -70,13 +69,13 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 		members.add("message", LogEvent::getMessage).as(StructuredMessage::get);
 		members.from(LogEvent::getContextData)
 			.usingPairs(contextPairs.nested(ElasticCommonSchemaStructuredLogFormatter::addContextDataPairs));
-		members.from(LogEvent::getThrownProxy).whenNotNull().usingMembers((thrownProxyMembers) -> {
-			thrownProxyMembers.add("error").usingMembers((error) -> {
-				error.add("type", ThrowableProxy::getThrowable).whenNotNull().as(ObjectUtils::nullSafeClassName);
-				error.add("message", ThrowableProxy::getMessage);
+		members.from(LogEvent::getThrown)
+			.whenNotNull()
+			.usingMembers((thrownMembers) -> thrownMembers.add("error").usingMembers((error) -> {
+				error.add("type", ObjectUtils::nullSafeClassName);
+				error.add("message", Throwable::getMessage);
 				error.add("stack_trace", extractor::stackTrace);
-			});
-		});
+			}));
 		members.add("tags", LogEvent::getMarker)
 			.whenNotNull()
 			.as(ElasticCommonSchemaStructuredLogFormatter::getMarkers)

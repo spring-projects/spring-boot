@@ -46,7 +46,7 @@ class ExtractorTests {
 	}
 
 	@Test
-	void stackTraceWhenNoPrinterPrintsUsingLoggingSystem() {
+	void stackTraceWhenNoPrinterPrintsUsingFallback() {
 		Extractor extractor = new Extractor(null, createConverter());
 		assertThat(extractor.stackTrace(createEvent())).contains("java.lang.RuntimeException: Boom!");
 	}
