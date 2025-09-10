@@ -109,7 +109,7 @@ class DockerComposeLifecycleManagerTests {
 		this.eventListeners = new LinkedHashSet<>();
 		this.skipCheck = mock(DockerComposeSkipCheck.class);
 		this.serviceReadinessChecks = mock(ServiceReadinessChecks.class);
-		this.lifecycleManager = new TestDockerComposeLifecycleManager(workingDirectory, this.applicationContext, binder,
+		this.lifecycleManager = new TestDockerComposeLifecycleManager(workingDirectory, this.applicationContext,
 				this.shutdownHandlers, this.properties, this.eventListeners, this.skipCheck,
 				this.serviceReadinessChecks);
 	}
@@ -152,15 +152,15 @@ class DockerComposeLifecycleManagerTests {
 	@Test
 	void startWhenComposeFileNotFoundThrowsException() {
 		DockerComposeLifecycleManager manager = new DockerComposeLifecycleManager(new File("."),
-				this.applicationContext, null, this.shutdownHandlers, this.properties, this.eventListeners,
-				this.skipCheck, this.serviceReadinessChecks);
+				this.applicationContext, this.shutdownHandlers, this.properties, this.eventListeners, this.skipCheck,
+				this.serviceReadinessChecks);
 		assertThatIllegalStateException().isThrownBy(manager::start)
 			.withMessageContaining(Paths.get(".").toAbsolutePath().toString());
 	}
 
 	@Test
 	void startWhenComposeFileNotFoundAndWorkingDirectoryNullThrowsException() {
-		DockerComposeLifecycleManager manager = new DockerComposeLifecycleManager(null, this.applicationContext, null,
+		DockerComposeLifecycleManager manager = new DockerComposeLifecycleManager(null, this.applicationContext,
 				this.shutdownHandlers, this.properties, this.eventListeners, this.skipCheck,
 				this.serviceReadinessChecks);
 		assertThatIllegalStateException().isThrownBy(manager::start)
@@ -516,11 +516,11 @@ class DockerComposeLifecycleManagerTests {
 	 */
 	class TestDockerComposeLifecycleManager extends DockerComposeLifecycleManager {
 
-		TestDockerComposeLifecycleManager(File workingDirectory, ApplicationContext applicationContext, Binder binder,
+		TestDockerComposeLifecycleManager(File workingDirectory, ApplicationContext applicationContext,
 				SpringApplicationShutdownHandlers shutdownHandlers, DockerComposeProperties properties,
 				Set<ApplicationListener<?>> eventListeners, DockerComposeSkipCheck skipCheck,
 				ServiceReadinessChecks serviceReadinessChecks) {
-			super(workingDirectory, applicationContext, binder, shutdownHandlers, properties, eventListeners, skipCheck,
+			super(workingDirectory, applicationContext, shutdownHandlers, properties, eventListeners, skipCheck,
 					serviceReadinessChecks);
 		}
 
