@@ -115,7 +115,7 @@ public class GroovyTemplateAutoConfiguration {
 		GroovyMarkupConfigurer groovyMarkupConfigurer(ObjectProvider<MarkupTemplateEngine> templateEngine,
 				Environment environment) {
 			GroovyMarkupConfigurer configurer = new GroovyMarkupConfigurer();
-			PropertyMapper map = PropertyMapper.get();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this.properties::isAutoEscape).to(configurer::setAutoEscape);
 			map.from(this.properties::isAutoIndent).to(configurer::setAutoIndent);
 			map.from(this.properties::getAutoIndentString).to(configurer::setAutoIndentString);
