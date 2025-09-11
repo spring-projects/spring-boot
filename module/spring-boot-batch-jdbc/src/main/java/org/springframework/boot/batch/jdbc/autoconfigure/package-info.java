@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
+/**
+ * Auto-configuration for Spring Batch JDBC.
+ */
+@NullMarked
+package org.springframework.boot.batch.jdbc.autoconfigure;
 
-description = "Starter for using Spring Batch"
-
-dependencies {
-	api(project(":starter:spring-boot-starter"))
-
-	api(project(":module:spring-boot-batch"))
-}
+import org.jspecify.annotations.NullMarked;

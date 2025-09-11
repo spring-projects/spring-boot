@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.batch.autoconfigure;
+package org.springframework.boot.batch.jdbc.autoconfigure;
 
 import java.util.Collections;
 import java.util.Set;

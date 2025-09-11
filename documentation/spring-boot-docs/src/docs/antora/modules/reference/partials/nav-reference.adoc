@@ -39,6 +39,7 @@
 
 ** xref:reference:io/index.adoc[]
 *** xref:reference:io/caching.adoc[]
+*** xref:reference:io/spring-batch.adoc[]
 *** xref:reference:io/hazelcast.adoc[]
 *** xref:reference:io/quartz.adoc[]
 *** xref:reference:io/email.adoc[]

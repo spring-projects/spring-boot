@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.batch.autoconfigure;
+package org.springframework.boot.batch.jdbc.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,15 +23,15 @@ import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConf
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BatchProperties}.
+ * Tests for {@link BatchJdbcProperties}.
  *
  * @author Andy Wilkinson
  */
-class BatchPropertiesTests {
+class BatchJdbcPropertiesTests {
 
 	@Test
 	void validateTransactionStateDefaultMatchesSpringBatchDefault() {
-		assertThat(new BatchProperties().getJdbc().isValidateTransactionState())
+		assertThat(new BatchJdbcProperties().isValidateTransactionState())
 			.isEqualTo(new TestBatchConfiguration().getValidateTransactionState());
 	}
 

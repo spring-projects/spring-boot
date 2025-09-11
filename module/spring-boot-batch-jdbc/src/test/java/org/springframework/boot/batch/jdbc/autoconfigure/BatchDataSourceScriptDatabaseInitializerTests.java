@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.batch.autoconfigure;
+package org.springframework.boot.batch.jdbc.autoconfigure;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -52,10 +52,10 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 	@Test
 	void getSettingsWithPlatformDoesNotTouchDataSource() {
 		DataSource dataSource = mock(DataSource.class);
-		BatchProperties properties = new BatchProperties();
-		properties.getJdbc().setPlatform("test");
+		BatchJdbcProperties properties = new BatchJdbcProperties();
+		properties.setPlatform("test");
 		DatabaseInitializationSettings settings = BatchDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties.getJdbc());
+				properties);
 		assertThat(settings.getSchemaLocations())
 			.containsOnly("classpath:org/springframework/batch/core/schema-test.sql");
 		then(dataSource).shouldHaveNoInteractions();
@@ -66,7 +66,7 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 			"INFORMIX", "JTDS", "PHOENIX", "REDSHIFT", "TERADATA", "TESTCONTAINERS", "UNKNOWN" })
 	void batchSchemaCanBeLocated(DatabaseDriver driver) throws SQLException {
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-		BatchProperties properties = new BatchProperties();
+		BatchJdbcProperties properties = new BatchJdbcProperties();
 		DataSource dataSource = mock(DataSource.class);
 		Connection connection = mock(Connection.class);
 		given(dataSource.getConnection()).willReturn(connection);
@@ -75,7 +75,7 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 		String productName = (String) ReflectionTestUtils.getField(driver, "productName");
 		given(metadata.getDatabaseProductName()).willReturn(productName);
 		DatabaseInitializationSettings settings = BatchDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties.getJdbc());
+				properties);
 		List<String> schemaLocations = settings.getSchemaLocations();
 		assertThat(schemaLocations).isNotEmpty()
 			.allSatisfy((location) -> assertThat(resourceLoader.getResource(location).exists()).isTrue());

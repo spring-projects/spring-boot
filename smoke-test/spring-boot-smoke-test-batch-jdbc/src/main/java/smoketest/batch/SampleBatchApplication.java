@@ -26,6 +26,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootApplication
 public class SampleBatchApplication {
@@ -41,8 +42,8 @@ public class SampleBatchApplication {
 	}
 
 	@Bean
-	Step step1(JobRepository jobRepository, Tasklet tasklet) {
-		return new StepBuilder("step1", jobRepository).tasklet(tasklet).build();
+	Step step1(JobRepository jobRepository, Tasklet tasklet, PlatformTransactionManager transactionManager) {
+		return new StepBuilder("step1", jobRepository).tasklet(tasklet, transactionManager).build();
 	}
 
 	public static void main(String[] args) {

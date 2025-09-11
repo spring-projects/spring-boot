@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.batch.autoconfigure;
+package org.springframework.boot.batch.jdbc.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

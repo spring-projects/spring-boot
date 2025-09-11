@@ -37,20 +37,6 @@ If you do so and want two task executors (for example by retaining the auto-conf
 
 
 
-[[howto.batch.running-jobs-on-startup]]
-== Running Spring Batch Jobs on Startup
-
-Spring Batch auto-configuration is enabled by adding `spring-boot-starter-batch` to your application's classpath.
-
-If a single javadoc:org.springframework.batch.core.Job[] bean is found in the application context, it is executed on startup (see javadoc:org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner[] for details).
-If multiple javadoc:org.springframework.batch.core.Job[] beans are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
-
-To disable running a javadoc:org.springframework.batch.core.Job[] found in the application context, set the configprop:spring.batch.job.enabled[] to `false`.
-
-See {code-spring-boot-autoconfigure-src}/batch/BatchAutoConfiguration.java[`BatchAutoConfiguration`] for more details.
-
-
-
 [[howto.batch.running-from-the-command-line]]
 == Running From the Command Line
 

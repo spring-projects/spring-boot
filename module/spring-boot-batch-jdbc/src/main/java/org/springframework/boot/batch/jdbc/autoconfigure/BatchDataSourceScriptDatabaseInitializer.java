@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.batch.autoconfigure;
+package org.springframework.boot.batch.jdbc.autoconfigure;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDa
 	 * @param properties the Spring Batch JDBC properties
 	 * @see #getSettings
 	 */
-	public BatchDataSourceScriptDatabaseInitializer(DataSource dataSource, BatchProperties.Jdbc properties) {
+	public BatchDataSourceScriptDatabaseInitializer(DataSource dataSource, BatchJdbcProperties properties) {
 		this(dataSource, getSettings(dataSource, properties));
 	}
 
@@ -58,16 +58,15 @@ public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDa
 	}
 
 	/**
-	 * Adapts {@link BatchProperties.Jdbc Spring Batch JDBC properties} to
-	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
-	 * placeholders.
+	 * Adapts {@link BatchJdbcProperties} to {@link DatabaseInitializationSettings}
+	 * replacing any {@literal @@platform@@} placeholders.
 	 * @param dataSource the Spring Batch data source
 	 * @param properties batch JDBC properties
 	 * @return a new {@link DatabaseInitializationSettings} instance
 	 * @see #BatchDataSourceScriptDatabaseInitializer(DataSource,
 	 * DatabaseInitializationSettings)
 	 */
-	public static DatabaseInitializationSettings getSettings(DataSource dataSource, BatchProperties.Jdbc properties) {
+	public static DatabaseInitializationSettings getSettings(DataSource dataSource, BatchJdbcProperties properties) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
 		settings.setMode(properties.getInitializeSchema());
@@ -75,7 +74,7 @@ public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDa
 		return settings;
 	}
 
-	private static List<String> resolveSchemaLocations(DataSource dataSource, BatchProperties.Jdbc properties) {
+	private static List<String> resolveSchemaLocations(DataSource dataSource, BatchJdbcProperties properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
 		if (StringUtils.hasText(properties.getPlatform())) {
 			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());

@@ -15,13 +15,15 @@
  */
 
 plugins {
-	id "org.springframework.boot.starter"
+	id "java"
 }
 
-description = "Starter for using Spring Batch"
+description = "Spring Boot Batch with JDBC smoke test"
 
 dependencies {
-	api(project(":starter:spring-boot-starter"))
+	implementation(project(":starter:spring-boot-starter-batch-jdbc"))
 
-	api(project(":module:spring-boot-batch"))
+	runtimeOnly("org.hsqldb:hsqldb")
+
+	testImplementation(project(":starter:spring-boot-starter-test"))
 }
