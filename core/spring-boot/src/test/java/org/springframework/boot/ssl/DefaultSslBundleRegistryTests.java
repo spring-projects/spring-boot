@@ -60,12 +60,14 @@ class DefaultSslBundleRegistryTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerBundleWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.registry.registerBundle(null, this.bundle1))
 			.withMessage("'name' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerBundleWhenBundleIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.registry.registerBundle("test", null))
 			.withMessage("'bundle' must not be null");
@@ -85,6 +87,7 @@ class DefaultSslBundleRegistryTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getBundleWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.registry.getBundle(null))
 			.withMessage("'name' must not be null");

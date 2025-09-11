@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.CharacterIndex;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -733,9 +734,9 @@ class ValueObjectBinderTests {
 
 	static class NestedJavaBean {
 
-		private String value;
+		private @Nullable String value;
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
@@ -903,23 +904,23 @@ class ValueObjectBinderTests {
 
 	static class NonExtractableParameterName {
 
-		private String value;
+		private @Nullable String value;
 
-		private JsonPath jsonPath;
+		private @Nullable JsonPath jsonPath;
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			this.value = value;
 		}
 
-		JsonPath getJsonPath() {
+		@Nullable JsonPath getJsonPath() {
 			return this.jsonPath;
 		}
 
-		void setJsonPath(JsonPath jsonPath) {
+		void setJsonPath(@Nullable JsonPath jsonPath) {
 			this.jsonPath = jsonPath;
 		}
 

@@ -40,6 +40,7 @@ class LocationResourceLoaderTests {
 	private final LocationResourceLoader loader = new LocationResourceLoader(new DefaultResourceLoader());
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Test access to {@link ContextPairs}.
  *
@@ -30,7 +32,7 @@ public final class TestContextPairs {
 		return of(true, null);
 	}
 
-	public static ContextPairs of(boolean include, String prefix) {
+	public static ContextPairs of(boolean include, @Nullable String prefix) {
 		return new ContextPairs(include, prefix);
 	}
 

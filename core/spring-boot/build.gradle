@@ -50,6 +50,8 @@ dependencies {
 	optional("org.yaml:snakeyaml")
 	optional("tools.jackson.core:jackson-databind")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testFixturesCompileOnly(project(":test-support:spring-boot-test-support"))
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
@@ -105,4 +107,8 @@ sourceSets {
 			srcDirs syncJavaTemplates
 		}
 	}
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

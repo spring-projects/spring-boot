@@ -18,9 +18,11 @@ package org.springframework.boot.bootstrap;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.bootstrap.BootstrapRegistry.InstanceSupplier;
@@ -34,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DefaultBootstrapContext}.
@@ -49,12 +52,14 @@ class DefaultBootstrapContextTests {
 	private final StaticApplicationContext applicationContext = new StaticApplicationContext();
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerWhenTypeIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.context.register(null, InstanceSupplier.of(1)))
 			.withMessage("'type' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerWhenRegistrationIsNullThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.context.register(Integer.class, null))
 			.withMessage("'instanceSupplier' must not be null");
@@ -206,20 +211,23 @@ class DefaultBootstrapContextTests {
 	@Test
 	void getOrElseSupplyWhenNoRegistrationReturnsSupplied() {
 		this.context.register(Number.class, InstanceSupplier.of(1));
-		assertThat(this.context.getOrElseSupply(Long.class, () -> -1L)).isEqualTo(-1);
+		Supplier<@Nullable Long> supplier = () -> -1L;
+		assertThat(this.context.getOrElseSupply(Long.class, supplier)).isEqualTo(-1);
 	}
 
 	@Test
 	void getOrElseSupplyWhenRegisteredAsNullReturnsNull() {
 		this.context.register(Number.class, InstanceSupplier.of(null));
-		assertThat(this.context.getOrElseSupply(Number.class, () -> -1L)).isNull();
+		Supplier<@Nullable Number> supplier = () -> -1L;
+		assertThat(this.context.getOrElseSupply(Number.class, supplier)).isNull();
 	}
 
 	@Test
 	void getOrElseSupplyCreatesOnlyOneInstance() {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
-		assertThat(this.context.getOrElseSupply(Integer.class, () -> -1)).isZero();
-		assertThat(this.context.getOrElseSupply(Integer.class, () -> -1)).isZero();
+		Supplier<@Nullable Integer> supplier = () -> -1;
+		assertThat(this.context.getOrElseSupply(Integer.class, supplier)).isZero();
+		assertThat(this.context.getOrElseSupply(Integer.class, supplier)).isZero();
 	}
 
 	@Test
@@ -265,14 +273,14 @@ class DefaultBootstrapContextTests {
 	void instanceSupplierGetScopeWhenNotConfiguredReturnsSingleton() {
 		InstanceSupplier<String> supplier = InstanceSupplier.of("test");
 		assertThat(supplier.getScope()).isEqualTo(Scope.SINGLETON);
-		assertThat(supplier.get(null)).isEqualTo("test");
+		assertThat(supplier.get(mock(BootstrapContext.class))).isEqualTo("test");
 	}
 
 	@Test
 	void instanceSupplierWithScopeChangesScope() {
 		InstanceSupplier<String> supplier = InstanceSupplier.of("test").withScope(Scope.PROTOTYPE);
 		assertThat(supplier.getScope()).isEqualTo(Scope.PROTOTYPE);
-		assertThat(supplier.get(null)).isEqualTo("test");
+		assertThat(supplier.get(mock(BootstrapContext.class))).isEqualTo("test");
 	}
 
 	private static final class TestCloseListener
@@ -280,9 +288,9 @@ class DefaultBootstrapContextTests {
 
 		private int called;
 
-		private BootstrapContext bootstrapContext;
+		private @Nullable BootstrapContext bootstrapContext;
 
-		private ConfigurableApplicationContext applicationContext;
+		private @Nullable ConfigurableApplicationContext applicationContext;
 
 		@Override
 		public void onApplicationEvent(BootstrapContextClosedEvent event) {

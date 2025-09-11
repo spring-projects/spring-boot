@@ -29,13 +29,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class SystemEnvironmentOriginTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPropertyIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new SystemEnvironmentOrigin(null));
+		assertThatIllegalArgumentException().isThrownBy(() -> new SystemEnvironmentOrigin(null))
+			.withMessage("'property' must not be empty");
 	}
 
 	@Test
 	void createWhenPropertyNameIsEmptyShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new SystemEnvironmentOrigin(""));
+		assertThatIllegalArgumentException().isThrownBy(() -> new SystemEnvironmentOrigin(""))
+			.withMessage("'property' must not be empty");
 	}
 
 	@Test

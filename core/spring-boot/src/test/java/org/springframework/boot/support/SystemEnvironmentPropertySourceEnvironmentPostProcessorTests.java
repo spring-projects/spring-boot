@@ -55,10 +55,12 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	void replacedPropertySourceShouldBeOriginAware() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		PropertySource<?> original = this.environment.getPropertySources().get("systemEnvironment");
+		assertThat(original).isNotNull();
 		postProcessor.postProcessEnvironment(this.environment, this.application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 			.getPropertySources()
 			.get("systemEnvironment");
+		assertThat(replaced).isNotNull();
 		Map<String, Object> originalMap = (Map<String, Object>) original.getSource();
 		Map<String, Object> replacedMap = replaced.getSource();
 		originalMap.forEach((key, value) -> {
@@ -75,6 +77,7 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 			.getPropertySources()
 			.get("systemEnvironment");
+		assertThat(replaced).isNotNull();
 		assertThat(replaced.getOrigin("NON_EXISTENT")).isNull();
 	}
 
@@ -88,7 +91,9 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 			.getPropertySources()
 			.get("systemEnvironment");
+		assertThat(replaced).isNotNull();
 		SystemEnvironmentOrigin origin = (SystemEnvironmentOrigin) replaced.getOrigin("foo.bar.baz");
+		assertThat(origin).isNotNull();
 		assertThat(origin.getProperty()).isEqualTo("FOO_BAR_BAZ");
 		assertThat(replaced.getProperty("foo.bar.baz")).isEqualTo("hello");
 	}
@@ -102,6 +107,7 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 			.getPropertySources()
 			.get("systemEnvironment");
+		assertThat(replaced).isNotNull();
 		assertThat(replaced.getPrefix()).isEqualTo("my");
 	}
 

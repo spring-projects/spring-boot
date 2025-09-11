@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -266,7 +267,8 @@ class EnvironmentPostProcessorApplicationListenerTests {
 			}
 		}
 
-		private BeanFactoryInitializationAotContribution getContribution(ConfigurableEnvironment environment) {
+		private @Nullable BeanFactoryInitializationAotContribution getContribution(
+				ConfigurableEnvironment environment) {
 			DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 			beanFactory.registerSingleton(ConfigurableApplicationContext.ENVIRONMENT_BEAN_NAME, environment);
 			return new EnvironmentBeanFactoryInitializationAotProcessor().processAheadOfTime(beanFactory);

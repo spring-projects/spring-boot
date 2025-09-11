@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,6 +33,7 @@ import java.util.function.Supplier;
 import jakarta.annotation.PostConstruct;
 import org.assertj.core.api.Condition;
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -167,7 +169,7 @@ class SpringApplicationTests {
 
 	private String headlessProperty;
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	private Environment getEnvironment() {
 		if (this.context != null) {
@@ -202,6 +204,8 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway")
+	// Test null check
 	void sourcesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SpringApplication((Class<?>[]) null).run())
 			.withMessageContaining("'primarySources' must not be null");
@@ -360,7 +364,9 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		AtomicReference<ApplicationReadyEvent> reference = addListener(application, ApplicationReadyEvent.class);
 		this.context = application.run("--foo=bar");
-		assertThat(application).isSameAs(reference.get().getSpringApplication());
+		ApplicationReadyEvent event = reference.get();
+		assertThat(event).isNotNull();
+		assertThat(application).isSameAs(event.getSpringApplication());
 	}
 
 	@Test
@@ -369,7 +375,9 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		AtomicReference<ContextRefreshedEvent> reference = addListener(application, ContextRefreshedEvent.class);
 		this.context = application.run("--foo=bar");
-		assertThat(this.context).isSameAs(reference.get().getApplicationContext());
+		ContextRefreshedEvent event = reference.get();
+		assertThat(event).isNotNull();
+		assertThat(this.context).isSameAs(event.getApplicationContext());
 		// Custom initializers do not switch off the defaults
 		assertThat(getEnvironment().getProperty("foo")).isEqualTo("bar");
 	}
@@ -487,6 +495,7 @@ class SpringApplicationTests {
 		assertThat(environment.getProperty("foo")).isEqualTo("bar");
 		CompositePropertySource composite = (CompositePropertySource) environment.getPropertySources()
 			.get("commandLineArgs");
+		assertThat(composite).isNotNull();
 		assertThat(composite.getPropertySources()).hasSize(2);
 		assertThat(composite.getPropertySources()).first()
 			.matches((source) -> source.getName().equals("springApplicationCommandLineArgs"),
@@ -878,8 +887,9 @@ class SpringApplicationTests {
 	@Test
 	void defaultCommandLineArgs() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setDefaultProperties(
-				StringUtils.splitArrayElementsIntoProperties(new String[] { "baz=", "bar=spam" }, "="));
+		Properties properties = StringUtils.splitArrayElementsIntoProperties(new String[] { "baz=", "bar=spam" }, "=");
+		assertThat(properties).isNotNull();
+		application.setDefaultProperties(properties);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run("--bar=foo", "bucket", "crap");
 		assertThat(this.context).isInstanceOf(AnnotationConfigApplicationContext.class);
@@ -936,7 +946,7 @@ class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
-		verifyRegisteredListenerSuccessEvents();
+		verifyRegisteredListenerSuccessEvents(this.context);
 	}
 
 	@Test
@@ -949,12 +959,12 @@ class SpringApplicationTests {
 		this.context = application.run();
 		assertThat(events).hasAtLeastOneElementOfType(ApplicationPreparedEvent.class);
 		assertThat(events).hasAtLeastOneElementOfType(ContextRefreshedEvent.class);
-		verifyRegisteredListenerSuccessEvents();
+		verifyRegisteredListenerSuccessEvents(this.context);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void verifyRegisteredListenerSuccessEvents() {
-		ApplicationListener<ApplicationEvent> listener = this.context.getBean("testApplicationListener",
+	private void verifyRegisteredListenerSuccessEvents(ConfigurableApplicationContext context) {
+		ApplicationListener<ApplicationEvent> listener = context.getBean("testApplicationListener",
 				ApplicationListener.class);
 		InOrder inOrder = Mockito.inOrder(listener);
 		then(listener).should(inOrder).onApplicationEvent(isA(ContextRefreshedEvent.class));
@@ -1224,9 +1234,11 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.addBootstrapRegistryInitializer((bootstrapContext) -> {
 			bootstrapContext.register(String.class, InstanceSupplier.of("boot"));
-			bootstrapContext.addCloseListener((event) -> event.getApplicationContext()
-				.getBeanFactory()
-				.registerSingleton("test", event.getBootstrapContext().get(String.class)));
+			bootstrapContext.addCloseListener((event) -> {
+				String string = event.getBootstrapContext().get(String.class);
+				assertThat(string).isNotNull();
+				event.getApplicationContext().getBeanFactory().registerSingleton("test", string);
+			});
 		});
 		ConfigurableApplicationContext applicationContext = application.run();
 		assertThat(applicationContext.getBean("test")).isEqualTo("boot");
@@ -1272,8 +1284,9 @@ class SpringApplicationTests {
 			.map(ApplicationFailedEvent.class::cast)
 			.findFirst()
 			.get();
-		assertThat(SpringApplicationShutdownHookInstance.get())
-			.didNotRegisterApplicationContext(failure.getApplicationContext());
+		ConfigurableApplicationContext context = failure.getApplicationContext();
+		assertThat(context).isNotNull();
+		assertThat(SpringApplicationShutdownHookInstance.get()).didNotRegisterApplicationContext(context);
 	}
 
 	@Test
@@ -1283,6 +1296,7 @@ class SpringApplicationTests {
 		SpringApplicationRunListener runListener = mock(SpringApplicationRunListener.class);
 		SpringApplicationHook hook = (springApplication) -> runListener;
 		SpringApplication.withHook(hook, () -> this.context = application.run());
+		assertThat(this.context).isNotNull();
 		then(runListener).should().starting(any());
 		then(runListener).should().contextPrepared(this.context);
 		then(runListener).should().ready(eq(this.context), any());
@@ -1320,7 +1334,11 @@ class SpringApplicationTests {
 		SpringApplicationHook hook = (springApplication) -> runListener;
 		assertThatExceptionOfType(SpringApplication.AbandonedRunException.class)
 			.isThrownBy(() -> SpringApplication.withHook(hook, () -> application.run()))
-			.satisfies((ex) -> assertThat(ex.getApplicationContext().isRunning()).isFalse());
+			.satisfies((ex) -> {
+				ConfigurableApplicationContext context = ex.getApplicationContext();
+				assertThat(context).isNotNull();
+				assertThat(context.isRunning()).isFalse();
+			});
 		then(runListener).should().starting(any());
 		then(runListener).should().contextPrepared(any());
 		then(runListener).should(never()).ready(any(), any());
@@ -1389,7 +1407,10 @@ class SpringApplicationTests {
 			.with(SingleUseAdditionalConfig.class)
 			.run()
 			.getApplicationContext();
-		assertThatNoException().isThrownBy(() -> this.context.getBean(SingleUseAdditionalConfig.class));
+		assertThatNoException().isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(SingleUseAdditionalConfig.class);
+		});
 	}
 
 	@Test
@@ -1540,7 +1561,7 @@ class SpringApplicationTests {
 
 	static class TestSpringApplication extends SpringApplication {
 
-		private BeanDefinitionLoader loader;
+		private @Nullable BeanDefinitionLoader loader;
 
 		private boolean useMockLoader;
 
@@ -1567,7 +1588,7 @@ class SpringApplicationTests {
 			return this.loader;
 		}
 
-		BeanDefinitionLoader getLoader() {
+		@Nullable BeanDefinitionLoader getLoader() {
 			return this.loader;
 		}
 
@@ -1855,6 +1876,7 @@ class SpringApplicationTests {
 
 		private final String[] expectedBefore;
 
+		@SuppressWarnings("NullAway.Init")
 		private ApplicationContext applicationContext;
 
 		private final int order;
@@ -1926,14 +1948,14 @@ class SpringApplicationTests {
 
 	static class ExitCodeListener implements ApplicationListener<ExitCodeEvent> {
 
-		private Integer exitCode;
+		private @Nullable Integer exitCode;
 
 		@Override
 		public void onApplicationEvent(ExitCodeEvent event) {
 			this.exitCode = event.getExitCode();
 		}
 
-		Integer getExitCode() {
+		@Nullable Integer getExitCode() {
 			return this.exitCode;
 		}
 
@@ -1971,7 +1993,9 @@ class SpringApplicationTests {
 
 		@SuppressWarnings("unchecked")
 		<E extends ApplicationEvent> E getEvent(Class<E> type) {
-			return (E) this.events.get(type).get(0);
+			List<ApplicationEvent> events = this.events.get(type);
+			assertThat(events).isNotNull();
+			return (E) events.get(0);
 		}
 
 	}

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -129,7 +130,7 @@ class ConfigurationPropertySourcesTests {
 		sources.addFirst(new PropertySource<Environment>("env", environment) {
 
 			@Override
-			public String getProperty(String key) {
+			public @Nullable String getProperty(String key) {
 				return this.source.getProperty(key);
 			}
 

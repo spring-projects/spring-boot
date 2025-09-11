@@ -49,6 +49,7 @@ class InetAddressFormatterTests {
 	void convertFromStringToInetAddressShouldConvert(ConversionService conversionService) {
 		assumingThat(isResolvable("example.com"), () -> {
 			InetAddress converted = conversionService.convert("example.com", InetAddress.class);
+			assertThat(converted).isNotNull();
 			assertThat(converted.toString()).startsWith("example.com");
 		});
 	}

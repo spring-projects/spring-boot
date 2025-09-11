@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,8 +70,9 @@ class UnboundConfigurationPropertyFailureAnalyzerTests {
 
 	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
 		BeanCreationException failure = createFailure(configuration, environment);
-		assertThat(failure).isNotNull();
-		return new UnboundConfigurationPropertyFailureAnalyzer().analyze(failure);
+		FailureAnalysis analyze = new UnboundConfigurationPropertyFailureAnalyzer().analyze(failure);
+		assertThat(analyze).isNotNull();
+		return analyze;
 	}
 
 	private BeanCreationException createFailure(Class<?> configuration, String... environment) {
@@ -80,7 +82,7 @@ class UnboundConfigurationPropertyFailureAnalyzerTests {
 			context.register(configuration);
 			context.refresh();
 			context.close();
-			return null;
+			throw new AssertionError("Should not be reached");
 		}
 		catch (BeanCreationException ex) {
 			return ex;
@@ -107,13 +109,13 @@ class UnboundConfigurationPropertyFailureAnalyzerTests {
 	@ConfigurationProperties("test.foo")
 	static class UnboundElementsFailureProperties {
 
-		private List<String> listValue;
+		private @Nullable List<String> listValue;
 
-		List<String> getListValue() {
+		@Nullable List<String> getListValue() {
 			return this.listValue;
 		}
 
-		void setListValue(List<String> listValue) {
+		void setListValue(@Nullable List<String> listValue) {
 			this.listValue = listValue;
 		}
 

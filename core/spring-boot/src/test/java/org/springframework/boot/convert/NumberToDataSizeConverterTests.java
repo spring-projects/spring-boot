@@ -19,6 +19,7 @@ package org.springframework.boot.convert;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.annotation.AnnotationUtils;
@@ -52,12 +53,13 @@ class NumberToDataSizeConverterTests {
 		assertThat(convert(conversionService, -10, DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(-10));
 	}
 
-	private DataSize convert(ConversionService conversionService, Integer source) {
+	private @Nullable DataSize convert(ConversionService conversionService, Integer source) {
 		return conversionService.convert(source, DataSize.class);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private DataSize convert(ConversionService conversionService, Integer source, DataUnit defaultUnit) {
+	private @Nullable DataSize convert(ConversionService conversionService, Integer source,
+			@Nullable DataUnit defaultUnit) {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
 			DataSizeUnit unitAnnotation = AnnotationUtils

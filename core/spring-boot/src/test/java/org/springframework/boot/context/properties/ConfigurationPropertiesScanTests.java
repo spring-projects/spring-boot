@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties;
 import java.io.IOException;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -151,7 +152,7 @@ class ConfigurationPropertiesScanTests {
 		}
 
 		@Override
-		public boolean equals(Object o) {
+		public boolean equals(@Nullable Object o) {
 			return (this == o);
 		}
 

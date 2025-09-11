@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.Ordered;
@@ -44,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ConfigurationsTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenClassesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestConfigurations((Collection<Class<?>>) null))
 			.withMessageContaining("'classes' must not be null");
@@ -91,7 +93,7 @@ class ConfigurationsTests {
 		}
 
 		TestConfigurations(UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes,
-				Function<Class<?>, String> beanNameGenerator) {
+				@Nullable Function<Class<?>, String> beanNameGenerator) {
 			super(sorter, classes, beanNameGenerator);
 		}
 

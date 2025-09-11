@@ -29,6 +29,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,7 +71,7 @@ class SpringBootServletInitializerTests {
 
 	private final ServletContext servletContext = new MockServletContext();
 
-	private SpringApplication application;
+	private @Nullable SpringApplication application;
 
 	@AfterEach
 	void verifyLoggingOutput(CapturedOutput output) {
@@ -87,6 +88,7 @@ class SpringBootServletInitializerTests {
 	@Test
 	void withConfigurationAnnotation() {
 		new WithConfigurationAnnotation().createRootApplicationContext(this.servletContext);
+		assertThat(this.application).isNotNull();
 		assertThat(this.application.getAllSources()).containsOnly(WithConfigurationAnnotation.class,
 				ErrorPageFilterConfiguration.class);
 	}
@@ -94,6 +96,7 @@ class SpringBootServletInitializerTests {
 	@Test
 	void withConfiguredSource() {
 		new WithConfiguredSource().createRootApplicationContext(this.servletContext);
+		assertThat(this.application).isNotNull();
 		assertThat(this.application.getAllSources()).containsOnly(Config.class, ErrorPageFilterConfiguration.class);
 	}
 
@@ -116,6 +119,7 @@ class SpringBootServletInitializerTests {
 		new WithConfigurationAnnotation().onStartup(this.servletContext);
 		assertThat(this.servletContext.getAttribute(LoggingApplicationListener.REGISTER_SHUTDOWN_HOOK_PROPERTY))
 			.isEqualTo(false);
+		assertThat(this.application).isNotNull();
 		Object properties = ReflectionTestUtils.getField(this.application, "properties");
 		assertThat(properties).hasFieldOrPropertyWithValue("registerShutdownHook", false);
 	}
@@ -124,6 +128,7 @@ class SpringBootServletInitializerTests {
 	void errorPageFilterRegistrationCanBeDisabled() {
 		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
 			.createRootApplicationContext(this.servletContext)) {
+			assertThat(context).isNotNull();
 			Map<String, ErrorPageFilter> errorPageFilterBeans = context.getBeansOfType(ErrorPageFilter.class);
 			assertThat(errorPageFilterBeans).isEmpty();
 		}
@@ -138,9 +143,11 @@ class SpringBootServletInitializerTests {
 		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
 		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
 			.createRootApplicationContext(servletContext)) {
+			assertThat(context).isNotNull();
 			Map<String, FilterRegistrationBean> registrations = context.getBeansOfType(FilterRegistrationBean.class);
 			assertThat(registrations).hasSize(1);
 			FilterRegistrationBean errorPageFilterRegistration = registrations.get("errorPageFilterRegistration");
+			assertThat(errorPageFilterRegistration).isNotNull();
 			assertThat(errorPageFilterRegistration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
 		}
 	}
@@ -154,6 +161,7 @@ class SpringBootServletInitializerTests {
 		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
 		try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
 			.createRootApplicationContext(servletContext)) {
+			assertThat(context).isNotNull();
 			Map<String, FilterRegistrationBean> registrations = context.getBeansOfType(FilterRegistrationBean.class);
 			assertThat(registrations).hasSize(1);
 			FilterRegistrationBean errorPageFilterRegistration = registrations.get("errorPageFilterRegistration");
@@ -179,6 +187,7 @@ class SpringBootServletInitializerTests {
 		given(servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
 		try (ConfigurableApplicationContext context = (ConfigurableApplicationContext) new PropertySourceVerifyingSpringBootServletInitializer()
 			.createRootApplicationContext(servletContext)) {
+			assertThat(context).isNotNull();
 			assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("from-servlet-context");
 		}
 	}
@@ -252,7 +261,7 @@ class SpringBootServletInitializerTests {
 	private class MockSpringBootServletInitializer extends SpringBootServletInitializer {
 
 		@Override
-		protected WebApplicationContext run(SpringApplication application) {
+		protected @Nullable WebApplicationContext run(SpringApplication application) {
 			SpringBootServletInitializerTests.this.application = application;
 			return null;
 		}
@@ -333,6 +342,7 @@ class SpringBootServletInitializerTests {
 			PropertySource<?> propertySource = event.getEnvironment()
 				.getPropertySources()
 				.get(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME);
+			assertThat(propertySource).isNotNull();
 			assertThat(propertySource.getProperty("spring.profiles.active")).isEqualTo("from-servlet-context");
 		}
 

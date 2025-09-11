@@ -61,6 +61,7 @@ class ConfigurationPropertyCachingTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getFromSourcesWhenSourcesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ConfigurationPropertyCaching.get((Iterable<ConfigurationPropertySource>) null))

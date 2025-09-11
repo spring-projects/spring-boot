@@ -57,6 +57,7 @@ class PemContentTests {
 	void getCertificateReturnsCertificates() throws Exception {
 		PemContent content = PemContent.load(contentFromClasspath("/test-cert-chain.pem"),
 				ApplicationResourceLoader.get());
+		assertThat(content).isNotNull();
 		List<X509Certificate> certificates = content.getCertificates();
 		assertThat(certificates).isNotNull();
 		assertThat(certificates).hasSize(2);
@@ -75,6 +76,7 @@ class PemContentTests {
 	@WithPackageResources("dsa.key")
 	void getPrivateKeyReturnsPrivateKey() throws Exception {
 		PemContent content = PemContent.load(contentFromClasspath("dsa.key"), ApplicationResourceLoader.get());
+		assertThat(content).isNotNull();
 		PrivateKey privateKey = content.getPrivateKey();
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
@@ -191,7 +193,9 @@ class PemContentTests {
 	@Test
 	@WithPackageResources("test-cert.pem")
 	void loadWithStringWhenClasspathLocationReturnsContent() throws IOException {
-		String actual = PemContent.load("classpath:test-cert.pem", ApplicationResourceLoader.get()).toString();
+		PemContent content = PemContent.load("classpath:test-cert.pem", ApplicationResourceLoader.get());
+		assertThat(content).isNotNull();
+		String actual = content.toString();
 		String expected = contentFromClasspath("test-cert.pem");
 		assertThat(actual).isEqualTo(expected);
 	}
@@ -200,7 +204,9 @@ class PemContentTests {
 	@WithPackageResources("test-cert.pem")
 	void loadWithStringWhenFileLocationReturnsContent(@ResourcePath("test-cert.pem") String testCert)
 			throws IOException {
-		String actual = PemContent.load(testCert, ApplicationResourceLoader.get()).toString();
+		PemContent content = PemContent.load(testCert, ApplicationResourceLoader.get());
+		assertThat(content).isNotNull();
+		String actual = content.toString();
 		String expected = contentFromClasspath("test-cert.pem");
 		assertThat(actual).isEqualTo(expected);
 	}

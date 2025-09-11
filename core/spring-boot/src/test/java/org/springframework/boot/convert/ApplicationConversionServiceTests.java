@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.convert.ApplicationConversionService.ConverterBeanAdapter;
@@ -40,6 +41,7 @@ import org.springframework.core.convert.converter.ConditionalConverter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.format.AnnotationFormatterFactory;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.Parser;
@@ -175,20 +177,24 @@ class ApplicationConversionServiceTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void sharedInstanceCannotBeModified() {
 		ApplicationConversionService instance = (ApplicationConversionService) ApplicationConversionService
 			.getSharedInstance();
-		assertUnmodifiableExceptionThrown(() -> instance.addPrinter(null));
-		assertUnmodifiableExceptionThrown(() -> instance.addParser(null));
-		assertUnmodifiableExceptionThrown(() -> instance.addFormatter(null));
-		assertUnmodifiableExceptionThrown(() -> instance.addFormatterForFieldType(null, null));
-		assertUnmodifiableExceptionThrown(() -> instance.addConverter((Converter<?, ?>) null));
-		assertUnmodifiableExceptionThrown(() -> instance.addFormatterForFieldType(null, null, null));
-		assertUnmodifiableExceptionThrown(() -> instance.addFormatterForFieldAnnotation(null));
-		assertUnmodifiableExceptionThrown(() -> instance.addConverter(null, null, null));
-		assertUnmodifiableExceptionThrown(() -> instance.addConverter((GenericConverter) null));
-		assertUnmodifiableExceptionThrown(() -> instance.addConverterFactory(null));
-		assertUnmodifiableExceptionThrown(() -> instance.removeConvertible(null, null));
+		Printer<?> printer = mock(Printer.class);
+		Parser<?> parser = mock(Parser.class);
+		assertUnmodifiableExceptionThrown(() -> instance.addPrinter(printer));
+		assertUnmodifiableExceptionThrown(() -> instance.addParser(parser));
+		assertUnmodifiableExceptionThrown(() -> instance.addFormatter(mock(Formatter.class)));
+		assertUnmodifiableExceptionThrown(() -> instance.addFormatterForFieldType(getClass(), mock(Formatter.class)));
+		assertUnmodifiableExceptionThrown(() -> instance.addConverter(mock(Converter.class)));
+		assertUnmodifiableExceptionThrown(() -> instance.addFormatterForFieldType(getClass(), printer, parser));
+		assertUnmodifiableExceptionThrown(
+				() -> instance.addFormatterForFieldAnnotation(mock(AnnotationFormatterFactory.class)));
+		assertUnmodifiableExceptionThrown(() -> instance.addConverter(getClass(), getClass(), mock(Converter.class)));
+		assertUnmodifiableExceptionThrown(() -> instance.addConverter(mock(GenericConverter.class)));
+		assertUnmodifiableExceptionThrown(() -> instance.addConverterFactory(mock(ConverterFactory.class)));
+		assertUnmodifiableExceptionThrown(() -> instance.removeConvertible(getClass(), getClass()));
 	}
 
 	@Test
@@ -323,12 +329,12 @@ class ApplicationConversionServiceTests {
 	static class ExampleGenericConverter implements GenericConverter {
 
 		@Override
-		public Set<ConvertiblePair> getConvertibleTypes() {
+		public @Nullable Set<ConvertiblePair> getConvertibleTypes() {
 			return null;
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public @Nullable Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			return null;
 		}
 
@@ -337,7 +343,7 @@ class ApplicationConversionServiceTests {
 	static class ExampleConverter implements Converter<String, Integer> {
 
 		@Override
-		public Integer convert(String source) {
+		public @Nullable Integer convert(String source) {
 			return null;
 		}
 
@@ -347,12 +353,12 @@ class ApplicationConversionServiceTests {
 
 		@Override
 		public String print(Integer object, Locale locale) {
-			return null;
+			return "";
 		}
 
 		@Override
 		public Integer parse(String text, Locale locale) throws ParseException {
-			return null;
+			return 1;
 		}
 
 	}
@@ -361,7 +367,7 @@ class ApplicationConversionServiceTests {
 
 		@Override
 		public Integer parse(String text, Locale locale) throws ParseException {
-			return null;
+			return 1;
 		}
 
 	}
@@ -370,7 +376,7 @@ class ApplicationConversionServiceTests {
 
 		@Override
 		public String print(Integer object, Locale locale) {
-			return null;
+			return "";
 		}
 
 	}

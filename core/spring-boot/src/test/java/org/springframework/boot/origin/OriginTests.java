@@ -18,6 +18,7 @@ package org.springframework.boot.origin;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,15 +94,15 @@ class OriginTests {
 
 	static class TestException extends RuntimeException implements OriginProvider {
 
-		private final Origin origin;
+		private final @Nullable Origin origin;
 
-		TestException(Origin origin, Throwable cause) {
+		TestException(@Nullable Origin origin, @Nullable Throwable cause) {
 			super(cause);
 			this.origin = origin;
 		}
 
 		@Override
-		public Origin getOrigin() {
+		public @Nullable Origin getOrigin() {
 			return this.origin;
 		}
 

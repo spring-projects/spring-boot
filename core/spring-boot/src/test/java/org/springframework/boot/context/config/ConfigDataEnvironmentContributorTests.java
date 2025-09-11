@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cloud.CloudPlatform;
@@ -30,7 +31,9 @@ import org.springframework.boot.context.config.ConfigData.Option;
 import org.springframework.boot.context.config.ConfigData.PropertySourceOptions;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.ImportPhase;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.mock.env.MockPropertySource;
@@ -110,9 +113,11 @@ class ConfigDataEnvironmentContributorTests {
 		ConfigData configData = new ConfigData(Collections.singleton(propertySource));
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(null, null,
 				false, configData, 0, this.conversionService, ConfigDataEnvironmentUpdateListener.NONE);
-		assertThat(contributor.getConfigurationPropertySource()
-			.getConfigurationProperty(ConfigurationPropertyName.of("spring"))
-			.getValue()).isEqualTo("boot");
+		ConfigurationPropertySource source = contributor.getConfigurationPropertySource();
+		assertThat(source).isNotNull();
+		ConfigurationProperty spring = source.getConfigurationProperty(ConfigurationPropertyName.of("spring"));
+		assertThat(spring).isNotNull();
+		assertThat(spring.getValue()).isEqualTo("boot");
 	}
 
 	@Test
@@ -379,8 +384,8 @@ class ConfigDataEnvironmentContributorTests {
 				new ConfigData(Collections.singleton(new MockPropertySource())), 0);
 	}
 
-	private ConfigDataEnvironmentContributor createBoundContributor(ConfigDataResource resource, ConfigData configData,
-			int propertySourceIndex) {
+	private ConfigDataEnvironmentContributor createBoundContributor(@Nullable ConfigDataResource resource,
+			ConfigData configData, int propertySourceIndex) {
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
 				resource, false, configData, propertySourceIndex, this.conversionService,
 				ConfigDataEnvironmentUpdateListener.NONE);
@@ -394,7 +399,9 @@ class ConfigDataEnvironmentContributorTests {
 	}
 
 	private String getLocationName(ConfigDataEnvironmentContributor contributor) {
-		return contributor.getResource().toString();
+		ConfigDataResource resource = contributor.getResource();
+		assertThat(resource).isNotNull();
+		return resource.toString();
 	}
 
 	static class TestResource extends ConfigDataResource {

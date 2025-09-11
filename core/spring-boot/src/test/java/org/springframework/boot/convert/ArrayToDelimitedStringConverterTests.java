@@ -16,8 +16,10 @@
 
 package org.springframework.boot.convert;
 
+import java.lang.reflect.Field;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -45,8 +47,9 @@ class ArrayToDelimitedStringConverterTests {
 	void convertWhenHasDelimiterNoneShouldConvert(ConversionService conversionService) {
 		Data data = new Data();
 		data.none = new String[] { "1", "2", "3" };
-		String converted = (String) conversionService.convert(data.none,
-				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "none"), 0),
+		Field field = ReflectionUtils.findField(Data.class, "none");
+		assertThat(field).isNotNull();
+		String converted = (String) conversionService.convert(data.none, TypeDescriptor.nested(field, 0),
 				TypeDescriptor.valueOf(String.class));
 		assertThat(converted).isEqualTo("123");
 	}
@@ -55,8 +58,9 @@ class ArrayToDelimitedStringConverterTests {
 	void convertWhenHasDelimiterDashShouldConvert(ConversionService conversionService) {
 		Data data = new Data();
 		data.dash = new String[] { "1", "2", "3" };
-		String converted = (String) conversionService.convert(data.dash,
-				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "dash"), 0),
+		Field field = ReflectionUtils.findField(Data.class, "dash");
+		assertThat(field).isNotNull();
+		String converted = (String) conversionService.convert(data.dash, TypeDescriptor.nested(field, 0),
 				TypeDescriptor.valueOf(String.class));
 		assertThat(converted).isEqualTo("1-2-3");
 	}
@@ -72,9 +76,10 @@ class ArrayToDelimitedStringConverterTests {
 	void convertShouldConvertElements() {
 		Data data = new Data();
 		data.type = new int[] { 1, 2, 3 };
+		Field field = ReflectionUtils.findField(Data.class, "type");
+		assertThat(field).isNotNull();
 		String converted = (String) new ApplicationConversionService().convert(data.type,
-				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "type"), 0),
-				TypeDescriptor.valueOf(String.class));
+				TypeDescriptor.nested(field, 0), TypeDescriptor.valueOf(String.class));
 		assertThat(converted).isEqualTo("1.2.3");
 	}
 
@@ -86,13 +91,13 @@ class ArrayToDelimitedStringConverterTests {
 	static class Data {
 
 		@Delimiter(Delimiter.NONE)
-		String[] none;
+		String @Nullable [] none;
 
 		@Delimiter("-")
-		String[] dash;
+		String @Nullable [] dash;
 
 		@Delimiter(".")
-		int[] type;
+		int @Nullable [] type;
 
 	}
 

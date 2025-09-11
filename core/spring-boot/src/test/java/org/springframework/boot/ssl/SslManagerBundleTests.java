@@ -63,12 +63,14 @@ class SslManagerBundleTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenKeyManagerFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SslManagerBundle.of(null, this.trustManagerFactory))
 			.withMessage("'keyManagerFactory' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenTrustManagerFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SslManagerBundle.of(this.keyManagerFactory, null))
 			.withMessage("'trustManagerFactory' must not be null");

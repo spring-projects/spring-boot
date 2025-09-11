@@ -18,6 +18,7 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -48,6 +49,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = new InvalidConfigurationPropertyValueFailureAnalyzer(null).analyze(failure);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 			.contains("Invalid value 'invalid' for configuration property 'test.property'.");
 	}
@@ -59,6 +61,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = performAnalysis(failure);
+		assertThat(analysis).isNotNull();
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getAction()).contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getDescription()).contains("Validation failed for the following reason")
@@ -76,6 +79,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"com.example.test-property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = performAnalysis(failure);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains("com.example.test-property")
 			.contains("invalid")
 			.contains("property source \"systemEnvironment\"");
@@ -93,6 +97,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", null);
 		FailureAnalysis analysis = performAnalysis(failure);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getAction()).contains("Review the value of the property.");
 		assertThat(analysis.getDescription()).contains("No reason was provided.")
 			.doesNotContain("Additionally, this property is also set");
@@ -112,6 +117,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", "This is not valid.");
 		FailureAnalysis analysis = performAnalysis(failure);
+		assertThat(analysis).isNotNull();
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getAction()).contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getDescription())
@@ -126,6 +132,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.key.not.defined", "invalid", "This is not valid.");
 		FailureAnalysis analysis = performAnalysis(failure);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 			.contains("Invalid value 'invalid' for configuration property 'test.key.not.defined'.");
 	}
@@ -137,7 +144,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		assertThat(analysis.getCause()).isSameAs(failure);
 	}
 
-	private FailureAnalysis performAnalysis(InvalidConfigurationPropertyValueException failure) {
+	private @Nullable FailureAnalysis performAnalysis(InvalidConfigurationPropertyValueException failure) {
 		InvalidConfigurationPropertyValueFailureAnalyzer analyzer = new InvalidConfigurationPropertyValueFailureAnalyzer(
 				this.environment);
 		return analyzer.analyze(failure);
@@ -157,7 +164,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			return this.propertySource.getProperty(name);
 		}
 

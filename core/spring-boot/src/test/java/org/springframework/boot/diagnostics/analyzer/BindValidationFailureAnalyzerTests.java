@@ -23,6 +23,7 @@ import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,6 +64,7 @@ class BindValidationFailureAnalyzerTests {
 	@Test
 	void bindExceptionWithFieldErrorsDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(failure("test.foo.foo", "null", "must not be null"))
 			.contains(failure("test.foo.value", "0", "at least five"))
 			.contains(failure("test.foo.nested.bar", "null", "must not be null"))
@@ -73,12 +75,14 @@ class BindValidationFailureAnalyzerTests {
 	@Test
 	void bindExceptionWithOriginDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class, "test.foo.value=4");
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains("Origin: \"test.foo.value\" from property source \"test\"");
 	}
 
 	@Test
 	void bindExceptionWithObjectErrorsDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(ObjectValidationFailureConfiguration.class);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains("Reason: This object could not be bound.");
 	}
 
@@ -89,6 +93,7 @@ class BindValidationFailureAnalyzerTests {
 		cause.addError(new FieldError("test", "value", "must not be null"));
 		BeanCreationException rootFailure = new BeanCreationException("bean creation failure", cause);
 		FailureAnalysis analysis = new BindValidationFailureAnalyzer().analyze(rootFailure, rootFailure);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(failure("test.value", "null", "must not be null"));
 	}
 
@@ -96,13 +101,13 @@ class BindValidationFailureAnalyzerTests {
 		return String.format("Property: %s%n    Value: \"%s\"%n    Reason: %s", property, value, reason);
 	}
 
-	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
+	private @Nullable FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {
 		BeanCreationException failure = createFailure(configuration, environment);
 		assertThat(failure).isNotNull();
 		return new BindValidationFailureAnalyzer().analyze(failure);
 	}
 
-	private BeanCreationException createFailure(Class<?> configuration, String... environment) {
+	private @Nullable BeanCreationException createFailure(Class<?> configuration, String... environment) {
 		try {
 			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 			addEnvironment(context, environment);
@@ -143,6 +148,7 @@ class BindValidationFailureAnalyzerTests {
 	static class FieldValidationFailureProperties {
 
 		@NotNull
+		@SuppressWarnings("NullAway.Init")
 		private String foo;
 
 		@Min(value = 5, message = "at least five")
@@ -178,6 +184,7 @@ class BindValidationFailureAnalyzerTests {
 		static class Nested {
 
 			@NotNull
+			@SuppressWarnings("NullAway.Init")
 			private String bar;
 
 			String getBar() {

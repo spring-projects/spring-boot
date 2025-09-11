@@ -49,6 +49,7 @@ class ConfigDataResourceNotFoundExceptionTests {
 	private File missing;
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@BeforeEach
@@ -61,6 +62,7 @@ class ConfigDataResourceNotFoundExceptionTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenResourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigDataResourceNotFoundException(null))
 			.withMessage("'resource' must not be null");

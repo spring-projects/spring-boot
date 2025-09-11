@@ -46,7 +46,9 @@ abstract class AbstractJsonParserTests {
 		Map<String, Object> map = this.parser.parseMap("{\"foo\":\"bar\",\"spam\":1}");
 		assertThat(map).hasSize(2);
 		assertThat(map).containsEntry("foo", "bar");
-		assertThat(((Number) map.get("spam")).longValue()).isOne();
+		Object spam = map.get("spam");
+		assertThat(spam).isNotNull();
+		assertThat(((Number) spam).longValue()).isOne();
 	}
 
 	@Test

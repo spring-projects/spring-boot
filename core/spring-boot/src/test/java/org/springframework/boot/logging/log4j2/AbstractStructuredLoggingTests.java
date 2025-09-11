@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -47,6 +48,7 @@ abstract class AbstractStructuredLoggingTests {
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	StructuredLoggingJsonMembersCustomizer<?> customizer;
 
 	MockStructuredLoggingJsonMembersCustomizerBuilder<?> customizerBuilder = new MockStructuredLoggingJsonMembersCustomizerBuilder<>(
@@ -65,7 +67,7 @@ abstract class AbstractStructuredLoggingTests {
 		return createEvent(null);
 	}
 
-	protected static MutableLogEvent createEvent(Throwable thrown) {
+	protected static MutableLogEvent createEvent(@Nullable Throwable thrown) {
 		MutableLogEvent event = new MutableLogEvent();
 		event.setTimeMillis(EVENT_TIME.toEpochMilli());
 		event.setLevel(Level.INFO);

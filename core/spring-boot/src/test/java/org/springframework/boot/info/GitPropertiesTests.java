@@ -18,6 +18,7 @@ package org.springframework.boot.info;
 
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -114,7 +115,7 @@ class GitPropertiesTests {
 		assertThat(RuntimeHintsPredicates.resource().forResource("git.properties")).accepts(runtimeHints);
 	}
 
-	private static Properties createProperties(String branch, String commitId, String commitIdAbbrev,
+	private static Properties createProperties(String branch, String commitId, @Nullable String commitIdAbbrev,
 			String commitTime) {
 		Properties properties = new Properties();
 		properties.put("branch", branch);

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -87,7 +88,8 @@ class ContextIdApplicationContextInitializerTests {
 		assertThat(createContext(parent).getId()).isEqualTo("application");
 	}
 
-	private ConfigurableApplicationContext createContext(ConfigurableApplicationContext parent, String... properties) {
+	private ConfigurableApplicationContext createContext(@Nullable ConfigurableApplicationContext parent,
+			String... properties) {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context, properties);
 		if (parent != null) {

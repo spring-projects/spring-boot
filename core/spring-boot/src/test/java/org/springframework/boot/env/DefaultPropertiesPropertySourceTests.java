@@ -44,6 +44,7 @@ import static org.mockito.BDDMockito.then;
 class DefaultPropertiesPropertySourceTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Consumer<DefaultPropertiesPropertySource> action;
 
 	@Test
@@ -107,7 +108,7 @@ class DefaultPropertiesPropertySourceTests {
 		MutablePropertySources propertySources = environment.getPropertySources();
 		DefaultPropertiesPropertySource.addOrMerge(Collections.singletonMap("spring", "boot"), propertySources);
 		assertThat(propertySources.contains(DefaultPropertiesPropertySource.NAME)).isTrue();
-		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("spring")).isEqualTo("boot");
+		assertThat(getDefaultPropertySource(propertySources).getProperty("spring")).isEqualTo("boot");
 	}
 
 	@Test
@@ -117,8 +118,8 @@ class DefaultPropertiesPropertySourceTests {
 		propertySources.addLast(new DefaultPropertiesPropertySource(Collections.singletonMap("spring", "boot")));
 		DefaultPropertiesPropertySource.addOrMerge(Collections.singletonMap("hello", "world"), propertySources);
 		assertThat(propertySources.contains(DefaultPropertiesPropertySource.NAME)).isTrue();
-		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("spring")).isEqualTo("boot");
-		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("hello")).isEqualTo("world");
+		assertThat(getDefaultPropertySource(propertySources).getProperty("spring")).isEqualTo("boot");
+		assertThat(getDefaultPropertySource(propertySources).getProperty("hello")).isEqualTo("world");
 	}
 
 	@Test
@@ -130,8 +131,8 @@ class DefaultPropertiesPropertySourceTests {
 		propertySources.addFirst(composite);
 		DefaultPropertiesPropertySource.addOrMerge(Collections.singletonMap("hello", "world"), propertySources);
 		assertThat(propertySources.contains(DefaultPropertiesPropertySource.NAME)).isTrue();
-		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("spring")).isNull();
-		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("hello")).isEqualTo("world");
+		assertThat(getDefaultPropertySource(propertySources).getProperty("spring")).isNull();
+		assertThat(getDefaultPropertySource(propertySources).getProperty("hello")).isEqualTo("world");
 	}
 
 	@Test
@@ -144,6 +145,12 @@ class DefaultPropertiesPropertySourceTests {
 		String[] names = propertySources.stream().map(PropertySource::getName).toArray(String[]::new);
 		assertThat(names).containsExactly(MockPropertySource.MOCK_PROPERTIES_PROPERTY_SOURCE_NAME, "test",
 				DefaultPropertiesPropertySource.NAME);
+	}
+
+	private PropertySource<?> getDefaultPropertySource(MutablePropertySources propertySources) {
+		PropertySource<?> propertySource = propertySources.get(DefaultPropertiesPropertySource.NAME);
+		assertThat(propertySource).isNotNull();
+		return propertySource;
 	}
 
 }

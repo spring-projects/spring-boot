@@ -19,6 +19,10 @@ package org.springframework.boot.logging;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Creates a test exception without too much stacktrace.
  *
@@ -40,7 +44,9 @@ public final class TestException {
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
-		return creatorThread.exception;
+		Exception exception = creatorThread.exception;
+		assertThat(exception).isNotNull();
+		return exception;
 	}
 
 	private static Exception createTestException() {
@@ -70,7 +76,7 @@ public final class TestException {
 
 	private static final class CreatorThread extends Thread {
 
-		Exception exception;
+		@Nullable Exception exception;
 
 		@Override
 		public void run() {

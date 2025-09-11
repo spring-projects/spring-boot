@@ -26,6 +26,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletRequestListener;
 import jakarta.servlet.ServletResponse;
+import org.jspecify.annotations.Nullable;
 
 class TestServletAndFilterAndListener implements Servlet, Filter, ServletRequestListener {
 
@@ -41,7 +42,7 @@ class TestServletAndFilterAndListener implements Servlet, Filter, ServletRequest
 	}
 
 	@Override
-	public ServletConfig getServletConfig() {
+	public @Nullable ServletConfig getServletConfig() {
 		return null;
 	}
 
@@ -52,7 +53,7 @@ class TestServletAndFilterAndListener implements Servlet, Filter, ServletRequest
 	}
 
 	@Override
-	public String getServletInfo() {
+	public @Nullable String getServletInfo() {
 		return null;
 	}
 

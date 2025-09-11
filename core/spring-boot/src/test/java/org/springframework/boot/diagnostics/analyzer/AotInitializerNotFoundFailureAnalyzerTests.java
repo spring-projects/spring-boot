@@ -16,6 +16,7 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.AotInitializerNotFoundException;
@@ -33,6 +34,7 @@ class AotInitializerNotFoundFailureAnalyzerTests {
 	@Test
 	void shouldAnalyze() {
 		FailureAnalysis analysis = analyze();
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).isEqualTo(
 				"Startup with AOT mode enabled failed: AOT initializer class org.springframework.boot.diagnostics.analyzer.AotInitializerNotFoundFailureAnalyzerTests__ApplicationContextInitializer could not be found");
 		assertThat(analysis.getAction()).isEqualTo(
@@ -43,7 +45,7 @@ class AotInitializerNotFoundFailureAnalyzerTests {
 						\tIf you want to run the application in regular mode, remove the system property 'spring.aot.enabled'""");
 	}
 
-	private FailureAnalysis analyze() {
+	private @Nullable FailureAnalysis analyze() {
 		return new AotInitializerNotFoundFailureAnalyzer()
 			.analyze(new AotInitializerNotFoundException(AotInitializerNotFoundFailureAnalyzerTests.class,
 					AotInitializerNotFoundFailureAnalyzerTests.class + "__ApplicationContextInitializer"));

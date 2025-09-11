@@ -61,9 +61,11 @@ import static org.mockito.Mockito.never;
 abstract class AbstractFilterRegistrationBeanTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	ServletContext servletContext;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	FilterRegistration.Dynamic registration;
 
 	@Test
@@ -130,6 +132,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletRegistrationBeans(null))
@@ -137,6 +140,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException()
@@ -164,6 +168,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlPatterns(null))
@@ -171,6 +176,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlPatterns((String[]) null))
@@ -178,6 +184,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletNames(null))
@@ -185,6 +192,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addServletNames((String[]) null))

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.convert.ConversionFailedException;
@@ -165,7 +166,7 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		private final Map<String, AtomicInteger> counts = new HashMap<>();
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			incrementCount(name);
 			return super.getProperty(name);
 		}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties.bind;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Java bean with an additional public single-arg constructor.
  *
@@ -23,7 +25,7 @@ package org.springframework.boot.context.properties.bind;
  */
 public class JavaBeanWithPublicConstructor {
 
-	private String value;
+	private @Nullable String value;
 
 	public JavaBeanWithPublicConstructor() {
 	}
@@ -32,11 +34,11 @@ public class JavaBeanWithPublicConstructor {
 		setValue(value);
 	}
 
-	public String getValue() {
+	public @Nullable String getValue() {
 		return this.value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(@Nullable String value) {
 		this.value = value;
 	}
 

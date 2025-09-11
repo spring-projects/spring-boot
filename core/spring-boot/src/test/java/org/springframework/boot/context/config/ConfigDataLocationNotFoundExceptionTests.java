@@ -39,6 +39,7 @@ class ConfigDataLocationNotFoundExceptionTests {
 			this.location);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenLocationIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigDataLocationNotFoundException(null))
 			.withMessage("'location' must not be null");

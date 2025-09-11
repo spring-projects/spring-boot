@@ -104,6 +104,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		Map<String, Object> expectedError = new HashMap<>();
 		expectedError.put("type", "java.lang.RuntimeException");
 		expectedError.put("message", "Boom");
+		assertThat(error).isNotNull();
 		assertThat(error).containsAllEntriesOf(expectedError);
 		String stackTrace = (String) error.get("stack_trace");
 		assertThat(stackTrace)
@@ -126,6 +127,7 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		event.setThrowableProxy(new ThrowableProxy(new RuntimeException("Boom")));
 		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
 		Map<String, Object> error = (Map<String, Object>) deserialized.get("error");
+		assertThat(error).isNotNull();
 		String stackTrace = (String) error.get("stack_trace");
 		assertThat(stackTrace).isEqualTo("stacktrace:RuntimeException");
 	}

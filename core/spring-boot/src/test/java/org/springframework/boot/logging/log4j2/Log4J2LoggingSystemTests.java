@@ -54,6 +54,7 @@ import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.status.StatusListener;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -247,10 +248,11 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		org.apache.logging.log4j.Level level = org.apache.logging.log4j.Level.forName("CUSTOM_LEVEL", 1000);
 		loggerContext.getConfiguration().addLogger(loggerName, new LoggerConfig(loggerName, level, true));
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(loggerName);
+		assertThat(configuration).isNotNull();
 		assertThat(configuration.getLevelConfiguration().getName()).isEqualTo("CUSTOM_LEVEL");
 	}
 
-	private void assertIsPresent(String loggerName, Map<String, LogLevel> loggers, LogLevel logLevel) {
+	private void assertIsPresent(String loggerName, Map<String, LogLevel> loggers, @Nullable LogLevel logLevel) {
 		assertThat(loggers).containsKey(loggerName);
 		assertThat(loggers).containsEntry(loggerName, logLevel);
 	}

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.origin;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 
 /**
@@ -27,16 +30,16 @@ public final class MockOrigin implements Origin {
 
 	private final String value;
 
-	private final Origin parent;
+	private final @Nullable Origin parent;
 
-	private MockOrigin(String value, Origin parent) {
+	private MockOrigin(String value, @Nullable Origin parent) {
 		Assert.notNull(value, "'value' must not be null");
 		this.value = value;
 		this.parent = parent;
 	}
 
 	@Override
-	public Origin getParent() {
+	public @Nullable Origin getParent() {
 		return this.parent;
 	}
 
@@ -61,11 +64,13 @@ public final class MockOrigin implements Origin {
 		return this.value;
 	}
 
-	public static Origin of(String value) {
+	@Contract("!null -> !null")
+	public static @Nullable Origin of(@Nullable String value) {
 		return of(value, null);
 	}
 
-	public static Origin of(String value, Origin parent) {
+	@Contract("!null, _ -> !null")
+	public static @Nullable Origin of(@Nullable String value, @Nullable Origin parent) {
 		return (value != null) ? new MockOrigin(value, parent) : null;
 	}
 

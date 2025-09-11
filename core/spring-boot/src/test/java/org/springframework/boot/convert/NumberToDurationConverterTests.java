@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.annotation.AnnotationUtils;
@@ -52,12 +53,13 @@ class NumberToDurationConverterTests {
 		assertThat(convert(conversionService, -10, ChronoUnit.SECONDS)).hasSeconds(-10);
 	}
 
-	private Duration convert(ConversionService conversionService, Integer source) {
+	private @Nullable Duration convert(ConversionService conversionService, Integer source) {
 		return conversionService.convert(source, Duration.class);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Duration convert(ConversionService conversionService, Integer source, ChronoUnit defaultUnit) {
+	private @Nullable Duration convert(ConversionService conversionService, Integer source,
+			@Nullable ChronoUnit defaultUnit) {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
 			DurationUnit unitAnnotation = AnnotationUtils

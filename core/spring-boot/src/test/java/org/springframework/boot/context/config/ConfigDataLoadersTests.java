@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.config;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.function.Supplier;
 import org.apache.commons.logging.Log;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.bootstrap.BootstrapContext;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
@@ -55,9 +53,6 @@ class ConfigDataLoadersTests {
 	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
 	private final ConfigDataLoaderContext context = mock(ConfigDataLoaderContext.class);
-
-	@TempDir
-	private File tempDir;
 
 	@Test
 	void createWhenLoaderHasDeferredLogFactoryParameterInjectsDeferredLogFactory() {
@@ -103,6 +98,7 @@ class ConfigDataLoadersTests {
 				springFactoriesLoader);
 		TestConfigDataResource location = new TestConfigDataResource("test");
 		ConfigData loaded = loaders.load(this.context, location);
+		assertThat(loaded).isNotNull();
 		assertThat(getLoader(loaded)).isInstanceOf(TestConfigDataLoader.class);
 	}
 
@@ -136,11 +132,14 @@ class ConfigDataLoadersTests {
 				springFactoriesLoader);
 		TestConfigDataResource location = new TestConfigDataResource("test");
 		ConfigData loaded = loaders.load(this.context, location);
+		assertThat(loaded).isNotNull();
 		assertThat(getLoader(loaded)).isInstanceOf(SpecificConfigDataLoader.class);
 	}
 
 	private ConfigDataLoader<?> getLoader(ConfigData loaded) {
-		return (ConfigDataLoader<?>) loaded.getPropertySources().get(0).getProperty("loader");
+		ConfigDataLoader<?> result = (ConfigDataLoader<?>) loaded.getPropertySources().get(0).getProperty("loader");
+		assertThat(result).isNotNull();
+		return result;
 	}
 
 	private static ConfigData createConfigData(ConfigDataLoader<?> loader, ConfigDataResource resource) {

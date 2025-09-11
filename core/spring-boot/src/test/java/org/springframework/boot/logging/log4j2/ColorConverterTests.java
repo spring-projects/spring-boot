@@ -18,6 +18,7 @@ package org.springframework.boot.logging.log4j2;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.AbstractLogEvent;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -212,20 +213,22 @@ class ColorConverterTests {
 		assertThat(output).hasToString("\033[32min\033[0;39m");
 	}
 
-	private ColorConverter newConverter(String styling) {
-		return ColorConverter.newInstance(null, new String[] { this.in, styling });
+	private ColorConverter newConverter(@Nullable String styling) {
+		ColorConverter converter = ColorConverter.newInstance(null, new String[] { this.in, styling });
+		assertThat(converter).isNotNull();
+		return converter;
 	}
 
 	static class TestLogEvent extends AbstractLogEvent {
 
-		private Level level;
+		private @Nullable Level level;
 
 		@Override
-		public Level getLevel() {
+		public @Nullable Level getLevel() {
 			return this.level;
 		}
 
-		void setLevel(Level level) {
+		void setLevel(@Nullable Level level) {
 			this.level = level;
 		}
 

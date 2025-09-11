@@ -16,9 +16,13 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -37,7 +41,10 @@ class ConfigDataLocationResolverTests {
 
 	@Test
 	void resolveProfileSpecificReturnsEmptyList() {
-		assertThat(this.resolver.resolveProfileSpecific(this.context, null, null)).isEmpty();
+		ConfigDataLocation location = ConfigDataLocation.of("location");
+		MockEnvironment environment = new MockEnvironment();
+		Profiles profiles = new Profiles(environment, Binder.get(environment), null);
+		assertThat(this.resolver.resolveProfileSpecific(this.context, location, profiles)).isEmpty();
 	}
 
 	static class TestConfigDataLocationResolver implements ConfigDataLocationResolver<ConfigDataResource> {
@@ -50,7 +57,7 @@ class ConfigDataLocationResolverTests {
 		@Override
 		public List<ConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 				ConfigDataLocation location) {
-			return null;
+			return Collections.emptyList();
 		}
 
 	}

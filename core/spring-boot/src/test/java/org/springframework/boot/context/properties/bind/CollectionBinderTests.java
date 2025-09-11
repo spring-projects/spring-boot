@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BinderTests.ExampleEnum;
@@ -117,7 +118,9 @@ class CollectionBinderTests {
 		this.sources.add(source);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", INTEGER_LIST))
 			.satisfies((ex) -> {
-				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+				Throwable cause = ex.getCause();
+				assertThat(cause).isNotNull();
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) cause)
 					.getUnboundProperties();
 				assertThat(unbound).singleElement().satisfies((property) -> {
 					assertThat(property.getName()).hasToString("foo[3]");
@@ -137,7 +140,9 @@ class CollectionBinderTests {
 		assertThatExceptionOfType(BindException.class)
 			.isThrownBy(() -> this.binder.bind("foo", Bindable.listOf(Name.class)))
 			.satisfies((ex) -> {
-				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+				Throwable cause = ex.getCause();
+				assertThat(cause).isNotNull();
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) cause)
 					.getUnboundProperties();
 				assertThat(unbound).singleElement().satisfies((property) -> {
 					assertThat(property.getName()).hasToString("foo[1].missing");
@@ -171,7 +176,9 @@ class CollectionBinderTests {
 		Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", target))
 			.satisfies((ex) -> {
-				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+				Throwable cause = ex.getCause();
+				assertThat(cause).isNotNull();
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) cause)
 					.getUnboundProperties();
 				assertThat(unbound).singleElement().satisfies((property) -> {
 					assertThat(property.getName()).hasToString("foo[4].value");
@@ -394,8 +401,10 @@ class CollectionBinderTests {
 		Bindable<BeanWithNestedCollection> target = Bindable.of(BeanWithNestedCollection.class);
 		BeanWithNestedCollection foo = this.binder.bind("foo", target).get();
 		assertThat(foo.getValue()).isEqualTo("one");
-		assertThat(foo.getFoos().get(0).getValue()).isEqualTo("two");
-		assertThat(foo.getFoos().get(1).getValue()).isEqualTo("three");
+		List<BeanWithNestedCollection> foos = foo.getFoos();
+		assertThat(foos).isNotNull();
+		assertThat(foos.get(0).getValue()).isEqualTo("two");
+		assertThat(foos.get(1).getValue()).isEqualTo("three");
 	}
 
 	@Test
@@ -465,7 +474,9 @@ class CollectionBinderTests {
 		source.put("foo.values[0]", "foo-bar,bar-baz");
 		this.sources.add(source);
 		BeanWithEnumSetCollection result = this.binder.bind("foo", Bindable.of(BeanWithEnumSetCollection.class)).get();
-		assertThat(result.getValues().get(0)).containsExactly(ExampleEnum.FOO_BAR, ExampleEnum.BAR_BAZ);
+		List<EnumSet<ExampleEnum>> values = result.getValues();
+		assertThat(values).isNotNull();
+		assertThat(values.get(0)).containsExactly(ExampleEnum.FOO_BAR, ExampleEnum.BAR_BAZ);
 	}
 
 	@Test
@@ -504,7 +515,7 @@ class CollectionBinderTests {
 
 		private Set<String> itemsSet = new LinkedHashSet<>();
 
-		private String string;
+		private @Nullable String string;
 
 		List<String> getItems() {
 			return this.items;
@@ -522,11 +533,11 @@ class CollectionBinderTests {
 			this.itemsSet = itemsSet;
 		}
 
-		String getString() {
+		@Nullable String getString() {
 			return this.string;
 		}
 
-		void setString(String string) {
+		void setString(@Nullable String string) {
 			this.string = string;
 		}
 
@@ -576,23 +587,23 @@ class CollectionBinderTests {
 
 	static class BeanWithNestedCollection {
 
-		private String value;
+		private @Nullable String value;
 
-		private List<BeanWithNestedCollection> foos;
+		private @Nullable List<BeanWithNestedCollection> foos;
 
-		List<BeanWithNestedCollection> getFoos() {
+		@Nullable List<BeanWithNestedCollection> getFoos() {
 			return this.foos;
 		}
 
-		void setFoos(List<BeanWithNestedCollection> foos) {
+		void setFoos(@Nullable List<BeanWithNestedCollection> foos) {
 			this.foos = foos;
 		}
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			this.value = value;
 		}
 
@@ -600,13 +611,13 @@ class CollectionBinderTests {
 
 	static class ClonedArrayBean {
 
-		private String[] bar;
+		private String @Nullable [] bar;
 
-		String[] getBar() {
-			return this.bar.clone();
+		String @Nullable [] getBar() {
+			return (this.bar != null) ? this.bar.clone() : null;
 		}
 
-		void setBar(String[] bar) {
+		void setBar(String @Nullable [] bar) {
 			this.bar = bar;
 		}
 
@@ -614,13 +625,13 @@ class CollectionBinderTests {
 
 	static class BeanWithGetterException {
 
-		private List<String> values;
+		private @Nullable List<String> values;
 
-		void setValues(List<String> values) {
+		void setValues(@Nullable List<String> values) {
 			this.values = values;
 		}
 
-		List<String> getValues() {
+		@Nullable List<String> getValues() {
 			return Collections.unmodifiableList(this.values);
 		}
 
@@ -628,13 +639,13 @@ class CollectionBinderTests {
 
 	static class BeanWithEnumSetCollection {
 
-		private List<EnumSet<ExampleEnum>> values;
+		private @Nullable List<EnumSet<ExampleEnum>> values;
 
-		void setValues(List<EnumSet<ExampleEnum>> values) {
+		void setValues(@Nullable List<EnumSet<ExampleEnum>> values) {
 			this.values = values;
 		}
 
-		List<EnumSet<ExampleEnum>> getValues() {
+		@Nullable List<EnumSet<ExampleEnum>> getValues() {
 			return this.values;
 		}
 

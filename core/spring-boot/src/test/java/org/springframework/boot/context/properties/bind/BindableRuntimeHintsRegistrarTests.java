@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.apache.tomcat.jdbc.pool.PoolProperties;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.ExecutableHint;
@@ -295,7 +296,7 @@ class BindableRuntimeHintsRegistrarTests {
 			throws NoSuchMethodException, SecurityException {
 		Constructor<?> constructor = PoolProperties.InterceptorProperty.class.getConstructor(String.class,
 				String.class);
-		String[] parameterNames = new StandardReflectionParameterNameDiscoverer().getParameterNames(constructor);
+		@Nullable String[] parameterNames = new StandardReflectionParameterNameDiscoverer().getParameterNames(constructor);
 		assertThat(parameterNames).isNull();
 		assertThatNoException().isThrownBy(() -> registerHints(PoolProperties.class));
 	}
@@ -425,24 +426,24 @@ class BindableRuntimeHintsRegistrarTests {
 
 	public static class WithExternalNested {
 
-		private String name;
+		private @Nullable String name;
 
 		@NestedConfigurationProperty
-		private SampleType sampleType;
+		private @Nullable SampleType sampleType;
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 
-		public SampleType getSampleType() {
+		public @Nullable SampleType getSampleType() {
 			return this.sampleType;
 		}
 
-		public void setSampleType(SampleType sampleType) {
+		public void setSampleType(@Nullable SampleType sampleType) {
 			this.sampleType = sampleType;
 		}
 
@@ -451,13 +452,13 @@ class BindableRuntimeHintsRegistrarTests {
 	public static class WithRecursive {
 
 		@NestedConfigurationProperty
-		private Recursive recursive;
+		private @Nullable Recursive recursive;
 
-		public Recursive getRecursive() {
+		public @Nullable Recursive getRecursive() {
 			return this.recursive;
 		}
 
-		public void setRecursive(Recursive recursive) {
+		public void setRecursive(@Nullable Recursive recursive) {
 			this.recursive = recursive;
 		}
 
@@ -466,9 +467,9 @@ class BindableRuntimeHintsRegistrarTests {
 	public static class ImmutableWithRecursive {
 
 		@NestedConfigurationProperty
-		private final ImmutableRecursive recursive;
+		private final @Nullable ImmutableRecursive recursive;
 
-		ImmutableWithRecursive(ImmutableRecursive recursive) {
+		ImmutableWithRecursive(@Nullable ImmutableRecursive recursive) {
 			this.recursive = recursive;
 		}
 
@@ -476,8 +477,10 @@ class BindableRuntimeHintsRegistrarTests {
 
 	public static class WithWellKnownTypes implements ApplicationContextAware, EnvironmentAware {
 
+		@SuppressWarnings("NullAway.Init")
 		private ApplicationContext applicationContext;
 
+		@SuppressWarnings("NullAway.Init")
 		private Environment environment;
 
 		public ApplicationContext getApplicationContext() {
@@ -516,23 +519,23 @@ class BindableRuntimeHintsRegistrarTests {
 
 	public static class PackagePrivateGettersAndSetters {
 
-		private String alpha;
+		private @Nullable String alpha;
 
-		private Map<String, String> bravo;
+		private @Nullable Map<String, String> bravo;
 
-		String getAlpha() {
+		@Nullable String getAlpha() {
 			return this.alpha;
 		}
 
-		void setAlpha(String alpha) {
+		void setAlpha(@Nullable String alpha) {
 			this.alpha = alpha;
 		}
 
-		Map<String, String> getBravo() {
+		@Nullable Map<String, String> getBravo() {
 			return this.bravo;
 		}
 
-		void setBravo(Map<String, String> bravo) {
+		void setBravo(@Nullable Map<String, String> bravo) {
 			this.bravo = bravo;
 		}
 
@@ -563,13 +566,13 @@ class BindableRuntimeHintsRegistrarTests {
 
 	public static class Recursive {
 
-		private Recursive recursive;
+		private @Nullable Recursive recursive;
 
-		public Recursive getRecursive() {
+		public @Nullable Recursive getRecursive() {
 			return this.recursive;
 		}
 
-		public void setRecursive(Recursive recursive) {
+		public void setRecursive(@Nullable Recursive recursive) {
 			this.recursive = recursive;
 		}
 
@@ -578,9 +581,9 @@ class BindableRuntimeHintsRegistrarTests {
 	public static class ImmutableRecursive {
 
 		@SuppressWarnings("unused")
-		private final ImmutableRecursive recursive;
+		private final @Nullable ImmutableRecursive recursive;
 
-		ImmutableRecursive(ImmutableRecursive recursive) {
+		ImmutableRecursive(@Nullable ImmutableRecursive recursive) {
 			this.recursive = recursive;
 		}
 
@@ -589,13 +592,13 @@ class BindableRuntimeHintsRegistrarTests {
 	public static class WithCrossReference {
 
 		@NestedConfigurationProperty
-		private CrossReferenceA crossReferenceA;
+		private @Nullable CrossReferenceA crossReferenceA;
 
-		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
+		public void setCrossReferenceA(@Nullable CrossReferenceA crossReferenceA) {
 			this.crossReferenceA = crossReferenceA;
 		}
 
-		public CrossReferenceA getCrossReferenceA() {
+		public @Nullable CrossReferenceA getCrossReferenceA() {
 			return this.crossReferenceA;
 		}
 
@@ -604,13 +607,13 @@ class BindableRuntimeHintsRegistrarTests {
 	public static class CrossReferenceA {
 
 		@NestedConfigurationProperty
-		private CrossReferenceB crossReferenceB;
+		private @Nullable CrossReferenceB crossReferenceB;
 
-		public void setCrossReferenceB(CrossReferenceB crossReferenceB) {
+		public void setCrossReferenceB(@Nullable CrossReferenceB crossReferenceB) {
 			this.crossReferenceB = crossReferenceB;
 		}
 
-		public CrossReferenceB getCrossReferenceB() {
+		public @Nullable CrossReferenceB getCrossReferenceB() {
 			return this.crossReferenceB;
 		}
 
@@ -618,13 +621,13 @@ class BindableRuntimeHintsRegistrarTests {
 
 	public static class CrossReferenceB {
 
-		private CrossReferenceA crossReferenceA;
+		private @Nullable CrossReferenceA crossReferenceA;
 
-		public void setCrossReferenceA(CrossReferenceA crossReferenceA) {
+		public void setCrossReferenceA(@Nullable CrossReferenceA crossReferenceA) {
 			this.crossReferenceA = crossReferenceA;
 		}
 
-		public CrossReferenceA getCrossReferenceA() {
+		public @Nullable CrossReferenceA getCrossReferenceA() {
 			return this.crossReferenceA;
 		}
 
@@ -633,9 +636,9 @@ class BindableRuntimeHintsRegistrarTests {
 	public static class WithGeneric {
 
 		@NestedConfigurationProperty
-		private GenericObject<?> generic;
+		private @Nullable GenericObject<?> generic;
 
-		public GenericObject<?> getGeneric() {
+		public @Nullable GenericObject<?> getGeneric() {
 			return this.generic;
 		}
 
@@ -665,13 +668,13 @@ class BindableRuntimeHintsRegistrarTests {
 
 		public static class Nested {
 
-			private String field;
+			private @Nullable String field;
 
-			public String getField() {
+			public @Nullable String getField() {
 				return this.field;
 			}
 
-			public void setField(String field) {
+			public void setField(@Nullable String field) {
 				this.field = field;
 			}
 
@@ -697,13 +700,13 @@ class BindableRuntimeHintsRegistrarTests {
 
 			public static class Nested {
 
-				private String field;
+				private @Nullable String field;
 
-				public String getField() {
+				public @Nullable String getField() {
 					return this.field;
 				}
 
-				public void setField(String field) {
+				public void setField(@Nullable String field) {
 					this.field = field;
 				}
 
@@ -715,25 +718,25 @@ class BindableRuntimeHintsRegistrarTests {
 
 	public abstract static class BaseProperties {
 
-		private InheritedNested inheritedNested;
+		private @Nullable InheritedNested inheritedNested;
 
-		public InheritedNested getInheritedNested() {
+		public @Nullable InheritedNested getInheritedNested() {
 			return this.inheritedNested;
 		}
 
-		public void setInheritedNested(InheritedNested inheritedNested) {
+		public void setInheritedNested(@Nullable InheritedNested inheritedNested) {
 			this.inheritedNested = inheritedNested;
 		}
 
 		public static class InheritedNested {
 
-			private String alpha;
+			private @Nullable String alpha;
 
-			public String getAlpha() {
+			public @Nullable String getAlpha() {
 				return this.alpha;
 			}
 
-			public void setAlpha(String alpha) {
+			public void setAlpha(@Nullable String alpha) {
 				this.alpha = alpha;
 			}
 
@@ -743,13 +746,13 @@ class BindableRuntimeHintsRegistrarTests {
 
 	public static class ExtendingProperties extends BaseProperties {
 
-		private String bravo;
+		private @Nullable String bravo;
 
-		public String getBravo() {
+		public @Nullable String getBravo() {
 			return this.bravo;
 		}
 
-		public void setBravo(String bravo) {
+		public void setBravo(@Nullable String bravo) {
 			this.bravo = bravo;
 		}
 

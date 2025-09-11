@@ -56,15 +56,19 @@ class ConfigDataLocationResolversTests {
 	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Binder binder;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ConfigDataLocationResolverContext context;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Profiles profiles;
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	private File tempDir;
 
 	@Test
