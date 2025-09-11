@@ -36,7 +36,7 @@ public final class RestClientTypeExcludeFilter extends StandardAnnotationCustomi
 
 	private static final Class<?>[] NO_COMPONENTS = {};
 
-	private static final String DATABIND_MODULE_CLASS_NAME = "com.fasterxml.jackson.databind.Module";
+	private static final String DATABIND_MODULE_CLASS_NAME = "tools.jackson.databind.JacksonModule";
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 

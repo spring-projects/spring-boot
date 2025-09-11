@@ -160,11 +160,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 
 	/**
 	 * {@link WebMvcConfigurer} to apply {@link EndpointJsonMapper} for
-	 * {@link OperationResponseBody} to
-	 * {@link org.springframework.http.converter.json.MappingJackson2HttpMessageConverter}
-	 * instances.
+	 * {@link OperationResponseBody} to {@link JacksonJsonHttpMessageConverter} instances.
 	 */
-	@SuppressWarnings("removal")
 	static class EndpointJsonMapperWebMvcConfigurer implements WebMvcConfigurer {
 
 		private static final List<MediaType> MEDIA_TYPES = Collections
@@ -177,6 +174,7 @@ public class WebMvcEndpointManagementContextConfiguration {
 		}
 
 		@Override
+		@SuppressWarnings("removal")
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			for (HttpMessageConverter<?> converter : converters) {
 				if (converter instanceof JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter) {

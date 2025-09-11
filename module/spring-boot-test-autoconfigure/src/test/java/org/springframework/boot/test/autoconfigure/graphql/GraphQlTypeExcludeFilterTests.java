@@ -19,13 +19,13 @@ package org.springframework.boot.test.autoconfigure.graphql;
 import java.io.IOException;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import graphql.GraphQLError;
 import graphql.execution.instrumentation.Instrumentation;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.idl.RuntimeWiring;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.module.SimpleModule;
 
 import org.springframework.boot.graphql.autoconfigure.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.ComponentScan;

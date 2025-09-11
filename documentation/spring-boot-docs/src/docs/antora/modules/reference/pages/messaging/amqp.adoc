@@ -74,7 +74,7 @@ spring:
 ----
 
 Retries are disabled by default.
-You can also customize the javadoc:org.springframework.retry.support.RetryTemplate[] programmatically by declaring a javadoc:org.springframework.boot.autoconfigure.amqp.RabbitRetryTemplateCustomizer[] bean.
+You can also customize the javadoc:org.springframework.core.retry.RetryTemplate[] programmatically by declaring a javadoc:org.springframework.boot.autoconfigure.amqp.RabbitTemplateRetrySettingsCustomizer[] bean.
 
 If you need to create more javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] with the same settings as the factories used by the auto-configuration.
 
@@ -129,7 +129,7 @@ You can enable retries to handle situations where your listener throws an except
 By default, javadoc:org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer[] is used, but you can define a javadoc:org.springframework.amqp.rabbit.retry.MessageRecoverer[] of your own.
 When retries are exhausted, the message is rejected and either dropped or routed to a dead-letter exchange if the broker is configured to do so.
 By default, retries are disabled.
-You can also customize the javadoc:org.springframework.retry.support.RetryTemplate[] programmatically by declaring a javadoc:org.springframework.boot.autoconfigure.amqp.RabbitRetryTemplateCustomizer[] bean.
+You can also customize the javadoc:org.springframework.core.retry.RetryPolicy[] programmatically by declaring a javadoc:org.springframework.boot.autoconfigure.amqp.RabbitListenerRetrySettingsCustomizer[] bean.
 
 IMPORTANT: By default, if retries are disabled and the listener throws an exception, the delivery is retried indefinitely.
 You can modify this behavior in two ways: Set the `defaultRequeueRejected` property to `false` so that zero re-deliveries are attempted or throw an javadoc:org.springframework.amqp.AmqpRejectAndDontRequeueException[] to signal the message should be rejected.

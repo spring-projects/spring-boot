@@ -30,6 +30,7 @@ import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.MapperFeature;
 import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.cfg.EnumFeature;
 import tools.jackson.databind.cfg.JsonNodeFeature;
 
@@ -89,6 +90,11 @@ public class JacksonProperties {
 	 * Jackson on/off features for writers.
 	 */
 	private final Map<JsonWriteFeature, Boolean> write = new EnumMap<>(JsonWriteFeature.class);
+
+	/**
+	 * Jackson on/off features for DateTime processing.
+	 */
+	private final Map<DateTimeFeature, Boolean> datetime = new EnumMap<>(DateTimeFeature.class);
 
 	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
@@ -158,6 +164,10 @@ public class JacksonProperties {
 
 	public Map<JsonWriteFeature, Boolean> getWrite() {
 		return this.write;
+	}
+
+	public Map<DateTimeFeature, Boolean> getDatetime() {
+		return this.datetime;
 	}
 
 	public JsonInclude.@Nullable Include getDefaultPropertyInclusion() {

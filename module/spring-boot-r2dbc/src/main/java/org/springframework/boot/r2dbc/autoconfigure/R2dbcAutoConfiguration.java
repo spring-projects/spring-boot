@@ -83,23 +83,19 @@ public final class R2dbcAutoConfiguration {
 			return optionsBuilder.build();
 		}
 
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		private void configureDatabase(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE,
-					() -> determineDatabaseName(this.properties));
+			Supplier<@Nullable String> getDatabaseName = () -> determineDatabaseName(this.properties);
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE, getDatabaseName);
 		}
 
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		private void configurePassword(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, this.properties::getPassword);
+			Supplier<@Nullable CharSequence> getPassword = this.properties::getPassword;
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, getPassword);
 		}
 
-		// Lambda isn't detected with the correct nullability
-		@SuppressWarnings("NullAway")
 		private void configureUser(Builder optionsBuilder, ConnectionFactoryOptions urlOptions) {
-			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, this.properties::getUsername);
+			Supplier<@Nullable String> getUsername = this.properties::getUsername;
+			configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, getUsername);
 		}
 
 		private <T extends CharSequence> void configureIf(Builder optionsBuilder,

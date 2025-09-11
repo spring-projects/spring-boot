@@ -142,9 +142,9 @@ public abstract class BuildInfoProperties implements Serializable {
 		return coerceToStringValues(applyExclusions(getAdditional().getOrElse(Collections.emptyMap())));
 	}
 
-	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name) {
-		return getIfNotExcluded(property, name, () -> null);
+		Supplier<@Nullable T> supplier = () -> null;
+		return getIfNotExcluded(property, name, supplier);
 	}
 
 	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name, Supplier<@Nullable T> defaultValue) {

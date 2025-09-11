@@ -156,12 +156,12 @@ public class StartMojo extends AbstractRunMojo {
 		}
 	}
 
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	private void doWaitForSpringApplication(MBeanServerConnection connection)
 			throws MojoExecutionException, MojoFailureException {
 		final SpringApplicationAdminClient client = new SpringApplicationAdminClient(connection, this.jmxName);
 		try {
-			execute(this.wait, this.maxAttempts, () -> (client.isReady() ? true : null));
+			Callable<@Nullable Boolean> isReady = () -> (client.isReady() ? true : null);
+			execute(this.wait, this.maxAttempts, isReady);
 		}
 		catch (ReflectionException ex) {
 			throw new MojoExecutionException("Unable to retrieve 'ready' attribute", ex.getCause());

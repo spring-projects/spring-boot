@@ -269,7 +269,7 @@ bom {
 			site("https://commons.apache.org/proper/commons-pool")
 		}
 	}
-	library("Couchbase Client", "3.9.0") {
+	library("Couchbase Client", "3.9.1") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -1005,7 +1005,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "12.1.0") {
+	library("Jetty", "12.1.1") {
 		prohibit {
 			contains ".alpha"
 			because "we don't want alpha dependencies"
@@ -1515,7 +1515,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-war-plugin/releases/tag/maven-war-plugin-{version}")
 		}
 	}
-	library("Micrometer", "1.16.0-SNAPSHOT") {
+	library("Micrometer", "1.16.0-M3") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
@@ -1537,7 +1537,7 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
-	library("Micrometer Tracing", "1.6.0-SNAPSHOT") {
+	library("Micrometer Tracing", "1.6.0-M3") {
 		considerSnapshots()
 		group("io.micrometer") {
 			bom("micrometer-tracing-bom")
@@ -1648,7 +1648,7 @@ bom {
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
-	library("Netty", "4.2.4.Final") {
+	library("Netty", "4.2.6.Final") {
 		prohibit {
 			contains ".Alpha"
 			contains ".Beta"
@@ -1663,7 +1663,7 @@ bom {
 			javadoc(version -> "https://netty.io/%s.%s/api".formatted(version.major(), version.minor()), "io.netty")
 		}
 	}
-	library("OpenTelemetry", "1.53.0") {
+	library("OpenTelemetry", "1.54.0") {
 		group("io.opentelemetry") {
 			bom("opentelemetry-bom")
 		}
@@ -1938,7 +1938,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2025.0.0-SNAPSHOT") {
+	library("Reactor Bom", "2025.0.0-M7") {
 		considerSnapshots()
 		calendarName = "Reactor"
 		group("io.projectreactor") {
@@ -2037,6 +2037,7 @@ bom {
 				"spring-boot-jpa",
 				"spring-boot-jsonb",
 				"spring-boot-kafka",
+				"spring-boot-kotlin-serialization",
 				"spring-boot-ldap",
 				"spring-boot-liquibase",
 				"spring-boot-loader",
@@ -2117,6 +2118,7 @@ bom {
 				"spring-boot-starter-json",
 				"spring-boot-starter-jsonb",
 				"spring-boot-starter-kafka",
+				"spring-boot-starter-kotlin-serialization",
 				"spring-boot-starter-ldap",
 				"spring-boot-starter-liquibase",
 				"spring-boot-starter-log4j2",
@@ -2262,7 +2264,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "4.0.0-M4") {
+	library("Spring AMQP", "4.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
@@ -2455,19 +2457,6 @@ bom {
 			docs(version -> "https://docs.spring.io/spring-restdocs/docs/%s/reference/htmlsingle"
 					.formatted(version.forMajorMinorGeneration()))
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
-		}
-	}
-	library("Spring Retry", "2.0.12") {
-		considerSnapshots()
-		group("org.springframework.retry") {
-			modules = [
-				"spring-retry"
-			]
-		}
-		links {
-			site("https://github.com/spring-projects/spring-retry")
-			javadoc("https://docs.spring.io/spring-retry/docs/{version}/apidocs", "org.springframework.retry")
-			releaseNotes("https://github.com/spring-projects/spring-retry/releases/tag/v{version}")
 		}
 	}
 	library("Spring Security", "7.0.0-M2") {

@@ -99,11 +99,11 @@ class ObservationAutoConfigurationTests {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			// This is allowed by ObservationPredicates.customPredicate
 			Observation observation = Observation.start("observation1", observationRegistry);
-			assertThat(observation).isNotEqualTo(Observation.NOOP);
+			assertThat(observation.isNoop()).isFalse();
 			observation.stop();
 			// This isn't allowed by ObservationPredicates.customPredicate
 			observation = Observation.start("observation2", observationRegistry);
-			assertThat(observation).isEqualTo(Observation.NOOP);
+			assertThat(observation.isNoop()).isTrue();
 			observation.stop();
 		});
 	}
@@ -150,7 +150,7 @@ class ObservationAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation observation = Observation.start("spring.security.filterchains", observationRegistry);
-			assertThat(observation).isNotEqualTo(Observation.NOOP);
+			assertThat(observation.isNoop()).isFalse();
 			observation.stop();
 		});
 	}
@@ -160,7 +160,7 @@ class ObservationAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.observations.enable.spring.security=false").run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation observation = Observation.start("spring.security.filterchains", observationRegistry);
-			assertThat(observation).isEqualTo(Observation.NOOP);
+			assertThat(observation.isNoop()).isTrue();
 			observation.stop();
 		});
 	}

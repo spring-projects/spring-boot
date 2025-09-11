@@ -41,6 +41,7 @@ import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.ValueSerializer;
 import tools.jackson.databind.cfg.ConstructorDetector;
 import tools.jackson.databind.cfg.ConstructorDetector.SingleArgConstructor;
+import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.cfg.EnumFeature;
 import tools.jackson.databind.cfg.JsonNodeFeature;
 import tools.jackson.databind.exc.InvalidFormatException;
@@ -260,6 +261,27 @@ class JacksonAutoConfigurationTests {
 			assertThat(JsonWriteFeature.WRITE_HEX_UPPER_CASE.enabledByDefault()).isTrue();
 			assertThat(mapper.isEnabled(JsonWriteFeature.WRITE_HEX_UPPER_CASE)).isFalse();
 		});
+	}
+
+	@Test
+	void enableDatetimeFeature() {
+		this.contextRunner.withPropertyValues("spring.jackson.datetime.write-dates-as-timestamps:true")
+			.run((context) -> {
+				JsonMapper mapper = context.getBean(JsonMapper.class);
+				DateTimeFeature feature = DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS;
+				assertThat(feature.enabledByDefault()).isFalse();
+				assertThat(mapper.isEnabled(feature)).isTrue();
+			});
+	}
+
+	@Test
+	void disableDatetimeFeature() {
+		this.contextRunner.withPropertyValues("spring.jackson.datetime.adjust-dates-to-context-time-zone:false")
+			.run((context) -> {
+				JsonMapper mapper = context.getBean(JsonMapper.class);
+				assertThat(DateTimeFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE.enabledByDefault()).isTrue();
+				assertThat(mapper.isEnabled(DateTimeFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)).isFalse();
+			});
 	}
 
 	@Test

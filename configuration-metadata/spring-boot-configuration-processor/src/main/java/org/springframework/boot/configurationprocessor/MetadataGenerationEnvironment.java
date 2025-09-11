@@ -98,8 +98,6 @@ class MetadataGenerationEnvironment {
 
 	private final String readOperationAnnotation;
 
-	private final String optionalParameterAnnotation;
-
 	private final String nameAnnotation;
 
 	private final String autowiredAnnotation;
@@ -108,7 +106,7 @@ class MetadataGenerationEnvironment {
 			String configurationPropertiesSourceAnnotation, String nestedConfigurationPropertyAnnotation,
 			String deprecatedConfigurationPropertyAnnotation, String constructorBindingAnnotation,
 			String autowiredAnnotation, String defaultValueAnnotation, Set<String> endpointAnnotations,
-			String readOperationAnnotation, String optionalParameterAnnotation, String nameAnnotation) {
+			String readOperationAnnotation, String nameAnnotation) {
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
@@ -123,7 +121,6 @@ class MetadataGenerationEnvironment {
 		this.defaultValueAnnotation = defaultValueAnnotation;
 		this.endpointAnnotations = endpointAnnotations;
 		this.readOperationAnnotation = readOperationAnnotation;
-		this.optionalParameterAnnotation = optionalParameterAnnotation;
 		this.nameAnnotation = nameAnnotation;
 	}
 
@@ -380,10 +377,6 @@ class MetadataGenerationEnvironment {
 
 	boolean hasNullableAnnotation(Element element) {
 		return getTypeUseAnnotation(element, NULLABLE_ANNOTATION) != null;
-	}
-
-	boolean hasOptionalParameterAnnotation(Element element) {
-		return getAnnotation(element, this.optionalParameterAnnotation) != null;
 	}
 
 	private boolean isElementDeprecated(Element element) {

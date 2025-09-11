@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.annotation;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Annotation that indicates that an operation parameter is optional.
- *
- * @author Phillip Webb
- * @since 4.0.0
+ * Auto-configuration for Kotlin Serialization.
  */
-@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface OptionalParameter {
+@NullMarked
+package org.springframework.boot.kotlin.serialization.autoconfigure;
 
-}
+import org.jspecify.annotations.NullMarked;

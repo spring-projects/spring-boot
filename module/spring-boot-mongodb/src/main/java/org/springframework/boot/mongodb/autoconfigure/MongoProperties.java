@@ -212,7 +212,7 @@ public class MongoProperties {
 		/**
 		 * Representation to use when converting a UUID to a BSON binary value.
 		 */
-		private UuidRepresentation uuid = UuidRepresentation.STANDARD;
+		private UuidRepresentation uuid = UuidRepresentation.UNSPECIFIED;
 
 		public UuidRepresentation getUuid() {
 			return this.uuid;

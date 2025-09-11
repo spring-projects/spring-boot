@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.aop.Advisor;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -36,7 +35,6 @@ import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
-import org.springframework.boot.restclient.autoconfigure.service.scan.TestHttpServiceClient;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -195,18 +193,6 @@ class HttpServiceClientAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(HttpServiceProxyRegistry.class));
 	}
 
-	@Test
-	void registerHttpServiceAnnotatedInterfacesInPackages() {
-		this.contextRunner.withUserConfiguration(ScanConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(TestHttpServiceClient.class));
-	}
-
-	@Test
-	void whenHasImportAnnotationDoesNotRegisterHttpServiceAnnotatedInterfacesInPackages() {
-		this.contextRunner.withUserConfiguration(ScanConfiguration.class, HttpClientConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(TestHttpServiceClient.class));
-	}
-
 	private HttpClient getJdkHttpClient(Object proxy) {
 		return (HttpClient) Extractors.byName("clientRequestFactory.httpClient").apply(getRestClient(proxy));
 	}
@@ -286,12 +272,6 @@ class HttpServiceClientAutoConfigurationTests {
 			return (groups) -> groups.filterByName("one")
 				.forEachClient((group, builder) -> builder.defaultHeader("customizedgroup", "true"));
 		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@AutoConfigurationPackage(basePackageClasses = TestHttpServiceClient.class)
-	static class ScanConfiguration {
 
 	}
 

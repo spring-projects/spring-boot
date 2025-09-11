@@ -101,9 +101,9 @@ public class MutuallyExclusiveConfigurationPropertiesException extends RuntimeEx
 	 * non-null values are defined in a set of entries.
 	 * @param entries a consumer used to populate the entries to check
 	 */
-	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 	public static void throwIfMultipleNonNullValuesIn(Consumer<Map<String, @Nullable Object>> entries) {
-		throwIfMultipleMatchingValuesIn(entries, Objects::nonNull);
+		Predicate<@Nullable Object> isNonNull = Objects::nonNull;
+		throwIfMultipleMatchingValuesIn(entries, isNonNull);
 	}
 
 	/**

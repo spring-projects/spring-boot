@@ -186,7 +186,7 @@ public final class TestPropertyValues {
 	 * @param call the call to make
 	 * @return the result of the call
 	 */
-	public <T> T applyToSystemProperties(Callable<T> call) {
+	public <T extends @Nullable Object> T applyToSystemProperties(Callable<T> call) {
 		try (SystemPropertiesHandler handler = new SystemPropertiesHandler()) {
 			return call.call();
 		}

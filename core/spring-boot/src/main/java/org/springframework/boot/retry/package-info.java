@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webclient.autoconfigure.service.scan;
-
-import org.springframework.web.service.annotation.GetExchange;
-import org.springframework.web.service.registry.HttpServiceClient;
-
 /**
- * Test HTTP service used with scanning.
- *
- * @author Phillip Webb
+ * Support for core retry functionality.
  */
-@HttpServiceClient("test")
-public interface TestHttpServiceClient {
+@NullMarked
+package org.springframework.boot.retry;
 
-	@GetExchange("/hello")
-	String hello();
-
-}
+import org.jspecify.annotations.NullMarked;

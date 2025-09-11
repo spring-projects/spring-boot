@@ -51,7 +51,7 @@ public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizabl
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
-	private static final String[] OPTIONAL_INCLUDES = { "com.fasterxml.jackson.databind.Module",
+	private static final String[] OPTIONAL_INCLUDES = { "tools.jackson.databind.JacksonModule",
 			"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
 			"org.springframework.security.web.SecurityFilterChain", "org.thymeleaf.dialect.IDialect" };
 

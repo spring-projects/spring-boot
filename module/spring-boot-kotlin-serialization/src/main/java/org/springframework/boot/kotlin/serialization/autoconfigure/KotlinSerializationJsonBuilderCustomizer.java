@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
+package org.springframework.boot.kotlin.serialization.autoconfigure;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import kotlinx.serialization.json.Json;
+import kotlinx.serialization.json.JsonBuilder;
 
 /**
- * Alternative to Spring Boot's {@code @OptionalParameter} for testing (removes the need
- * for a dependency on the real annotation).
+ * Callback interface that can be implemented by beans wishing to further customize the
+ * {@link Json} through {@link JsonBuilder} retaining its default configuration.
  *
- * @author Phillip Webb
+ * @author Dmitry Sulman
+ * @since 4.0.0
  */
-@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface OptionalParameter {
+@FunctionalInterface
+public interface KotlinSerializationJsonBuilderCustomizer {
+
+	/**
+	 * Customize the Kotlin Serialization {@link Json} through {@link JsonBuilder}.
+	 * @param jsonBuilder the {@link JsonBuilder} to customize
+	 */
+	void customize(JsonBuilder jsonBuilder);
 
 }

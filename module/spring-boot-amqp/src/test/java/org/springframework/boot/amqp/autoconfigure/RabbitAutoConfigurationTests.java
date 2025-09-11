@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 
 import javax.net.ssl.SSLSocketFactory;
 
@@ -81,15 +82,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.retry.RetryPolicy;
+import org.springframework.core.retry.RetryTemplate;
 import org.springframework.core.task.VirtualThreadTaskExecutor;
-import org.springframework.retry.RetryPolicy;
-import org.springframework.retry.backoff.BackOffPolicy;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.interceptor.MethodInvocationRecoverer;
-import org.springframework.retry.policy.NeverRetryPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.backoff.ExponentialBackOff;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -340,14 +337,14 @@ class RabbitAutoConfigurationTests {
 				RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(rabbitTemplate,
 						"retryTemplate");
 				assertThat(retryTemplate).isNotNull();
-				SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils.getField(retryTemplate,
-						"retryPolicy");
-				ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) ReflectionTestUtils
-					.getField(retryTemplate, "backOffPolicy");
-				assertThat(retryPolicy.getMaxAttempts()).isEqualTo(4);
-				assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
-				assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
-				assertThat(backOffPolicy.getMaxInterval()).isEqualTo(5000);
+				RetryPolicy retryPolicy = (RetryPolicy) ReflectionTestUtils.getField(retryTemplate, "retryPolicy");
+				assertThat(retryPolicy).isNotNull();
+				assertThat(retryPolicy.getBackOff()).isInstanceOfSatisfying(ExponentialBackOff.class, (backOff) -> {
+					assertThat(backOff.getMaxAttempts()).isEqualTo(4);
+					assertThat(backOff.getInitialInterval()).isEqualTo(2000);
+					assertThat(backOff.getMultiplier()).isEqualTo(1.5);
+					assertThat(backOff.getMaxInterval()).isEqualTo(5000);
+				});
 			});
 	}
 
@@ -361,11 +358,12 @@ class RabbitAutoConfigurationTests {
 				RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(rabbitTemplate,
 						"retryTemplate");
 				assertThat(retryTemplate).isNotNull();
-				ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) ReflectionTestUtils
-					.getField(retryTemplate, "backOffPolicy");
-				assertThat(backOffPolicy)
-					.isSameAs(context.getBean(RabbitRetryTemplateCustomizerConfiguration.class).backOffPolicy);
-				assertThat(backOffPolicy.getInitialInterval()).isEqualTo(100);
+				RetryPolicy retryPolicy = (RetryPolicy) ReflectionTestUtils.getField(retryTemplate, "retryPolicy");
+				assertThat(retryPolicy).isNotNull();
+				assertThat(retryPolicy.getBackOff()).isInstanceOfSatisfying(ExponentialBackOff.class, (backOff) -> {
+					assertThat(backOff.getInitialInterval()).isEqualTo(2000);
+					assertThat(backOff.getMultiplier()).isEqualTo(1.4);
+				});
 			});
 	}
 
@@ -759,21 +757,28 @@ class RabbitAutoConfigurationTests {
 		assertThat(adviceChain).hasSize(1);
 		Advice advice = adviceChain[0];
 		MessageRecoverer messageRecoverer = context.getBean("myMessageRecoverer", MessageRecoverer.class);
-		MethodInvocationRecoverer<?> mir = (MethodInvocationRecoverer<?>) ReflectionTestUtils.getField(advice,
-				"recoverer");
 		Message message = mock(Message.class);
-		Exception ex = new Exception("test");
-		mir.recover(new Object[] { "foo", message }, ex);
-		then(messageRecoverer).should().recover(message, ex);
+		Exception cause = new Exception("test");
+		invokeRecoverer(advice, new Object[] { "foo", message }, cause);
+		then(messageRecoverer).should().recover(message, cause);
 		RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(advice, "retryOperations");
 		assertThat(retryTemplate).isNotNull();
-		SimpleRetryPolicy retryPolicy = (SimpleRetryPolicy) ReflectionTestUtils.getField(retryTemplate, "retryPolicy");
-		ExponentialBackOffPolicy backOffPolicy = (ExponentialBackOffPolicy) ReflectionTestUtils.getField(retryTemplate,
-				"backOffPolicy");
-		assertThat(retryPolicy.getMaxAttempts()).isEqualTo(4);
-		assertThat(backOffPolicy.getInitialInterval()).isEqualTo(2000);
-		assertThat(backOffPolicy.getMultiplier()).isEqualTo(1.5);
-		assertThat(backOffPolicy.getMaxInterval()).isEqualTo(5000);
+		RetryPolicy retryPolicy = (RetryPolicy) ReflectionTestUtils.getField(retryTemplate, "retryPolicy");
+		assertThat(retryPolicy).isNotNull();
+		assertThat(retryPolicy.getBackOff()).isInstanceOfSatisfying(ExponentialBackOff.class, (backOff) -> {
+			assertThat(backOff.getMaxAttempts()).isEqualTo(4);
+			assertThat(backOff.getInitialInterval()).isEqualTo(2000);
+			assertThat(backOff.getMultiplier()).isEqualTo(1.5);
+			assertThat(backOff.getMaxInterval()).isEqualTo(5000);
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private Object invokeRecoverer(Advice advice, Object[] args, Throwable cause) {
+		BiFunction<Object[], Throwable, Object> recoverer = (BiFunction<Object[], Throwable, Object>) ReflectionTestUtils
+			.getField(advice, "recoverer");
+		assertThat(recoverer).isNotNull();
+		return recoverer.apply(args, cause);
 	}
 
 	@Test
@@ -1215,26 +1220,17 @@ class RabbitAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class RabbitRetryTemplateCustomizerConfiguration {
 
-		private final BackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-
-		private final RetryPolicy retryPolicy = new NeverRetryPolicy();
+		private final RetryPolicy retryPolicy = RetryPolicy.withMaxAttempts(1);
 
 		@Bean
-		RabbitRetryTemplateCustomizer rabbitTemplateRetryTemplateCustomizer() {
-			return (target, template) -> {
-				if (target.equals(RabbitRetryTemplateCustomizer.Target.SENDER)) {
-					template.setBackOffPolicy(this.backOffPolicy);
-				}
-			};
+		RabbitTemplateRetrySettingsCustomizer rabbitTemplateRetryTemplateCustomizer() {
+			return (settings) -> settings.getRetryPolicySettings()
+				.setFactory((builder) -> builder.multiplier(1.4).build());
 		}
 
 		@Bean
-		RabbitRetryTemplateCustomizer rabbitListenerRetryTemplateCustomizer() {
-			return (target, template) -> {
-				if (target.equals(RabbitRetryTemplateCustomizer.Target.LISTENER)) {
-					template.setRetryPolicy(this.retryPolicy);
-				}
-			};
+		RabbitListenerRetrySettingsCustomizer rabbitListenerRetryPolicyCustomizer() {
+			return (settings) -> settings.setFactory((builder) -> this.retryPolicy);
 		}
 
 	}

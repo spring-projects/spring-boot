@@ -119,6 +119,14 @@
       }
     },
     {
+      "name": "spring.kafka.retry.topic.backoff.random",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.kafka.retry.topic.backoff.jitter",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.kafka.retry.topic.delay",
       "type": "java.time.Duration",
       "deprecation": {

@@ -18,9 +18,9 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.dialect.IDialect;
+import tools.jackson.databind.module.SimpleModule;
 
 import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -28,6 +28,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
@@ -186,8 +187,7 @@ class WebMvcTypeExcludeFilterTests {
 	}
 
 	@SuppressWarnings("removal")
-	static class ExampleMessageConverter
-			extends org.springframework.http.converter.json.MappingJackson2HttpMessageConverter {
+	static class ExampleMessageConverter extends JacksonJsonHttpMessageConverter {
 
 	}
 

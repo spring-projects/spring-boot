@@ -75,8 +75,6 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 
 	public static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.configurationsample.ReadOperation";
 
-	public static final String OPTIONAL_PARAMETER_ANNOTATION = "org.springframework.boot.configurationsample.OptionalParameter";
-
 	public static final String NAME_ANNOTATION = "org.springframework.boot.configurationsample.Name";
 
 	public static final String ENDPOINT_ACCESS_ENUM = "org.springframework.boot.configurationsample.Access";
@@ -128,11 +126,6 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	@Override
 	protected String readOperationAnnotation() {
 		return READ_OPERATION_ANNOTATION;
-	}
-
-	@Override
-	protected String optionalParameterAnnotation() {
-		return OPTIONAL_PARAMETER_ANNOTATION;
 	}
 
 	@Override

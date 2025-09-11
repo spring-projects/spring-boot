@@ -62,7 +62,7 @@ public class HealthEndpoint extends HealthEndpointSupport<Health, HealthDescript
 	 */
 	public HealthEndpoint(HealthContributorRegistry registry,
 			@Nullable ReactiveHealthContributorRegistry fallbackRegistry, HealthEndpointGroups groups,
-			Duration slowContributorLoggingThreshold) {
+			@Nullable Duration slowContributorLoggingThreshold) {
 		super(Contributor.blocking(registry, fallbackRegistry), groups, slowContributorLoggingThreshold);
 	}
 

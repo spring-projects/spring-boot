@@ -69,13 +69,13 @@ public class ReactiveHealthEndpointWebExtension
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthDescriptor>> health(ApiVersion apiVersion,
-			WebServerNamespace serverNamespace, SecurityContext securityContext) {
+			@Nullable WebServerNamespace serverNamespace, SecurityContext securityContext) {
 		return health(apiVersion, serverNamespace, securityContext, false, EMPTY_PATH);
 	}
 
 	@ReadOperation
 	public Mono<WebEndpointResponse<? extends HealthDescriptor>> health(ApiVersion apiVersion,
-			WebServerNamespace serverNamespace, SecurityContext securityContext,
+			@Nullable WebServerNamespace serverNamespace, SecurityContext securityContext,
 			@Selector(match = Match.ALL_REMAINING) String... path) {
 		return health(apiVersion, serverNamespace, securityContext, false, path);
 	}

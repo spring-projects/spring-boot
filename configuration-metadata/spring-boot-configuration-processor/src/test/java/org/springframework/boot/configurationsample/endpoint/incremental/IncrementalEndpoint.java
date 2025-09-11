@@ -16,8 +16,9 @@
 
 package org.springframework.boot.configurationsample.endpoint.incremental;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.OptionalParameter;
 import org.springframework.boot.configurationsample.ReadOperation;
 
 /**
@@ -29,7 +30,7 @@ import org.springframework.boot.configurationsample.ReadOperation;
 public class IncrementalEndpoint {
 
 	@ReadOperation
-	public String invoke(@OptionalParameter String param) {
+	public String invoke(@Nullable String param) {
 		return "test";
 	}
 

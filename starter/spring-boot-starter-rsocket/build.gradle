@@ -27,6 +27,6 @@ dependencies {
 
 	api(project(":module:spring-boot-rsocket"))
 
-	api("com.fasterxml.jackson.dataformat:jackson-dataformat-cbor")
 	api("io.rsocket:rsocket-transport-netty")
+	api("tools.jackson.dataformat:jackson-dataformat-cbor")
 }

@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
-import java.util.function.Predicate;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.core.Nullness;
@@ -35,18 +34,14 @@ class OperationMethodParameter implements OperationParameter {
 
 	private final Parameter parameter;
 
-	private final Predicate<Parameter> optional;
-
 	/**
 	 * Create a new {@link OperationMethodParameter} instance.
 	 * @param name the parameter name
 	 * @param parameter the parameter
-	 * @param optionalParameters predicate to test if a parameter is optional
 	 */
-	OperationMethodParameter(String name, Parameter parameter, Predicate<Parameter> optionalParameters) {
+	OperationMethodParameter(String name, Parameter parameter) {
 		this.name = name;
 		this.parameter = parameter;
-		this.optional = optionalParameters;
 	}
 
 	@Override
@@ -61,11 +56,7 @@ class OperationMethodParameter implements OperationParameter {
 
 	@Override
 	public boolean isMandatory() {
-		return !isOptional();
-	}
-
-	private boolean isOptional() {
-		return Nullness.NULLABLE == Nullness.forParameter(this.parameter) || this.optional.test(this.parameter);
+		return Nullness.NULLABLE != Nullness.forParameter(this.parameter);
 	}
 
 	@Override

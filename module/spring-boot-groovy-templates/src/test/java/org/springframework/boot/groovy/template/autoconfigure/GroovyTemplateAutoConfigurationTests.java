@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import groovy.text.markup.BaseTemplate;
+import groovy.text.markup.DelegatingIndentWriter;
 import groovy.text.markup.MarkupTemplateEngine;
 import groovy.text.markup.TemplateConfiguration;
 import jakarta.servlet.http.HttpServletRequest;
@@ -160,8 +161,15 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	void defaultResourceLoaderPath() throws Exception {
+		registerAndRefreshContext();
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getResourceLoaderPath())
+			.isEqualTo(GroovyTemplateProperties.DEFAULT_RESOURCE_LOADER_PATH);
+	}
+
+	@Test
 	@WithResource(name = "custom-templates/custom.tpl", content = "yield \"custom\"")
-	void customTemplateLoaderPath() throws Exception {
+	void customResourceLoaderPath() throws Exception {
 		registerAndRefreshContext("spring.groovy.template.resource-loader-path:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
@@ -200,6 +208,13 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	void defaultAutoIndentString() {
+		registerAndRefreshContext();
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getAutoIndentString())
+			.isEqualTo(DelegatingIndentWriter.SPACES);
+	}
+
+	@Test
 	void customAutoIndentString() {
 		registerAndRefreshContext("spring.groovy.template.auto-indent-string:\\t");
 		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getAutoIndentString()).isEqualTo("\\t");
@@ -212,10 +227,23 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	void defaultBaseTemplateClass() {
+		registerAndRefreshContext();
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getBaseTemplateClass())
+			.isEqualTo(BaseTemplate.class);
+	}
+
+	@Test
 	void customBaseTemplateClass() {
 		registerAndRefreshContext("spring.groovy.template.base-template-class:" + CustomBaseTemplate.class.getName());
 		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getBaseTemplateClass())
 			.isEqualTo(CustomBaseTemplate.class);
+	}
+
+	@Test
+	void defaultDeclarationEncoding() {
+		registerAndRefreshContext();
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getDeclarationEncoding()).isNull();
 	}
 
 	@Test
@@ -231,9 +259,22 @@ class GroovyTemplateAutoConfigurationTests {
 	}
 
 	@Test
+	void defaultLocale() {
+		registerAndRefreshContext();
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getLocale()).isEqualTo(Locale.getDefault());
+	}
+
+	@Test
 	void customLocale() {
 		registerAndRefreshContext("spring.groovy.template.locale:en_US");
 		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getLocale()).isEqualTo(Locale.US);
+	}
+
+	@Test
+	void defaultNewLineString() {
+		registerAndRefreshContext();
+		assertThat(this.context.getBean(GroovyMarkupConfigurer.class).getNewLineString())
+			.isEqualTo(System.lineSeparator());
 	}
 
 	@Test

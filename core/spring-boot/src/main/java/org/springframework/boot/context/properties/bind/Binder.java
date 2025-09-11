@@ -459,7 +459,6 @@ public class Binder {
 		return null;
 	}
 
-	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 	private <T> @Nullable Object bindAggregate(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
 			Context context, AggregateBinder<?> aggregateBinder) {
 		AggregateElementBinder elementBinder = (itemName, itemTarget, source) -> {
@@ -467,7 +466,8 @@ public class Binder {
 			Supplier<?> supplier = () -> bind(itemName, itemTarget, handler, context, allowRecursiveBinding, false);
 			return context.withSource(source, supplier);
 		};
-		return context.withIncreasedDepth(() -> aggregateBinder.bind(name, target, elementBinder));
+		Supplier<@Nullable Object> supplier = () -> aggregateBinder.bind(name, target, elementBinder);
+		return context.withIncreasedDepth(supplier);
 	}
 
 	private <T> @Nullable ConfigurationProperty findProperty(ConfigurationPropertyName name, Bindable<T> target,
@@ -492,7 +492,6 @@ public class Binder {
 		return result;
 	}
 
-	@SuppressWarnings("NullAway") // Doesn't detect lambda with correct nullability
 	private @Nullable Object bindDataObject(ConfigurationPropertyName name, Bindable<?> target, BindHandler handler,
 			Context context, boolean allowRecursiveBinding) {
 		if (isUnbindableBean(name, target, context)) {
@@ -505,8 +504,9 @@ public class Binder {
 		}
 		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
-		return context.withDataObject(type, () -> fromDataObjectBinders(bindMethod,
-				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder)));
+		Supplier<@Nullable Object> supplier = () -> fromDataObjectBinders(bindMethod,
+				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder));
+		return context.withDataObject(type, supplier);
 	}
 
 	private @Nullable Object fromDataObjectBinders(@Nullable BindMethod bindMethod,

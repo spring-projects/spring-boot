@@ -53,7 +53,7 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableControllerEndpoint, Operation>
 		implements ControllerEndpointsSupplier {
 
-	private final List<PathMapper> endpointPathMappers;
+	private final @Nullable List<PathMapper> endpointPathMappers;
 
 	/**
 	 * Create a new {@link ControllerEndpointDiscoverer} instance.
@@ -61,7 +61,8 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	 * @param endpointPathMappers the endpoint path mappers
 	 * @param filters filters to apply
 	 */
-	public ControllerEndpointDiscoverer(ApplicationContext applicationContext, List<PathMapper> endpointPathMappers,
+	public ControllerEndpointDiscoverer(ApplicationContext applicationContext,
+			@Nullable List<PathMapper> endpointPathMappers,
 			Collection<EndpointFilter<ExposableControllerEndpoint>> filters) {
 		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters, Collections.emptyList());
 		this.endpointPathMappers = endpointPathMappers;

@@ -100,7 +100,6 @@ public final class ClientHttpRequestFactories {
 		return getProperty(accessor, Function.identity(), predicate, fallback, fallbackAccessor);
 	}
 
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	private <P, T, F> @Nullable T getProperty(Function<AbstractHttpRequestFactoryProperties, @Nullable P> accessor,
 			Function<P, @Nullable T> extractor, Predicate<@Nullable T> predicate, @Nullable F fallback,
 			Function<F, @Nullable T> fallbackAccessor) {
