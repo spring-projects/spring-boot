@@ -38,6 +38,7 @@
 			<version>@project.version@</version>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-test</artifactId>
@@ -49,12 +50,6 @@
 			<artifactId>junit-jupiter</artifactId>
 			<version>@junit-jupiter.version@</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>@jakarta-servlet.version@</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

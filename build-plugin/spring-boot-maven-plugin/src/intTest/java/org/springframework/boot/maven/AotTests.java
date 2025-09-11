@@ -167,6 +167,17 @@ class AotTests {
 	}
 
 	@TestTemplate
+	void whenAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-exclude-devtools").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(aotDirectory).exists();
+			Path sourcesDirectory = aotDirectory.resolve("sources");
+			assertThat(sourcesDirectory).exists();
+			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
+		});
+	}
+
+	@TestTemplate
 	void whenAotTestRunsSourcesAndResourcesAreGenerated(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-test").goals("test").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
@@ -177,6 +188,17 @@ class AotTests {
 					"org.springframework.boot.maven.it", "aot-test", "reachability-metadata.json"));
 			assertThat(collectRelativePaths(testClassesDirectory)).contains(Path.of("org", "test",
 					"SampleApplicationTests__TestContext001_ApplicationContextInitializer.class"));
+		});
+	}
+
+	@TestTemplate
+	void whenTestAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-test-exclude-devtools").goals("process-test-classes").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
+			assertThat(aotDirectory).exists();
+			Path sourcesDirectory = aotDirectory.resolve("sources");
+			assertThat(sourcesDirectory).exists();
+			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
 		});
 	}
 
@@ -193,28 +215,6 @@ class AotTests {
 
 	protected String buildLog(File project) {
 		return contentOf(new File(project, "target/build.log"));
-	}
-
-	@TestTemplate
-	void whenAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
-		mavenBuild.project("aot-exclude-devtools").goals("package").execute((project) -> {
-			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
-			assertThat(aotDirectory).exists();
-			Path sourcesDirectory = aotDirectory.resolve("sources");
-			assertThat(sourcesDirectory).exists();
-			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
-		});
-	}
-
-	@TestTemplate
-	void whenTestAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
-		mavenBuild.project("aot-test-exclude-devtools").goals("process-test-classes").execute((project) -> {
-			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
-			assertThat(aotDirectory).exists();
-			Path sourcesDirectory = aotDirectory.resolve("sources");
-			assertThat(sourcesDirectory).exists();
-			assertThat(collectRelativePaths(sourcesDirectory)).isNotEmpty();
-		});
 	}
 
 }
