@@ -44,7 +44,7 @@ class ApplicationInfoPropertySource extends MapPropertySource implements OriginL
 		super(NAME, getProperties(readVersion(mainClass)));
 	}
 
-	ApplicationInfoPropertySource(String applicationVersion) {
+	ApplicationInfoPropertySource(@Nullable String applicationVersion) {
 		super(NAME, getProperties(applicationVersion));
 	}
 

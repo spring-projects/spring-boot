@@ -88,7 +88,7 @@ public abstract class Configurations {
 	 * @since 3.4.0
 	 */
 	protected Configurations(@Nullable UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes,
-			Function<Class<?>, String> beanNameGenerator) {
+			@Nullable Function<Class<?>, String> beanNameGenerator) {
 		Assert.notNull(classes, "'classes' must not be null");
 		this.sorter = (sorter != null) ? sorter : UnaryOperator.identity();
 		Collection<Class<?>> sorted = this.sorter.apply(classes);

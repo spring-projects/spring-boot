@@ -160,7 +160,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	 * {@link ConfigDataEnvironmentUpdateListener} that can be used to track
 	 * {@link Environment} updates.
 	 */
-	public static void applyTo(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
+	public static void applyTo(ConfigurableEnvironment environment, @Nullable ResourceLoader resourceLoader,
 			@Nullable ConfigurableBootstrapContext bootstrapContext, Collection<String> additionalProfiles,
 			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		DeferredLogFactory logFactory = Supplier::get;

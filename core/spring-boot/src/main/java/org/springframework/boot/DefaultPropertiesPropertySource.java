@@ -69,7 +69,7 @@ public class DefaultPropertiesPropertySource extends MapPropertySource {
 	 * @param action the action used to consume the
 	 * {@link DefaultPropertiesPropertySource}
 	 */
-	public static void ifNotEmpty(Map<String, Object> source,
+	public static void ifNotEmpty(@Nullable Map<String, Object> source,
 			@Nullable Consumer<DefaultPropertiesPropertySource> action) {
 		if (!CollectionUtils.isEmpty(source) && action != null) {
 			action.accept(new DefaultPropertiesPropertySource(source));
