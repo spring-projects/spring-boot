@@ -235,6 +235,7 @@ dependencies {
 	javadocMacros(project(":module:spring-boot-activemq"))
 	javadocMacros(project(":module:spring-boot-artemis"))
 	javadocMacros(project(":module:spring-boot-batch"))
+	javadocMacros(project(":module:spring-boot-batch-data-mongodb"))
 	javadocMacros(project(":module:spring-boot-batch-jdbc"))
 	javadocMacros(project(":module:spring-boot-cache-test"))
 	javadocMacros(project(":module:spring-boot-data-r2dbc-test"))

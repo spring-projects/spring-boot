@@ -7,6 +7,7 @@ When building a batch application, the following stores can be auto-configured:
 
 * In-memory
 * JDBC
+* MongoDB
 
 Each store has specific additional settings.
 For instance, it is possible to customize the tables prefix for the JDBC store, as shown in the following example:
@@ -19,8 +20,20 @@ spring:
       table-prefix: "CUSTOM_"
 ----
 
+When using the MongoDB store, you can enable initialization of the Spring Batch job repository schema (collections and indexes):
+
+[configprops,yaml]
+----
+spring:
+  batch:
+    data:
+      mongodb:
+        schema:
+          initialize: true
+----
+
 To disable Spring Boot's auto-configuration and take complete control of Spring Batch's configuration, add javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation] to one of your javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes or extend javadoc:org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[].
-This will cause the auto-configuration to back off, including initialization of Spring Batch's database schema if you're using the JDBC-based store.
+This will cause the auto-configuration to back off, including initialization of Spring Batch's database schema (JDBC or MongoDB).
 Spring Batch can then be configured using the `@Enable*JobRepository` annotation's attributes rather than the previously described configuration properties.
 
 To learn more about manually configuring Spring Batch, see the API documentation of:
@@ -50,4 +63,4 @@ spring:
       enabled: false
 ----
 
-See {code-spring-boot-batch-src}/autoconfigure/BatchAutoConfiguration.java[`BatchAutoConfiguration`] and  {code-spring-boot-batch-jdbc-src}/autoconfigure/BatchJdbcAutoConfiguration.java[`BatchJdbcAutoConfiguration`] for more details.
+See {code-spring-boot-batch-src}/autoconfigure/BatchAutoConfiguration.java[`BatchAutoConfiguration`], {code-spring-boot-batch-jdbc-src}/autoconfigure/BatchJdbcAutoConfiguration.java[`BatchJdbcAutoConfiguration`], and {code-spring-boot-batch-data-mongodb-src}/autoconfigure/BatchDataMongoAutoConfiguration.java[`BatchDataMongoAutoConfiguration`] for more details.
