@@ -146,14 +146,35 @@ abstract class HttpClientTransport implements HttpTransport {
 		try {
 			ClassicHttpResponse response = this.client.executeOpen(this.host, request, null);
 			int statusCode = response.getCode();
+
 			if (statusCode >= 400 && statusCode <= 500) {
 				byte[] content = readContent(response);
-				response.close();
+
+				if (statusCode == 407) {
+					response.close();
+
+					String detail = null;
+					Message json = deserializeMessage(content);
+					if (json != null && org.springframework.util.StringUtils.hasText(json.getMessage())) {
+						detail = json.getMessage();
+					}
+					else {
+						detail = new String(content, java.nio.charset.StandardCharsets.UTF_8);
+					}
+
+					String msg = "Proxy authentication required for host: " + this.host.toHostString() + ", uri: "
+							+ request.getUri()
+							+ (org.springframework.util.StringUtils.hasText(detail) ? " - " + detail : "");
+
+					throw new ProxyAuthenticationException(msg);
+				}
+
 				Errors errors = (statusCode != 500) ? deserializeErrors(content) : null;
 				Message message = deserializeMessage(content);
 				throw new DockerEngineException(this.host.toHostString(), request.getUri(), statusCode,
 						response.getReasonPhrase(), errors, message);
 			}
+
 			return new HttpClientResponse(response);
 		}
 		catch (IOException | URISyntaxException ex) {
