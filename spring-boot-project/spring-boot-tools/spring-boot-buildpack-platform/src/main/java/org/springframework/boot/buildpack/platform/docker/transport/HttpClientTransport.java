@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
@@ -36,6 +37,7 @@ import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
 
 import org.springframework.boot.buildpack.platform.io.Content;
@@ -160,14 +162,27 @@ abstract class HttpClientTransport implements HttpTransport {
 			beforeExecute(request);
 			ClassicHttpResponse response = this.client.executeOpen(this.host, request, null);
 			int statusCode = response.getCode();
+
 			if (statusCode >= 400 && statusCode <= 500) {
 				byte[] content = readContent(response);
 				response.close();
+
+				if (statusCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED) {
+					String detail = (content != null && content.length > 0)
+							? new String(content, StandardCharsets.UTF_8) : null;
+
+					String msg = "Proxy authentication required for host: " + this.host.toHostString() + ", uri: "
+							+ request.getUri() + (StringUtils.hasText(detail) ? " - " + detail : "");
+
+					throw new ProxyAuthenticationException(msg);
+				}
+
 				Errors errors = (statusCode != 500) ? deserializeErrors(content) : null;
 				Message message = deserializeMessage(content);
 				throw new DockerEngineException(this.host.toHostString(), request.getUri(), statusCode,
 						response.getReasonPhrase(), errors, message);
 			}
+
 			return new HttpClientResponse(response);
 		}
 		catch (IOException | URISyntaxException ex) {
