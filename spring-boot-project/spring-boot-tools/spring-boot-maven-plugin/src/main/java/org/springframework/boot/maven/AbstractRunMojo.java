@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class to run a Spring Boot application.
@@ -300,17 +302,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 * @return a {@link RunArguments} defining the JVM arguments
 	 */
 	protected RunArguments resolveJvmArguments() {
-		StringBuilder stringBuilder = new StringBuilder();
+		List<String> arguments = new ArrayList<>();
 		if (this.systemPropertyVariables != null) {
-			stringBuilder.append(this.systemPropertyVariables.entrySet()
-				.stream()
-				.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
-				.collect(Collectors.joining(" ")));
+			for (Entry<String, String> systemProperty : this.systemPropertyVariables.entrySet()) {
+				String argument = SystemPropertyFormatter.format(systemProperty.getKey(), systemProperty.getValue());
+				if (StringUtils.hasText(argument)) {
+					arguments.add(argument);
+				}
+			}
 		}
 		if (this.jvmArguments != null) {
-			stringBuilder.append(" ").append(this.jvmArguments);
+			String[] jvmArguments = RunArguments.parseArgs(this.jvmArguments);
+			arguments.addAll(Arrays.asList(jvmArguments));
 		}
-		return new RunArguments(stringBuilder.toString());
+		return new RunArguments(arguments);
 	}
 
 	private void addJvmArgs(List<String> args) {
@@ -415,23 +420,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			String message = (args.length == 1) ? name + ": " : name + "s: ";
 			getLog().debug(Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
 		}
-	}
-
-	/**
-	 * Format System properties.
-	 */
-	static class SystemPropertyFormatter {
-
-		static String format(String key, String value) {
-			if (key == null) {
-				return "";
-			}
-			if (value == null || value.isEmpty()) {
-				return String.format("-D%s", key);
-			}
-			return String.format("-D%s=\"%s\"", key, value);
-		}
-
 	}
 
 }

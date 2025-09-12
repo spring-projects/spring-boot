@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Helper class to build the command-line arguments of a java process.
@@ -55,10 +58,12 @@ final class CommandLineBuilder {
 
 	CommandLineBuilder withSystemProperties(Map<String, String> systemProperties) {
 		if (systemProperties != null) {
-			systemProperties.entrySet()
-				.stream()
-				.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
-				.forEach(this.options::add);
+			for (Entry<String, String> systemProperty : systemProperties.entrySet()) {
+				String option = SystemPropertyFormatter.format(systemProperty.getKey(), systemProperty.getValue());
+				if (StringUtils.hasText(option)) {
+					this.options.add(option);
+				}
+			}
 		}
 		return this;
 	}
@@ -86,23 +91,6 @@ final class CommandLineBuilder {
 			commandLine.addAll(this.arguments);
 		}
 		return commandLine;
-	}
-
-	/**
-	 * Format System properties.
-	 */
-	private static final class SystemPropertyFormatter {
-
-		static String format(String key, String value) {
-			if (key == null) {
-				return "";
-			}
-			if (value == null || value.isEmpty()) {
-				return String.format("-D%s", key);
-			}
-			return String.format("-D%s=\"%s\"", key, value);
-		}
-
 	}
 
 }
