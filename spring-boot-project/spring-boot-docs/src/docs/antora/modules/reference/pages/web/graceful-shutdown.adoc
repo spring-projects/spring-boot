@@ -5,7 +5,7 @@ Graceful shutdown is enabled by default with all four embedded web servers (Jett
 It occurs as part of closing the application context and is performed in the earliest phase of stopping javadoc:org.springframework.context.SmartLifecycle[] beans.
 This stop processing uses a timeout which provides a grace period during which existing requests will be allowed to complete but no new requests will be permitted.
 
-To configure the timeout period, which is 30 seconds by default, configure the configprop:spring.lifecycle.timeout-per-shutdown-phase[] property, as shown in the following example:
+To configure the timeout period, which is 10 seconds by default, configure the configprop:spring.lifecycle.timeout-per-shutdown-phase[] property, as shown in the following example:
 
 [configprops,yaml]
 ----
