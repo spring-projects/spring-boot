@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.export.prometheus;
+package org.springframework.boot.micrometer.metrics.export.prometheus;
 
 import java.time.Duration;
 import java.util.concurrent.Executors;
@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  *
  * @author David J. M. Karlsen
  * @author Phillip Webb
- * @since 2.1.0
+ * @since 4.0.0
  */
 public class PrometheusPushGatewayManager {
 
@@ -57,7 +57,6 @@ public class PrometheusPushGatewayManager {
 	 * @param pushRate the rate at which push operations occur
 	 * @param shutdownOperation the shutdown operation that should be performed when
 	 * context is closed
-	 * @since 3.5.0
 	 */
 	public PrometheusPushGatewayManager(PushGateway pushGateway, Duration pushRate,
 			ShutdownOperation shutdownOperation) {

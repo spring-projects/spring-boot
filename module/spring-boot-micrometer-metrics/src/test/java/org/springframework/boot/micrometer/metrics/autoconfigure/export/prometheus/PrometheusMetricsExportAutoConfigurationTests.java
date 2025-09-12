@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager;
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
+import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager;
+import org.springframework.boot.micrometer.metrics.export.prometheus.endpoint.PrometheusScrapeEndpoint;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;

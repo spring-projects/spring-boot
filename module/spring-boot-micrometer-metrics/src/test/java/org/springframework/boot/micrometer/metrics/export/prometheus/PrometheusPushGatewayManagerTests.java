@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.export.prometheus;
+package org.springframework.boot.micrometer.metrics.export.prometheus;
 
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
@@ -27,8 +27,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.PushGatewayTaskScheduler;
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
+import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager.PushGatewayTaskScheduler;
+import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 

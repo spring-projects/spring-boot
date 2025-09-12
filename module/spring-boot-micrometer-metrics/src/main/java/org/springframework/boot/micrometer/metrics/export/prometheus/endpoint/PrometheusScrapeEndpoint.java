@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.export.prometheus;
+package org.springframework.boot.micrometer.metrics.export.prometheus.endpoint;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
  * @author Jon Schneider
  * @author Johnny Lim
  * @author Moritz Halbritter
- * @since 2.0.0
+ * @since 4.0.0
  */
 @WebEndpoint(id = "prometheus")
 public class PrometheusScrapeEndpoint {

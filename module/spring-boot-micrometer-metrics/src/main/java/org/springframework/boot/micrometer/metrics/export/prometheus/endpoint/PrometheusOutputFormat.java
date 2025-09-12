@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.export.prometheus;
+package org.springframework.boot.micrometer.metrics.export.prometheus.endpoint;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,7 +33,7 @@ import org.springframework.util.MimeTypeUtils;
  * A {@link Producible} enum for supported Prometheus formats.
  *
  * @author Andy Wilkinson
- * @since 3.3.0
+ * @since 4.0.0
  */
 public enum PrometheusOutputFormat implements Producible<PrometheusOutputFormat> {
 

@@ -15,9 +15,9 @@
  */
 
 /**
- * Actuator support for exporting metrics to Prometheus.
+ * Support for exporting metrics to Prometheus through a scrape endpoint.
  */
 @NullMarked
-package org.springframework.boot.actuate.metrics.export.prometheus;
+package org.springframework.boot.micrometer.metrics.export.prometheus.endpoint;
 
 import org.jspecify.annotations.NullMarked;

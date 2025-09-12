@@ -28,8 +28,6 @@ import io.prometheus.metrics.tracer.common.SpanContext;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager;
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -42,6 +40,8 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.CompositeMeterR
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager;
+import org.springframework.boot.micrometer.metrics.export.prometheus.endpoint.PrometheusScrapeEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
