@@ -76,7 +76,7 @@ class CommandLineBuilderTests {
 	@Test
 	void buildWithSystemProperty() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withSystemProperties(Map.of("flag", "enabled")).build())
-			.containsExactly("-Dflag=\"enabled\"", CLASS_NAME);
+			.containsExactly("-Dflag=enabled", CLASS_NAME);
 	}
 
 	@Test
