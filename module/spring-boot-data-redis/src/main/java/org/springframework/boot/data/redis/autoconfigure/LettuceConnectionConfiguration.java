@@ -17,6 +17,8 @@
 package org.springframework.boot.data.redis.autoconfigure;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.ReadFrom;
@@ -37,7 +39,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails.Node;
 import org.springframework.boot.data.redis.autoconfigure.RedisProperties.Lettuce.Cluster.Refresh;
+import org.springframework.boot.data.redis.autoconfigure.RedisProperties.Lettuce.StaticMasterReplica;
 import org.springframework.boot.data.redis.autoconfigure.RedisProperties.Pool;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
@@ -49,11 +53,13 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -64,6 +70,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yong-Hyun Kim
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
@@ -120,6 +127,12 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		LettuceClientConfiguration clientConfiguration = getLettuceClientConfiguration(
 				clientConfigurationBuilderCustomizers, clientOptionsBuilderCustomizers, clientResources,
 				getProperties().getLettuce().getPool());
+
+		RedisStaticMasterReplicaConfiguration staticMasterReplicaConfiguration = getStaticMasterReplicaConfiguration();
+		if (staticMasterReplicaConfiguration != null) {
+			return new LettuceConnectionFactory(staticMasterReplicaConfiguration, clientConfiguration);
+		}
+
 		return switch (this.mode) {
 			case STANDALONE -> new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
 			case CLUSTER -> {
@@ -133,6 +146,26 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 				yield new LettuceConnectionFactory(sentinelConfig, clientConfiguration);
 			}
 		};
+	}
+
+	private @Nullable RedisStaticMasterReplicaConfiguration getStaticMasterReplicaConfiguration() {
+		StaticMasterReplica staticMasterReplica = getProperties().getLettuce().getStaticMasterReplica();
+
+		if (!CollectionUtils.isEmpty(staticMasterReplica.getNodes())) {
+			List<Node> nodes = asNodes(staticMasterReplica.getNodes());
+			RedisStaticMasterReplicaConfiguration configuration = new RedisStaticMasterReplicaConfiguration(
+					nodes.get(0).host(), nodes.get(0).port());
+			configuration.setUsername(getProperties().getUsername());
+			if (StringUtils.hasText(getProperties().getPassword())) {
+				configuration.setPassword(getProperties().getPassword());
+			}
+			configuration.setDatabase(getProperties().getDatabase());
+			nodes.stream().skip(1).forEach((node) -> configuration.addNode(node.host(), node.port()));
+
+			return configuration;
+		}
+
+		return null;
 	}
 
 	private LettuceClientConfiguration getLettuceClientConfiguration(
@@ -248,6 +281,20 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (urlUsesSsl(url)) {
 			builder.useSsl();
 		}
+	}
+
+	private List<Node> asNodes(@Nullable List<String> nodes) {
+		if (nodes == null) {
+			return Collections.emptyList();
+		}
+		return nodes.stream().map(this::asNode).toList();
+	}
+
+	private Node asNode(String node) {
+		int portSeparatorIndex = node.lastIndexOf(':');
+		String host = node.substring(0, portSeparatorIndex);
+		int port = Integer.parseInt(node.substring(portSeparatorIndex + 1));
+		return new Node(host, port);
 	}
 
 	/**

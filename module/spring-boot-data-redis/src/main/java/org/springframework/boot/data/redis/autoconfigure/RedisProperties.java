@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Yanming Zhou
+ * @author Yong-Hyun Kim
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.redis")
@@ -482,6 +483,8 @@ public class RedisProperties {
 
 		private final Cluster cluster = new Cluster();
 
+		private final StaticMasterReplica staticMasterReplica = new StaticMasterReplica();
+
 		public Duration getShutdownTimeout() {
 			return this.shutdownTimeout;
 		}
@@ -504,6 +507,10 @@ public class RedisProperties {
 
 		public Cluster getCluster() {
 			return this.cluster;
+		}
+
+		public StaticMasterReplica getStaticMasterReplica() {
+			return this.staticMasterReplica;
 		}
 
 		public static class Cluster {
@@ -558,6 +565,27 @@ public class RedisProperties {
 					this.adaptive = adaptive;
 				}
 
+			}
+
+		}
+
+		/**
+		 * Lettuce static master-replica properties.
+		 */
+		public static class StaticMasterReplica {
+
+			/**
+			 * List of "host:port" pairs regardless of role as the actual roles are
+			 * determined by querying each node's ROLE command.
+			 */
+			private @Nullable List<String> nodes;
+
+			public @Nullable List<String> getNodes() {
+				return this.nodes;
+			}
+
+			public void setNodes(@Nullable List<String> nodes) {
+				this.nodes = nodes;
 			}
 
 		}
