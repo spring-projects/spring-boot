@@ -16,14 +16,13 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.pattern.ConverterKeys;
-import org.apache.logging.log4j.core.pattern.ExtendedThrowablePatternConverter;
 import org.apache.logging.log4j.core.pattern.LogEventPatternConverter;
 import org.apache.logging.log4j.core.pattern.PatternConverter;
 import org.apache.logging.log4j.core.pattern.ThrowablePatternConverter;
+import org.apache.logging.log4j.core.pattern.VariablesNotEmptyReplacementConverter;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -35,42 +34,15 @@ import org.jspecify.annotations.Nullable;
  */
 @Plugin(name = "WhitespaceThrowablePatternConverter", category = PatternConverter.CATEGORY)
 @ConverterKeys({ "wEx", "wThrowable", "wException" })
-public final class WhitespaceThrowablePatternConverter extends LogEventPatternConverter {
+public final class WhitespaceThrowablePatternConverter {
 
-	private final ExtendedThrowablePatternConverter delegate;
-
-	private final String separator;
-
-	private WhitespaceThrowablePatternConverter(Configuration configuration, @Nullable String[] options) {
-		super("WhitespaceThrowable", "throwable");
-		this.delegate = ExtendedThrowablePatternConverter.newInstance(configuration, options);
-		this.separator = this.delegate.getOptions().getSeparator();
+	private WhitespaceThrowablePatternConverter() {
 	}
 
-	@Override
-	public void format(LogEvent event, StringBuilder buffer) {
-		if (event.getThrown() != null) {
-			buffer.append(this.separator);
-			this.delegate.format(event, buffer);
-			buffer.append(this.separator);
-		}
-	}
-
-	@Override
-	public boolean handlesThrowable() {
-		return true;
-	}
-
-	/**
-	 * Creates a new instance of the class. Required by Log4J2.
-	 * @param configuration current configuration
-	 * @param options pattern options, may be null. If first element is "short", only the
-	 * first line of the throwable will be formatted.
-	 * @return a new {@code WhitespaceThrowablePatternConverter}
-	 */
-	public static WhitespaceThrowablePatternConverter newInstance(Configuration configuration,
-			@Nullable String[] options) {
-		return new WhitespaceThrowablePatternConverter(configuration, options);
+	public static LogEventPatternConverter newInstance(Configuration configuration, String @Nullable [] options) {
+		final String nested = (options != null && options.length > 0) ? "{" + String.join("}{", options) + "}" : "";
+		final String pattern = "%notEmpty{%n%ex" + nested + "%n}";
+		return VariablesNotEmptyReplacementConverter.newInstance(configuration, new String[] { pattern });
 	}
 
 }
