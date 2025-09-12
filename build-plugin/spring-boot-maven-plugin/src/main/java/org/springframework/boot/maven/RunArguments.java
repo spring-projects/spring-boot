@@ -19,7 +19,6 @@ package org.springframework.boot.maven;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Objects;
 
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.jspecify.annotations.Nullable;
@@ -39,9 +38,18 @@ class RunArguments {
 		this(parseArgs(arguments));
 	}
 
-	RunArguments(String[] args) {
+	@SuppressWarnings("NullAway") // Maven can't handle nullable arrays
+	RunArguments(@Nullable String[] args) {
+		this((args != null) ? Arrays.asList(args) : null);
+	}
+
+	RunArguments(@Nullable Iterable<@Nullable String> args) {
 		if (args != null) {
-			Arrays.stream(args).filter(Objects::nonNull).forEach(this.args::add);
+			for (String arg : args) {
+				if (arg != null) {
+					this.args.add(arg);
+				}
+			}
 		}
 	}
 
@@ -53,7 +61,7 @@ class RunArguments {
 		return this.args.toArray(new String[0]);
 	}
 
-	private static String[] parseArgs(@Nullable String arguments) {
+	static String[] parseArgs(@Nullable String arguments) {
 		if (arguments == null || arguments.trim().isEmpty()) {
 			return NO_ARGS;
 		}

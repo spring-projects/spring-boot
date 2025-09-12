@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 @ExtendWith(MavenBuildExtension.class)
 class AotTests {
@@ -96,6 +97,15 @@ class AotTests {
 	@TestTemplate
 	void whenAotRunsWithArgumentsSourcesAreGenerated(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-arguments").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
+				.contains(Path.of("org", "test", "TestProfileConfiguration__BeanDefinitions.java"));
+		});
+	}
+
+	@TestTemplate
+	void whenAotRunsWithSystemPropertiesSourcesAreGenerated(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-system-properties").goals("package").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
 			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
 				.contains(Path.of("org", "test", "TestProfileConfiguration__BeanDefinitions.java"));
