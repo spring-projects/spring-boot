@@ -32,15 +32,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 /**
- * AutoConfiguration for Spring HTTP Service clients.
- * <p>
- * This will result in the creation of blocking HTTP Service client beans defined by
- * {@link ImportHttpServices @ImportHttpServices} annotations.
+ * AutoConfiguration for Spring HTTP Service clients backed by {@link RestClient}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Rossen Stoyanchev
@@ -56,9 +53,6 @@ public final class HttpServiceClientAutoConfiguration implements BeanClassLoader
 
 	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
-
-	HttpServiceClientAutoConfiguration() {
-	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {

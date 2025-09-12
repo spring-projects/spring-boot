@@ -31,15 +31,12 @@ import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfigurati
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 /**
- * AutoConfiguration for Spring reactive HTTP Service Clients.
- * <p>
- * This will result in the creation of reactive HTTP Service client beans defined by
- * {@link ImportHttpServices @ImportHttpServices} annotations.
+ * AutoConfiguration for Spring reactive HTTP Service Clients backed by {@link WebClient}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Rossen Stoyanchev
@@ -54,9 +51,6 @@ public final class ReactiveHttpServiceClientAutoConfiguration implements BeanCla
 
 	@SuppressWarnings("NullAway.Init")
 	private ClassLoader beanClassLoader;
-
-	ReactiveHttpServiceClientAutoConfiguration() {
-	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
