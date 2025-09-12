@@ -19,9 +19,6 @@
         },
         {
           "value": "jsonb"
-        },
-        {
-          "value": "kotlin-serialization"
         }
       ],
       "providers": [
