@@ -71,10 +71,12 @@ import org.springframework.core.io.ResourceLoader;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Eddú Meléndez
  * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
+@ConditionalOnMissingBean(type = "org.springframework.amqp.rabbitmq.client.RabbitAmqpTemplate")
 @EnableConfigurationProperties(RabbitProperties.class)
 @Import({ RabbitAnnotationDrivenConfiguration.class, RabbitStreamConfiguration.class })
 public final class RabbitAutoConfiguration {
