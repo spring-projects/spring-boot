@@ -718,7 +718,7 @@ bom {
 			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
 		}
 	}
-	library("Jakarta Activation", "2.1.3") {
+	library("Jakarta Activation", "2.1.4") {
 		group("jakarta.activation") {
 			modules = [
 				"jakarta.activation-api"
