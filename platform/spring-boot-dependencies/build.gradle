@@ -2279,23 +2279,6 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
-	library("Spring Authorization Server", "2.0.0-SNAPSHOT") {
-		considerSnapshots()
-		group("org.springframework.security") {
-			modules = [
-					"spring-security-oauth2-authorization-server"
-			]
-		}
-		links {
-			site("https://spring.io/projects/spring-authorization-server")
-			github("https://github.com/spring-projects/spring-authorization-server")
-			javadoc(version -> "https://docs.spring.io/spring-authorization-server/docs/%s/api"
-				.formatted(version.forMajorMinorGeneration()), "org.springframework.security.oauth2.server")
-			docs(version -> "https://docs.spring.io/spring-authorization-server/reference/%s"
-				.formatted(version.forAntora()))
-			releaseNotes("https://github.com/spring-projects/spring-authorization-server/releases/tag/{version}")
-		}
-	}
 	library("Spring Batch", "6.0.0-M2") {
 		considerSnapshots()
 		group("org.springframework.batch") {

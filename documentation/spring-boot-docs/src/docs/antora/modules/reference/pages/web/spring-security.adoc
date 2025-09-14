@@ -343,7 +343,7 @@ TIP: Spring Boot auto-configures an javadoc:org.springframework.security.oauth2.
 The javadoc:org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository[] has limited capabilities and we recommend using it only for development environments.
 For production environments, consider using a javadoc:org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository[] or creating your own implementation of javadoc:org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository[].
 
-Additional information can be found in the {url-spring-authorization-server-docs}/getting-started.html[Getting Started] chapter of the {url-spring-authorization-server-docs}[Spring Authorization Server Reference Guide].
+Additional information can be found in the {url-spring-security-docs}/servlet/oauth2/authorization-server/getting-started.html[Getting Started] chapter of Spring Security Reference Documentation.
 
 
 
