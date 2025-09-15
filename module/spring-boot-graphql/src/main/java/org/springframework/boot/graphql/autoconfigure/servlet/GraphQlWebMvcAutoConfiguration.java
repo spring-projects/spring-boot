@@ -60,7 +60,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
@@ -190,12 +189,12 @@ public final class GraphQlWebMvcAutoConfiguration {
 					properties.getWebsocket().getConnectionInitTimeout(), properties.getWebsocket().getKeepAlive());
 		}
 
-		private GenericHttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
+		private HttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
 			return converters.getConverters()
 				.stream()
 				.filter(this::canReadJsonMap)
 				.findFirst()
-				.map(this::asGenericHttpMessageConverter)
+				.map(this::asObjectHttpMessageConverter)
 				.orElseThrow(() -> new IllegalStateException("No JSON converter"));
 		}
 
@@ -204,8 +203,8 @@ public final class GraphQlWebMvcAutoConfiguration {
 		}
 
 		@SuppressWarnings("unchecked")
-		private GenericHttpMessageConverter<Object> asGenericHttpMessageConverter(HttpMessageConverter<?> converter) {
-			return (GenericHttpMessageConverter<Object>) converter;
+		private HttpMessageConverter<Object> asObjectHttpMessageConverter(HttpMessageConverter<?> converter) {
+			return (HttpMessageConverter<Object>) converter;
 		}
 
 		@Bean

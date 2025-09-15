@@ -16,7 +16,6 @@
 
 package smoketest.graphql;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureHttpGraphQlTester
-@Disabled("Waiting on compatible release")
 class GreetingControllerTests {
 
 	@Autowired
