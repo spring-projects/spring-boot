@@ -27,13 +27,6 @@ bom {
 			issueLabels = ["type: task"]
 		}
 	}
-	library("Android JSON", "0.0.20131108.vaadin1") {
-		group("com.vaadin.external.google") {
-			modules = [
-				"android-json"
-			]
-		}
-	}
 	library("API Guardian", "1.1.2") {
 		group("org.apiguardian") {
 			modules = [

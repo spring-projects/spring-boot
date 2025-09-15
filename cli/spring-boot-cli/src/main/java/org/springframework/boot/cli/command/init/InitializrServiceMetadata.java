@@ -22,11 +22,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.cli.json.JSONArray;
+import org.springframework.boot.cli.json.JSONException;
+import org.springframework.boot.cli.json.JSONObject;
 import org.springframework.util.Assert;
 
 /**
