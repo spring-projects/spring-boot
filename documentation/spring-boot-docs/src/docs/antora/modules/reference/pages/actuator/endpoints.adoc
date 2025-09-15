@@ -672,7 +672,7 @@ TIP: The `ssl` javadoc:org.springframework.boot.actuate.health.HealthIndicator[]
 If an SSL certificate will be invalid within the time span defined by this threshold, the javadoc:org.springframework.boot.actuate.health.HealthIndicator[] will warn you but it will still return HTTP 200 to not disrupt the application.
 You can use this threshold to give yourself enough lead time to rotate the soon to be expired certificate.
 
-Additional javadoc:org.springframework.boot.actuate.health.HealthIndicator[] beans are available but are not enabled by default:
+Additional javadoc:org.springframework.boot.actuate.health.HealthIndicator[] beans are enabled by default:
 
 [cols="3,4,6"]
 |===
@@ -686,6 +686,8 @@ Additional javadoc:org.springframework.boot.actuate.health.HealthIndicator[] bea
 | javadoc:org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator[]
 | Exposes the "`Readiness`" application availability state.
 |===
+
+These can be disabled by using the configprop:management.endpoint.health.probes.enabled[] configuration property.
 
 
 
@@ -952,8 +954,8 @@ readinessProbe:
 NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.
 It could be the main web server port or a separate management port if the `"management.server.port"` property has been set.
 
-These health groups are automatically enabled only if the application xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes[runs in a Kubernetes environment].
-You can enable them in any environment by using the configprop:management.endpoint.health.probes.enabled[] configuration property.
+These health groups are automatically enabled.
+You can disable them by using the configprop:management.endpoint.health.probes.enabled[] configuration property.
 
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mentions the `"startupProbe"` as a possible solution.
 Generally speaking, the `"startupProbe"` is not necessarily needed here, as the `"readinessProbe"` fails until all startup tasks are done.

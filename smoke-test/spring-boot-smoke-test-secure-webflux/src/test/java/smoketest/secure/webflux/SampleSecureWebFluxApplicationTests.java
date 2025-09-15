@@ -87,7 +87,7 @@ class SampleSecureWebFluxApplicationTests {
 			.header("Authorization", getBasicAuth())
 			.exchange()
 			.expectBody(String.class)
-			.isEqualTo("{\"status\":\"UP\"}");
+			.isEqualTo("{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}");
 	}
 
 	private String getBasicAuth() {

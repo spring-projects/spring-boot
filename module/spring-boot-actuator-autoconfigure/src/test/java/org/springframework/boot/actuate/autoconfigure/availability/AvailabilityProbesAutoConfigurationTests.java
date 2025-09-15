@@ -41,18 +41,8 @@ class AvailabilityProbesAutoConfigurationTests {
 				AvailabilityHealthContributorAutoConfiguration.class, AvailabilityProbesAutoConfiguration.class));
 
 	@Test
-	void probesWhenNotKubernetesAddsNoBeans() {
-		this.contextRunner.run(this::doesNotHaveProbeBeans);
-	}
-
-	@Test
-	void probesWhenKubernetesAddsBeans() {
-		this.contextRunner.withPropertyValues("spring.main.cloud-platform=kubernetes").run(this::hasProbesBeans);
-	}
-
-	@Test
-	void probesWhenCloudFoundryAddsBeans() {
-		this.contextRunner.withPropertyValues("spring.main.cloud-platform=cloud_foundry").run(this::hasProbesBeans);
+	void probesWhenDefaultAddsBeans() {
+		this.contextRunner.run(this::hasProbesBeans);
 	}
 
 	@Test
@@ -62,17 +52,14 @@ class AvailabilityProbesAutoConfigurationTests {
 	}
 
 	@Test
-	void probesWhenPropertyEnabledButNoHealthDependencyDoesNotAddBeans() {
-		this.contextRunner.withPropertyValues("management.endpoint.health.probes.enabled=true")
-			.withClassLoader(new FilteredClassLoader("org.springframework.boot.health"))
+	void probesWhenNoHealthDependencyDoesNotAddBeans() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.boot.health"))
 			.run(this::doesNotHaveProbeBeans);
 	}
 
 	@Test
-	void probesWhenKubernetesAndPropertyDisabledAddsNotBeans() {
-		this.contextRunner
-			.withPropertyValues("spring.main.cloud-platform=kubernetes",
-					"management.endpoint.health.probes.enabled=false")
+	void probesWhenPropertyDisabledAddsNotBeans() {
+		this.contextRunner.withPropertyValues("management.endpoint.health.probes.enabled=false")
 			.run(this::doesNotHaveProbeBeans);
 	}
 
