@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.domain.scan.c;
+package org.springframework.boot.persistence.autoconfigure.scan.c;
 
 import jakarta.persistence.Embeddable;
 

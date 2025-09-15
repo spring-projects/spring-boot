@@ -176,7 +176,7 @@ For more about Spring Data, see the {url-spring-data-site}[Spring Data project p
 == Separate @Entity Definitions from Spring Configuration
 
 Spring Boot determines the location of your javadoc:jakarta.persistence.Entity[format=annotation] definitions by scanning the xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages].
-For more control, use the javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] annotation, as shown in the following example:
+For more control, use the javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] annotation, as shown in the following example:
 
 include-code::MyApplication[]
 

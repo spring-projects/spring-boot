@@ -22,25 +22,22 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot Transaction"
+description = "Spring Boot Persistence"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api(project(":module:spring-boot-persistence"))
 	api("org.springframework:spring-tx")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional("jakarta.transaction:jakarta.transaction-api")
-	optional("org.springframework:spring-aspects")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation("com.github.h-thurow:simple-jndi")
 	testImplementation("com.zaxxer:HikariCP")
+	testImplementation("jakarta.persistence:jakarta.persistence-api")
+	testImplementation("org.hibernate.orm:hibernate-core")
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.springframework:spring-jdbc")
+	testImplementation("org.springframework:spring-orm")
 
-	testRuntimeOnly(project(":module:spring-boot-reactor"))
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly(project(":module:spring-boot-reactor"))
 }

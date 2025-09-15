@@ -105,6 +105,7 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-jsonb"))
 	implementation(project(path: ":module:spring-boot-ldap"))
 	implementation(project(path: ":module:spring-boot-micrometer-metrics"))
+	implementation(project(path: ":module:spring-boot-persistence"))
 	implementation(project(path: ":module:spring-boot-r2dbc"))
 	implementation(project(path: ":module:spring-boot-reactor-netty"))
 	implementation(project(path: ":module:spring-boot-restclient"))

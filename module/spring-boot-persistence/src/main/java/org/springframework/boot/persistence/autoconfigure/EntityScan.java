@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.domain;
+package org.springframework.boot.persistence.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

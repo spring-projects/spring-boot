@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.transaction.autoconfigure;
+package org.springframework.boot.persistence.autoconfigure;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,7 +40,7 @@ public final class PersistenceExceptionTranslationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBooleanProperty(name = "spring.dao.exceptiontranslation.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.persistence.exceptiontranslation.enabled", matchIfMissing = true)
 	static PersistenceExceptionTranslationPostProcessor persistenceExceptionTranslationPostProcessor(
 			Environment environment) {
 		PersistenceExceptionTranslationPostProcessor postProcessor = new PersistenceExceptionTranslationPostProcessor();

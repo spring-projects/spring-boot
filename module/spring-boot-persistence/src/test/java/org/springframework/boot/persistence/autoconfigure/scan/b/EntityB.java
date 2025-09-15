@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.domain.scan.c;
+package org.springframework.boot.persistence.autoconfigure.scan.b;
 
 import jakarta.persistence.Entity;
 
 @Entity
-public class EntityC {
+public class EntityB {
 
 }

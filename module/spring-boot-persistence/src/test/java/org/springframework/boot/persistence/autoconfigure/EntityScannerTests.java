@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.domain;
+package org.springframework.boot.persistence.autoconfigure;
 
 import java.util.Collections;
 import java.util.Set;
@@ -23,12 +23,12 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.domain.scan.a.EmbeddableA;
-import org.springframework.boot.autoconfigure.domain.scan.a.EntityA;
-import org.springframework.boot.autoconfigure.domain.scan.b.EmbeddableB;
-import org.springframework.boot.autoconfigure.domain.scan.b.EntityB;
-import org.springframework.boot.autoconfigure.domain.scan.c.EmbeddableC;
-import org.springframework.boot.autoconfigure.domain.scan.c.EntityC;
+import org.springframework.boot.persistence.autoconfigure.scan.a.EmbeddableA;
+import org.springframework.boot.persistence.autoconfigure.scan.a.EntityA;
+import org.springframework.boot.persistence.autoconfigure.scan.b.EmbeddableB;
+import org.springframework.boot.persistence.autoconfigure.scan.b.EntityB;
+import org.springframework.boot.persistence.autoconfigure.scan.c.EmbeddableC;
+import org.springframework.boot.persistence.autoconfigure.scan.c.EntityC;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -68,7 +68,7 @@ class EntityScannerTests {
 	@Test
 	void scanShouldScanFromResolvedPlaceholderPackage() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan")
+		TestPropertyValues.of("com.example.entity-package=org.springframework.boot.persistence.autoconfigure.scan")
 			.applyTo(context);
 		context.register(ScanPlaceholderConfig.class);
 		context.refresh();
@@ -104,7 +104,8 @@ class EntityScannerTests {
 	void scanShouldUseCustomCandidateComponentProvider() throws ClassNotFoundException {
 		ClassPathScanningCandidateComponentProvider candidateComponentProvider = mock(
 				ClassPathScanningCandidateComponentProvider.class);
-		given(candidateComponentProvider.findCandidateComponents("org.springframework.boot.autoconfigure.domain.scan"))
+		given(candidateComponentProvider
+			.findCandidateComponents("org.springframework.boot.persistence.autoconfigure.scan"))
 			.willReturn(Collections.emptySet());
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		TestEntityScanner scanner = new TestEntityScanner(context, candidateComponentProvider);
@@ -114,7 +115,7 @@ class EntityScannerTests {
 					assertArg((typeFilter) -> assertThat(typeFilter).isInstanceOfSatisfying(AnnotationTypeFilter.class,
 							(filter) -> assertThat(filter.getAnnotationType()).isEqualTo(Entity.class))));
 		then(candidateComponentProvider).should()
-			.findCandidateComponents("org.springframework.boot.autoconfigure.domain.scan");
+			.findCandidateComponents("org.springframework.boot.persistence.autoconfigure.scan");
 		then(candidateComponentProvider).shouldHaveNoMoreInteractions();
 	}
 
@@ -122,7 +123,7 @@ class EntityScannerTests {
 	void scanShouldScanCommaSeparatedPackagesInPlaceholderPackage() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-			.of("com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan.a,org.springframework.boot.autoconfigure.domain.scan.b")
+			.of("com.example.entity-package=org.springframework.boot.persistence.autoconfigure.scan.a,org.springframework.boot.persistence.autoconfigure.scan.b")
 			.applyTo(context);
 		context.register(ScanPlaceholderConfig.class);
 		context.refresh();
@@ -151,7 +152,7 @@ class EntityScannerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EntityScan("org.springframework.boot.autoconfigure.domain.scan")
+	@EntityScan("org.springframework.boot.persistence.autoconfigure.scan")
 	static class ScanConfig {
 
 	}

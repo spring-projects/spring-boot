@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure;
 
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.TestConfiguration;
 
 /**
