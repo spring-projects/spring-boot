@@ -60,7 +60,7 @@ abstract class AbstractDeploymentTests {
 		getDeployedApplication().test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/actuator/health", String.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-			assertThat(response.getBody()).isEqualTo("{\"status\":\"UP\"}");
+			assertThat(response.getBody()).isEqualTo("{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}");
 		});
 	}
 
