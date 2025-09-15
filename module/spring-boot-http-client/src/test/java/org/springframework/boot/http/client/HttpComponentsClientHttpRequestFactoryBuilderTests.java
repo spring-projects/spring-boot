@@ -92,6 +92,15 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 		assertThat(bundles).contains(settings.sslBundle());
 	}
 
+	@Test
+	void with() {
+		TestCustomizer<HttpClientBuilder> customizer = new TestCustomizer<>();
+		ClientHttpRequestFactoryBuilder.httpComponents()
+			.with((builder) -> builder.withHttpClientCustomizer(customizer))
+			.build();
+		customizer.assertCalled();
+	}
+
 	@Override
 	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
 		return (long) ReflectionTestUtils.getField(requestFactory, "connectTimeout");

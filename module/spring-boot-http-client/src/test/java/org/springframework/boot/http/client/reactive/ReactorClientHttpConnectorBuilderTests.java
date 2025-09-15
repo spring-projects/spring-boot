@@ -84,6 +84,19 @@ class ReactorClientHttpConnectorBuilderTests
 		assertThat(httpClients).hasSize(2);
 	}
 
+	@Test
+	void with() {
+		boolean[] called = new boolean[1];
+		Supplier<HttpClient> httpClientFactory = () -> {
+			called[0] = true;
+			return HttpClient.create();
+		};
+		ClientHttpConnectorBuilder.reactor()
+			.with((builder) -> builder.withHttpClientFactory(httpClientFactory))
+			.build();
+		assertThat(called).containsExactly(true);
+	}
+
 	@Override
 	protected long connectTimeout(ReactorClientHttpConnector connector) {
 		return (int) ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).configuration()

@@ -19,6 +19,7 @@ package org.springframework.boot.http.client.reactive;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
@@ -97,6 +98,17 @@ public final class JettyClientHttpConnectorBuilder
 		Assert.notNull(clientConnectorCustomizerCustomizer, "'clientConnectorCustomizerCustomizer' must not be null");
 		return new JettyClientHttpConnectorBuilder(getCustomizers(),
 				this.httpClientBuilder.withClientConnectorCustomizerCustomizer(clientConnectorCustomizerCustomizer));
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpConnectorBuilder} that applies the given
+	 * customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link JettyClientHttpConnectorBuilder}
+	 * @since 4.0.0
+	 */
+	public JettyClientHttpConnectorBuilder with(UnaryOperator<JettyClientHttpConnectorBuilder> customizer) {
+		return customizer.apply(this);
 	}
 
 	@Override

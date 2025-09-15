@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
@@ -101,6 +102,17 @@ public final class JettyClientHttpRequestFactoryBuilder
 		Assert.notNull(clientConnectorCustomizerCustomizer, "'clientConnectorCustomizerCustomizer' must not be null");
 		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withClientConnectorCustomizerCustomizer(clientConnectorCustomizerCustomizer));
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies the given
+	 * customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link JettyClientHttpRequestFactoryBuilder}
+	 * @since 4.0.0
+	 */
+	public JettyClientHttpRequestFactoryBuilder with(UnaryOperator<JettyClientHttpRequestFactoryBuilder> customizer) {
+		return customizer.apply(this);
 	}
 
 	@Override

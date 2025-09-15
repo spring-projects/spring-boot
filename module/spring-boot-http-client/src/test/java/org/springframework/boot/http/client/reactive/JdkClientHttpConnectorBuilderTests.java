@@ -60,6 +60,13 @@ class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuil
 		assertThat(httpClient.executor()).containsSame(executor);
 	}
 
+	@Test
+	void with() {
+		TestCustomizer<HttpClient.Builder> customizer = new TestCustomizer<>();
+		ClientHttpConnectorBuilder.jdk().with((builder) -> builder.withHttpClientCustomizer(customizer)).build();
+		customizer.assertCalled();
+	}
+
 	@Override
 	protected long connectTimeout(JdkClientHttpConnector connector) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");

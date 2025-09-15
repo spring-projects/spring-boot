@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import org.jspecify.annotations.Nullable;
 
@@ -86,6 +87,17 @@ public final class JdkClientHttpRequestFactoryBuilder
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
+	}
+
+	/**
+	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} that applies the given
+	 * customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link JdkClientHttpRequestFactoryBuilder}
+	 * @since 4.0.0
+	 */
+	public JdkClientHttpRequestFactoryBuilder with(UnaryOperator<JdkClientHttpRequestFactoryBuilder> customizer) {
+		return customizer.apply(this);
 	}
 
 	@Override

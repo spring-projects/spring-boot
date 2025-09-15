@@ -56,6 +56,13 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 		clientConnectorCustomizerCustomizer.assertCalled();
 	}
 
+	@Test
+	void with() {
+		TestCustomizer<HttpClient> customizer = new TestCustomizer<>();
+		ClientHttpConnectorBuilder.jetty().with((builder) -> builder.withHttpClientCustomizer(customizer)).build();
+		customizer.assertCalled();
+	}
+
 	@Override
 	protected long connectTimeout(JettyClientHttpConnector connector) {
 		return ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).getConnectTimeout();

@@ -55,6 +55,13 @@ class JettyClientHttpRequestFactoryBuilderTests
 		clientConnectorCustomizerCustomizer.assertCalled();
 	}
 
+	@Test
+	void with() {
+		TestCustomizer<HttpClient> customizer = new TestCustomizer<>();
+		ClientHttpRequestFactoryBuilder.jetty().with((builder) -> builder.withHttpClientCustomizer(customizer)).build();
+		customizer.assertCalled();
+	}
+
 	@Override
 	protected long connectTimeout(JettyClientHttpRequestFactory requestFactory) {
 		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();

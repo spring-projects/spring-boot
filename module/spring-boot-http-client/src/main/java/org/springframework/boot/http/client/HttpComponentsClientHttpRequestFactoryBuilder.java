@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -141,6 +142,18 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		Assert.notNull(defaultRequestConfigCustomizer, "'defaultRequestConfigCustomizer' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withDefaultRequestConfigCustomizer(defaultRequestConfigCustomizer));
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} that applies the
+	 * given customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link HttpComponentsClientHttpRequestFactoryBuilder}
+	 * @since 4.0.0
+	 */
+	public HttpComponentsClientHttpRequestFactoryBuilder with(
+			UnaryOperator<HttpComponentsClientHttpRequestFactoryBuilder> customizer) {
+		return customizer.apply(this);
 	}
 
 	@Override

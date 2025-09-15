@@ -107,6 +107,18 @@ public final class ReactorClientHttpRequestFactoryBuilder
 				this.httpClientBuilder.withHttpClientCustomizer(httpClientCustomizer));
 	}
 
+	/**
+	 * Return a new {@link ReactorClientHttpRequestFactoryBuilder} that applies the given
+	 * customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link ReactorClientHttpRequestFactoryBuilder}
+	 * @since 4.0.0
+	 */
+	public ReactorClientHttpRequestFactoryBuilder with(
+			UnaryOperator<ReactorClientHttpRequestFactoryBuilder> customizer) {
+		return customizer.apply(this);
+	}
+
 	@Override
 	protected ReactorClientHttpRequestFactory createClientHttpRequestFactory(
 			ClientHttpRequestFactorySettings settings) {

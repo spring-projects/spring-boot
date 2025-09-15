@@ -93,6 +93,15 @@ class HttpComponentsClientHttpConnectorBuilderTests
 		assertThat(bundles).contains(settings.sslBundle());
 	}
 
+	@Test
+	void with() {
+		TestCustomizer<HttpAsyncClientBuilder> customizer = new TestCustomizer<>();
+		ClientHttpConnectorBuilder.httpComponents()
+			.with((builder) -> builder.withHttpClientCustomizer(customizer))
+			.build();
+		customizer.assertCalled();
+	}
+
 	@Override
 	protected long connectTimeout(HttpComponentsClientHttpConnector connector) {
 		return getConnectorConfig(connector).getConnectTimeout().toMilliseconds();

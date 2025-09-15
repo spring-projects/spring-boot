@@ -19,6 +19,7 @@ package org.springframework.boot.http.client.reactive;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -124,6 +125,18 @@ public final class HttpComponentsClientHttpConnectorBuilder
 		Assert.notNull(defaultRequestConfigCustomizer, "'defaultRequestConfigCustomizer' must not be null");
 		return new HttpComponentsClientHttpConnectorBuilder(getCustomizers(),
 				this.httpClientBuilder.withDefaultRequestConfigCustomizer(defaultRequestConfigCustomizer));
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsClientHttpConnectorBuilder} that applies the
+	 * given customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link HttpComponentsClientHttpConnectorBuilder}
+	 * @since 4.0.0
+	 */
+	public HttpComponentsClientHttpConnectorBuilder with(
+			UnaryOperator<HttpComponentsClientHttpConnectorBuilder> customizer) {
+		return customizer.apply(this);
 	}
 
 	@Override

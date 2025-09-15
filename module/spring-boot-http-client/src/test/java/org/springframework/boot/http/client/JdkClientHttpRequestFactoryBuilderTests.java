@@ -60,6 +60,13 @@ class JdkClientHttpRequestFactoryBuilderTests
 		assertThat(httpClient.executor()).containsSame(executor);
 	}
 
+	@Test
+	void with() {
+		TestCustomizer<HttpClient.Builder> customizer = new TestCustomizer<>();
+		ClientHttpRequestFactoryBuilder.jdk().with((builder) -> builder.withHttpClientCustomizer(customizer)).build();
+		customizer.assertCalled();
+	}
+
 	@Override
 	protected long connectTimeout(JdkClientHttpRequestFactory requestFactory) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
