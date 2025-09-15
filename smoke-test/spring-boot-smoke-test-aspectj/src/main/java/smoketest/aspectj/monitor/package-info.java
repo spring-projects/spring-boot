@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-plugins {
-	id "java"
-}
+@NullMarked
+package smoketest.aspectj.monitor;
 
-description = "Spring Boot AOP smoke test"
-
-dependencies {
-	implementation(project(":starter:spring-boot-starter-aop"))
-
-	testImplementation(project(":starter:spring-boot-starter-test"))
-}
+import org.jspecify.annotations.NullMarked;

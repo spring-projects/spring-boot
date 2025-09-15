@@ -15,6 +15,6 @@
  */
 
 @NullMarked
-package smoketest.aop.monitor;
+package smoketest.aspectj;
 
 import org.jspecify.annotations.NullMarked;

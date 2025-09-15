@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.aop.monitor;
+package smoketest.aspectj.monitor;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

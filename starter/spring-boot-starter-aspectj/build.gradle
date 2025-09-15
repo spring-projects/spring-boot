@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for aspect-oriented programming with Spring AOP and AspectJ"
+description = "Starter for aspect-oriented programming with AspectJ"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))

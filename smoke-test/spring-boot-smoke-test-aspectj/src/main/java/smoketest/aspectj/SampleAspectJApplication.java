@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package smoketest.aop;
+package smoketest.aspectj;
 
-import smoketest.aop.service.HelloWorldService;
+import smoketest.aspectj.service.HelloWorldService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -24,7 +24,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SampleAopApplication implements CommandLineRunner {
+public class SampleAspectJApplication implements CommandLineRunner {
 
 	// Simple example shows how an application can spy on itself with AOP
 
@@ -37,7 +37,7 @@ public class SampleAopApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleAopApplication.class, args);
+		SpringApplication.run(SampleAspectJApplication.class, args);
 	}
 
 }

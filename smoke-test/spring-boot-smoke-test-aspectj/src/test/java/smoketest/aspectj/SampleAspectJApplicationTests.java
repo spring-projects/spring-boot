@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.aop;
+package smoketest.aspectj;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +27,13 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SampleAopApplication}.
+ * Tests for {@link SampleAspectJApplication}.
  *
  * @author Dave Syer
  * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
-class SampleAopApplicationTests {
+class SampleAspectJApplicationTests {
 
 	private String profiles;
 
@@ -54,13 +54,13 @@ class SampleAopApplicationTests {
 
 	@Test
 	void testDefaultSettings(CapturedOutput output) {
-		SampleAopApplication.main(new String[0]);
+		SampleAspectJApplication.main(new String[0]);
 		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
 	void testCommandLineOverrides(CapturedOutput output) {
-		SampleAopApplication.main(new String[] { "--test.name=Gordon" });
+		SampleAspectJApplication.main(new String[] { "--test.name=Gordon" });
 		assertThat(output).contains("Hello Gordon");
 	}
 
