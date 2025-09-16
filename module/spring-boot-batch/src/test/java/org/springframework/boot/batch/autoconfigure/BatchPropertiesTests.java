@@ -18,7 +18,7 @@ package org.springframework.boot.batch.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.configuration.support.JdbcDefaultBatchConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +35,7 @@ class BatchPropertiesTests {
 			.isEqualTo(new TestBatchConfiguration().getValidateTransactionState());
 	}
 
-	static class TestBatchConfiguration extends DefaultBatchConfiguration {
+	static class TestBatchConfiguration extends JdbcDefaultBatchConfiguration {
 
 		@Override
 		public boolean getValidateTransactionState() {
