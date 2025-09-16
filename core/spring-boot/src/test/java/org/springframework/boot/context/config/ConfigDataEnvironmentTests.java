@@ -32,9 +32,9 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import org.springframework.boot.ConfigurableBootstrapContext;
-import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.MockApplicationEnvironment;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.ImportPhase;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.config.TestConfigDataEnvironmentUpdateListener.AddedPropertySource;

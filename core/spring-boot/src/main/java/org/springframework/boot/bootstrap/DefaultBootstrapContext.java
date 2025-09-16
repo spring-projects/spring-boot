@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.bootstrap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ import org.springframework.util.Assert;
  * Default {@link ConfigurableBootstrapContext} implementation.
  *
  * @author Phillip Webb
- * @since 2.4.0
+ * @since 4.0.0
  */
 public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 

@@ -21,9 +21,9 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.TestApplicationEnvironment;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.context.config.ConfigData.Options;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.env.PropertySource;

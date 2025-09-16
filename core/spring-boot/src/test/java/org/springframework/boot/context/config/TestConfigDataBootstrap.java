@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.springframework.boot.BootstrapContextClosedEvent;
-import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.bootstrap.BootstrapContextClosedEvent;
+import org.springframework.boot.bootstrap.BootstrapRegistry.InstanceSupplier;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.MapPropertySource;

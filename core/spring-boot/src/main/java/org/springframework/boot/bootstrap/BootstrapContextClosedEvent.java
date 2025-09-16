@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.bootstrap;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -23,7 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * {@link ApplicationEvent} published by a {@link BootstrapContext} when it's closed.
  *
  * @author Phillip Webb
- * @since 2.4.0
+ * @since 4.0.0
  * @see BootstrapRegistry#addCloseListener(org.springframework.context.ApplicationListener)
  */
 public class BootstrapContextClosedEvent extends ApplicationEvent {

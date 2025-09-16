@@ -20,8 +20,8 @@ import java.util.function.Function;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.BootstrapContext;
-import org.springframework.boot.BootstrapRegistryInitializer;
+import org.springframework.boot.bootstrap.BootstrapContext;
+import org.springframework.boot.bootstrap.BootstrapRegistryInitializer;
 
 /**
  * Allows the user to register a {@link BootstrapRegistryInitializer} with a custom

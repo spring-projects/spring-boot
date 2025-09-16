@@ -26,10 +26,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
-import org.springframework.boot.BootstrapRegistry.Scope;
-import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultPropertiesPropertySource;
+import org.springframework.boot.bootstrap.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.bootstrap.BootstrapRegistry.Scope;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributors.BinderOption;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;

@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.bootstrap;
 
 /**
- * A {@link BootstrapContext} that also provides configuration methods through the
- * {@link BootstrapRegistry} interface.
+ * Callback interface that can be used to initialize a {@link BootstrapRegistry} before it
+ * is used.
  *
  * @author Phillip Webb
- * @since 2.4.0
+ * @since 4.0.0
  * @see BootstrapRegistry
- * @see BootstrapContext
- * @see DefaultBootstrapContext
  */
-public interface ConfigurableBootstrapContext extends BootstrapRegistry, BootstrapContext {
+@FunctionalInterface
+public interface BootstrapRegistryInitializer {
+
+	/**
+	 * Initialize the given {@link BootstrapRegistry} with any required registrations.
+	 * @param registry the registry to initialize
+	 */
+	void initialize(BootstrapRegistry registry);
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.bootstrap;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,8 +23,8 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
-import org.springframework.boot.BootstrapRegistry.Scope;
+import org.springframework.boot.bootstrap.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.bootstrap.BootstrapRegistry.Scope;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;

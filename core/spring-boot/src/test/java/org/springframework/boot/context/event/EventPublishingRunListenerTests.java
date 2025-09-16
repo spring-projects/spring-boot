@@ -24,9 +24,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.StaticApplicationContext;

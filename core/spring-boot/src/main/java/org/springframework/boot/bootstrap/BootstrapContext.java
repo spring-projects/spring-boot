@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.bootstrap;
 
 import java.util.function.Supplier;
 
@@ -31,7 +31,7 @@ import org.springframework.core.env.Environment;
  * shared before the {@link ApplicationContext} is available.
  *
  * @author Phillip Webb
- * @since 2.4.0
+ * @since 4.0.0
  */
 public interface BootstrapContext {
 

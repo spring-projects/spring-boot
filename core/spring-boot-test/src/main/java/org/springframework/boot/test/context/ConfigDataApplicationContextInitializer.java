@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.context;
 
-import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.DefaultPropertiesPropertySource;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.boot.env.RandomValuePropertySource;
