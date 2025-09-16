@@ -695,6 +695,11 @@ public class TomcatServerProperties {
 		private boolean allowCaching = true;
 
 		/**
+		 * Maximum size of the static resource cache.
+		 */
+		private @Nullable DataSize cacheMaxSize;
+
+		/**
 		 * Time-to-live of the static resource cache.
 		 */
 		private @Nullable Duration cacheTtl;
@@ -705,6 +710,14 @@ public class TomcatServerProperties {
 
 		public void setAllowCaching(boolean allowCaching) {
 			this.allowCaching = allowCaching;
+		}
+
+		public @Nullable DataSize getCacheMaxSize() {
+			return this.cacheMaxSize;
+		}
+
+		public void setCacheMaxSize(@Nullable DataSize cacheMaxSize) {
+			this.cacheMaxSize = cacheMaxSize;
 		}
 
 		public @Nullable Duration getCacheTtl() {

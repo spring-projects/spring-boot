@@ -333,6 +333,16 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customStaticResourceCacheMaxSize() {
+		bind("server.tomcat.resource.cache-max-size=4096KB");
+		customizeAndRunServer((server) -> {
+			Tomcat tomcat = server.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(context.getResources().getCacheMaxSize()).isEqualTo(4096L);
+		});
+	}
+
+	@Test
 	void customStaticResourceCacheTtl() {
 		bind("server.tomcat.resource.cache-ttl=10000");
 		customizeAndRunServer((server) -> {
