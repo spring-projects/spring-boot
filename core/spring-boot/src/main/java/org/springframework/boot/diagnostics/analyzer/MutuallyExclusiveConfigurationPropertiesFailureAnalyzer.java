@@ -48,9 +48,9 @@ import org.springframework.core.env.PropertySource;
 class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 		extends AbstractFailureAnalyzer<MutuallyExclusiveConfigurationPropertiesException> {
 
-	private final ConfigurableEnvironment environment;
+	private final @Nullable ConfigurableEnvironment environment;
 
-	MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(Environment environment) {
+	MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(@Nullable Environment environment) {
 		this.environment = (ConfigurableEnvironment) environment;
 	}
 

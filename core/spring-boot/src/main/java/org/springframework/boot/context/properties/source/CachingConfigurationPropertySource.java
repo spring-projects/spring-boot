@@ -38,7 +38,7 @@ interface CachingConfigurationPropertySource {
 	 * @return a {@link ConfigurationPropertyCaching} instance or {@code null} if the
 	 * source does not support caching.
 	 */
-	static @Nullable ConfigurationPropertyCaching find(ConfigurationPropertySource source) {
+	static @Nullable ConfigurationPropertyCaching find(@Nullable ConfigurationPropertySource source) {
 		if (source instanceof CachingConfigurationPropertySource cachingSource) {
 			return cachingSource.getCaching();
 		}

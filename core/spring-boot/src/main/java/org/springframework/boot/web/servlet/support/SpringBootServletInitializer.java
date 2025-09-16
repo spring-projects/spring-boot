@@ -151,7 +151,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		}
 	}
 
-	protected WebApplicationContext createRootApplicationContext(ServletContext servletContext) {
+	protected @Nullable WebApplicationContext createRootApplicationContext(ServletContext servletContext) {
 		SpringApplicationBuilder builder = createSpringApplicationBuilder();
 		builder.main(getClass());
 		ApplicationContext parent = getExistingRootWebApplicationContext(servletContext);
@@ -201,7 +201,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 * @param application the application to run
 	 * @return the {@link WebApplicationContext}
 	 */
-	protected WebApplicationContext run(SpringApplication application) {
+	protected @Nullable WebApplicationContext run(SpringApplication application) {
 		return (WebApplicationContext) application.run();
 	}
 

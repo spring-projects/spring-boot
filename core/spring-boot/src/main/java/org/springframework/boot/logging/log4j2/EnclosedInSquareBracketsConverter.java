@@ -67,7 +67,8 @@ public final class EnclosedInSquareBracketsConverter extends LogEventPatternConv
 	 * @param options the options
 	 * @return a new instance, or {@code null} if the options are invalid
 	 */
-	public static @Nullable EnclosedInSquareBracketsConverter newInstance(Configuration config, String[] options) {
+	public static @Nullable EnclosedInSquareBracketsConverter newInstance(@Nullable Configuration config,
+			String[] options) {
 		if (options.length < 1) {
 			LOGGER.error("Incorrect number of options on style. Expected at least 1, received {}", options.length);
 			return null;

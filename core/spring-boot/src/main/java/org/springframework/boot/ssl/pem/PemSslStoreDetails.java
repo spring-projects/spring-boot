@@ -151,7 +151,7 @@ public record PemSslStoreDetails(@Nullable String type, @Nullable String alias, 
 	 * reference to the resource to load)
 	 * @return a new {@link PemSslStoreDetails} instance.
 	 */
-	public static PemSslStoreDetails forCertificate(String certificate) {
+	public static PemSslStoreDetails forCertificate(@Nullable String certificate) {
 		return forCertificates(certificate);
 	}
 
@@ -163,7 +163,7 @@ public record PemSslStoreDetails(@Nullable String type, @Nullable String alias, 
 	 * @return a new {@link PemSslStoreDetails} instance.
 	 * @since 3.2.0
 	 */
-	public static PemSslStoreDetails forCertificates(String certificates) {
+	public static PemSslStoreDetails forCertificates(@Nullable String certificates) {
 		return new PemSslStoreDetails(null, certificates, null);
 	}
 

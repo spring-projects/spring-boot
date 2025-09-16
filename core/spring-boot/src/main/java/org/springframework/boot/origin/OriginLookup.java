@@ -47,7 +47,7 @@ public interface OriginLookup<K> {
 	 * @return an {@link Origin} or {@code null}
 	 */
 	@SuppressWarnings("unchecked")
-	static <K> @Nullable Origin getOrigin(Object source, K key) {
+	static <K> @Nullable Origin getOrigin(@Nullable Object source, K key) {
 		if (!(source instanceof OriginLookup)) {
 			return null;
 		}
