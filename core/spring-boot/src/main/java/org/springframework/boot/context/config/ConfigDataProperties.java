@@ -53,7 +53,8 @@ class ConfigDataProperties {
 	 * @param activate the activate properties
 	 */
 	ConfigDataProperties(@Nullable @Name("import") List<ConfigDataLocation> imports, @Nullable Activate activate) {
-		this.imports = (imports != null) ? imports : Collections.emptyList();
+		this.imports = (imports != null) ? imports.stream().filter(ConfigDataLocation::isNotEmpty).toList()
+				: Collections.emptyList();
 		this.activate = activate;
 	}
 

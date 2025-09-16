@@ -19,13 +19,15 @@ package org.springframework.boot.context.config;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
 
@@ -39,32 +41,35 @@ import org.springframework.boot.origin.Origin;
 class ConfigDataLocationBindHandler extends AbstractBindHandler {
 
 	@Override
-	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
+	public @Nullable Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+			Object result) {
+		OriginMapper originMapper = new OriginMapper(context.getConfigurationProperty());
 		if (result instanceof ConfigDataLocation location) {
-			return withOrigin(context, location);
+			return originMapper.map(location);
 		}
-		if (result instanceof List<?> list) {
-			return list.stream()
-				.filter(Objects::nonNull)
-				.map((element) -> (element instanceof ConfigDataLocation location) ? withOrigin(context, location)
-						: element)
-				.collect(Collectors.toCollection(ArrayList::new));
+		if (result instanceof List<?> locations) {
+			return locations.stream().map(originMapper::mapIfPossible).collect(Collectors.toCollection(ArrayList::new));
 		}
-		if (result instanceof ConfigDataLocation[] unfilteredLocations) {
-			return Arrays.stream(unfilteredLocations)
-				.filter(Objects::nonNull)
-				.map((element) -> withOrigin(context, element))
-				.toArray(ConfigDataLocation[]::new);
+		if (result instanceof ConfigDataLocation[] locations) {
+			return Arrays.stream(locations).map(originMapper::mapIfPossible).toArray(ConfigDataLocation[]::new);
 		}
 		return result;
 	}
 
-	private ConfigDataLocation withOrigin(BindContext context, ConfigDataLocation result) {
-		if (result.getOrigin() != null) {
-			return result;
+	private record OriginMapper(@Nullable ConfigurationProperty property) {
+
+		@Nullable Object mapIfPossible(@Nullable Object object) {
+			return (object instanceof ConfigDataLocation location) ? map(location) : object;
 		}
-		Origin origin = Origin.from(context.getConfigurationProperty());
-		return result.withOrigin(origin);
+
+		@Nullable ConfigDataLocation map(@Nullable ConfigDataLocation location) {
+			if (location == null) {
+				return null;
+			}
+			Origin origin = Origin.from(location);
+			return (origin != null) ? location : location.withOrigin(Origin.from(property()));
+		}
+
 	}
 
 }
