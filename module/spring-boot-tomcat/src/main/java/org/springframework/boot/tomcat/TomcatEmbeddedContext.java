@@ -34,6 +34,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -46,7 +47,7 @@ import org.springframework.util.ClassUtils;
  */
 public class TomcatEmbeddedContext extends StandardContext {
 
-	private @Nullable TomcatStarter starter;
+	private DeferredStartupExceptions deferredStartupExceptions = DeferredStartupExceptions.NONE;
 
 	private @Nullable MimeMappings mimeMappings;
 
@@ -116,12 +117,17 @@ public class TomcatEmbeddedContext extends StandardContext {
 		}
 	}
 
-	public void setStarter(@Nullable TomcatStarter starter) {
-		this.starter = starter;
+	/**
+	 * Set the a strategy used to capture and rethrow deferred startup exceptions.
+	 * @param deferredStartupExceptions the strategy to use
+	 */
+	public void setDeferredStartupExceptions(DeferredStartupExceptions deferredStartupExceptions) {
+		Assert.notNull(deferredStartupExceptions, "'deferredStartupExceptions' must not be null");
+		this.deferredStartupExceptions = deferredStartupExceptions;
 	}
 
-	@Nullable TomcatStarter getStarter() {
-		return this.starter;
+	DeferredStartupExceptions getDeferredStartupExceptions() {
+		return this.deferredStartupExceptions;
 	}
 
 	public void setMimeMappings(MimeMappings mimeMappings) {
@@ -144,6 +150,26 @@ public class TomcatEmbeddedContext extends StandardContext {
 			return mimeMapping;
 		}
 		return (this.mimeMappings != null) ? this.mimeMappings.get(extension) : null;
+	}
+
+	/**
+	 * Strategy interface that can be used to rethrow deferred startup exceptions.
+	 */
+	@FunctionalInterface
+	public interface DeferredStartupExceptions {
+
+		/**
+		 * {@link DeferredStartupExceptions} that does nothing.
+		 */
+		DeferredStartupExceptions NONE = () -> {
+		};
+
+		/**
+		 * Rethrow deferred startup exceptions if there are any.
+		 * @throws Exception the deferred startup exception
+		 */
+		void rethrow() throws Exception;
+
 	}
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.tomcat;
+package org.springframework.boot.tomcat.servlet;
 
 import java.util.Set;
 
@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.tomcat.TomcatEmbeddedContext;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 /**
@@ -33,17 +34,17 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 4.0.0
  */
-public class TomcatStarter implements ServletContainerInitializer {
+class DeferredServletContainerInitializers
+		implements ServletContainerInitializer, TomcatEmbeddedContext.DeferredStartupExceptions {
 
-	private static final Log logger = LogFactory.getLog(TomcatStarter.class);
+	private static final Log logger = LogFactory.getLog(DeferredServletContainerInitializers.class);
 
 	private final Iterable<ServletContextInitializer> initializers;
 
 	private volatile @Nullable Exception startUpException;
 
-	public TomcatStarter(Iterable<ServletContextInitializer> initializers) {
+	DeferredServletContainerInitializers(Iterable<ServletContextInitializer> initializers) {
 		this.initializers = initializers;
 	}
 
@@ -65,8 +66,11 @@ public class TomcatStarter implements ServletContainerInitializer {
 		}
 	}
 
-	@Nullable Exception getStartUpException() {
-		return this.startUpException;
+	@Override
+	public void rethrow() throws Exception {
+		if (this.startUpException != null) {
+			throw this.startUpException;
+		}
 	}
 
 }

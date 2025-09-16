@@ -200,13 +200,7 @@ public class TomcatWebServer implements WebServer {
 		Container[] children = this.tomcat.getHost().findChildren();
 		for (Container container : children) {
 			if (container instanceof TomcatEmbeddedContext embeddedContext) {
-				TomcatStarter tomcatStarter = embeddedContext.getStarter();
-				if (tomcatStarter != null) {
-					Exception exception = tomcatStarter.getStartUpException();
-					if (exception != null) {
-						throw exception;
-					}
-				}
+				embeddedContext.getDeferredStartupExceptions().rethrow();
 			}
 			if (!LifecycleState.STARTED.equals(container.getState())) {
 				throw new IllegalStateException(container + " failed to start");

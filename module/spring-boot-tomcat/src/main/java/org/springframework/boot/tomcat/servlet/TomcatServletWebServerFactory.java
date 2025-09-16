@@ -70,7 +70,6 @@ import org.springframework.boot.tomcat.DisableReferenceClearingContextCustomizer
 import org.springframework.boot.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.tomcat.TomcatEmbeddedContext;
 import org.springframework.boot.tomcat.TomcatEmbeddedWebappClassLoader;
-import org.springframework.boot.tomcat.TomcatStarter;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.tomcat.TomcatWebServerFactory;
 import org.springframework.boot.web.error.ErrorPage;
@@ -289,12 +288,13 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 	 * @param initializers initializers to apply
 	 */
 	protected void configureContext(Context context, Iterable<ServletContextInitializer> initializers) {
-		TomcatStarter starter = new TomcatStarter(initializers);
+		DeferredServletContainerInitializers deferredInitializers = new DeferredServletContainerInitializers(
+				initializers);
 		if (context instanceof TomcatEmbeddedContext embeddedContext) {
-			embeddedContext.setStarter(starter);
+			embeddedContext.setDeferredStartupExceptions(deferredInitializers);
 			embeddedContext.setFailCtxIfServletStartFails(true);
 		}
-		context.addServletContainerInitializer(starter, NO_CLASSES);
+		context.addServletContainerInitializer(deferredInitializers, NO_CLASSES);
 		for (LifecycleListener lifecycleListener : this.getContextLifecycleListeners()) {
 			context.addLifecycleListener(lifecycleListener);
 		}
