@@ -47,12 +47,12 @@ class JmxPropertiesConfigAdapter extends PropertiesConfigAdapter<JmxProperties> 
 
 	@Override
 	public String domain() {
-		return getRequired(JmxProperties::getDomain, JmxConfig.super::domain);
+		return obtain(JmxProperties::getDomain, JmxConfig.super::domain);
 	}
 
 	@Override
 	public Duration step() {
-		return getRequired(JmxProperties::getStep, JmxConfig.super::step);
+		return obtain(JmxProperties::getStep, JmxConfig.super::step);
 	}
 
 }

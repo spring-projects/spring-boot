@@ -64,12 +64,12 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public String url() {
-		return getRequired((properties) -> this.connectionDetails.getUrl(), OtlpConfig.super::url);
+		return obtain((properties) -> this.connectionDetails.getUrl(), OtlpConfig.super::url);
 	}
 
 	@Override
 	public AggregationTemporality aggregationTemporality() {
-		return getRequired(OtlpMetricsProperties::getAggregationTemporality, OtlpConfig.super::aggregationTemporality);
+		return obtain(OtlpMetricsProperties::getAggregationTemporality, OtlpConfig.super::aggregationTemporality);
 	}
 
 	@Override
@@ -82,37 +82,37 @@ class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAda
 
 	@Override
 	public Map<String, String> headers() {
-		return getRequired(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers);
+		return obtain(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers);
 	}
 
 	@Override
 	public HistogramFlavor histogramFlavor() {
-		return getRequired(OtlpMetricsProperties::getHistogramFlavor, OtlpConfig.super::histogramFlavor);
+		return obtain(OtlpMetricsProperties::getHistogramFlavor, OtlpConfig.super::histogramFlavor);
 	}
 
 	@Override
 	public Map<String, HistogramFlavor> histogramFlavorPerMeter() {
-		return getRequired(perMeter(Meter::getHistogramFlavor), OtlpConfig.super::histogramFlavorPerMeter);
+		return obtain(perMeter(Meter::getHistogramFlavor), OtlpConfig.super::histogramFlavorPerMeter);
 	}
 
 	@Override
 	public Map<String, Integer> maxBucketsPerMeter() {
-		return getRequired(perMeter(Meter::getMaxBucketCount), OtlpConfig.super::maxBucketsPerMeter);
+		return obtain(perMeter(Meter::getMaxBucketCount), OtlpConfig.super::maxBucketsPerMeter);
 	}
 
 	@Override
 	public int maxScale() {
-		return getRequired(OtlpMetricsProperties::getMaxScale, OtlpConfig.super::maxScale);
+		return obtain(OtlpMetricsProperties::getMaxScale, OtlpConfig.super::maxScale);
 	}
 
 	@Override
 	public int maxBucketCount() {
-		return getRequired(OtlpMetricsProperties::getMaxBucketCount, OtlpConfig.super::maxBucketCount);
+		return obtain(OtlpMetricsProperties::getMaxBucketCount, OtlpConfig.super::maxBucketCount);
 	}
 
 	@Override
 	public TimeUnit baseTimeUnit() {
-		return getRequired(OtlpMetricsProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
+		return obtain(OtlpMetricsProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
 	}
 
 	private <V> Getter<OtlpMetricsProperties, Map<String, V>> perMeter(Getter<Meter, V> getter) {

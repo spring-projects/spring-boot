@@ -40,61 +40,57 @@ class ElasticPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 
 	@Override
 	public String host() {
-		return getRequired(ElasticProperties::getHost, ElasticConfig.super::host);
+		return obtain(ElasticProperties::getHost, ElasticConfig.super::host);
 	}
 
 	@Override
 	public String index() {
-		return getRequired(ElasticProperties::getIndex, ElasticConfig.super::index);
+		return obtain(ElasticProperties::getIndex, ElasticConfig.super::index);
 	}
 
 	@Override
 	public String indexDateFormat() {
-		return getRequired(ElasticProperties::getIndexDateFormat, ElasticConfig.super::indexDateFormat);
+		return obtain(ElasticProperties::getIndexDateFormat, ElasticConfig.super::indexDateFormat);
 	}
 
 	@Override
 	public String indexDateSeparator() {
-		return getRequired(ElasticProperties::getIndexDateSeparator, ElasticConfig.super::indexDateSeparator);
+		return obtain(ElasticProperties::getIndexDateSeparator, ElasticConfig.super::indexDateSeparator);
 	}
 
 	@Override
 	public String timestampFieldName() {
-		return getRequired(ElasticProperties::getTimestampFieldName, ElasticConfig.super::timestampFieldName);
+		return obtain(ElasticProperties::getTimestampFieldName, ElasticConfig.super::timestampFieldName);
 	}
 
 	@Override
 	public boolean autoCreateIndex() {
-		return getRequired(ElasticProperties::isAutoCreateIndex, ElasticConfig.super::autoCreateIndex);
+		return obtain(ElasticProperties::isAutoCreateIndex, ElasticConfig.super::autoCreateIndex);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String userName() {
 		return get(ElasticProperties::getUserName, ElasticConfig.super::userName);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String password() {
 		return get(ElasticProperties::getPassword, ElasticConfig.super::password);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String pipeline() {
 		return get(ElasticProperties::getPipeline, ElasticConfig.super::pipeline);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String apiKeyCredentials() {
 		return get(ElasticProperties::getApiKeyCredentials, ElasticConfig.super::apiKeyCredentials);
 	}
 
 	@Override
 	public boolean enableSource() {
-		return getRequired(ElasticProperties::isEnableSource, ElasticConfig.super::enableSource);
+		return obtain(ElasticProperties::isEnableSource, ElasticConfig.super::enableSource);
 	}
 
 }

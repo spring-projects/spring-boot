@@ -40,23 +40,22 @@ class AppOpticsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 
 	@Override
 	public String uri() {
-		return getRequired(AppOpticsProperties::getUri, AppOpticsConfig.super::uri);
+		return obtain(AppOpticsProperties::getUri, AppOpticsConfig.super::uri);
 	}
 
 	@Override
 	public String apiToken() {
-		return getRequired(AppOpticsProperties::getApiToken, AppOpticsConfig.super::apiToken);
+		return obtain(AppOpticsProperties::getApiToken, AppOpticsConfig.super::apiToken);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String hostTag() {
 		return get(AppOpticsProperties::getHostTag, AppOpticsConfig.super::hostTag);
 	}
 
 	@Override
 	public boolean floorTimes() {
-		return getRequired(AppOpticsProperties::isFloorTimes, AppOpticsConfig.super::floorTimes);
+		return obtain(AppOpticsProperties::isFloorTimes, AppOpticsConfig.super::floorTimes);
 	}
 
 }

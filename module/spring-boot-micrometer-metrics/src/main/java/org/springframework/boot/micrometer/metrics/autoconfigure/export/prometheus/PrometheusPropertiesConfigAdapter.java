@@ -50,16 +50,15 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 
 	@Override
 	public boolean descriptions() {
-		return getRequired(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
+		return obtain(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
 	}
 
 	@Override
 	public Duration step() {
-		return getRequired(PrometheusProperties::getStep, PrometheusConfig.super::step);
+		return obtain(PrometheusProperties::getStep, PrometheusConfig.super::step);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable Properties prometheusProperties() {
 		return get(this::fromPropertiesMap, PrometheusConfig.super::prometheusProperties);
 	}

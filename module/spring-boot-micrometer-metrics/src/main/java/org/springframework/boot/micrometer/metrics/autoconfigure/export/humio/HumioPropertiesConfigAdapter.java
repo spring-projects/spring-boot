@@ -46,17 +46,15 @@ class HumioPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<H
 
 	@Override
 	public String uri() {
-		return getRequired(HumioProperties::getUri, HumioConfig.super::uri);
+		return obtain(HumioProperties::getUri, HumioConfig.super::uri);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable Map<String, String> tags() {
 		return get(HumioProperties::getTags, HumioConfig.super::tags);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String apiToken() {
 		return get(HumioProperties::getApiToken, HumioConfig.super::apiToken);
 	}

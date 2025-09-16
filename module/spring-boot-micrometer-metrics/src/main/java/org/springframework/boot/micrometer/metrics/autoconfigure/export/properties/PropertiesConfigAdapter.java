@@ -16,8 +16,6 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure.export.properties;
 
-import java.util.function.Supplier;
-
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
@@ -28,6 +26,7 @@ import org.springframework.util.Assert;
  * @param <T> the properties type
  * @author Phillip Webb
  * @author Nikolay Rybak
+ * @author Moritz Halbritter
  * @since 4.0.0
  */
 public class PropertiesConfigAdapter<T> {
@@ -50,7 +49,7 @@ public class PropertiesConfigAdapter<T> {
 	 * @param <V> the value type
 	 * @return the property or fallback value
 	 */
-	protected final <V> @Nullable V get(Getter<T, V> getter, Supplier<@Nullable V> fallback) {
+	protected final <V> @Nullable V get(Getter<T, V> getter, Fallback<V> fallback) {
 		V value = getter.get(this.properties);
 		return (value != null) ? value : fallback.get();
 	}
@@ -62,7 +61,7 @@ public class PropertiesConfigAdapter<T> {
 	 * @param <V> the value type
 	 * @return the property or fallback value
 	 */
-	protected final <V> V getRequired(Getter<T, V> getter, Supplier<V> fallback) {
+	protected final <V> V obtain(Getter<T, V> getter, RequiredFallback<V> fallback) {
 		V value = getter.get(this.properties);
 		if (value != null) {
 			return value;
@@ -72,9 +71,53 @@ public class PropertiesConfigAdapter<T> {
 		return fallbackValue;
 	}
 
+	/**
+	 * Gets a value from the given properties.
+	 *
+	 * @param <T> the type of the properties
+	 * @param <V> the type of the value
+	 */
+	@FunctionalInterface
 	protected interface Getter<T, V> {
 
+		/**
+		 * Gets a value from the given properties.
+		 * @param properties the properties
+		 * @return the value or {@code null}
+		 */
 		@Nullable V get(T properties);
+
+	}
+
+	/**
+	 * Gets the fallback value, if any.
+	 *
+	 * @param <V> the type of the value
+	 */
+	@FunctionalInterface
+	protected interface Fallback<V> {
+
+		/**
+		 * Gets the fallback value, if any.
+		 * @return the value or {@code null}
+		 */
+		@Nullable V get();
+
+	}
+
+	/**
+	 * Gets the fallback value.
+	 *
+	 * @param <V> the type of the value
+	 */
+	@FunctionalInterface
+	protected interface RequiredFallback<V> {
+
+		/**
+		 * Gets the fallback value.
+		 * @return the value
+		 */
+		V get();
 
 	}
 

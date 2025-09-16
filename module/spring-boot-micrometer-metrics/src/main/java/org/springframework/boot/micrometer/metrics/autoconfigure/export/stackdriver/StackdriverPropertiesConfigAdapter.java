@@ -42,33 +42,32 @@ public class StackdriverPropertiesConfigAdapter extends StepRegistryPropertiesCo
 
 	@Override
 	public String projectId() {
-		return getRequired(StackdriverProperties::getProjectId, StackdriverConfig.super::projectId);
+		return obtain(StackdriverProperties::getProjectId, StackdriverConfig.super::projectId);
 	}
 
 	@Override
 	public String resourceType() {
-		return getRequired(StackdriverProperties::getResourceType, StackdriverConfig.super::resourceType);
+		return obtain(StackdriverProperties::getResourceType, StackdriverConfig.super::resourceType);
 	}
 
 	@Override
 	public Map<String, String> resourceLabels() {
-		return getRequired(StackdriverProperties::getResourceLabels, StackdriverConfig.super::resourceLabels);
+		return obtain(StackdriverProperties::getResourceLabels, StackdriverConfig.super::resourceLabels);
 	}
 
 	@Override
 	public boolean useSemanticMetricTypes() {
-		return getRequired(StackdriverProperties::isUseSemanticMetricTypes,
-				StackdriverConfig.super::useSemanticMetricTypes);
+		return obtain(StackdriverProperties::isUseSemanticMetricTypes, StackdriverConfig.super::useSemanticMetricTypes);
 	}
 
 	@Override
 	public String metricTypePrefix() {
-		return getRequired(StackdriverProperties::getMetricTypePrefix, StackdriverConfig.super::metricTypePrefix);
+		return obtain(StackdriverProperties::getMetricTypePrefix, StackdriverConfig.super::metricTypePrefix);
 	}
 
 	@Override
 	public boolean autoCreateMetricDescriptors() {
-		return getRequired(StackdriverProperties::isAutoCreateMetricDescriptors,
+		return obtain(StackdriverProperties::isAutoCreateMetricDescriptors,
 				StackdriverConfig.super::autoCreateMetricDescriptors);
 	}
 

@@ -49,37 +49,37 @@ class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProp
 
 	@Override
 	public boolean enabled() {
-		return getRequired(GangliaProperties::isEnabled, GangliaConfig.super::enabled);
+		return obtain(GangliaProperties::isEnabled, GangliaConfig.super::enabled);
 	}
 
 	@Override
 	public Duration step() {
-		return getRequired(GangliaProperties::getStep, GangliaConfig.super::step);
+		return obtain(GangliaProperties::getStep, GangliaConfig.super::step);
 	}
 
 	@Override
 	public TimeUnit durationUnits() {
-		return getRequired(GangliaProperties::getDurationUnits, GangliaConfig.super::durationUnits);
+		return obtain(GangliaProperties::getDurationUnits, GangliaConfig.super::durationUnits);
 	}
 
 	@Override
 	public GMetric.UDPAddressingMode addressingMode() {
-		return getRequired(GangliaProperties::getAddressingMode, GangliaConfig.super::addressingMode);
+		return obtain(GangliaProperties::getAddressingMode, GangliaConfig.super::addressingMode);
 	}
 
 	@Override
 	public int ttl() {
-		return getRequired(GangliaProperties::getTimeToLive, GangliaConfig.super::ttl);
+		return obtain(GangliaProperties::getTimeToLive, GangliaConfig.super::ttl);
 	}
 
 	@Override
 	public String host() {
-		return getRequired(GangliaProperties::getHost, GangliaConfig.super::host);
+		return obtain(GangliaProperties::getHost, GangliaConfig.super::host);
 	}
 
 	@Override
 	public int port() {
-		return getRequired(GangliaProperties::getPort, GangliaConfig.super::port);
+		return obtain(GangliaProperties::getPort, GangliaConfig.super::port);
 	}
 
 }
