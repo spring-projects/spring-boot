@@ -18,8 +18,8 @@ package smoketest.web.thymeleaf;
 
 import java.util.Calendar;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotEmpty;
+import org.jspecify.annotations.Nullable;
 
 public class Message {
 
