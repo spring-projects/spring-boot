@@ -136,7 +136,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "boot").has(unsanitizedValue());
 		assertThatApplyingToKey(function, "xspring").has(unsanitizedValue());
 		assertThatApplyingToKey(function, "springx").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -148,7 +147,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "boot").has(sanitizedValue());
 		assertThatApplyingToKey(function, "atest").has(sanitizedValue());
 		assertThatApplyingToKey(function, "bootx").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -160,7 +158,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "boot").has(sanitizedValue());
 		assertThatApplyingToKey(function, "beet").has(sanitizedValue());
 		assertThatApplyingToKey(function, "spring").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -171,7 +168,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "XtestX").has(sanitizedValue());
 		assertThatApplyingToKey(function, "YY").has(sanitizedValue());
 		assertThatApplyingToKey(function, "xy").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -182,7 +178,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "SPRING").has(sanitizedValue());
 		assertThatApplyingToKey(function, "BOOT").has(sanitizedValue());
 		assertThatApplyingToKey(function, "xspring").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -192,7 +187,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "spin").has(sanitizedValue());
 		assertThatApplyingToKey(function, "SPRING").has(unsanitizedValue());
 		assertThatApplyingToKey(function, "xspring").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -204,7 +198,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "BO").has(sanitizedValue());
 		assertThatApplyingToKey(function, "SPRING").has(unsanitizedValue());
 		assertThatApplyingToKey(function, "boot").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -213,7 +206,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToKey(function, "spring").has(sanitizedValue());
 		assertThatApplyingToKey(function, "spin").has(sanitizedValue());
 		assertThatApplyingToKey(function, "boot").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -223,7 +215,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToValue(function, "SPRING").has(sanitizedValue());
 		assertThatApplyingToValue(function, "boot").has(sanitizedValue());
 		assertThatApplyingToValue(function, "other").has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test
@@ -281,7 +272,6 @@ class SanitizingFunctionTests {
 		assertThatApplyingToValue(function, "spin").has(sanitizedValue());
 		assertThatApplyingToValue(function, "boot").has(unsanitizedValue());
 		assertThatApplyingToValue(function, 123).has(unsanitizedValue());
-		assertThatApplyingToKey(function, null).has(unsanitizedValue());
 	}
 
 	@Test

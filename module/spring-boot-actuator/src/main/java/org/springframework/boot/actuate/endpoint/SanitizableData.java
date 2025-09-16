@@ -21,6 +21,7 @@ import java.util.Locale;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.env.PropertySource;
+import org.springframework.util.Assert;
 
 /**
  * Value object that represents the data that can be used by a {@link SanitizingFunction}.
@@ -38,7 +39,7 @@ public final class SanitizableData {
 
 	private final @Nullable PropertySource<?> propertySource;
 
-	private final @Nullable String key;
+	private final String key;
 
 	private @Nullable String lowerCaseKey;
 
@@ -50,7 +51,8 @@ public final class SanitizableData {
 	 * @param key the data key
 	 * @param value the data value
 	 */
-	public SanitizableData(@Nullable PropertySource<?> propertySource, @Nullable String key, @Nullable Object value) {
+	public SanitizableData(@Nullable PropertySource<?> propertySource, String key, @Nullable Object value) {
+		Assert.notNull(key, "'key' must not be null");
 		this.propertySource = propertySource;
 		this.key = key;
 		this.value = value;
@@ -69,7 +71,7 @@ public final class SanitizableData {
 	 * Return the key of the data.
 	 * @return the data key
 	 */
-	public @Nullable String getKey() {
+	public String getKey() {
 		return this.key;
 	}
 
@@ -78,9 +80,9 @@ public final class SanitizableData {
 	 * @return the key as a lowercase value
 	 * @since 3.5.0
 	 */
-	public @Nullable String getLowerCaseKey() {
+	public String getLowerCaseKey() {
 		String result = this.lowerCaseKey;
-		if (result == null && this.key != null) {
+		if (result == null) {
 			result = this.key.toLowerCase(Locale.getDefault());
 			this.lowerCaseKey = result;
 		}
