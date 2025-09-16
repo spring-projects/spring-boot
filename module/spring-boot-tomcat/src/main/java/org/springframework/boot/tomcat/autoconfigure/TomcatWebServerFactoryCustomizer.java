@@ -384,6 +384,10 @@ public class TomcatWebServerFactoryCustomizer
 					long ttl = resource.getCacheTtl().toMillis();
 					context.getResources().setCacheTtl(ttl);
 				}
+				if (resource.getCacheMaxSize() != null) {
+					long cacheMaxSize = resource.getCacheMaxSize().toKilobytes();
+					context.getResources().setCacheMaxSize(cacheMaxSize);
+				}
 			}
 		}));
 	}
