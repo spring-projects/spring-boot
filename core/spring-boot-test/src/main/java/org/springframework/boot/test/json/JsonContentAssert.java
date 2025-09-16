@@ -1000,9 +1000,11 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (this.actual == null) {
 			return compareForNull(expectedJson);
 		}
+		if (expectedJson == null) {
+			return fail("Expected JSON but got null");
+		}
 		try {
-			return JSONCompare.compareJSON((expectedJson != null) ? expectedJson.toString() : null,
-					this.actual.toString(), compareMode);
+			return JSONCompare.compareJSON(expectedJson.toString(), this.actual.toString(), compareMode);
 		}
 		catch (Exception ex) {
 			if (ex instanceof RuntimeException runtimeException) {
@@ -1016,9 +1018,11 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (this.actual == null) {
 			return compareForNull(expectedJson);
 		}
+		if (expectedJson == null) {
+			return fail("Expected JSON but got null");
+		}
 		try {
-			return JSONCompare.compareJSON((expectedJson != null) ? expectedJson.toString() : null,
-					this.actual.toString(), comparator);
+			return JSONCompare.compareJSON(expectedJson.toString(), this.actual.toString(), comparator);
 		}
 		catch (Exception ex) {
 			if (ex instanceof RuntimeException runtimeException) {
@@ -1034,6 +1038,12 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expectedJson != null) {
 			result.fail("Expected null JSON");
 		}
+		return result;
+	}
+
+	private JSONCompareResult fail(String message) {
+		JSONCompareResult result = new JSONCompareResult();
+		result.fail(message);
 		return result;
 	}
 
