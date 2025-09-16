@@ -2206,7 +2206,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "3.2.7-SNAPSHOT") {
+	library("Spring AMQP", "3.2.7") {
 		considerSnapshots()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
