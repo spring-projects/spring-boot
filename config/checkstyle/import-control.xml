@@ -13,6 +13,11 @@
 	<!-- Allow other imports -->
 	<allow pkg=".*" regex="true" />
 
+	<!-- Keep foundation packages away from SpringApplication package -->
+	<subpackage name="ssl">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
+
 	<!-- Open direct use of micrometer to specific subpackages  -->
 	<subpackage name="metrics">
 		<allow pkg="io.micrometer" />
