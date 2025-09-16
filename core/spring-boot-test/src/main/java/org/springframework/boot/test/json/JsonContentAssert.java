@@ -63,7 +63,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param resourceLoadClass the source class used to load resources
 	 * @param json the actual JSON content
 	 */
-	public JsonContentAssert(Class<?> resourceLoadClass, CharSequence json) {
+	public JsonContentAssert(Class<?> resourceLoadClass, @Nullable CharSequence json) {
 		this(resourceLoadClass, null, json);
 	}
 
@@ -75,7 +75,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param json the actual JSON content
 	 * @since 1.4.1
 	 */
-	public JsonContentAssert(Class<?> resourceLoadClass, @Nullable Charset charset, CharSequence json) {
+	public JsonContentAssert(Class<?> resourceLoadClass, @Nullable Charset charset, @Nullable CharSequence json) {
 		this(resourceLoadClass, charset, json, Configuration.defaultConfiguration());
 	}
 
@@ -87,7 +87,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @param json the actual JSON content
 	 * @param configuration the json-path configuration
 	 */
-	JsonContentAssert(Class<?> resourceLoadClass, @Nullable Charset charset, CharSequence json,
+	JsonContentAssert(Class<?> resourceLoadClass, @Nullable Charset charset, @Nullable CharSequence json,
 			Configuration configuration) {
 		super(json, JsonContentAssert.class);
 		this.configuration = configuration;
