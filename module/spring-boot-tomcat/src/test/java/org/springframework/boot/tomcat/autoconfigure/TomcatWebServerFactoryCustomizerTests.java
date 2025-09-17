@@ -323,6 +323,18 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void resourceCacheMatchesDefault() {
+		TomcatServerProperties properties = new TomcatServerProperties();
+		customizeAndRunServer((server) -> {
+			Tomcat tomcat = server.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(properties.getResource().isAllowCaching()).isEqualTo(context.getResources().isCachingAllowed());
+			assertThat(properties.getResource().getCacheMaxSize())
+				.isEqualTo(DataSize.ofKilobytes(context.getResources().getCacheMaxSize()));
+		});
+	}
+
+	@Test
 	void customStaticResourceAllowCaching() {
 		bind("server.tomcat.resource.allow-caching=false");
 		customizeAndRunServer((server) -> {
@@ -334,7 +346,7 @@ class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	void customStaticResourceCacheMaxSize() {
-		bind("server.tomcat.resource.cache-max-size=4096KB");
+		bind("server.tomcat.resource.cache-max-size=4MB");
 		customizeAndRunServer((server) -> {
 			Tomcat tomcat = server.getTomcat();
 			Context context = (Context) tomcat.getHost().findChildren()[0];

@@ -697,7 +697,7 @@ public class TomcatServerProperties {
 		/**
 		 * Maximum size of the static resource cache.
 		 */
-		private @Nullable DataSize cacheMaxSize;
+		private DataSize cacheMaxSize = DataSize.ofMegabytes(10);
 
 		/**
 		 * Time-to-live of the static resource cache.
@@ -712,11 +712,11 @@ public class TomcatServerProperties {
 			this.allowCaching = allowCaching;
 		}
 
-		public @Nullable DataSize getCacheMaxSize() {
+		public DataSize getCacheMaxSize() {
 			return this.cacheMaxSize;
 		}
 
-		public void setCacheMaxSize(@Nullable DataSize cacheMaxSize) {
+		public void setCacheMaxSize(DataSize cacheMaxSize) {
 			this.cacheMaxSize = cacheMaxSize;
 		}
 
