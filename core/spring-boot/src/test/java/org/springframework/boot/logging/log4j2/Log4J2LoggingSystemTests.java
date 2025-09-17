@@ -35,6 +35,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.CronTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.TimeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.TriggeringPolicy;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
@@ -70,6 +76,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -798,6 +805,110 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 					""")
 	private @interface WithNonDefaultXmlResource {
 
+	}
+
+	@Test
+	void rollingPolicySystemPropertiesAreApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "50MB");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-history", "30");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.clean-history-on-start", "true");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.total-size-cap", "5GB");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.file-name-pattern",
+				"${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
+		File file = new File(tmpDir(), "log4j2-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		String maxFileSize = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
+		String maxHistory = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_HISTORY");
+		String cleanHistoryOnStart = System.getProperty("LOG4J2_ROLLINGPOLICY_CLEAN_HISTORY_ON_START");
+		String totalSizeCap = System.getProperty("LOG4J2_ROLLINGPOLICY_TOTAL_SIZE_CAP");
+		String fileNamePattern = System.getProperty("LOG4J2_ROLLINGPOLICY_FILE_NAME_PATTERN");
+		assertThat(maxFileSize).isEqualTo(String.valueOf(50 * 1024 * 1024));
+		assertThat(maxHistory).isEqualTo("30");
+		assertThat(cleanHistoryOnStart).isEqualTo("true");
+		assertThat(totalSizeCap).isEqualTo(String.valueOf(DataSize.ofGigabytes(5).toBytes()));
+		assertThat(fileNamePattern).isEqualTo("${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
+	}
+
+	@Test
+	void rollingPolicyDeprecatedPropertiesAreApplied() {
+		this.environment.setProperty("logging.file.max-size", "20MB");
+		this.environment.setProperty("logging.file.max-history", "15");
+		File file = new File(tmpDir(), "log4j2-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		String maxFileSize = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
+		String maxHistory = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_HISTORY");
+		assertThat(maxFileSize).isEqualTo(String.valueOf(20 * 1024 * 1024));
+		assertThat(maxHistory).isEqualTo("15");
+	}
+
+	@Test
+	void rollingPolicyTimeStrategyIsApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "time");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "2");
+		SpringBootTriggeringPolicy policy = getTriggeringPolicy();
+		TriggeringPolicy delegate = policy.getDelegate();
+		assertThat(delegate).isInstanceOf(TimeBasedTriggeringPolicy.class);
+		TimeBasedTriggeringPolicy timePolicy = (TimeBasedTriggeringPolicy) delegate;
+		assertThat(timePolicy.getInterval()).isEqualTo(2);
+	}
+
+	@Test
+	void rollingPolicySizeAndTimeStrategyIsApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "size-and-time");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "5MB");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "3");
+		SpringBootTriggeringPolicy policy = getTriggeringPolicy();
+		TriggeringPolicy delegate = policy.getDelegate();
+		assertThat(delegate).isInstanceOf(CompositeTriggeringPolicy.class);
+		CompositeTriggeringPolicy composite = (CompositeTriggeringPolicy) delegate;
+		TriggeringPolicy[] policies = composite.getTriggeringPolicies();
+		assertThat(policies).anyMatch(TimeBasedTriggeringPolicy.class::isInstance);
+		assertThat(policies).anyMatch(SizeBasedTriggeringPolicy.class::isInstance);
+	}
+
+	@Test
+	void rollingPolicyCronStrategyIsApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "cron");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.cron.schedule", "0 0 0 * * ?");
+		SpringBootTriggeringPolicy policy = getTriggeringPolicy();
+		TriggeringPolicy delegate = policy.getDelegate();
+		assertThat(delegate).isInstanceOf(CronTriggeringPolicy.class);
+		CronTriggeringPolicy cronPolicy = (CronTriggeringPolicy) delegate;
+		assertThat(cronPolicy.getCronExpression().getCronExpression()).isEqualTo("0 0 0 * * ?");
+	}
+
+	private SpringBootTriggeringPolicy getTriggeringPolicy() {
+		File file = new File(tmpDir(), "target-file.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, "classpath:org/springframework/boot/logging/log4j2/log4j2-file.xml", logFile);
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		Configuration configuration = loggerContext.getConfiguration();
+		RollingFileAppender appender = (RollingFileAppender) configuration.getAppenders().get("File");
+		assertThat(appender).isNotNull();
+		TriggeringPolicy topPolicy = appender.getManager().getTriggeringPolicy();
+		SpringBootTriggeringPolicy policy = findSpringBootTriggeringPolicy(topPolicy);
+		assertThat(policy).isNotNull();
+		return policy;
+	}
+
+	private SpringBootTriggeringPolicy findSpringBootTriggeringPolicy(TriggeringPolicy policy) {
+		if (policy instanceof SpringBootTriggeringPolicy springBoot) {
+			return springBoot;
+		}
+		if (policy instanceof CompositeTriggeringPolicy composite) {
+			for (TriggeringPolicy child : composite.getTriggeringPolicies()) {
+				SpringBootTriggeringPolicy found = findSpringBootTriggeringPolicy(child);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Target(ElementType.METHOD)
