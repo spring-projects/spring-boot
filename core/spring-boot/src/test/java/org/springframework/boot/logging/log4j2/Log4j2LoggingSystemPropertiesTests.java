@@ -52,9 +52,11 @@ class Log4j2LoggingSystemPropertiesTests {
 		Environment environment = new StandardEnvironment();
 		addPropertiesToEnvironment(environment, "logging.log4j2.rollingpolicy.max-file-size", "50MB",
 				"logging.log4j2.rollingpolicy.clean-history-on-start", "true",
-				"logging.log4j2.rollingpolicy.max-history", "30",
-				"logging.log4j2.rollingpolicy.total-size-cap", "10GB",
-				"logging.log4j2.rollingpolicy.file-name-pattern", "test.%d{yyyy-MM-dd}.%i.log");
+				"logging.log4j2.rollingpolicy.max-history", "30", "logging.log4j2.rollingpolicy.total-size-cap", "10GB",
+				"logging.log4j2.rollingpolicy.file-name-pattern", "test.%d{yyyy-MM-dd}.%i.log",
+				"logging.log4j2.rollingpolicy.strategy", "time", "logging.log4j2.rollingpolicy.time-based.interval",
+				"2", "logging.log4j2.rollingpolicy.time-based.modulate", "true",
+				"logging.log4j2.rollingpolicy.cron.schedule", "0 0 0 * * ?");
 		new Log4j2LoggingSystemProperties(environment, this.systemPropertySetter).apply(null);
 		assertThat(this.systemProperties).containsEntry("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE",
 				String.valueOf(DataSize.ofMegabytes(50).toBytes()));
@@ -64,6 +66,10 @@ class Log4j2LoggingSystemPropertiesTests {
 				String.valueOf(DataSize.ofGigabytes(10).toBytes()));
 		assertThat(this.systemProperties).containsEntry("LOG4J2_ROLLINGPOLICY_FILE_NAME_PATTERN",
 				"test.%d{yyyy-MM-dd}.%i.log");
+		assertThat(this.systemProperties).containsEntry("LOG4J2_ROLLINGPOLICY_STRATEGY", "time");
+		assertThat(this.systemProperties).containsEntry("LOG4J2_ROLLINGPOLICY_TIME_INTERVAL", "2");
+		assertThat(this.systemProperties).containsEntry("LOG4J2_ROLLINGPOLICY_TIME_MODULATE", "true");
+		assertThat(this.systemProperties).containsEntry("LOG4J2_ROLLINGPOLICY_CRON_SCHEDULE", "0 0 0 * * ?");
 	}
 
 	@Test
@@ -111,8 +117,7 @@ class Log4j2LoggingSystemPropertiesTests {
 		for (int i = 0; i < pairs.length; i += 2) {
 			map.put(pairs[i], pairs[i + 1]);
 		}
-		((StandardEnvironment) environment).getPropertySources()
-			.addFirst(new MapPropertySource("test", map));
+		((StandardEnvironment) environment).getPropertySources().addFirst(new MapPropertySource("test", map));
 	}
 
 }

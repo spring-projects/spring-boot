@@ -71,6 +71,10 @@ public class Log4j2LoggingSystemProperties extends LoggingSystemProperties {
 	}
 
 	private void applyRollingPolicyProperties(PropertyResolver resolver) {
+		applyRollingPolicy(Log4j2RollingPolicySystemProperty.STRATEGY, resolver);
+		applyRollingPolicy(Log4j2RollingPolicySystemProperty.TIME_INTERVAL, resolver, Integer.class);
+		applyRollingPolicy(Log4j2RollingPolicySystemProperty.TIME_MODULATE, resolver, Boolean.class);
+		applyRollingPolicy(Log4j2RollingPolicySystemProperty.CRON_SCHEDULE, resolver);
 		applyRollingPolicy(Log4j2RollingPolicySystemProperty.FILE_NAME_PATTERN, resolver);
 		applyRollingPolicy(Log4j2RollingPolicySystemProperty.CLEAN_HISTORY_ON_START, resolver);
 		applyRollingPolicy(Log4j2RollingPolicySystemProperty.MAX_FILE_SIZE, resolver, DataSize.class);
@@ -85,7 +89,9 @@ public class Log4j2LoggingSystemProperties extends LoggingSystemProperties {
 	private <T> void applyRollingPolicy(Log4j2RollingPolicySystemProperty property, PropertyResolver resolver,
 			Class<T> type) {
 		T value = getProperty(resolver, property.getApplicationPropertyName(), type);
-		value = (value != null) ? value : getProperty(resolver, property.getDeprecatedApplicationPropertyName(), type);
+		if (value == null && property.getDeprecatedApplicationPropertyName() != null) {
+			value = getProperty(resolver, property.getDeprecatedApplicationPropertyName(), type);
+		}
 		if (value != null) {
 			String stringValue = String.valueOf((value instanceof DataSize dataSize) ? dataSize.toBytes() : value);
 			setSystemProperty(property.getEnvironmentVariableName(), stringValue);
