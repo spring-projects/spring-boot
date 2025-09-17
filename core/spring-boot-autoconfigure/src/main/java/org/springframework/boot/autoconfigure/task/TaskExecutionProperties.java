@@ -80,6 +80,12 @@ public class TaskExecutionProperties {
 	public static class Simple {
 
 		/**
+		 * Whether to cancel remaining tasks on close. Only recommended if threads are
+		 * commonly expected to be stuck.
+		 */
+		private boolean cancelRemainingTasksOnClose;
+
+		/**
 		 * Whether to reject tasks when the concurrency limit has been reached.
 		 */
 		private boolean rejectTasksWhenLimitReached;
@@ -89,6 +95,14 @@ public class TaskExecutionProperties {
 		 * concurrency limit at all.
 		 */
 		private @Nullable Integer concurrencyLimit;
+
+		public boolean isCancelRemainingTasksOnClose() {
+			return this.cancelRemainingTasksOnClose;
+		}
+
+		public void setCancelRemainingTasksOnClose(boolean cancelRemainingTasksOnClose) {
+			this.cancelRemainingTasksOnClose = cancelRemainingTasksOnClose;
+		}
 
 		public boolean isRejectTasksWhenLimitReached() {
 			return this.rejectTasksWhenLimitReached;
