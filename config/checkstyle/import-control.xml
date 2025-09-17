@@ -14,13 +14,38 @@
 	<allow pkg=".*" regex="true" />
 
 	<!-- Keep foundation packages away from 'org.springframework.boot' package -->
+	<subpackage name="ansi">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
+	<subpackage name="avilability">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
 	<subpackage name="bootstrap">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
+	<subpackage name="context">
+		<subpackage name="properties">
+			<subpackage name="bind">
+				<disallow pkg="org.springframework.boot" exact-match="true"/>
+			</subpackage>
+			<subpackage name="source">
+				<disallow pkg="org.springframework.boot" exact-match="true"/>
+			</subpackage>
+		</subpackage>
 	</subpackage>
 	<subpackage name="env">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>
+	<subpackage name="info">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
+	<subpackage name="io">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
 	<subpackage name="ssl">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
+	<subpackage name="util">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>
 
