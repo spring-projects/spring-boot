@@ -227,7 +227,7 @@ A typical entity class resembles the following example:
 
 include-code::City[]
 
-TIP: You can customize entity scanning locations by using the javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] annotation.
+TIP: You can customize entity scanning locations by using the javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] annotation.
 See the xref:how-to:data-access.adoc#howto.data-access.separate-entity-definitions-from-spring-configuration[] section of the "`How-to Guides`".
 
 

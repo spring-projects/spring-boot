@@ -130,7 +130,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		config.accept("spring.ldap");
 		config.accept("spring.mongodb");
 		config.accept("spring.neo4j");
-		config.accept("spring.dao");
+		config.accept("spring.persistence");
 		config.accept("spring.data");
 		config.accept("spring.datasource");
 		config.accept("spring.jooq");

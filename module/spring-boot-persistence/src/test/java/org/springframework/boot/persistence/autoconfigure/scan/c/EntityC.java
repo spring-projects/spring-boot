@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.domain.scan.a;
+package org.springframework.boot.persistence.autoconfigure.scan.c;
 
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
 
-@Embeddable
-public class EmbeddableA {
+@Entity
+public class EntityC {
 
 }

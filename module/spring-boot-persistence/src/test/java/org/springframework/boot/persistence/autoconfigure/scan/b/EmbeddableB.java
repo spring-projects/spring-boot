@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * General purpose domain annotations and classes.
- */
-@NullMarked
-package org.springframework.boot.autoconfigure.domain;
+package org.springframework.boot.persistence.autoconfigure.scan.b;
 
-import org.jspecify.annotations.NullMarked;
+import jakarta.persistence.Embeddable;
+
+@Embeddable
+public class EmbeddableB {
+
+}

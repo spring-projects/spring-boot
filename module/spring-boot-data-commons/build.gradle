@@ -26,6 +26,7 @@ description = "Spring Boot Data Commons"
 
 dependencies {
 	api(project(":core:spring-boot"))
+	api(project(":module:spring-boot-persistence"))
 	api("org.springframework.data:spring-data-commons")
 
 	optional(project(":core:spring-boot-autoconfigure"))

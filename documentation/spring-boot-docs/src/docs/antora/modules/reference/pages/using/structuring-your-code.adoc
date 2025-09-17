@@ -13,7 +13,7 @@ TIP: If you wish to enforce a structure based on domains, take a look at https:/
 
 When a class does not include a `package` declaration, it is considered to be in the "`default package`".
 The use of the "`default package`" is generally discouraged and should be avoided.
-It can cause particular problems for Spring Boot applications that use the javadoc:org.springframework.context.annotation.ComponentScan[format=annotation], javadoc:org.springframework.boot.context.properties.ConfigurationPropertiesScan[format=annotation], javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation], or javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotations, since every class from every jar is read.
+It can cause particular problems for Spring Boot applications that use the javadoc:org.springframework.context.annotation.ComponentScan[format=annotation], javadoc:org.springframework.boot.context.properties.ConfigurationPropertiesScan[format=annotation], javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation], or javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotations, since every class from every jar is read.
 
 TIP: We recommend that you follow Java's recommended package naming conventions and use a reversed domain name (for example, `com.example.project`).
 

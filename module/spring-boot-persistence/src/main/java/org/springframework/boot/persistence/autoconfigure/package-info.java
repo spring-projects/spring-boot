@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.domain.scan.a;
+/**
+ * General purpose domain annotations and classes.
+ */
+@NullMarked
+package org.springframework.boot.persistence.autoconfigure;
 
-import jakarta.persistence.Entity;
-
-@Entity
-public class EntityA {
-
-}
+import org.jspecify.annotations.NullMarked;

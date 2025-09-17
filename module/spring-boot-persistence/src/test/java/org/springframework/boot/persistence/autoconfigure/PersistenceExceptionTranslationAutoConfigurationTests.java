@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.transaction.autoconfigure;
+package org.springframework.boot.persistence.autoconfigure;
 
 import java.io.Serializable;
 import java.lang.annotation.ElementType;
@@ -93,7 +93,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 	@Test
 	void exceptionTranslationPostProcessorCanBeDisabled() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.dao.exceptiontranslation.enabled=false").applyTo(this.context);
+		TestPropertyValues.of("spring.persistence.exceptiontranslation.enabled=false").applyTo(this.context);
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
