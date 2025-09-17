@@ -561,6 +561,19 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "com/example/h2/beforeEachMigrate.sql", content = "DROP TABLE IF EXISTS TEMP;")
+	void useOneCallbackLocationWithVendorSpecificPackage() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.callback-locations=classpath:com.example.{vendor}")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getCallbackLocations())
+					.containsExactly(new Location("classpath:com.example.h2"));
+			});
+	}
+
+	@Test
 	void callbacksAreConfiguredAndOrderedByName() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CallbackConfiguration.class)
 			.run((context) -> {

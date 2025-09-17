@@ -234,6 +234,11 @@ public final class FlywayAutoConfiguration {
 				.resolveLocations(properties.getLocations())
 				.toArray(new String[0]);
 			configuration.locations(locations);
+			map.from(properties.getCallbackLocations())
+				.when((callbackLocations) -> !ObjectUtils.isEmpty(callbackLocations))
+				.to((callbackLocations) -> configuration.callbackLocations(
+						new LocationResolver(configuration.getDataSource()).resolveLocations(callbackLocations)
+							.toArray(new String[0])));
 			map.from(properties.isFailOnMissingLocations())
 				.to((failOnMissingLocations) -> configuration.failOnMissingLocations(failOnMissingLocations));
 			map.from(properties.getEncoding()).to((encoding) -> configuration.encoding(encoding));
