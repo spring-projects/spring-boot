@@ -115,28 +115,6 @@ public class ErrorProperties {
 	}
 
 	/**
-	 * Include Stacktrace attribute options.
-	 */
-	public enum IncludeStacktrace {
-
-		/**
-		 * Never add stacktrace information.
-		 */
-		NEVER,
-
-		/**
-		 * Always add stacktrace information.
-		 */
-		ALWAYS,
-
-		/**
-		 * Add stacktrace attribute when the appropriate request parameter is not "false".
-		 */
-		ON_PARAM
-
-	}
-
-	/**
 	 * Include error attributes options.
 	 */
 	public enum IncludeAttribute {
