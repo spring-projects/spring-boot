@@ -413,7 +413,7 @@ Configuration properties for HTTP Services can be specified under `spring.http.c
 You can use properties to configure aspects such as:
 
 * The base URL.
-* Any default default headers that should be sent.
+* Any default headers that should be sent.
 * API versioning configuration.
 * Redirect settings.
 * Connection and read timeouts.
