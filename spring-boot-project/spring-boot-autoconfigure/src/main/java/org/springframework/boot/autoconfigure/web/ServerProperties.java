@@ -1024,7 +1024,7 @@ public class ServerProperties {
 			/**
 			 * Time-to-live of the static resource cache.
 			 */
-			private Duration cacheTtl;
+			private Duration cacheTtl = Duration.ofSeconds(5);
 
 			public boolean isAllowCaching() {
 				return this.allowCaching;
