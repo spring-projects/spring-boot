@@ -80,7 +80,8 @@ public class TaskExecutionProperties {
 	public static class Simple {
 
 		/**
-		 * Whether to cancel remaining tasks on close.
+		 * Whether to cancel remaining tasks on close. Only recommended if threads are
+		 * commonly expected to be stuck.
 		 */
 		private boolean cancelRemainingTasksOnClose;
 
