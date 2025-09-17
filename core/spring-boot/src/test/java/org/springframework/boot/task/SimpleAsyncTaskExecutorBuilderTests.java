@@ -60,6 +60,12 @@ class SimpleAsyncTaskExecutorBuilderTests {
 	}
 
 	@Test
+	void cancelRemainingTasksOnCloseShouldApply() {
+		SimpleAsyncTaskExecutor executor = this.builder.cancelRemainingTasksOnClose(true).build();
+		assertThat(executor).extracting("cancelRemainingTasksOnClose").isEqualTo(true);
+	}
+
+	@Test
 	void rejectTasksWhenLimitReachedShouldApply() {
 		SimpleAsyncTaskExecutor executor = this.builder.rejectTasksWhenLimitReached(true).build();
 		assertThat(executor).extracting("rejectTasksWhenLimitReached").isEqualTo(true);
