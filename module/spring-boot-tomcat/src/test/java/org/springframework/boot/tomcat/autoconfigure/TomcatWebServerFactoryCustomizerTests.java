@@ -16,6 +16,7 @@
 
 package org.springframework.boot.tomcat.autoconfigure;
 
+import java.time.Duration;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -331,6 +332,8 @@ class TomcatWebServerFactoryCustomizerTests {
 			assertThat(properties.getResource().isAllowCaching()).isEqualTo(context.getResources().isCachingAllowed());
 			assertThat(properties.getResource().getCacheMaxSize())
 				.isEqualTo(DataSize.ofKilobytes(context.getResources().getCacheMaxSize()));
+			assertThat(properties.getResource().getCacheTtl())
+				.isEqualTo(Duration.ofMillis(context.getResources().getCacheTtl()));
 		});
 	}
 
@@ -356,7 +359,7 @@ class TomcatWebServerFactoryCustomizerTests {
 
 	@Test
 	void customStaticResourceCacheTtl() {
-		bind("server.tomcat.resource.cache-ttl=10000");
+		bind("server.tomcat.resource.cache-ttl=10s");
 		customizeAndRunServer((server) -> {
 			Tomcat tomcat = server.getTomcat();
 			Context context = (Context) tomcat.getHost().findChildren()[0];

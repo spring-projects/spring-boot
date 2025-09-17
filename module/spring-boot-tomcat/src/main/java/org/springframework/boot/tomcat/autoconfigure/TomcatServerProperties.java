@@ -702,7 +702,7 @@ public class TomcatServerProperties {
 		/**
 		 * Time-to-live of the static resource cache.
 		 */
-		private @Nullable Duration cacheTtl;
+		private Duration cacheTtl = Duration.ofSeconds(5);
 
 		public boolean isAllowCaching() {
 			return this.allowCaching;
@@ -720,11 +720,11 @@ public class TomcatServerProperties {
 			this.cacheMaxSize = cacheMaxSize;
 		}
 
-		public @Nullable Duration getCacheTtl() {
+		public Duration getCacheTtl() {
 			return this.cacheTtl;
 		}
 
-		public void setCacheTtl(@Nullable Duration cacheTtl) {
+		public void setCacheTtl(Duration cacheTtl) {
 			this.cacheTtl = cacheTtl;
 		}
 

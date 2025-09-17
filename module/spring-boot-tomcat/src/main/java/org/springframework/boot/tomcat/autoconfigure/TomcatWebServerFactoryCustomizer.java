@@ -380,12 +380,8 @@ public class TomcatWebServerFactoryCustomizer
 		factory.addContextCustomizers((context) -> context.addLifecycleListener((event) -> {
 			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
 				context.getResources().setCachingAllowed(resource.isAllowCaching());
-				long cacheMaxSize = resource.getCacheMaxSize().toKilobytes();
-				context.getResources().setCacheMaxSize(cacheMaxSize);
-				if (resource.getCacheTtl() != null) {
-					long ttl = resource.getCacheTtl().toMillis();
-					context.getResources().setCacheTtl(ttl);
-				}
+				context.getResources().setCacheMaxSize(resource.getCacheMaxSize().toKilobytes());
+				context.getResources().setCacheTtl(resource.getCacheTtl().toMillis());
 			}
 		}));
 	}
