@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.config;
+package org.springframework.boot.support;
 
 import java.util.HashMap;
 import java.util.Map;

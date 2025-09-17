@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.config;
+package org.springframework.boot.support;
 
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.support.EnvironmentPostProcessorApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -32,7 +31,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *
  * @author Raphael von der Grün
  * @author Madhura Bhave
- * @since 1.2.0
+ * @since 4.0.0
  */
 public class AnsiOutputApplicationListener
 		implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {

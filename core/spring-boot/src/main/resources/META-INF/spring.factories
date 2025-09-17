@@ -40,8 +40,8 @@ org.springframework.context.ApplicationListener=\
 org.springframework.boot.ClearCachesApplicationListener,\
 org.springframework.boot.builder.ParentContextCloserApplicationListener,\
 org.springframework.boot.context.FileEncodingApplicationListener,\
-org.springframework.boot.context.config.AnsiOutputApplicationListener,\
 org.springframework.boot.context.logging.LoggingApplicationListener,\
+org.springframework.boot.support.AnsiOutputApplicationListener,\
 org.springframework.boot.support.EnvironmentPostProcessorApplicationListener
 
 # Environment Post Processors
