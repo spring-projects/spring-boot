@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bootstrap.BootstrapContext;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
@@ -34,8 +33,8 @@ import org.springframework.core.env.Environment;
  * interface or use an {@link org.springframework.core.annotation.Order @Order} annotation
  * if they wish to be invoked in specific order.
  * <p>
- * Since Spring Boot 2.4, {@code EnvironmentPostProcessor} implementations may optionally
- * take the following constructor parameters:
+ * {@code EnvironmentPostProcessor} implementations may optionally take the following
+ * constructor parameters:
  * <ul>
  * <li>{@link DeferredLogFactory} - A factory that can be used to create loggers with
  * output deferred until the application has been fully prepared (allowing the environment
@@ -47,7 +46,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
- * @since 1.3.0
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface EnvironmentPostProcessor {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -54,7 +55,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Artsiom Yudovin
- * @since 1.3.0
+ * @since 4.0.0
  */
 public class SpringApplicationJsonEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 

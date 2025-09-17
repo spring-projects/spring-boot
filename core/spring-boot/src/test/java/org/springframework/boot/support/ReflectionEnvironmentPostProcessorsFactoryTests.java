@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.bootstrap.DefaultBootstrapContext;

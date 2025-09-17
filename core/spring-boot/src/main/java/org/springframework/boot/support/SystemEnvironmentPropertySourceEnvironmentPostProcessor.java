@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
@@ -38,7 +39,7 @@ import org.springframework.util.StringUtils;
  * {@link SystemEnvironmentOrigin} for every system environment property.
  *
  * @author Madhura Bhave
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 

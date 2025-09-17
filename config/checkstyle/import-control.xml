@@ -17,6 +17,9 @@
 	<subpackage name="bootstrap">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>
+	<subpackage name="env">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
 	<subpackage name="ssl">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>

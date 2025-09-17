@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.config;
-
-import org.springframework.boot.EnvironmentPostProcessor;
-import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
-
 /**
- * Context provided to {@link ConfigDataLoader} methods.
- *
- * @author Phillip Webb
- * @since 2.4.0
+ * Classes supporting application concerns and the org.springframework.boot package.
  */
-public interface ConfigDataLoaderContext {
+@NullMarked
+package org.springframework.boot.support;
 
-	/**
-	 * Provides access to the {@link ConfigurableBootstrapContext} shared across all
-	 * {@link EnvironmentPostProcessor EnvironmentPostProcessors}.
-	 * @return the bootstrap context
-	 */
-	ConfigurableBootstrapContext getBootstrapContext();
-
-}
+import org.jspecify.annotations.NullMarked;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -38,6 +38,7 @@ import org.springframework.aot.AotDetector;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
@@ -46,9 +47,9 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
-import org.springframework.boot.env.EnvironmentPostProcessorApplicationListener.EnvironmentBeanFactoryInitializationAotProcessor;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.boot.logging.DeferredLogs;
+import org.springframework.boot.support.EnvironmentPostProcessorApplicationListener.EnvironmentBeanFactoryInitializationAotProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;

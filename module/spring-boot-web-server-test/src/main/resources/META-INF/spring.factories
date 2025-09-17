@@ -1,5 +1,5 @@
 # Environment Post Processors
-org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.EnvironmentPostProcessor=\
 org.springframework.boot.web.server.test.SpringBootTestRandomPortEnvironmentPostProcessor
 
 # Spring Test Context Customizer Factories

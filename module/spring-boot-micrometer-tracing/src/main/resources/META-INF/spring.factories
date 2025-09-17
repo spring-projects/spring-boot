@@ -9,7 +9,7 @@ org.springframework.context.ApplicationListener=\
 org.springframework.boot.micrometer.tracing.autoconfigure.OpenTelemetryEventPublisherBeansApplicationListener
 
 # Environment Post Processors
-org.springframework.boot.env.EnvironmentPostProcessor=\
+org.springframework.boot.EnvironmentPostProcessor=\
 org.springframework.boot.micrometer.tracing.autoconfigure.LogCorrelationEnvironmentPostProcessor
 
 

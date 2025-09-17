@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +33,7 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContrib
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -57,7 +58,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 2.4.0
+ * @since 4.0.0
  */
 public class EnvironmentPostProcessorApplicationListener implements SmartApplicationListener, Ordered {
 

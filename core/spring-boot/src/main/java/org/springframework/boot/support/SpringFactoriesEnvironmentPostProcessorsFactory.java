@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import java.util.List;
 
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.bootstrap.BootstrapContext;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;

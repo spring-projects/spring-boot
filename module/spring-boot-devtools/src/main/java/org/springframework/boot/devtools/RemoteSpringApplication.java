@@ -31,8 +31,8 @@ import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration
 import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
-import org.springframework.boot.env.EnvironmentPostProcessorApplicationListener;
-import org.springframework.boot.env.EnvironmentPostProcessorsFactory;
+import org.springframework.boot.support.EnvironmentPostProcessorApplicationListener;
+import org.springframework.boot.support.EnvironmentPostProcessorsFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import java.util.Collections;
 import java.util.Map;

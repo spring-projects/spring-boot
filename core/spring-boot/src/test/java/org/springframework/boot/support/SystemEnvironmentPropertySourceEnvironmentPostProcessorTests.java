@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import java.util.Collections;
 import java.util.Map;
@@ -22,8 +22,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor.OriginAwareSystemEnvironmentPropertySource;
 import org.springframework.boot.origin.SystemEnvironmentOrigin;
+import org.springframework.boot.support.SystemEnvironmentPropertySourceEnvironmentPostProcessor.OriginAwareSystemEnvironmentPropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;

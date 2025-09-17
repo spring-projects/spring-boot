@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot.support;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -27,7 +29,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * {@link EnvironmentPostProcessor} to add the {@link RandomValuePropertySource}.
  *
  * @author Phillip Webb
- * @since 2.4.0
+ * @since 4.0.0
  */
 public class RandomValuePropertySourceEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
