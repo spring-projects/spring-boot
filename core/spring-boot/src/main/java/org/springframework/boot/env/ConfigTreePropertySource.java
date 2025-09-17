@@ -76,7 +76,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 2.4.0
  */
-public class ConfigTreePropertySource extends EnumerablePropertySource<Path> implements OriginLookup<String> {
+public class ConfigTreePropertySource extends EnumerablePropertySource<Path>
+		implements PropertySourceInfo, OriginLookup<String> {
 
 	private static final int MAX_DEPTH = 100;
 

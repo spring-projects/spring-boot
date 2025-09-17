@@ -45,6 +45,9 @@
 	<subpackage name="ssl">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>
+	<subpackage name="origin">
+		<disallow pkg="org.springframework.boot" exact-match="true"/>
+	</subpackage>
 	<subpackage name="util">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>

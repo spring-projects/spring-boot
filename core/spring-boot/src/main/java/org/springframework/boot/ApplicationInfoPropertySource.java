@@ -21,8 +21,7 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.origin.Origin;
-import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.env.PropertySourceInfo;
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -36,7 +35,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Moritz Halbritter
  */
-class ApplicationInfoPropertySource extends MapPropertySource implements OriginLookup<String> {
+class ApplicationInfoPropertySource extends MapPropertySource implements PropertySourceInfo {
 
 	static final String NAME = "applicationInfo";
 
@@ -46,11 +45,6 @@ class ApplicationInfoPropertySource extends MapPropertySource implements OriginL
 
 	ApplicationInfoPropertySource(@Nullable String applicationVersion) {
 		super(NAME, getProperties(applicationVersion));
-	}
-
-	@Override
-	public @Nullable Origin getOrigin(String key) {
-		return null;
 	}
 
 	@Override
