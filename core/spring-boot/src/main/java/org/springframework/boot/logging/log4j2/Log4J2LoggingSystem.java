@@ -324,8 +324,12 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		List<String> overrides = getOverrides(initializationContext);
 		Environment environment = initializationContext.getEnvironment();
 		Assert.state(environment != null, "'environment' must not be null");
-		applySystemProperties(environment, logFile);
+		applyLog4j2SystemProperties(environment, logFile);
 		loadConfiguration(location, logFile, overrides);
+	}
+
+	private void applyLog4j2SystemProperties(Environment environment, @Nullable LogFile logFile) {
+		new Log4j2LoggingSystemProperties(environment, getDefaultValueResolver(environment), null).apply(logFile);
 	}
 
 	private List<String> getOverrides(LoggingInitializationContext initializationContext) {
