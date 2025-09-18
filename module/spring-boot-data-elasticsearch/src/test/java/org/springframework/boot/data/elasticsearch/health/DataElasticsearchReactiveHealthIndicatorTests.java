@@ -74,6 +74,7 @@ class DataElasticsearchReactiveHealthIndicatorTests {
 	void elasticsearchIsUp() {
 		setupMockResponse("green");
 		Health health = this.healthIndicator.health().block(TIMEOUT);
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "green");
 	}
@@ -82,6 +83,7 @@ class DataElasticsearchReactiveHealthIndicatorTests {
 	void elasticsearchWithYellowStatusIsUp() {
 		setupMockResponse("yellow");
 		Health health = this.healthIndicator.health().block(TIMEOUT);
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertHealthDetailsWithStatus(health.getDetails(), "yellow");
 	}
@@ -91,6 +93,7 @@ class DataElasticsearchReactiveHealthIndicatorTests {
 	void elasticsearchIsDown() throws Exception {
 		this.server.shutdown();
 		Health health = this.healthIndicator.health().block(TIMEOUT);
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("error")).asString().contains("Connection refused");
 	}
@@ -99,6 +102,7 @@ class DataElasticsearchReactiveHealthIndicatorTests {
 	void elasticsearchIsDownByResponseCode() {
 		this.server.enqueue(new MockResponse().setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value()));
 		Health health = this.healthIndicator.health().block(TIMEOUT);
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("error")).asString().startsWith(ResponseException.class.getName());
 	}
@@ -107,6 +111,7 @@ class DataElasticsearchReactiveHealthIndicatorTests {
 	void elasticsearchIsOutOfServiceByStatus() {
 		setupMockResponse("red");
 		Health health = this.healthIndicator.health().block(TIMEOUT);
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 		assertHealthDetailsWithStatus(health.getDetails(), "red");
 	}

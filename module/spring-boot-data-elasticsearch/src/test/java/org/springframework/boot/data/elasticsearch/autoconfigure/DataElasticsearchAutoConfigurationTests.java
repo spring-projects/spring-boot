@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -151,7 +152,7 @@ class DataElasticsearchAutoConfigurationTests {
 	static class MyConverter implements Converter<ElasticsearchTemplate, Boolean> {
 
 		@Override
-		public Boolean convert(ElasticsearchTemplate source) {
+		public @Nullable Boolean convert(ElasticsearchTemplate source) {
 			return null;
 		}
 
