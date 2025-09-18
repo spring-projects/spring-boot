@@ -69,6 +69,7 @@ class DataCouchbaseAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			CouchbaseMappingContext mappingContext = context.getBean(CouchbaseMappingContext.class);
 			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes).isNotNull();
 			assertThat(managedTypes.toList()).containsOnly(City.class);
 		});
 	}
