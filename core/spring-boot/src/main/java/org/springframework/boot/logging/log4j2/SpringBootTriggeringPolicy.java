@@ -36,6 +36,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.core.util.Builder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -110,7 +111,8 @@ public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
 	}
 
 	@PluginFactory
-	public static SpringBootTriggeringPolicy createPolicy(@PluginAttribute("strategy") @Nullable String strategy,
+	public static SpringBootTriggeringPolicy createPolicy(
+			@PluginAttribute("strategy") @Nullable String strategy,
 			@PluginAttribute("maxFileSize") @Nullable String maxFileSize,
 			@PluginAttribute("timeInterval") @Nullable Integer timeInterval,
 			@PluginAttribute("timeModulate") @Nullable Boolean timeModulate,
@@ -129,7 +131,7 @@ public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
 	 * Builder for {@link SpringBootTriggeringPolicy}.
 	 */
 	public static class SpringBootTriggeringPolicyBuilder
-			implements org.apache.logging.log4j.core.util.Builder<SpringBootTriggeringPolicy> {
+			implements Builder<SpringBootTriggeringPolicy> {
 
 		private static final String DEFAULT_STRATEGY = "size";
 
