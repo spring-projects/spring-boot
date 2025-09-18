@@ -2053,6 +2053,7 @@ bom {
 				"spring-boot-netty",
 				"spring-boot-opentelemetry",
 				"spring-boot-properties-migrator",
+				"spring-boot-persistence",
 				"spring-boot-pulsar",
 				"spring-boot-quartz",
 				"spring-boot-r2dbc",
