@@ -19,6 +19,7 @@ package org.springframework.boot.http.client.reactive;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -60,6 +61,20 @@ public final class JettyClientHttpConnectorBuilder
 	@Override
 	public JettyClientHttpConnectorBuilder withCustomizers(Collection<Consumer<JettyClientHttpConnector>> customizers) {
 		return new JettyClientHttpConnectorBuilder(mergedCustomizers(customizers), this.httpClientBuilder);
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpConnectorBuilder} that uses the given factory to
+	 * create the {@link HttpClientTransport}.
+	 * @param httpClientTransportFactory the {@link HttpClientTransport} factory to use
+	 * @return a new {@link JettyClientHttpConnectorBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JettyClientHttpConnectorBuilder withHttpClientTransportFactory(
+			Function<ClientConnector, HttpClientTransport> httpClientTransportFactory) {
+		Assert.notNull(httpClientTransportFactory, "'httpClientTransportFactory' must not be null");
+		return new JettyClientHttpConnectorBuilder(getCustomizers(),
+				this.httpClientBuilder.withHttpClientTransportFactory(httpClientTransportFactory));
 	}
 
 	/**

@@ -18,11 +18,14 @@ package org.springframework.boot.http.client;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpClientTransport;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.io.ClientConnector;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link JettyClientHttpRequestFactoryBuilder} and
@@ -62,6 +65,16 @@ class JettyClientHttpRequestFactoryBuilderTests
 		customizer.assertCalled();
 	}
 
+	@Test
+	void withHttpClientTransportFactory() {
+		JettyClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jetty()
+			.withHttpClientTransportFactory(TestHttpClientTransport::new)
+			.build();
+		assertThat(factory).extracting("httpClient")
+			.extracting("transport")
+			.isInstanceOf(TestHttpClientTransport.class);
+	}
+
 	@Override
 	protected long connectTimeout(JettyClientHttpRequestFactory requestFactory) {
 		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();
@@ -70,6 +83,14 @@ class JettyClientHttpRequestFactoryBuilderTests
 	@Override
 	protected long readTimeout(JettyClientHttpRequestFactory requestFactory) {
 		return (long) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+	}
+
+	static class TestHttpClientTransport extends HttpClientTransportOverHTTP {
+
+		TestHttpClientTransport(ClientConnector connector) {
+			super(connector);
+		}
+
 	}
 
 }

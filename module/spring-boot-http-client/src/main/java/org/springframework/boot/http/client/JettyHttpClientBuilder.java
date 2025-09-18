@@ -19,6 +19,7 @@ package org.springframework.boot.http.client;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.net.ssl.SSLContext;
 
@@ -48,20 +49,29 @@ public final class JettyHttpClientBuilder {
 
 	private final Consumer<HttpClient> customizer;
 
+	private final Function<ClientConnector, HttpClientTransport> httpClientTransportFactory;
+
 	private final Consumer<HttpClientTransport> httpClientTransportCustomizer;
 
 	private final Consumer<ClientConnector> clientConnectorCustomizerCustomizer;
 
 	public JettyHttpClientBuilder() {
-		this(Empty.consumer(), Empty.consumer(), Empty.consumer());
+		this(Empty.consumer(), JettyHttpClientBuilder::createHttpClientTransport, Empty.consumer(), Empty.consumer());
 	}
 
 	private JettyHttpClientBuilder(Consumer<HttpClient> customizer,
+			Function<ClientConnector, HttpClientTransport> httpClientTransportFactory,
 			Consumer<HttpClientTransport> httpClientTransportCustomizer,
 			Consumer<ClientConnector> clientConnectorCustomizerCustomizer) {
 		this.customizer = customizer;
+		this.httpClientTransportFactory = httpClientTransportFactory;
 		this.httpClientTransportCustomizer = httpClientTransportCustomizer;
 		this.clientConnectorCustomizerCustomizer = clientConnectorCustomizerCustomizer;
+	}
+
+	private static HttpClientTransport createHttpClientTransport(ClientConnector connector) {
+		return (connector.getSslContextFactory() != null) ? new HttpClientTransportDynamic(connector)
+				: new HttpClientTransportOverHTTP(connector);
 	}
 
 	/**
@@ -72,8 +82,22 @@ public final class JettyHttpClientBuilder {
 	 */
 	public JettyHttpClientBuilder withCustomizer(Consumer<HttpClient> customizer) {
 		Assert.notNull(customizer, "'customizer' must not be null");
-		return new JettyHttpClientBuilder(this.customizer.andThen(customizer), this.httpClientTransportCustomizer,
-				this.clientConnectorCustomizerCustomizer);
+		return new JettyHttpClientBuilder(this.customizer.andThen(customizer), this.httpClientTransportFactory,
+				this.httpClientTransportCustomizer, this.clientConnectorCustomizerCustomizer);
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that uses the given
+	 * factory to create the {@link HttpClientTransport}.
+	 * @param httpClientTransportFactory the {@link HttpClientTransport} factory to use
+	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JettyHttpClientBuilder withHttpClientTransportFactory(
+			Function<ClientConnector, HttpClientTransport> httpClientTransportFactory) {
+		Assert.notNull(httpClientTransportFactory, "'httpClientTransportFactory' must not be null");
+		return new JettyHttpClientBuilder(this.customizer, httpClientTransportFactory,
+				this.httpClientTransportCustomizer, this.clientConnectorCustomizerCustomizer);
 	}
 
 	/**
@@ -85,7 +109,7 @@ public final class JettyHttpClientBuilder {
 	public JettyHttpClientBuilder withHttpClientTransportCustomizer(
 			Consumer<HttpClientTransport> httpClientTransportCustomizer) {
 		Assert.notNull(httpClientTransportCustomizer, "'httpClientTransportCustomizer' must not be null");
-		return new JettyHttpClientBuilder(this.customizer,
+		return new JettyHttpClientBuilder(this.customizer, this.httpClientTransportFactory,
 				this.httpClientTransportCustomizer.andThen(httpClientTransportCustomizer),
 				this.clientConnectorCustomizerCustomizer);
 	}
@@ -99,7 +123,8 @@ public final class JettyHttpClientBuilder {
 	public JettyHttpClientBuilder withClientConnectorCustomizerCustomizer(
 			Consumer<ClientConnector> clientConnectorCustomizerCustomizer) {
 		Assert.notNull(clientConnectorCustomizerCustomizer, "'clientConnectorCustomizerCustomizer' must not be null");
-		return new JettyHttpClientBuilder(this.customizer, this.httpClientTransportCustomizer,
+		return new JettyHttpClientBuilder(this.customizer, this.httpClientTransportFactory,
+				this.httpClientTransportCustomizer,
 				this.clientConnectorCustomizerCustomizer.andThen(clientConnectorCustomizerCustomizer));
 	}
 
@@ -127,8 +152,9 @@ public final class JettyHttpClientBuilder {
 
 	private HttpClientTransport createTransport(HttpClientSettings settings) {
 		ClientConnector connector = createClientConnector(settings.sslBundle());
-		return (connector.getSslContextFactory() != null) ? new HttpClientTransportDynamic(connector)
-				: new HttpClientTransportOverHTTP(connector);
+		HttpClientTransport clientTransport = this.httpClientTransportFactory.apply(connector);
+		Assert.state(clientTransport != null, "'httpClientTransportFactory' did not return a client transport");
+		return clientTransport;
 	}
 
 	private ClientConnector createClientConnector(@Nullable SslBundle sslBundle) {

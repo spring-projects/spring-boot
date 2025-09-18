@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import org.eclipse.jetty.client.HttpClient;
@@ -76,6 +77,20 @@ public final class JettyClientHttpRequestFactoryBuilder
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientBuilder.withCustomizer(httpClientCustomizer));
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that uses the given
+	 * factory to create the {@link HttpClientTransport}.
+	 * @param httpClientTransportFactory the {@link HttpClientTransport} factory to use
+	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 * @since 4.0.0
+	 */
+	public JettyClientHttpRequestFactoryBuilder withHttpClientTransportFactory(
+			Function<ClientConnector, HttpClientTransport> httpClientTransportFactory) {
+		Assert.notNull(httpClientTransportFactory, "'httpClientTransportFactory' must not be null");
+		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withHttpClientTransportFactory(httpClientTransportFactory));
 	}
 
 	/**
