@@ -34,14 +34,14 @@ import org.springframework.web.bind.annotation.*;
 @SpringBootApplication
 public class Example {
 
-	@RequestMapping("/")
-	String home() {
-		return "Hello World!";
-	}
+    @RequestMapping("/")
+    String home() {
+       return "Hello World!";
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(Example.class, args);
-	}
+    public static void main(String[] args) {
+       SpringApplication.run(Example.class, args);
+    }
 
 }
 ----
@@ -85,7 +85,7 @@ We like to know the Spring Boot version, operating system, and JVM version you'r
 
 == Building from Source
 
-You don't need to build from source to use Spring Boot (binaries in https://repo.spring.io[repo.spring.io]), but if you want to try out the latest and greatest, Spring Boot can be built and published to your local Maven cache using the https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle wrapper].
+You don't need to build from source to use Spring Boot (binaries in [https://repo.spring.io](https://repo.spring.io)[repo.spring.io]), but if you want to try out the latest and greatest, Spring Boot can be built and published to your local Maven cache using the [https://docs.gradle.org/current/userguide/gradle_wrapper.html](https://docs.gradle.org/current/userguide/gradle_wrapper.html)[Gradle wrapper].
 You also need JDK 24.
 
 [source,shell]
@@ -154,7 +154,7 @@ This module provides many endpoints, including the `HealthEndpoint`, `Environmen
 This provides auto-configuration for actuator endpoints based on the content of the classpath and a set of properties.
 For instance, if Micrometer is on the classpath, it will auto-configure the `MetricsEndpoint`.
 It contains configuration to expose endpoints over HTTP or JMX.
-Just like Spring Boot AutoConfigure, this will back away as the user starts to define their own beans.
+Just like Spring Boot auto-configuration, this will back away as the user starts to define their own beans.
 
 
 
@@ -187,13 +187,13 @@ Developer tools are automatically disabled when running a fully packaged applica
 
 == Guides
 
-The https://spring.io/[spring.io] site contains several guides that show how to use Spring Boot step-by-step:
+The [https://spring.io/](https://spring.io/)[spring.io] site contains several guides that show how to use Spring Boot step-by-step:
 
-* https://spring.io/guides/gs/spring-boot/[Building an Application with Spring Boot] is an introductory guide that shows you how to create an application, run it, and add some management services.
-* https://spring.io/guides/gs/actuator-service/[Building a RESTful Web Service with Spring Boot Actuator] is a guide to creating a REST web service and also shows how the server can be configured.
+* [https://spring.io/guides/gs/spring-boot/](https://spring.io/guides/gs/spring-boot/)[Building an Application with Spring Boot] is an introductory guide that shows you how to create an application, run it, and add some management services.
+* [https://spring.io/guides/gs/actuator-service/](https://spring.io/guides/gs/actuator-service/)[Building a RESTful Web Service with Spring Boot Actuator] is a guide to creating a REST web service and also shows how the server can be configured.
 
 
 
 == License
 
-Spring Boot is Open Source software released under the https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
+Spring Boot is Open Source software released under the [https://www.apache.org/licenses/LICENSE-2.0.html](https://www.apache.org/licenses/LICENSE-2.0.html)[Apache 2.0 license].
