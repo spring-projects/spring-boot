@@ -51,7 +51,6 @@ import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.status.StatusConsoleListener;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
-import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.bind.BindResult;
@@ -326,24 +325,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		Environment environment = initializationContext.getEnvironment();
 		Assert.state(environment != null, "'environment' must not be null");
 		applyLog4j2SystemProperties(environment, logFile);
-		registerSpringBootPlugins();
 		loadConfiguration(location, logFile, overrides);
 	}
 
-	private void registerSpringBootPlugins() {
-		String pluginPackages = SpringBootTriggeringPolicy.class.getPackageName();
-		String existing = System.getProperty("log4j.plugin.packages");
-		if (StringUtils.hasText(existing)) {
-			if (!existing.contains(pluginPackages)) {
-				System.setProperty("log4j.plugin.packages", existing + "," + pluginPackages);
-				PluginRegistry.getInstance().clear();
-			}
-		}
-		else {
-			System.setProperty("log4j.plugin.packages", pluginPackages);
-			PluginRegistry.getInstance().clear();
-		}
-	}
 
 	private void applyLog4j2SystemProperties(Environment environment, @Nullable LogFile logFile) {
 		new Log4j2LoggingSystemProperties(environment, getDefaultValueResolver(environment), null).apply(logFile);
