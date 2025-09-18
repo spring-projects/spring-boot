@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderP
 import org.springframework.boot.actuate.metrics.cache.JCacheCacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.RedisCacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.context.annotation.Bean;
@@ -83,6 +84,7 @@ class CacheMeterBinderProvidersConfiguration {
 	static class JCacheCacheMeterBinderProviderConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean(JCacheCacheMeterBinderProvider.class)
 		JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
 			return new JCacheCacheMeterBinderProvider();
 		}
