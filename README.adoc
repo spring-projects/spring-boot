@@ -34,14 +34,14 @@ import org.springframework.web.bind.annotation.*;
 @SpringBootApplication
 public class Example {
 
-    @RequestMapping("/")
-    String home() {
-       return "Hello World!";
-    }
+	@RequestMapping("/")
+	String home() {
+		return "Hello World!";
+	}
 
-    public static void main(String[] args) {
-       SpringApplication.run(Example.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(Example.class, args);
+	}
 
 }
 ----
@@ -54,7 +54,7 @@ Are you having trouble with Spring Boot? We want to help!
 
 * Check the {docs}/[reference documentation], especially the {docs}/how-to/index.html[How-to's] -- they provide solutions to the most common questions.
 * Learn the Spring basics -- Spring Boot builds on many other Spring projects; check the https://spring.io[spring.io] website for a wealth of reference documentation.
-  If you are new to Spring, try one of the https://spring.io/guides[guides].
+If you are new to Spring, try one of the https://spring.io/guides[guides].
 * If you are upgrading, read the {github}/wiki[release notes] for upgrade instructions and "new and noteworthy" features.
 * Ask a question -- we monitor https://stackoverflow.com[stackoverflow.com] for questions tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
 * Report bugs with Spring Boot at {github}/issues[github.com/spring-projects/spring-boot/issues].
@@ -86,7 +86,7 @@ We like to know the Spring Boot version, operating system, and JVM version you'r
 == Building from Source
 
 You don't need to build from source to use Spring Boot (binaries in [https://repo.spring.io](https://repo.spring.io)[repo.spring.io]), but if you want to try out the latest and greatest, Spring Boot can be built and published to your local Maven cache using the [https://docs.gradle.org/current/userguide/gradle_wrapper.html](https://docs.gradle.org/current/userguide/gradle_wrapper.html)[Gradle wrapper].
-You also need JDK 24.
+You also need JDK 17.
 
 [source,shell]
 ----
@@ -115,7 +115,7 @@ There are several modules in Spring Boot. Here is a quick overview:
 The main library providing features that support the other parts of Spring Boot. These include:
 
 * The `SpringApplication` class, providing static convenience methods that can be used to write a stand-alone Spring Application.
-  Its sole job is to create and refresh an appropriate Spring `ApplicationContext`.
+Its sole job is to create and refresh an appropriate Spring `ApplicationContext`.
 * Embedded web applications with a choice of container (Tomcat, Jetty).
 * First-class externalized configuration support.
 * Convenience `ApplicationContext` initializers, including support for sensible logging defaults.
@@ -154,7 +154,7 @@ This module provides many endpoints, including the `HealthEndpoint`, `Environmen
 This provides auto-configuration for actuator endpoints based on the content of the classpath and a set of properties.
 For instance, if Micrometer is on the classpath, it will auto-configure the `MetricsEndpoint`.
 It contains configuration to expose endpoints over HTTP or JMX.
-Just like Spring Boot auto-configuration, this will back away as the user starts to define their own beans.
+Just like Spring Boot's auto-configuration, this will back away as the user starts to define their own beans.
 
 
 
@@ -167,7 +167,7 @@ This module contains core items and annotations that can be helpful when testing
 === spring-boot-test-autoconfigure
 
 Like other Spring Boot auto-configuration modules, spring-boot-test-autoconfigure provides auto-configuration for tests based on the classpath.
-It includes many annotations that can automatically configure a slice of your application that needs to be tested.
+It includes a number of annotations that can automatically configure a slice of your application that needs to be tested.
 
 
 
