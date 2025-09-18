@@ -52,7 +52,7 @@ import static org.hamcrest.Matchers.allOf;
  * @since 2.2.0
  * @deprecated since 4.0.0 in favor of JUnit 5 and {@link OutputCaptureExtension}
  */
-@Deprecated
+@Deprecated(since = "4.0.0")
 public class OutputCaptureRule implements TestRule, CapturedOutput {
 
 	private final OutputCapture delegate = new OutputCapture();
