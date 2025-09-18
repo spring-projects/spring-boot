@@ -48,8 +48,10 @@ import static org.mockito.Mockito.mock;
 class CassandraDriverHealthIndicatorTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenCqlSessionIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraDriverHealthIndicator(null));
+		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraDriverHealthIndicator(null))
+			.withMessage("'session' must not be null");
 	}
 
 	@Test

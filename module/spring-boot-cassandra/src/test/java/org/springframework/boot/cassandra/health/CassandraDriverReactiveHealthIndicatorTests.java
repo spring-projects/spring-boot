@@ -51,8 +51,10 @@ import static org.mockito.Mockito.mock;
 class CassandraDriverReactiveHealthIndicatorTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenCqlSessionIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraDriverReactiveHealthIndicator(null));
+		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraDriverReactiveHealthIndicator(null))
+			.withMessage("'session' must not be null");
 	}
 
 	@Test
