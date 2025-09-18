@@ -651,7 +651,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
+				.getExact(OracleConfigurationExtension.class)
 				.getSqlplus()).isTrue());
 
 	}
@@ -663,7 +663,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
+				.getExact(OracleConfigurationExtension.class)
 				.getSqlplusWarn()).isTrue());
 	}
 
@@ -674,7 +674,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
+				.getExact(OracleConfigurationExtension.class)
 				.getWalletLocation()).isEqualTo("/tmp/my.wallet"));
 	}
 
@@ -685,7 +685,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(OracleConfigurationExtension.class)
+				.getExact(OracleConfigurationExtension.class)
 				.getKerberosCacheFile()).isEqualTo("/tmp/cache"));
 	}
 
@@ -783,7 +783,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(PostgreSQLConfigurationExtension.class)
+				.getExact(PostgreSQLConfigurationExtension.class)
 				.isTransactionalLock()).isFalse());
 	}
 
@@ -801,7 +801,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(Flyway.class)
 				.getConfiguration()
 				.getPluginRegister()
-				.getPlugin(SQLServerConfigurationExtension.class)
+				.getExact(SQLServerConfigurationExtension.class)
 				.getKerberos()
 				.getLogin()
 				.getFile()).isEqualTo("/tmp/config"));
