@@ -42,6 +42,7 @@ import static org.mockito.Mockito.mock;
 class JCacheCacheMeterBinderProviderTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private javax.cache.Cache<Object, Object> nativeCache;
 
 	@Test
