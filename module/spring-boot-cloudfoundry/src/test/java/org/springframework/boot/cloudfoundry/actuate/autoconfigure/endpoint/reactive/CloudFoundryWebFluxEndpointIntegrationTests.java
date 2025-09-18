@@ -48,6 +48,7 @@ import org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServ
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
@@ -61,6 +62,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.cors.CorsConfiguration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -213,9 +215,10 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(
 			Consumer<WebTestClient> clientConsumer) {
 		return (context) -> {
-			int port = ((AnnotationConfigReactiveWebServerApplicationContext) context.getSourceApplicationContext())
-				.getWebServer()
-				.getPort();
+			WebServer webServer = ((AnnotationConfigReactiveWebServerApplicationContext) context
+				.getSourceApplicationContext()).getWebServer();
+			assertThat(webServer).isNotNull();
+			int port = webServer.getPort();
 			clientConsumer.accept(WebTestClient.bindToServer()
 				.baseUrl("http://localhost:" + port)
 				.responseTimeout(Duration.ofMinutes(5))

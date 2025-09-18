@@ -72,6 +72,7 @@ class SecurityServiceTests {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		this.securityService = new SecurityService(builder, CLOUD_CONTROLLER, true);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(this.securityService, "restTemplate");
+		assertThat(restTemplate).isNotNull();
 		assertThat(restTemplate.getRequestFactory()).isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 	}
 
@@ -80,6 +81,7 @@ class SecurityServiceTests {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		this.securityService = new SecurityService(builder, CLOUD_CONTROLLER, false);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(this.securityService, "restTemplate");
+		assertThat(restTemplate).isNotNull();
 		assertThat(restTemplate.getRequestFactory()).isNotInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 	}
 

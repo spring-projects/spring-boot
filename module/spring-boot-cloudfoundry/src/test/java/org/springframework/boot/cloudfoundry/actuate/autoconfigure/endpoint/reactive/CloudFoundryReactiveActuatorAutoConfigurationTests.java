@@ -28,6 +28,7 @@ import javax.net.ssl.SSLException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpResources;
@@ -203,7 +204,7 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 			});
 	}
 
-	private static Boolean getMatches(List<? extends SecurityWebFilterChain> filters, String urlTemplate) {
+	private static @Nullable Boolean getMatches(List<? extends SecurityWebFilterChain> filters, String urlTemplate) {
 		return filters.get(0)
 			.matches(MockServerWebExchange.from(MockServerHttpRequest.get(urlTemplate).build()))
 			.block(Duration.ofSeconds(30));
@@ -290,6 +291,7 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 			CloudFoundryInfoEndpointWebExtension extension = context
 				.getBean(CloudFoundryInfoEndpointWebExtension.class);
 			Map<String, Object> git = (Map<String, Object>) extension.info().get("git");
+			assertThat(git).isNotNull();
 			Map<String, Object> commit = (Map<String, Object>) git.get("commit");
 			assertThat(commit).hasSize(4);
 		});
@@ -317,6 +319,7 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 							.retrieve()
 							.toBodilessEntity()
 							.block(Duration.ofSeconds(30));
+						assertThat(response).isNotNull();
 						assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
 					}));
 		}

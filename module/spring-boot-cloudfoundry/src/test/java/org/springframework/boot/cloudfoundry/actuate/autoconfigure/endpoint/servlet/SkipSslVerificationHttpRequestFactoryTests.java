@@ -18,6 +18,7 @@ package org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.ser
 
 import javax.net.ssl.SSLHandshakeException;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class SkipSslVerificationHttpRequestFactoryTests {
 
-	private WebServer webServer;
+	private @Nullable WebServer webServer;
 
 	@AfterEach
 	void shutdownContainer() {
