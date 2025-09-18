@@ -22,6 +22,7 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -46,7 +47,7 @@ class DefaultEndpointObjectNameFactoryTests {
 
 	private final MBeanServer mBeanServer = mock(MBeanServer.class);
 
-	private String contextId;
+	private @Nullable String contextId;
 
 	@Test
 	void generateObjectName() {

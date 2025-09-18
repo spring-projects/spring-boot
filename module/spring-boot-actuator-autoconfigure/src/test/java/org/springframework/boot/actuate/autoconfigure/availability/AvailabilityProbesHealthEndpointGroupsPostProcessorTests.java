@@ -84,7 +84,9 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 	void postProcessHealthEndpointGroupsWhenAdditionalPathPropertyIsTrue() {
 		HealthEndpointGroups postProcessed = getPostProcessed("true");
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
+		assertThat(liveness).isNotNull();
 		HealthEndpointGroup readiness = postProcessed.get("readiness");
+		assertThat(readiness).isNotNull();
 		assertThat(liveness.getAdditionalPath()).hasToString("server:/livez");
 		assertThat(readiness.getAdditionalPath()).hasToString("server:/readyz");
 	}
@@ -103,7 +105,9 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 				environment);
 		HealthEndpointGroups postProcessed = postProcessor.postProcessHealthEndpointGroups(groups);
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
+		assertThat(liveness).isNotNull();
 		HealthEndpointGroup readiness = postProcessed.get("readiness");
+		assertThat(readiness).isNotNull();
 		assertThat(liveness.getAdditionalPath()).hasToString("server:/livez");
 		assertThat(readiness.getAdditionalPath()).hasToString("server:/readyz");
 	}
@@ -154,7 +158,9 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 	void postProcessHealthEndpointGroupsWhenAdditionalPathPropertyIsFalse() {
 		HealthEndpointGroups postProcessed = getPostProcessed("false");
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
+		assertThat(liveness).isNotNull();
 		HealthEndpointGroup readiness = postProcessed.get("readiness");
+		assertThat(readiness).isNotNull();
 		assertThat(liveness.getAdditionalPath()).isNull();
 		assertThat(readiness.getAdditionalPath()).isNull();
 	}
@@ -164,7 +170,9 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		HealthEndpointGroups groups = mock(HealthEndpointGroups.class);
 		HealthEndpointGroups postProcessed = this.postProcessor.postProcessHealthEndpointGroups(groups);
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
+		assertThat(liveness).isNotNull();
 		HealthEndpointGroup readiness = postProcessed.get("readiness");
+		assertThat(readiness).isNotNull();
 		assertThat(liveness.getAdditionalPath()).isNull();
 		assertThat(readiness.getAdditionalPath()).isNull();
 	}

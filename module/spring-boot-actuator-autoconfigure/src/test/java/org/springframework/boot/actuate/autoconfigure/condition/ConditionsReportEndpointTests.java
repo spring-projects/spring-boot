@@ -50,6 +50,7 @@ class ConditionsReportEndpointTests {
 				.conditions()
 				.getContexts()
 				.get(context.getId());
+			assertThat(report).isNotNull();
 			assertThat(report.getPositiveMatches()).isEmpty();
 			assertThat(report.getNegativeMatches()).containsKey("a");
 			assertThat(report.getUnconditionalClasses()).contains("b");

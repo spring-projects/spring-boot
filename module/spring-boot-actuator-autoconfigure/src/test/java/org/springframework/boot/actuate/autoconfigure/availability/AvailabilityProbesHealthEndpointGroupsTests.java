@@ -50,6 +50,7 @@ class AvailabilityProbesHealthEndpointGroupsTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenGroupsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new AvailabilityProbesHealthEndpointGroups(null, false))
 			.withMessage("'groups' must not be null");
@@ -87,15 +88,22 @@ class AvailabilityProbesHealthEndpointGroupsTests {
 		given(this.delegate.get("liveness")).willReturn(group);
 		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, true);
 		HealthEndpointGroup liveness = availabilityProbes.get("liveness");
+		assertThat(liveness).isNotNull();
 		assertThat(liveness).isEqualTo(group);
-		assertThat(liveness.getAdditionalPath().getValue()).isEqualTo("test");
+		AdditionalHealthEndpointPath additionalPath = liveness.getAdditionalPath();
+		assertThat(additionalPath).isNotNull();
+		assertThat(additionalPath.getValue()).isEqualTo("test");
 	}
 
 	@Test
 	void getWhenProbeInDelegateAndAdditionalPathReturnsGroupWithAdditionalPath() {
 		given(this.delegate.get("liveness")).willReturn(this.group);
 		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, true);
-		assertThat(availabilityProbes.get("liveness").getAdditionalPath().getValue()).isEqualTo("/livez");
+		HealthEndpointGroup liveness = availabilityProbes.get("liveness");
+		assertThat(liveness).isNotNull();
+		AdditionalHealthEndpointPath additionalPath = liveness.getAdditionalPath();
+		assertThat(additionalPath).isNotNull();
+		assertThat(additionalPath.getValue()).isEqualTo("/livez");
 	}
 
 	@Test
@@ -114,6 +122,7 @@ class AvailabilityProbesHealthEndpointGroupsTests {
 	void getLivenessProbeHasOnlyLivenessStateAsMember() {
 		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		HealthEndpointGroup probeGroup = availabilityProbes.get("liveness");
+		assertThat(probeGroup).isNotNull();
 		assertThat(probeGroup.isMember("livenessState")).isTrue();
 		assertThat(probeGroup.isMember("readinessState")).isFalse();
 	}
@@ -122,6 +131,7 @@ class AvailabilityProbesHealthEndpointGroupsTests {
 	void getReadinessProbeHasOnlyReadinessStateAsMember() {
 		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		HealthEndpointGroup probeGroup = availabilityProbes.get("readiness");
+		assertThat(probeGroup).isNotNull();
 		assertThat(probeGroup.isMember("livenessState")).isFalse();
 		assertThat(probeGroup.isMember("readinessState")).isTrue();
 	}

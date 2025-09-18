@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -35,7 +36,8 @@ class EndpointIdTimeToLivePropertyFunctionTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private final Function<EndpointId, Long> timeToLive = new EndpointIdTimeToLivePropertyFunction(this.environment);
+	private final Function<EndpointId, @Nullable Long> timeToLive = new EndpointIdTimeToLivePropertyFunction(
+			this.environment);
 
 	@Test
 	void defaultConfiguration() {

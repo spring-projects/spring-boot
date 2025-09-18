@@ -105,7 +105,7 @@ class JacksonEndpointAutoConfigurationTests {
 
 		@Override
 		public JsonMapper get() {
-			return null;
+			return new JsonMapper();
 		}
 
 	}

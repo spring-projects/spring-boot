@@ -45,15 +45,19 @@ import static org.mockito.Mockito.mock;
 class AutoConfiguredHealthEndpointGroupTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private StatusAggregator statusAggregator;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private HttpCodeStatusMapper httpCodeStatusMapper;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private SecurityContext securityContext;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Principal principal;
 
 	@Test

@@ -20,6 +20,7 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
@@ -103,6 +104,7 @@ class EndpointAutoConfigurationTests {
 		@Override
 		public Person convert(String source) {
 			String[] content = StringUtils.split(source, " ");
+			assertThat(content).isNotNull();
 			return new Person(content[0], content[1]);
 		}
 
@@ -116,8 +118,9 @@ class EndpointAutoConfigurationTests {
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 			String[] content = StringUtils.split((String) source, " ");
+			assertThat(content).isNotNull();
 			return new Person(content[0], content[1]);
 		}
 
@@ -202,7 +205,7 @@ class EndpointAutoConfigurationTests {
 		}
 
 		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotation) {
+		public <T extends Annotation> @Nullable T getAnnotation(Class<T> annotation) {
 			return null;
 		}
 

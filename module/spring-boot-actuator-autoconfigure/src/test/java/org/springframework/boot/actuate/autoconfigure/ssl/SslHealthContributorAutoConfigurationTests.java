@@ -116,7 +116,10 @@ class SslHealthContributorAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	private static List<CertificateChainInfo> getInvalidChains(Health health) {
-		return (List<CertificateChainInfo>) health.getDetails().get("invalidChains");
+		List<CertificateChainInfo> invalidChains = (List<CertificateChainInfo>) health.getDetails()
+			.get("invalidChains");
+		assertThat(invalidChains).isNotNull();
+		return invalidChains;
 	}
 
 	@Configuration(proxyBeanMethods = false)
