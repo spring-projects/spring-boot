@@ -21,7 +21,6 @@ import java.time.Duration;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.junit.jupiter.api.Disabled;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
@@ -42,14 +41,6 @@ class ClickHouseR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	void runCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 		checkDatabaseAccess(connectionDetails);
-	}
-
-	@DockerComposeTest(composeFile = "clickhouse-bitnami-compose.yaml", image = TestImage.BITNAMI_CLICKHOUSE)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
-	void runWithBitnamiImageCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
-		// See https://github.com/bitnami/containers/issues/73550
-		// checkDatabaseAccess(connectionDetails);
 	}
 
 	private void assertConnectionDetails(R2dbcConnectionDetails connectionDetails) {

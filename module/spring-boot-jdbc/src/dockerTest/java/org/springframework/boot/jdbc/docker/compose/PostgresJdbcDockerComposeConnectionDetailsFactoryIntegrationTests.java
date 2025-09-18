@@ -18,8 +18,6 @@ package org.springframework.boot.jdbc.docker.compose;
 
 import java.sql.Driver;
 
-import org.junit.jupiter.api.Disabled;
-
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
@@ -53,14 +51,6 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isNull();
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
-		checkDatabaseAccess(connectionDetails);
-	}
-
-	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
-	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails)
-			throws ClassNotFoundException {
-		assertConnectionDetails(connectionDetails);
 		checkDatabaseAccess(connectionDetails);
 	}
 

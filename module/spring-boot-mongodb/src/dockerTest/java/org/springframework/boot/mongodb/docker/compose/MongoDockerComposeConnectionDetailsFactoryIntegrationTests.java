@@ -17,13 +17,10 @@
 package org.springframework.boot.mongodb.docker.compose;
 
 import com.mongodb.ConnectionString;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,13 +37,6 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "mongo-compose.yaml", image = TestImage.MONGODB)
 	void runCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
 		assertConnectionDetailsWithDatabase(connectionDetails, "mydatabase");
-	}
-
-	@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64", disabledReason = "The image has no ARM support")
-	@DockerComposeTest(composeFile = "mongo-bitnami-compose.yaml", image = TestImage.BITNAMI_MONGODB)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
-	void runWithBitnamiImageCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
-		assertConnectionDetailsWithDatabase(connectionDetails, "testdb");
 	}
 
 	private void assertConnectionDetailsWithDatabase(MongoConnectionDetails connectionDetails, String database) {
