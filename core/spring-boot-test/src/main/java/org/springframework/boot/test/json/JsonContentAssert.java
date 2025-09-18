@@ -42,6 +42,7 @@ import org.skyscreamer.jsonassert.comparator.JSONComparator;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.ThrowingFunction;
 
 /**
  * AssertJ {@link Assert} for {@link JsonContent}.
@@ -997,24 +998,17 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	}
 
 	private JSONCompareResult compare(@Nullable CharSequence expectedJson, JSONCompareMode compareMode) {
-		if (this.actual == null) {
-			return compareForNull(expectedJson);
-		}
-		if (expectedJson == null) {
-			return fail("Expected JSON but got null");
-		}
-		try {
-			return JSONCompare.compareJSON(expectedJson.toString(), this.actual.toString(), compareMode);
-		}
-		catch (Exception ex) {
-			if (ex instanceof RuntimeException runtimeException) {
-				throw runtimeException;
-			}
-			throw new IllegalStateException(ex);
-		}
+		return compare(expectedJson,
+				(expected) -> JSONCompare.compareJSON(expected, this.actual.toString(), compareMode));
 	}
 
 	private JSONCompareResult compare(@Nullable CharSequence expectedJson, JSONComparator comparator) {
+		return compare(expectedJson,
+				(expected) -> JSONCompare.compareJSON(expected, this.actual.toString(), comparator));
+	}
+
+	private JSONCompareResult compare(@Nullable CharSequence expectedJson,
+			ThrowingFunction<String, JSONCompareResult> compareAction) {
 		if (this.actual == null) {
 			return compareForNull(expectedJson);
 		}
@@ -1022,7 +1016,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 			return fail("Expected JSON but got null");
 		}
 		try {
-			return JSONCompare.compareJSON(expectedJson.toString(), this.actual.toString(), comparator);
+			return compareAction.applyWithException(expectedJson.toString());
 		}
 		catch (Exception ex) {
 			if (ex instanceof RuntimeException runtimeException) {

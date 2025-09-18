@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Roland Weisleder
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings("removal")
 public class OutputCaptureRuleTests {
 
 	@Rule

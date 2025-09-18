@@ -176,10 +176,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		LoggerContext loggerContext = getLoggerContext();
 		String contextName = loggerContext.getName();
 		List<String> extensions = getStandardConfigExtensions();
-		extensions.forEach((e) -> locations.add("log4j2-test" + contextName + e));
-		extensions.forEach((e) -> locations.add("log4j2-test" + e));
-		extensions.forEach((e) -> locations.add("log4j2" + contextName + e));
-		extensions.forEach((e) -> locations.add("log4j2" + e));
+		addLocation(locations, "log4j2-test" + contextName, extensions);
+		addLocation(locations, "log4j2-test", extensions);
+		addLocation(locations, "log4j2" + contextName, extensions);
+		addLocation(locations, "log4j2", extensions);
 	}
 
 	private List<String> getStandardConfigExtensions() {
@@ -188,22 +188,26 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		ClassLoader classLoader = LoggerContext.class.getClassLoader();
 		// The order of the extensions corresponds to the order in which Log4j Core 2 and
 		// 3 will try to load them, in decreasing value of @Order.
-		if (isClassAvailable(classLoader, PROPS_CONFIGURATION_FACTORY_V2)
-				|| isClassAvailable(classLoader, PROPS_CONFIGURATION_FACTORY_V3)) {
+		if (isPresent(classLoader, PROPS_CONFIGURATION_FACTORY_V2)
+				|| isPresent(classLoader, PROPS_CONFIGURATION_FACTORY_V3)) {
 			extensions.add(".properties");
 		}
-		if (areAllClassesAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V2, YAML_TREE_PARSER_V2)
-				|| isClassAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V3)) {
+		if (isPresent(classLoader, YAML_CONFIGURATION_FACTORY_V2, YAML_TREE_PARSER_V2)
+				|| isPresent(classLoader, YAML_CONFIGURATION_FACTORY_V3)) {
 			Collections.addAll(extensions, ".yaml", ".yml");
 		}
-		if (isClassAvailable(classLoader, JSON_TREE_PARSER_V2) || isClassAvailable(classLoader, JSON_TREE_PARSER_V3)) {
+		if (isPresent(classLoader, JSON_TREE_PARSER_V2) || isPresent(classLoader, JSON_TREE_PARSER_V3)) {
 			Collections.addAll(extensions, ".json", ".jsn");
 		}
 		extensions.add(".xml");
 		return extensions;
 	}
 
-	private boolean areAllClassesAvailable(ClassLoader classLoader, String... classNames) {
+	private void addLocation(List<String> locations, String location, List<String> extensions) {
+		extensions.forEach((extension) -> locations.add(location + extension));
+	}
+
+	private boolean isPresent(ClassLoader classLoader, String... classNames) {
 		for (String className : classNames) {
 			if (!isClassAvailable(classLoader, className)) {
 				return false;
@@ -212,13 +216,13 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		return true;
 	}
 
+	protected boolean isClassAvailable(ClassLoader classLoader, String className) {
+		return ClassUtils.isPresent(className, classLoader);
+	}
+
 	@Deprecated(since = "4.0.0", forRemoval = true)
 	protected boolean isClassAvailable(String className) {
 		return ClassUtils.isPresent(className, getClassLoader());
-	}
-
-	protected boolean isClassAvailable(ClassLoader classLoader, String className) {
-		return ClassUtils.isPresent(className, classLoader);
 	}
 
 	@Override

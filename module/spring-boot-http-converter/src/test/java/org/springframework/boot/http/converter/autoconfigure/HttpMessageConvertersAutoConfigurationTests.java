@@ -324,9 +324,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	private void assertConvertersBeanRegisteredWithHttpMessageConverters(AssertableApplicationContext context,
 			List<Class<? extends HttpMessageConverter<?>>> types) {
-
 		List<? extends HttpMessageConverter<?>> converterInstances = types.stream().map(context::getBean).toList();
-
 		HttpMessageConverters converters = context.getBean(HttpMessageConverters.class);
 		assertThat(converters.getConverters()).containsSubsequence(converterInstances);
 	}
