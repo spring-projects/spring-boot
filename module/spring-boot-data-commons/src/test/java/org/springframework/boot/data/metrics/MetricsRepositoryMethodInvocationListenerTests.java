@@ -90,6 +90,7 @@ class MetricsRepositoryMethodInvocationListenerTests {
 
 	private RepositoryMethodInvocation createInvocation(Class<?> repositoryInterface) {
 		Method method = ReflectionUtils.findMethod(repositoryInterface, "findById", long.class);
+		assertThat(method).isNotNull();
 		RepositoryMethodInvocationResult result = mock(RepositoryMethodInvocationResult.class);
 		given(result.getState()).willReturn(State.SUCCESS);
 		return new RepositoryMethodInvocation(repositoryInterface, method, result, 0);
