@@ -19,6 +19,7 @@ package org.springframework.boot.data.cassandra.autoconfigure;
 import java.util.Collections;
 
 import com.datastax.oss.driver.api.core.CqlSession;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -144,7 +145,7 @@ class DataCassandraAutoConfigurationTests {
 	static class MyConverter implements Converter<Person, String> {
 
 		@Override
-		public String convert(Person o) {
+		public @Nullable String convert(Person o) {
 			return null;
 		}
 
