@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docker.compose.service.connection.neo4j;
 
-import org.junit.jupiter.api.Disabled;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -42,7 +41,6 @@ class Neo4jDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@DockerComposeTest(composeFile = "neo4j-bitnami-compose.yaml", image = TestImage.BITNAMI_NEO4J)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
 	void runWithBitnamiImageCreatesConnectionDetailsThatCanAccessNeo4j(Neo4jConnectionDetails connectionDetails) {
 		assertConnectionDetailsWithPassword(connectionDetails, "bitnami2");
 	}

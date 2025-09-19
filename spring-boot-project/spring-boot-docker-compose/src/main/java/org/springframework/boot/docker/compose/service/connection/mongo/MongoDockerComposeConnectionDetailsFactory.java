@@ -34,7 +34,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  */
 class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<MongoConnectionDetails> {
 
-	private static final String[] MONGODB_CONTAINER_NAMES = { "mongo", "bitnami/mongodb" };
+	private static final String[] MONGODB_CONTAINER_NAMES = { "mongo", "bitnami/mongodb", "bitnamilegacy/mongodb" };
 
 	private static final int MONGODB_PORT = 27017;
 

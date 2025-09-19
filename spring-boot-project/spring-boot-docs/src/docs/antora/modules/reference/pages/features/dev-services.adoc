@@ -90,25 +90,25 @@ The following service connections are currently supported:
 | Containers named "apache/activemq-artemis"
 
 | javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
-| Containers named "cassandra" or "bitnami/cassandra"
+| Containers named "cassandra", "bitnami/cassandra" or "bitnamilegacy/cassandra"
 
 | javadoc:org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails[]
-| Containers named "elasticsearch" or "bitnami/elasticsearch"
+| Containers named "elasticsearch", "bitnami/elasticsearch" or "bitnamilegacy/elasticsearch"
 
 | javadoc:org.springframework.boot.autoconfigure.hazelcast.HazelcastConnectionDetails[]
 | Containers named "hazelcast/hazelcast".
 
 | javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[]
-| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "bitnamilegacy/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "bitnamilegacy/mariadb", "mssql/server", "mysql", "bitnami/mysql", "bitnamilegacy/mysql", "postgres", "bitnami/postgresql" or "bitnamilegacy/postgresql"
 
 | javadoc:org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails[]
 | Containers named "osixia/openldap", "lldap/lldap"
 
 | javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]
-| Containers named "mongo" or "bitnami/mongodb"
+| Containers named "mongo", "bitnami/mongodb" or "bitnamilegacy/mongodb"
 
 | javadoc:org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails[]
-| Containers named "neo4j" or "bitnami/neo4j"
+| Containers named "neo4j", "bitnami/neo4j" or "bitnamilegacy/neo4j"
 
 | javadoc:org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
@@ -123,13 +123,13 @@ The following service connections are currently supported:
 | Containers named "apachepulsar/pulsar"
 
 | javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[]
-| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "bitnamilegacy/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "bitnamilegacy/mariadb", "mssql/server", "mysql", "bitnami/mysql", "bitnamilegacy/mysql", "postgres", "bitnami/postgresql" or "bitnamilegacy/postgresql"
 
 | javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
-| Containers named "rabbitmq" or "bitnami/rabbitmq"
+| Containers named "rabbitmq", "bitnami/rabbitmq" or "bitnamilegacy/rabbitmq"
 
 | javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[]
-| Containers named "redis", "bitnami/redis", "redis/redis-stack" or "redis/redis-stack-server"
+| Containers named "redis", "bitnami/redis", "bitnamilegacy/redis", "redis/redis-stack" or "redis/redis-stack-server"
 
 | javadoc:org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails[]
 | Containers named "openzipkin/zipkin".

@@ -35,7 +35,8 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class RabbitDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<RabbitConnectionDetails> {
 
-	private static final String[] RABBITMQ_CONTAINER_NAMES = { "rabbitmq", "bitnami/rabbitmq" };
+	private static final String[] RABBITMQ_CONTAINER_NAMES = { "rabbitmq", "bitnami/rabbitmq",
+			"bitnamilegacy/rabbitmq" };
 
 	private static final int RABBITMQ_PORT = 5672;
 

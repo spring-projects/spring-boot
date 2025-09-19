@@ -16,8 +16,6 @@
 
 package org.springframework.boot.docker.compose.service.connection.rabbit;
 
-import org.junit.jupiter.api.Disabled;
-
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
@@ -41,7 +39,6 @@ class RabbitDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@DockerComposeTest(composeFile = "rabbit-bitnami-compose.yaml", image = TestImage.BITNAMI_RABBITMQ)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
 	void runWithBitnamiImageCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 	}

@@ -34,7 +34,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  */
 class Neo4jDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<Neo4jConnectionDetails> {
 
-	private static final String[] NEO4J_CONTAINER_NAMES = { "neo4j", "bitnami/neo4j" };
+	private static final String[] NEO4J_CONTAINER_NAMES = { "neo4j", "bitnami/neo4j", "bitnamilegacy/neo4j" };
 
 	Neo4jDockerComposeConnectionDetailsFactory() {
 		super(NEO4J_CONTAINER_NAMES);

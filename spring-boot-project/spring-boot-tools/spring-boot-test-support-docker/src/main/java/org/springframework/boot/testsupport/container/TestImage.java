@@ -269,52 +269,52 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Cassandra via Bitnami.
 	 */
-	BITNAMI_CASSANDRA("bitnami/cassandra", "4.1.3"),
+	BITNAMI_CASSANDRA("bitnamilegacy/cassandra", "4.1.3"),
 
 	/**
 	 * A container image suitable for testing ClickHouse via Bitnami.
 	 */
-	BITNAMI_CLICKHOUSE("bitnami/clickhouse", "24.3"),
+	BITNAMI_CLICKHOUSE("bitnamilegacy/clickhouse", "24.3"),
 
 	/**
 	 * A container image suitable for testing Elasticsearch via Bitnami.
 	 */
-	BITNAMI_ELASTICSEARCH("bitnami/elasticsearch", "8.12.1"),
+	BITNAMI_ELASTICSEARCH("bitnamilegacy/elasticsearch", "8.12.1"),
 
 	/**
 	 * A container image suitable for testing MariaDB via Bitnami.
 	 */
-	BITNAMI_MARIADB("bitnami/mariadb", "11.2.3"),
+	BITNAMI_MARIADB("bitnamilegacy/mariadb", "11.2.3"),
 
 	/**
 	 * A container image suitable for testing MongoDB via Bitnami.
 	 */
-	BITNAMI_MONGODB("bitnami/mongodb", "7.0.5"),
+	BITNAMI_MONGODB("bitnamilegacy/mongodb", "7.0.5"),
 
 	/**
 	 * A container image suitable for testing MySQL via Bitnami.
 	 */
-	BITNAMI_MYSQL("bitnami/mysql", "8.0.36"),
+	BITNAMI_MYSQL("bitnamilegacy/mysql", "8.0.36"),
 
 	/**
 	 * A container image suitable for testing Neo4j via Bitnami.
 	 */
-	BITNAMI_NEO4J("bitnami/neo4j", "5.16.0"),
+	BITNAMI_NEO4J("bitnamilegacy/neo4j", "5.16.0"),
 
 	/**
 	 * A container image suitable for testing Postgres via Bitnami.
 	 */
-	BITNAMI_POSTGRESQL("bitnami/postgresql", "16.2.0"),
+	BITNAMI_POSTGRESQL("bitnamilegacy/postgresql", "16.2.0"),
 
 	/**
 	 * A container image suitable for testing RabbitMQ via Bitnami.
 	 */
-	BITNAMI_RABBITMQ("bitnami/rabbitmq", "3.11.28"),
+	BITNAMI_RABBITMQ("bitnamilegacy/rabbitmq", "3.11.28"),
 
 	/**
 	 * A container image suitable for testing Redis via Bitnami.
 	 */
-	BITNAMI_REDIS("bitnami/redis", "7.2.4");
+	BITNAMI_REDIS("bitnamilegacy/redis", "7.2.4");
 
 	private final String name;
 

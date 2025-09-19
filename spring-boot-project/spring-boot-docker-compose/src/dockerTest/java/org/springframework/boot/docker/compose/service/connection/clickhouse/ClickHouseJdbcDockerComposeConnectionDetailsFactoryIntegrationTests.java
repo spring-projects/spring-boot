@@ -18,8 +18,6 @@ package org.springframework.boot.docker.compose.service.connection.clickhouse;
 
 import java.sql.Driver;
 
-import org.junit.jupiter.api.Disabled;
-
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -44,7 +42,6 @@ class ClickHouseJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@DockerComposeTest(composeFile = "clickhouse-bitnami-compose.yaml", image = TestImage.BITNAMI_CLICKHOUSE)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
 	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 		// See https://github.com/bitnami/containers/issues/73550

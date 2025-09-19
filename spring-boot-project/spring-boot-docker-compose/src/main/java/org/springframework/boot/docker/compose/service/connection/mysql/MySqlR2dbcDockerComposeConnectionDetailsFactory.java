@@ -36,7 +36,7 @@ import org.springframework.boot.docker.compose.service.connection.r2dbc.Connecti
 class MySqlR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	private static final String[] MYSQL_CONTAINER_NAMES = { "mysql", "bitnami/mysql" };
+	private static final String[] MYSQL_CONTAINER_NAMES = { "mysql", "bitnami/mysql", "bitnamilegacy/mysql" };
 
 	MySqlR2dbcDockerComposeConnectionDetailsFactory() {
 		super(MYSQL_CONTAINER_NAMES, "io.r2dbc.spi.ConnectionFactoryOptions");
