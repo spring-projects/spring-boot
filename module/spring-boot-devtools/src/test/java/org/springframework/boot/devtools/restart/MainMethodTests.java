@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.lang.reflect.Method;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +46,7 @@ class MainMethodTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void threadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MainMethod(null))
 			.withMessageContaining("'thread' must not be null");
@@ -90,9 +92,9 @@ class MainMethodTests {
 
 		private final Runnable runnable;
 
-		private Exception exception;
+		private @Nullable Exception exception;
 
-		private MainMethod mainMethod;
+		private @Nullable MainMethod mainMethod;
 
 		TestThread(Runnable runnable) {
 			this.runnable = runnable;
@@ -104,7 +106,9 @@ class MainMethodTests {
 			if (this.exception != null) {
 				ReflectionUtils.rethrowRuntimeException(this.exception);
 			}
-			return this.mainMethod;
+			MainMethod mainMethod = this.mainMethod;
+			assertThat(mainMethod).isNotNull();
+			return mainMethod;
 		}
 
 		@Override

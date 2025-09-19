@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class DirectorySnapshotTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	private File directory;
@@ -51,6 +52,7 @@ class DirectorySnapshotTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void directoryMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DirectorySnapshot(null))
 			.withMessageContaining("'directory' must not be null");
@@ -101,6 +103,7 @@ class DirectorySnapshotTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getChangedFilesSnapshotMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
 			.withMessageContaining("'snapshot' must not be null");
@@ -142,7 +145,7 @@ class DirectorySnapshotTests {
 				return changedFile;
 			}
 		}
-		return null;
+		throw new AssertionError("File '%s' not found".formatted(file));
 	}
 
 	private File createTestDirectoryStructure() throws IOException {

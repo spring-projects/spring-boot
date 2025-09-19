@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -65,6 +66,7 @@ class ClassPathChangeUploaderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void urlMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
 			.withMessageContaining("'url' must not be empty");
@@ -77,6 +79,7 @@ class ClassPathChangeUploaderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ClassPathChangeUploader("http://localhost:8080", null))
@@ -124,7 +127,7 @@ class ClassPathChangeUploaderTests {
 		assertThat(classFiles.hasNext()).isFalse();
 	}
 
-	private void assertClassFile(ClassLoaderFile file, String content, Kind kind) {
+	private void assertClassFile(ClassLoaderFile file, @Nullable String content, Kind kind) {
 		assertThat(file.getContents()).isEqualTo((content != null) ? content.getBytes() : null);
 		assertThat(file.getKind()).isEqualTo(kind);
 	}

@@ -118,3 +118,12 @@ tasks.register("syncIntTestDependencies", Sync) {
 intTest {
 	dependsOn syncIntTestDependencies
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileIntTestJava") {
+	options.nullability.checking = "tests"
+}
+

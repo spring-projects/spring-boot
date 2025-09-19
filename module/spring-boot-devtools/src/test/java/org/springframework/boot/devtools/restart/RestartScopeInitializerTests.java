@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.restart;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
@@ -37,9 +38,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class RestartScopeInitializerTests {
 
-	private static AtomicInteger createCount;
+	private static @Nullable AtomicInteger createCount;
 
-	private static AtomicInteger refreshCount;
+	private static @Nullable AtomicInteger refreshCount;
 
 	@Test
 	void restartScope() {
@@ -73,11 +74,13 @@ class RestartScopeInitializerTests {
 	static class ScopeTestBean implements ApplicationListener<ContextRefreshedEvent> {
 
 		ScopeTestBean() {
+			assertThat(createCount).isNotNull();
 			createCount.incrementAndGet();
 		}
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
+			assertThat(refreshCount).isNotNull();
 			refreshCount.incrementAndGet();
 		}
 

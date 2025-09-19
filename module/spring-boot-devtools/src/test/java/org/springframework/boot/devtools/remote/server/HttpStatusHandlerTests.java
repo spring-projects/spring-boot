@@ -54,6 +54,7 @@ class HttpStatusHandlerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void statusMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpStatusHandler(null))
 			.withMessageContaining("'status' must not be null");
