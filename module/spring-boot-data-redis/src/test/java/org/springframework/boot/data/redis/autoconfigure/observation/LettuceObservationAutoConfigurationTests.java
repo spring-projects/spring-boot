@@ -45,6 +45,7 @@ class LettuceObservationAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(DataRedisAutoConfiguration.class))
 			.run((context) -> {
 				ClientResources clientResources = context.getBean(LettuceConnectionFactory.class).getClientResources();
+				assertThat(clientResources).isNotNull();
 				assertThat(clientResources.tracing()).isInstanceOf(MicrometerTracing.class);
 			});
 
@@ -54,6 +55,7 @@ class LettuceObservationAutoConfigurationTests {
 	void whenThereIsNoObservationRegistryThenClientResourcesCustomizationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataRedisAutoConfiguration.class)).run((context) -> {
 			ClientResources clientResources = context.getBean(LettuceConnectionFactory.class).getClientResources();
+			assertThat(clientResources).isNotNull();
 			assertThat(clientResources.tracing()).isNotInstanceOf(MicrometerTracing.class);
 		});
 	}

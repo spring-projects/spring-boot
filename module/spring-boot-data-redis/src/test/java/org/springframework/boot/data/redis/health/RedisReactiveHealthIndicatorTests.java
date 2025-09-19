@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Properties;
 
 import io.lettuce.core.RedisConnectionException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -142,7 +143,7 @@ class RedisReactiveHealthIndicatorTests {
 		return new DataRedisReactiveHealthIndicator(redisConnectionFactory);
 	}
 
-	private ReactiveRedisConnectionFactory createClusterConnectionFactory(String state) {
+	private ReactiveRedisConnectionFactory createClusterConnectionFactory(@Nullable String state) {
 		Properties clusterProperties = new Properties();
 		if (state != null) {
 			clusterProperties.setProperty("cluster_state", state);

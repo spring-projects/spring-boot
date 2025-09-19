@@ -21,7 +21,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails.Cluster;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails.MasterReplica;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails.Node;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails.Sentinel;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
 
@@ -144,8 +147,10 @@ class PropertiesRedisConnectionDetailsTests {
 		DataRedisProperties.Cluster cluster = new DataRedisProperties.Cluster();
 		cluster.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setCluster(cluster);
-		assertThat(this.connectionDetails.getCluster().getNodes()).containsExactly(new Node("localhost", 1111),
-				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
+		Cluster actualCluster = this.connectionDetails.getCluster();
+		assertThat(actualCluster).isNotNull();
+		assertThat(actualCluster.getNodes()).containsExactly(new Node("localhost", 1111), new Node("127.0.0.1", 2222),
+				new Node("[::1]", 3333));
 	}
 
 	@Test
@@ -153,7 +158,9 @@ class PropertiesRedisConnectionDetailsTests {
 		DataRedisProperties.Masterreplica masterReplica = new DataRedisProperties.Masterreplica();
 		masterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setMasterreplica(masterReplica);
-		assertThat(this.connectionDetails.getMasterReplica().getNodes()).containsExactly(new Node("localhost", 1111),
+		MasterReplica actualMasterReplica = this.connectionDetails.getMasterReplica();
+		assertThat(actualMasterReplica).isNotNull();
+		assertThat(actualMasterReplica.getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
 	}
 
@@ -165,9 +172,11 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setDatabase(5);
 		PropertiesDataRedisConnectionDetails connectionDetails = new PropertiesDataRedisConnectionDetails(
 				this.properties, null);
-		assertThat(connectionDetails.getSentinel().getNodes()).containsExactly(new Node("localhost", 1111),
-				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
-		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(5);
+		Sentinel actualSentinel = connectionDetails.getSentinel();
+		assertThat(actualSentinel).isNotNull();
+		assertThat(actualSentinel.getNodes()).containsExactly(new Node("localhost", 1111), new Node("127.0.0.1", 2222),
+				new Node("[::1]", 3333));
+		assertThat(actualSentinel.getDatabase()).isEqualTo(5);
 	}
 
 	@Test
@@ -179,7 +188,9 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setDatabase(5);
 		PropertiesDataRedisConnectionDetails connectionDetails = new PropertiesDataRedisConnectionDetails(
 				this.properties, null);
-		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(9999);
+		Sentinel actualSentinel = connectionDetails.getSentinel();
+		assertThat(actualSentinel).isNotNull();
+		assertThat(actualSentinel.getDatabase()).isEqualTo(9999);
 	}
 
 	@Test
