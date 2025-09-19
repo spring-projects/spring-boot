@@ -26,6 +26,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.gridfs.GridFSBucket;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -84,13 +85,11 @@ class DataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void whenGridFsDatabaseIsConfiguredThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.database:grid").run((context) -> {
 			assertThat(context).hasSingleBean(GridFsTemplate.class);
 			GridFsTemplate template = context.getBean(GridFsTemplate.class);
-			GridFSBucket bucket = ((Supplier<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
-				.get();
+			GridFSBucket bucket = getBucket(template);
 			assertThat(bucket).extracting("filesCollection", InstanceOfAssertFactories.type(MongoCollection.class))
 				.extracting((collection) -> collection.getNamespace().getDatabaseName())
 				.isEqualTo("grid");
@@ -98,13 +97,11 @@ class DataMongoAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void whenGridFsBucketIsConfiguredThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
 			assertThat(context).hasSingleBean(GridFsTemplate.class);
 			GridFsTemplate template = context.getBean(GridFsTemplate.class);
-			GridFSBucket bucket = ((Supplier<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
-				.get();
+			GridFSBucket bucket = getBucket(template);
 			assertThat(bucket.getBucketName()).isEqualTo("test-bucket");
 		});
 	}
@@ -169,8 +166,7 @@ class DataMongoAutoConfigurationTests {
 	void defaultFieldNamingStrategy() {
 		this.contextRunner.run((context) -> {
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
-			FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils.getField(mappingContext,
-					"fieldNamingStrategy");
+			FieldNamingStrategy fieldNamingStrategy = getFieldNamingStrategy(mappingContext);
 			assertThat(fieldNamingStrategy.getClass()).isEqualTo(PropertyNameFieldNamingStrategy.class);
 		});
 	}
@@ -182,8 +178,7 @@ class DataMongoAutoConfigurationTests {
 					+ CamelCaseAbbreviatingFieldNamingStrategy.class.getName())
 			.run((context) -> {
 				MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
-				FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
-					.getField(mappingContext, "fieldNamingStrategy");
+				FieldNamingStrategy fieldNamingStrategy = getFieldNamingStrategy(mappingContext);
 				assertThat(fieldNamingStrategy.getClass()).isEqualTo(CamelCaseAbbreviatingFieldNamingStrategy.class);
 			});
 	}
@@ -216,6 +211,7 @@ class DataMongoAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
 			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes).isNotNull();
 			assertThat(managedTypes.toList()).containsOnly(City.class, Country.class);
 		});
 
@@ -226,7 +222,9 @@ class DataMongoAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
 			MongoPersistentEntity<?> entity = mappingContext.getPersistentEntity(Sample.class);
+			assertThat(entity).isNotNull();
 			MongoPersistentProperty dateProperty = entity.getPersistentProperty("date");
+			assertThat(dateProperty).isNotNull();
 			assertThat(dateProperty.isEntity()).isFalse();
 		});
 
@@ -346,7 +344,22 @@ class DataMongoAutoConfigurationTests {
 
 	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext, Class<?>... types) {
 		ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+		assertThat(managedTypes).isNotNull();
 		assertThat(managedTypes.toList()).containsOnly(types);
+	}
+
+	@SuppressWarnings("unchecked")
+	private GridFSBucket getBucket(GridFsTemplate template) {
+		Supplier<GridFSBucket> field = (Supplier<GridFSBucket>) ReflectionTestUtils.getField(template,
+				"bucketSupplier");
+		assertThat(field).isNotNull();
+		return field.get();
+	}
+
+	private FieldNamingStrategy getFieldNamingStrategy(MongoMappingContext mappingContext) {
+		Object field = ReflectionTestUtils.getField(mappingContext, "fieldNamingStrategy");
+		assertThat(field).isNotNull();
+		return (FieldNamingStrategy) field;
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -388,7 +401,7 @@ class DataMongoAutoConfigurationTests {
 	static class MyConverter implements Converter<MongoClient, Boolean> {
 
 		@Override
-		public Boolean convert(MongoClient source) {
+		public @Nullable Boolean convert(MongoClient source) {
 			return null;
 		}
 
@@ -396,7 +409,7 @@ class DataMongoAutoConfigurationTests {
 
 	static class Sample {
 
-		LocalDateTime date;
+		@Nullable LocalDateTime date;
 
 	}
 

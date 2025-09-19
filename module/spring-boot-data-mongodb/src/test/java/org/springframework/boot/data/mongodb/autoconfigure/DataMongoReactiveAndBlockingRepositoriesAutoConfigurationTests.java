@@ -19,6 +19,7 @@ package org.springframework.boot.data.mongodb.autoconfigure;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,11 +47,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DataMongoReactiveAndBlockingRepositoriesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void close() {
-		this.context.close();
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test

@@ -55,6 +55,7 @@ class DataMongoRepositoriesAutoConfigurationTests {
 			assertThat(context).hasSingleBean(MongoClient.class);
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
 			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes).isNotNull();
 			assertThat(managedTypes.toList()).hasSize(1);
 		});
 	}

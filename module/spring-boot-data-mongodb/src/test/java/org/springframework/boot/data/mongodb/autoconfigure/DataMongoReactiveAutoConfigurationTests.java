@@ -19,6 +19,7 @@ package org.springframework.boot.data.mongodb.autoconfigure;
 import java.time.Duration;
 
 import com.mongodb.reactivestreams.client.MongoCollection;
+import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -76,8 +77,10 @@ class DataMongoReactiveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
 			assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
 			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-			GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
-				.block(Duration.ofSeconds(30));
+			Mono<GridFSBucket> field = (Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier");
+			assertThat(field).isNotNull();
+			GridFSBucket bucket = field.block(Duration.ofSeconds(30));
+			assertThat(bucket).isNotNull();
 			assertThat(bucket.getBucketName()).isEqualTo("test-bucket");
 		});
 	}
@@ -94,7 +97,9 @@ class DataMongoReactiveAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
 			assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
-			assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("test");
+			MongoDatabase mongoDatabase = factory.getMongoDatabase().block();
+			assertThat(mongoDatabase).isNotNull();
+			assertThat(mongoDatabase.getName()).isEqualTo("test");
 		});
 	}
 
@@ -103,7 +108,9 @@ class DataMongoReactiveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.mongodb.database=mydb").run((context) -> {
 			ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
 			assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
-			assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("mydb");
+			MongoDatabase mongoDatabase = factory.getMongoDatabase().block();
+			assertThat(mongoDatabase).isNotNull();
+			assertThat(mongoDatabase.getName()).isEqualTo("mydb");
 		});
 	}
 
@@ -112,7 +119,9 @@ class DataMongoReactiveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.mongodb.uri=mongodb://mongo.example.com/mydb").run((context) -> {
 			ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
 			assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
-			assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("mydb");
+			MongoDatabase mongoDatabase = factory.getMongoDatabase().block();
+			assertThat(mongoDatabase).isNotNull();
+			assertThat(mongoDatabase.getName()).isEqualTo("mydb");
 		});
 	}
 
@@ -124,7 +133,9 @@ class DataMongoReactiveAutoConfigurationTests {
 			.run((context) -> {
 				ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
 				assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
-				assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("mydb");
+				MongoDatabase mongoDatabase = factory.getMongoDatabase().block();
+				assertThat(mongoDatabase).isNotNull();
+				assertThat(mongoDatabase.getName()).isEqualTo("mydb");
 			});
 	}
 
@@ -135,7 +146,9 @@ class DataMongoReactiveAutoConfigurationTests {
 			.run((context) -> {
 				ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
 				assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
-				assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("mydb");
+				MongoDatabase mongoDatabase = factory.getMongoDatabase().block();
+				assertThat(mongoDatabase).isNotNull();
+				assertThat(mongoDatabase.getName()).isEqualTo("mydb");
 			});
 	}
 
@@ -157,9 +170,12 @@ class DataMongoReactiveAutoConfigurationTests {
 	private String grisFsTemplateDatabaseName(AssertableApplicationContext context) {
 		assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
 		ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-		GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
-			.block(Duration.ofSeconds(30));
+		Mono<GridFSBucket> field = (Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier");
+		assertThat(field).isNotNull();
+		GridFSBucket bucket = field.block(Duration.ofSeconds(30));
+		assertThat(bucket).isNotNull();
 		MongoCollection<?> collection = (MongoCollection<?>) ReflectionTestUtils.getField(bucket, "filesCollection");
+		assertThat(collection).isNotNull();
 		return collection.getNamespace().getDatabaseName();
 	}
 

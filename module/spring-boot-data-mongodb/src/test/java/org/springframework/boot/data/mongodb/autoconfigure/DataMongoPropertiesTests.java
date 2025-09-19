@@ -51,8 +51,9 @@ class DataMongoPropertiesTests {
 	}
 
 	private BigDecimalRepresentation springDataDefaultBigDecimalRepresentation() {
-		return (BigDecimalRepresentation) ReflectionTestUtils.getField(new MongoConverterConfigurationAdapter(),
-				"bigDecimals");
+		Object field = ReflectionTestUtils.getField(new MongoConverterConfigurationAdapter(), "bigDecimals");
+		assertThat(field).isNotNull();
+		return (BigDecimalRepresentation) field;
 	}
 
 }
