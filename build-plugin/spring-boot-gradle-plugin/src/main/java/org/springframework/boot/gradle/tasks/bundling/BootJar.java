@@ -148,8 +148,7 @@ public abstract class BootJar extends Jar implements BootArchive {
 			layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
 		}
 		String jarmodeToolsLocation = isIncludeJarmodeTools() ? LIB_DIRECTORY : null;
-		return this.support.createCopyAction(this, this.resolvedDependencies, true, layerResolver,
-				jarmodeToolsLocation);
+		return this.support.createCopyAction(this, this.resolvedDependencies, layerResolver, jarmodeToolsLocation);
 	}
 
 	private boolean isIncludeJarmodeTools() {
