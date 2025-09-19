@@ -126,6 +126,7 @@ class DataJdbcRepositoriesAutoConfigurationTests {
 			.run((context) -> {
 				JdbcMappingContext mappingContext = context.getBean(JdbcMappingContext.class);
 				ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+				assertThat(managedTypes).isNotNull();
 				assertThat(managedTypes.toList()).containsOnly(City.class);
 			});
 	}
