@@ -49,7 +49,7 @@ import org.springframework.util.ClassUtils;
  * {@link ApplicationContext} and/or custom {@link ImportSelector} implementations.
  * <p>
  * This class is primarily intended for use with tests that need to specify configuration
- * classes but can't use {@link org.springframework.test.context.junit4.SpringRunner}.
+ * classes.
  * <p>
  * Implementations of this class should be annotated with {@link Order @Order} or
  * implement {@link Ordered}.
