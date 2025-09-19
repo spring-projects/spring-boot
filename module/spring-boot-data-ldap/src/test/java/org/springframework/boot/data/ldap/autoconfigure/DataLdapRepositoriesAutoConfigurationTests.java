@@ -16,6 +16,7 @@
 
 package org.springframework.boot.data.ldap.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,31 +40,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DataLdapRepositoriesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void close() {
-		if (this.context != null) {
-			this.context.close();
+		if (getContext() != null) {
+			getContext().close();
 		}
 	}
 
 	@Test
 	void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
-		assertThat(this.context.getBean(PersonRepository.class)).isNotNull();
+		assertThat(getContext().getBean(PersonRepository.class)).isNotNull();
 	}
 
 	@Test
 	void testNoRepositoryConfiguration() {
 		load(EmptyConfiguration.class);
-		assertThat(this.context.getBeanNamesForType(PersonRepository.class)).isEmpty();
+		assertThat(getContext().getBeanNamesForType(PersonRepository.class)).isEmpty();
 	}
 
 	@Test
 	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(CustomizedConfiguration.class);
-		assertThat(this.context.getBean(PersonRepository.class)).isNotNull();
+		assertThat(getContext().getBean(PersonRepository.class)).isNotNull();
 	}
 
 	private void load(Class<?>... configurationClasses) {
@@ -73,6 +74,12 @@ class DataLdapRepositoriesAutoConfigurationTests {
 		this.context.register(LdapAutoConfiguration.class, DataLdapRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+	}
+
+	private AnnotationConfigApplicationContext getContext() {
+		AnnotationConfigApplicationContext context = this.context;
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	@Configuration(proxyBeanMethods = false)
