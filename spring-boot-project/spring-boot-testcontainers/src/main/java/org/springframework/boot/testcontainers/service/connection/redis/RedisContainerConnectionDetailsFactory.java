@@ -41,8 +41,8 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 class RedisContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<Container<?>, RedisConnectionDetails> {
 
-	private static final List<String> REDIS_IMAGE_NAMES = List.of("redis", "bitnami/redis", "redis/redis-stack",
-			"redis/redis-stack-server");
+	private static final List<String> REDIS_IMAGE_NAMES = List.of("redis", "bitnami/redis", "bitnamilegacy/redis",
+			"redis/redis-stack", "redis/redis-stack-server");
 
 	private static final int REDIS_PORT = 6379;
 

@@ -36,7 +36,8 @@ import org.springframework.boot.docker.compose.service.connection.r2dbc.Connecti
 class PostgresR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	private static final String[] POSTGRES_CONTAINER_NAMES = { "postgres", "bitnami/postgresql" };
+	private static final String[] POSTGRES_CONTAINER_NAMES = { "postgres", "bitnami/postgresql",
+			"bitnamilegacy/postgresql" };
 
 	PostgresR2dbcDockerComposeConnectionDetailsFactory() {
 		super(POSTGRES_CONTAINER_NAMES, "io.r2dbc.spi.ConnectionFactoryOptions");

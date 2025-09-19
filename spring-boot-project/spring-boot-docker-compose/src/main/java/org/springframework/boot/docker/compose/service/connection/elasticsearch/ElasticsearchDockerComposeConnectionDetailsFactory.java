@@ -36,7 +36,8 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class ElasticsearchDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<ElasticsearchConnectionDetails> {
 
-	private static final String[] ELASTICSEARCH_CONTAINER_NAMES = { "elasticsearch", "bitnami/elasticsearch" };
+	private static final String[] ELASTICSEARCH_CONTAINER_NAMES = { "elasticsearch", "bitnami/elasticsearch",
+			"bitnamilegacy/elasticsearch" };
 
 	private static final int ELASTICSEARCH_PORT = 9200;
 

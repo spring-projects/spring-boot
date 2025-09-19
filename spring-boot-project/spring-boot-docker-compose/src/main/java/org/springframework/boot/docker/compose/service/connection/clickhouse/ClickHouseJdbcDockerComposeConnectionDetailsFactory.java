@@ -31,7 +31,8 @@ import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBu
 class ClickHouseJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final String[] CLICKHOUSE_CONTAINER_NAMES = { "clickhouse/clickhouse-server", "bitnami/clickhouse" };
+	private static final String[] CLICKHOUSE_CONTAINER_NAMES = { "clickhouse/clickhouse-server", "bitnami/clickhouse",
+			"bitnamilegacy/clickhouse" };
 
 	protected ClickHouseJdbcDockerComposeConnectionDetailsFactory() {
 		super(CLICKHOUSE_CONTAINER_NAMES);

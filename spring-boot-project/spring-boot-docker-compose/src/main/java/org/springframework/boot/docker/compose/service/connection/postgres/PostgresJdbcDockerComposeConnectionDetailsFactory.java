@@ -34,7 +34,8 @@ import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBu
 class PostgresJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final String[] POSTGRES_CONTAINER_NAMES = { "postgres", "bitnami/postgresql" };
+	private static final String[] POSTGRES_CONTAINER_NAMES = { "postgres", "bitnami/postgresql",
+			"bitnamilegacy/postgresql" };
 
 	protected PostgresJdbcDockerComposeConnectionDetailsFactory() {
 		super(POSTGRES_CONTAINER_NAMES);

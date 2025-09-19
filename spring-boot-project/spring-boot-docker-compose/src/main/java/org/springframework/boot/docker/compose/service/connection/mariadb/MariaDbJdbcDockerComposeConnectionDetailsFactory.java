@@ -34,7 +34,7 @@ import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBu
 class MariaDbJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final String[] MARIADB_CONTAINER_NAMES = { "mariadb", "bitnami/mariadb" };
+	private static final String[] MARIADB_CONTAINER_NAMES = { "mariadb", "bitnami/mariadb", "bitnamilegacy/mariadb" };
 
 	protected MariaDbJdbcDockerComposeConnectionDetailsFactory() {
 		super(MARIADB_CONTAINER_NAMES);

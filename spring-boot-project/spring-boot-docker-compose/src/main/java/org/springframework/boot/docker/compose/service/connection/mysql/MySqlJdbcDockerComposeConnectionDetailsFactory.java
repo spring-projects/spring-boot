@@ -34,7 +34,7 @@ import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBu
 class MySqlJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final String[] MYSQL_CONTAINER_NAMES = { "mysql", "bitnami/mysql" };
+	private static final String[] MYSQL_CONTAINER_NAMES = { "mysql", "bitnami/mysql", "bitnamilegacy/mysql" };
 
 	protected MySqlJdbcDockerComposeConnectionDetailsFactory() {
 		super(MYSQL_CONTAINER_NAMES);
