@@ -63,6 +63,9 @@ import org.springframework.web.client.RestTemplate;
  * If you are testing a bean that doesn't use {@link RestTemplateBuilder} but instead
  * injects a {@link RestTemplate} directly, you can add
  * {@code @AutoConfigureWebClient(registerRestTemplate=true)}.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb

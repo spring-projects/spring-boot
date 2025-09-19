@@ -28,9 +28,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * JUnit {@link Extension} for tests that interact with Spring Boot's {@link Handler} for
- * {@code jar:} URLs. Ensures that the handler is registered prior to test execution and
- * cleans up the handler's root file cache afterwards.
+ * JUnit 5 {@link Extension} for tests that interact with Spring Boot's {@link Handler}
+ * for {@code jar:} URLs. Ensures that the handler is registered prior to test execution
+ * and cleans up the handler's root file cache afterwards.
  *
  * @author Andy Wilkinson
  */

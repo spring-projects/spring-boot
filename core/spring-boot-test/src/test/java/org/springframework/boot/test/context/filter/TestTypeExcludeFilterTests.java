@@ -40,7 +40,6 @@ class TestTypeExcludeFilterTests {
 	private final MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 
 	@Test
-	@Deprecated(since = "4.0.0")
 	void matchesJUnit4TestClass() throws Exception {
 		assertThat(this.filter.match(getMetadataReader(TestTypeExcludeFilterTests.class), this.metadataReaderFactory))
 			.isTrue();

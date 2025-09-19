@@ -89,7 +89,7 @@ include::partial$goals/process-aot.adoc[leveloffset=+1]
 [[aot.processing-tests]]
 == Processing Tests
 
-The AOT engine can be applied to JUnit tests that use Spring's Test Context Framework.
+The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
 Those tests are processed by the AOT engine and are then executed in a native image.
 
 Just like <<aot.processing-applications.using-the-native-profile,for production code>>, the `spring-boot-starter-parent` defines a `nativeTest` profile that can be used to streamline the steps required to execute your tests in a native image.
