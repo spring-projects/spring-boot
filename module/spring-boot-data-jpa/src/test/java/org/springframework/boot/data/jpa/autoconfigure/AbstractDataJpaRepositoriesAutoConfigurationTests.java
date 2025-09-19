@@ -149,7 +149,9 @@ abstract class AbstractDataJpaRepositoriesAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	private Map<Metamodel, JpaMetamodel> jpaMetamodelCache() {
-		return (Map<Metamodel, JpaMetamodel>) ReflectionTestUtils.getField(JpaMetamodel.class, "CACHE");
+		Object field = ReflectionTestUtils.getField(JpaMetamodel.class, "CACHE");
+		assertThat(field).isNotNull();
+		return (Map<Metamodel, JpaMetamodel>) field;
 	}
 
 	@Configuration(proxyBeanMethods = false)
