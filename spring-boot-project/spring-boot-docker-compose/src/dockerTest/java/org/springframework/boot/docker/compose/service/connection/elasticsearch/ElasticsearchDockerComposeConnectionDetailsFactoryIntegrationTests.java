@@ -16,8 +16,6 @@
 
 package org.springframework.boot.docker.compose.service.connection.elasticsearch;
 
-import org.junit.jupiter.api.Disabled;
-
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
@@ -42,7 +40,6 @@ class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@DockerComposeTest(composeFile = "elasticsearch-bitnami-compose.yaml", image = TestImage.BITNAMI_ELASTICSEARCH)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
 	void runWithBitnamiImageCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 	}
