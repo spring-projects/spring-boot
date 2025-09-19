@@ -18,6 +18,7 @@ package org.springframework.boot.graphql.autoconfigure.servlet;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 
 import graphql.schema.idl.TypeRuntimeWiring;
 import org.assertj.core.api.ThrowingConsumer;
@@ -313,13 +314,13 @@ class GraphQlWebMvcAutoConfigurationTests {
 		@Bean
 		@Order(-1)
 		RouterFunction<?> before() {
-			return (r) -> null;
+			return (r) -> Optional.empty();
 		}
 
 		@Bean
 		@Order(1)
 		RouterFunction<?> after() {
-			return (r) -> null;
+			return (r) -> Optional.empty();
 		}
 
 	}

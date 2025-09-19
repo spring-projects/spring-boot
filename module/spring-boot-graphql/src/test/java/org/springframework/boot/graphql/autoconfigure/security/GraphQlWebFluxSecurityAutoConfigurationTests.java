@@ -153,8 +153,11 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher(BookService bookService) {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
-				.dataFetcher("bookById", (env) -> bookService.getBookdById(env.getArgument("id"))));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById", (env) -> {
+				String id = env.getArgument("id");
+				assertThat(id).isNotNull();
+				return bookService.getBookdById(id);
+			}));
 		}
 
 		@Bean

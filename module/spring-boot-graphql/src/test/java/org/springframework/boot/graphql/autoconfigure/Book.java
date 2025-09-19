@@ -26,15 +26,19 @@ import org.springframework.data.annotation.Id;
 public class Book {
 
 	@Id
+	@SuppressWarnings("NullAway.Init")
 	String id;
 
+	@SuppressWarnings("NullAway.Init")
 	String name;
 
+	@SuppressWarnings("NullAway.Init")
 	int pageCount;
 
+	@SuppressWarnings("NullAway.Init")
 	String author;
 
-	public Book() {
+	protected Book() {
 	}
 
 	public Book(String id, String name, int pageCount, String author) {
