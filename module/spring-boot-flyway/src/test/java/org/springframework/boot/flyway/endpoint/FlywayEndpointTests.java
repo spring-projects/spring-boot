@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
+import org.springframework.boot.flyway.endpoint.FlywayEndpoint.ContextFlywayBeansDescriptor;
 import org.springframework.boot.flyway.endpoint.FlywayEndpoint.FlywayDescriptor;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -50,11 +51,12 @@ class FlywayEndpointTests {
 	@Test
 	void flywayReportIsProduced() {
 		this.contextRunner.run((context) -> {
-			Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class)
+			ContextFlywayBeansDescriptor descriptor = context.getBean(FlywayEndpoint.class)
 				.flywayBeans()
 				.getContexts()
-				.get(context.getId())
-				.getFlywayBeans();
+				.get(context.getId());
+			assertThat(descriptor).isNotNull();
+			Map<String, FlywayDescriptor> flywayBeans = descriptor.getFlywayBeans();
 			assertThat(flywayBeans).hasSize(1);
 			assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(3);
 		});
@@ -68,11 +70,12 @@ class FlywayEndpointTests {
 				flyway.migrate();
 			})
 			.run((context) -> {
-				Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class)
+				ContextFlywayBeansDescriptor descriptor = context.getBean(FlywayEndpoint.class)
 					.flywayBeans()
 					.getContexts()
-					.get(context.getId())
-					.getFlywayBeans();
+					.get(context.getId());
+				assertThat(descriptor).isNotNull();
+				Map<String, FlywayDescriptor> flywayBeans = descriptor.getFlywayBeans();
 				assertThat(flywayBeans).hasSize(1);
 				assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(4);
 			});

@@ -43,6 +43,7 @@ import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.api.pattern.ValidatePattern;
+import org.flywaydb.core.internal.configuration.models.ResolvedEnvironment;
 import org.flywaydb.core.internal.license.FlywayEditionUpgradeRequiredException;
 import org.flywaydb.database.oracle.OracleConfigurationExtension;
 import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
@@ -393,7 +394,9 @@ class FlywayAutoConfigurationTests {
 				Flyway flyway = context.getBean(Flyway.class);
 				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) flyway.getConfiguration().getDataSource();
 				assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
-				assertThat(dataSource.getDriver().getClass().getName()).isEqualTo(driverClassName);
+				java.sql.Driver driver = dataSource.getDriver();
+				assertThat(driver).isNotNull();
+				assertThat(driver.getClass().getName()).isEqualTo(driverClassName);
 			});
 	}
 
@@ -737,10 +740,11 @@ class FlywayAutoConfigurationTests {
 			.withPropertyValues("spring.flyway.jdbc-properties.prop=value")
 			.run((context) -> {
 				Flyway flyway = context.getBean(Flyway.class);
-				assertThat(flyway.getConfiguration()
+				ResolvedEnvironment environment = flyway.getConfiguration()
 					.getCachedResolvedEnvironments()
-					.get(flyway.getConfiguration().getCurrentEnvironmentName())
-					.getJdbcProperties()).containsEntry("prop", "value");
+					.get(flyway.getConfiguration().getCurrentEnvironmentName());
+				assertThat(environment).isNotNull();
+				assertThat(environment.getJdbcProperties()).containsEntry("prop", "value");
 			});
 	}
 
@@ -1216,7 +1220,9 @@ class FlywayAutoConfigurationTests {
 
 		@Override
 		protected String getDatabaseName(DataSourceProperties properties) {
-			return properties.determineDatabaseName();
+			String result = properties.determineDatabaseName();
+			assertThat(result).isNotNull();
+			return result;
 		}
 
 	}
@@ -1356,18 +1362,23 @@ class FlywayAutoConfigurationTests {
 
 		@Id
 		@GeneratedValue
+		@SuppressWarnings("NullAway.Init")
 		private Long id;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String name;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String state;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String country;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String map;
 
 		protected City() {
