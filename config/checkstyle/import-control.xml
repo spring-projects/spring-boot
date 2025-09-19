@@ -17,7 +17,7 @@
 	<subpackage name="ansi">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>
-	<subpackage name="avilability">
+	<subpackage name="availability">
 		<disallow pkg="org.springframework.boot" exact-match="true"/>
 	</subpackage>
 	<subpackage name="bootstrap">
