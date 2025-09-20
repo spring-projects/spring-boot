@@ -50,6 +50,7 @@
 	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]smoke-test[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]smoke-test[\\/]spring-boot-smoke-test-testng[\\/]" checks="SpringJUnit5" />
+	<suppress files="[\\/]smoke-test[\\/]spring-boot-smoke-test-grpc[\\/]build[\\/]generated[\\/]sources[\\/]proto" checks=".*" />
 	<suppress files="[\\/]test-support[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]src[\\/]dockerTest[\\/]java[\\/]" checks="JavadocPackage" />
 	<suppress files="[\\/]src[\\/]dockerTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />

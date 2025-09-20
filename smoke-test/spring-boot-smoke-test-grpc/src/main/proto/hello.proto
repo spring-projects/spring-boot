@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "smoketest.grpc.proto";
+option java_outer_classname = "HelloWorldProto";
+
+// The greeting service definition.
+service Simple {
+    // Sends a greeting
+    rpc SayHello (HelloRequest) returns (HelloReply) {
+    }
+    rpc StreamHello(HelloRequest) returns (stream HelloReply) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+    string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+    string message = 1;
+}
