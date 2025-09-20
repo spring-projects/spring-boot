@@ -4,6 +4,7 @@ org.springframework.boot.test.autoconfigure.OnFailureConditionReportContextCusto
 org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory,\
+org.springframework.boot.test.autoconfigure.grpc.InProcessTransportContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory
 
@@ -14,3 +15,7 @@ org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerRese
 org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener
+
+# Application Context Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.test.autoconfigure.grpc.ServerPortInfoApplicationContextInitializer

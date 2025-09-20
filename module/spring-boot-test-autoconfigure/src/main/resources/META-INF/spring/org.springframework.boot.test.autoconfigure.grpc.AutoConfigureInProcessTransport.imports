@@ -1,0 +1,2 @@
+# AutoConfigureInProcessTransport auto-configuration imports
+org.springframework.boot.test.autoconfigure.grpc.InProcessTestAutoConfiguration
