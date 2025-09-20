@@ -24,6 +24,7 @@ plugins {
 
 description = "Spring Boot Test AutoConfigure"
 
+
 dependencies {
 	api(project(":core:spring-boot"))
 	api(project(":core:spring-boot-autoconfigure"))
@@ -46,6 +47,8 @@ dependencies {
 	optional(project(":module:spring-boot-flyway"))
 	optional(project(":module:spring-boot-graphql"))
 	optional(project(":module:spring-boot-groovy-templates"))
+	optional(project(":module:spring-boot-grpc-client"))
+	optional(project(":module:spring-boot-grpc-server"))
 	optional(project(":module:spring-boot-hateoas"))
 	optional(project(":module:spring-boot-http-converter"))
 	optional(project(":module:spring-boot-http-codec"))
@@ -101,6 +104,7 @@ dependencies {
 	optional("org.springframework.data:spring-data-r2dbc")
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.graphql:spring-graphql-test")
+	optional("org.springframework.grpc:spring-grpc-core")
 	optional("org.springframework.restdocs:spring-restdocs-mockmvc")
 	optional("org.springframework.restdocs:spring-restdocs-restassured")
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
@@ -111,6 +115,8 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
+	optional("io.grpc:grpc-inprocess")
+	optional("io.grpc:grpc-stub")
 	optional("io.micrometer:micrometer-tracing")
 
 	dockerTestImplementation(project(":core:spring-boot-docker-compose"))
@@ -150,6 +156,7 @@ dependencies {
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.h2database:h2")
 	testImplementation("com.unboundid:unboundid-ldapsdk")
+	testImplementation("io.grpc:grpc-netty")
 	testImplementation("io.lettuce:lettuce-core")
 	testImplementation("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("io.projectreactor.netty:reactor-netty-http")

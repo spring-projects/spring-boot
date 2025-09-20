@@ -1,0 +1,9 @@
+org.springframework.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.GrpcServerObservationAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.GrpcServerReflectionAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.exception.GrpcExceptionHandlerAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.health.GrpcServerHealthAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.security.GrpcSecurityAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.security.OAuth2ClientAutoConfiguration
+org.springframework.boot.grpc.server.autoconfigure.security.OAuth2ResourceServerAutoConfiguration

@@ -58,6 +58,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		Snippets snippets = new Snippets(this.configurationPropertyMetadata);
 		snippets.add("application-properties.core", "Core Properties", this::corePrefixes);
 		snippets.add("application-properties.cache", "Cache Properties", this::cachePrefixes);
+		snippets.add("application-properties.grpc", "gRPC Properties", this::grpcPrefixes);
 		snippets.add("application-properties.mail", "Mail Properties", this::mailPrefixes);
 		snippets.add("application-properties.json", "JSON Properties", this::jsonPrefixes);
 		snippets.add("application-properties.data", "Data Properties", this::dataPrefixes);
@@ -157,6 +158,10 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 		prefix.accept("spring.flyway");
 		prefix.accept("spring.liquibase");
 		prefix.accept("spring.sql.init");
+	}
+
+	private void grpcPrefixes(Config prefix) {
+		prefix.accept("spring.grpc");
 	}
 
 	private void integrationPrefixes(Config prefix) {
