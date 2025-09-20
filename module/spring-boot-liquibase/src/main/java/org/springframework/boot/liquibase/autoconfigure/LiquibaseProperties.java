@@ -124,6 +124,15 @@ public class LiquibaseProperties {
 	private @Nullable Map<String, String> parameters;
 
 	/**
+	 * Liquibase global configuration properties. Properties must be set with liquibase's
+	 * full propertiesFile dot format. For example:
+	 * {@code spring.liquibase.properties.liquibase.duplicateFileMode}. Note that
+	 * Liquibase’s normal precedence still applies (env variables and jvm system
+	 * properties can override values set here).
+	 */
+	private @Nullable Map<String, String> properties;
+
+	/**
 	 * File to which rollback SQL is written when an update is performed.
 	 */
 	private @Nullable File rollbackFile;
@@ -292,6 +301,14 @@ public class LiquibaseProperties {
 
 	public void setParameters(@Nullable Map<String, String> parameters) {
 		this.parameters = parameters;
+	}
+
+	public @Nullable Map<String, String> getProperties() {
+		return this.properties;
+	}
+
+	public void setProperties(@Nullable Map<String, String> properties) {
+		this.properties = properties;
 	}
 
 	public @Nullable File getRollbackFile() {
