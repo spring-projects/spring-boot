@@ -30,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -50,6 +51,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.Assert;
@@ -186,6 +188,24 @@ public final class LiquibaseAutoConfiguration {
 			}
 		}
 
+	}
+
+	@Bean
+	static BeanFactoryPostProcessor liquibaseConfigurationValueProviderRegistrar(Environment environment) {
+
+		return (beanFactory) -> {
+			var liquibaseConfiguration = liquibase.Scope.getCurrentScope()
+				.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+			// Remove any previously registered instance of our provider class
+			liquibaseConfiguration.getProviders()
+				.stream()
+				.filter((provider) -> provider.getClass() == EnvironmentConfigurationValueProvider.class)
+				.toList()
+				.forEach(liquibaseConfiguration::unregisterProvider);
+
+			liquibaseConfiguration.registerProvider(new EnvironmentConfigurationValueProvider(environment));
+		};
 	}
 
 	@ConditionalOnClass(Customizer.class)

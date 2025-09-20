@@ -570,6 +570,92 @@ class LiquibaseAutoConfigurationTests {
 
 	@Test
 	@WithDbChangelogMasterYamlResource
+	void springLiquibaseTakesPrecedenceOverLiquibaseDefaults() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.properties.liquibase.duplicateFileMode=WARN")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringLiquibase.class);
+
+				var liquibaseConfig = liquibase.Scope.getCurrentScope()
+					.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+				var provider = liquibaseConfig.getProviders()
+					.stream()
+					.filter(p -> p.getClass()
+						.getName()
+						.equals("org.springframework.boot.liquibase.autoconfigure.EnvironmentConfigurationValueProvider"))
+					.findFirst()
+					.orElseThrow();
+
+				var provided = provider.getProvidedValue("liquibase.duplicateFileMode");
+				assertThat(provided).isNotNull();
+				assertThat(String.valueOf(provided.getValue())).isEqualTo("WARN");
+
+				// Now check the resolved value, which should be different from the
+				// default 'ERROR'
+				var resolved = liquibaseConfig.getCurrentConfiguredValue(null, null, "liquibase.duplicateFileMode");
+				assertThat(String.valueOf(resolved.getValue())).isEqualTo("WARN");
+			});
+	}
+
+	@Test
+	@WithDbChangelogMasterYamlResource
+	void systemPropertyTakesPrecedenceOverSpringLiquibaseProperties() {
+		this.contextRunner.withSystemProperties("liquibase.duplicateFileMode=ERROR")
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.properties.liquibase.duplicateFileMode=WARN")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringLiquibase.class);
+
+				var liquibaseConfig = liquibase.Scope.getCurrentScope()
+					.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+				var provider = liquibaseConfig.getProviders()
+					.stream()
+					.filter(p -> p.getClass()
+						.getName()
+						.equals("org.springframework.boot.liquibase.autoconfigure.EnvironmentConfigurationValueProvider"))
+					.findFirst()
+					.orElseThrow();
+
+				// Our provider should return the value set through Spring property
+				var providedBySpring = provider.getProvidedValue("liquibase.duplicateFileMode");
+				assertThat(providedBySpring).isNotNull();
+				assertThat(String.valueOf(providedBySpring.getValue())).isEqualTo("WARN");
+
+				// Now check the resolved value, which should be the system property
+				var resolved = liquibaseConfig.getCurrentConfiguredValue(null, null, "liquibase.duplicateFileMode");
+				assertThat(String.valueOf(resolved.getValue())).isEqualTo("ERROR");
+			});
+	}
+
+	@Test
+	@WithDbChangelogMasterYamlResource
+	void arbitraryLiquibaseKeyIsPassedThroughAsIs() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.properties.my.extension.custom.option=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringLiquibase.class);
+
+				var liquibaseConfig = liquibase.Scope.getCurrentScope()
+					.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+				var provider = liquibaseConfig.getProviders()
+					.stream()
+					.filter(p -> p.getClass()
+						.getName()
+						.equals("org.springframework.boot.liquibase.autoconfigure.EnvironmentConfigurationValueProvider"))
+					.findFirst()
+					.orElseThrow();
+
+				var provided = provider.getProvidedValue("my.extension.custom.option");
+				assertThat(provided).isNotNull();
+				assertThat(String.valueOf(provided.getValue())).isEqualTo("true");
+			});
+	}
+
+	@Test
+	@WithDbChangelogMasterYamlResource
 	void whenCustomizerBeanIsDefinedThenItIsConfiguredOnSpringLiquibase() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomizerConfiguration.class)
 			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getCustomizer()).isNotNull()));
