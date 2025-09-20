@@ -24,6 +24,9 @@ import org.springframework.core.annotation.Order;
  * a {@link SpringApplication}. Multiple {@link ApplicationRunner} beans can be defined
  * within the same application context and can be ordered using the {@link Ordered}
  * interface or {@link Order @Order} annotation.
+ * <p>
+ * If you need access to the raw String array instead of {@link ApplicationArguments}
+ * consider using {@link CommandLineRunner}.
  *
  * @author Phillip Webb
  * @since 1.3.0
