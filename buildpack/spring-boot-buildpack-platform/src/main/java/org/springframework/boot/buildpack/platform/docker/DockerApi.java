@@ -239,7 +239,9 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-				return inspect((platform != null) ? PLATFORM_API_VERSION : API_VERSION, reference);
+				String digest = digestCapture.getDigest();
+				ImageReference inspectReference = (digest != null) ? reference.withDigest(digest) : reference;
+				return inspect((platform != null) ? PLATFORM_API_VERSION : API_VERSION, inspectReference);
 			}
 			finally {
 				listener.onFinish();
@@ -562,6 +564,10 @@ public class DockerApi {
 				Assert.state(this.digest == null || this.digest.equals(digest), "Different digests IDs provided");
 				this.digest = digest;
 			}
+		}
+
+		private @Nullable String getDigest() {
+			return this.digest;
 		}
 
 	}

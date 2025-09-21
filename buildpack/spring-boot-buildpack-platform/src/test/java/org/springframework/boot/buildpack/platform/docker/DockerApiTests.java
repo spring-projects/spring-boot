@@ -207,7 +207,8 @@ class DockerApiTests {
 		void pullPullsImageAndProducesEvents() throws Exception {
 			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
 			URI createUri = new URI(IMAGES_URL + "/create?fromImage=docker.io%2Fpaketobuildpacks%2Fbuilder%3Abase");
-			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
+			URI imageUri = new URI(IMAGES_URL
+					+ "/docker.io/paketobuildpacks/builder@sha256:4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30/json");
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, null, this.pullListener);
@@ -222,7 +223,8 @@ class DockerApiTests {
 		void pullWithRegistryAuthPullsImageAndProducesEvents() throws Exception {
 			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
 			URI createUri = new URI(IMAGES_URL + "/create?fromImage=docker.io%2Fpaketobuildpacks%2Fbuilder%3Abase");
-			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
+			URI imageUri = new URI(IMAGES_URL
+					+ "/docker.io/paketobuildpacks/builder@sha256:4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30/json");
 			given(http().post(eq(createUri), eq("auth token"))).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, null, this.pullListener, "auth token");
@@ -239,7 +241,8 @@ class DockerApiTests {
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
 			URI createUri = new URI(PLATFORM_IMAGES_URL
 					+ "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase&platform=linux%2Farm64%2Fv1");
-			URI imageUri = new URI(PLATFORM_IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			URI imageUri = new URI(PLATFORM_IMAGES_URL
+					+ "/gcr.io/paketo-buildpacks/builder@sha256:4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30/json");
 			given(http().head(eq(new URI(PING_URL))))
 				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.41")));
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
