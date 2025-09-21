@@ -68,6 +68,10 @@ public class DockerApi {
 
 	static final ApiVersion PLATFORM_API_VERSION = ApiVersion.of(1, 41);
 
+	static final ApiVersion EXPORT_PLATFORM_API_VERSION = ApiVersion.of(1, 48);
+
+	static final ApiVersion INSPECT_PLATFORM_API_VERSION = ApiVersion.of(1, 49);
+
 	static final ApiVersion UNKNOWN_API_VERSION = ApiVersion.of(0, 0);
 
 	static final String API_VERSION_HEADER_NAME = "API-Version";
@@ -235,7 +239,10 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-				return inspect((platform != null) ? PLATFORM_API_VERSION : API_VERSION, reference);
+				if (platform != null) {
+					return inspect(INSPECT_PLATFORM_API_VERSION, reference, platform);
+				}
+				return inspect(API_VERSION, reference);
 			}
 			finally {
 				listener.onFinish();
@@ -332,14 +339,56 @@ public class DockerApi {
 		 */
 		public void exportLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
+			exportLayers(reference, null, exports);
+		}
+
+		/**
+		 * Export the layers of an image as {@link TarArchive TarArchives}.
+		 * @param reference the reference to export
+		 * @param platform the platform (os/architecture/variant) of the image to export
+		 * @param exports a consumer to receive the layers (contents can only be accessed
+		 * during the callback)
+		 * @throws IOException on IO error
+		 */
+		public void exportLayers(ImageReference reference, ImagePlatform platform,
+				IOBiConsumer<String, TarArchive> exports) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(exports, "Exports must not be null");
 			URI uri = buildUrl("/images/" + reference + "/get");
+			if (platform != null) {
+				uri = buildUrl(EXPORT_PLATFORM_API_VERSION, "/images/" + reference + "/get", "platform",
+						platform.toJson());
+			}
 			try (Response response = http().get(uri)) {
 				try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference, response.getContent())) {
 					exportedImageTar.exportLayers(exports);
 				}
 			}
+		}
+
+		/**
+		 * Resolve an image manifest digest via Docker inspect. If {@code platform} is
+		 * provided, performs a platform-aware inspect. Preference order:
+		 * {@code Descriptor.digest} then first {@code RepoDigest}. Returns an empty
+		 * string if no digest can be determined.
+		 * @param reference image reference
+		 * @param platform desired platform
+		 * @return resolved digest or empty string
+		 * @throws IOException on IO error
+		 */
+		public String resolveManifestDigest(ImageReference reference, ImagePlatform platform) throws IOException {
+			Assert.notNull(reference, "'reference' must not be null");
+			Image image = inspect(API_VERSION, reference);
+			if (platform != null) {
+				image = inspect(INSPECT_PLATFORM_API_VERSION, reference, platform);
+			}
+			Image.Descriptor descriptor = image.getDescriptor();
+			if (descriptor != null && StringUtils.hasText(descriptor.getDigest())) {
+				return descriptor.getDigest();
+			}
+			List<String> repoDigests = image.getDigests();
+			String digest = repoDigests.isEmpty() ? "" : repoDigests.get(0);
+			return digest.substring(digest.indexOf('@') + 1);
 		}
 
 		/**
@@ -366,8 +415,15 @@ public class DockerApi {
 		}
 
 		private Image inspect(ApiVersion apiVersion, ImageReference reference) throws IOException {
+			return inspect(apiVersion, reference, null);
+		}
+
+		private Image inspect(ApiVersion apiVersion, ImageReference reference, ImagePlatform platform)
+				throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
-			URI imageUri = buildUrl(apiVersion, "/images/" + reference + "/json");
+			URI imageUri = (platform != null)
+					? buildUrl(apiVersion, "/images/" + reference + "/json", "platform", platform.toJson())
+					: buildUrl(apiVersion, "/images/" + reference + "/json");
 			try (Response response = http().get(imageUri)) {
 				return Image.of(response.getContent());
 			}

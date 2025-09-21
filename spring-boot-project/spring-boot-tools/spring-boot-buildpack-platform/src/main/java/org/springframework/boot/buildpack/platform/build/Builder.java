@@ -103,12 +103,19 @@ public class Builder {
 		validateBindings(request.getBindings());
 		String domain = request.getBuilder().getDomain();
 		PullPolicy pullPolicy = request.getPullPolicy();
-		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy,
-				request.getImagePlatform());
+		ImagePlatform requestedPlatform = request.getImagePlatform();
+		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy, requestedPlatform);
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		request = withRunImageIfNeeded(request, builderMetadata);
-		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage());
+		ImageReference imageReference = request.getRunImage();
+		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, imageReference);
+		String digest = this.docker.image().resolveManifestDigest(imageReference, requestedPlatform);
+		if (StringUtils.hasText(digest)) {
+			imageReference = imageReference.withDigest(digest);
+			runImage = imageFetcher.fetchImage(ImageType.RUNNER, imageReference);
+		}
+		request = request.withRunImage(imageReference);
 		assertStackIdsMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
 		BuildpackLayersMetadata buildpackLayersMetadata = BuildpackLayersMetadata.fromImage(builderImage);
@@ -325,7 +332,15 @@ public class Builder {
 		@Override
 		public void exportImageLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
-			Builder.this.docker.image().exportLayers(reference, exports);
+			String digest = Builder.this.docker.image()
+				.resolveManifestDigest(reference, this.imageFetcher.defaultPlatform);
+			if (StringUtils.hasText(digest)) {
+				ImageReference pinned = reference.withDigest(digest);
+				Builder.this.docker.image().exportLayers(pinned, null, exports);
+			}
+			else {
+				Builder.this.docker.image().exportLayers(reference, this.imageFetcher.defaultPlatform, exports);
+			}
 		}
 
 	}

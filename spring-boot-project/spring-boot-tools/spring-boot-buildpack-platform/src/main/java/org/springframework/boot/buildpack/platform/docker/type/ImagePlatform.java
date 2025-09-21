@@ -99,4 +99,22 @@ public class ImagePlatform {
 		return new ImagePlatform(image.getOs(), image.getArchitecture(), image.getVariant());
 	}
 
+	/**
+	 * Return a JSON-encoded representation of this platform for use with Docker Engine
+	 * API 1.48+ endpoints that require the platform parameter in JSON format
+	 * (e.g., image inspect and export operations).
+	 * @return a JSON object in the form {@code {"os":"...","architecture":"...","variant":"..."}}
+	 */
+	public String toJson() {
+		StringBuilder json = new StringBuilder("{");
+		json.append("\"os\":\"").append(this.os).append("\"");
+		if (this.architecture != null && !this.architecture.isEmpty()) {
+			json.append(",\"architecture\":\"").append(this.architecture).append("\"");
+		}
+		if (this.variant != null && !this.variant.isEmpty()) {
+			json.append(",\"variant\":\"").append(this.variant).append("\"");
+		}
+		json.append("}");
+		return json.toString();
+	}
 }

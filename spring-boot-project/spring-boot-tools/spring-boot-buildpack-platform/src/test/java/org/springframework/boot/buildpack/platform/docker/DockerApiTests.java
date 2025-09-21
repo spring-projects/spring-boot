@@ -92,11 +92,15 @@ class DockerApiTests {
 
 	private static final String PLATFORM_API_URL = "/v" + DockerApi.PLATFORM_API_VERSION;
 
+	private static final String INSPECT_PLATFORM_API_URL = "/v" + DockerApi.INSPECT_PLATFORM_API_VERSION;
+
 	public static final String PING_URL = "/_ping";
 
 	private static final String IMAGES_URL = API_URL + "/images";
 
 	private static final String PLATFORM_IMAGES_URL = PLATFORM_API_URL + "/images";
+
+	private static final String INSPECT_PLATFORM_IMAGES_URL = INSPECT_PLATFORM_API_URL + "/images";
 
 	private static final String CONTAINERS_URL = API_URL + "/containers";
 
@@ -240,9 +244,10 @@ class DockerApiTests {
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
 			URI createUri = new URI(PLATFORM_IMAGES_URL
 					+ "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase&platform=linux%2Farm64%2Fv1");
-			URI imageUri = new URI(PLATFORM_IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			URI imageUri = new URI(INSPECT_PLATFORM_IMAGES_URL
+					+ "/gcr.io/paketo-buildpacks/builder:base/json?platform=%7B%22os%22%3A%22linux%22%2C%22architecture%22%3A%22arm64%22%2C%22variant%22%3A%22v1%22%7D");
 			given(http().head(eq(new URI(PING_URL))))
-				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.41")));
+				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.49")));
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, platform, this.pullListener);
