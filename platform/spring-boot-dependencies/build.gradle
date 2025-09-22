@@ -502,7 +502,7 @@ bom {
 			releaseNotes("https://github.com/grpc/grpc-java/releases/tag/v{version}")
 		}
 	}
-	library("Grpc Kotlin", "1.4.3") {
+	library("Grpc Kotlin", "1.5.0") {
 		group("io.grpc") {
 			modules = [
 					"grpc-kotlin-stub" {
