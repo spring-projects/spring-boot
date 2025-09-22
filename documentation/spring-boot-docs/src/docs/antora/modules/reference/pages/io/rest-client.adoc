@@ -320,7 +320,7 @@ For example, the following code defines an HTTP Service for an an "`echo`" API t
 
 include-code::EchoService[]
 
-More details about how to develop HTTP Service interface clients can be found in the {url-spring-framework-docs}/integration/rest-clients.html#rest-http-interface[Spring Framework reference documentation].
+More details about how to develop HTTP Service interface clients can be found in the {url-spring-framework-docs}/integration/rest-clients.html#rest-http-service-client[Spring Framework reference documentation].
 
 
 
@@ -463,6 +463,6 @@ include-code::MyHttpServiceGroupConfiguration[]
 
 As well as the javadoc:org.springframework.web.service.registry.ImportHttpServices[format=annotation] annotation, Spring Framework also offers an javadoc:org.springframework.web.service.registry.AbstractHttpServiceRegistrar[] class.
 You can javadoc:org.springframework.context.annotation.Import[format=annotation] your own extension of this class to perform programmatic configuration.
-For more details, see {url-spring-framework-docs}/integration/rest-clients.html#rest-http-interface-group-config[Spring Framework's reference documenation].
+For more details, see {url-spring-framework-docs}/integration/rest-clients.html#rest-http-service-client-group-config[Spring Framework's reference documenation].
 
 Regardless of which method you use to register HTTP Service clients, Spring Boot's support remains the same.
