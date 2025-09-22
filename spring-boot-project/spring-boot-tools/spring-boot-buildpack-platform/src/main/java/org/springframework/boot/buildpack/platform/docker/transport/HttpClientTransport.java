@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
@@ -65,66 +66,31 @@ abstract class HttpClientTransport implements HttpTransport {
 		this.host = host;
 	}
 
-	/**
-	 * Perform an HTTP GET operation.
-	 * @param uri the destination URI
-	 * @return the operation response
-	 */
 	@Override
 	public Response get(URI uri) {
 		return execute(new HttpGet(uri));
 	}
 
-	/**
-	 * Perform an HTTP POST operation.
-	 * @param uri the destination URI
-	 * @return the operation response
-	 */
 	@Override
 	public Response post(URI uri) {
 		return execute(new HttpPost(uri));
 	}
 
-	/**
-	 * Perform an HTTP POST operation.
-	 * @param uri the destination URI
-	 * @param registryAuth registry authentication credentials
-	 * @return the operation response
-	 */
 	@Override
 	public Response post(URI uri, String registryAuth) {
 		return execute(new HttpPost(uri), registryAuth);
 	}
 
-	/**
-	 * Perform an HTTP POST operation.
-	 * @param uri the destination URI
-	 * @param contentType the content type to write
-	 * @param writer a content writer
-	 * @return the operation response
-	 */
 	@Override
 	public Response post(URI uri, String contentType, IOConsumer<OutputStream> writer) {
 		return execute(new HttpPost(uri), contentType, writer);
 	}
 
-	/**
-	 * Perform an HTTP PUT operation.
-	 * @param uri the destination URI
-	 * @param contentType the content type to write
-	 * @param writer a content writer
-	 * @return the operation response
-	 */
 	@Override
 	public Response put(URI uri, String contentType, IOConsumer<OutputStream> writer) {
 		return execute(new HttpPut(uri), contentType, writer);
 	}
 
-	/**
-	 * Perform an HTTP DELETE operation.
-	 * @param uri the destination URI
-	 * @return the operation response
-	 */
 	@Override
 	public Response delete(URI uri) {
 		return execute(new HttpDelete(uri));
@@ -149,22 +115,22 @@ abstract class HttpClientTransport implements HttpTransport {
 
 			if (statusCode >= 400 && statusCode <= 500) {
 				byte[] content = readContent(response);
+				// Always close the response for error paths
+				response.close();
 
 				if (statusCode == 407) {
-					response.close();
-
 					String detail = null;
 					Message json = deserializeMessage(content);
-					if (json != null && org.springframework.util.StringUtils.hasText(json.getMessage())) {
+					if (json != null && StringUtils.hasText(json.getMessage())) {
 						detail = json.getMessage();
 					}
-					else {
-						detail = new String(content, java.nio.charset.StandardCharsets.UTF_8);
+					else if (content != null && content.length > 0) {
+						detail = new String(content, StandardCharsets.UTF_8);
 					}
 
 					String msg = "Proxy authentication required for host: " + this.host.toHostString() + ", uri: "
 							+ request.getUri()
-							+ (org.springframework.util.StringUtils.hasText(detail) ? " - " + detail : "");
+							+ (StringUtils.hasText(detail) ? " - " + detail : "");
 
 					throw new ProxyAuthenticationException(msg);
 				}
