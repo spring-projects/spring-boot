@@ -44,9 +44,9 @@ tasks.withType(io.spring.javaformat.gradle.tasks.CheckFormat) {
 }
 
 // FIXME get from 'protobuf-java-version' from dep mgmt
-def protobufJavaVersion = "4.30.2"
+def protobufJavaVersion = "4.32.1"
 // FIXME get from 'grpc-java-version' from dep mgmt
-def grpcVersion = "1.74.0"
+def grpcVersion = "1.75.0"
 
 protobuf {
 	protoc {
