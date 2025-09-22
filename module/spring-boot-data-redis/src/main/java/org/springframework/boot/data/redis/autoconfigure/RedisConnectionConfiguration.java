@@ -35,6 +35,7 @@ import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Base Redis connection configuration.
@@ -48,6 +49,7 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Yanming Zhou
+ * @author Yong-Hyun Kim
  */
 abstract class RedisConnectionConfiguration {
 
@@ -156,7 +158,7 @@ abstract class RedisConnectionConfiguration {
 
 	protected @Nullable SslBundle getSslBundle() {
 		return switch (this.mode) {
-			case STANDALONE -> (this.connectionDetails.getStandalone() != null)
+			case STANDALONE, STATIC_MASTER_REPLICA -> (this.connectionDetails.getStandalone() != null)
 					? this.connectionDetails.getStandalone().getSslBundle() : null;
 			case CLUSTER -> (this.connectionDetails.getCluster() != null)
 					? this.connectionDetails.getCluster().getSslBundle() : null;
@@ -197,12 +199,15 @@ abstract class RedisConnectionConfiguration {
 		if (getClusterConfiguration() != null) {
 			return Mode.CLUSTER;
 		}
+		if (!CollectionUtils.isEmpty(this.properties.getLettuce().getNodes())) {
+			return Mode.STATIC_MASTER_REPLICA;
+		}
 		return Mode.STANDALONE;
 	}
 
 	enum Mode {
 
-		STANDALONE, CLUSTER, SENTINEL
+		STANDALONE, CLUSTER, SENTINEL, STATIC_MASTER_REPLICA
 
 	}
 
