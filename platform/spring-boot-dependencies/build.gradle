@@ -492,7 +492,7 @@ bom {
 			site("https://groovy-lang.org")
 		}
 	}
-	library("Grpc Java", "1.74.0") {
+	library("Grpc Java", "1.75.0") {
 		group("io.grpc") {
 			bom("grpc-bom")
 		}
@@ -1797,7 +1797,7 @@ bom {
 			releaseNotes("https://github.com/googleapis/sdk-platform-java/releases/tag/v-{version}")
 		}
 	}
-	library("Protobuf Java", "4.31.1") {
+	library("Protobuf Java", "4.32.1") {
 		group("com.google.protobuf") {
 			bom("protobuf-bom")
 		}
