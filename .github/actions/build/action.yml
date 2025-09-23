@@ -5,16 +5,16 @@ inputs:
     description: 'URL of the release repository'
     required: false
   commercial-repository-password:
-    description: 'Password for authentication with the commercial repository'
+    description: 'Password for authentication with the commercial repository (securely managed as secret)'
     required: false
   commercial-repository-username:
-    description: 'Username for authentication with the commercial repository'
+    description: 'Username for authentication with the commercial repository (securely managed as secret)'
     required: false
   commercial-snapshot-repository-url:
     description: 'URL of the snapshot repository'
     required: false
   develocity-access-key:
-    description: 'Access key for authentication with ge.spring.io'
+    description: 'Access key for authentication with ge.spring.io (secure secret recommended)'
     required: false
   gradle-cache-read-only:
     description: 'Whether Gradle''s cache should be read only'
@@ -33,7 +33,7 @@ inputs:
     required: false
     default: 'false'
   java-version:
-    description: 'Java version to compile and test with'
+    description: 'Java version to compile and test with (valid values should be checked)'
     required: false
     default: '24'
   publish:
@@ -50,6 +50,7 @@ outputs:
 runs:
   using: composite
   steps:
+    # Step to prepare the Gradle build environment and settings
     - name: Prepare Gradle Build
       uses: ./.github/actions/prepare-gradle-build
       with:
@@ -59,6 +60,8 @@ runs:
         java-early-access: ${{ inputs.java-early-access }}
         java-toolchain: ${{ inputs.java-toolchain }}
         java-version: ${{ inputs.java-version }}
+
+    # Main build step (only runs when publish is false)
     - name: Build
       id: build
       if: ${{ inputs.publish == 'false' }}
@@ -68,7 +71,11 @@ runs:
         COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: ./gradlew build
+      run: |
+        set -e  # Exit immediately if a command exits with a non-zero status
+        ./gradlew build
+
+    # Publish step (only runs when publish is true)
     - name: Publish
       id: publish
       if: ${{ inputs.publish == 'true' }}
@@ -78,11 +85,20 @@ runs:
         COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository ${{ !startsWith(github.event.head_commit.message, 'Next development version') && 'build' || '' }} publishAllPublicationsToDeploymentRepository
+      run: |
+        set -e
+        # Conditional publish build to deployment repository, avoid publishing on "Next development version" commit message
+        if [[ ! "${{ github.event.head_commit.message }}" =~ ^Next\ development\ version ]]; then
+          ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository build
+        fi
+        ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository publishAllPublicationsToDeploymentRepository
+
+    # Step to read version from gradle.properties file
     - name: Read Version From gradle.properties
       id: read-version
       shell: bash
       run: |
+        set -e
         version=$(sed -n 's/version=\(.*\)/\1/p' gradle.properties)
         echo "Version is $version"
         echo "version=$version" >> $GITHUB_OUTPUT
