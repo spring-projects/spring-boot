@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker.type;
+package org.springframework.boot.buildpack.platform.docker;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,7 +65,7 @@ class ImagePlatformTests extends AbstractJsonTests {
 	}
 
 	private Image getImage() throws IOException {
-		return Image.of(getContent("image.json"));
+		return Image.of(getContent("type/image.json"));
 	}
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker.type;
+package org.springframework.boot.buildpack.platform.docker;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Scott Frederick
- * @since 3.4.0
+ * @since 4.0.0
  */
 public final class ApiVersion {
 

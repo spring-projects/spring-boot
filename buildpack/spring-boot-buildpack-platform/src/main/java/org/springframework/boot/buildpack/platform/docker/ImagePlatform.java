@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker.type;
+package org.springframework.boot.buildpack.platform.docker;
 
 import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.util.Assert;
 
 /**
  * A platform specification for a Docker image.
  *
  * @author Scott Frederick
- * @since 3.4.0
+ * @since 4.0.0
  */
 public class ImagePlatform {
 

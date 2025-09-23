@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker.type;
+package org.springframework.boot.buildpack.platform.docker;
 
 import java.util.Arrays;
 
