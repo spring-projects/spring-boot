@@ -2041,8 +2041,6 @@ bom {
 				"spring-boot-ldap",
 				"spring-boot-liquibase",
 				"spring-boot-loader",
-				"spring-boot-loader-classic",
-				"spring-boot-loader-tools",
 				"spring-boot-mail",
 				"spring-boot-micrometer-metrics",
 				"spring-boot-micrometer-observation",

@@ -47,7 +47,6 @@ import org.springframework.boot.loader.tools.Layouts.Jar;
 import org.springframework.boot.loader.tools.Layouts.None;
 import org.springframework.boot.loader.tools.Layouts.War;
 import org.springframework.boot.loader.tools.Libraries;
-import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.boot.loader.tools.Packager;
 import org.springframework.boot.loader.tools.layer.CustomLayers;
 
@@ -143,15 +142,6 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	}
 
 	/**
-	 * Return the loader implementation that should be used.
-	 * @return the loader implementation or {@code null}
-	 * @since 3.2.0
-	 */
-	protected @Nullable LoaderImplementation getLoaderImplementation() {
-		return null;
-	}
-
-	/**
 	 * Return the layout factory that will be used to determine the {@link LayoutType} if
 	 * no explicit layout is set.
 	 * @return {@code null}, indicating a default layout factory will be chosen
@@ -168,7 +158,6 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 */
 	protected <P extends Packager> P getConfiguredPackager(Supplier<P> supplier) {
 		P packager = supplier.get();
-		packager.setLoaderImplementation(getLoaderImplementation());
 		packager.setLayoutFactory(getLayoutFactory());
 		packager.addMainClassTimeoutWarningListener(new LoggingMainClassTimeoutWarningListener(this::getLog));
 		packager.setMainClass(this.mainClass);

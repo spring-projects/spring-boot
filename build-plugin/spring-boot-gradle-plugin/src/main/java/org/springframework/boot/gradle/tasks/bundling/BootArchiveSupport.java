@@ -46,8 +46,6 @@ import org.gradle.api.tasks.util.PatternSet;
 import org.gradle.util.GradleVersion;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.loader.tools.LoaderImplementation;
-
 /**
  * Support class for implementations of {@link BootArchive}.
  *
@@ -123,13 +121,11 @@ class BootArchiveSupport {
 		return (version != null) ? version : "unknown";
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
-			LoaderImplementation loaderImplementation, boolean supportsSignatureFile) {
-		return createCopyAction(jar, resolvedDependencies, loaderImplementation, supportsSignatureFile, null, null);
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies, boolean supportsSignatureFile) {
+		return createCopyAction(jar, resolvedDependencies, supportsSignatureFile, null, null);
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
-			LoaderImplementation loaderImplementation, boolean supportsSignatureFile,
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies, boolean supportsSignatureFile,
 			@Nullable LayerResolver layerResolver, @Nullable String jarmodeToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
@@ -145,8 +141,7 @@ class BootArchiveSupport {
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirPermissions,
 				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript,
-				librarySpec, compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver,
-				loaderImplementation);
+				librarySpec, compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 

@@ -206,13 +206,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	@Override
 	public void writeLoaderClasses() throws IOException {
-		writeLoaderClasses(LoaderImplementation.DEFAULT);
-	}
-
-	@Override
-	public void writeLoaderClasses(@Nullable LoaderImplementation loaderImplementation) throws IOException {
-		writeLoaderClasses((loaderImplementation != null) ? loaderImplementation.getJarResourceName()
-				: LoaderImplementation.DEFAULT.getJarResourceName());
+		writeLoaderClasses("META-INF/loader/spring-boot-loader.jar");
 	}
 
 	/**

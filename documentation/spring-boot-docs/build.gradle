@@ -246,7 +246,6 @@ project.rootProject.gradle.projectsEvaluated {
 		.findAll { !it.path.contains(":configuration-metadata:") }
 		.findAll { !it.path.contains(":core:spring-boot-properties-migrator") }
 		.findAll { !it.path.contains(":loader:spring-boot-jarmode-tools") }
-		.findAll { !it.path.contains(":loader:spring-boot-loader-classic") }
 		.findAll { !it.name.startsWith('spring-boot-starter') }
 	aggregatedJavadoc.configure {
 		dependsOn publishedProjects.javadoc

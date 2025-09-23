@@ -63,7 +63,6 @@ import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
-import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.boot.loader.tools.NativeImageArgFile;
 import org.springframework.boot.loader.tools.ReachabilityMetadataProperties;
 import org.springframework.util.Assert;
@@ -120,15 +119,13 @@ class BootZipCopyAction implements CopyAction {
 
 	private final @Nullable LayerResolver layerResolver;
 
-	private final LoaderImplementation loaderImplementation;
-
 	BootZipCopyAction(File output, Manifest manifest, boolean preserveFileTimestamps, @Nullable Integer dirMode,
 			@Nullable Integer fileMode, boolean includeDefaultLoader, @Nullable String jarmodeToolsLocation,
 			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 			@Nullable LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver, @Nullable String encoding,
 			ResolvedDependencies resolvedDependencies, boolean supportsSignatureFile,
-			@Nullable LayerResolver layerResolver, LoaderImplementation loaderImplementation) {
+			@Nullable LayerResolver layerResolver) {
 		this.output = output;
 		this.manifest = manifest;
 		this.preserveFileTimestamps = preserveFileTimestamps;
@@ -145,7 +142,6 @@ class BootZipCopyAction implements CopyAction {
 		this.resolvedDependencies = resolvedDependencies;
 		this.supportsSignatureFile = supportsSignatureFile;
 		this.layerResolver = layerResolver;
-		this.loaderImplementation = loaderImplementation;
 	}
 
 	@Override
@@ -329,8 +325,7 @@ class BootZipCopyAction implements CopyAction {
 				// Always write loader entries after META-INF directory (see gh-16698)
 				return;
 			}
-			LoaderZipEntries loaderEntries = new LoaderZipEntries(getTime(), getDirMode(), getFileMode(),
-					BootZipCopyAction.this.loaderImplementation);
+			LoaderZipEntries loaderEntries = new LoaderZipEntries(getTime(), getDirMode(), getFileMode());
 			this.writtenLoaderEntries = loaderEntries.writeTo(this.out);
 			if (BootZipCopyAction.this.layerResolver != null) {
 				for (String name : this.writtenLoaderEntries.getFiles()) {

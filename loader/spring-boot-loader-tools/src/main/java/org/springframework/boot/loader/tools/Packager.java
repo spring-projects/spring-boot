@@ -93,8 +93,6 @@ public abstract class Packager {
 
 	private @Nullable Layout layout;
 
-	private @Nullable LoaderImplementation loaderImplementation;
-
 	private @Nullable LayoutFactory layoutFactory;
 
 	private @Nullable Layers layers;
@@ -140,14 +138,6 @@ public abstract class Packager {
 	public void setLayout(Layout layout) {
 		Assert.notNull(layout, "Layout must not be null");
 		this.layout = layout;
-	}
-
-	/**
-	 * Sets the loader implementation to use.
-	 * @param loaderImplementation the loaderImplementation to set
-	 */
-	public void setLoaderImplementation(@Nullable LoaderImplementation loaderImplementation) {
-		this.loaderImplementation = loaderImplementation;
 	}
 
 	/**
@@ -231,7 +221,7 @@ public abstract class Packager {
 			customLoaderLayout.writeLoadedClasses(writer);
 		}
 		else if (layout.isExecutable()) {
-			writer.writeLoaderClasses(this.loaderImplementation);
+			writer.writeLoaderClasses();
 		}
 	}
 
