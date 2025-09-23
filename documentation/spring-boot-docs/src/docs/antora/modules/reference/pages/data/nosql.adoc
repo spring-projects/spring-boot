@@ -350,6 +350,8 @@ spring:
         delay-after-failure: "30s"
 ----
 
+To disable auto-configuration of the Sniffer, set configprop:spring.elasticsearch.restclient.sniffer.enabled[] to `false`.
+
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]

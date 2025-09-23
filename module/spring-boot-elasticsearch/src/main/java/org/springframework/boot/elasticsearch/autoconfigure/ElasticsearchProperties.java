@@ -161,6 +161,11 @@ public class ElasticsearchProperties {
 		public static class Sniffer {
 
 			/**
+			 * Whether the sniffer is enabled.
+			 */
+			private boolean enabled = true;
+
+			/**
 			 * Interval between consecutive ordinary sniff executions.
 			 */
 			private Duration interval = Duration.ofMinutes(5);
@@ -169,6 +174,14 @@ public class ElasticsearchProperties {
 			 * Delay of a sniff execution scheduled after a failure.
 			 */
 			private Duration delayAfterFailure = Duration.ofMinutes(1);
+
+			public boolean isEnabled() {
+				return this.enabled;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
 
 			public Duration getInterval() {
 				return this.interval;
