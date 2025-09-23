@@ -20,7 +20,7 @@
       "defaultValue": true
     },
     {
-      "name": "spring.grpc.server.observations.enabled",
+      "name": "spring.grpc.server.observation.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Observations on the server.",
       "defaultValue": true
