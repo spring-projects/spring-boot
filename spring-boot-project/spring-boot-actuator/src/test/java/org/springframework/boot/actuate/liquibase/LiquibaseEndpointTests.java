@@ -50,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Leo Li
+ * @author Nabil Fawwaz Elqayyim
  */
 @WithResource(name = "db/changelog/db.changelog-master.yaml", content = """
 		databaseChangeLog:
@@ -117,6 +118,21 @@ class LiquibaseEndpointTests {
 					.getLiquibaseBeans();
 				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 			});
+	}
+
+	@Test
+	@WithResource(name = "db/create-custom-schema.sql", content = "CREATE SCHEMA LIQUIBASE_SCHEMA;")
+	void invokeWithLiquibaseSchema() {
+		this.contextRunner.withUserConfiguration(Config.class, DataSourceWithSchemaConfiguration.class)
+				.withPropertyValues("spring.liquibase.liquibase-schema=LIQUIBASE_SCHEMA")
+				.run((context) -> {
+					Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+							.liquibaseBeans()
+							.getContexts()
+							.get(context.getId())
+							.getLiquibaseBeans();
+					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+				});
 	}
 
 	@Test
