@@ -1,5 +1,0 @@
-org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\
-org.springframework.boot.test.context.bootstrap.TestDefaultTestExecutionListenersPostProcessor
-
-org.springframework.test.context.ApplicationContextFailureProcessor=\
-org.springframework.boot.test.context.SpringBootContextLoaderTests.ContextLoaderApplicationContextFailureProcessor

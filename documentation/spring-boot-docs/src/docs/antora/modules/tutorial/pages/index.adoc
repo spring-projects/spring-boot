@@ -1,3 +1,0 @@
-= Tutorials
-
-This section provides tutorials to help you get started using Spring Boot.

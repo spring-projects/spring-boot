@@ -1,7 +1,0 @@
-services:
-  hazelcast:
-    image: '{imageName}'
-    environment:
-      HZ_CLUSTERNAME: "spring-boot"
-    ports:
-      - '5701'

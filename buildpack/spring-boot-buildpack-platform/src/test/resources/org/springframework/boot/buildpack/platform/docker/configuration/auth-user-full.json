@@ -1,6 +1,0 @@
-{
-	"username": "user",
-	"password": "secret",
-	"email": "docker@example.com",
-	"serveraddress": "https://docker.example.com"
-}

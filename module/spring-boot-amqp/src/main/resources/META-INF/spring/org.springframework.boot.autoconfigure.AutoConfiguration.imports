@@ -1,3 +1,0 @@
-org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration
-org.springframework.boot.amqp.autoconfigure.health.RabbitHealthContributorAutoConfiguration
-org.springframework.boot.amqp.autoconfigure.metrics.RabbitMetricsAutoConfiguration

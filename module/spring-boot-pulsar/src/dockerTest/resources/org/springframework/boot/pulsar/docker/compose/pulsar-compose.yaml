@@ -1,9 +1,0 @@
-services:
-  pulsar:
-    image: '{imageName}'
-    ports:
-      - '8080'
-      - '6650'
-    command: bin/pulsar standalone
-    healthcheck:
-      test: curl http://127.0.0.1:8080/admin/v2/namespaces/public/default

@@ -3,11 +3,16 @@
 :docs: https://docs.spring.io/spring-boot
 :github: https://github.com/spring-projects/spring-boot
 
-Spring Boot helps you to create Spring-powered, production-grade applications and services with absolute minimum fuss.
-It takes an opinionated view of the Spring platform so that new and existing users can quickly get to the bits they need.
+Spring Boot helps you quickly create Spring-powered, production-ready applications and services with minimal fuss.
 
-You can use Spring Boot to create stand-alone Java applications that can be started using `java -jar` or more traditional WAR deployments.
-We also provide a command-line tool that runs Spring scripts.
+You can use Spring Boot to create stand-alone Java applications that can be started using `java -jar` or traditional WAR deployments.
+
+Example command to run using Gradle:
+[source,shell]
+----
+./gradlew build
+----
+
 
 Our primary goals are:
 
@@ -20,7 +25,7 @@ Our primary goals are:
 
 == Installation and Getting Started
 
-The {docs}[reference documentation] includes detailed {docs}/installing.html[installation instructions] as well as a comprehensive {docs}/tutorial/first-application/index.html[``getting started``] guide.
+The {docs}[reference documentation] includes detailed {docs}/installing.html[installation instructions] as well as a comprehensive {docs}/tutorial/first-application/index.html[getting started] guide.
 
 Here is a quick teaser of a complete Spring Boot application in Java:
 
@@ -56,7 +61,7 @@ Are you having trouble with Spring Boot? We want to help!
 * Learn the Spring basics -- Spring Boot builds on many other Spring projects; check the https://spring.io[spring.io] website for a wealth of reference documentation.
   If you are new to Spring, try one of the https://spring.io/guides[guides].
 * If you are upgrading, read the {github}/wiki[release notes] for upgrade instructions and "new and noteworthy" features.
-* Ask a question -- we monitor https://stackoverflow.com[stackoverflow.com] for questions tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
+* Ask a question -- we monitor https://stackoverflow.com[stackoverflow.com] for `StackOverflow questions tagged 'spring-boot'` and link: `https://stackoverflow.com/questions/tagged/spring-boot`.
 * Report bugs with Spring Boot at {github}/issues[github.com/spring-projects/spring-boot/issues].
 
 
