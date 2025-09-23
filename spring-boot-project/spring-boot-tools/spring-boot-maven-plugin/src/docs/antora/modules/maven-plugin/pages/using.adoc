@@ -67,6 +67,9 @@ include::example$using/different-versions-pom.xml[tags=different-versions]
 
 Browse the xref:appendix:dependency-versions/properties.adoc[Dependency Versions Properties] section in the Spring Boot reference for a complete list of dependency version properties.
 
+WARNING: Each Spring Boot release is designed and tested against a specific set of third-party dependencies.
+Overriding versions may cause compatibility issues and should be done with care.
+
 
 
 [[using.import]]
