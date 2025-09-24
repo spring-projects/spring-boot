@@ -60,6 +60,8 @@ public abstract class MainClassFinder {
 
 	private static final Type MAIN_METHOD_TYPE = Type.getMethodType(Type.VOID_TYPE, STRING_ARRAY_TYPE);
 
+	private static final Type PARAMETERLESS_MAIN_METHOD_TYPE = Type.getMethodType(Type.VOID_TYPE);
+
 	private static final String MAIN_METHOD_NAME = "main";
 
 	private static final FileFilter CLASS_FILE_FILTER = MainClassFinder::isClassFile;
@@ -286,8 +288,18 @@ public abstract class MainClassFinder {
 
 		private boolean mainMethodFound;
 
+		private boolean java25OrLater = false;
+
 		ClassDescriptor() {
 			super(SpringAsmInfo.ASM_VERSION);
+		}
+
+		@Override
+		public void visit(int version, int access, String name, String signature, String superName,
+				String[] interfaces) {
+			if (version >= 69) {
+				this.java25OrLater = true;
+			}
 		}
 
 		@Override
@@ -298,11 +310,22 @@ public abstract class MainClassFinder {
 
 		@Override
 		public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-			if (isAccess(access, Opcodes.ACC_PUBLIC, Opcodes.ACC_STATIC) && MAIN_METHOD_NAME.equals(name)
-					&& MAIN_METHOD_TYPE.getDescriptor().equals(desc)) {
-				this.mainMethodFound = true;
+			if (hasRequiredAccess(access) && MAIN_METHOD_NAME.equals(name)) {
+				if (MAIN_METHOD_TYPE.getDescriptor().equals(desc)
+						|| (this.java25OrLater && PARAMETERLESS_MAIN_METHOD_TYPE.getDescriptor().equals(desc))) {
+					this.mainMethodFound = true;
+				}
 			}
 			return null;
+		}
+
+		private boolean hasRequiredAccess(int access) {
+			if (this.java25OrLater) {
+				return !isAccess(access, Opcodes.ACC_PRIVATE) && isAccess(access, Opcodes.ACC_STATIC);
+			}
+			else {
+				return isAccess(access, Opcodes.ACC_PUBLIC, Opcodes.ACC_STATIC);
+			}
 		}
 
 		private boolean isAccess(int access, int... requiredOpsCodes) {
