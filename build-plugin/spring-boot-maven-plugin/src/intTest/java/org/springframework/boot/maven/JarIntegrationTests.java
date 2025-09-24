@@ -181,14 +181,14 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenAnEntryIsOptionalByDefaultAppearsInTheRepackagedJar(MavenBuild mavenBuild) {
+	void whenAnEntryIsOptionalByDefaultDoesNotAppearInTheRepackagedJar(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-optional-default").goals("install").execute((project) -> {
 			File repackaged = new File(project, "target/jar-optional-default-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
-				.hasEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
 		});
 	}
 

@@ -124,8 +124,8 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * Include JAR tools.
 	 * @since 3.3.0
 	 */
-	@Parameter(defaultValue = "true")
-	public boolean includeTools = true;
+	@Parameter(defaultValue = "false")
+	public boolean includeTools;
 
 	/**
 	 * Layer configuration with options to disable layer creation, exclude layer tools
