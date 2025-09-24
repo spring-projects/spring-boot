@@ -20,11 +20,11 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
-import io.grpc.stub.AbstractStub;
 import io.grpc.BindableService;
 import io.grpc.ChannelCredentials;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
+import io.grpc.stub.AbstractStub;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
