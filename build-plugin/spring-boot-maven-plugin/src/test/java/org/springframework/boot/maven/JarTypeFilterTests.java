@@ -61,6 +61,11 @@ class JarTypeFilterTests {
 	}
 
 	@Test
+	void whenArtifactHasDevelopmentToolJarTypeThenItIsExcluded() {
+		assertThat(new JarTypeFilter().filter(createArtifact("development-tool"))).isTrue();
+	}
+
+	@Test
 	void whenArtifactHasNoManifestFileThenItIsIncluded() {
 		assertThat(new JarTypeFilter().filter(createArtifactWithNoManifest())).isFalse();
 	}

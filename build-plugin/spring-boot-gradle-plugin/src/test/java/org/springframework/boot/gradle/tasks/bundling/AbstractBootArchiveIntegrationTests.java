@@ -283,6 +283,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	void jarTypeFilteringIsApplied() throws IOException {
 		File flatDirRepository = new File(this.gradleBuild.getProjectDir(), "repository");
 		createDependenciesStarterJar(new File(flatDirRepository, "starter.jar"));
+		createDependenciesDeveloperToolsJar(new File(flatDirRepository, "devonly.jar"));
 		createStandardJar(new File(flatDirRepository, "standard.jar"));
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 			.isEqualTo(TaskOutcome.SUCCESS);
@@ -657,6 +658,10 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	private void createDependenciesStarterJar(File location) throws IOException {
 		createJar(location, (attributes) -> attributes.putValue("Spring-Boot-Jar-Type", "dependencies-starter"));
+	}
+
+	private void createDependenciesDeveloperToolsJar(File location) throws IOException {
+		createJar(location, (attributes) -> attributes.putValue("Spring-Boot-Jar-Type", "development-tool"));
 	}
 
 	private void createJar(File location, Consumer<Attributes> attributesConfigurer) throws IOException {
