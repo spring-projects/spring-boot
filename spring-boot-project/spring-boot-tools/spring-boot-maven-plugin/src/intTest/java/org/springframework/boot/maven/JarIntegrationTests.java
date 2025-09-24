@@ -203,6 +203,42 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenAnEntryIsOptionalByDefaultAppearsInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-optional-default").goals("install").execute((project) -> {
+			File repackaged = new File(project, "target/jar-optional-default-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
+		});
+	}
+
+	@TestTemplate
+	void whenAnEntryIsOptionalAndOptionalsIncludedAppearsInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-optional-include").goals("install").execute((project) -> {
+			File repackaged = new File(project, "target/jar-optional-include-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
+		});
+	}
+
+	@TestTemplate
+	void whenAnEntryIsOptionalAndOptionalsExcludedDoesNotAppearInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-optional-exclude").goals("install").execute((project) -> {
+			File repackaged = new File(project, "target/jar-optional-exclude-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
+		});
+	}
+
+	@TestTemplate
 	void whenAnEntryIsExcludedWithPropertyItDoesNotAppearInTheRepackagedJar(MavenBuild mavenBuild) {
 		mavenBuild.project("jar")
 			.systemProperty("spring-boot.excludes", "jakarta.servlet:jakarta.servlet-api")

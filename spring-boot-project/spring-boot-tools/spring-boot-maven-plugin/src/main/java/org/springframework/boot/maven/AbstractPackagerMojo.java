@@ -112,6 +112,13 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	public boolean includeSystemScope;
 
 	/**
+	 * Include optional dependencies.
+	 * @since 3.5.7
+	 */
+	@Parameter(defaultValue = "true")
+	public boolean includeOptional = true;
+
+	/**
 	 * Include JAR tools.
 	 * @since 3.3.0
 	 */
@@ -227,6 +234,9 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		}
 		if (!this.includeSystemScope) {
 			filters.add(new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
+		}
+		if (!this.includeOptional) {
+			filters.add(DependencyFilter.exclude(Artifact::isOptional));
 		}
 		return filters.toArray(new ArtifactsFilter[0]);
 	}
