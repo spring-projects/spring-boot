@@ -19,6 +19,7 @@ package org.springframework.boot.liquibase.autoconfigure;
 import javax.sql.DataSource;
 
 import liquibase.Liquibase;
+import liquibase.Scope;
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
 import liquibase.change.DatabaseChange;
@@ -30,7 +31,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -103,7 +103,9 @@ public final class LiquibaseAutoConfiguration {
 		@Bean
 		SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource, LiquibaseProperties properties,
-				ObjectProvider<SpringLiquibaseCustomizer> customizers, LiquibaseConnectionDetails connectionDetails) {
+				ObjectProvider<SpringLiquibaseCustomizer> customizers, LiquibaseConnectionDetails connectionDetails,
+				Environment environment) {
+			registerLiquibaseConfigurationValueProvider(environment);
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
 					dataSource.getIfUnique(), connectionDetails);
 			liquibase.setChangeLog(properties.getChangeLog());
@@ -155,6 +157,20 @@ public final class LiquibaseAutoConfiguration {
 			return liquibase;
 		}
 
+		private void registerLiquibaseConfigurationValueProvider(Environment environment) {
+			liquibase.configuration.LiquibaseConfiguration liquibaseConfiguration = Scope.getCurrentScope()
+				.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+			// Remove any previously registered instance of our provider class
+			liquibaseConfiguration.getProviders()
+				.stream()
+				.filter((provider) -> provider.getClass() == EnvironmentConfigurationValueProvider.class)
+				.toList()
+				.forEach(liquibaseConfiguration::unregisterProvider);
+
+			liquibaseConfiguration.registerProvider(new EnvironmentConfigurationValueProvider(environment));
+		}
+
 		private DataSource getMigrationDataSource(@Nullable DataSource liquibaseDataSource,
 				@Nullable DataSource dataSource, LiquibaseConnectionDetails connectionDetails) {
 			if (liquibaseDataSource != null) {
@@ -188,24 +204,6 @@ public final class LiquibaseAutoConfiguration {
 			}
 		}
 
-	}
-
-	@Bean
-	static BeanFactoryPostProcessor liquibaseConfigurationValueProviderRegistrar(Environment environment) {
-
-		return (beanFactory) -> {
-			var liquibaseConfiguration = liquibase.Scope.getCurrentScope()
-				.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
-
-			// Remove any previously registered instance of our provider class
-			liquibaseConfiguration.getProviders()
-				.stream()
-				.filter((provider) -> provider.getClass() == EnvironmentConfigurationValueProvider.class)
-				.toList()
-				.forEach(liquibaseConfiguration::unregisterProvider);
-
-			liquibaseConfiguration.registerProvider(new EnvironmentConfigurationValueProvider(environment));
-		};
 	}
 
 	@ConditionalOnClass(Customizer.class)

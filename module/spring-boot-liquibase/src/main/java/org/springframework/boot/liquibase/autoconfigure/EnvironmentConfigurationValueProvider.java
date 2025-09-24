@@ -64,12 +64,9 @@ final class EnvironmentConfigurationValueProvider extends AbstractConfigurationV
 			if (requestedKey == null) {
 				continue;
 			}
-			// Exact pass-through: no rewriting of the Liquibase key
 			String propertyName = PREFIX + requestedKey;
 			String value = this.environment.getProperty(propertyName);
 			if (value != null) {
-				// requestedKey: the key Liquibase asked for
-				// propertyName: the exact Spring Environment property we read
 				return new ProvidedValue(requestedKey, requestedKey, value,
 						"Spring Environment property '" + propertyName + "'", this);
 			}
