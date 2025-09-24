@@ -32,7 +32,6 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -83,12 +82,6 @@ import org.springframework.graphql.execution.SubscriptionExceptionResolver;
 public final class GraphQlAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlAutoConfiguration.class);
-
-	private final ListableBeanFactory beanFactory;
-
-	GraphQlAutoConfiguration(ListableBeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean

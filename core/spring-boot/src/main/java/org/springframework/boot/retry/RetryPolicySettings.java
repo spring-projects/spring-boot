@@ -181,12 +181,12 @@ public final class RetryPolicySettings {
 
 	/**
 	 * Set the factory to use to create the {@link RetryPolicy}, or {@code null} to use
-	 * the default. The function takes a {@link RetryPolicy.Builder} initialized with the
-	 * state of this instance that can be further configured, or ignored to restart from
-	 * scratch.
+	 * the default. The function takes a {@link Builder RetryPolicy.Builder} initialized
+	 * with the state of this instance that can be further configured, or ignored to
+	 * restart from scratch.
 	 * @param factory a factory to customize the retry policy.
 	 */
-	public void setFactory(@Nullable Function<Builder, RetryPolicy> factory) {
+	public void setFactory(@Nullable Function<RetryPolicy.Builder, RetryPolicy> factory) {
 		this.factory = factory;
 	}
 

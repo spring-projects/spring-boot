@@ -92,6 +92,7 @@ class BufferingApplicationStartupTests {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	void taggingShouldFailWhenEventAlreadyRecorded() {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(2);
 		StartupStep step = applicationStartup.start("first");

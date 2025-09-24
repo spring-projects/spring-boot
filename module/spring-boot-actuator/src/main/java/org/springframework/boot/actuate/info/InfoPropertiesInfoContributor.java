@@ -16,8 +16,10 @@
 
 package org.springframework.boot.actuate.info;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -99,11 +101,13 @@ public abstract class InfoPropertiesInfoContributor<T extends InfoProperties> im
 	}
 
 	private Iterable<ConfigurationPropertySource> ensureNonNullContent(
-			Iterable<@Nullable ConfigurationPropertySource> adapted) {
-		for (ConfigurationPropertySource source : adapted) {
-			Assert.state(source != null, "'source' must not be null");
+			Iterable<@Nullable ConfigurationPropertySource> sources) {
+		List<ConfigurationPropertySource> nonNullSources = new ArrayList<>(1);
+		for (ConfigurationPropertySource source : sources) {
+			Assert.notNull(source, "'source' must not be null");
+			nonNullSources.add(source);
 		}
-		return (Iterable<ConfigurationPropertySource>) adapted;
+		return nonNullSources;
 	}
 
 	/**

@@ -21,7 +21,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.util.Callback;
 
 import org.springframework.boot.web.server.Compression;
@@ -36,9 +35,9 @@ final class JettyHandlerWrappers {
 	private JettyHandlerWrappers() {
 	}
 
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "deprecation", "removal" })
 	static Handler.Wrapper createGzipHandlerWrapper(Compression compression) {
-		GzipHandler handler = new GzipHandler();
+		org.eclipse.jetty.server.handler.gzip.GzipHandler handler = new org.eclipse.jetty.server.handler.gzip.GzipHandler();
 		handler.setMinGzipSize((int) compression.getMinResponseSize().toBytes());
 		handler.setIncludedMimeTypes(compression.getMimeTypes());
 		for (HttpMethod httpMethod : HttpMethod.values()) {

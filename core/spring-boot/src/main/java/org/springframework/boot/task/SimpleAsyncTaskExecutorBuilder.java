@@ -107,11 +107,11 @@ public class SimpleAsyncTaskExecutorBuilder {
 	/**
 	 * Set whether to cancel remaining tasks on close. By default {@code false} not
 	 * tracking active threads at all or just interrupting any remaining threads that
-	 * still have not finished after the specified {@link #taskTerminationTimeout
-	 * taskTerminationTimeout}. Switch this to {@code true} for immediate interruption on
-	 * close, either in combination with a subsequent termination timeout or without any
-	 * waiting at all, depending on whether a {@code taskTerminationTimeout} has been
-	 * specified as well.
+	 * still have not finished after the specified
+	 * {@link #taskTerminationTimeout(Duration) taskTerminationTimeout}. Switch this to
+	 * {@code true} for immediate interruption on close, either in combination with a
+	 * subsequent termination timeout or without any waiting at all, depending on whether
+	 * a {@code taskTerminationTimeout} has been specified as well.
 	 * @param cancelRemainingTasksOnClose whether to cancel remaining tasks on close
 	 * @return a new builder instance
 	 * @since 4.0.0

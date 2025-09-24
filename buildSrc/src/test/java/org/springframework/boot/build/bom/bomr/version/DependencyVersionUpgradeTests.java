@@ -31,6 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -244,7 +245,8 @@ class DependencyVersionUpgradeTests {
 	static class InputProvider implements ArgumentsProvider {
 
 		@Override
-		public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+		public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameterDeclarations,
+				ExtensionContext context) {
 			Method testMethod = context.getRequiredTestMethod();
 			Stream<Arguments> artifactVersions = artifactVersions(testMethod)
 				.map((artifactVersion) -> Arguments.of(VersionType.ARTIFACT_VERSION.parse(artifactVersion.current()),
