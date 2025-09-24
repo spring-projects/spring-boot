@@ -28,9 +28,8 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("tools.jackson.core:jackson-databind")
 
-	implementation("org.springframework:spring-web")
-
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional("org.springframework:spring-web")
 	optional("tools.jackson.dataformat:jackson-dataformat-cbor")
 	optional("tools.jackson.dataformat:jackson-dataformat-xml")
 	optional("tools.jackson.module:jackson-module-jakarta-xmlbind-annotations")

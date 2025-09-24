@@ -67,6 +67,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.ProblemDetail;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -482,6 +483,17 @@ class JacksonAutoConfigurationTests {
 		RuntimeHints hints = new RuntimeHints();
 		new JacksonAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(PropertyNamingStrategies.class)).accepts(hints);
+	}
+
+	@Test
+	void shouldRegisterProblemDetailsMixin() {
+		this.contextRunner.run((context) -> {
+			ObjectMapper mapper = context.getBean(ObjectMapper.class);
+			ProblemDetail problemDetail = ProblemDetail.forStatus(404);
+			problemDetail.setProperty("spring", "boot");
+			String json = mapper.writeValueAsString(problemDetail);
+			assertThat(json).isEqualTo("{\"status\":404,\"title\":\"Not Found\",\"spring\":\"boot\"}");
+		});
 	}
 
 	static class MyDateFormat extends SimpleDateFormat {

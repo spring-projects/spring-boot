@@ -59,6 +59,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.json.ProblemDetailJacksonMixin;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -299,6 +301,26 @@ public final class JacksonAutoConfiguration {
 						default -> builder.constructorDetector(ConstructorDetector.DEFAULT);
 					}
 				}
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ProblemDetail.class)
+	static class ProblemDetailsConfiguration {
+
+		@Bean
+		ProblemDetailJsonMapperBuilderCustomizer problemDetailJsonMapperBuilderCustomizer() {
+			return new ProblemDetailJsonMapperBuilderCustomizer();
+		}
+
+		static final class ProblemDetailJsonMapperBuilderCustomizer implements JsonMapperBuilderCustomizer {
+
+			@Override
+			public void customize(JsonMapper.Builder builder) {
+				builder.addMixIn(ProblemDetail.class, ProblemDetailJacksonMixin.class);
 			}
 
 		}
