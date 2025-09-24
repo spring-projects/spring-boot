@@ -79,4 +79,7 @@
 	<suppress files="EntityManagerFactoryBuilder\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="DockerApi\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="InvocationContext\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
+	<!-- https://github.com/apache/logging-log4j2/issues/2769#issuecomment-3049020222 -->
+	<suppress files="SpringProfileArbiter\.java" checks="SpringMethodVisibility"/>
+	<suppress files="StructuredLogLayout\.java" checks="SpringMethodVisibility"/>
 </suppressions>

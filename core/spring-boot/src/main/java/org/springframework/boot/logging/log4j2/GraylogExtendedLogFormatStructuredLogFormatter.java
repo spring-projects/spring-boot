@@ -98,11 +98,11 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 			.whenNot(mapIsEmpty)
 			.usingPairs(contextPairs.flat(additionalFieldJoiner(),
 					GraylogExtendedLogFormatStructuredLogFormatter::addContextDataPairs));
-		Function<@Nullable LogEvent, @Nullable Object> getThrownProxy = (event) -> (event != null)
-				? event.getThrownProxy() : null;
+		Function<@Nullable LogEvent, @Nullable Object> getThrown = (event) -> (event != null) ? event.getThrown()
+				: null;
 		members.add()
-			.whenNotNull(getThrownProxy)
-			.usingMembers((thrownProxyMembers) -> throwableMembers(thrownProxyMembers, extractor));
+			.whenNotNull(getThrown)
+			.usingMembers((thrownMembers) -> throwableMembers(thrownMembers, extractor));
 	}
 
 	private static String getMessageText(Message message) {
@@ -134,11 +134,9 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 
 	private static void throwableMembers(Members<LogEvent> members, Extractor extractor) {
 		members.add("full_message", extractor::messageAndStackTrace);
-		members.add("_error_type", (event) -> event.getThrownProxy().getThrowable())
-			.whenNotNull()
-			.as(ObjectUtils::nullSafeClassName);
+		members.add("_error_type", LogEvent::getThrown).whenNotNull().as(ObjectUtils::nullSafeClassName);
 		members.add("_error_stack_trace", extractor::stackTrace);
-		members.add("_error_message", (event) -> event.getThrownProxy().getMessage());
+		members.add("_error_message", (event) -> event.getThrown().getMessage());
 	}
 
 	private static void addContextDataPairs(ContextPairs.Pairs<ReadOnlyStringMap> contextPairs) {

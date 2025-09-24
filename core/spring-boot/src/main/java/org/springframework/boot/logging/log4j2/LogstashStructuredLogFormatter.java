@@ -71,7 +71,7 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<Lo
 			.whenNotNull()
 			.as(LogstashStructuredLogFormatter::getMarkers)
 			.whenNot(collectionIsEmpty);
-		members.add("stack_trace", LogEvent::getThrownProxy).whenNotNull().as(extractor::stackTrace);
+		members.add("stack_trace", LogEvent::getThrown).whenNotNull().as(extractor::stackTrace);
 	}
 
 	private static String asTimestamp(Instant instant) {
