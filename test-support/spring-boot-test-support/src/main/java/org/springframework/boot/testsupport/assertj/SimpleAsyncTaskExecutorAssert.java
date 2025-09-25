@@ -22,6 +22,7 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assert;
 
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -77,6 +78,7 @@ public final class SimpleAsyncTaskExecutorAssert
 	 * @param actual the {@link SimpleAsyncTaskExecutor}
 	 * @return the assertion instance
 	 */
+	@CheckReturnValue
 	public static SimpleAsyncTaskExecutorAssert assertThat(SimpleAsyncTaskExecutor actual) {
 		return new SimpleAsyncTaskExecutorAssert(actual);
 	}
