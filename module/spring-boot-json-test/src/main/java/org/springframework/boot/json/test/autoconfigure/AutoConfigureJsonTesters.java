@@ -28,7 +28,7 @@ import org.springframework.boot.json.test.BasicJsonTester;
 import org.springframework.boot.json.test.GsonTester;
 import org.springframework.boot.json.test.JacksonTester;
 import org.springframework.boot.json.test.JsonbTester;
-import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.context.PropertyMapping;
 
 /**
  * Annotation that can be applied to a test class to enable and configure

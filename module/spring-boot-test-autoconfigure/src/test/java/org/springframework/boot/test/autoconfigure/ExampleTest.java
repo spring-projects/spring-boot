@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.context.PropertyMapping;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 

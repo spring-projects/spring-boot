@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.properties;
+package org.springframework.boot.test.context;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -45,7 +45,7 @@ import org.springframework.test.context.TestPropertySource;
  * <p>
  *
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 4.0.0
  * @see AnnotationsPropertySource
  * @see TestPropertySource
  */
@@ -68,6 +68,28 @@ public @interface PropertyMapping {
 	 * overrides the type-level default.
 	 * @return if mapping should be skipped
 	 */
-	SkipPropertyMapping skip() default SkipPropertyMapping.NO;
+	Skip skip() default Skip.NO;
+
+	/**
+	 * Controls when mapping is skipped.
+	 */
+	enum Skip {
+
+		/**
+		 * Skip mapping the property.
+		 */
+		YES,
+
+		/**
+		 * Skip mapping the property when the default attribute value is specified.
+		 */
+		ON_DEFAULT_VALUE,
+
+		/**
+		 * Don't skip mapping the property.
+		 */
+		NO
+
+	}
 
 }

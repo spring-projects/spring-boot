@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import java.time.Duration;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.context.PropertyMapping;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 

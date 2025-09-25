@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.test.MockServerRestClientCustomizer;
 import org.springframework.boot.restclient.test.MockServerRestTemplateCustomizer;
-import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.context.PropertyMapping;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient.Builder;
 

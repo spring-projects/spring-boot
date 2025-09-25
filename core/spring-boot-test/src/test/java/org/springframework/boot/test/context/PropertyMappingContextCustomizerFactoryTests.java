@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.properties;
+package org.springframework.boot.test.context;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

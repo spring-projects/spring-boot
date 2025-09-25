@@ -1,5 +1,4 @@
 # Spring Test Context Customizer Factories
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.autoconfigure.OnFailureConditionReportContextCustomizerFactory,\
-org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory,\
-org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory
+org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory

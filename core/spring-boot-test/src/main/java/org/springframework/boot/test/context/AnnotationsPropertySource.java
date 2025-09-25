@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.properties;
+package org.springframework.boot.test.context;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.test.context.PropertyMapping.Skip;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotationPredicates;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -42,19 +43,18 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 1.4.0
  */
-public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>> {
+class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>> {
 
 	private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([^A-Z-])([A-Z])");
 
 	private final Map<String, Object> properties;
 
-	public AnnotationsPropertySource(Class<?> source) {
+	AnnotationsPropertySource(Class<?> source) {
 		this("Annotations", source);
 	}
 
-	public AnnotationsPropertySource(String name, Class<?> source) {
+	AnnotationsPropertySource(String name, Class<?> source) {
 		super(name, source);
 		this.properties = getProperties(source);
 	}
@@ -74,8 +74,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 				MergedAnnotation<?> typeMapping = MergedAnnotations.from(type)
 					.get(PropertyMapping.class, MergedAnnotation::isDirectlyPresent);
 				String prefix = typeMapping.getValue(MergedAnnotation.VALUE, String.class).orElse("");
-				SkipPropertyMapping defaultSkip = typeMapping.getValue("skip", SkipPropertyMapping.class)
-					.orElse(SkipPropertyMapping.YES);
+				Skip defaultSkip = typeMapping.getValue("skip", Skip.class).orElse(Skip.YES);
 				for (Method attribute : type.getDeclaredMethods()) {
 					collectProperties(prefix, defaultSkip, annotation, attribute, properties);
 				}
@@ -85,18 +84,18 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		}
 	}
 
-	private void collectProperties(String prefix, SkipPropertyMapping skip, MergedAnnotation<?> annotation,
-			Method attribute, Map<String, Object> properties) {
+	private void collectProperties(String prefix, Skip skip, MergedAnnotation<?> annotation, Method attribute,
+			Map<String, Object> properties) {
 		MergedAnnotation<?> attributeMapping = MergedAnnotations.from(attribute).get(PropertyMapping.class);
-		skip = attributeMapping.getValue("skip", SkipPropertyMapping.class).orElse(skip);
-		if (skip == SkipPropertyMapping.YES) {
+		skip = attributeMapping.getValue("skip", Skip.class).orElse(skip);
+		if (skip == Skip.YES) {
 			return;
 		}
 		Optional<Object> value = annotation.getValue(attribute.getName());
 		if (value.isEmpty()) {
 			return;
 		}
-		if (skip == SkipPropertyMapping.ON_DEFAULT_VALUE) {
+		if (skip == Skip.ON_DEFAULT_VALUE) {
 			if (ObjectUtils.nullSafeEquals(value.get(), annotation.getDefaultValue(attribute.getName()).orElse(null))) {
 				return;
 			}
@@ -130,8 +129,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return postfix;
 	}
 
-	private void putProperties(String name, SkipPropertyMapping defaultSkip, Object value,
-			Map<String, Object> properties) {
+	private void putProperties(String name, Skip defaultSkip, Object value, Map<String, Object> properties) {
 		if (ObjectUtils.isArray(value)) {
 			Object[] array = ObjectUtils.toObjectArray(value);
 			for (int i = 0; i < array.length; i++) {
@@ -163,7 +161,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return StringUtils.toStringArray(this.properties.keySet());
 	}
 
-	public boolean isEmpty() {
+	boolean isEmpty() {
 		return this.properties.isEmpty();
 	}
 

@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.properties;
+package org.springframework.boot.test.context;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- * Enum used to control when {@link PropertyMapping @PropertyMapping} is skipped.
+ * Example {@link PropertyMapping @PropertyMapping} annotation for use with
+ * {@link PropertyMappingTests}.
  *
  * @author Phillip Webb
- * @since 1.4.0
  */
-public enum SkipPropertyMapping {
+@Retention(RetentionPolicy.RUNTIME)
+@PropertyMapping
+@interface ExampleMapping {
 
-	/**
-	 * Skip mapping the property.
-	 */
-	YES,
-
-	/**
-	 * Skip mapping the property when the default attribute value is specified.
-	 */
-	ON_DEFAULT_VALUE,
-
-	/**
-	 * Don't skip mapping the property.
-	 */
-	NO
+	String exampleProperty();
 
 }

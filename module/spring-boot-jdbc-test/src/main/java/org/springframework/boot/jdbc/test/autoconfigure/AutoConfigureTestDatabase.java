@@ -28,8 +28,8 @@ import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
-import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMapping;
+import org.springframework.boot.test.context.PropertyMapping;
+import org.springframework.boot.test.context.PropertyMapping.Skip;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -55,7 +55,7 @@ public @interface AutoConfigureTestDatabase {
 	 * Determines what type of existing DataSource bean can be replaced.
 	 * @return the type of existing DataSource to replace
 	 */
-	@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
+	@PropertyMapping(skip = Skip.ON_DEFAULT_VALUE)
 	Replace replace() default Replace.NON_TEST;
 
 	/**

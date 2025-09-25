@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.properties;
+package org.springframework.boot.test.context;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,10 +22,11 @@ import java.lang.annotation.RetentionPolicy;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level1;
-import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level2;
-import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.EnclosingClass.PropertyMappedAnnotationOnEnclosingClass;
-import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.NestedAnnotations.Entry;
+import org.springframework.boot.test.context.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level1;
+import org.springframework.boot.test.context.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level2;
+import org.springframework.boot.test.context.AnnotationsPropertySourceTests.EnclosingClass.PropertyMappedAnnotationOnEnclosingClass;
+import org.springframework.boot.test.context.AnnotationsPropertySourceTests.NestedAnnotations.Entry;
+import org.springframework.boot.test.context.PropertyMapping.Skip;
 import org.springframework.core.annotation.AliasFor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -268,7 +269,7 @@ class AnnotationsPropertySourceTests {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@PropertyMapping(skip = SkipPropertyMapping.YES)
+	@PropertyMapping(skip = Skip.YES)
 	@interface NotMappedAtTypeLevelAnnotation {
 
 		@PropertyMapping
@@ -289,7 +290,7 @@ class AnnotationsPropertySourceTests {
 
 		String value();
 
-		@PropertyMapping(skip = SkipPropertyMapping.YES)
+		@PropertyMapping(skip = Skip.YES)
 		String ignore() default "xyz";
 
 	}
@@ -423,7 +424,7 @@ class AnnotationsPropertySourceTests {
 	@PropertyMapping("testenum")
 	@interface EnumAnnotation {
 
-		@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
+		@PropertyMapping(skip = Skip.ON_DEFAULT_VALUE)
 		EnumItem value() default EnumItem.DEFAULT;
 
 	}

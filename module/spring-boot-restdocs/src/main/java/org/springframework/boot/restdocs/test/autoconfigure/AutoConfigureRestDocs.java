@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import io.restassured.RestAssured;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.boot.test.context.PropertyMapping;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.web.reactive.server.WebTestClient;
