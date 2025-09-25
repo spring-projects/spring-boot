@@ -117,15 +117,15 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * Include optional dependencies.
 	 * @since 3.5.7
 	 */
-	@Parameter(defaultValue = "true")
-	public boolean includeOptional = true;
+	@Parameter(defaultValue = "false")
+	public boolean includeOptional;
 
 	/**
 	 * Include JAR tools.
 	 * @since 3.3.0
 	 */
-	@Parameter(defaultValue = "false")
-	public boolean includeTools;
+	@Parameter(defaultValue = "true")
+	public boolean includeTools = true;
 
 	/**
 	 * Layer configuration with options to disable layer creation, exclude layer tools

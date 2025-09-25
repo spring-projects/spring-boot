@@ -187,7 +187,6 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
-				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
 				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
 		});
 	}
@@ -199,7 +198,6 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
-				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
 		});
 	}
@@ -211,7 +209,6 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
-				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
 				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
 		});
 	}
