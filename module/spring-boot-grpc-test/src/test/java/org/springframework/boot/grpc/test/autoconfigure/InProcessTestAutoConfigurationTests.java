@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.grpc;
+package org.springframework.boot.grpc.test.autoconfigure;
 
 import io.grpc.BindableService;
 import io.grpc.ServerServiceDefinition;

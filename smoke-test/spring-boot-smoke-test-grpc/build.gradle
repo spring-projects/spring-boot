@@ -26,12 +26,13 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-grpc"))
 
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
+	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
+	testImplementation(project(":module:spring-boot-grpc-test"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("io.grpc:grpc-inprocess")
-	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.testcontainers:junit-jupiter")
-
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 

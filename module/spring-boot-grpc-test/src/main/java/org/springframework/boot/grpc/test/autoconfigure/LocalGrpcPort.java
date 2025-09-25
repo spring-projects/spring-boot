@@ -14,40 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.grpc;
+package org.springframework.boot.grpc.test.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
- * Annotation that can be applied to a test class to start an in-process gRPC server. All
- * clients that connect to any server via the autoconfigured {@code GrpcChannelFactory}
- * will be able to connect to the in-process gRPC server.
+ * Annotation at the field or method/constructor parameter level that injects the gRPC
+ * server port that was allocated at runtime. Provides a convenient alternative for
+ * <code>&#064;Value(&quot;${local.grpc.port}&quot;)</code>.
  *
  * @author Dave Syer
  * @author Chris Bono
  * @since 4.0.0
- * @see InProcessTestAutoConfiguration
  */
-@Target({ ElementType.TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Inherited
-@ImportAutoConfiguration
-@PropertyMapping("spring.test.grpc.inprocess")
-public @interface AutoConfigureInProcessTransport {
-
-	/**
-	 * Whether to start an in-process test gRPC server. Defaults to {@code true}.
-	 * @return whether to start an in-process gRPC server
-	 */
-	boolean enabled() default true;
+@Value("${local.grpc.port}")
+public @interface LocalGrpcPort {
 
 }

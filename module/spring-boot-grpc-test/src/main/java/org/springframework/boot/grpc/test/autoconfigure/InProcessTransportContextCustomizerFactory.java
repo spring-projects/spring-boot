@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.grpc;
+package org.springframework.boot.grpc.test.autoconfigure;
 
 import java.util.List;
 import java.util.Objects;
