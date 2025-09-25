@@ -17,7 +17,7 @@
 package org.springframework.boot.data.neo4j.test.autoconfigure;
 
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
+import org.springframework.boot.test.context.filter.annotation.StandardAnnotationCustomizableTypeExcludeFilter;
 
 /**
  * {@link TypeExcludeFilter} for {@link DataNeo4jTest @DataNeo4jTest}.

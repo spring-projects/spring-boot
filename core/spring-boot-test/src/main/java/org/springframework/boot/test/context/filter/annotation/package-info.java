@@ -15,10 +15,10 @@
  */
 
 /**
- * Helper utilities for using {@link org.springframework.boot.context.TypeExcludeFilter}
- * with auto-configured tests.
+ * Test annotations support for
+ * {@link org.springframework.boot.context.TypeExcludeFilter}.
  */
 @NullMarked
-package org.springframework.boot.test.autoconfigure.filter;
+package org.springframework.boot.test.context.filter.annotation;
 
 import org.jspecify.annotations.NullMarked;

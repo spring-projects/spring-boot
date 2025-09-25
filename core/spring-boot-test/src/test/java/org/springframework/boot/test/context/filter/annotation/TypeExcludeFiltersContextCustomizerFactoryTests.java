@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.filter;
+package org.springframework.boot.test.context.filter.annotation;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactoryTests.EnclosingClass.WithEnclosingClassExcludeFilters;
+import org.springframework.boot.test.context.filter.annotation.TypeExcludeFiltersContextCustomizerFactoryTests.EnclosingClass.WithEnclosingClassExcludeFilters;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.type.classreading.MetadataReader;

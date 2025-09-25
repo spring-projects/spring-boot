@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.filter;
+package org.springframework.boot.test.context.filter.annotation;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  *
  * @param <A> the annotation type
  * @author Phillip Webb
- * @since 2.2.0
+ * @since 4.0.0
  */
 public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends Annotation>
 		extends AnnotationCustomizableTypeExcludeFilter {

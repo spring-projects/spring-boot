@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.filter;
+package org.springframework.boot.test.context.filter.annotation;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -40,15 +40,14 @@ import org.springframework.util.Assert;
  * Utility to load {@link TypeFilter TypeFilters} from {@link Filter @Filter} annotations.
  *
  * @author Phillip Webb
- * @since 1.4.0
  */
-public class FilterAnnotations implements Iterable<TypeFilter> {
+class FilterAnnotations implements Iterable<TypeFilter> {
 
 	private final ClassLoader classLoader;
 
 	private final List<TypeFilter> filters;
 
-	public FilterAnnotations(ClassLoader classLoader, Filter[] filters) {
+	FilterAnnotations(ClassLoader classLoader, Filter[] filters) {
 		Assert.notNull(filters, "'filters' must not be null");
 		this.classLoader = classLoader;
 		this.filters = createTypeFilters(filters);
@@ -99,8 +98,7 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 		return this.filters.iterator();
 	}
 
-	public boolean anyMatches(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
-			throws IOException {
+	boolean anyMatches(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
 		for (TypeFilter filter : this) {
 			if (filter.match(metadataReader, metadataReaderFactory)) {
 				return true;

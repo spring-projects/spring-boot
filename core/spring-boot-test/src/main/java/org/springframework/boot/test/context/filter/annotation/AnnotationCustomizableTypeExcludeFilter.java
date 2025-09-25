@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.filter;
+package org.springframework.boot.test.context.filter.annotation;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -38,7 +38,7 @@ import org.springframework.util.ObjectUtils;
  * annotation.
  *
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 4.0.0
  */
 public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExcludeFilter
 		implements BeanClassLoaderAware {

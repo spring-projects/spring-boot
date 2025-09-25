@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCustomizableTypeExcludeFilter;
+import org.springframework.boot.test.context.filter.annotation.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 
 /**

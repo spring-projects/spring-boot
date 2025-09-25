@@ -31,7 +31,7 @@ import org.springframework.boot.json.test.GsonTester;
 import org.springframework.boot.json.test.JacksonTester;
 import org.springframework.boot.json.test.JsonbTester;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
+import org.springframework.boot.test.context.filter.annotation.TypeExcludeFilters;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;

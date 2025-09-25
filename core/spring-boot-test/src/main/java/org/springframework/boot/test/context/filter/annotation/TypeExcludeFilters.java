@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.filter;
+package org.springframework.boot.test.context.filter.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,16 +23,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.TypeExcludeFilter;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Annotation that can be on tests to define a set of {@link TypeExcludeFilter} classes
- * that should be applied to {@link SpringBootApplication @SpringBootApplication}
- * component scanning.
+ * that should be registered with the {@link ApplicationContext}.
  *
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 4.0.0
  * @see TypeExcludeFilter
  */
 @Target(ElementType.TYPE)
@@ -42,8 +41,7 @@ import org.springframework.boot.context.TypeExcludeFilter;
 public @interface TypeExcludeFilters {
 
 	/**
-	 * Specifies {@link TypeExcludeFilter} classes that should be applied to
-	 * {@link SpringBootApplication @SpringBootApplication} component scanning. Classes
+	 * Specifies {@link TypeExcludeFilter} classes that should be registered. Classes
 	 * specified here can either have a no-arg constructor or accept a single
 	 * {@code Class<?>} argument if they need access to the {@code testClass}.
 	 * @see TypeExcludeFilter
