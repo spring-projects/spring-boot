@@ -1,8 +1,7 @@
 # Spring Test Context Customizer Factories
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.context.ImportsContextCustomizerFactory,\
-org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFactory,\
-org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory
+org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFactory
 
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\

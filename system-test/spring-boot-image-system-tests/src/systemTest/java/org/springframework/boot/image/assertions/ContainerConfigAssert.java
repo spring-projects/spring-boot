@@ -31,7 +31,7 @@ import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 
-import org.springframework.boot.test.json.JsonContentAssert;
+import org.springframework.boot.json.test.JsonContentAssert;
 
 /**
  * AssertJ {@link org.assertj.core.api.Assert} for Docker image container configuration.

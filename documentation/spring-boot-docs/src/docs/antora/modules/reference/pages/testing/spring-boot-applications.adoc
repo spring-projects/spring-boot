@@ -290,7 +290,7 @@ TIP: A list of the auto-configurations that are enabled by javadoc:org.springfra
 If you need to configure elements of the auto-configuration, you can use the javadoc:org.springframework.boot.json.test.autoconfigure.AutoConfigureJsonTesters[format=annotation] annotation.
 
 Spring Boot includes AssertJ-based helpers that work with the JSONAssert and JsonPath libraries to check that JSON appears as expected.
-The javadoc:org.springframework.boot.test.json.JacksonTester[], javadoc:org.springframework.boot.test.json.GsonTester[], javadoc:org.springframework.boot.test.json.JsonbTester[], and javadoc:org.springframework.boot.test.json.BasicJsonTester[] classes can be used for Jackson, Gson, Jsonb, and Strings respectively.
+The javadoc:org.springframework.boot.json.test.JacksonTester[], javadoc:org.springframework.boot.json.test.GsonTester[], javadoc:org.springframework.boot.json.test.JsonbTester[], and javadoc:org.springframework.boot.json.test.BasicJsonTester[] classes can be used for Jackson, Gson, Jsonb, and Strings respectively.
 Any helper fields on the test class can be javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] when using javadoc:org.springframework.boot.json.test.autoconfigure.JsonTest[format=annotation].
 The following example shows a test class for Jackson:
 

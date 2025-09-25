@@ -22,15 +22,15 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.test.BasicJsonTester;
+import org.springframework.boot.json.test.GsonTester;
+import org.springframework.boot.json.test.JacksonTester;
+import org.springframework.boot.json.test.JsonContent;
+import org.springframework.boot.json.test.JsonbTester;
 import org.springframework.boot.json.test.autoconfigure.app.ExampleBasicObject;
 import org.springframework.boot.json.test.autoconfigure.app.ExampleCustomObject;
 import org.springframework.boot.json.test.autoconfigure.app.ExampleJsonApplication;
 import org.springframework.boot.json.test.autoconfigure.app.ExampleJsonObjectWithView;
-import org.springframework.boot.test.json.BasicJsonTester;
-import org.springframework.boot.test.json.GsonTester;
-import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonContent;
-import org.springframework.boot.test.json.JsonbTester;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;

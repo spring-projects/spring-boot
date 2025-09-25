@@ -32,7 +32,10 @@ dependencies {
 	optional(project(":module:spring-boot-jsonb"))
 	optional(project(":module:spring-boot-kotlin-serialization"))
 	optional(project(":module:spring-boot-test-autoconfigure"))
+	optional("com.jayway.jsonpath:json-path")
+	optional("org.assertj:assertj-core")
 	optional("org.junit.jupiter:junit-jupiter-api")
+	optional("org.skyscreamer:jsonassert")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 

@@ -24,11 +24,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.json.test.BasicJsonTester;
+import org.springframework.boot.json.test.GsonTester;
+import org.springframework.boot.json.test.JacksonTester;
+import org.springframework.boot.json.test.JsonbTester;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
-import org.springframework.boot.test.json.BasicJsonTester;
-import org.springframework.boot.test.json.GsonTester;
-import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.boot.test.json.JsonbTester;
 
 /**
  * Annotation that can be applied to a test class to enable and configure

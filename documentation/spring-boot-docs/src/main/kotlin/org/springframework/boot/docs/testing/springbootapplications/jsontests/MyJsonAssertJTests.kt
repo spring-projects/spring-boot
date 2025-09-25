@@ -22,7 +22,7 @@ import org.assertj.core.api.ThrowingConsumer
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.json.test.autoconfigure.JsonTest
-import org.springframework.boot.test.json.JacksonTester
+import org.springframework.boot.json.test.JacksonTester
 
 @JsonTest
 class MyJsonAssertJTests(@Autowired val json: JacksonTester<SomeObject>) {
