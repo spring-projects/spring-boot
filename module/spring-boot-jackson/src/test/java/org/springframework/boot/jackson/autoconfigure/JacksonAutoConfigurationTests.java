@@ -237,8 +237,8 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	void enableReadFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.read.allow_single_quotes:true").run((context) -> {
+	void enableJsonReadFeature() {
+		this.contextRunner.withPropertyValues("spring.jackson.json.read.allow_single_quotes:true").run((context) -> {
 			JsonMapper mapper = context.getBean(JsonMapper.class);
 			assertThat(JsonReadFeature.ALLOW_SINGLE_QUOTES.enabledByDefault()).isFalse();
 			assertThat(mapper.isEnabled(JsonReadFeature.ALLOW_SINGLE_QUOTES)).isTrue();
@@ -246,18 +246,19 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	void enableWriteFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.write.write_numbers_as_strings:true").run((context) -> {
-			JsonMapper mapper = context.getBean(JsonMapper.class);
-			JsonWriteFeature feature = JsonWriteFeature.WRITE_NUMBERS_AS_STRINGS;
-			assertThat(feature.enabledByDefault()).isFalse();
-			assertThat(mapper.isEnabled(feature)).isTrue();
-		});
+	void enableJsonWriteFeature() {
+		this.contextRunner.withPropertyValues("spring.jackson.json.write.write_numbers_as_strings:true")
+			.run((context) -> {
+				JsonMapper mapper = context.getBean(JsonMapper.class);
+				JsonWriteFeature feature = JsonWriteFeature.WRITE_NUMBERS_AS_STRINGS;
+				assertThat(feature.enabledByDefault()).isFalse();
+				assertThat(mapper.isEnabled(feature)).isTrue();
+			});
 	}
 
 	@Test
 	void disableWriteFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.write.write_hex_upper_case:false").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.jackson.json.write.write_hex_upper_case:false").run((context) -> {
 			JsonMapper mapper = context.getBean(JsonMapper.class);
 			assertThat(JsonWriteFeature.WRITE_HEX_UPPER_CASE.enabledByDefault()).isTrue();
 			assertThat(mapper.isEnabled(JsonWriteFeature.WRITE_HEX_UPPER_CASE)).isFalse();

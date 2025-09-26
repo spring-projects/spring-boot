@@ -74,30 +74,30 @@ These features are described in several enums (in Jackson) that map onto propert
 | `spring.jackson.datatype.json-node.<feature_name>`
 | `true`, `false`
 
+| javadoc:com.fasterxml.jackson.annotation.JsonInclude$Include[]
+| configprop:spring.jackson.default-property-inclusion[]
+| `always`, `non_null`, `non_absent`, `non_default`, `non_empty`
+|===
+
 | javadoc:tools.jackson.databind.DeserializationFeature[]
 | `spring.jackson.deserialization.<feature_name>`
+| `true`, `false`
+
+| javadoc:tools.jackson.core.JsonReadFeature[]
+| `spring.jackson.json.read.<feature_name>`
+| `true`, `false`
+
+| javadoc:tools.jackson.core.JsonWriteFeature[]
+| `spring.jackson.json.write.<feature_name>`
 | `true`, `false`
 
 | javadoc:tools.jackson.databind.MapperFeature[]
 | `spring.jackson.mapper.<feature_name>`
 | `true`, `false`
 
-| javadoc:tools.jackson.core.JsonReadFeature[]
-| `spring.jackson.read.<feature_name>`
-| `true`, `false`
-
-| javadoc:tools.jackson.core.JsonWriteFeature[]
-| `spring.jackson.write.<feature_name>`
-| `true`, `false`
-
 | javadoc:tools.jackson.databind.SerializationFeature[]
 | `spring.jackson.serialization.<feature_name>`
 | `true`, `false`
-
-| javadoc:com.fasterxml.jackson.annotation.JsonInclude$Include[]
-| configprop:spring.jackson.default-property-inclusion[]
-| `always`, `non_null`, `non_absent`, `non_default`, `non_empty`
-|===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
 Note that, thanks to the use of xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding[relaxed binding], the case of `indent_output` does not have to match the case of the corresponding enum constant, which is `INDENT_OUTPUT`.

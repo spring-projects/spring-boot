@@ -82,16 +82,6 @@ public class JacksonProperties {
 	private final Map<MapperFeature, Boolean> mapper = new EnumMap<>(MapperFeature.class);
 
 	/**
-	 * Jackson on/off features for readers.
-	 */
-	private final Map<JsonReadFeature, Boolean> read = new EnumMap<>(JsonReadFeature.class);
-
-	/**
-	 * Jackson on/off features for writers.
-	 */
-	private final Map<JsonWriteFeature, Boolean> write = new EnumMap<>(JsonWriteFeature.class);
-
-	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
 	 * the values in Jackson's JsonInclude.Include enumeration.
 	 */
@@ -120,6 +110,8 @@ public class JacksonProperties {
 	private @Nullable Locale locale;
 
 	private final Datatype datatype = new Datatype();
+
+	private final Json json = new Json();
 
 	public @Nullable String getDateFormat() {
 		return this.dateFormat;
@@ -151,14 +143,6 @@ public class JacksonProperties {
 
 	public Map<MapperFeature, Boolean> getMapper() {
 		return this.mapper;
-	}
-
-	public Map<JsonReadFeature, Boolean> getRead() {
-		return this.read;
-	}
-
-	public Map<JsonWriteFeature, Boolean> getWrite() {
-		return this.write;
 	}
 
 	public JsonInclude.@Nullable Include getDefaultPropertyInclusion() {
@@ -203,6 +187,10 @@ public class JacksonProperties {
 
 	public Datatype getDatatype() {
 		return this.datatype;
+	}
+
+	public Json getJson() {
+		return this.json;
 	}
 
 	public enum ConstructorDetectorStrategy {
@@ -257,6 +245,28 @@ public class JacksonProperties {
 
 		public Map<DateTimeFeature, Boolean> getDatetime() {
 			return this.datetime;
+		}
+
+	}
+
+	public static class Json {
+
+		/**
+		 * Jackson on/off token reader features that are specific to JSON.
+		 */
+		private final Map<JsonReadFeature, Boolean> read = new EnumMap<>(JsonReadFeature.class);
+
+		/**
+		 * Jackson on/off token writer features that are specific to JSON.
+		 */
+		private final Map<JsonWriteFeature, Boolean> write = new EnumMap<>(JsonWriteFeature.class);
+
+		public Map<JsonReadFeature, Boolean> getRead() {
+			return this.read;
+		}
+
+		public Map<JsonWriteFeature, Boolean> getWrite() {
+			return this.write;
 		}
 
 	}
