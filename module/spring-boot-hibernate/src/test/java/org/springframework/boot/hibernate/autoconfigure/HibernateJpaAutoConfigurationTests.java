@@ -1086,7 +1086,9 @@ class HibernateJpaAutoConfigurationTests {
 			properties.put("hibernate.transaction.jta.platform", NoJtaPlatform.INSTANCE);
 			factoryBean.setJpaPropertyMap(properties);
 			factoryBean.afterPropertiesSet();
-			return factoryBean.getObject();
+			EntityManagerFactory bean = factoryBean.getObject();
+			assertThat(bean).isNotNull();
+			return bean;
 		}
 
 		@Bean
