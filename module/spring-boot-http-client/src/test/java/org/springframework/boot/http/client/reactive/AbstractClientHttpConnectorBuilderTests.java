@@ -29,6 +29,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -172,7 +173,7 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 		testRedirect(settings, HttpMethod.valueOf(httpMethod), ALWAYS_FOUND);
 	}
 
-	protected final void testRedirect(ClientHttpConnectorSettings settings, HttpMethod httpMethod,
+	protected final void testRedirect(@Nullable ClientHttpConnectorSettings settings, HttpMethod httpMethod,
 			Function<HttpMethod, HttpStatus> expectedStatusForMethod) throws URISyntaxException {
 		HttpStatus expectedStatus = expectedStatusForMethod.apply(httpMethod);
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
@@ -204,7 +205,9 @@ abstract class AbstractClientHttpConnectorBuilderTests<T extends ClientHttpConne
 	}
 
 	private ClientResponse getResponse(ClientHttpConnector connector, ClientRequest request) {
-		return ExchangeFunctions.create(connector).exchange(request).block();
+		ClientResponse response = ExchangeFunctions.create(connector).exchange(request).block();
+		assertThat(response).isNotNull();
+		return response;
 	}
 
 	private Ssl ssl(String... ciphers) {

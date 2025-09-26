@@ -36,6 +36,7 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings
 import org.springframework.boot.http.client.reactive.JdkClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.JettyClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -160,7 +161,9 @@ class ClientHttpConnectorAutoConfigurationTests {
 				assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
 				assertThat(settings.connectTimeout()).isEqualTo(Duration.ofSeconds(10));
 				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
-				assertThat(settings.sslBundle().getKey().getAlias()).isEqualTo("alias1");
+				SslBundle sslBundle = settings.sslBundle();
+				assertThat(sslBundle).isNotNull();
+				assertThat(sslBundle.getKey().getAlias()).isEqualTo("alias1");
 			});
 	}
 
@@ -184,6 +187,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 				ClientHttpConnector connector = context.getBean(ClientHttpConnectorBuilder.class).build();
 				java.net.http.HttpClient httpClient = (java.net.http.HttpClient) ReflectionTestUtils.getField(connector,
 						"httpClient");
+				assertThat(httpClient).isNotNull();
 				assertThat(httpClient.executor()).containsInstanceOf(VirtualThreadTaskExecutor.class);
 			});
 	}

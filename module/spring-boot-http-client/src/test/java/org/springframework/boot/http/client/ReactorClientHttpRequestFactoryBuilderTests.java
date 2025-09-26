@@ -100,14 +100,18 @@ class ReactorClientHttpRequestFactoryBuilderTests
 
 	@Override
 	protected long connectTimeout(ReactorClientHttpRequestFactory requestFactory) {
-		return (int) ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).configuration()
-			.options()
-			.get(ChannelOption.CONNECT_TIMEOUT_MILLIS);
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		assertThat(httpClient).isNotNull();
+		Object connectTimeout = httpClient.configuration().options().get(ChannelOption.CONNECT_TIMEOUT_MILLIS);
+		assertThat(connectTimeout).isNotNull();
+		return (int) connectTimeout;
 	}
 
 	@Override
 	protected long readTimeout(ReactorClientHttpRequestFactory requestFactory) {
-		return ((Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout")).toMillis();
+		Duration readTimeout = (Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		assertThat(readTimeout).isNotNull();
+		return readTimeout.toMillis();
 	}
 
 }

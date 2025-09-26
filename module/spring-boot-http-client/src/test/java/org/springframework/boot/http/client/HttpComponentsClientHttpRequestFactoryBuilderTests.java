@@ -103,7 +103,9 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 
 	@Override
 	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+		Object field = ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+		assertThat(field).isNotNull();
+		return (long) field;
 	}
 
 	@Override
@@ -111,9 +113,11 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 	protected long readTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
 		HttpClient httpClient = requestFactory.getHttpClient();
 		Object connectionManager = ReflectionTestUtils.getField(httpClient, "connManager");
-		SocketConfig socketConfig = ((Resolver<HttpRoute, SocketConfig>) ReflectionTestUtils.getField(connectionManager,
-				"socketConfigResolver"))
-			.resolve(null);
+		assertThat(connectionManager).isNotNull();
+		Resolver<HttpRoute, SocketConfig> socketConfigResolver = (Resolver<HttpRoute, SocketConfig>) ReflectionTestUtils
+			.getField(connectionManager, "socketConfigResolver");
+		assertThat(socketConfigResolver).isNotNull();
+		SocketConfig socketConfig = socketConfigResolver.resolve(null);
 		return socketConfig.getSoTimeout().toMilliseconds();
 	}
 

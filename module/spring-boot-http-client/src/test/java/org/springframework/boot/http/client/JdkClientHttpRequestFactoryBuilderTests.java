@@ -57,6 +57,7 @@ class JdkClientHttpRequestFactoryBuilderTests
 		Executor executor = new SimpleAsyncTaskExecutor();
 		JdkClientHttpRequestFactory factory = ClientHttpRequestFactoryBuilder.jdk().withExecutor(executor).build();
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");
+		assertThat(httpClient).isNotNull();
 		assertThat(httpClient.executor()).containsSame(executor);
 	}
 
@@ -70,12 +71,14 @@ class JdkClientHttpRequestFactoryBuilderTests
 	@Override
 	protected long connectTimeout(JdkClientHttpRequestFactory requestFactory) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		assertThat(httpClient).isNotNull();
 		return httpClient.connectTimeout().get().toMillis();
 	}
 
 	@Override
 	protected long readTimeout(JdkClientHttpRequestFactory requestFactory) {
 		Duration readTimeout = (Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		assertThat(readTimeout).isNotNull();
 		return readTimeout.toMillis();
 	}
 

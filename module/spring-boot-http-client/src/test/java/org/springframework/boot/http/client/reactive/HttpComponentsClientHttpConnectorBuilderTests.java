@@ -28,6 +28,7 @@ import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.HttpComponentsHttpAsyncClientBuilder;
@@ -83,7 +84,7 @@ class HttpComponentsClientHttpConnectorBuilderTests
 	void withTlsSocketStrategyFactory() {
 		ClientHttpConnectorSettings settings = ClientHttpConnectorSettings.ofSslBundle(sslBundle());
 		List<SslBundle> bundles = new ArrayList<>();
-		Function<SslBundle, TlsStrategy> tlsSocketStrategyFactory = (bundle) -> {
+		Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsSocketStrategyFactory = (bundle) -> {
 			bundles.add(bundle);
 			return (sessionLayer, host, localAddress, remoteAddress, attachment, handshakeTimeout) -> false;
 		};
@@ -115,10 +116,13 @@ class HttpComponentsClientHttpConnectorBuilderTests
 	@SuppressWarnings("unchecked")
 	private ConnectionConfig getConnectorConfig(HttpComponentsClientHttpConnector connector) {
 		HttpAsyncClient httpClient = (HttpAsyncClient) ReflectionTestUtils.getField(connector, "client");
+		assertThat(httpClient).isNotNull();
 		Object manager = ReflectionTestUtils.getField(httpClient, "manager");
-		ConnectionConfig connectorConfig = ((Resolver<HttpRoute, ConnectionConfig>) ReflectionTestUtils
-			.getField(manager, "connectionConfigResolver")).resolve(null);
-		return connectorConfig;
+		assertThat(manager).isNotNull();
+		Resolver<HttpRoute, ConnectionConfig> connectionConfigResolver = (Resolver<HttpRoute, ConnectionConfig>) ReflectionTestUtils
+			.getField(manager, "connectionConfigResolver");
+		assertThat(connectionConfigResolver).isNotNull();
+		return connectionConfigResolver.resolve(null);
 	}
 
 }

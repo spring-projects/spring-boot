@@ -20,6 +20,7 @@ import java.net.URI;
 import java.time.Duration;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpMethod;
@@ -179,12 +180,16 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 
 	@Override
 	protected long connectTimeout(ClientHttpRequestFactory requestFactory) {
-		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		assertThat(httpClient).isNotNull();
+		return httpClient.getConnectTimeout();
 	}
 
 	@Override
 	protected long readTimeout(ClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		Object field = ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		assertThat(field).isNotNull();
+		return (long) field;
 	}
 
 	public static class TestClientHttpRequestFactory implements ClientHttpRequestFactory {
@@ -244,9 +249,9 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 
 		private int connectTimeout;
 
-		private Duration readTimeoutDuration;
+		private @Nullable Duration readTimeoutDuration;
 
-		private Duration connectTimeoutDuration;
+		private @Nullable Duration connectTimeoutDuration;
 
 		@Override
 		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) {
@@ -261,11 +266,11 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 			this.readTimeout = timeout;
 		}
 
-		public void setConnectTimeout(Duration timeout) {
+		public void setConnectTimeout(@Nullable Duration timeout) {
 			this.connectTimeoutDuration = timeout;
 		}
 
-		public void setReadTimeout(Duration timeout) {
+		public void setReadTimeout(@Nullable Duration timeout) {
 			this.readTimeoutDuration = timeout;
 		}
 

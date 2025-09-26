@@ -30,6 +30,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -168,7 +169,7 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		testRedirect(settings, HttpMethod.valueOf(httpMethod), ALWAYS_FOUND);
 	}
 
-	protected final void testRedirect(ClientHttpRequestFactorySettings settings, HttpMethod httpMethod,
+	protected final void testRedirect(@Nullable ClientHttpRequestFactorySettings settings, HttpMethod httpMethod,
 			Function<HttpMethod, HttpStatus> expectedStatusForMethod) throws URISyntaxException, IOException {
 		HttpStatus expectedStatus = expectedStatusForMethod.apply(httpMethod);
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);

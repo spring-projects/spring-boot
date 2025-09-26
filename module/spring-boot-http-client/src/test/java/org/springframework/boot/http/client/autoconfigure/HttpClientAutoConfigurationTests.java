@@ -35,6 +35,7 @@ import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.JettyClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.SimpleClientHttpRequestFactoryBuilder;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -81,7 +82,9 @@ class HttpClientAutoConfigurationTests {
 				assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
 				assertThat(settings.connectTimeout()).isEqualTo(Duration.ofSeconds(10));
 				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
-				assertThat(settings.sslBundle().getKey().getAlias()).isEqualTo("alias1");
+				SslBundle sslBundle = settings.sslBundle();
+				assertThat(sslBundle).isNotNull();
+				assertThat(sslBundle.getKey().getAlias()).isEqualTo("alias1");
 			});
 	}
 
@@ -95,7 +98,9 @@ class HttpClientAutoConfigurationTests {
 				assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
 				assertThat(settings.connectTimeout()).isEqualTo(Duration.ofSeconds(10));
 				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
-				assertThat(settings.sslBundle().getKey().getAlias()).isEqualTo("alias1");
+				SslBundle sslBundle = settings.sslBundle();
+				assertThat(sslBundle).isNotNull();
+				assertThat(sslBundle.getKey().getAlias()).isEqualTo("alias1");
 			});
 	}
 
@@ -158,6 +163,7 @@ class HttpClientAutoConfigurationTests {
 			.run((context) -> {
 				ClientHttpRequestFactory factory = context.getBean(ClientHttpRequestFactoryBuilder.class).build();
 				HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");
+				assertThat(httpClient).isNotNull();
 				assertThat(httpClient.executor()).containsInstanceOf(VirtualThreadTaskExecutor.class);
 			});
 	}
