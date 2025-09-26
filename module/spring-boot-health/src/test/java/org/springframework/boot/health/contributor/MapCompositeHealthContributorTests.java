@@ -20,7 +20,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.health.contributor.HealthContributors.Entry;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MapCompositeHealthContributor}.
@@ -31,8 +35,9 @@ class MapCompositeHealthContributorTests
 		extends MapCompositeTests<CompositeHealthContributor, HealthContributor, Entry> {
 
 	@Override
+	@SuppressWarnings("NullAway") // Test null check
 	protected CompositeHealthContributor create(Map<String, String> map,
-			Function<String, HealthContributor> valueAdapter) {
+			@Nullable Function<String, HealthContributor> valueAdapter) {
 		return new MapCompositeHealthContributor<>(map, valueAdapter);
 	}
 
@@ -42,7 +47,7 @@ class MapCompositeHealthContributorTests
 	}
 
 	@Override
-	protected HealthContributor getContributor(CompositeHealthContributor composite, String name) {
+	protected @Nullable HealthContributor getContributor(CompositeHealthContributor composite, String name) {
 		return composite.getContributor(name);
 	}
 
@@ -52,8 +57,10 @@ class MapCompositeHealthContributorTests
 	}
 
 	@Override
-	protected String getData(HealthContributor contributor) {
-		return (String) ((HealthIndicator) contributor).health().getDetails().get("data");
+	protected @Nullable String getData(HealthContributor contributor) {
+		Health health = ((HealthIndicator) contributor).health();
+		assertThat(health).isNotNull();
+		return (String) health.getDetails().get("data");
 	}
 
 	@Override

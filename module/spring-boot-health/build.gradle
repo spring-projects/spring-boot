@@ -37,5 +37,11 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("tools.jackson.core:jackson-databind")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

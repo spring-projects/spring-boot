@@ -33,8 +33,10 @@ class ReactiveHealthIndicatorAdapterTests {
 		ReactiveHealthIndicator reactiveHealthIndicator = () -> Mono
 			.just(Health.up().withDetail("test", "test").build());
 		ReactiveHealthIndicatorAdapter adapter = new ReactiveHealthIndicatorAdapter(reactiveHealthIndicator);
-		assertThat(adapter.health().getStatus()).isEqualTo(Status.UP);
-		assertThat(adapter.health().getDetails()).containsEntry("test", "test");
+		Health health = adapter.health();
+		assertThat(health).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("test", "test");
 	}
 
 	@Test
@@ -42,8 +44,10 @@ class ReactiveHealthIndicatorAdapterTests {
 		ReactiveHealthIndicator reactiveHealthIndicator = () -> Mono
 			.just(Health.up().withDetail("test", "test").build());
 		ReactiveHealthIndicatorAdapter adapter = new ReactiveHealthIndicatorAdapter(reactiveHealthIndicator);
-		assertThat(adapter.health(false).getStatus()).isEqualTo(Status.UP);
-		assertThat(adapter.health(false).getDetails()).isEmpty();
+		Health health = adapter.health(false);
+		assertThat(health).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).isEmpty();
 	}
 
 }
