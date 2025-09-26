@@ -114,7 +114,7 @@ If you want to replace the default javadoc:tools.jackson.databind.json.JsonMappe
 When defining an javadoc:tools.jackson.databind.json.JsonMapper[] bean, marking it as javadoc:org.springframework.context.annotation.Primary[format=annotation] is recommended as the auto-configuration's javadoc:tools.jackson.databind.json.JsonMapper[] that it will replace is javadoc:org.springframework.context.annotation.Primary[format=annotation].
 Note that, in either case, doing so disables all auto-configuration of the javadoc:tools.jackson.databind.json.JsonMapper[].
 
-If you provide any javadoc:java.beans.Beans[format=annotation] of type javadoc:org.springframework.http.converter.json.JacksonJsonHttpMessageConverter[], they replace the default value in the MVC configuration.
+If you provide any javadoc:org.springframework.context.annotation.Bean[format=annotation]s of type javadoc:org.springframework.http.converter.json.JacksonJsonHttpMessageConverter[], they replace the default value in the MVC configuration.
 Also, a convenience bean of type javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
