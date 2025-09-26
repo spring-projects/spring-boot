@@ -21,15 +21,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.grpc.BindableService;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.grpc.server.GrpcServerFactory;
 
 /**
- * {@link Conditional @Conditional} that checks whether the gRPC server and optionally a
- * specific gRPC service is enabled. It matches if the value of the
- * {@code spring.grpc.server.enabled} property is not explicitly set to {@code false} and
- * if the {@link #value() gRPC service name} is set, that the
- * {@code spring.grpc.server.<service-name>.enabled} property is not explicitly set to
- * {@code false}.
+ * {@link Conditional @Conditional} that only matches when Spring gRPC is on the classpath
+ * (i.e. {@link BindableService} and {@link GrpcServerFactory} are on the classpath).
  *
  * @author Freeman Freeman
  * @author Chris Bono
@@ -37,13 +37,7 @@ import org.springframework.context.annotation.Conditional;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
-@Conditional(OnEnabledGrpcServerCondition.class)
-public @interface ConditionalOnGrpcServerEnabled {
-
-	/**
-	 * Name of the gRPC service.
-	 * @return the name of the gRPC service
-	 */
-	String value() default "";
+@ConditionalOnClass({ BindableService.class, GrpcServerFactory.class })
+public @interface ConditionalOnSpringGrpc {
 
 }

@@ -24,12 +24,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.grpc.server.GlobalServerInterceptor;
-import org.springframework.grpc.server.GrpcServerFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for gRPC server-side observations.
@@ -41,10 +39,10 @@ import org.springframework.grpc.server.GrpcServerFactory;
  */
 @AutoConfiguration(
 		afterName = "org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration")
-@ConditionalOnGrpcServerEnabled
-@ConditionalOnClass({ GrpcServerFactory.class, ObservationRegistry.class, ObservationGrpcServerInterceptor.class })
+@ConditionalOnSpringGrpc
+@ConditionalOnClass({ ObservationRegistry.class, ObservationGrpcServerInterceptor.class })
+@ConditionalOnGrpcServerEnabled("observation")
 @ConditionalOnBean(ObservationRegistry.class)
-@ConditionalOnProperty(name = "spring.grpc.server.observation.enabled", havingValue = "true", matchIfMissing = true)
 public final class GrpcServerObservationAutoConfiguration {
 
 	@Bean

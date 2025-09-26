@@ -16,19 +16,15 @@
 
 package org.springframework.boot.grpc.server.autoconfigure.exception;
 
-import io.grpc.Grpc;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnGrpcServerEnabled;
+import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnSpringGrpc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.grpc.server.GlobalServerInterceptor;
-import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.exception.CompositeGrpcExceptionHandler;
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor;
@@ -42,12 +38,10 @@ import org.springframework.grpc.server.exception.GrpcExceptionHandlerInterceptor
  * @since 4.0.0
  */
 @AutoConfiguration
-@ConditionalOnGrpcServerEnabled
-@ConditionalOnClass({ Grpc.class, GrpcServerFactory.class })
+@ConditionalOnSpringGrpc
+@ConditionalOnGrpcServerEnabled("exception-handler")
 @ConditionalOnBean(GrpcExceptionHandler.class)
 @ConditionalOnMissingBean(GrpcExceptionHandlerInterceptor.class)
-@ConditionalOnProperty(prefix = "spring.grpc.server.exception-handler", name = "enabled", havingValue = "true",
-		matchIfMissing = true)
 public final class GrpcExceptionHandlerAutoConfiguration {
 
 	@GlobalServerInterceptor

@@ -33,7 +33,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
 import org.springframework.grpc.server.exception.ReactiveStubBeanDefinitionRegistrar;
 import org.springframework.grpc.server.service.DefaultGrpcServiceConfigurer;
@@ -53,8 +52,8 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
  * @since 4.0.0
  */
 @AutoConfiguration(after = GrpcServerFactoryAutoConfiguration.class)
+@ConditionalOnSpringGrpc
 @ConditionalOnGrpcServerEnabled
-@ConditionalOnClass({ GrpcServerFactory.class })
 @ConditionalOnBean(BindableService.class)
 @EnableConfigurationProperties(GrpcServerProperties.class)
 @Import({ GrpcCodecConfiguration.class })

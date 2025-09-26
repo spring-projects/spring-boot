@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnSpringGrpc;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration.GrpcServletConfiguration;
 import org.springframework.boot.grpc.server.autoconfigure.security.OAuth2ResourceServerAutoConfiguration.Oauth2ResourceServerConfiguration;
@@ -49,7 +50,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.grpc.server.GlobalServerInterceptor;
-import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.security.AuthenticationProcessInterceptor;
 import org.springframework.grpc.server.security.GrpcSecurity;
 import org.springframework.security.config.ObjectPostProcessor;
@@ -89,8 +89,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 				"org.springframework.boot.security.oauth2.server.resource.autoconfigure.servlet.OAuth2ResourceServerAutoConfiguration" },
 		after = { GrpcSecurityAutoConfiguration.class, GrpcServerFactoryAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
-@ConditionalOnClass({ BindableService.class, GrpcServerFactory.class, InMemoryClientRegistrationRepository.class,
-		BearerTokenAuthenticationToken.class, ObjectPostProcessor.class })
+@ConditionalOnSpringGrpc
+@ConditionalOnClass({ InMemoryClientRegistrationRepository.class, BearerTokenAuthenticationToken.class,
+		ObjectPostProcessor.class })
 @ConditionalOnMissingBean(GrpcServletConfiguration.class)
 @ConditionalOnBean({ BindableService.class, GrpcSecurityAutoConfiguration.class })
 @Import({ Oauth2ResourceServerConfiguration.JwtConfiguration.class,

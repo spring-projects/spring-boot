@@ -28,14 +28,12 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.service.GrpcServiceConfigurer;
 import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 import org.springframework.util.unit.DataSize;
@@ -53,8 +51,8 @@ import org.springframework.util.unit.DataSize;
  */
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
+@ConditionalOnSpringGrpc
 @ConditionalOnGrpcServerEnabled
-@ConditionalOnClass(GrpcServerFactory.class)
 @ConditionalOnBean(BindableService.class)
 public final class GrpcServerFactoryAutoConfiguration {
 

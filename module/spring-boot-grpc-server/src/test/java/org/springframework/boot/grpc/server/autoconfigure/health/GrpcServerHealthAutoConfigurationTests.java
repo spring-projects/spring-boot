@@ -35,6 +35,7 @@ import org.springframework.boot.health.autoconfigure.registry.HealthContributorR
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +65,20 @@ class GrpcServerHealthAutoConfigurationTests {
 	@Test
 	void whenNoBindableServiceDefinedDoesNotAutoConfigureBean() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(GrpcServerHealthAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerHealthAutoConfiguration.class));
+	}
+
+	@Test
+	void whenGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(BindableService.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerHealthAutoConfiguration.class));
+	}
+
+	@Test
+	void whenSpringGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(GrpcServerFactory.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerHealthAutoConfiguration.class));
 	}
 

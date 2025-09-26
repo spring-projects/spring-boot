@@ -19,18 +19,16 @@ package org.springframework.boot.grpc.server.autoconfigure.security;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.grpc.BindableService;
-
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnSpringGrpc;
 import org.springframework.boot.security.oauth2.client.autoconfigure.ConditionalOnOAuth2ClientRegistrationProperties;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientPropertiesMapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
@@ -45,7 +43,8 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 // https://github.com/spring-projects/spring-boot/issues/15877)
 @AutoConfiguration(
 		afterName = "org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration")
-@ConditionalOnClass({ BindableService.class, GrpcServerFactory.class, InMemoryClientRegistrationRepository.class })
+@ConditionalOnSpringGrpc
+@ConditionalOnClass(InMemoryClientRegistrationRepository.class)
 @ConditionalOnOAuth2ClientRegistrationProperties
 @EnableConfigurationProperties(OAuth2ClientProperties.class)
 public final class OAuth2ClientAutoConfiguration {

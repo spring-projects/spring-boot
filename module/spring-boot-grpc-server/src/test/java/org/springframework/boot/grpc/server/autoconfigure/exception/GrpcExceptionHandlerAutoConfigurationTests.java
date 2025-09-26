@@ -16,7 +16,7 @@
 
 package org.springframework.boot.grpc.server.autoconfigure.exception;
 
-import io.grpc.Grpc;
+import io.grpc.BindableService;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -49,12 +49,12 @@ class GrpcExceptionHandlerAutoConfigurationTests {
 	@Test
 	void whenGrpcNotOnClasspathAutoConfigurationIsSkipped() {
 		this.contextRunner()
-			.withClassLoader(new FilteredClassLoader(Grpc.class))
+			.withClassLoader(new FilteredClassLoader(BindableService.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcExceptionHandlerAutoConfiguration.class));
 	}
 
 	@Test
-	void whenSprimgGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+	void whenSpringGrpcNotOnClasspathAutoConfigurationIsSkipped() {
 		this.contextRunner()
 			.withClassLoader(new FilteredClassLoader(GrpcServerFactory.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcExceptionHandlerAutoConfiguration.class));

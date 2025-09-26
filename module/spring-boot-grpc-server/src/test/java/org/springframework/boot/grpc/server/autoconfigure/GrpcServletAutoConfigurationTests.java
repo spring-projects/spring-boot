@@ -30,6 +30,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.ServerBuilderCustomizer;
 import org.springframework.util.unit.DataSize;
 
@@ -63,6 +64,13 @@ class GrpcServletAutoConfigurationTests {
 			.withClassLoader(new FilteredClassLoader(BindableService.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServletConfiguration.class)
 				.doesNotHaveBean(ServletRegistrationBean.class));
+	}
+
+	@Test
+	void whenSpringGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(GrpcServerFactory.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServletConfiguration.class));
 	}
 
 	@Test

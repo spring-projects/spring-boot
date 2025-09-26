@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -40,6 +39,7 @@ import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnGrpcServerEnabled;
+import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnSpringGrpc;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerProperties;
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
@@ -48,7 +48,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -59,10 +58,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @since 4.0.0
  */
 @AutoConfiguration(before = GrpcServerFactoryAutoConfiguration.class)
-@ConditionalOnGrpcServerEnabled
-@ConditionalOnClass({ GrpcServerFactory.class, HealthStatusManager.class })
+@ConditionalOnSpringGrpc
+@ConditionalOnClass(HealthStatusManager.class)
+@ConditionalOnGrpcServerEnabled("health")
 @ConditionalOnBean(BindableService.class)
-@ConditionalOnProperty(name = "spring.grpc.server.health.enabled", havingValue = "true", matchIfMissing = true)
 public final class GrpcServerHealthAutoConfiguration {
 
 	@Bean(destroyMethod = "enterTerminalState")
@@ -81,8 +80,7 @@ public final class GrpcServerHealthAutoConfiguration {
 	@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
 	@AutoConfigureAfter(value = TaskSchedulingAutoConfiguration.class,
 			name = "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration")
-	@ConditionalOnProperty(name = "spring.grpc.server.health.actuator.enabled", havingValue = "true",
-			matchIfMissing = true)
+	@ConditionalOnGrpcServerEnabled("health.actuator")
 	@Conditional(OnHealthIndicatorPathsCondition.class)
 	@EnableConfigurationProperties(GrpcServerProperties.class)
 	@EnableScheduling

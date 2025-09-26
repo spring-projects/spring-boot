@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnGrpcNativeServer;
 import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnGrpcServerEnabled;
 import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnGrpcServletServer;
+import org.springframework.boot.grpc.server.autoconfigure.ConditionalOnSpringGrpc;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerExecutorProvider;
 import org.springframework.boot.grpc.server.autoconfigure.exception.GrpcExceptionHandlerAutoConfiguration;
 import org.springframework.boot.grpc.server.autoconfigure.security.GrpcSecurityAutoConfiguration.ExceptionHandlerConfiguration;
@@ -36,7 +37,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.grpc.server.GlobalServerInterceptor;
-import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.exception.GrpcExceptionHandler;
 import org.springframework.grpc.server.security.GrpcSecurity;
 import org.springframework.grpc.server.security.SecurityContextServerInterceptor;
@@ -57,8 +57,9 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @AutoConfiguration(before = GrpcExceptionHandlerAutoConfiguration.class,
 		afterName = "org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration")
+@ConditionalOnSpringGrpc
+@ConditionalOnClass(ObjectPostProcessor.class)
 @ConditionalOnGrpcServerEnabled
-@ConditionalOnClass({ GrpcServerFactory.class, ObjectPostProcessor.class })
 @Import({ ExceptionHandlerConfiguration.class, GrpcNativeSecurityConfigurerConfiguration.class,
 		GrpcServletSecurityConfigurerConfiguration.class })
 public final class GrpcSecurityAutoConfiguration {

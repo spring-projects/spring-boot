@@ -19,6 +19,7 @@ package org.springframework.boot.grpc.server.autoconfigure;
 import java.util.List;
 import java.util.Map;
 
+import io.grpc.BindableService;
 import io.grpc.ServerInterceptor;
 import io.micrometer.core.instrument.binder.grpc.ObservationGrpcServerInterceptor;
 import io.micrometer.observation.ObservationRegistry;
@@ -30,6 +31,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.grpc.server.GlobalServerInterceptor;
+import org.springframework.grpc.server.GrpcServerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,6 +47,20 @@ class GrpcServerObservationAutoConfigurationTests {
 		return new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(GrpcServerObservationAutoConfiguration.class))
 			.withBean("observationRegistry", ObservationRegistry.class, Mockito::mock);
+	}
+
+	@Test
+	void whenGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+		this.validContextRunner()
+			.withClassLoader(new FilteredClassLoader(BindableService.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerObservationAutoConfiguration.class));
+	}
+
+	@Test
+	void whenSpringGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+		this.validContextRunner()
+			.withClassLoader(new FilteredClassLoader(GrpcServerFactory.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerObservationAutoConfiguration.class));
 	}
 
 	@Test

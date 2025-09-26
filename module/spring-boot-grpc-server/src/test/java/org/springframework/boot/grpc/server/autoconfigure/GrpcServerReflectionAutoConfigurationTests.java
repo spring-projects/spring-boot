@@ -21,7 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.grpc.server.GrpcServerFactory;
 import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +47,20 @@ class GrpcServerReflectionAutoConfigurationTests {
 	@Test
 	void whenAutoConfigurationIsNotSkippedThenCreatesReflectionServiceBean() {
 		this.contextRunner().run((context) -> assertThat(context).hasBean("serverReflection"));
+	}
+
+	@Test
+	void whenGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(BindableService.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerReflectionAutoConfiguration.class));
+	}
+
+	@Test
+	void whenSpringGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(GrpcServerFactory.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerReflectionAutoConfiguration.class));
 	}
 
 	@Test

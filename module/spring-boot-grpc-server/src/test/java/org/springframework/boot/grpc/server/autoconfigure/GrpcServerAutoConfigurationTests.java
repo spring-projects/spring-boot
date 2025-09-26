@@ -124,6 +124,13 @@ class GrpcServerAutoConfigurationTests {
 	}
 
 	@Test
+	void whenSpringGrpcNotOnClasspathAutoConfigurationIsSkipped() {
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(GrpcServerFactory.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerAutoConfiguration.class));
+	}
+
+	@Test
 	void whenNoBindableServicesRegisteredAutoConfigurationIsSkipped() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(GrpcServerAutoConfiguration.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(GrpcServerAutoConfiguration.class));
