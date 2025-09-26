@@ -50,3 +50,7 @@ dependencies {
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
