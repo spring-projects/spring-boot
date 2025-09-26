@@ -28,9 +28,8 @@ import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
  *
  * @author Andy Wilkinson
  * @author Ravi Undupitiya
- * @since 4.0.0
  */
-public final class DataJdbcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataJdbcTest> {
+class DataJdbcTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataJdbcTest> {
 
 	private static final Set<Class<?>> KNOWN_INCLUDES = Collections.singleton(AbstractJdbcConfiguration.class);
 

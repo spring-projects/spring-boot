@@ -30,9 +30,8 @@ import org.springframework.util.ClassUtils;
  * {@link TypeExcludeFilter} for {@link RestClientTest @RestClientTest}.
  *
  * @author Stephane Nicoll
- * @since 4.0.0
  */
-public final class RestClientTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<RestClientTest> {
+class RestClientTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<RestClientTest> {
 
 	private static final Class<?>[] NO_COMPONENTS = {};
 

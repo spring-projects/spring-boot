@@ -23,9 +23,8 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
  * {@link TypeExcludeFilter} for {@link DataJpaTest @DataJpaTest}.
  *
  * @author Phillip Webb
- * @since 4.0.0
  */
-public final class DataJpaTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataJpaTest> {
+class DataJpaTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<DataJpaTest> {
 
 	DataJpaTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);

@@ -37,9 +37,8 @@ import org.springframework.web.server.WebFilter;
  * {@link TypeExcludeFilter} for {@link WebFluxTest @WebFluxTest}.
  *
  * @author Stephane Nicoll
- * @since 4.0.0
  */
-public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebFluxTest> {
+class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebFluxTest> {
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 

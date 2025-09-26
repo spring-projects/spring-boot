@@ -31,10 +31,8 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
  * {@link TypeExcludeFilter} for {@link WebServiceServerTest @WebServiceServerTest}.
  *
  * @author Daniil Razorenov
- * @since 2.6.0
  */
-public class WebServiceServerTypeExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<WebServiceServerTest> {
+class WebServiceServerTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebServiceServerTest> {
 
 	private static final Class<?>[] NO_ENDPOINTS = {};
 

@@ -27,10 +27,8 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
  * {@link TypeExcludeFilter} for {@link WebServiceClientTest @WebServiceClientTest}.
  *
  * @author Dmytro Nosan
- * @since 2.3.0
  */
-public final class WebServiceClientExcludeFilter
-		extends StandardAnnotationCustomizableTypeExcludeFilter<WebServiceClientTest> {
+class WebServiceClientExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<WebServiceClientTest> {
 
 	private final Class<?>[] components;
 

@@ -29,9 +29,8 @@ import org.springframework.util.ClassUtils;
  * {@link TypeExcludeFilter} for {@link JsonTest @JsonTest}.
  *
  * @author Phillip Webb
- * @since 4.0.0
  */
-public final class JsonTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<JsonTest> {
+class JsonTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<JsonTest> {
 
 	private static final String JACKSON_MODULE = "tools.jackson.databind.JacksonModule";
 

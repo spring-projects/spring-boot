@@ -39,9 +39,8 @@ import org.springframework.util.ObjectUtils;
  * {@link TypeExcludeFilter} for {@link GraphQlTest @GraphQlTest}.
  *
  * @author Brian Clozel
- * @since 4.0.0
  */
-public class GraphQlTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<GraphQlTest> {
+class GraphQlTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcludeFilter<GraphQlTest> {
 
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
