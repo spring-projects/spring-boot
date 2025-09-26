@@ -26,6 +26,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.core.json.JsonReadFeature;
@@ -624,9 +625,9 @@ class JacksonAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class JsonMapperBuilderConsumerConfig {
 
-		JsonMapper.Builder builderOne;
+		JsonMapper.@Nullable Builder builderOne;
 
-		JsonMapper.Builder builderTwo;
+		JsonMapper.@Nullable Builder builderTwo;
 
 		@Bean
 		String consumerOne(JsonMapper.Builder builder) {
@@ -644,7 +645,7 @@ class JacksonAutoConfigurationTests {
 
 	protected static final class Foo {
 
-		private String name;
+		private @Nullable String name;
 
 		private Foo() {
 		}
@@ -653,11 +654,11 @@ class JacksonAutoConfigurationTests {
 			return new Foo();
 		}
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 
@@ -665,13 +666,13 @@ class JacksonAutoConfigurationTests {
 
 	static class Bar {
 
-		private String propertyName;
+		private @Nullable String propertyName;
 
-		String getPropertyName() {
+		@Nullable String getPropertyName() {
 			return this.propertyName;
 		}
 
-		void setPropertyName(String propertyName) {
+		void setPropertyName(@Nullable String propertyName) {
 			this.propertyName = propertyName;
 		}
 
@@ -708,11 +709,11 @@ class JacksonAutoConfigurationTests {
 	@SuppressWarnings("unused")
 	static class VisibilityBean {
 
-		private String property1;
+		private @Nullable String property1;
 
-		public String property2;
+		public @Nullable String property2;
 
-		String getProperty3() {
+		@Nullable String getProperty3() {
 			return null;
 		}
 
@@ -721,13 +722,13 @@ class JacksonAutoConfigurationTests {
 	static class Person {
 
 		@JsonFormat(pattern = "yyyyMMdd")
-		private Date birthDate;
+		private @Nullable Date birthDate;
 
-		Date getBirthDate() {
+		@Nullable Date getBirthDate() {
 			return this.birthDate;
 		}
 
-		void setBirthDate(Date birthDate) {
+		void setBirthDate(@Nullable Date birthDate) {
 			this.birthDate = birthDate;
 		}
 

@@ -39,3 +39,7 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

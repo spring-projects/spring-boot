@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
@@ -193,19 +194,22 @@ class ObjectValueDeserializerTests {
 	static class TestJsonObjectDeserializer<T> extends ObjectValueDeserializer<T> {
 
 		@Override
+		@SuppressWarnings("unchecked")
 		protected T deserializeObject(JsonParser jsonParser, DeserializationContext context, JsonNode tree) {
-			return null;
+			return (T) new Object();
 		}
 
-		<D, R> R testNullSafeValue(JsonNode jsonNode, Class<D> type, Function<D, R> mapper) {
+		<D, R> @Nullable R testNullSafeValue(JsonNode jsonNode, Class<D> type, Function<D, R> mapper) {
 			return nullSafeValue(jsonNode, type, mapper);
 		}
 
-		<D> D testNullSafeValue(JsonNode jsonNode, Class<D> type) {
+		@SuppressWarnings("NullAway") // Test null check
+		<D> @Nullable D testNullSafeValue(@Nullable JsonNode jsonNode, @Nullable Class<D> type) {
 			return nullSafeValue(jsonNode, type);
 		}
 
-		JsonNode testGetRequiredNode(JsonNode tree, String fieldName) {
+		@SuppressWarnings("NullAway") // Test null check
+		JsonNode testGetRequiredNode(@Nullable JsonNode tree, String fieldName) {
 			return getRequiredNode(tree, fieldName);
 		}
 
