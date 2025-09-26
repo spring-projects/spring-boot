@@ -40,6 +40,7 @@ publishing.publications.withType(MavenPublication) {
 				delegate."project.build.sourceEncoding"('UTF-8')
 				delegate."project.reporting.outputEncoding"('UTF-8')
 				delegate."spring-boot.run.main-class"('${start-class}')
+				delegate."maven.compiler.proc"('full')
 			}
 		}
 		root.scm.plus {
