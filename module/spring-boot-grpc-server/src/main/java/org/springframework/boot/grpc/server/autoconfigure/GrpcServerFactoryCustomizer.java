@@ -18,6 +18,14 @@ package org.springframework.boot.grpc.server.autoconfigure;
 
 import org.springframework.grpc.server.GrpcServerFactory;
 
+/**
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link GrpcServerFactory server factory} before it is fully initialized.
+ *
+ * @author Chris Bono
+ * @since 4.0.0
+ */
+@FunctionalInterface
 public interface GrpcServerFactoryCustomizer {
 
 	/**

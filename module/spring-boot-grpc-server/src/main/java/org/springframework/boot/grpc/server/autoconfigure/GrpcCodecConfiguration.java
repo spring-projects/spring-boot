@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.grpc.server.autoconfigure.codec;
+package org.springframework.boot.grpc.server.autoconfigure;
 
 import io.grpc.Codec;
 import io.grpc.Compressor;
@@ -29,14 +29,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * The configuration that contains all codec related beans for clients/servers.
+ * The configuration that contains all codec related beans for gRPC servers.
  *
  * @author Andrei Lisa
- * @since 4.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Codec.class)
-public class GrpcCodecConfiguration {
+class GrpcCodecConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

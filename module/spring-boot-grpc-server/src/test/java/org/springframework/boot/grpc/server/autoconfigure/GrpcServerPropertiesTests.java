@@ -23,13 +23,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link GrpcServerProperties}.
@@ -54,8 +52,10 @@ class GrpcServerPropertiesTests {
 			map.put("spring.grpc.server.port", "3130");
 			map.put("spring.grpc.server.shutdown-grace-period", "15");
 			GrpcServerProperties properties = bindProperties(map);
-			assertThat(properties.getAddress()).isEqualTo("my-server-ip:3130");
+			assertThat(properties.getHost()).isEqualTo("my-server-ip");
 			assertThat(properties.getPort()).isEqualTo(3130);
+			assertThat(properties.getAddress()).isNull();
+			assertThat(properties.determineAddress()).isEqualTo("my-server-ip:3130");
 			assertThat(properties.getShutdownGracePeriod()).isEqualTo(Duration.ofSeconds(15));
 		}
 
@@ -174,15 +174,17 @@ class GrpcServerPropertiesTests {
 			map.put("spring.grpc.server.address", "my-server-ip:3130");
 			GrpcServerProperties properties = bindProperties(map);
 			assertThat(properties.getAddress()).isEqualTo("my-server-ip:3130");
-			assertThat(properties.getPort()).isEqualTo(3130);
+			assertThat(properties.determineAddress()).isEqualTo("my-server-ip:3130");
 		}
 
 		@Test
-		void illegalBecauseAddressAndPortSpecified() {
+		void addressTakesPrecedenceOverHostAndPort() {
 			Map<String, String> map = new HashMap<>();
 			map.put("spring.grpc.server.address", "my-server-ip:3130");
+			map.put("spring.grpc.server.host", "foo");
 			map.put("spring.grpc.server.port", "10000");
-			assertThatExceptionOfType(BindException.class).isThrownBy(() -> bindProperties(map));
+			GrpcServerProperties properties = bindProperties(map);
+			assertThat(properties.getAddress()).isEqualTo("my-server-ip:3130");
 		}
 
 	}

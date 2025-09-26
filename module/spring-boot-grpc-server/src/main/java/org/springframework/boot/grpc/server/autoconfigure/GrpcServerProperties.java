@@ -40,23 +40,21 @@ public class GrpcServerProperties {
 	public static final String ANY_IP_ADDRESS = "*";
 
 	/**
-	 * Server address to bind to. The default is any IP address ('*').
+	 * The address to bind to in the form 'host:port' or a pseudo URL like
+	 * 'static://host:port'. When the address is set it takes precedence over any
+	 * configured host/port values.
+	 */
+	private @Nullable String address;
+
+	/**
+	 * Server host to bind to. The default is any IP address ('*').
 	 */
 	private String host = ANY_IP_ADDRESS;
 
 	/**
 	 * Server port to listen on. When the value is 0, a random available port is selected.
-	 * The default is 9090.
 	 */
 	private int port = GrpcUtils.DEFAULT_PORT;
-
-	/**
-	 * Maximum time to wait for the server to gracefully shutdown. When the value is
-	 * negative, the server waits forever. When the value is 0, the server will force
-	 * shutdown immediately. The default is 30 seconds.
-	 */
-	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration shutdownGracePeriod = Duration.ofSeconds(30);
 
 	/**
 	 * Maximum message size allowed to be received by the server (default 4MiB).
@@ -70,30 +68,37 @@ public class GrpcServerProperties {
 	@DataSizeUnit(DataUnit.BYTES)
 	private DataSize maxInboundMetadataSize = DataSize.ofBytes(8192);
 
-	private final Health health = new Health();
+	/**
+	 * Maximum time to wait for the server to gracefully shutdown. When the value is
+	 * negative, the server waits forever. When the value is 0, the server will force
+	 * shutdown immediately. The default is 30 seconds.
+	 */
+	@DurationUnit(ChronoUnit.SECONDS)
+	private Duration shutdownGracePeriod = Duration.ofSeconds(30);
 
-	private final KeepAlive keepAlive = new KeepAlive();
+	private final Health health = new Health();
 
 	private final Inprocess inprocess = new Inprocess();
 
-	/**
-	 * The address to bind to. could be a host:port combination or a pseudo URL like
-	 * static://host:port. Can not be set if host or port are set independently.
-	 */
-	@Nullable private String address;
-
-	public String getAddress() {
-		return (this.address != null) ? this.address : this.host + ":" + this.port;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
+	private final KeepAlive keepAlive = new KeepAlive();
 
 	private final Ssl ssl = new Ssl();
 
-	public Ssl getSsl() {
-		return this.ssl;
+	public @Nullable String getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(@Nullable String address) {
+		this.address = address;
+	}
+
+	/**
+	 * Returns the configured address or an address created from the configured host and
+	 * port if no address has been set.
+	 * @return the address to bind to
+	 */
+	public String determineAddress() {
+		return (this.address != null) ? this.address : this.host + ":" + this.port;
 	}
 
 	public String getHost() {
@@ -101,32 +106,15 @@ public class GrpcServerProperties {
 	}
 
 	public void setHost(String host) {
-		if (this.address != null) {
-			throw new IllegalStateException("Cannot set host when address is already set");
-		}
 		this.host = host;
 	}
 
 	public int getPort() {
-		if (this.address != null) {
-			return GrpcUtils.getPort(this.address);
-		}
 		return this.port;
 	}
 
 	public void setPort(int port) {
-		if (this.address != null) {
-			throw new IllegalStateException("Cannot set port when address is already set");
-		}
 		this.port = port;
-	}
-
-	public @Nullable Duration getShutdownGracePeriod() {
-		return this.shutdownGracePeriod;
-	}
-
-	public void setShutdownGracePeriod(Duration shutdownGracePeriod) {
-		this.shutdownGracePeriod = shutdownGracePeriod;
 	}
 
 	public DataSize getMaxInboundMessageSize() {
@@ -145,16 +133,28 @@ public class GrpcServerProperties {
 		this.maxInboundMetadataSize = maxInboundMetadataSize;
 	}
 
+	public Duration getShutdownGracePeriod() {
+		return this.shutdownGracePeriod;
+	}
+
+	public void setShutdownGracePeriod(Duration shutdownGracePeriod) {
+		this.shutdownGracePeriod = shutdownGracePeriod;
+	}
+
 	public Health getHealth() {
 		return this.health;
+	}
+
+	public Inprocess getInprocess() {
+		return this.inprocess;
 	}
 
 	public KeepAlive getKeepAlive() {
 		return this.keepAlive;
 	}
 
-	public Inprocess getInprocess() {
-		return this.inprocess;
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	public static class Health {
@@ -162,36 +162,36 @@ public class GrpcServerProperties {
 		/**
 		 * Whether to auto-configure Health feature on the gRPC server.
 		 */
-		private Boolean enabled = true;
+		private boolean enabled = true;
 
-		private final ActuatorAdapt actuator = new ActuatorAdapt();
+		private final Actuator actuator = new Actuator();
 
-		public Boolean getEnabled() {
+		public boolean getEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(Boolean enabled) {
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
-		public ActuatorAdapt getActuator() {
+		public Actuator getActuator() {
 			return this.actuator;
 		}
 
 	}
 
-	public static class ActuatorAdapt {
+	public static class Actuator {
 
 		/**
 		 * Whether to adapt Actuator health indicators into gRPC health checks.
 		 */
-		private Boolean enabled = true;
+		private boolean enabled = true;
 
 		/**
 		 * Whether to update the overall gRPC server health (the '' service) with the
 		 * aggregate status of the configured health indicators.
 		 */
-		private Boolean updateOverallHealth = true;
+		private boolean updateOverallHealth = true;
 
 		/**
 		 * How often to update the health status.
@@ -208,19 +208,19 @@ public class GrpcServerProperties {
 		 */
 		private List<String> healthIndicatorPaths = new ArrayList<>();
 
-		public Boolean getEnabled() {
+		public boolean getEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(Boolean enabled) {
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
-		public Boolean getUpdateOverallHealth() {
+		public boolean getUpdateOverallHealth() {
 			return this.updateOverallHealth;
 		}
 
-		public void setUpdateOverallHealth(Boolean updateOverallHealth) {
+		public void setUpdateOverallHealth(boolean updateOverallHealth) {
 			this.updateOverallHealth = updateOverallHealth;
 		}
 
@@ -250,6 +250,23 @@ public class GrpcServerProperties {
 
 	}
 
+	public static class Inprocess {
+
+		/**
+		 * The name of the in-process server or null to not start the in-process server.
+		 */
+		private @Nullable String name;
+
+		public @Nullable String getName() {
+			return this.name;
+		}
+
+		public void setName(@Nullable String name) {
+			this.name = name;
+		}
+
+	}
+
 	public static class KeepAlive {
 
 		/**
@@ -271,20 +288,20 @@ public class GrpcServerProperties {
 		 * (default infinite).
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
-		private @Nullable Duration maxIdle = null;
+		private @Nullable Duration maxIdle;
 
 		/**
 		 * Maximum time a connection may exist before being gracefully terminated (default
 		 * infinite).
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
-		private @Nullable Duration maxAge = null;
+		private @Nullable Duration maxAge;
 
 		/**
 		 * Maximum time for graceful connection termination (default infinite).
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
-		private @Nullable Duration maxAgeGrace = null;
+		private @Nullable Duration maxAgeGrace;
 
 		/**
 		 * Maximum keep-alive time clients are permitted to configure (default 5m).
@@ -296,13 +313,13 @@ public class GrpcServerProperties {
 		 * Whether clients are permitted to send keep alive pings when there are no
 		 * outstanding RPCs on the connection (default false).
 		 */
-		private boolean permitWithoutCalls = false;
+		private boolean permitWithoutCalls;
 
 		public @Nullable Duration getTime() {
 			return this.time;
 		}
 
-		public void setTime(Duration time) {
+		public void setTime(@Nullable Duration time) {
 			this.time = time;
 		}
 
@@ -310,7 +327,7 @@ public class GrpcServerProperties {
 			return this.timeout;
 		}
 
-		public void setTimeout(Duration timeout) {
+		public void setTimeout(@Nullable Duration timeout) {
 			this.timeout = timeout;
 		}
 
@@ -318,7 +335,7 @@ public class GrpcServerProperties {
 			return this.maxIdle;
 		}
 
-		public void setMaxIdle(Duration maxIdle) {
+		public void setMaxIdle(@Nullable Duration maxIdle) {
 			this.maxIdle = maxIdle;
 		}
 
@@ -326,7 +343,7 @@ public class GrpcServerProperties {
 			return this.maxAge;
 		}
 
-		public void setMaxAge(Duration maxAge) {
+		public void setMaxAge(@Nullable Duration maxAge) {
 			this.maxAge = maxAge;
 		}
 
@@ -334,7 +351,7 @@ public class GrpcServerProperties {
 			return this.maxAgeGrace;
 		}
 
-		public void setMaxAgeGrace(Duration maxAgeGrace) {
+		public void setMaxAgeGrace(@Nullable Duration maxAgeGrace) {
 			this.maxAgeGrace = maxAgeGrace;
 		}
 
@@ -342,7 +359,7 @@ public class GrpcServerProperties {
 			return this.permitTime;
 		}
 
-		public void setPermitTime(Duration permitTime) {
+		public void setPermitTime(@Nullable Duration permitTime) {
 			this.permitTime = permitTime;
 		}
 
@@ -359,8 +376,7 @@ public class GrpcServerProperties {
 	public static class Ssl {
 
 		/**
-		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
-		 * unless specified otherwise.
+		 * Whether to enable SSL support.
 		 */
 		private @Nullable Boolean enabled;
 
@@ -380,29 +396,29 @@ public class GrpcServerProperties {
 		 */
 		private boolean secure = true;
 
-		public boolean isEnabled() {
-			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		public @Nullable Boolean getEnabled() {
+			return this.enabled;
 		}
 
-		public void copyDefaultsFrom(Ssl config) {
-			if (this.enabled == null) {
-				this.enabled = config.enabled;
-			}
-			if (this.bundle == null) {
-				this.bundle = config.bundle;
-			}
-
-		}
-
-		public void setEnabled(boolean enabled) {
+		public void setEnabled(@Nullable Boolean enabled) {
 			this.enabled = enabled;
+		}
+
+		/**
+		 * Determine whether to enable SSL support. When the {@code enabled} property is
+		 * specified it determines enablement. Otherwise, the support is enabled if the
+		 * {@code bundle} is provided.
+		 * @return whether to enable SSL support
+		 */
+		public boolean determineEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
 		}
 
 		public @Nullable String getBundle() {
 			return this.bundle;
 		}
 
-		public void setBundle(String bundle) {
+		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
 		}
 
@@ -420,37 +436,6 @@ public class GrpcServerProperties {
 
 		public boolean isSecure() {
 			return this.secure;
-		}
-
-	}
-
-	public static class Inprocess {
-
-		/**
-		 * The name of the in-process server or null to not start the in-process server.
-		 */
-		private @Nullable String name;
-
-		/**
-		 * Whether the inprocess server factory should be the only server factory
-		 * available. When the value is true no other server factory will be configured.
-		 */
-		private @Nullable Boolean exclusive;
-
-		public @Nullable String getName() {
-			return this.name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public @Nullable Boolean getExclusive() {
-			return this.exclusive;
-		}
-
-		public void setExclusive(Boolean exclusive) {
-			this.exclusive = exclusive;
 		}
 
 	}

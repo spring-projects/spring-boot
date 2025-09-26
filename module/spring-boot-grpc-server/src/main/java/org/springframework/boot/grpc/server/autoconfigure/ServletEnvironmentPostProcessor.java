@@ -24,7 +24,13 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.util.ClassUtils;
 
-public class ServletEnvironmentPostProcessor implements EnvironmentPostProcessor {
+/**
+ * An {@link EnvironmentPostProcessor} that sets the {@code server.http2.enabled} property
+ * to {@code true} when {@code io.grpc.servlet.jakarta.GrpcServlet} is on the classpath.
+ *
+ * @author Dave Syer
+ */
+class ServletEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
 	private static final boolean SERVLET_AVAILABLE = ClassUtils.isPresent("io.grpc.servlet.jakarta.GrpcServlet", null);
 

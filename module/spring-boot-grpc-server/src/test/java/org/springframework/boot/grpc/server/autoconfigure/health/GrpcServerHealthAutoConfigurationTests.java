@@ -19,7 +19,6 @@ package org.springframework.boot.grpc.server.autoconfigure.health;
 import java.util.Arrays;
 
 import io.grpc.BindableService;
-import io.grpc.ServerServiceDefinition;
 import io.grpc.protobuf.services.HealthStatusManager;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
@@ -30,22 +29,15 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
-import org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration;
-import org.springframework.boot.grpc.server.autoconfigure.ServerBuilderCustomizers;
 import org.springframework.boot.grpc.server.autoconfigure.health.GrpcServerHealthAutoConfiguration.ActuatorHealthAdapterConfiguration;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.grpc.server.lifecycle.GrpcServerLifecycle;
-import org.springframework.grpc.server.service.GrpcServiceConfigurer;
-import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -120,23 +112,6 @@ class GrpcServerHealthAutoConfigurationTests {
 		this.contextRunner()
 			.withPropertyValues("spring.grpc.server.enabled=true")
 			.run((context) -> assertThat(context).hasSingleBean(GrpcServerHealthAutoConfiguration.class));
-	}
-
-	@Test
-	void healthIsAutoConfiguredBeforeGrpcServerFactory() {
-		BindableService service = mock();
-		ServerServiceDefinition serviceDefinition = ServerServiceDefinition.builder("my-service").build();
-		given(service.bindService()).willReturn(serviceDefinition);
-		this.contextRunner()
-			.withConfiguration(AutoConfigurations.of(GrpcServerFactoryAutoConfiguration.class))
-			.withBean("noopServerLifecycle", GrpcServerLifecycle.class, Mockito::mock)
-			.withBean("serverBuilderCustomizers", ServerBuilderCustomizers.class, Mockito::mock)
-			.withBean("grpcServicesDiscoverer", GrpcServiceDiscoverer.class, Mockito::mock)
-			.withBean("grpcServiceConfigurer", GrpcServiceConfigurer.class, Mockito::mock)
-			.withBean("sslBundles", SslBundles.class, Mockito::mock)
-			.withPropertyValues("spring.grpc.server.port=0")
-			.run((context) -> assertThatBeanDefinitionsContainInOrder(context, GrpcServerHealthAutoConfiguration.class,
-					GrpcServerFactoryAutoConfiguration.class));
 	}
 
 	@Disabled("Will be tested in an integration test once the Actuator adapter is implemented")

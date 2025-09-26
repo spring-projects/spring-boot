@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.grpc.server.autoconfigure.codec;
+package org.springframework.boot.grpc.server.autoconfigure;
 
 import io.grpc.CompressorRegistry;
 import io.grpc.DecompressorRegistry;

@@ -30,9 +30,8 @@ import org.springframework.grpc.server.ServerBuilderCustomizer;
  * given {@link ServerBuilder}.
  *
  * @author Chris Bono
- * @since 4.0.0
  */
-public class ServerBuilderCustomizers {
+class ServerBuilderCustomizers {
 
 	private final List<ServerBuilderCustomizer<?>> customizers;
 

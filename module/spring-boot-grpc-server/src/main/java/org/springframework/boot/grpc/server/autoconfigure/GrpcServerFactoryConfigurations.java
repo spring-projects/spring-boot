@@ -78,7 +78,7 @@ class GrpcServerFactoryConfigurations {
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
 			KeyManagerFactory keyManager = null;
 			TrustManagerFactory trustManager = null;
-			if (properties.getSsl().isEnabled()) {
+			if (properties.getSsl().determineEnabled()) {
 				String bundleName = properties.getSsl().getBundle();
 				Assert.notNull(bundleName, () -> "SSL bundleName must not be null");
 				SslBundle bundle = bundles.getBundle(bundleName);
@@ -86,7 +86,7 @@ class GrpcServerFactoryConfigurations {
 				trustManager = properties.getSsl().isSecure() ? bundle.getManagers().getTrustManagerFactory()
 						: io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory.INSTANCE;
 			}
-			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.getAddress(),
+			ShadedNettyGrpcServerFactory factory = new ShadedNettyGrpcServerFactory(properties.determineAddress(),
 					builderCustomizers, keyManager, trustManager, properties.getSsl().getClientAuth());
 			applyServerFactoryCustomizers(customizers, factory);
 			serviceDiscoverer.findServices()
@@ -124,7 +124,7 @@ class GrpcServerFactoryConfigurations {
 				.of(mapper::customizeServerBuilder, serverBuilderCustomizers::customize);
 			KeyManagerFactory keyManager = null;
 			TrustManagerFactory trustManager = null;
-			if (properties.getSsl().isEnabled()) {
+			if (properties.getSsl().determineEnabled()) {
 				String bundleName = properties.getSsl().getBundle();
 				Assert.notNull(bundleName, () -> "SSL bundleName must not be null");
 				SslBundle bundle = bundles.getBundle(bundleName);
@@ -132,8 +132,8 @@ class GrpcServerFactoryConfigurations {
 				trustManager = properties.getSsl().isSecure() ? bundle.getManagers().getTrustManagerFactory()
 						: InsecureTrustManagerFactory.INSTANCE;
 			}
-			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.getAddress(), builderCustomizers,
-					keyManager, trustManager, properties.getSsl().getClientAuth());
+			NettyGrpcServerFactory factory = new NettyGrpcServerFactory(properties.determineAddress(),
+					builderCustomizers, keyManager, trustManager, properties.getSsl().getClientAuth());
 			applyServerFactoryCustomizers(customizers, factory);
 			serviceDiscoverer.findServices()
 				.stream()

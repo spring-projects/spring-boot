@@ -36,7 +36,7 @@ import org.springframework.util.unit.DataSize;
  */
 class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 
-	final GrpcServerProperties properties;
+	private final GrpcServerProperties properties;
 
 	DefaultServerFactoryPropertyMapper(GrpcServerProperties properties) {
 		this.properties = properties;
@@ -47,37 +47,37 @@ class DefaultServerFactoryPropertyMapper<T extends ServerBuilder<T>> {
 	 * @param serverBuilder the builder
 	 */
 	void customizeServerBuilder(T serverBuilder) {
-		PropertyMapper mapper = PropertyMapper.get();
-		customizeKeepAlive(serverBuilder, mapper);
-		customizeInboundLimits(serverBuilder, mapper);
+		PropertyMapper map = PropertyMapper.get();
+		customizeKeepAlive(serverBuilder, map);
+		customizeInboundLimits(serverBuilder, map);
 	}
 
 	/**
 	 * Map the keep-alive properties to the server factory's server builder.
 	 * @param serverBuilder the builder
-	 * @param mapper the property mapper
+	 * @param map the property mapper
 	 */
-	void customizeKeepAlive(T serverBuilder, PropertyMapper mapper) {
+	void customizeKeepAlive(T serverBuilder, PropertyMapper map) {
 		GrpcServerProperties.KeepAlive keepAliveProps = this.properties.getKeepAlive();
-		mapper.from(keepAliveProps.getTime()).to(durationProperty(serverBuilder::keepAliveTime));
-		mapper.from(keepAliveProps.getTimeout()).to(durationProperty(serverBuilder::keepAliveTimeout));
-		mapper.from(keepAliveProps.getMaxIdle()).to(durationProperty(serverBuilder::maxConnectionIdle));
-		mapper.from(keepAliveProps.getMaxAge()).to(durationProperty(serverBuilder::maxConnectionAge));
-		mapper.from(keepAliveProps.getMaxAgeGrace()).to(durationProperty(serverBuilder::maxConnectionAgeGrace));
-		mapper.from(keepAliveProps.getPermitTime()).to(durationProperty(serverBuilder::permitKeepAliveTime));
-		mapper.from(keepAliveProps.isPermitWithoutCalls()).to(serverBuilder::permitKeepAliveWithoutCalls);
+		map.from(keepAliveProps.getTime()).to(durationProperty(serverBuilder::keepAliveTime));
+		map.from(keepAliveProps.getTimeout()).to(durationProperty(serverBuilder::keepAliveTimeout));
+		map.from(keepAliveProps.getMaxIdle()).to(durationProperty(serverBuilder::maxConnectionIdle));
+		map.from(keepAliveProps.getMaxAge()).to(durationProperty(serverBuilder::maxConnectionAge));
+		map.from(keepAliveProps.getMaxAgeGrace()).to(durationProperty(serverBuilder::maxConnectionAgeGrace));
+		map.from(keepAliveProps.getPermitTime()).to(durationProperty(serverBuilder::permitKeepAliveTime));
+		map.from(keepAliveProps.isPermitWithoutCalls()).to(serverBuilder::permitKeepAliveWithoutCalls);
 	}
 
 	/**
 	 * Map the inbound limits properties to the server factory's server builder.
 	 * @param serverBuilder the builder
-	 * @param mapper the property mapper
+	 * @param map the property mapper
 	 */
-	void customizeInboundLimits(T serverBuilder, PropertyMapper mapper) {
-		mapper.from(this.properties.getMaxInboundMessageSize())
+	void customizeInboundLimits(T serverBuilder, PropertyMapper map) {
+		map.from(this.properties.getMaxInboundMessageSize())
 			.asInt(DataSize::toBytes)
 			.to(serverBuilder::maxInboundMessageSize);
-		mapper.from(this.properties.getMaxInboundMetadataSize())
+		map.from(this.properties.getMaxInboundMetadataSize())
 			.asInt(DataSize::toBytes)
 			.to(serverBuilder::maxInboundMetadataSize);
 	}
