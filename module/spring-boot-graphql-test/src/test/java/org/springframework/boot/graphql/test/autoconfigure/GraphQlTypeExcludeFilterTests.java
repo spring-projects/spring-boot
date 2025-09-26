@@ -192,7 +192,7 @@ class GraphQlTypeExcludeFilterTests {
 
 		@Override
 		public Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {
-			return null;
+			return Mono.empty();
 		}
 
 	}
@@ -206,7 +206,7 @@ class GraphQlTypeExcludeFilterTests {
 
 		@Override
 		public Mono<List<GraphQLError>> resolveException(Throwable exception, DataFetchingEnvironment environment) {
-			return null;
+			return Mono.empty();
 		}
 
 	}

@@ -48,3 +48,7 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("tools.jackson.core:jackson-databind")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
