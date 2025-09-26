@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * {@link Endpoint @Endpoint} to expose liquibase info.
  *
  * @author Eddú Meléndez
+ * @author Nabil Fawwaz Elqayyim
  * @since 4.0.0
  */
 @Endpoint(id = "liquibase")
@@ -80,9 +81,12 @@ public class LiquibaseEndpoint {
 			Database database = null;
 			try {
 				database = factory.findCorrectDatabaseImplementation(connection);
-				String defaultSchema = liquibase.getDefaultSchema();
-				if (StringUtils.hasText(defaultSchema)) {
-					database.setDefaultSchemaName(defaultSchema);
+				String schemaToUse = liquibase.getLiquibaseSchema();
+				if (!StringUtils.hasText(schemaToUse)) { // Use liquibase-schema if set, otherwise fall back to default-schema
+					schemaToUse = liquibase.getDefaultSchema();
+				}
+				if (StringUtils.hasText(schemaToUse)) {
+					database.setDefaultSchemaName(schemaToUse);
 				}
 				database.setDatabaseChangeLogTableName(liquibase.getDatabaseChangeLogTable());
 				database.setDatabaseChangeLogLockTableName(liquibase.getDatabaseChangeLogLockTable());
