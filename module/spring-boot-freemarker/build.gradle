@@ -38,8 +38,8 @@ dependencies {
 	optional("jakarta.servlet:jakarta.servlet-api")
 
 	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":core:spring-boot-test-autoconfigure"))
 	testImplementation(project(":module:spring-boot-servlet"))
-	testImplementation(project(":module:spring-boot-test-autoconfigure"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 

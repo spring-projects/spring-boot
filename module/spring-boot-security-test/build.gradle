@@ -24,10 +24,11 @@ plugins {
 description = "Spring Boot Security Test"
 
 dependencies {
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-security"))
 	api("org.springframework.security:spring-security-test")
 
-	optional(project(":module:spring-boot-test-autoconfigure"))
+	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-webflux-test"))
 	optional(project(":module:spring-boot-webmvc-test"))
 	optional("org.seleniumhq.selenium:htmlunit3-driver") {

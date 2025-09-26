@@ -25,12 +25,12 @@ description = "Spring Boot RestClient Test"
 
 dependencies {
 	api(project(":core:spring-boot"))
+	api(project(":core:spring-boot-test-autoconfigure"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-json-test"))
 	optional(project(":module:spring-boot-restclient"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.springframework:spring-test")
 

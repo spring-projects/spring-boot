@@ -25,13 +25,13 @@ plugins {
 description = "Spring Boot JSON Test"
 
 dependencies {
-	implementation(project(":core:spring-boot-test"))
+	api(project(":core:spring-boot-test-autoconfigure"))
 
+	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-gson"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-jsonb"))
 	optional(project(":module:spring-boot-kotlin-serialization"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("com.jayway.jsonpath:json-path")
 	optional("org.assertj:assertj-core")
 	optional("org.junit.jupiter:junit-jupiter-api")

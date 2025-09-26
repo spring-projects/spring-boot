@@ -25,18 +25,19 @@ plugins {
 description = "Spring Boot Web MVC Test"
 
 dependencies {
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-webmvc"))
 
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 
-	implementation(project(":core:spring-boot-test"))
 	implementation(project(":module:spring-boot-http-converter"))
 	implementation(project(":module:spring-boot-web-server"))
 	implementation(project(":module:spring-boot-web-server-test"))
 
+	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-json-test"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-validation"))
 	optional(project(":module:spring-boot-webflux"))
 	optional("org.junit.jupiter:junit-jupiter-api")

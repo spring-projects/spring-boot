@@ -24,11 +24,10 @@ plugins {
 description = "Spring Boot Micrometer Tracing Test"
 
 dependencies {
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-micrometer-tracing"))
 
-	implementation(project(":core:spring-boot-test"))
-
-	optional(project(":module:spring-boot-test-autoconfigure"))
+	optional(project(":core:spring-boot-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))

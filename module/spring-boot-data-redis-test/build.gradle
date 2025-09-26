@@ -25,12 +25,10 @@ plugins {
 description = "Spring Boot Data Redis Test"
 
 dependencies {
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-data-redis"))
 
-	implementation(project(":core:spring-boot-test"))
-
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))

@@ -83,6 +83,7 @@ dependencies {
 	implementation(project(path: ":cli:spring-boot-cli"))
 	implementation(project(path: ":core:spring-boot-docker-compose"))
 	implementation(project(path: ":core:spring-boot-test"))
+	implementation(project(path: ":core:spring-boot-test-autoconfigure"))
 	implementation(project(path: ":core:spring-boot-testcontainers"))
 	implementation(project(path: ":loader:spring-boot-loader-tools"))
 	implementation(project(path: ":module:spring-boot-actuator"))
@@ -124,7 +125,6 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-restclient"))
 	implementation(project(path: ":module:spring-boot-restclient-test"))
 	implementation(project(path: ":module:spring-boot-security"))
-	implementation(project(path: ":module:spring-boot-test-autoconfigure"))
 	implementation(project(path: ":module:spring-boot-tomcat"))
 	implementation(project(path: ":module:spring-boot-web-server-test"))
 	implementation(project(path: ":module:spring-boot-webclient"))
@@ -232,7 +232,7 @@ dependencies {
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("org.springframework:spring-jdbc")
 
-	testSlices(project(path: ":module:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
+	testSlices(project(path: ":core:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
 }
 
 dokkatoo {

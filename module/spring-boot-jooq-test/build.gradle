@@ -24,13 +24,11 @@ plugins {
 description = "Spring Boot jOOQ Test"
 
 dependencies {
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-jooq"))
-
-	implementation(project(":core:spring-boot-test"))
 
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-jdbc-test"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":module:spring-boot-flyway"))

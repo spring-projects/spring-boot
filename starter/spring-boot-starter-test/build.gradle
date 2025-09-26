@@ -25,8 +25,8 @@ dependencies {
 
 	api(project(":core:spring-boot-test"))
 
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-restclient-test"))
-	api(project(":module:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-web-server-test"))
 
 	api("com.jayway.jsonpath:json-path")

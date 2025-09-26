@@ -23,12 +23,11 @@ plugins {
 description = "Spring Boot Test AutoConfigure"
 
 dependencies {
-	api(project(":core:spring-boot"))
-	api(project(":core:spring-boot-autoconfigure"))
 	api(project(":core:spring-boot-test"))
 
 	compileOnly("org.mockito:mockito-core")
 
+	optional(project(":core:spring-boot-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))

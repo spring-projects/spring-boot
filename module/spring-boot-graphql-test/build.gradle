@@ -24,14 +24,14 @@ plugins {
 description = "Spring Boot GraphQL Test"
 
 dependencies {
+	api(project(":core:spring-boot-test-autoconfigure"))
 	api("org.springframework.graphql:spring-graphql-test")
 
-	implementation(project(":core:spring-boot-test"))
 	implementation(project(":module:spring-boot-graphql"))
 	implementation(project(":module:spring-boot-jackson"))
 
+	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-json-test"))
-	optional(project(":module:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-validation"))
 	optional(project(":module:spring-boot-webclient"))
 	optional(project(":module:spring-boot-webflux-test"))
