@@ -109,7 +109,9 @@ class DataSourceScriptDatabaseInitializerTests
 	}
 
 	private int numberOfRows(DataSource dataSource, String sql) {
-		return new JdbcTemplate(dataSource).queryForObject(sql, Integer.class);
+		Integer rows = new JdbcTemplate(dataSource).queryForObject(sql, Integer.class);
+		assertThat(rows).isNotNull();
+		return rows;
 	}
 
 	@Override

@@ -77,6 +77,8 @@ dependencies {
 	}
 	testImplementation("tools.jackson.core:jackson-databind")
 
+	testCompileOnly("org.checkerframework:checker-qual")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.clickhouse:clickhouse-jdbc")
 	testRuntimeOnly("com.mysql:mysql-connector-j")
@@ -101,4 +103,12 @@ tasks.named("checkSpringConfigurationMetadata").configure {
 		"spring.datasource.oracleucp.*",
 		"spring.datasource.tomcat.*",
 	]
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

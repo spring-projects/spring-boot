@@ -68,7 +68,9 @@ class SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
 				getClass().getClassLoader()));
 		JdbcTemplate template = new JdbcTemplate(dataSource);
-		assertThat(template.queryForObject(DatabaseDriver.SQLSERVER.getValidationQuery(), Integer.class)).isEqualTo(1);
+		String validationQuery = DatabaseDriver.SQLSERVER.getValidationQuery();
+		assertThat(validationQuery).isNotNull();
+		assertThat(template.queryForObject(validationQuery, Integer.class)).isEqualTo(1);
 	}
 
 }

@@ -56,7 +56,9 @@ class ClickHouseJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
 				getClass().getClassLoader()));
 		JdbcTemplate template = new JdbcTemplate(dataSource);
-		assertThat(template.queryForObject(DatabaseDriver.CLICKHOUSE.getValidationQuery(), Integer.class)).isEqualTo(1);
+		String validationQuery = DatabaseDriver.CLICKHOUSE.getValidationQuery();
+		assertThat(validationQuery).isNotNull();
+		assertThat(template.queryForObject(validationQuery, Integer.class)).isEqualTo(1);
 	}
 
 }

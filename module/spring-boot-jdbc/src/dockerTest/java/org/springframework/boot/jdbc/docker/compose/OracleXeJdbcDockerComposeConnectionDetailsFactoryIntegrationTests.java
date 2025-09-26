@@ -57,8 +57,9 @@ class OracleXeJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 				getClass().getClassLoader()));
 		Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
 			JdbcTemplate template = new JdbcTemplate(dataSource);
-			assertThat(template.queryForObject(DatabaseDriver.ORACLE.getValidationQuery(), String.class))
-				.isEqualTo("Hello");
+			String validationQuery = DatabaseDriver.ORACLE.getValidationQuery();
+			assertThat(validationQuery).isNotNull();
+			assertThat(template.queryForObject(validationQuery, String.class)).isEqualTo("Hello");
 		});
 	}
 

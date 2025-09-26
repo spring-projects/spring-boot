@@ -54,7 +54,7 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 	void getPoolSizeNoConnection() {
 		// Make sure the pool is initialized
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
-		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
+		jdbcTemplate.execute((ConnectionCallback<Object>) (connection) -> new Object());
 		assertThat(getDataSourceMetadata().getActive()).isZero();
 		assertThat(getDataSourceMetadata().getUsage()).isZero();
 	}
@@ -62,30 +62,30 @@ abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourceP
 	@Test
 	void getPoolSizeOneConnection() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
-		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> {
+		jdbcTemplate.execute((ConnectionCallback<Object>) (connection) -> {
 			assertThat(getDataSourceMetadata().getActive()).isOne();
 			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0.5f);
-			return null;
+			return new Object();
 		});
 	}
 
 	@Test
 	void getIdle() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
-		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
+		jdbcTemplate.execute((ConnectionCallback<Object>) (connection) -> new Object());
 		assertThat(getDataSourceMetadata().getIdle()).isOne();
 	}
 
 	@Test
 	void getPoolSizeTwoConnections() {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
-		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> {
-			jdbcTemplate.execute((ConnectionCallback<Void>) (connection1) -> {
+		jdbcTemplate.execute((ConnectionCallback<Object>) (connection) -> {
+			jdbcTemplate.execute((ConnectionCallback<Object>) (connection1) -> {
 				assertThat(getDataSourceMetadata().getActive()).isEqualTo(2);
 				assertThat(getDataSourceMetadata().getUsage()).isOne();
-				return null;
+				return new Object();
 			});
-			return null;
+			return new Object();
 		});
 	}
 
