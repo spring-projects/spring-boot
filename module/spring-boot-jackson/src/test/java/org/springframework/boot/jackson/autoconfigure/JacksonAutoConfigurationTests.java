@@ -266,7 +266,7 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void enableDatetimeFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.datetime.write-dates-as-timestamps:true")
+		this.contextRunner.withPropertyValues("spring.jackson.datatype.datetime.write-dates-as-timestamps:true")
 			.run((context) -> {
 				JsonMapper mapper = context.getBean(JsonMapper.class);
 				DateTimeFeature feature = DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS;
@@ -277,7 +277,8 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void disableDatetimeFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.datetime.adjust-dates-to-context-time-zone:false")
+		this.contextRunner
+			.withPropertyValues("spring.jackson.datatype.datetime.adjust-dates-to-context-time-zone:false")
 			.run((context) -> {
 				JsonMapper mapper = context.getBean(JsonMapper.class);
 				assertThat(DateTimeFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE.enabledByDefault()).isTrue();

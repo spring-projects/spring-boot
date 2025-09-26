@@ -92,11 +92,6 @@ public class JacksonProperties {
 	private final Map<JsonWriteFeature, Boolean> write = new EnumMap<>(JsonWriteFeature.class);
 
 	/**
-	 * Jackson on/off features for DateTime processing.
-	 */
-	private final Map<DateTimeFeature, Boolean> datetime = new EnumMap<>(DateTimeFeature.class);
-
-	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
 	 * the values in Jackson's JsonInclude.Include enumeration.
 	 */
@@ -164,10 +159,6 @@ public class JacksonProperties {
 
 	public Map<JsonWriteFeature, Boolean> getWrite() {
 		return this.write;
-	}
-
-	public Map<DateTimeFeature, Boolean> getDatetime() {
-		return this.datetime;
 	}
 
 	public JsonInclude.@Nullable Include getDefaultPropertyInclusion() {
@@ -251,12 +242,21 @@ public class JacksonProperties {
 		 */
 		private final Map<JsonNodeFeature, Boolean> jsonNode = new EnumMap<>(JsonNodeFeature.class);
 
+		/**
+		 * Jackson on/off features for DateTimes.
+		 */
+		private final Map<DateTimeFeature, Boolean> datetime = new EnumMap<>(DateTimeFeature.class);
+
 		public Map<EnumFeature, Boolean> getEnum() {
 			return this.enumFeatures;
 		}
 
 		public Map<JsonNodeFeature, Boolean> getJsonNode() {
 			return this.jsonNode;
+		}
+
+		public Map<DateTimeFeature, Boolean> getDatetime() {
+			return this.datetime;
 		}
 
 	}
