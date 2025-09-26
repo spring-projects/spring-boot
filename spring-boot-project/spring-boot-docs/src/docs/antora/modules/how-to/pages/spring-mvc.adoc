@@ -124,7 +124,7 @@ If you want to replace the default javadoc:com.fasterxml.jackson.databind.Object
 When defining an javadoc:com.fasterxml.jackson.databind.ObjectMapper[] bean, marking it as javadoc:org.springframework.context.annotation.Primary[format=annotation] is recommended as the auto-configuration's javadoc:com.fasterxml.jackson.databind.ObjectMapper[] that it will replace is javadoc:org.springframework.context.annotation.Primary[format=annotation].
 Note that, in either case, doing so disables all auto-configuration of the javadoc:com.fasterxml.jackson.databind.ObjectMapper[].
 
-If you provide any javadoc:java.beans.Beans[format=annotation] of type javadoc:org.springframework.http.converter.json.MappingJackson2HttpMessageConverter[], they replace the default value in the MVC configuration.
+If you provide any javadoc:org.springframework.context.annotation.Bean[format=annotation]s of type javadoc:org.springframework.http.converter.json.MappingJackson2HttpMessageConverter[], they replace the default value in the MVC configuration.
 Also, a convenience bean of type javadoc:org.springframework.boot.autoconfigure.http.HttpMessageConverters[] is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
