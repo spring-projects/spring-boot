@@ -1,0 +1,67 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java-library"
+	id "org.springframework.boot.auto-configuration"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot gRPC Client"
+
+
+dependencies {
+	api(project(":core:spring-boot"))
+	api("org.springframework.grpc:spring-grpc-core")
+
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
+	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":module:spring-boot-actuator"))
+	optional(project(":module:spring-boot-actuator-autoconfigure"))
+	optional(project(":module:spring-boot-health"))
+	optional(project(":module:spring-boot-micrometer-observation"))
+	optional(project(":module:spring-boot-security"))
+	optional(project(":module:spring-boot-security-oauth2-client"))
+	optional(project(":module:spring-boot-security-oauth2-resource-server"))
+	optional("io.grpc:grpc-servlet-jakarta")
+	optional("io.grpc:grpc-stub")
+	optional("io.grpc:grpc-netty")
+	optional("io.grpc:grpc-netty-shaded")
+	optional("io.grpc:grpc-inprocess")
+	optional("io.grpc:grpc-kotlin-stub") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+	}
+	optional("io.micrometer:micrometer-core")
+	optional("io.netty:netty-transport-native-epoll")
+	optional("io.projectreactor:reactor-core")
+	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("org.springframework:spring-web")
+	optional("org.springframework.security:spring-security-config")
+	optional("org.springframework.security:spring-security-oauth2-client")
+	optional("org.springframework.security:spring-security-oauth2-resource-server")
+	optional("org.springframework.security:spring-security-oauth2-jose")
+	optional("org.springframework.security:spring-security-web")
+
+	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
+	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":test-support:spring-boot-test-support"))
+
+	testRuntimeOnly("ch.qos.logback:logback-classic")
+}

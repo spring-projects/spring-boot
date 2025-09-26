@@ -1,0 +1,29 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.grpc.client.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable client autoconfiguration.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.client.inprocess.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to configure the in-process channel factory.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.client.inprocess.exclusive",
+      "type": "java.lang.Boolean",
+      "description": "Whether the inprocess channel factory should be the only channel factory available. When the value is true, no other channel factory will be configured.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.client.observation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Observations on the client.",
+      "defaultValue": true
+    }
+  ]
+}
