@@ -237,7 +237,9 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-				return inspect((platform != null) ? PLATFORM_API_VERSION : API_VERSION, reference);
+				String digest = digestCapture.getDigest();
+				ImageReference inspectReference = (digest != null) ? reference.withDigest(digest) : reference;
+				return inspect((platform != null) ? PLATFORM_API_VERSION : API_VERSION, inspectReference);
 			}
 			finally {
 				listener.onFinish();
@@ -309,9 +311,24 @@ public class DockerApi {
 		 */
 		public void exportLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
+			exportLayers(reference, null, exports);
+		}
+
+		/**
+		 * Export the layers of an image as {@link TarArchive TarArchives}.
+		 * @param reference the reference to export
+		 * @param platform the platform (os/architecture/variant) of the image to export
+		 * @param exports a consumer to receive the layers (contents can only be accessed
+		 * during the callback)
+		 * @throws IOException on IO error
+		 */
+		public void exportLayers(ImageReference reference, @Nullable ImagePlatform platform,
+				IOBiConsumer<String, TarArchive> exports) throws IOException {
 			Assert.notNull(reference, "'reference' must not be null");
 			Assert.notNull(exports, "'exports' must not be null");
-			URI uri = buildUrl("/images/" + reference + "/get");
+			URI uri = (platform != null)
+					? buildUrl(PLATFORM_API_VERSION, "/images/" + reference + "/get", "platform", platform)
+					: buildUrl("/images/" + reference + "/get");
 			try (Response response = http().get(uri)) {
 				try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference, response.getContent())) {
 					exportedImageTar.exportLayers(exports);
@@ -545,6 +562,10 @@ public class DockerApi {
 				Assert.state(this.digest == null || this.digest.equals(digest), "Different digests IDs provided");
 				this.digest = digest;
 			}
+		}
+
+		private @Nullable String getDigest() {
+			return this.digest;
 		}
 
 	}
