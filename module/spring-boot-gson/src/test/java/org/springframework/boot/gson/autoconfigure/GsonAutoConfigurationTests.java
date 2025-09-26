@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
 import com.google.gson.Strictness;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -310,7 +311,7 @@ class GsonAutoConfigurationTests {
 		private Long data = 1L;
 
 		@SuppressWarnings("unused")
-		private final String owner = null;
+		private final @Nullable String owner = null;
 
 		public void setData(Long data) {
 			this.data = data;
