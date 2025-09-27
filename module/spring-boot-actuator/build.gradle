@@ -65,7 +65,6 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-jackson"))
 	testImplementation(project(":module:spring-boot-jsonb"))
-	testImplementation(project(":module:spring-boot-json-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("io.projectreactor:reactor-test")

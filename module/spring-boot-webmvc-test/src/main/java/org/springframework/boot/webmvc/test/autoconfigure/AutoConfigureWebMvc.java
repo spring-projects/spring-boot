@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.json.test.autoconfigure.AutoConfigureJson;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 
 /**
  * {@link ImportAutoConfiguration Auto-configuration imports} for typical Spring MVC

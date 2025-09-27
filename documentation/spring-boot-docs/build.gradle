@@ -115,7 +115,6 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-jpa"))
 	implementation(project(path: ":module:spring-boot-jms"))
 	implementation(project(path: ":module:spring-boot-jsonb"))
-	implementation(project(path: ":module:spring-boot-json-test"))
 	implementation(project(path: ":module:spring-boot-ldap"))
 	implementation(project(path: ":module:spring-boot-micrometer-metrics"))
 	implementation(project(path: ":module:spring-boot-persistence"))

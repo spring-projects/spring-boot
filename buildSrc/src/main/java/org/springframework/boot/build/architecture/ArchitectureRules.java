@@ -80,6 +80,8 @@ final class ArchitectureRules {
 
 	private static final String AUTOCONFIGURATION_ANNOTATION = "org.springframework.boot.autoconfigure.AutoConfiguration";
 
+	private static final String TEST_AUTOCONFIGURATION_ANNOTATION = "org.springframework.boot.test.autoconfigure.TestAutoConfiguration";
+
 	private ArchitectureRules() {
 	}
 
@@ -112,6 +114,7 @@ final class ArchitectureRules {
 		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
 		rules.add(autoConfigurationClassesShouldBePublicAndFinal());
 		rules.add(autoConfigurationClassesShouldHaveNoPublicMembers());
+		rules.add(testAutoConfigurationClassesShouldBePackagePrivateAndFinal());
 		return List.copyOf(rules);
 	}
 
@@ -358,8 +361,7 @@ final class ArchitectureRules {
 
 	private static ArchRule autoConfigurationClassesShouldBePublicAndFinal() {
 		return ArchRuleDefinition.classes()
-			.that()
-			.areAnnotatedWith(AUTOCONFIGURATION_ANNOTATION)
+			.that(areRegularAutoConfiguration())
 			.should()
 			.bePublic()
 			.andShould()
@@ -370,14 +372,31 @@ final class ArchitectureRules {
 	private static ArchRule autoConfigurationClassesShouldHaveNoPublicMembers() {
 		return ArchRuleDefinition.members()
 			.that()
-			.areDeclaredInClassesThat()
-			.areAnnotatedWith(AUTOCONFIGURATION_ANNOTATION)
+			.areDeclaredInClassesThat(areRegularAutoConfiguration())
 			.and(areNotDefaultConstructors())
 			.and(areNotConstants())
 			.and(dontOverridePublicMethods())
 			.should()
 			.notBePublic()
 			.allowEmptyShould(true);
+	}
+
+	private static ArchRule testAutoConfigurationClassesShouldBePackagePrivateAndFinal() {
+		return ArchRuleDefinition.classes()
+			.that()
+			.areAnnotatedWith(TEST_AUTOCONFIGURATION_ANNOTATION)
+			.should()
+			.bePackagePrivate()
+			.andShould()
+			.haveModifier(JavaModifier.FINAL)
+			.allowEmptyShould(true);
+	}
+
+	private static DescribedPredicate<JavaClass> areRegularAutoConfiguration() {
+		return DescribedPredicate.describe("Regular @AutoConfiguration",
+				(javaClass) -> javaClass.isMetaAnnotatedWith(AUTOCONFIGURATION_ANNOTATION)
+						&& !javaClass.isMetaAnnotatedWith(TEST_AUTOCONFIGURATION_ANNOTATION)
+						&& !javaClass.isAnnotation());
 	}
 
 	private static DescribedPredicate<? super JavaMember> dontOverridePublicMethods() {

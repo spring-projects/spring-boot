@@ -31,7 +31,6 @@ dependencies {
 	implementation(project(":module:spring-boot-jackson"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":module:spring-boot-json-test"))
 	optional(project(":module:spring-boot-validation"))
 	optional(project(":module:spring-boot-webclient"))
 	optional(project(":module:spring-boot-webflux-test"))

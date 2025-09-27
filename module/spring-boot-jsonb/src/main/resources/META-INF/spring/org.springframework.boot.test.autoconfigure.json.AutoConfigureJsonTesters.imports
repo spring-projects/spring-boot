@@ -1,0 +1,2 @@
+org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration
+org.springframework.boot.jsonb.autoconfigure.JsonbTesterAutoConfiguration

@@ -29,7 +29,6 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
-	optional(project(":module:spring-boot-json-test"))
 	optional(project(":module:spring-boot-restclient"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.springframework:spring-test")

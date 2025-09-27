@@ -2040,7 +2040,6 @@ bom {
 				"spring-boot-jooq-test",
 				"spring-boot-jpa",
 				"spring-boot-jpa-test",
-				"spring-boot-json-test",
 				"spring-boot-jsonb",
 				"spring-boot-kafka",
 				"spring-boot-kotlin-serialization",

@@ -1,0 +1,2 @@
+org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration
+org.springframework.boot.gson.autoconfigure.GsonTesterAutoConfiguration

@@ -292,7 +292,7 @@ You can use this combination if you are not interested in "`slicing`" your appli
 [[testing.spring-boot-applications.json-tests]]
 == Auto-configured JSON Tests
 
-To test that object JSON serialization and deserialization is working as expected, you can use the javadoc:org.springframework.boot.json.test.autoconfigure.JsonTest[format=annotation] annotation from the `spring-boot-json-test` module.
+To test that object JSON serialization and deserialization is working as expected, you can use the javadoc:org.springframework.boot.json.test.autoconfigure.JsonTest[format=annotation] annotation from the `spring-boot-test-autoconfigure` module.
 javadoc:org.springframework.boot.json.test.autoconfigure.JsonTest[format=annotation] auto-configures the available supported JSON mapper, which can be one of the following libraries:
 
 * Jackson javadoc:tools.jackson.databind.JsonMapper[], any javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] beans and any Jackson javadoc:tools.jackson.databind.JacksonModule[]

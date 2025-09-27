@@ -51,7 +51,6 @@ dependencies {
 	}
 
 	systemTestImplementation(project(":buildpack:spring-boot-buildpack-platform"))
-	systemTestImplementation(project(":module:spring-boot-json-test"))
 	systemTestImplementation(project(":starter:spring-boot-starter-test"))
 	systemTestImplementation(project(":test-support:spring-boot-gradle-test-support"))
 	systemTestImplementation(gradleTestKit())

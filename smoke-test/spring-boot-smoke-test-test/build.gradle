@@ -30,7 +30,6 @@ dependencies {
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation(project(":module:spring-boot-data-jpa-test"))
 	testImplementation(project(":module:spring-boot-jdbc-test"))
-	testImplementation(project(":module:spring-boot-json-test"))
 	testImplementation(project(":module:spring-boot-restclient-test"))
 	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation("org.htmlunit:htmlunit")

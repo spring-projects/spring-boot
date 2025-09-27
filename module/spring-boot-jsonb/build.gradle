@@ -29,7 +29,7 @@ dependencies {
 	api("org.eclipse:yasson")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-test-autoconfigure"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

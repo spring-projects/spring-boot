@@ -33,7 +33,7 @@ import org.assertj.core.api.ListAssert;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
-import org.springframework.boot.json.test.JsonContentAssert;
+import org.springframework.boot.test.json.JsonContentAssert;
 import org.springframework.util.StreamUtils;
 
 /**

@@ -28,6 +28,7 @@ dependencies {
 	compileOnly("org.mockito:mockito-core")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
