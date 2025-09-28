@@ -49,7 +49,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * </pre>
  *
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 4.0.0
  * @see RootUriTemplateHandler
  * @see #bindTo(RestTemplate)
  * @see #forRestTemplate(RestTemplate, RequestExpectationManager)
