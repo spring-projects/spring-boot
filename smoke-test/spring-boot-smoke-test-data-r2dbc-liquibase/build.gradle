@@ -30,7 +30,6 @@ dependencies {
 
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":module:spring-boot-data-r2dbc-test"))
-	dockerTestImplementation(project(":module:spring-boot-jdbc-test"))
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("io.projectreactor:reactor-test")

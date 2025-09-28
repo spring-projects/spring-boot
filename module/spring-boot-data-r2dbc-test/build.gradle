@@ -28,7 +28,6 @@ dependencies {
 	api(project(":module:spring-boot-data-r2dbc"))
 
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-jdbc-test"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))

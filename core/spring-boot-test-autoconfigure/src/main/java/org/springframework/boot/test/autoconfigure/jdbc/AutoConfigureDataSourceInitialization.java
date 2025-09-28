@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.test.autoconfigure;
+package org.springframework.boot.test.autoconfigure.jdbc;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -33,8 +33,8 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
-	optional(project(":module:spring-boot-jdbc-test"))
 	optional(project(":core:spring-boot-testcontainers"))
+	optional(project(":core:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional("org.flywaydb:flyway-database-oracle")
 	optional("org.flywaydb:flyway-database-postgresql")

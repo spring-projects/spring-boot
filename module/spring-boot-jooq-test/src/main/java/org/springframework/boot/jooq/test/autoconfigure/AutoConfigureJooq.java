@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureDataSourceInitialization;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureDataSourceInitialization;
 
 /**
  * {@link ImportAutoConfiguration Auto-configuration imports} for typical jOOQ tests. Most
