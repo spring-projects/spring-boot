@@ -405,6 +405,7 @@ include ":integration-test:spring-boot-launch-script-integration-tests"
 include ":integration-test:spring-boot-loader-integration-tests"
 include ":integration-test:spring-boot-server-integration-tests"
 include ":integration-test:spring-boot-sni-integration-tests"
+include ":integration-test:spring-boot-test-integration-tests"
 
 include ":system-test:spring-boot-deployment-system-tests"
 include ":system-test:spring-boot-image-system-tests"

@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client.reactive;
-
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.reactive.server.WebTestClient.Builder;
-
 /**
- * A customizer that can be implemented by beans wishing to customize the {@link Builder}
- * to fine-tine its auto-configuration before a {@link WebTestClient} is created.
- *
- * @author Andy Wilkinson
- * @since 4.0.0
+ * Spring Boot support for testing Spring WebFlux server endpoints via
+ * {@link org.springframework.test.web.reactive.server.WebTestClient}.
  */
-@FunctionalInterface
-public interface WebTestClientBuilderCustomizer {
+@NullMarked
+package org.springframework.boot.test.web.reactive.client;
 
-	/**
-	 * Customize the given {@code builder}.
-	 * @param builder the builder
-	 */
-	void customize(Builder builder);
-
-}
+import org.jspecify.annotations.NullMarked;

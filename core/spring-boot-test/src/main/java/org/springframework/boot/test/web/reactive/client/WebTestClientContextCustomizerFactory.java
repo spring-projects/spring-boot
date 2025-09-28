@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client.reactive;
+package org.springframework.boot.test.web.reactive.client;
 
 import java.util.List;
 

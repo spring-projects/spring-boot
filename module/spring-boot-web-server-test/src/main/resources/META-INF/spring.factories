@@ -6,5 +6,4 @@ org.springframework.boot.web.server.test.SpringBootTestRandomPortEnvironmentPost
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.web.server.test.client.RestTestClientContextCustomizerFactory,\
 org.springframework.boot.web.server.test.client.TestRestTemplateContextCustomizerFactory,\
-org.springframework.boot.web.server.test.client.reactive.WebTestClientContextCustomizerFactory,\
 org.springframework.boot.web.server.test.reactor.netty.DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory

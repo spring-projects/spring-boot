@@ -109,6 +109,10 @@
 					<allow pkg="org.springframework.boot.web.servlet" />
 				</subpackage>
 			</subpackage>
+			<subpackage name="client">
+				<allow pkg="jakarta.servlet" />
+				<allow pkg="org.springframework.context" />
+			</subpackage>
 			<subpackage name="context">
 				<allow pkg="org.springframework.context" />
 			</subpackage>

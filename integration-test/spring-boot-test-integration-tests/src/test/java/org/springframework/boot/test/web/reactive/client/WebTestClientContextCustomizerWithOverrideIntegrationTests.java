@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client.reactive;
+package org.springframework.boot.test.web.reactive.client;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -33,31 +33,26 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.reactive.server.WebTestClient.Builder;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.then;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Integration test for {@link WebTestClientContextCustomizer}.
+ * Integration test for {@link WebTestClientContextCustomizer} with a custom
+ * {@link WebTestClient} bean.
  *
  * @author Phillip Webb
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.main.web-application-type=reactive")
 @DirtiesContext
-class WebTestClientContextCustomizerIntegrationTests {
+class WebTestClientContextCustomizerWithOverrideIntegrationTests {
 
 	@Autowired
 	private WebTestClient webTestClient;
 
-	@Autowired
-	private WebTestClientBuilderCustomizer clientBuilderCustomizer;
-
 	@Test
 	void test() {
-		then(this.clientBuilderCustomizer).should().customize(any(Builder.class));
-		this.webTestClient.get().uri("/").exchange().expectBody(String.class).isEqualTo("hello");
+		assertThat(this.webTestClient).isInstanceOf(CustomWebTestClient.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -70,8 +65,8 @@ class WebTestClientContextCustomizerIntegrationTests {
 		}
 
 		@Bean
-		WebTestClientBuilderCustomizer clientBuilderCustomizer() {
-			return mock(WebTestClientBuilderCustomizer.class);
+		WebTestClient webTestClient() {
+			return mock(CustomWebTestClient.class);
 		}
 
 	}
@@ -85,6 +80,10 @@ class WebTestClientContextCustomizerIntegrationTests {
 			response.setStatusCode(HttpStatus.OK);
 			return response.writeWith(Mono.just(factory.wrap("hello".getBytes())));
 		}
+
+	}
+
+	interface CustomWebTestClient extends WebTestClient {
 
 	}
 

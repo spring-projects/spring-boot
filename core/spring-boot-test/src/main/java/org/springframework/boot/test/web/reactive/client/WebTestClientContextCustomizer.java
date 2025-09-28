@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client.reactive;
+package org.springframework.boot.test.web.reactive.client;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.servlet.ServletContext;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.AotDetector;
@@ -28,31 +28,26 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.reactive.AbstractReactiveWebServerFactory;
+import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.boot.test.http.server.BaseUrlProviders;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
 
 /**
  * {@link ContextCustomizer} for {@link WebTestClient}.
@@ -60,13 +55,6 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
  * @author Stephane Nicoll
  */
 class WebTestClientContextCustomizer implements ContextCustomizer {
-
-	private static final boolean codecCustomizerPresent;
-
-	static {
-		ClassLoader loader = WebTestClientContextCustomizerFactory.class.getClassLoader();
-		codecCustomizerPresent = ClassUtils.isPresent("org.springframework.boot.http.codec.CodecCustomizer", loader);
-	}
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
@@ -111,8 +99,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	 */
 	static class WebTestClientRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
-		@SuppressWarnings("NullAway.Init")
-		private BeanFactory beanFactory;
+		private @Nullable BeanFactory beanFactory;
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -126,7 +113,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-			if (AotDetector.useGeneratedArtifacts()) {
+			if (this.beanFactory == null || AotDetector.useGeneratedArtifacts()) {
 				return;
 			}
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) this.beanFactory,
@@ -134,7 +121,6 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 				registry.registerBeanDefinition(WebTestClient.class.getName(),
 						new RootBeanDefinition(WebTestClientFactory.class));
 			}
-
 		}
 
 		@Override
@@ -148,14 +134,9 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 	 */
 	public static class WebTestClientFactory implements FactoryBean<WebTestClient>, ApplicationContextAware {
 
-		@SuppressWarnings("NullAway.Init")
-		private ApplicationContext applicationContext;
+		private @Nullable ApplicationContext applicationContext;
 
 		private @Nullable WebTestClient object;
-
-		private static final String SERVLET_APPLICATION_CONTEXT_CLASS = "org.springframework.web.context.WebApplicationContext";
-
-		private static final String REACTIVE_APPLICATION_CONTEXT_CLASS = "org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext";
 
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -181,87 +162,29 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		}
 
 		private WebTestClient createWebTestClient() {
-			boolean sslEnabled = isSslEnabled(this.applicationContext);
-			String port = this.applicationContext.getEnvironment().getProperty("local.server.port", "8080");
-			String baseUrl = getBaseUrl(sslEnabled, port);
+			Assert.state(this.applicationContext != null, "ApplicationContext not injected");
 			WebTestClient.Builder builder = WebTestClient.bindToServer();
 			customizeWebTestClientBuilder(builder, this.applicationContext);
-			if (codecCustomizerPresent) {
-				WebTestClientCodecCustomizer.customizeWebTestClientCodecs(builder, this.applicationContext);
+			BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrl();
+			if (baseUrl != null) {
+				builder.baseUrl(baseUrl.resolve());
 			}
-			return builder.baseUrl(baseUrl).build();
-		}
-
-		private String getBaseUrl(boolean sslEnabled, String port) {
-			String basePath = deduceBasePath();
-			String pathSegment = (StringUtils.hasText(basePath)) ? basePath : "";
-			return (sslEnabled ? "https" : "http") + "://localhost:" + port + pathSegment;
-		}
-
-		private @Nullable String deduceBasePath() {
-			WebApplicationType webApplicationType = deduceFromApplicationContext(this.applicationContext.getClass());
-			if (webApplicationType == WebApplicationType.REACTIVE) {
-				return this.applicationContext.getEnvironment().getProperty("spring.webflux.base-path");
-			}
-			else if (webApplicationType == WebApplicationType.SERVLET) {
-				ServletContext servletContext = ((WebApplicationContext) this.applicationContext).getServletContext();
-				Assert.state(servletContext != null, "'servletContext' must not be null");
-				return servletContext.getContextPath();
-			}
-			return null;
-		}
-
-		static WebApplicationType deduceFromApplicationContext(Class<?> applicationContextClass) {
-			if (isAssignable(SERVLET_APPLICATION_CONTEXT_CLASS, applicationContextClass)) {
-				return WebApplicationType.SERVLET;
-			}
-			if (isAssignable(REACTIVE_APPLICATION_CONTEXT_CLASS, applicationContextClass)) {
-				return WebApplicationType.REACTIVE;
-			}
-			return WebApplicationType.NONE;
-		}
-
-		private static boolean isAssignable(String target, Class<?> type) {
-			try {
-				return ClassUtils.resolveClassName(target, null).isAssignableFrom(type);
-			}
-			catch (Throwable ex) {
-				return false;
-			}
-		}
-
-		private boolean isSslEnabled(ApplicationContext context) {
-			try {
-				AbstractReactiveWebServerFactory webServerFactory = context
-					.getBean(AbstractReactiveWebServerFactory.class);
-				return webServerFactory.getSsl() != null && webServerFactory.getSsl().isEnabled();
-			}
-			catch (NoSuchBeanDefinitionException ex) {
-				return false;
-			}
+			return builder.build();
 		}
 
 		private void customizeWebTestClientBuilder(WebTestClient.Builder clientBuilder, ApplicationContext context) {
-			for (WebTestClientBuilderCustomizer customizer : context
-				.getBeansOfType(WebTestClientBuilderCustomizer.class)
-				.values()) {
-				customizer.customize(clientBuilder);
-			}
+			Assert.state(this.applicationContext != null, "ApplicationContext not injected");
+			getWebTestClientBuilderCustomizers(this.applicationContext)
+				.forEach((customizer) -> customizer.customize(clientBuilder));
 		}
 
-		private static final class WebTestClientCodecCustomizer {
-
-			private static void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder,
-					ApplicationContext context) {
-				Collection<CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class).values();
-				if (!CollectionUtils.isEmpty(codecCustomizers)) {
-					clientBuilder.exchangeStrategies(ExchangeStrategies.builder()
-						.codecs((codecs) -> codecCustomizers
-							.forEach((codecCustomizer) -> codecCustomizer.customize(codecs)))
-						.build());
-				}
-			}
-
+		private List<WebTestClientBuilderCustomizer> getWebTestClientBuilderCustomizers(ApplicationContext context) {
+			List<WebTestClientBuilderCustomizer> customizers = new ArrayList<>();
+			SpringFactoriesLoader.forDefaultResourceLocation(context.getClassLoader())
+				.load(WebTestClientBuilderCustomizer.class, ArgumentResolver.of(ApplicationContext.class, context))
+				.forEach(customizers::add);
+			context.getBeansOfType(WebTestClientBuilderCustomizer.class).values().forEach(customizers::add);
+			return customizers;
 		}
 
 	}

@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
+
 plugins {
 	id "java-library"
-	id "org.springframework.boot.auto-configuration"
-	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot HTTP Codec"
+description = "Spring Boot Test Integration Tests"
 
 dependencies {
-	api(project(":core:spring-boot"))
-	api("org.springframework:spring-web")
-
-	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":core:spring-boot-test"))
-	optional(project(":module:spring-boot-jackson"))
-	optional("org.springframework:spring-webflux")
-
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-
-	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testImplementation(project(":module:spring-boot-http-codec"))
+	testImplementation(project(":module:spring-boot-tomcat"))
+	testImplementation(project(":module:spring-boot-web-server"))
+	testImplementation("io.projectreactor.netty:reactor-netty-http")
+	testImplementation("org.springframework:spring-webmvc")
+	testImplementation("org.springframework:spring-webflux")
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client.reactive;
+package org.springframework.boot.test.web.reactive.client;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.web.server.test.client.reactive.WebTestClientContextCustomizer.WebTestClientRegistrar;
+import org.springframework.boot.test.web.reactive.client.WebTestClientContextCustomizer.WebTestClientRegistrar;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;

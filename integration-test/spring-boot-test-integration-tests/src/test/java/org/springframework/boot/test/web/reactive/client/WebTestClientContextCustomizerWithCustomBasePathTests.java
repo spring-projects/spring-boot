@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.client.reactive;
+package org.springframework.boot.test.web.reactive.client;
 
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ContextPathCompositeHandler;
@@ -39,61 +37,25 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Tests for {@link WebTestClientContextCustomizer} when the test context framework pauses
- * a context while it's in the cache.
+ * Tests for {@link WebTestClientContextCustomizer} with a custom base path for a reactive
+ * web application.
  *
- * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = "spring.main.web-application-type=none")
-class WebTestClientContextCustomizerTcfCacheContextPausingTests {
+		properties = "spring.main.web-application-type=reactive")
+@TestPropertySource(properties = "spring.webflux.base-path=/test")
+class WebTestClientContextCustomizerWithCustomBasePathTests {
 
-	@Nested
-	@Import(TestConfig.class)
-	@TestPropertySource(properties = { "context=one", "spring.main.web-application-type=reactive" })
-	class ContextOne {
+	@Autowired
+	private WebTestClient webTestClient;
 
-		@Autowired
-		private WebTestClient webTestClient;
-
-		@Test
-		void test() {
-			this.webTestClient.get().uri("/test").exchange().expectBody(String.class).isEqualTo("hello world");
-		}
-
+	@Test
+	void test() {
+		this.webTestClient.get().uri("/hello").exchange().expectBody(String.class).isEqualTo("hello world");
 	}
 
-	@Nested
-	@Import(TestConfig.class)
-	@TestPropertySource(properties = { "context=two", "spring.main.web-application-type=reactive" })
-	class ContextTwo {
-
-		@Autowired
-		private WebTestClient webTestClient;
-
-		@Test
-		void test() {
-			this.webTestClient.get().uri("/test").exchange().expectBody(String.class).isEqualTo("hello world");
-		}
-
-	}
-
-	@Nested
-	@Import(TestConfig.class)
-	@TestPropertySource(properties = { "context=one", "spring.main.web-application-type=reactive" })
-	class ReuseContextOne {
-
-		@Autowired
-		private WebTestClient webTestClient;
-
-		@Test
-		void test() {
-			this.webTestClient.get().uri("/test").exchange().expectBody(String.class).isEqualTo("hello world");
-		}
-
-	}
-
-	@SpringBootConfiguration(proxyBeanMethods = false)
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfig {
 
 		@Bean
