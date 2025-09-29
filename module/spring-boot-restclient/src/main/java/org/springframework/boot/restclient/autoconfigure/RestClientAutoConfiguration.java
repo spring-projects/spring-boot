@@ -34,6 +34,7 @@ import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -96,6 +97,7 @@ public final class RestClientAutoConfiguration {
 		return restClientBuilderConfigurer.configure(RestClient.builder());
 	}
 
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(HttpMessageConverters.class)
 	static class HttpMessageConvertersConfiguration {
 

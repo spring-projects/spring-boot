@@ -91,8 +91,6 @@
 		<disallow pkg="jakarta.servlet" />
 
 		<!-- Common -->
-		<subpackage name="client">
-		</subpackage>
 		<subpackage name="context">
 			<allow pkg="org.springframework.context" />
 			<subpackage name="servlet">
