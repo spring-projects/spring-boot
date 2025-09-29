@@ -29,7 +29,7 @@ import org.springframework.session.SaveMode;
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.session.redis")
-public class RedisSessionProperties {
+public class SessionDataRedisProperties {
 
 	/**
 	 * Namespace for keys used to store sessions.

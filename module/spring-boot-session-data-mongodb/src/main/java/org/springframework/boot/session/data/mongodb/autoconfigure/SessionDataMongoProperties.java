@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.session.mongodb")
-public class MongoSessionProperties {
+public class SessionDataMongoProperties {
 
 	/**
 	 * Collection name used to store sessions.

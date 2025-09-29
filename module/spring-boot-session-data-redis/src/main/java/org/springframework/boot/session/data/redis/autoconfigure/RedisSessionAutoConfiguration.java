@@ -74,7 +74,7 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
 		after = { RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class },
 		afterName = "org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration")
 @ConditionalOnClass(Session.class)
-@EnableConfigurationProperties({ RedisSessionProperties.class, ServerProperties.class, SessionProperties.class })
+@EnableConfigurationProperties({ SessionDataRedisProperties.class, ServerProperties.class, SessionProperties.class })
 public final class RedisSessionAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -93,9 +93,9 @@ public final class RedisSessionAutoConfiguration {
 			@Bean
 			@Order(Ordered.HIGHEST_PRECEDENCE)
 			SessionRepositoryCustomizer<RedisSessionRepository> springBootSessionRepositoryCustomizer(
-					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+					SessionProperties sessionProperties, SessionDataRedisProperties sessionDataRedisProperties,
 					ServerProperties serverProperties) {
-				String cleanupCron = redisSessionProperties.getCleanupCron();
+				String cleanupCron = sessionDataRedisProperties.getCleanupCron();
 				if (cleanupCron != null) {
 					throw new InvalidConfigurationPropertyValueException("spring.session.redis.cleanup-cron",
 							cleanupCron, "Cron-based cleanup is only supported when "
@@ -106,9 +106,9 @@ public final class RedisSessionAutoConfiguration {
 					map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);
-					map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
-					map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
-					map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+					map.from(sessionDataRedisProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+					map.from(sessionDataRedisProperties::getFlushMode).to(sessionRepository::setFlushMode);
+					map.from(sessionDataRedisProperties::getSaveMode).to(sessionRepository::setSaveMode);
 				};
 			}
 
@@ -121,8 +121,8 @@ public final class RedisSessionAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
-			ConfigureRedisAction configureRedisAction(RedisSessionProperties redisSessionProperties) {
-				return switch (redisSessionProperties.getConfigureAction()) {
+			ConfigureRedisAction configureRedisAction(SessionDataRedisProperties sessionDataRedisProperties) {
+				return switch (sessionDataRedisProperties.getConfigureAction()) {
 					case NOTIFY_KEYSPACE_EVENTS -> new ConfigureNotifyKeyspaceEventsAction();
 					case NONE -> ConfigureRedisAction.NO_OP;
 				};
@@ -131,17 +131,17 @@ public final class RedisSessionAutoConfiguration {
 			@Bean
 			@Order(Ordered.HIGHEST_PRECEDENCE)
 			SessionRepositoryCustomizer<RedisIndexedSessionRepository> springBootSessionRepositoryCustomizer(
-					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+					SessionProperties sessionProperties, SessionDataRedisProperties sessionDataRedisProperties,
 					ServerProperties serverProperties) {
 				return (sessionRepository) -> {
 					PropertyMapper map = PropertyMapper.get();
 					map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);
-					map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
-					map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
-					map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
-					map.from(redisSessionProperties::getCleanupCron).to(sessionRepository::setCleanupCron);
+					map.from(sessionDataRedisProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+					map.from(sessionDataRedisProperties::getFlushMode).to(sessionRepository::setFlushMode);
+					map.from(sessionDataRedisProperties::getSaveMode).to(sessionRepository::setSaveMode);
+					map.from(sessionDataRedisProperties::getCleanupCron).to(sessionRepository::setCleanupCron);
 				};
 			}
 
@@ -164,15 +164,15 @@ public final class RedisSessionAutoConfiguration {
 
 			@Bean
 			ReactiveSessionRepositoryCustomizer<ReactiveRedisSessionRepository> springBootSessionRepositoryCustomizer(
-					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+					SessionProperties sessionProperties, SessionDataRedisProperties sessionDataRedisProperties,
 					ServerProperties serverProperties) {
 				return (sessionRepository) -> {
 					PropertyMapper map = PropertyMapper.get();
 					map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);
-					map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
-					map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+					map.from(sessionDataRedisProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+					map.from(sessionDataRedisProperties::getSaveMode).to(sessionRepository::setSaveMode);
 				};
 			}
 
@@ -185,8 +185,8 @@ public final class RedisSessionAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
-			ConfigureReactiveRedisAction configureReactiveRedisAction(RedisSessionProperties redisSessionProperties) {
-				return switch (redisSessionProperties.getConfigureAction()) {
+			ConfigureReactiveRedisAction configureReactiveRedisAction(SessionDataRedisProperties sessionDataRedisProperties) {
+				return switch (sessionDataRedisProperties.getConfigureAction()) {
 					case NOTIFY_KEYSPACE_EVENTS -> new ConfigureNotifyKeyspaceEventsReactiveAction();
 					case NONE -> ConfigureReactiveRedisAction.NO_OP;
 				};
@@ -194,15 +194,15 @@ public final class RedisSessionAutoConfiguration {
 
 			@Bean
 			ReactiveSessionRepositoryCustomizer<ReactiveRedisIndexedSessionRepository> springBootSessionRepositoryCustomizer(
-					SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
+					SessionProperties sessionProperties, SessionDataRedisProperties sessionDataRedisProperties,
 					ServerProperties serverProperties) {
 				return (sessionRepository) -> {
 					PropertyMapper map = PropertyMapper.get();
 					map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);
-					map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
-					map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
+					map.from(sessionDataRedisProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
+					map.from(sessionDataRedisProperties::getSaveMode).to(sessionRepository::setSaveMode);
 				};
 			}
 
