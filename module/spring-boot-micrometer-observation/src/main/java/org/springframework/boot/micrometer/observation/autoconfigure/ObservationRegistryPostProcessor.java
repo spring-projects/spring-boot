@@ -21,6 +21,7 @@ import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.Observations;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeansException;
@@ -36,6 +37,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  */
 class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
+	private final ObjectProvider<ObservationProperties> properties;
+
 	private final ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers;
 
 	private final ObjectProvider<ObservationPredicate> observationPredicates;
@@ -50,12 +53,14 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	private volatile @Nullable ObservationRegistryConfigurer configurer;
 
-	ObservationRegistryPostProcessor(ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
+	ObservationRegistryPostProcessor(ObjectProvider<ObservationProperties> properties,
+			ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
 			ObjectProvider<ObservationHandlerGroup> observationHandlerGroups,
 			ObjectProvider<ObservationFilter> observationFilters) {
+		this.properties = properties;
 		this.observationRegistryCustomizers = observationRegistryCustomizers;
 		this.observationPredicates = observationPredicates;
 		this.observationConventions = observationConventions;
@@ -67,9 +72,14 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof ObservationRegistry registry) {
-			getConfigurer().configure(registry);
+			postProcessObservationRegistry(registry);
 		}
 		return bean;
+	}
+
+	private void postProcessObservationRegistry(ObservationRegistry registry) {
+		getConfigurer().configure(registry);
+		setGlobalRegistryIfNecessary(registry);
 	}
 
 	private ObservationRegistryConfigurer getConfigurer() {
@@ -83,4 +93,13 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 		return configurer;
 	}
 
+	private void setGlobalRegistryIfNecessary(ObservationRegistry registry) {
+		if (this.properties.getObject().isUseGlobalRegistry() && !isGlobalRegistry(registry)) {
+			Observations.setRegistry(registry);
+		}
+	}
+
+	private boolean isGlobalRegistry(ObservationRegistry registry) {
+		return registry == Observations.getGlobalRegistry();
+	}
 }

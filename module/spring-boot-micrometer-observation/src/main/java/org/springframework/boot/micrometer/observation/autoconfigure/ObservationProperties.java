@@ -32,6 +32,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("management.observations")
 public class ObservationProperties {
 
+	/**
+	 * Whether auto-configured ObservationRegistry implementations should be bound to the global
+	 * static registry on Observations. For testing, set this to 'false' to maximize test
+	 * independence.
+	 */
+	private boolean useGlobalRegistry = true;
+
 	private final Http http = new Http();
 
 	/**
@@ -46,6 +53,14 @@ public class ObservationProperties {
 	private Map<String, Boolean> enable = new LinkedHashMap<>();
 
 	private final LongTaskTimer longTaskTimer = new LongTaskTimer();
+
+	public boolean isUseGlobalRegistry() {
+		return this.useGlobalRegistry;
+	}
+
+	public void setUseGlobalRegistry(boolean useGlobalRegistry) {
+		this.useGlobalRegistry = useGlobalRegistry;
+	}
 
 	public Map<String, Boolean> getEnable() {
 		return this.enable;

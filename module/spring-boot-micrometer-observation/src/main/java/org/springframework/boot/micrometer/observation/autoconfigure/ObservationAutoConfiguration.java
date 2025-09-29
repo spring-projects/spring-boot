@@ -52,13 +52,14 @@ public final class ObservationAutoConfiguration {
 
 	@Bean
 	static ObservationRegistryPostProcessor observationRegistryPostProcessor(
+			ObjectProvider<ObservationProperties> properties,
 			ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
 			ObjectProvider<ObservationHandlerGroup> observationHandlerGroups,
 			ObjectProvider<ObservationFilter> observationFilters) {
-		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates,
+		return new ObservationRegistryPostProcessor(properties, observationRegistryCustomizers, observationPredicates,
 				observationConventions, observationHandlers, observationHandlerGroups, observationFilters);
 	}
 
