@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import smoketest.tomcat.multiconnector.SampleTomcatTwoConnectorsApplicationTests.Ports;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.restclient.test.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -29,7 +30,6 @@ import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;

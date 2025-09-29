@@ -17,7 +17,6 @@
 plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java-library"
-	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-auto-configuration"
@@ -35,7 +34,6 @@ dependencies {
 	optional(project(":module:spring-boot-web-server"))
 	optional(project(":module:spring-boot-webclient"))
 	optional("jakarta.servlet:jakarta.servlet-api")
-	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.htmlunit:htmlunit")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")

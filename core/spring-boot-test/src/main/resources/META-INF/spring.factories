@@ -5,7 +5,8 @@ org.springframework.boot.test.context.PropertyMappingContextCustomizerFactory,\
 org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFactory,\
 org.springframework.boot.test.context.filter.annotation.TypeExcludeFiltersContextCustomizerFactory,\
 org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory,\
-org.springframework.boot.test.web.reactive.client.WebTestClientContextCustomizerFactory
+org.springframework.boot.test.web.reactive.client.WebTestClientContextCustomizerFactory,\
+org.springframework.boot.test.web.servlet.client.RestTestClientContextCustomizerFactory
 
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\

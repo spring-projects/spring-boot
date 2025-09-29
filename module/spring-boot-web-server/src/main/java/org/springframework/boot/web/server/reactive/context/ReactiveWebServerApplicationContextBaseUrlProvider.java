@@ -22,7 +22,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.http.server.BaseUrl;
 import org.springframework.boot.test.http.server.BaseUrlProvider;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
-import org.springframework.boot.web.server.reactive.AbstractReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -65,7 +64,7 @@ class ReactiveWebServerApplicationContextBaseUrlProvider implements BaseUrlProvi
 	private boolean isSslEnabled(ReactiveWebServerApplicationContext context) {
 		try {
 			AbstractConfigurableWebServerFactory webServerFactory = context
-				.getBean(AbstractReactiveWebServerFactory.class);
+				.getBean(AbstractConfigurableWebServerFactory.class);
 			return webServerFactory.getSsl() != null && webServerFactory.getSsl().isEnabled();
 		}
 		catch (NoSuchBeanDefinitionException ex) {

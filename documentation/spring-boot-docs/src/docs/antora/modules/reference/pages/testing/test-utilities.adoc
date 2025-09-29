@@ -43,6 +43,8 @@ include-code::MyOutputCaptureTests[]
 == TestRestTemplate
 
 javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] is a convenience alternative to Spring's javadoc:org.springframework.web.client.RestTemplate[] that is useful in integration tests.
+It's provided by the `spring-boot-restclient-test` module.
+
 You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).
 In either case, the template is fault tolerant.
 This means that it behaves in a test-friendly way by not throwing exceptions on 4xx and 5xx errors.
