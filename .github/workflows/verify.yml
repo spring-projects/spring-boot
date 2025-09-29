@@ -59,7 +59,7 @@ jobs:
         with:
           stable: true
       - name: Set Up Gradle
-        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+        uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
         with:
           cache-read-only: false
       - name: Configure Gradle Properties
