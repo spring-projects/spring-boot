@@ -92,7 +92,7 @@ class MongoReactiveSessionAutoConfigurationTests extends AbstractReactiveSession
 	@Test
 	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
-			.withPropertyValues("spring.session.mongodb.collection-name=foo",
+			.withPropertyValues("spring.session.data.mongodb.collection-name=foo",
 					"spring.mongodb.uri=" + mongoDb.getReplicaSetUrl())
 			.run(validateSpringSessionUsesMongo("foo"));
 	}

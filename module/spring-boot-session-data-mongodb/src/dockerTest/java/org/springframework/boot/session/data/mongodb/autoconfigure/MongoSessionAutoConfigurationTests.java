@@ -73,7 +73,7 @@ class MongoSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 
 	@Test
 	void mongoSessionStoreWithCustomizations() {
-		this.contextRunner.withPropertyValues("spring.session.mongodb.collection-name=foo")
+		this.contextRunner.withPropertyValues("spring.session.data.mongodb.collection-name=foo")
 			.run(validateSpringSessionUsesMongo("foo"));
 	}
 

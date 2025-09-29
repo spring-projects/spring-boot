@@ -61,7 +61,7 @@ import org.springframework.session.data.mongo.config.annotation.web.reactive.Rea
 		after = { MongoDataAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class },
 		afterName = "org.springframework.boot.webflux.autoconfigure.WebSessionIdResolverAutoConfiguration")
 @ConditionalOnClass(Session.class)
-@EnableConfigurationProperties(MongoSessionProperties.class)
+@EnableConfigurationProperties(SessionDataMongoProperties.class)
 public final class MongoSessionAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -75,14 +75,14 @@ public final class MongoSessionAutoConfiguration {
 		@Bean
 		@Order(Ordered.HIGHEST_PRECEDENCE)
 		SessionRepositoryCustomizer<MongoIndexedSessionRepository> springBootSessionRepositoryCustomizer(
-				SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
+				SessionProperties sessionProperties, SessionDataMongoProperties sessionDataMongoProperties,
 				ServerProperties serverProperties) {
 			return (sessionRepository) -> {
 				PropertyMapper map = PropertyMapper.get();
 				map.from(sessionProperties
 					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 					.to(sessionRepository::setDefaultMaxInactiveInterval);
-				map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);
+				map.from(sessionDataMongoProperties::getCollectionName).to(sessionRepository::setCollectionName);
 			};
 		}
 
@@ -97,14 +97,14 @@ public final class MongoSessionAutoConfiguration {
 
 		@Bean
 		ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> springBootSessionRepositoryCustomizer(
-				SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
+				SessionProperties sessionProperties, SessionDataMongoProperties sessionDataMongoProperties,
 				ServerProperties serverProperties) {
 			return (sessionRepository) -> {
 				PropertyMapper map = PropertyMapper.get();
 				map.from(sessionProperties
 					.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
 					.to(sessionRepository::setDefaultMaxInactiveInterval);
-				map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);
+				map.from(sessionDataMongoProperties::getCollectionName).to(sessionRepository::setCollectionName);
 			};
 		}
 

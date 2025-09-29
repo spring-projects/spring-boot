@@ -23,13 +23,13 @@ import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
 
 /**
- * Configuration properties for Redis backed Spring Session.
+ * Configuration properties for Spring Session Data Redis.
  *
  * @author Vedran Pavic
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.session.redis")
-public class RedisSessionProperties {
+@ConfigurationProperties("spring.session.data.redis")
+public class SessionDataRedisProperties {
 
 	/**
 	 * Namespace for keys used to store sessions.

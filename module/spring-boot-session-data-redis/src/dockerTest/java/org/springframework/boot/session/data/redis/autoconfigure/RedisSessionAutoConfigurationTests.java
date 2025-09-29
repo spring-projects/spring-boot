@@ -80,8 +80,10 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 
 	@Test
 	void invalidConfigurationPropertyValueWhenDefaultConfigIsUsedWithCustomCronCleanup() {
-		this.contextRunner.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
-				"spring.data.redis.port=" + redis.getFirstMappedPort(), "spring.session.redis.cleanup-cron=0 0 * * * *")
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort(),
+					"spring.session.data.redis.cleanup-cron=0 0 * * * *")
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).hasFailed();
@@ -104,8 +106,9 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void defaultRedisSessionStoreWithCustomizations() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.namespace=foo", "spring.session.redis.flush-mode=immediate",
-					"spring.session.redis.save-mode=on-get-attribute", "spring.data.redis.host=" + redis.getHost(),
+			.withPropertyValues("spring.session.data.redis.namespace=foo",
+					"spring.session.data.redis.flush-mode=immediate",
+					"spring.session.data.redis.save-mode=on-get-attribute", "spring.data.redis.host=" + redis.getHost(),
 					"spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateSpringSessionUsesDefaultRedis("foo:", FlushMode.IMMEDIATE, SaveMode.ON_GET_ATTRIBUTE));
 	}
@@ -113,7 +116,7 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void indexedRedisSessionDefaultConfig() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
 					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 			.run(validateSpringSessionUsesIndexedRedis("spring:session:", FlushMode.ON_SAVE, SaveMode.ON_SET_ATTRIBUTE,
@@ -123,9 +126,10 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void indexedRedisSessionStoreWithCustomizations() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.repository-type=indexed", "spring.session.redis.namespace=foo",
-					"spring.session.redis.flush-mode=immediate", "spring.session.redis.save-mode=on-get-attribute",
-					"spring.session.redis.cleanup-cron=0 0 12 * * *", "spring.data.redis.host=" + redis.getHost(),
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
+					"spring.session.data.redis.namespace=foo", "spring.session.data.redis.flush-mode=immediate",
+					"spring.session.data.redis.save-mode=on-get-attribute",
+					"spring.session.data.redis.cleanup-cron=0 0 12 * * *", "spring.data.redis.host=" + redis.getHost(),
 					"spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateSpringSessionUsesIndexedRedis("foo:", FlushMode.IMMEDIATE, SaveMode.ON_GET_ATTRIBUTE,
 					"0 0 12 * * *"));
@@ -134,8 +138,8 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void indexedRedisSessionWithConfigureActionNone() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
-					"spring.session.redis.configure-action=none", "spring.data.redis.host=" + redis.getHost(),
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
+					"spring.session.data.redis.configure-action=none", "spring.data.redis.host=" + redis.getHost(),
 					"spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateStrategy(ConfigureRedisAction.NO_OP.getClass()));
 	}
@@ -143,7 +147,7 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void indexedRedisSessionWithDefaultConfigureActionNone() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
 					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateStrategy(ConfigureNotifyKeyspaceEventsAction.class, entry("notify-keyspace-events", "gxE")));
 	}
@@ -151,7 +155,7 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void indexedRedisSessionWithCustomConfigureRedisActionBean() {
 		this.contextRunner.withUserConfiguration(MaxEntriesRedisAction.class)
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
 					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateStrategy(MaxEntriesRedisAction.class, entry("set-max-intset-entries", "1024")));
 
@@ -160,7 +164,7 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void whenTheUserDefinesTheirOwnSessionRepositoryCustomizerThenDefaultConfigurationIsOverwritten() {
 		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class)
-			.withPropertyValues("spring.session.redis.flush-mode=immediate",
+			.withPropertyValues("spring.session.data.redis.flush-mode=immediate",
 					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run((context) -> {
 				RedisSessionRepository repository = validateSessionRepository(context, RedisSessionRepository.class);
@@ -171,8 +175,8 @@ class RedisSessionAutoConfigurationTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void whenIndexedAndTheUserDefinesTheirOwnSessionRepositoryCustomizerThenDefaultConfigurationIsOverwritten() {
 		this.contextRunner.withUserConfiguration(IndexedCustomizerConfiguration.class)
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
-					"spring.session.redis.flush-mode=immediate", "spring.data.redis.host=" + redis.getHost(),
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
+					"spring.session.data.redis.flush-mode=immediate", "spring.data.redis.host=" + redis.getHost(),
 					"spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run((context) -> {
 				RedisIndexedSessionRepository repository = validateSessionRepository(context,

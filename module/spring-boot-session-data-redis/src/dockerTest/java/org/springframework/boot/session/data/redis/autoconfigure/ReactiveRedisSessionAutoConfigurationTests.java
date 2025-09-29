@@ -100,7 +100,8 @@ class ReactiveRedisSessionAutoConfigurationTests extends AbstractReactiveSession
 	@Test
 	void redisSessionStoreWithCustomizations() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.namespace=foo", "spring.session.redis.save-mode=on-get-attribute")
+			.withPropertyValues("spring.session.data.redis.namespace=foo",
+					"spring.session.data.redis.save-mode=on-get-attribute")
 			.run(validateSpringSessionUsesRedis("foo:", SaveMode.ON_GET_ATTRIBUTE));
 	}
 
@@ -129,7 +130,7 @@ class ReactiveRedisSessionAutoConfigurationTests extends AbstractReactiveSession
 	@Test
 	void indexedRedisSessionDefaultConfig() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
 					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateSpringSessionUsesIndexedRedis("spring:session:", SaveMode.ON_SET_ATTRIBUTE));
 	}
@@ -137,17 +138,17 @@ class ReactiveRedisSessionAutoConfigurationTests extends AbstractReactiveSession
 	@Test
 	void indexedRedisSessionStoreWithCustomizations() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.repository-type=indexed", "spring.session.redis.namespace=foo",
-					"spring.session.redis.save-mode=on-get-attribute", "spring.data.redis.host=" + redis.getHost(),
-					"spring.data.redis.port=" + redis.getFirstMappedPort())
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
+					"spring.session.data.redis.namespace=foo", "spring.session.data.redis.save-mode=on-get-attribute",
+					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateSpringSessionUsesIndexedRedis("foo:", SaveMode.ON_GET_ATTRIBUTE));
 	}
 
 	@Test
 	void indexedRedisSessionWithConfigureActionNone() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
-					"spring.session.redis.configure-action=none", "spring.data.redis.host=" + redis.getHost(),
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
+					"spring.session.data.redis.configure-action=none", "spring.data.redis.host=" + redis.getHost(),
 					"spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateStrategy(ConfigureReactiveRedisAction.NO_OP.getClass()));
 	}
@@ -155,7 +156,7 @@ class ReactiveRedisSessionAutoConfigurationTests extends AbstractReactiveSession
 	@Test
 	void indexedRedisSessionWithDefaultConfigureActionNone() {
 		this.contextRunner
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
 					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateStrategy(ConfigureNotifyKeyspaceEventsReactiveAction.class,
 					entry("notify-keyspace-events", "gxE")));
@@ -164,7 +165,7 @@ class ReactiveRedisSessionAutoConfigurationTests extends AbstractReactiveSession
 	@Test
 	void indexedRedisSessionWithCustomConfigureReactiveRedisActionBean() {
 		this.contextRunner.withUserConfiguration(MaxEntriesReactiveRedisAction.class)
-			.withPropertyValues("spring.session.redis.repository-type=indexed",
+			.withPropertyValues("spring.session.data.redis.repository-type=indexed",
 					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
 			.run(validateStrategy(MaxEntriesReactiveRedisAction.class, entry("set-max-intset-entries", "1024")));
 
