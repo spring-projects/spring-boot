@@ -44,4 +44,4 @@ spring:
 ----
 
 
-See javadoc:org.springframework.boot.batch.autoconfigure.BatchAutoConfiguration[] and javadoc:org.springframework.boot.batch.jdbc.autoconfigure.BatchJdbcAutoConfiguration[] for more details.
+See {code-spring-boot-batch-src}/autoconfigure/BatchAutoConfiguration.java[`BatchAutoConfiguration`] and  {code-spring-boot-batch-jdbc-src}/autoconfigure/BatchJdbcAutoConfiguration.java[`BatchJdbcAutoConfiguration`] for more details.

@@ -118,7 +118,7 @@ If you provide any javadoc:org.springframework.context.annotation.Bean[format=an
 Also, a convenience bean of type javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
-See the xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[] section and the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[] section and the {code-spring-boot-webmvc-src}/autoconfigure/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 
@@ -135,7 +135,7 @@ As in normal MVC usage, any javadoc:org.springframework.web.servlet.config.annot
 However, unlike with normal MVC, you can supply only additional converters that you need (because Spring Boot uses the same mechanism to contribute its defaults).
 Finally, if you opt out of the default Spring Boot MVC configuration by providing your own javadoc:org.springframework.web.servlet.config.annotation.EnableWebMvc[format=annotation] configuration, you can take control completely and do everything manually by using `getMessageConverters` from javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport[].
 
-See the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the {code-spring-boot-webmvc-src}/autoconfigure/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 
@@ -149,7 +149,7 @@ For example, if you want to specify that files be unlimited, set the configprop:
 
 The multipart support is helpful when you want to receive multipart encoded file data as a javadoc:org.springframework.web.bind.annotation.RequestParam[format=annotation]-annotated parameter of type javadoc:org.springframework.web.multipart.MultipartFile[] in a Spring MVC controller handler method.
 
-See the {code-spring-boot-autoconfigure-src}/web/servlet/MultipartAutoConfiguration.java[`MultipartAutoConfiguration`] source for more details.
+See the {code-spring-boot-servlet-src}/autoconfigure/MultipartAutoConfiguration.java[`MultipartAutoConfiguration`] source for more details.
 
 NOTE: It is recommended to use the container's built-in support for multipart uploads rather than introduce an additional dependency such as Apache Commons File Upload.
 
@@ -195,7 +195,7 @@ Spring Boot, on the other hand, installs one or two for you, depending on what i
 The javadoc:org.springframework.web.servlet.DispatcherServlet[] uses all the resolvers it finds in the application context, trying each one in turn until it gets a result.
 If you add your own, you have to be aware of the order and in which position your resolver is added.
 
-javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration[] adds the following javadoc:org.springframework.web.servlet.ViewResolver[] beans to your context:
+javadoc:org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration[] adds the following javadoc:org.springframework.web.servlet.ViewResolver[] beans to your context:
 
 * An javadoc:org.springframework.web.servlet.view.InternalResourceViewResolver[] named '`defaultViewResolver`'.
   This one locates physical resources that can be rendered by using the `DefaultServlet` (including static resources and JSP pages, if you use those).
@@ -231,10 +231,10 @@ javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurati
 
 For more detail, see the following sections:
 
-* {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`]
-* {code-spring-boot-autoconfigure-src}/thymeleaf/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`]
-* {code-spring-boot-autoconfigure-src}/freemarker/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`]
-* {code-spring-boot-autoconfigure-src}/groovy/template/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`]
+* {code-spring-boot-webmvc-src}/autoconfigure/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`]
+* {code-spring-boot-thymeleaf-src}/autoconfigure/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`]
+* {code-spring-boot-freemarker-src}/autoconfigure/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`]
+* {code-spring-boot-groovy-templates-src}/autoconfigure/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`]
 
 
 
@@ -252,6 +252,6 @@ For example, if you use Thymeleaf, you can add an `error.html` template.
 If you use FreeMarker, you can add an `error.ftlh` template.
 In general, you need a javadoc:org.springframework.web.servlet.View[] that resolves with a name of `error` or a javadoc:org.springframework.stereotype.Controller[format=annotation] that handles the `/error` path.
 Unless you replaced some of the default configuration, you should find a javadoc:org.springframework.web.servlet.view.BeanNameViewResolver[] in your javadoc:org.springframework.context.ApplicationContext[], so a javadoc:org.springframework.context.annotation.Bean[format=annotation] named `error` would be one way of doing that.
-See {code-spring-boot-autoconfigure-src}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
+See {code-spring-boot-webmvc-src}/autoconfigure/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
 See also the section on xref:reference:web/servlet.adoc#web.servlet.spring-mvc.error-handling[] for details of how to register handlers in the servlet container.
