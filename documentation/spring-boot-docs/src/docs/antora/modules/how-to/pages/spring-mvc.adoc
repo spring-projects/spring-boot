@@ -104,7 +104,7 @@ Note that, thanks to the use of xref:reference:features/external-config.adoc#fea
 
 This environment-based configuration is applied to the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[] bean and applies to any mappers created by using the builder, including the auto-configured javadoc:tools.jackson.databind.json.JsonMapper[] bean.
 
-The context's javadoc:tools.jackson.databind.json.JsonMapper.Builder[] can be customized by one or more javadoc:org.springframework.boot.autoconfigure.jackson.JsonMapperBuilderCustomizer[] beans.
+The context's javadoc:tools.jackson.databind.json.JsonMapper.Builder[] can be customized by one or more javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
 Such customizer beans can be ordered (Boot's own customizer has an order of 0), letting additional customization be applied both before and after Boot's customization.
 
 Any beans of type javadoc:tools.jackson.databind.JacksonModule[] are automatically registered with the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[] and are applied to any javadoc:tools.jackson.databind.json.JsonMapper[] instances that it creates.
@@ -173,7 +173,7 @@ If you have additional servlets you can declare a javadoc:org.springframework.co
 It is also possible to use javadoc:org.springframework.boot.web.servlet.ServletRegistration[format=annotation] as an annotation-based alternative to javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[].
 Because servlets are registered that way, they can be mapped to a sub-context of the javadoc:org.springframework.web.servlet.DispatcherServlet[] without invoking it.
 
-Configuring the javadoc:org.springframework.web.servlet.DispatcherServlet[] yourself is unusual but if you really need to do it, a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath[] must be provided as well to provide the path of your custom javadoc:org.springframework.web.servlet.DispatcherServlet[].
+Configuring the javadoc:org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath[] yourself is unusual but if you really need to do it, a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath[] must be provided as well to provide the path of your custom javadoc:org.springframework.web.servlet.DispatcherServlet[].
 
 
 
@@ -218,7 +218,7 @@ javadoc:org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration[] 
   The prefix is externalized to `spring.freemarker.prefix`, and the suffix is externalized to `spring.freemarker.suffix`.
   The default values of the prefix and suffix are empty and '`.ftlh`', respectively.
   You can override javadoc:org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver[] by providing a bean of the same name.
-  FreeMarker variables can be customized by defining a bean of type javadoc:org.springframework.boot.autoconfigure.freemarker.FreeMarkerVariablesCustomizer[].
+  FreeMarker variables can be customized by defining a bean of type javadoc:org.springframework.boot.freemarker.autoconfigure.FreeMarkerVariablesCustomizer[].
 * If you use Groovy templates (actually, if `groovy-templates` is on your classpath), you also have a javadoc:org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver[] named '`groovyMarkupViewResolver`'.
   It looks for resources in a loader path by surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix` and `spring.groovy.template.suffix`).
   The prefix and suffix have default values of '`classpath:/templates/`' and '`.tpl`', respectively.

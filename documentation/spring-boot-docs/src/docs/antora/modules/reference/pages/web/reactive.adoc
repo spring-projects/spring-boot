@@ -49,7 +49,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 
 If you want to keep Spring Boot WebFlux features and you want to add additional {url-spring-framework-docs}/web/webflux/config.html[WebFlux configuration], you can add your own javadoc:org.springframework.context.annotation.Configuration[format=annotation] class of type javadoc:org.springframework.web.reactive.config.WebFluxConfigurer[] but *without* javadoc:org.springframework.web.reactive.config.EnableWebFlux[format=annotation].
 
-If you want to add additional customization to the auto-configured javadoc:org.springframework.http.server.reactive.HttpHandler[], you can define beans of type javadoc:org.springframework.boot.autoconfigure.web.reactive.WebHttpHandlerBuilderCustomizer[] and use them to modify the javadoc:org.springframework.web.server.adapter.WebHttpHandlerBuilder[].
+If you want to add additional customization to the auto-configured javadoc:org.springframework.http.server.reactive.HttpHandler[], you can define beans of type javadoc:org.springframework.boot.webflux.autoconfigure.WebHttpHandlerBuilderCustomizer[] and use them to modify the javadoc:org.springframework.web.server.adapter.WebHttpHandlerBuilder[].
 
 If you want to take complete control of Spring WebFlux, you can add your own javadoc:org.springframework.context.annotation.Configuration[format=annotation] annotated with javadoc:org.springframework.web.reactive.config.EnableWebFlux[format=annotation].
 
@@ -202,11 +202,11 @@ The first step to customizing this feature often involves using the existing mec
 For that, you can add a bean of type javadoc:org.springframework.boot.web.reactive.error.ErrorAttributes[].
 
 To change the error handling behavior, you can implement javadoc:org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler[] and register a bean definition of that type.
-Because an javadoc:org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler[] is quite low-level, Spring Boot also provides a convenient javadoc:org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler[] to let you handle errors in a WebFlux functional way, as shown in the following example:
+Because an javadoc:org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler[] is quite low-level, Spring Boot also provides a convenient javadoc:org.springframework.boot.webflux.autoconfigure.error.AbstractErrorWebExceptionHandler[] to let you handle errors in a WebFlux functional way, as shown in the following example:
 
 include-code::MyErrorWebExceptionHandler[]
 
-For a more complete picture, you can also subclass javadoc:org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorWebExceptionHandler[] directly and override specific methods.
+For a more complete picture, you can also subclass javadoc:org.springframework.boot.webflux.autoconfigure.error.DefaultErrorWebExceptionHandler[] directly and override specific methods.
 
 In some cases, errors handled at the controller level are not recorded by web observations or the xref:actuator/metrics.adoc#actuator.metrics.supported.spring-webflux[metrics infrastructure].
 Applications can ensure that such exceptions are recorded with the observations by {url-spring-framework-docs}/integration/observability.html#observability.http-server.reactive[setting the handled exception on the observation context].
@@ -332,7 +332,7 @@ Common server settings include:
 Spring Boot tries as much as possible to expose common settings, but this is not always possible.
 For those cases, dedicated namespaces such as `server.netty.*` offer server-specific customizations.
 
-TIP: See the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class for a complete list.
+TIP: See the javadoc:org.springframework.boot.web.server.autoconfigure.ServerProperties[] class for a complete list.
 
 
 

@@ -59,7 +59,7 @@ The registration is performed by Spring Boot's javadoc:org.springframework.boot.
 Auto-configuration for Gson is provided.
 When Gson is on the classpath a javadoc:com.google.gson.Gson[] bean is automatically configured.
 Several `+spring.gson.*+` configuration properties are provided for customizing the configuration.
-To take more control, one or more javadoc:org.springframework.boot.autoconfigure.gson.GsonBuilderCustomizer[] beans can be used.
+To take more control, one or more javadoc:org.springframework.boot.gson.autoconfigure.GsonBuilderCustomizer[] beans can be used.
 
 
 

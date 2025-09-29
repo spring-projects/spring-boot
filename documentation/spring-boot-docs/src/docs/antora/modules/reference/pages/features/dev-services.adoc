@@ -83,10 +83,10 @@ The following service connections are currently supported:
 |===
 | Connection Details | Matched on
 
-| javadoc:org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails[]
+| javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionDetails[]
 | Containers named "symptoma/activemq" or "apache/activemq-classic"
 
-| javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails[]
+| javadoc:org.springframework.boot.artemis.autoconfigure.ArtemisConnectionDetails[]
 | Containers named "apache/activemq-artemis"
 
 | javadoc:org.springframework.boot.cassandra.autoconfigure.CassandraConnectionDetails[]
@@ -95,16 +95,16 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchConnectionDetails[]
 | Containers named "elasticsearch"
 
-| javadoc:org.springframework.boot.autoconfigure.hazelcast.HazelcastConnectionDetails[]
+| javadoc:org.springframework.boot.hazelcast.autoconfigure.HazelcastConnectionDetails[]
 | Containers named "hazelcast/hazelcast".
 
-| javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[]
+| javadoc:org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails[]
 | Containers named "clickhouse/clickhouse-server", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[]
 | Containers named "osixia/openldap", "lldap/lldap"
 
-| javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]
+| javadoc:org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails[]
 | Containers named "mongo"
 
 | javadoc:org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails[]
@@ -119,13 +119,13 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.micrometer.tracing.autoconfigure.otlp.OtlpTracingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
-| javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails[]
+| javadoc:org.springframework.boot.pulsar.autoconfigure.PulsarConnectionDetails[]
 | Containers named "apachepulsar/pulsar"
 
-| javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[]
+| javadoc:org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails[]
 | Containers named "clickhouse/clickhouse-server", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
-| javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
+| javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
 | Containers named "rabbitmq"
 
 | javadoc:org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails[]

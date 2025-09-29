@@ -74,15 +74,15 @@ app:
     pool-size: 30
 ----
 
-To address this problem, make use of javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] which will handle the `url` to `jdbc-url` translation for you.
-You can initialize a javadoc:org.springframework.boot.jdbc.DataSourceBuilder[] from the state of any javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] object using its `initializeDataSourceBuilder()` method.
-You could inject the javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] that Spring Boot creates automatically, however, that would split your configuration across `+spring.datasource.*+` and `+app.datasource.*+`.
-To avoid this, define a custom javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] with a custom configuration properties prefix, as shown in the following example:
+To address this problem, make use of javadoc:org.springframework.boot.jdbc.autoconfigure.DataSourceProperties[] which will handle the `url` to `jdbc-url` translation for you.
+You can initialize a javadoc:org.springframework.boot.jdbc.DataSourceBuilder[] from the state of any javadoc:org.springframework.boot.jdbc.autoconfigure.DataSourceProperties[] object using its `initializeDataSourceBuilder()` method.
+You could inject the javadoc:org.springframework.boot.jdbc.autoconfigure.DataSourceProperties[] that Spring Boot creates automatically, however, that would split your configuration across `+spring.datasource.*+` and `+app.datasource.*+`.
+To avoid this, define a custom javadoc:org.springframework.boot.jdbc.autoconfigure.DataSourceProperties[] with a custom configuration properties prefix, as shown in the following example:
 
 include-code::configurable/MyDataSourceConfiguration[]
 
 This setup is equivalent to what Spring Boot does for you by default, except that the pool's type is specified in code and its settings are exposed as `app.datasource.configuration.*` properties.
-javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] takes care of the `url` to `jdbc-url` translation, so you can configure it as follows:
+javadoc:org.springframework.boot.jdbc.autoconfigure.DataSourceProperties[] takes care of the `url` to `jdbc-url` translation, so you can configure it as follows:
 
 [configprops%novalidate,yaml]
 ----

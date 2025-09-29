@@ -82,7 +82,7 @@ Thanks to relaxed binding of javadoc:org.springframework.core.env.Environment[] 
 
 To switch off the HTTP endpoints completely but still create a javadoc:org.springframework.web.context.WebApplicationContext[], use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers] in the '`Spring Boot Features`' section, or the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class.
+For more details, see xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers] in the '`Spring Boot Features`' section, or the javadoc:org.springframework.boot.web.server.autoconfigure.ServerProperties[] class.
 
 
 
