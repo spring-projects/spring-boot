@@ -80,10 +80,8 @@ public class LiquibaseEndpoint {
 			Database database = null;
 			try {
 				database = factory.findCorrectDatabaseImplementation(connection);
-				String schemaToUse = liquibase.getLiquibaseSchema();
-				if (!StringUtils.hasText(schemaToUse)) { // Use liquibase-schema if set, otherwise fall back to default-schema
-					schemaToUse = liquibase.getDefaultSchema();
-				}
+				String schemaToUse = StringUtils.hasText(liquibase.getLiquibaseSchema())
+						? liquibase.getLiquibaseSchema() : liquibase.getDefaultSchema();
 				if (StringUtils.hasText(schemaToUse)) {
 					database.setDefaultSchemaName(schemaToUse);
 				}
