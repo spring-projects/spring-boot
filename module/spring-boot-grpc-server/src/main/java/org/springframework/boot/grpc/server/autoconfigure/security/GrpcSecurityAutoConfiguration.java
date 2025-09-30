@@ -76,8 +76,8 @@ public final class GrpcSecurityAutoConfiguration {
 	}
 
 	@ConditionalOnBean(ObjectPostProcessor.class)
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnGrpcNativeServer
+	@Configuration(proxyBeanMethods = false)
 	static class GrpcNativeSecurityConfigurerConfiguration {
 
 		@Bean
