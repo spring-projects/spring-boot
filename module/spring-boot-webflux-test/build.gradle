@@ -31,7 +31,6 @@ dependencies {
 	optional(project(":module:spring-boot-http-codec"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-validation"))
-	optional(project(":module:spring-boot-web-server-test"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
