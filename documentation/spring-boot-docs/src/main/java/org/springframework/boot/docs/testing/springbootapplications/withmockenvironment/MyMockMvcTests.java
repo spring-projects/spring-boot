@@ -24,6 +24,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,6 +44,17 @@ class MyMockMvcTests {
 	@Test
 	void testWithMockMvcTester(@Autowired MockMvcTester mvc) {
 		assertThat(mvc.get().uri("/")).hasStatusOk().hasBodyTextEqualTo("Hello World");
+	}
+
+	@Test
+	void testWithRestTestClient(@Autowired RestTestClient webClient) {
+		// @formatter:off
+		webClient
+				.get().uri("/")
+				.exchange()
+				.expectStatus().isOk()
+				.expectBody(String.class).isEqualTo("Hello World");
+		// @formatter:on
 	}
 
 	// If Spring WebFlux is on the classpath, you can drive MVC tests with a WebTestClient

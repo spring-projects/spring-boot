@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -78,6 +79,11 @@ class MockMvcTesterSpringBootTestIntegrationTests {
 	@Test
 	void shouldTestWithWebTestClient(@Autowired WebTestClient webTestClient) {
 		webTestClient.get().uri("/one").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("one");
+	}
+
+	@Test
+	void shouldTestWithRestTestClient(@Autowired RestTestClient restTestClient) {
+		restTestClient.get().uri("/one").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("one");
 	}
 
 	@Test

@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.web.server.test.client.RestTestClientBuilderCustomizer;
 import org.springframework.boot.web.server.test.client.reactive.WebTestClientBuilderCustomizer;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
@@ -35,6 +36,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
+import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -75,6 +78,22 @@ public final class MockMvcAutoConfiguration {
 		WebTestClient webTestClient(MockMvc mockMvc, List<WebTestClientBuilderCustomizer> customizers) {
 			WebTestClient.Builder builder = MockMvcWebTestClient.bindTo(mockMvc);
 			for (WebTestClientBuilderCustomizer customizer : customizers) {
+				customizer.customize(builder);
+			}
+			return builder.build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ RestClient.class, RestTestClient.class })
+	static class RestTestClientMockMvcConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		RestTestClient restTestClient(MockMvc mockMvc, List<RestTestClientBuilderCustomizer> customizers) {
+			RestTestClient.Builder<?> builder = RestTestClient.bindTo(mockMvc);
+			for (RestTestClientBuilderCustomizer customizer : customizers) {
 				customizer.customize(builder);
 			}
 			return builder.build();

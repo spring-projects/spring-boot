@@ -141,10 +141,11 @@ include-code::MyApplicationArgumentTests[]
 By default, javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] does not start the server but instead sets up a mock environment for testing web endpoints.
 
 With Spring MVC, we can query our web endpoints using {url-spring-framework-docs}/testing/mockmvc.html[`MockMvc`].
-Three integrations are available:
+The following integrations are available:
 
 * The regular {url-spring-framework-docs}/testing/mockmvc/hamcrest.html[`MockMvc`] that uses Hamcrest.
 * {url-spring-framework-docs}/testing/mockmvc/assertj.html[`MockMvcTester`] that wraps javadoc:org.springframework.test.web.servlet.MockMvc[] and uses AssertJ.
+* {url-spring-framework-docs}/testing/resttestclient.html[`RestTestClient`] where javadoc:org.springframework.test.web.servlet.MockMvc[] is plugged in as the server to handle requests with.
 * {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] where javadoc:org.springframework.test.web.servlet.MockMvc[] is plugged in as the server to handle requests with.
 
 The following example showcases the available integrations:
@@ -176,16 +177,29 @@ If you need to start a full running server, we recommend that you use random por
 If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an available port is picked at random each time your test runs.
 
 The javadoc:org.springframework.boot.test.web.server.LocalServerPort[format=annotation] annotation can be used to xref:how-to:webserver.adoc#howto.webserver.discover-port[inject the actual port used] into your test.
-For convenience, tests that need to make REST calls to the started server can additionally autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
+
+For convenience, tests that need to make REST calls to the started server can additionally autowire a
+{url-spring-framework-docs}/testing/resttestclient.html[`RestTestClient`] which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
+
+include-code::MyRandomPortRestTestClientTests[]
+
+If you have `spring-webflux` on the classpath, you can also autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] that provides a similar API:
 
 include-code::MyRandomPortWebTestClientTests[]
 
 TIP: javadoc:org.springframework.test.web.reactive.server.WebTestClient[] can also used with a xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[mock environment], removing the need for a running server, by annotating your test class with javadoc:org.springframework.boot.webflux.test.autoconfigure.AutoConfigureWebTestClient[format=annotation] from `spring-boot-webflux-test`.
 
-This setup requires `spring-webflux` on the classpath.
-If you can not or will not add webflux, the `spring-boot-web-server-test` modules provides a javadoc:org.springframework.boot.web.server.test.client.TestRestTemplate[] facility:
+The `spring-boot-web-server-test` modules also provides a javadoc:org.springframework.boot.web.server.test.client.TestRestTemplate[] facility:
 
 include-code::MyRandomPortTestRestTemplateTests[]
+
+
+
+[[testing.spring-boot-applications.customizing-rest-test-client]]
+== Customizing RestTestClient
+
+To customize the javadoc:org.springframework.test.web.servlet.client.RestTestClient[] bean, configure a javadoc:org.springframework.boot.web.server.test.client.RestTestClientBuilderCustomizer[] bean.
+Any such beans are called with the javadoc:org.springframework.test.web.servlet.client.RestTestClient$Builder[] that is used to create the javadoc:org.springframework.test.web.servlet.client.RestTestClient[].
 
 
 
