@@ -26,7 +26,6 @@ description = "Spring Boot Data JPA Test"
 dependencies {
 	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-data-jpa"))
-	api(project(":module:spring-boot-jdbc-test"))
 	api(project(":module:spring-boot-jpa-test"))
 
 	optional(project(":core:spring-boot-testcontainers"))
