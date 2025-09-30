@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.env.Environment;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -44,22 +44,7 @@ class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuato
 	private int port;
 
 	@Autowired
-	private Environment environment;
-
-	@Override
-	String getPath() {
-		return "http://localhost:" + this.port;
-	}
-
-	@Override
-	String getManagementPath() {
-		return "http://localhost:" + this.port;
-	}
-
-	@Override
-	Environment getEnvironment() {
-		return this.environment;
-	}
+	private ApplicationContext applicationContext;
 
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -77,6 +62,21 @@ class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuato
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		entity = beansRestTemplate().getForEntity(getManagementPath() + "/actuator/beans/", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+	}
+
+	@Override
+	String getPath() {
+		return "http://localhost:" + this.port;
+	}
+
+	@Override
+	String getManagementPath() {
+		return "http://localhost:" + this.port;
+	}
+
+	@Override
+	ApplicationContext getApplicationContext() {
+		return this.applicationContext;
 	}
 
 }

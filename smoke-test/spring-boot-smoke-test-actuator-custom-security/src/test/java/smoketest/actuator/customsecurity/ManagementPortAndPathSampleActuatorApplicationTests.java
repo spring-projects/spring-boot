@@ -24,7 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.env.Environment;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -48,7 +48,7 @@ class ManagementPortAndPathSampleActuatorApplicationTests extends AbstractSample
 	private int managementPort;
 
 	@Autowired
-	private Environment environment;
+	private ApplicationContext applicationContext;
 
 	@Test
 	void testMissing() {
@@ -69,8 +69,8 @@ class ManagementPortAndPathSampleActuatorApplicationTests extends AbstractSample
 	}
 
 	@Override
-	Environment getEnvironment() {
-		return this.environment;
+	ApplicationContext getApplicationContext() {
+		return this.applicationContext;
 	}
 
 }

@@ -26,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.test.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.client.LocalHostUriTemplateHandler;
+import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.boot.test.web.servlet.client.BaseUrlUriBuilderFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -52,9 +54,8 @@ class CorsSampleActuatorApplicationTests {
 	@BeforeEach
 	void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
-		LocalHostUriTemplateHandler handler = new LocalHostUriTemplateHandler(this.applicationContext.getEnvironment(),
-				"http");
-		builder = builder.uriTemplateHandler(handler);
+		BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrlOrDefault();
+		builder = builder.uriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
 		this.testRestTemplate = new TestRestTemplate(builder);
 	}
 
