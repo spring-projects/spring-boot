@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.howto.webserver.discoverport;
+/**
+ * Web server test utilities and support classes.
+ */
+@NullMarked
+package org.springframework.boot.test.web.server;
 
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
-
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class MyWebIntegrationTests {
-
-	@LocalServerPort
-	int port;
-
-	// ...
-
-}
+import org.jspecify.annotations.NullMarked;
