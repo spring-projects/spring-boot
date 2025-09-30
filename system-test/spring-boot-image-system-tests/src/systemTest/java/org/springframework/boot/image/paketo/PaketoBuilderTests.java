@@ -312,11 +312,14 @@ class PaketoBuilderTests {
 		// these deprecations are from native image buildpacks
 		this.gradleBuild.expectDeprecationMessages("Using a deprecated option --report-unsupported-elements-at-runtime",
 				"The option is deprecated and will be removed in the future.");
+		// this deprecation is from Framework (spring-projects/spring-framework#35557)
+		this.gradleBuild.expectDeprecationMessages("Using a deprecated option --install-exit-handlers");
 		writeMainClass();
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		System.out.println(result.getOutput());
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
