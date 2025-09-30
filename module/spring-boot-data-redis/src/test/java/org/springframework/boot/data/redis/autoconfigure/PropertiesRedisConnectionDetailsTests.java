@@ -21,7 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails.Node;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails.Node;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
 
@@ -29,29 +29,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link PropertiesRedisConnectionDetails}.
+ * Tests for {@link PropertiesDataRedisConnectionDetails}.
  *
  * @author Scott Frederick
  * @author Moritz Halbritter
  */
 class PropertiesRedisConnectionDetailsTests {
 
-	private RedisProperties properties;
+	private DataRedisProperties properties;
 
-	private PropertiesRedisConnectionDetails connectionDetails;
+	private PropertiesDataRedisConnectionDetails connectionDetails;
 
 	private DefaultSslBundleRegistry sslBundleRegistry;
 
 	@BeforeEach
 	void setUp() {
-		this.properties = new RedisProperties();
+		this.properties = new DataRedisProperties();
 		this.sslBundleRegistry = new DefaultSslBundleRegistry();
-		this.connectionDetails = new PropertiesRedisConnectionDetails(this.properties, this.sslBundleRegistry);
+		this.connectionDetails = new PropertiesDataRedisConnectionDetails(this.properties, this.sslBundleRegistry);
 	}
 
 	@Test
 	void connectionIsConfiguredWithDefaults() {
-		RedisConnectionDetails.Standalone standalone = this.connectionDetails.getStandalone();
+		DataRedisConnectionDetails.Standalone standalone = this.connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("localhost");
 		assertThat(standalone.getPort()).isEqualTo(6379);
 		assertThat(standalone.getDatabase()).isEqualTo(0);
@@ -109,7 +109,7 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setHost("notused");
 		this.properties.setPort(9999);
 		this.properties.setDatabase(5);
-		RedisConnectionDetails.Standalone standalone = this.connectionDetails.getStandalone();
+		DataRedisConnectionDetails.Standalone standalone = this.connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("example.com");
 		assertThat(standalone.getPort()).isEqualTo(1234);
 		assertThat(standalone.getDatabase()).isEqualTo(9999);
@@ -119,9 +119,9 @@ class PropertiesRedisConnectionDetailsTests {
 	void standaloneIsConfiguredFromUrlWithoutDatabase() {
 		this.properties.setUrl("redis://example.com:1234");
 		this.properties.setDatabase(5);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
-				null);
-		RedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
+		PropertiesDataRedisConnectionDetails connectionDetails = new PropertiesDataRedisConnectionDetails(
+				this.properties, null);
+		DataRedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("example.com");
 		assertThat(standalone.getPort()).isEqualTo(1234);
 		assertThat(standalone.getDatabase()).isEqualTo(0);
@@ -132,7 +132,7 @@ class PropertiesRedisConnectionDetailsTests {
 		this.properties.setHost("example.com");
 		this.properties.setPort(1234);
 		this.properties.setDatabase(5);
-		RedisConnectionDetails.Standalone standalone = this.connectionDetails.getStandalone();
+		DataRedisConnectionDetails.Standalone standalone = this.connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("example.com");
 		assertThat(standalone.getPort()).isEqualTo(1234);
 		assertThat(standalone.getDatabase()).isEqualTo(5);
@@ -140,7 +140,7 @@ class PropertiesRedisConnectionDetailsTests {
 
 	@Test
 	void clusterIsConfigured() {
-		RedisProperties.Cluster cluster = new RedisProperties.Cluster();
+		DataRedisProperties.Cluster cluster = new DataRedisProperties.Cluster();
 		cluster.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setCluster(cluster);
 		assertThat(this.connectionDetails.getCluster().getNodes()).containsExactly(new Node("localhost", 1111),
@@ -149,12 +149,12 @@ class PropertiesRedisConnectionDetailsTests {
 
 	@Test
 	void sentinelIsConfigured() {
-		RedisProperties.Sentinel sentinel = new RedisProperties.Sentinel();
+		DataRedisProperties.Sentinel sentinel = new DataRedisProperties.Sentinel();
 		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setSentinel(sentinel);
 		this.properties.setDatabase(5);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
-				null);
+		PropertiesDataRedisConnectionDetails connectionDetails = new PropertiesDataRedisConnectionDetails(
+				this.properties, null);
 		assertThat(connectionDetails.getSentinel().getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
 		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(5);
@@ -162,13 +162,13 @@ class PropertiesRedisConnectionDetailsTests {
 
 	@Test
 	void sentinelDatabaseIsConfiguredFromUrl() {
-		RedisProperties.Sentinel sentinel = new RedisProperties.Sentinel();
+		DataRedisProperties.Sentinel sentinel = new DataRedisProperties.Sentinel();
 		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setSentinel(sentinel);
 		this.properties.setUrl("redis://example.com:1234/9999");
 		this.properties.setDatabase(5);
-		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties,
-				null);
+		PropertiesDataRedisConnectionDetails connectionDetails = new PropertiesDataRedisConnectionDetails(
+				this.properties, null);
 		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(9999);
 	}
 

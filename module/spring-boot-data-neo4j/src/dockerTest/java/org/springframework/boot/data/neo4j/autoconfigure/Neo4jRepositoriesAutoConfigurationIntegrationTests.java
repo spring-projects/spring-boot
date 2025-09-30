@@ -63,8 +63,8 @@ class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Configuration
 	@EnableNeo4jRepositories(basePackageClasses = CountryRepository.class)
-	@ImportAutoConfiguration({ Neo4jAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
-			Neo4jRepositoriesAutoConfiguration.class })
+	@ImportAutoConfiguration({ Neo4jAutoConfiguration.class, DataNeo4jAutoConfiguration.class,
+			DataNeo4jRepositoriesAutoConfiguration.class })
 	static class TestConfiguration {
 
 	}

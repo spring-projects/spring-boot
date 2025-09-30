@@ -1,1 +1,1 @@
-org.springframework.boot.data.jdbc.autoconfigure.JdbcRepositoriesAutoConfiguration
+org.springframework.boot.data.jdbc.autoconfigure.DataJdbcRepositoriesAutoConfiguration

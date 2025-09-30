@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
-import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testcontainers.service.connection.TestContainerConnectionSource;
@@ -48,7 +48,7 @@ class CustomRedisContainerConnectionDetailsFactoryTests {
 		ContainerConnectionSource<RedisContainer> source = TestContainerConnectionSource.create("test", null,
 				RedisContainer.class, "mycustomimage", annotation, null);
 		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails(source, true);
-		assertThat(connectionDetails.get(RedisConnectionDetails.class)).isNotNull();
+		assertThat(connectionDetails.get(DataRedisConnectionDetails.class)).isNotNull();
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class CustomRedisContainerConnectionDetailsFactoryTests {
 		ContainerConnectionSource<RedisStackContainer> source = TestContainerConnectionSource.create("test", null,
 				RedisStackContainer.class, "mycustomimage", annotation, null);
 		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails(source, true);
-		assertThat(connectionDetails.get(RedisConnectionDetails.class)).isNotNull();
+		assertThat(connectionDetails.get(DataRedisConnectionDetails.class)).isNotNull();
 	}
 
 }

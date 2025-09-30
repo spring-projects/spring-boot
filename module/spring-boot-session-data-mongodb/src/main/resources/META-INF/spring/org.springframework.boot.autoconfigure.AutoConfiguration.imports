@@ -1,1 +1,1 @@
-org.springframework.boot.session.data.mongodb.autoconfigure.MongoSessionAutoConfiguration
+org.springframework.boot.session.data.mongodb.autoconfigure.SessionDataMongoAutoConfiguration

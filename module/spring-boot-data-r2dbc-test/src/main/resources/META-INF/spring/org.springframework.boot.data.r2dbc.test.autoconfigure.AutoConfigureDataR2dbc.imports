@@ -1,5 +1,5 @@
-org.springframework.boot.data.r2dbc.autoconfigure.R2dbcDataAutoConfiguration
-org.springframework.boot.data.r2dbc.autoconfigure.R2dbcRepositoriesAutoConfiguration
+org.springframework.boot.data.r2dbc.autoconfigure.DataR2dbcAutoConfiguration
+org.springframework.boot.data.r2dbc.autoconfigure.DataR2dbcRepositoriesAutoConfiguration
 org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration
 org.springframework.boot.r2dbc.autoconfigure.R2dbcInitializationAutoConfiguration
 org.springframework.boot.r2dbc.autoconfigure.R2dbcTransactionManagerAutoConfiguration

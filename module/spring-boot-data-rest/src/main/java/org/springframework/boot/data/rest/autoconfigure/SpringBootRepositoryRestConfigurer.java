@@ -41,10 +41,10 @@ class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
 	private final List<JsonMapperBuilderCustomizer> jsonMapperBuilderCustomizers;
 
-	private final RepositoryRestProperties properties;
+	private final DataRestProperties properties;
 
 	SpringBootRepositoryRestConfigurer(List<JsonMapperBuilderCustomizer> jsonMapperBuilderCustomizers,
-			RepositoryRestProperties properties) {
+			DataRestProperties properties) {
 		this.jsonMapperBuilderCustomizers = jsonMapperBuilderCustomizers;
 		this.properties = properties;
 	}

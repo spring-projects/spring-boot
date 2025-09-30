@@ -23,8 +23,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
-import org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +48,7 @@ class RedisContainerConnectionDetailsFactoryTests {
 	static final RedisContainer redis = TestImage.container(RedisContainer.class);
 
 	@Autowired(required = false)
-	private RedisConnectionDetails connectionDetails;
+	private DataRedisConnectionDetails connectionDetails;
 
 	@Autowired
 	private RedisConnectionFactory connectionFactory;
@@ -62,7 +62,7 @@ class RedisContainerConnectionDetailsFactoryTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(RedisAutoConfiguration.class)
+	@ImportAutoConfiguration(DataRedisAutoConfiguration.class)
 	static class TestConfiguration {
 
 	}
