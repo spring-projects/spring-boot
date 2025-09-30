@@ -32,7 +32,7 @@ import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
  * @author Chris Bono
  * @since 4.0.0
  */
-public class ChannelBuilderCustomizers {
+class ChannelBuilderCustomizers {
 
 	private final List<GrpcChannelBuilderCustomizer<?>> customizers;
 
