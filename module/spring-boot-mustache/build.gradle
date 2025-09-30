@@ -42,7 +42,6 @@ dependencies {
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":module:spring-boot-webflux-test"))
 	testImplementation(project(":module:spring-boot-webmvc-test"))
-	testImplementation(project(":module:spring-boot-web-server-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("io.projectreactor:reactor-test")

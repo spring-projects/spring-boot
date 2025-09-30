@@ -55,7 +55,6 @@ dependencies {
 	testImplementation(project(":module:spring-boot-restclient"))
 	testImplementation(project(":module:spring-boot-restclient-test"))
 	testImplementation(project(":module:spring-boot-tomcat"))
-	testImplementation(project(":module:spring-boot-web-server-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":module:spring-boot-actuator-autoconfigure")))
 	testImplementation(testFixtures(project(":module:spring-boot-web-server")))

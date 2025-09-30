@@ -56,7 +56,6 @@ dependencies {
 	intTestImplementation(project(":core:spring-boot-test"))
 	intTestImplementation(project(":module:spring-boot-restclient"))
 	intTestImplementation(project(":module:spring-boot-restclient-test"))
-	intTestImplementation(project(":module:spring-boot-web-server-test"))
 	intTestImplementation(project(":test-support:spring-boot-test-support"))
 	intTestImplementation("org.apache.httpcomponents.client5:httpclient5")
 	intTestImplementation("net.bytebuddy:byte-buddy")

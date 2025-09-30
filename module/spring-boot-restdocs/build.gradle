@@ -30,7 +30,6 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-webmvc-test"))
-	optional(project(":module:spring-boot-web-server-test"))
 	optional("org.springframework.restdocs:spring-restdocs-mockmvc")
 	optional("org.springframework.restdocs:spring-restdocs-restassured")
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")

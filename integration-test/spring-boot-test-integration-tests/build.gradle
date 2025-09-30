@@ -29,7 +29,6 @@ dependencies {
 	testImplementation(project(":module:spring-boot-restclient-test"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":module:spring-boot-web-server"))
-	testImplementation(project(":module:spring-boot-web-server-test"))
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("org.springframework:spring-webmvc")
 	testImplementation("org.springframework:spring-webflux")

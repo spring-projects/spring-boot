@@ -2179,7 +2179,6 @@ bom {
 				"spring-boot-tx",
 				"spring-boot-validation",
 				"spring-boot-web-server",
-				"spring-boot-web-server-test",
 				"spring-boot-webclient",
 				"spring-boot-webflux",
 				"spring-boot-webflux-test",

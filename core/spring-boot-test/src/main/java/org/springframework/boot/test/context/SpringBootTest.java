@@ -59,7 +59,7 @@ import org.springframework.web.context.WebApplicationContext;
  * <li>Provides support for different {@link #webEnvironment() webEnvironment} modes,
  * including the ability to start a fully running web server listening on a
  * {@link WebEnvironment#DEFINED_PORT defined} or {@link WebEnvironment#RANDOM_PORT
- * random} port when {@code spring-boot-web-server-test} is on the classpath.</li>
+ * random} port when {@code spring-boot-web-server} is on the classpath.</li>
  * </ul>
  *
  * @author Phillip Webb
@@ -144,7 +144,7 @@ public @interface SpringBootTest {
 		 * Creates a web application context (reactive or servlet based) and sets a
 		 * {@code server.port=0} {@link Environment} property (which usually triggers
 		 * listening on a random port). Requires a dependency on
-		 * {@code spring-boot-web-server-test}. Often used in conjunction with a
+		 * {@code spring-boot-web-server}. Often used in conjunction with a
 		 * {@code @LocalServerPort} injected field on the test.
 		 */
 		RANDOM_PORT(true),
@@ -152,7 +152,7 @@ public @interface SpringBootTest {
 		/**
 		 * Creates a web application context (reactive or servlet based) without defining
 		 * any {@code server.port=0} {@link Environment} property. Requires a dependency
-		 * on {@code spring-boot-web-server-test}.
+		 * on {@code spring-boot-web-server}.
 		 */
 		DEFINED_PORT(true),
 
