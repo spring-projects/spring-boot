@@ -27,21 +27,28 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.grpc.client.ChannelCredentialsProvider;
+import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 import org.springframework.grpc.client.CoroutineStubFactory;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 
 @AutoConfiguration(before = CompositeChannelFactoryAutoConfiguration.class)
 @ConditionalOnGrpcClientEnabled
 @EnableConfigurationProperties(GrpcClientProperties.class)
-@Import({ GrpcCodecConfiguration.class, ClientInterceptorsConfiguration.class,
-		GrpcChannelFactoryConfigurations.ShadedNettyChannelFactoryConfiguration.class,
+@Import({ GrpcCodecConfiguration.class, GrpcChannelFactoryConfigurations.ShadedNettyChannelFactoryConfiguration.class,
 		GrpcChannelFactoryConfigurations.NettyChannelFactoryConfiguration.class,
 		GrpcChannelFactoryConfigurations.InProcessChannelFactoryConfiguration.class, ClientScanConfiguration.class })
 public final class GrpcClientAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	ClientInterceptorsConfigurer clientInterceptorsConfigurer(ApplicationContext applicationContext) {
+		return new ClientInterceptorsConfigurer(applicationContext);
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(ChannelCredentialsProvider.class)

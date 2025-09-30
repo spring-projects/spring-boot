@@ -31,12 +31,12 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.grpc.client.autoconfigure.ClientInterceptorsConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration;
 import org.springframework.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.grpc.client.ClientInterceptorsConfigurer;
@@ -63,10 +63,15 @@ import org.springframework.grpc.server.service.GrpcServiceDiscoverer;
 @ConditionalOnClass({ InProcessServerBuilder.class, InProcessChannelBuilder.class, InProcessGrpcServerFactory.class,
 		InProcessGrpcChannelFactory.class })
 @ConditionalOnBooleanProperty("spring.test.grpc.inprocess.enabled")
-@Import(ClientInterceptorsConfiguration.class)
 public final class InProcessTestAutoConfiguration {
 
 	private final String address = InProcessServerBuilder.generateName();
+
+	@Bean
+	@ConditionalOnMissingBean
+	ClientInterceptorsConfigurer clientInterceptorsConfigurer(ApplicationContext applicationContext) {
+		return new ClientInterceptorsConfigurer(applicationContext);
+	}
 
 	@Bean
 	@ConditionalOnClass({ BindableService.class, GrpcServerFactory.class })
