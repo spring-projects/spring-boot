@@ -319,7 +319,6 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		System.out.println(result.getOutput());
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
