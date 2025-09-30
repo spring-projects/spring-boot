@@ -453,7 +453,7 @@ class ProfilesTests {
 		environment.setProperty("spring.profiles.active", "fa!l");
 		Binder binder = new Binder();
 		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
-			.withMessage("Invalid profile property value found in Envronment under 'spring.profiles.active'");
+			.withMessage("Invalid profile property value found in Environment under 'spring.profiles.active'");
 	}
 
 	@Test
