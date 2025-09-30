@@ -30,7 +30,6 @@ import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
  * {@link ManagedChannelBuilder}.
  *
  * @author Chris Bono
- * @since 4.0.0
  */
 class ChannelBuilderCustomizers {
 
