@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.test.reactor.netty;
+package org.springframework.boot.test.http.client;
 
 import java.util.List;
 
@@ -36,12 +36,16 @@ import org.springframework.util.ClassUtils;
  */
 class DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory implements ContextCustomizerFactory {
 
-	String REACTOR_RESOURCE_FACTORY_CLASS = "org.springframework.http.client.ReactorResourceFactory";
+	private static final String REACTOR_RESOURCE_FACTORY_CLASS = "org.springframework.http.client.ReactorResourceFactory";
+
+	private static final String REACTOR_NETTY_CLASS = "reactor.netty.ReactorNetty";
 
 	@Override
 	public @Nullable ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		if (ClassUtils.isPresent(this.REACTOR_RESOURCE_FACTORY_CLASS, testClass.getClassLoader())) {
+		ClassLoader classLoader = testClass.getClassLoader();
+		if (ClassUtils.isPresent(REACTOR_RESOURCE_FACTORY_CLASS, classLoader)
+				&& ClassUtils.isPresent(REACTOR_NETTY_CLASS, classLoader)) {
 			return new DisableReactorResourceFactoryGlobalResourcesContextCustomizerCustomizer();
 		}
 		return null;

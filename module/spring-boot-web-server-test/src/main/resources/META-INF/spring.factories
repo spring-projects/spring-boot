@@ -1,7 +1,3 @@
 # Environment Post Processors
 org.springframework.boot.EnvironmentPostProcessor=\
 org.springframework.boot.web.server.test.SpringBootTestRandomPortEnvironmentPostProcessor
-
-# Spring Test Context Customizer Factories
-org.springframework.test.context.ContextCustomizerFactory=\
-org.springframework.boot.web.server.test.reactor.netty.DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory

@@ -15,9 +15,9 @@
  */
 
 /**
- * Spring Boot support for testing Reactor Netty.
+ * Spring Boot support for HTTP client testing.
  */
 @NullMarked
-package org.springframework.boot.web.server.test.reactor.netty;
+package org.springframework.boot.test.http.client;
 
 import org.jspecify.annotations.NullMarked;
