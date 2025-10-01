@@ -52,6 +52,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.RequestEntity.UriTemplateRequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.NoOpResponseErrorHandler;
@@ -80,6 +81,8 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link TestRestTemplate} is automatically available and can be {@code @Autowired} into
  * your test. If you need customizations (for example to adding additional message
  * converters) use a {@link RestTemplateBuilder} {@code @Bean}.
+ *
+ * @deprecated Please consider {@link RestTestClient} as successor.
  *
  * @author Dave Syer
  * @author Phillip Webb
