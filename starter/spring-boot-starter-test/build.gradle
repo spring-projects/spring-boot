@@ -26,7 +26,6 @@ dependencies {
 	api(project(":core:spring-boot-test"))
 
 	api(project(":core:spring-boot-test-autoconfigure"))
-	api(project(":module:spring-boot-restclient-test"))
 
 	api("com.jayway.jsonpath:json-path")
 	api("jakarta.xml.bind:jakarta.xml.bind-api")

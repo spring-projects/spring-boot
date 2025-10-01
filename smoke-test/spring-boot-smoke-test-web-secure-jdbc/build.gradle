@@ -27,7 +27,7 @@ dependencies {
 
 	runtimeOnly("com.h2database:h2")
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
+	testImplementation(project(":starter:spring-boot-starter-restclient-test"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }

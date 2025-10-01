@@ -29,7 +29,7 @@ dependencies {
 
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
-	dockerTestImplementation(project(":starter:spring-boot-starter-restclient"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-restclient-test"))
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mongodb")
