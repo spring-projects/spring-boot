@@ -248,6 +248,15 @@ class DataRedisAutoConfigurationJedisTests {
 	}
 
 	@Test
+	void testRedisConfigurationWitMasterReplica() {
+		this.contextRunner.withPropertyValues("spring.data.redis.masterreplica.nodes=127.0.0.1:27379,127.0.0.1:27380")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.rootCause()
+				.hasMessageContaining("'masterReplicaConfig' is not supported by Jedis"));
+	}
+
+	@Test
 	void testRedisConfigurationWithSslEnabled() {
 		this.contextRunner.withPropertyValues("spring.data.redis.ssl.enabled:true").run((context) -> {
 			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);

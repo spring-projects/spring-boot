@@ -34,7 +34,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Yanming Zhou
- * @author Yong-Hyun Kim
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.data.redis")
@@ -94,6 +93,8 @@ public class DataRedisProperties {
 	private @Nullable Sentinel sentinel;
 
 	private @Nullable Cluster cluster;
+
+	private @Nullable Masterreplica masterreplica;
 
 	private final Ssl ssl = new Ssl();
 
@@ -199,6 +200,14 @@ public class DataRedisProperties {
 
 	public void setCluster(@Nullable Cluster cluster) {
 		this.cluster = cluster;
+	}
+
+	public @Nullable Masterreplica getMasterreplica() {
+		return this.masterreplica;
+	}
+
+	public void setMasterreplica(@Nullable Masterreplica masterreplica) {
+		this.masterreplica = masterreplica;
 	}
 
 	public Jedis getJedis() {
@@ -356,6 +365,26 @@ public class DataRedisProperties {
 	}
 
 	/**
+	 * Master Replica properties.
+	 */
+	public static class Masterreplica {
+
+		/**
+		 * Static list of "host:port" pairs to use, at least one entry is required.
+		 */
+		private @Nullable List<String> nodes;
+
+		public @Nullable List<String> getNodes() {
+			return this.nodes;
+		}
+
+		public void setNodes(@Nullable List<String> nodes) {
+			this.nodes = nodes;
+		}
+
+	}
+
+	/**
 	 * Redis sentinel properties.
 	 */
 	public static class Sentinel {
@@ -482,20 +511,6 @@ public class DataRedisProperties {
 		private final Pool pool = new Pool();
 
 		private final Cluster cluster = new Cluster();
-
-		/**
-		 * List of static master-replica "host:port" pairs regardless of role
-		 * as the actual roles are determined by querying each node's ROLE command.
-		 */
-		private @Nullable List<String> nodes;
-
-		public @Nullable List<String> getNodes() {
-			return this.nodes;
-		}
-
-		public void setNodes(@Nullable List<String> nodes) {
-			this.nodes = nodes;
-		}
 
 		public Duration getShutdownTimeout() {
 			return this.shutdownTimeout;

@@ -38,6 +38,7 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisSslClientConfigurationBuilder;
@@ -66,9 +67,10 @@ class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
 			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
+			ObjectProvider<RedisStaticMasterReplicaConfiguration> masterReplicaConfiguration,
 			DataRedisConnectionDetails connectionDetails) {
 		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
-				clusterConfiguration);
+				clusterConfiguration, masterReplicaConfiguration);
 	}
 
 	@Bean
@@ -104,7 +106,7 @@ class JedisConnectionConfiguration extends DataRedisConnectionConfiguration {
 				Assert.state(sentinelConfig != null, "'sentinelConfig' must not be null");
 				yield new JedisConnectionFactory(sentinelConfig, clientConfiguration);
 			}
-			case STATIC_MASTER_REPLICA -> throw new IllegalStateException("Static master replica is not supported for Jedis");
+			case MASTER_REPLICA -> throw new IllegalStateException("'masterReplicaConfig' is not supported by Jedis");
 		};
 	}
 

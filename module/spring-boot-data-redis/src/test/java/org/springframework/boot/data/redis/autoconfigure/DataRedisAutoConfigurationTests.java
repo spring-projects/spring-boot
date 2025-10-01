@@ -61,6 +61,7 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
@@ -91,7 +92,6 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @author Yong-Hyun Kim
  */
 class DataRedisAutoConfigurationTests {
 
@@ -497,40 +497,38 @@ class DataRedisAutoConfigurationTests {
 				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
 				assertThat(getUserName(connectionFactory)).isEqualTo("user");
 				assertThat(connectionFactory.getPassword()).isEqualTo("password");
-			}
-
-			);
-	}
-
-	@Test
-	void testRedisConfigurationWithStaticMasterReplica() {
-		List<String> staticMasterReplicaNodes = Arrays.asList("127.0.0.1:28319", "127.0.0.1:28320", "[::1]:28321");
-		this.contextRunner
-			.withPropertyValues(
-					"spring.data.redis.lettuce.static-master-replica.nodes[0]:" + staticMasterReplicaNodes.get(0),
-					"spring.data.redis.lettuce.static-master-replica.nodes[1]:" + staticMasterReplicaNodes.get(1),
-					"spring.data.redis.lettuce.static-master-replica.nodes[2]:" + staticMasterReplicaNodes.get(2))
-			.run((context) -> {
-				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
-				assertThat(connectionFactory.getSentinelConfiguration()).isNull();
-				assertThat(connectionFactory.getClusterConfiguration()).isNull();
-				assertThat(isStaticMasterReplicaAware(connectionFactory)).isTrue();
 			});
 	}
 
 	@Test
-	void testRedisConfigurationWithStaticMasterReplicaAndAuthenticationAndDatabase() {
-		List<String> staticMasterReplicaNodes = Arrays.asList("127.0.0.1:28319", "127.0.0.1:28320");
+	void testRedisConfigurationWithMasterReplica() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.masterreplica.nodes=127.0.0.1:28319,127.0.0.1:28320,[::1]:28321")
+			.run((context) -> {
+				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+				assertThat(connectionFactory.getSentinelConfiguration()).isNull();
+				assertThat(connectionFactory.getClusterConfiguration()).isNull();
+				assertThat(connectionFactory).extracting("configuration")
+					.isInstanceOfSatisfying(RedisStaticMasterReplicaConfiguration.class,
+							(masterReplicaConfiguration) -> assertThat(masterReplicaConfiguration.getNodes()
+								.stream()
+								.map((config) -> new RedisNode(config.getHostName(), config.getPort())))
+								.containsExactly(new RedisNode("127.0.0.1", 28319), new RedisNode("127.0.0.1", 28320),
+										new RedisNode("[::1]", 28321)));
+			});
+	}
+
+	@Test
+	void testRedisConfigurationWithMasterAndAuthentication() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.username=user", "spring.data.redis.password=password",
-					"spring.data.redis.database=1",
-					"spring.data.redis.lettuce.static-master-replica.nodes[0]:" + staticMasterReplicaNodes.get(0),
-					"spring.data.redis.lettuce.static-master-replica.nodes[1]:" + staticMasterReplicaNodes.get(1))
+					"spring.data.redis.masterreplica.nodes=127.0.0.1:28319,127.0.0.1:28320")
 			.run((context) -> {
 				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
 				assertThat(getUserName(connectionFactory)).isEqualTo("user");
 				assertThat(connectionFactory.getPassword()).isEqualTo("password");
-				assertThat(connectionFactory.getDatabase()).isOne();
+				assertThat(connectionFactory).extracting("configuration")
+					.isInstanceOf(RedisStaticMasterReplicaConfiguration.class);
 			});
 	}
 
@@ -662,6 +660,27 @@ class DataRedisAutoConfigurationTests {
 	}
 
 	@Test
+	void usesMasterReplicaFromCustomConnectionDetails() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsMasterReplicaConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(DataRedisConnectionDetails.class)
+				.doesNotHaveBean(PropertiesDataRedisConnectionDetails.class);
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isFalse();
+			assertThat(cf).extracting("configuration")
+				.isInstanceOfSatisfying(RedisStaticMasterReplicaConfiguration.class,
+						(masterReplicationConfiguration) -> {
+							assertThat(masterReplicationConfiguration.getUsername()).isEqualTo("user-1");
+							assertThat(masterReplicationConfiguration.getPassword().get())
+								.isEqualTo("password-1".toCharArray());
+							assertThat(masterReplicationConfiguration.getNodes())
+								.map((nodeConfiguration) -> new RedisNode(nodeConfiguration.getHostName(),
+										nodeConfiguration.getPort()))
+								.containsExactly(new RedisNode("node-1", 12345), new RedisNode("node-2", 23456));
+						});
+		});
+	}
+
+	@Test
 	void testRedisConfigurationWithSslEnabled() {
 		this.contextRunner.withPropertyValues("spring.data.redis.ssl.enabled:true").run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
@@ -736,10 +755,6 @@ class DataRedisAutoConfigurationTests {
 		RedisClusterNode node = new RedisClusterNode();
 		node.setUri(RedisURI.Builder.redis(host).build());
 		return node;
-	}
-
-	private boolean isStaticMasterReplicaAware(LettuceConnectionFactory factory) {
-		return ReflectionTestUtils.invokeMethod(factory, "isStaticMasterReplicaAware");
 	}
 
 	private static final class RedisNodes implements Nodes {
@@ -907,6 +922,40 @@ class DataRedisAutoConfigurationTests {
 				@Override
 				public Cluster getCluster() {
 					return new Cluster() {
+
+						@Override
+						public List<Node> getNodes() {
+							return List.of(new Node("node-1", 12345), new Node("node-2", 23456));
+						}
+
+					};
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsMasterReplicaConfiguration {
+
+		@Bean
+		DataRedisConnectionDetails redisConnectionDetails() {
+			return new DataRedisConnectionDetails() {
+
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "password-1";
+				}
+
+				@Override
+				public MasterReplica getMasterReplica() {
+					return new MasterReplica() {
 
 						@Override
 						public List<Node> getNodes() {

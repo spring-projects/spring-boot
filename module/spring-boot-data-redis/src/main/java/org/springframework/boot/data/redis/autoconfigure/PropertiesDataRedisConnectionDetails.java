@@ -92,6 +92,12 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 		return (cluster != null) ? new PropertiesCluster(cluster) : null;
 	}
 
+	@Override
+	public @Nullable MasterReplica getMasterReplica() {
+		DataRedisProperties.Masterreplica masterreplica = this.properties.getMasterreplica();
+		return (masterreplica != null) ? new PropertiesMasterReplica(masterreplica) : null;
+	}
+
 	private @Nullable DataRedisUrl getRedisUrl() {
 		return DataRedisUrl.of(this.properties.getUrl());
 	}
@@ -118,6 +124,24 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 		private final List<Node> nodes;
 
 		PropertiesCluster(DataRedisProperties.Cluster properties) {
+			this.nodes = asNodes(properties.getNodes());
+		}
+
+		@Override
+		public List<Node> getNodes() {
+			return this.nodes;
+		}
+
+	}
+
+	/**
+	 * {@link MasterReplica} implementation backed by properties.
+	 */
+	private class PropertiesMasterReplica implements MasterReplica {
+
+		private final List<Node> nodes;
+
+		PropertiesMasterReplica(DataRedisProperties.Masterreplica properties) {
 			this.nodes = asNodes(properties.getNodes());
 		}
 
