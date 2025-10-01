@@ -62,7 +62,8 @@ class GrpcChannelFactoryConfigurations {
 				ChannelCredentialsProvider credentials) {
 			List<GrpcChannelBuilderCustomizer<io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder>> builderCustomizers = List
 				.of(channelBuilderCustomizers::customize);
-			var factory = new ShadedNettyGrpcChannelFactory(builderCustomizers, interceptorsConfigurer);
+			ShadedNettyGrpcChannelFactory factory = new ShadedNettyGrpcChannelFactory(builderCustomizers,
+					interceptorsConfigurer);
 			factory.setCredentialsProvider(credentials);
 			factory.setVirtualTargets(properties);
 			channelFactoryCustomizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
@@ -87,7 +88,7 @@ class GrpcChannelFactoryConfigurations {
 				ChannelCredentialsProvider credentials) {
 			List<GrpcChannelBuilderCustomizer<NettyChannelBuilder>> builderCustomizers = List
 				.of(channelBuilderCustomizers::customize);
-			var factory = new NettyGrpcChannelFactory(builderCustomizers, interceptorsConfigurer);
+			NettyGrpcChannelFactory factory = new NettyGrpcChannelFactory(builderCustomizers, interceptorsConfigurer);
 			factory.setCredentialsProvider(credentials);
 			factory.setVirtualTargets(properties);
 			channelFactoryCustomizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
