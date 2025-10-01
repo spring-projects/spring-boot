@@ -2,9 +2,9 @@ require 'formula'
 
 class SpringBoot < Formula
   homepage 'https://spring.io/projects/spring-boot'
-  url '${repo}/org/springframework/boot/spring-boot-cli/${version}/spring-boot-cli-${version}-bin.tar.gz'
-  version '${version}'
-  sha256 '${hash}'
+  url 'https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/3.5.6/spring-boot-cli-3.5.6-bin.tar.gz'
+  version '3.5.6'
+  sha256 '3ac9314100c474ddad1c4ae04a85404383817d6f748820980e26ccbe55393bbe'
   head 'https://github.com/spring-projects/spring-boot.git', :branch => "main"
 
   def install
@@ -16,9 +16,14 @@ class SpringBoot < Formula
       root = '.'
     end
 
-    bin.install Dir["#{root}/bin/spring"]
-    lib.install Dir["#{root}/lib/spring-boot-cli-*.jar"]
-    bash_completion.install Dir["#{root}/shell-completion/bash/spring"]
-    zsh_completion.install Dir["#{root}/shell-completion/zsh/_spring"]
+    libexec.install Dir["#{root}/*"]
+    
+	(bin/"spring").write_env_script libexec/"bin/spring", {}
+
+	bash_comp = libexec/"shell-completion/bash/spring"
+	zsh_comp  = libexec/"shell-completion/zsh/_spring"
+
+	bash_completion.install bash_comp if bash_comp.exist?
+	zsh_completion.install  zsh_comp  if zsh_comp.exist?
   end
 end
