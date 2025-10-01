@@ -45,8 +45,8 @@ dependencies {
 
 	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
 	dockerTestRuntimeOnly("org.springframework.data:spring-data-redis")
-	
+
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }

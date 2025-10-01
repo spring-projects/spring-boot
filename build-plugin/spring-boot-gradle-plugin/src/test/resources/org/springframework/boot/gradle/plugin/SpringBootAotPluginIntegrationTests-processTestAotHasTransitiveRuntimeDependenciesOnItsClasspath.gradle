@@ -42,7 +42,7 @@ dependencies {
 }
 
 task('processTestAotClasspath') {
-	dependsOn configurations.processTestAotClasspath 
+	dependsOn configurations.processTestAotClasspath
 	doFirst {
 		configurations.processTestAotClasspath.files.each { println it }
 	}

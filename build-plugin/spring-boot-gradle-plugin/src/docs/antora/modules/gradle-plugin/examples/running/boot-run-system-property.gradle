@@ -27,7 +27,7 @@ tasks.named("bootRun") {
 
 tasks.register("configuredSystemProperties") {
 	doLast {
-		bootRun.systemProperties.each { k, v -> 
+		bootRun.systemProperties.each { k, v ->
 			println "$k = $v"
 		}
 	}
