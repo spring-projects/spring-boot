@@ -50,10 +50,11 @@ public class NamedChannelCredentialsProvider implements ChannelCredentialsProvid
 	@Override
 	public ChannelCredentials getChannelCredentials(String path) {
 		ChannelConfig channel = this.properties.getChannel(path);
-		if (!channel.getSsl().isEnabled() && channel.getNegotiationType() == NegotiationType.PLAINTEXT) {
+		boolean sslEnabled = channel.getSsl().determineEnabled();
+		if (!sslEnabled && channel.getNegotiationType() == NegotiationType.PLAINTEXT) {
 			return InsecureChannelCredentials.create();
 		}
-		if (channel.getSsl().isEnabled()) {
+		if (sslEnabled) {
 			String bundleName = channel.getSsl().getBundle();
 			Assert.notNull(bundleName, "Bundle name must not be null when SSL is enabled");
 			SslBundle bundle = this.bundles.getBundle(bundleName);

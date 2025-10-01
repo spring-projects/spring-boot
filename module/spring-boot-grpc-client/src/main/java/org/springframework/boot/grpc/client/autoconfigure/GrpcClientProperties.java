@@ -418,13 +418,16 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			 */
 			private @Nullable String bundle;
 
-			// TODO bono
-			public boolean isEnabled() {
-				return (this.enabled != null) ? this.enabled : this.bundle != null;
+			public @Nullable Boolean isEnabled() {
+				return this.enabled;
 			}
 
-			public void setEnabled(boolean enabled) {
+			public void setEnabled(@Nullable Boolean enabled) {
 				this.enabled = enabled;
+			}
+
+			public boolean determineEnabled() {
+				return (this.enabled != null) ? this.enabled : this.bundle != null;
 			}
 
 			public @Nullable String getBundle() {

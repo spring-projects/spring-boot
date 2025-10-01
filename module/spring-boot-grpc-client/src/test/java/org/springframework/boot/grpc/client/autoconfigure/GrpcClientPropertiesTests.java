@@ -92,7 +92,8 @@ class GrpcClientPropertiesTests {
 			assertThat(channel.getMaxInboundMetadataSize()).isEqualTo(DataSize.ofBytes(8192));
 			assertThat(channel.getUserAgent()).isNull();
 			assertThat(channel.isSecure()).isTrue();
-			assertThat(channel.getSsl().isEnabled()).isFalse();
+			assertThat(channel.getSsl().isEnabled()).isNull();
+			assertThat(channel.getSsl().determineEnabled()).isFalse();
 			assertThat(channel.getSsl().getBundle()).isNull();
 		}
 
@@ -144,6 +145,7 @@ class GrpcClientPropertiesTests {
 			assertThat(channel.getUserAgent()).isEqualTo("me");
 			assertThat(channel.isSecure()).isFalse();
 			assertThat(channel.getSsl().isEnabled()).isTrue();
+			assertThat(channel.getSsl().determineEnabled()).isTrue();
 			assertThat(channel.getSsl().getBundle()).isEqualTo("my-bundle");
 		}
 
@@ -180,6 +182,16 @@ class GrpcClientPropertiesTests {
 			var channel = properties.getDefaultChannel();
 			assertThat(channel.getServiceConfig()).hasSize(1);
 			assertThat(channel.getServiceConfig().get("something")).isInstanceOf(Map.class);
+		}
+
+		@Test
+		void whenBundleNameSetThenDetermineEnabledReturnsTrue() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.grpc.client.default-channel.ssl.bundle", "my-bundle");
+			GrpcClientProperties properties = bindProperties(map);
+			var channel = properties.getDefaultChannel();
+			assertThat(channel.getSsl().isEnabled()).isNull();
+			assertThat(channel.getSsl().determineEnabled()).isTrue();
 		}
 
 	}
