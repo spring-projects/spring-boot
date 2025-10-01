@@ -33,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,7 +53,7 @@ class WelcomePageIntegrationTests {
 				WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
 				TomcatServletWebServerAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
 
-	private final TestRestTemplate template = new TestRestTemplate();
+	private final RestTestClient template = new RestTestClient();
 
 	@Test
 	void contentStrategyWithWelcomePage() {
