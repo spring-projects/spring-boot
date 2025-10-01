@@ -165,17 +165,6 @@ class GrpcClientAutoConfigurationTests {
 	}
 
 	@Test
-	void whenNoCompressorRegistryAutoConfigurationIsSkipped() {
-		// Codec class guards the imported GrpcCodecConfiguration which provides the
-		// registry
-		this.contextRunner()
-			.withClassLoader(new FilteredClassLoader(Codec.class))
-			.run((context) -> assertThat(context)
-				.getBean("compressionClientCustomizer", GrpcChannelBuilderCustomizer.class)
-				.isNull());
-	}
-
-	@Test
 	void compressionCustomizerAutoConfiguredAsExpected() {
 		this.contextRunner().run((context) -> {
 			assertThat(context).getBean("compressionClientCustomizer", GrpcChannelBuilderCustomizer.class).isNotNull();
@@ -188,13 +177,13 @@ class GrpcClientAutoConfigurationTests {
 	}
 
 	@Test
-	void whenNoDecompressorRegistryAutoConfigurationIsSkipped() {
+	void whenNoCompressorRegistryThenCompressionCustomizerIsNotConfigured() {
 		// Codec class guards the imported GrpcCodecConfiguration which provides the
 		// registry
 		this.contextRunner()
 			.withClassLoader(new FilteredClassLoader(Codec.class))
 			.run((context) -> assertThat(context)
-				.getBean("decompressionClientCustomizer", GrpcChannelBuilderCustomizer.class)
+				.getBean("compressionClientCustomizer", GrpcChannelBuilderCustomizer.class)
 				.isNull());
 	}
 
@@ -209,6 +198,17 @@ class GrpcClientAutoConfigurationTests {
 			customizer.customize("testChannel", builder);
 			then(builder).should().decompressorRegistry(decompressorRegistry);
 		});
+	}
+
+	@Test
+	void whenNoDecompressorRegistryAutoConfigurationIsSkipped() {
+		// Codec class guards the imported GrpcCodecConfiguration which provides the
+		// registry
+		this.contextRunner()
+			.withClassLoader(new FilteredClassLoader(Codec.class))
+			.run((context) -> assertThat(context)
+				.getBean("decompressionClientCustomizer", GrpcChannelBuilderCustomizer.class)
+				.isNull());
 	}
 
 	@Test
