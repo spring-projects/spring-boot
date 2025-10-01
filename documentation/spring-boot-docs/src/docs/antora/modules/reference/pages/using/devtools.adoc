@@ -287,7 +287,7 @@ The `spring-boot-devtools` module includes an embedded LiveReload server that ca
 LiveReload browser extensions are freely available for Chrome, Firefox and Safari.
 You can find these extensions by searching 'LiveReload' in the marketplace or store of your chosen browser.
 
-If you do not want to start the LiveReload server when your application runs, you can set the configprop:spring.devtools.livereload.enabled[] property to `false`.
+If you want to start the LiveReload server when your application runs, you can set the configprop:spring.devtools.livereload.enabled[] property to `true`.
 
 NOTE: You can only run one LiveReload server at a time.
 Before starting your application, ensure that no other LiveReload servers are running.
