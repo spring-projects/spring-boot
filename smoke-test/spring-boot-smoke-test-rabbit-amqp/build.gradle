@@ -15,13 +15,19 @@
  */
 
 plugins {
-	id "org.springframework.boot.starter"
+	id "java"
+	id "org.springframework.boot.docker-test"
 }
 
-description = "Starter for using Spring AMQP with Rabbit MQ over AMQP 1.0 protocol"
+description = "Spring Boot RabbitMQ AMQP smoke test"
 
 dependencies {
-	api(project(":starter:spring-boot-starter"))
+	implementation(project(":starter:spring-boot-starter-amqp"))
 
-	api(project(":module:spring-boot-amqp"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
+	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation("org.awaitility:awaitility")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:rabbitmq")
 }
