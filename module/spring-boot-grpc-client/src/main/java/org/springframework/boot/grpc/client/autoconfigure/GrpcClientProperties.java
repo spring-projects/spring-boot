@@ -40,14 +40,14 @@ import org.springframework.util.unit.DataSize;
 public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 
 	/**
-	 * The default channel configuration to use for new channels.
-	 */
-	private final ChannelConfig defaultChannel = new ChannelConfig();
-
-	/**
 	 * Map of channels configured by name.
 	 */
 	private final Map<String, ChannelConfig> channels = new HashMap<>();
+
+	/**
+	 * The default channel configuration to use for new channels.
+	 */
+	private final ChannelConfig defaultChannel = new ChannelConfig();
 
 	/**
 	 * Default stub factory to use for all channels.
@@ -61,12 +61,12 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		this.environment = new StandardEnvironment();
 	}
 
-	public ChannelConfig getDefaultChannel() {
-		return this.defaultChannel;
-	}
-
 	public Map<String, ChannelConfig> getChannels() {
 		return this.channels;
+	}
+
+	public ChannelConfig getDefaultChannel() {
+		return this.defaultChannel;
 	}
 
 	public Class<? extends StubFactory<?>> getDefaultStubFactory() {
@@ -134,95 +134,28 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		 */
 		private String address = "static://localhost:9090";
 
-		public String getAddress() {
-			return this.address;
-		}
-
-		public void setAddress(final String address) {
-			this.address = address;
-		}
-
-		// --------------------------------------------------
-		// defaultLoadBalancingPolicy
-		// --------------------------------------------------
+		/**
+		 * The default deadline for RPCs performed on this channel.
+		 */
+		private @Nullable Duration defaultDeadline;
 
 		/**
-		 * The default load balancing policy the channel should use.
+		 * The load balancing policy the channel should use.
 		 */
 		private String defaultLoadBalancingPolicy = "round_robin";
-
-		public String getDefaultLoadBalancingPolicy() {
-			return this.defaultLoadBalancingPolicy;
-		}
-
-		public void setDefaultLoadBalancingPolicy(final String defaultLoadBalancingPolicy) {
-			this.defaultLoadBalancingPolicy = defaultLoadBalancingPolicy;
-		}
-
-		// --------------------------------------------------
-
-		private final Health health = new Health();
-
-		public Health getHealth() {
-			return this.health;
-		}
-
-		/**
-		 * Map representation of the service config to use for the channel.
-		 */
-		private final Map<String, Object> serviceConfig = new HashMap<>();
-
-		public Map<String, Object> getServiceConfig() {
-			return this.serviceConfig;
-		}
-
-		/**
-		 * The negotiation type for the channel.
-		 */
-		private NegotiationType negotiationType = NegotiationType.PLAINTEXT;
-
-		public NegotiationType getNegotiationType() {
-			return this.negotiationType;
-		}
-
-		public void setNegotiationType(NegotiationType negotiationType) {
-			this.negotiationType = negotiationType;
-		}
-
-		// --------------------------------------------------
-		// KeepAlive
-		// --------------------------------------------------
 
 		/**
 		 * Whether keep alive is enabled on the channel.
 		 */
-		private boolean enableKeepAlive = false;
+		private boolean enableKeepAlive;
 
-		public boolean isEnableKeepAlive() {
-			return this.enableKeepAlive;
-		}
-
-		public void setEnableKeepAlive(boolean enableKeepAlive) {
-			this.enableKeepAlive = enableKeepAlive;
-		}
-
-		// --------------------------------------------------
+		private final Health health = new Health();
 
 		/**
 		 * The duration without ongoing RPCs before going to idle mode.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration idleTimeout = Duration.ofSeconds(20);
-
-		public Duration getIdleTimeout() {
-			return this.idleTimeout;
-		}
-
-		public void setIdleTimeout(Duration idleTimeout) {
-			this.idleTimeout = idleTimeout;
-		}
-
-		// --------------------------------------------------
 
 		/**
 		 * The delay before sending a keepAlive. Note that shorter intervals increase the
@@ -232,49 +165,17 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration keepAliveTime = Duration.ofMinutes(5);
 
-		public Duration getKeepAliveTime() {
-			return this.keepAliveTime;
-		}
-
-		public void setKeepAliveTime(Duration keepAliveTime) {
-			this.keepAliveTime = keepAliveTime;
-		}
-
-		// --------------------------------------------------
-
 		/**
 		 * The default timeout for a keepAlives ping request.
 		 */
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration keepAliveTimeout = Duration.ofSeconds(20);
 
-		public Duration getKeepAliveTimeout() {
-			return this.keepAliveTimeout;
-		}
-
-		public void setKeepAliveTimeout(Duration keepAliveTimeout) {
-			this.keepAliveTimeout = keepAliveTimeout;
-		}
-
-		// --------------------------------------------------
-
 		/**
 		 * Whether a keepAlive will be performed when there are no outstanding RPC on a
 		 * connection.
 		 */
-		private boolean keepAliveWithoutCalls = false;
-
-		public boolean isKeepAliveWithoutCalls() {
-			return this.keepAliveWithoutCalls;
-		}
-
-		public void setKeepAliveWithoutCalls(boolean keepAliveWithoutCalls) {
-			this.keepAliveWithoutCalls = keepAliveWithoutCalls;
-		}
-
-		// --------------------------------------------------
-		// Message Transfer
-		// --------------------------------------------------
+		private boolean keepAliveWithoutCalls;
 
 		/**
 		 * Maximum message size allowed to be received by the channel (default 4MiB). Set
@@ -287,6 +188,97 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		 * to '-1' to use the highest possible limit (not recommended).
 		 */
 		private DataSize maxInboundMetadataSize = DataSize.ofBytes(8192);
+
+		/**
+		 * The negotiation type for the channel.
+		 */
+		private NegotiationType negotiationType = NegotiationType.PLAINTEXT;
+
+		/**
+		 * Flag to say that strict SSL checks are not enabled (so the remote certificate
+		 * could be anonymous).
+		 */
+		private boolean secure = true;
+
+		/**
+		 * Map representation of the service config to use for the channel.
+		 */
+		private final Map<String, Object> serviceConfig = new HashMap<>();
+
+		private final Ssl ssl = new Ssl();
+
+		/**
+		 * The custom User-Agent for the channel.
+		 */
+		private @Nullable String userAgent;
+
+		public String getAddress() {
+			return this.address;
+		}
+
+		public void setAddress(final String address) {
+			this.address = address;
+		}
+
+		public @Nullable Duration getDefaultDeadline() {
+			return this.defaultDeadline;
+		}
+
+		public void setDefaultDeadline(@Nullable Duration defaultDeadline) {
+			this.defaultDeadline = defaultDeadline;
+		}
+
+		public String getDefaultLoadBalancingPolicy() {
+			return this.defaultLoadBalancingPolicy;
+		}
+
+		public void setDefaultLoadBalancingPolicy(final String defaultLoadBalancingPolicy) {
+			this.defaultLoadBalancingPolicy = defaultLoadBalancingPolicy;
+		}
+
+		public boolean isEnableKeepAlive() {
+			return this.enableKeepAlive;
+		}
+
+		public void setEnableKeepAlive(boolean enableKeepAlive) {
+			this.enableKeepAlive = enableKeepAlive;
+		}
+
+		public Health getHealth() {
+			return this.health;
+		}
+
+		public Duration getIdleTimeout() {
+			return this.idleTimeout;
+		}
+
+		public void setIdleTimeout(Duration idleTimeout) {
+			this.idleTimeout = idleTimeout;
+		}
+
+		public Duration getKeepAliveTime() {
+			return this.keepAliveTime;
+		}
+
+		public void setKeepAliveTime(Duration keepAliveTime) {
+			this.keepAliveTime = keepAliveTime;
+		}
+
+		public Duration getKeepAliveTimeout() {
+			return this.keepAliveTimeout;
+		}
+
+		public void setKeepAliveTimeout(Duration keepAliveTimeout) {
+			this.keepAliveTimeout = keepAliveTimeout;
+		}
+
+		public boolean isKeepAliveWithoutCalls() {
+			return this.keepAliveWithoutCalls;
+		}
+
+		public void setKeepAliveWithoutCalls(boolean keepAliveWithoutCalls) {
+			this.keepAliveWithoutCalls = keepAliveWithoutCalls;
+		}
 
 		public DataSize getMaxInboundMessageSize() {
 			return this.maxInboundMessageSize;
@@ -318,12 +310,29 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			}
 		}
 
-		// --------------------------------------------------
+		public NegotiationType getNegotiationType() {
+			return this.negotiationType;
+		}
 
-		/**
-		 * The custom User-Agent for the channel.
-		 */
-		private @Nullable String userAgent = null;
+		public void setNegotiationType(NegotiationType negotiationType) {
+			this.negotiationType = negotiationType;
+		}
+
+		public boolean isSecure() {
+			return this.secure;
+		}
+
+		public void setSecure(boolean secure) {
+			this.secure = secure;
+		}
+
+		public Map<String, Object> getServiceConfig() {
+			return this.serviceConfig;
+		}
+
+		public Ssl getSsl() {
+			return this.ssl;
+		}
 
 		public @Nullable String getUserAgent() {
 			return this.userAgent;
@@ -334,23 +343,10 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 		}
 
 		/**
-		 * The default deadline for RPCs performed on this channel.
-		 */
-		private @Nullable Duration defaultDeadline = null;
-
-		public @Nullable Duration getDefaultDeadline() {
-			return this.defaultDeadline;
-		}
-
-		public void setDefaultDeadline(@Nullable Duration defaultDeadline) {
-			this.defaultDeadline = defaultDeadline;
-		}
-
-		/**
 		 * Provide a copy of the channel instance.
 		 * @return a copy of the channel instance.
 		 */
-		public ChannelConfig copy() {
+		ChannelConfig copy() {
 			ChannelConfig copy = new ChannelConfig();
 			copy.address = this.address;
 			copy.defaultLoadBalancingPolicy = this.defaultLoadBalancingPolicy;
@@ -370,76 +366,12 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			return copy;
 		}
 
-		// --------------------------------------------------
-
-		/**
-		 * Flag to say that strict SSL checks are not enabled (so the remote certificate
-		 * could be anonymous).
-		 */
-		private boolean secure = true;
-
-		public boolean isSecure() {
-			return this.secure;
-		}
-
-		public void setSecure(boolean secure) {
-			this.secure = secure;
-		}
-
-		// --------------------------------------------------
-
-		private final Ssl ssl = new Ssl();
-
-		public Ssl getSsl() {
-			return this.ssl;
-		}
-
-		public static class Ssl {
-
-			/**
-			 * Whether to enable SSL support. Enabled automatically if "bundle" is
-			 * provided unless specified otherwise.
-			 */
-			private @Nullable Boolean enabled;
-
-			/**
-			 * SSL bundle name.
-			 */
-			private @Nullable String bundle;
-
-			public boolean isEnabled() {
-				return (this.enabled != null) ? this.enabled : this.bundle != null;
-			}
-
-			public void setEnabled(boolean enabled) {
-				this.enabled = enabled;
-			}
-
-			public @Nullable String getBundle() {
-				return this.bundle;
-			}
-
-			public void setBundle(@Nullable String bundle) {
-				this.bundle = bundle;
-			}
-
-			/**
-			 * Copies the values from another instance.
-			 * @param other instance to copy values from
-			 */
-			public void copyValuesFrom(Ssl other) {
-				this.enabled = other.enabled;
-				this.bundle = other.bundle;
-			}
-
-		}
-
 		public static class Health {
 
 			/**
 			 * Whether to enable client-side health check for the channel.
 			 */
-			private boolean enabled = false;
+			private boolean enabled;
 
 			/**
 			 * Name of the service to check health on.
@@ -466,9 +398,50 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			 * Copies the values from another instance.
 			 * @param other instance to copy values from
 			 */
-			public void copyValuesFrom(Health other) {
+			void copyValuesFrom(Health other) {
 				this.enabled = other.enabled;
 				this.serviceName = other.serviceName;
+			}
+
+		}
+
+		public static class Ssl {
+
+			/**
+			 * Whether to enable SSL support. Enabled automatically if "bundle" is
+			 * provided unless specified otherwise.
+			 */
+			private @Nullable Boolean enabled;
+
+			/**
+			 * SSL bundle name.
+			 */
+			private @Nullable String bundle;
+
+			// TODO bono
+			public boolean isEnabled() {
+				return (this.enabled != null) ? this.enabled : this.bundle != null;
+			}
+
+			public void setEnabled(boolean enabled) {
+				this.enabled = enabled;
+			}
+
+			public @Nullable String getBundle() {
+				return this.bundle;
+			}
+
+			public void setBundle(@Nullable String bundle) {
+				this.bundle = bundle;
+			}
+
+			/**
+			 * Copies the values from another instance.
+			 * @param other instance to copy values from
+			 */
+			void copyValuesFrom(Ssl other) {
+				this.enabled = other.enabled;
+				this.bundle = other.bundle;
 			}
 
 		}
