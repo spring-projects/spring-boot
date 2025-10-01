@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.grpc.BindableService;
+import io.grpc.Codec;
+import io.grpc.CompressorRegistry;
+import io.grpc.DecompressorRegistry;
 import io.grpc.Grpc;
 import io.grpc.ServerBuilder;
 import io.grpc.ServerServiceDefinition;
@@ -61,6 +64,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -407,6 +411,59 @@ class GrpcServerAutoConfigurationTests {
 					"spring.grpc.server.port=6160")
 			.withClassLoader(new FilteredClassLoader(io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder.class)),
 				NettyGrpcServerFactory.class, "myhost:6160", "nettyGrpcServerLifecycle");
+	}
+
+	@Nested
+	class WithCodecConfiguration {
+
+		@SuppressWarnings("unchecked")
+		@Test
+		void compressionCustomizerAutoConfiguredAsExpected() {
+			GrpcServerAutoConfigurationTests.this.contextRunner().run((context) -> {
+				assertThat(context).getBean("compressionServerConfigurer", ServerBuilderCustomizer.class).isNotNull();
+				var customizer = context.getBean("compressionServerConfigurer", ServerBuilderCustomizer.class);
+				var compressorRegistry = context.getBean(CompressorRegistry.class);
+				ServerBuilder<?> builder = mock();
+				customizer.customize(builder);
+				then(builder).should().compressorRegistry(compressorRegistry);
+			});
+		}
+
+		@Test
+		void whenNoCompressorRegistryThenCompressionCustomizerIsNotConfigured() {
+			// Codec class guards the imported GrpcCodecConfiguration which provides the
+			// registry
+			GrpcServerAutoConfigurationTests.this.contextRunner()
+				.withClassLoader(new FilteredClassLoader(Codec.class))
+				.run((context) -> assertThat(context)
+					.getBean("compressionServerConfigurer", ServerBuilderCustomizer.class)
+					.isNull());
+		}
+
+		@SuppressWarnings("unchecked")
+		@Test
+		void decompressionCustomizerAutoConfiguredAsExpected() {
+			GrpcServerAutoConfigurationTests.this.contextRunner().run((context) -> {
+				assertThat(context).getBean("decompressionServerConfigurer", ServerBuilderCustomizer.class).isNotNull();
+				var customizer = context.getBean("decompressionServerConfigurer", ServerBuilderCustomizer.class);
+				var decompressorRegistry = context.getBean(DecompressorRegistry.class);
+				ServerBuilder<?> builder = mock();
+				customizer.customize(builder);
+				then(builder).should().decompressorRegistry(decompressorRegistry);
+			});
+		}
+
+		@Test
+		void whenNoDecompressorRegistryThenDecompressionCustomizerIsNotConfigured() {
+			// Codec class guards the imported GrpcCodecConfiguration which provides the
+			// registry
+			GrpcServerAutoConfigurationTests.this.contextRunner()
+				.withClassLoader(new FilteredClassLoader(Codec.class))
+				.run((context) -> assertThat(context)
+					.getBean("decompressionClientCustomizer", ServerBuilderCustomizer.class)
+					.isNull());
+		}
+
 	}
 
 	@Nested

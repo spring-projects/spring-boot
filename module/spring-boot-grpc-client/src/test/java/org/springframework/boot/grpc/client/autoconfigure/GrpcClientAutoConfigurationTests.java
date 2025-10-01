@@ -201,7 +201,7 @@ class GrpcClientAutoConfigurationTests {
 	}
 
 	@Test
-	void whenNoDecompressorRegistryAutoConfigurationIsSkipped() {
+	void whenNoDecompressorRegistryThenDecompressionCustomizerIsNotConfigured() {
 		// Codec class guards the imported GrpcCodecConfiguration which provides the
 		// registry
 		this.contextRunner()
