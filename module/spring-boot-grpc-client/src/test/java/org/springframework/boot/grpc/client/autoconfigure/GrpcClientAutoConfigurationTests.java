@@ -35,6 +35,7 @@ import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration.ClientScanConfiguration;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -44,6 +45,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.grpc.client.ChannelCredentialsProvider;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
 import org.springframework.grpc.client.GrpcChannelFactory;
+import org.springframework.grpc.client.GrpcClientFactory;
 import org.springframework.grpc.client.InProcessGrpcChannelFactory;
 import org.springframework.grpc.client.NettyGrpcChannelFactory;
 import org.springframework.grpc.client.ShadedNettyGrpcChannelFactory;
@@ -211,7 +213,7 @@ class GrpcClientAutoConfigurationTests {
 
 	@Test
 	void whenHasUserDefinedChannelBuilderCustomizersDoesNotAutoConfigureBean() {
-		ChannelBuilderCustomizers customCustomizers = mock(ChannelBuilderCustomizers.class);
+		ChannelBuilderCustomizers customCustomizers = mock();
 		this.contextRunner()
 			.withBean("customCustomizers", ChannelBuilderCustomizers.class, () -> customCustomizers)
 			.run((context) -> assertThat(context).getBean(ChannelBuilderCustomizers.class).isSameAs(customCustomizers));
@@ -225,6 +227,19 @@ class GrpcClientAutoConfigurationTests {
 				.extracting("customizers", InstanceOfAssertFactories.list(GrpcChannelBuilderCustomizer.class))
 				.contains(ChannelBuilderCustomizersConfig.CUSTOMIZER_BAR,
 						ChannelBuilderCustomizersConfig.CUSTOMIZER_FOO));
+	}
+
+	@Test
+	void clientScanConfigurationAutoConfiguredAsExpected() {
+		this.contextRunner().run((context) -> assertThat(context).hasSingleBean(ClientScanConfiguration.class));
+	}
+
+	@Test
+	void whenHasUserDefinedClientFactoryDoesNotAutoConfigureClientScanConfiguration() {
+		GrpcClientFactory clientFactory = mock();
+		this.contextRunner()
+			.withBean("customClientFactory", GrpcClientFactory.class, () -> clientFactory)
+			.run((context) -> assertThat(context).doesNotHaveBean(ClientScanConfiguration.class));
 	}
 
 	@Test

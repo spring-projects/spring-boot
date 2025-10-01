@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.grpc.client.autoconfigure.GrpcClientAutoConfiguration.ClientScanConfiguration;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,7 @@ import org.springframework.grpc.client.ChannelCredentialsProvider;
 import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 import org.springframework.grpc.client.CoroutineStubFactory;
 import org.springframework.grpc.client.GrpcChannelBuilderCustomizer;
+import org.springframework.grpc.client.GrpcClientFactory;
 
 @AutoConfiguration(before = CompositeChannelFactoryAutoConfiguration.class)
 @ConditionalOnGrpcClientEnabled
@@ -80,6 +82,13 @@ public final class GrpcClientAutoConfiguration {
 	@Bean
 	ChannelBuilderCustomizers channelBuilderCustomizers(ObjectProvider<GrpcChannelBuilderCustomizer<?>> customizers) {
 		return new ChannelBuilderCustomizers(customizers.orderedStream().toList());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(GrpcClientFactory.class)
+	@Import(DefaultGrpcClientRegistrations.class)
+	static class ClientScanConfiguration {
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
