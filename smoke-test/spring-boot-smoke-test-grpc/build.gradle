@@ -1,0 +1,68 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the License);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+	id "java"
+	id 'com.google.protobuf' version '0.9.5'
+}
+
+description = "Spring Boot gRPC smoke test"
+
+dependencies {
+	implementation(platform(project(":platform:spring-boot-dependencies")))
+	implementation(project(":starter:spring-boot-starter-actuator"))
+	implementation(project(":starter:spring-boot-starter-grpc"))
+
+	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
+	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
+
+	testImplementation(project(":module:spring-boot-grpc-test"))
+	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation("io.grpc:grpc-inprocess")
+}
+
+
+architectureCheck {
+	nullMarked = false
+}
+
+tasks.withType(io.spring.javaformat.gradle.tasks.CheckFormat) {
+	exclude "smoketest/grpc/proto"
+}
+
+// FIXME get from 'protobuf-java-version' from dep mgmt
+def protobufJavaVersion = "4.32.1"
+// FIXME get from 'grpc-java-version' from dep mgmt
+def grpcVersion = "1.75.0"
+
+protobuf {
+	protoc {
+		artifact = "com.google.protobuf:protoc:${protobufJavaVersion}"
+	}
+	plugins {
+		grpc {
+			artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+		}
+	}
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {
+				option '@generated=omit'
+			}
+		}
+	}
+}

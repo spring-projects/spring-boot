@@ -1,0 +1,51 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.grpc.server.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable server autoconfiguration.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.server.exception-handling.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable user-defined global exception handling on the gRPC server.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.server.inprocess.exclusive",
+      "type": "java.lang.Boolean",
+      "description": "Whether the inprocess server factory should be the only server factory available. When the value is true, no other server factory will be configured.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.server.observation.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Observations on the server.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.server.port",
+      "defaultValue": "9090"
+    },
+    {
+      "name": "spring.grpc.server.reflection.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable Reflection on the gRPC server.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.grpc.server.security.csrf.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable CSRF protection on gRPC requests.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.grpc.server.servlet.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use a servlet server in a servlet-based web application. When the value is false, a native gRPC server will be created as long as one is available, and it will listen on its own port. Should only be needed if the GrpcServlet is on the classpath",
+      "defaultValue": true
+    }
+  ]
+}
