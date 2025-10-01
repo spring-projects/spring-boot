@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for building RSocket clients and servers"
+description = "Starter for using RSocket"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
