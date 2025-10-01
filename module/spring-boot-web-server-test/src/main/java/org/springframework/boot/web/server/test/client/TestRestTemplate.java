@@ -52,6 +52,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.RequestEntity.UriTemplateRequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.NoOpResponseErrorHandler;
@@ -80,6 +81,8 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link TestRestTemplate} is automatically available and can be {@code @Autowired} into
  * your test. If you need customizations (for example to adding additional message
  * converters) use a {@link RestTemplateBuilder} {@code @Bean}.
+ *
+ * @deprecated {@link RestTestClient} is considered successor.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -1017,11 +1020,11 @@ public class TestRestTemplate {
 		if (entity instanceof UriTemplateRequestEntity<?> templatedUriEntity) {
 			if (templatedUriEntity.getVars() != null) {
 				return this.restTemplate.getUriTemplateHandler()
-					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVars());
+						.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVars());
 			}
 			else if (templatedUriEntity.getVarsMap() != null) {
 				return this.restTemplate.getUriTemplateHandler()
-					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVarsMap());
+						.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVarsMap());
 			}
 			throw new IllegalStateException(
 					"No variables specified for URI template: " + templatedUriEntity.getUriTemplate());
@@ -1065,7 +1068,8 @@ public class TestRestTemplate {
 				SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, trustStrategy).build();
 				return new DefaultClientTlsStrategy(sslContext, SUPPORTED_PROTOCOLS, null, null, null);
 			}
-			catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException ex) {
+			catch (KeyManagementException | NoSuchAlgorithmException |
+				   KeyStoreException ex) {
 				throw new IllegalStateException(ex);
 			}
 		}
