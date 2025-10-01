@@ -146,7 +146,11 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	@Override
 	protected HttpComponentsClientHttpRequestFactory createClientHttpRequestFactory(
 			ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withConnectTimeout(null)));
+		HttpComponentsHttpClientBuilder builder = this.httpClientBuilder;
+		if (settings.dnsResolver() instanceof org.apache.hc.client5.http.DnsResolver dnsResolver) {
+			builder = builder.withDnsResolver(dnsResolver);
+		}
+		HttpClient httpClient = builder.build(asHttpClientSettings(settings.withConnectTimeout(null)));
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(factory::setConnectTimeout);

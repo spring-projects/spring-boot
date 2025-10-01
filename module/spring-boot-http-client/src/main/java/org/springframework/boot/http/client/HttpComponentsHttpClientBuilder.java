@@ -57,21 +57,25 @@ public final class HttpComponentsHttpClientBuilder {
 
 	private final Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> tlsSocketStrategyFactory;
 
+	private final org.apache.hc.client5.http.@Nullable DnsResolver dnsResolver;
+
 	public HttpComponentsHttpClientBuilder() {
 		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
-				HttpComponentsSslBundleTlsStrategy::get);
+				HttpComponentsSslBundleTlsStrategy::get, null);
 	}
 
 	private HttpComponentsHttpClientBuilder(Consumer<HttpClientBuilder> customizer,
 			Consumer<PoolingHttpClientConnectionManagerBuilder> connectionManagerCustomizer,
 			Consumer<SocketConfig.Builder> socketConfigCustomizer,
 			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer,
-			Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> tlsSocketStrategyFactory) {
+			Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> tlsSocketStrategyFactory,
+			org.apache.hc.client5.http.@Nullable DnsResolver dnsResolver) {
 		this.customizer = customizer;
 		this.connectionManagerCustomizer = connectionManagerCustomizer;
 		this.socketConfigCustomizer = socketConfigCustomizer;
 		this.defaultRequestConfigCustomizer = defaultRequestConfigCustomizer;
 		this.tlsSocketStrategyFactory = tlsSocketStrategyFactory;
+		this.dnsResolver = dnsResolver;
 	}
 
 	/**
@@ -84,7 +88,7 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(customizer, "'customizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer.andThen(customizer),
 				this.connectionManagerCustomizer, this.socketConfigCustomizer, this.defaultRequestConfigCustomizer,
-				this.tlsSocketStrategyFactory);
+				this.tlsSocketStrategyFactory, this.dnsResolver);
 	}
 
 	/**
@@ -98,7 +102,7 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(connectionManagerCustomizer, "'connectionManagerCustomizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer,
 				this.connectionManagerCustomizer.andThen(connectionManagerCustomizer), this.socketConfigCustomizer,
-				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory);
+				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory, this.dnsResolver);
 	}
 
 	/**
@@ -113,7 +117,7 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(socketConfigCustomizer, "'socketConfigCustomizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.socketConfigCustomizer.andThen(socketConfigCustomizer), this.defaultRequestConfigCustomizer,
-				this.tlsSocketStrategyFactory);
+				this.tlsSocketStrategyFactory, this.dnsResolver);
 	}
 
 	/**
@@ -129,7 +133,8 @@ public final class HttpComponentsHttpClientBuilder {
 			Function<@Nullable SslBundle, @Nullable TlsSocketStrategy> tlsSocketStrategyFactory) {
 		Assert.notNull(tlsSocketStrategyFactory, "'tlsSocketStrategyFactory' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
-				this.socketConfigCustomizer, this.defaultRequestConfigCustomizer, tlsSocketStrategyFactory);
+				this.socketConfigCustomizer, this.defaultRequestConfigCustomizer, tlsSocketStrategyFactory,
+				this.dnsResolver);
 	}
 
 	/**
@@ -146,7 +151,20 @@ public final class HttpComponentsHttpClientBuilder {
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
 				this.socketConfigCustomizer,
 				this.defaultRequestConfigCustomizer.andThen(defaultRequestConfigCustomizer),
-				this.tlsSocketStrategyFactory);
+				this.tlsSocketStrategyFactory, this.dnsResolver);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpClientBuilder} with a replacement
+	 * {@link org.apache.hc.client5.http.DnsResolver}.
+	 * @param dnsResolver the new DNS resolver
+	 * @return a new {@link HttpComponentsHttpClientBuilder} instance
+	 */
+	public HttpComponentsHttpClientBuilder withDnsResolver(org.apache.hc.client5.http.DnsResolver dnsResolver) {
+		Assert.notNull(dnsResolver, "'dnsResolver' must not be null");
+		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
+				this.socketConfigCustomizer, this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory,
+				dnsResolver);
 	}
 
 	/**
@@ -169,6 +187,9 @@ public final class HttpComponentsHttpClientBuilder {
 	private PoolingHttpClientConnectionManager createConnectionManager(HttpClientSettings settings) {
 		PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create()
 			.useSystemProperties();
+		if (this.dnsResolver != null) {
+			builder.setDnsResolver(this.dnsResolver);
+		}
 		PropertyMapper map = PropertyMapper.get();
 		builder.setDefaultSocketConfig(createSocketConfig(settings));
 		setTlsSocketStrategy(settings, map, builder);

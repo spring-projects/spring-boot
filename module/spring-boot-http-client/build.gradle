@@ -37,6 +37,8 @@ dependencies {
 	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
 	optional("org.eclipse.jetty:jetty-client")
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
+	optional("commons-logging:commons-logging:1.2")
+	optional("org.jspecify:jspecify:1.0.0")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-tomcat"))

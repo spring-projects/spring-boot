@@ -31,6 +31,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @param connectTimeout the connect timeout
  * @param readTimeout the read timeout
  * @param sslBundle the SSL bundle providing SSL configuration
+ * @param dnsResolver the DNS resolver to use
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
@@ -38,17 +39,23 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @see ClientHttpRequestFactoryBuilder
  */
 public record ClientHttpRequestFactorySettings(HttpRedirects redirects, @Nullable Duration connectTimeout,
-		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle, @Nullable Object dnsResolver) {
 
 	private static final ClientHttpRequestFactorySettings defaults = new ClientHttpRequestFactorySettings(null, null,
-			null, null);
+			null, null, null);
 
 	public ClientHttpRequestFactorySettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
 			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		this(redirects, connectTimeout, readTimeout, sslBundle, null);
+	}
+
+	public ClientHttpRequestFactorySettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
+			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle, @Nullable Object dnsResolver) {
 		this.redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
 		this.sslBundle = sslBundle;
+		this.dnsResolver = dnsResolver;
 	}
 
 	/**
@@ -58,7 +65,8 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, @Nullabl
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
 	public ClientHttpRequestFactorySettings withConnectTimeout(@Nullable Duration connectTimeout) {
-		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle,
+				this.dnsResolver);
 	}
 
 	/**
@@ -68,7 +76,8 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, @Nullabl
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
 	public ClientHttpRequestFactorySettings withReadTimeout(@Nullable Duration readTimeout) {
-		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle,
+				this.dnsResolver);
 	}
 
 	/**
@@ -80,7 +89,8 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, @Nullabl
 	 */
 	public ClientHttpRequestFactorySettings withTimeouts(@Nullable Duration connectTimeout,
 			@Nullable Duration readTimeout) {
-		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, readTimeout, this.sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, readTimeout, this.sslBundle,
+				this.dnsResolver);
 	}
 
 	/**
@@ -90,7 +100,19 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, @Nullabl
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
 	public ClientHttpRequestFactorySettings withSslBundle(@Nullable SslBundle sslBundle) {
-		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle,
+				this.dnsResolver);
+	}
+
+	/**
+	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated DNS
+	 * resolver setting.
+	 * @param dnsResolver the new DNS resolver setting
+	 * @return a new {@link ClientHttpRequestFactorySettings} instance
+	 */
+	public ClientHttpRequestFactorySettings withDnsResolver(@Nullable Object dnsResolver) {
+		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, this.readTimeout,
+				this.sslBundle, dnsResolver);
 	}
 
 	/**
@@ -100,7 +122,8 @@ public record ClientHttpRequestFactorySettings(HttpRedirects redirects, @Nullabl
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
 	public ClientHttpRequestFactorySettings withRedirects(@Nullable HttpRedirects redirects) {
-		return new ClientHttpRequestFactorySettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
+		return new ClientHttpRequestFactorySettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle,
+				this.dnsResolver);
 	}
 
 	/**
