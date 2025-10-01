@@ -34,15 +34,14 @@ import org.springframework.util.Assert;
  * Provides channel credentials using channel configuration and {@link SslBundles}.
  *
  * @author David Syer
- * @since 4.0.0
  */
-public class NamedChannelCredentialsProvider implements ChannelCredentialsProvider {
+class NamedChannelCredentialsProvider implements ChannelCredentialsProvider {
 
 	private final SslBundles bundles;
 
 	private final GrpcClientProperties properties;
 
-	public NamedChannelCredentialsProvider(SslBundles bundles, GrpcClientProperties properties) {
+	NamedChannelCredentialsProvider(SslBundles bundles, GrpcClientProperties properties) {
 		this.bundles = bundles;
 		this.properties = properties;
 	}
