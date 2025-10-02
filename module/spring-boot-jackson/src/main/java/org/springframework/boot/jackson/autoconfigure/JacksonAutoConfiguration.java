@@ -68,10 +68,10 @@ import org.springframework.util.ReflectionUtils;
 /**
  * Auto configuration for Jackson. The following auto-configuration will get applied:
  * <ul>
- * <li>an {@link JsonMapper} in case none is already configured.</li>
  * <li>a {@link tools.jackson.databind.json.JsonMapper.Builder} in case none is already
  * configured.</li>
- * <li>auto-registration for all {@link JacksonModule} beans with all {@link ObjectMapper}
+ * <li>a {@link JsonMapper} in case none is already configured.</li>
+ * <li>auto-registration for all {@link JacksonModule} beans with all {@link JsonMapper}
  * beans (including the defaulted ones).</li>
  * </ul>
  *
@@ -111,7 +111,7 @@ public final class JacksonAutoConfiguration {
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean(ObjectMapper.class)
+	@ConditionalOnMissingBean(JsonMapper.class)
 	JsonMapper jacksonJsonMapper(JsonMapper.Builder builder) {
 		return builder.build();
 	}
