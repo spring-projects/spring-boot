@@ -32,21 +32,29 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
  * @param connectTimeout the connect timeout
  * @param readTimeout the read timeout
  * @param sslBundle the SSL bundle providing SSL configuration
+ * @param dnsResolver the DNS resolver to use
  * @author Phillip Webb
  * @since 3.5.0
  * @see ClientHttpConnectorBuilder
  */
 public record ClientHttpConnectorSettings(HttpRedirects redirects, @Nullable Duration connectTimeout,
-		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle, @Nullable Object dnsResolver) {
 
-	private static final ClientHttpConnectorSettings defaults = new ClientHttpConnectorSettings(null, null, null, null);
+	private static final ClientHttpConnectorSettings defaults = new ClientHttpConnectorSettings(null, null, null, null,
+			null);
 
 	public ClientHttpConnectorSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
 			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
+		this(redirects, connectTimeout, readTimeout, sslBundle, null);
+	}
+
+	public ClientHttpConnectorSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
+			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle, @Nullable Object dnsResolver) {
 		this.redirects = (redirects != null) ? redirects : HttpRedirects.FOLLOW_WHEN_POSSIBLE;
 		this.connectTimeout = connectTimeout;
 		this.readTimeout = readTimeout;
 		this.sslBundle = sslBundle;
+		this.dnsResolver = dnsResolver;
 	}
 
 	/**
@@ -56,7 +64,8 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, @Nullable Dur
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
 	public ClientHttpConnectorSettings withConnectTimeout(@Nullable Duration connectTimeout) {
-		return new ClientHttpConnectorSettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
+		return new ClientHttpConnectorSettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle,
+				this.dnsResolver);
 	}
 
 	/**
@@ -66,7 +75,8 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, @Nullable Dur
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
 	public ClientHttpConnectorSettings withReadTimeout(@Nullable Duration readTimeout) {
-		return new ClientHttpConnectorSettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
+		return new ClientHttpConnectorSettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle,
+				this.dnsResolver);
 	}
 
 	/**
@@ -77,7 +87,8 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, @Nullable Dur
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
 	public ClientHttpConnectorSettings withTimeouts(@Nullable Duration connectTimeout, @Nullable Duration readTimeout) {
-		return new ClientHttpConnectorSettings(this.redirects, connectTimeout, readTimeout, this.sslBundle);
+		return new ClientHttpConnectorSettings(this.redirects, connectTimeout, readTimeout, this.sslBundle,
+				this.dnsResolver);
 	}
 
 	/**
@@ -87,7 +98,8 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, @Nullable Dur
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
 	public ClientHttpConnectorSettings withSslBundle(@Nullable SslBundle sslBundle) {
-		return new ClientHttpConnectorSettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
+		return new ClientHttpConnectorSettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle,
+				this.dnsResolver);
 	}
 
 	/**
@@ -97,7 +109,19 @@ public record ClientHttpConnectorSettings(HttpRedirects redirects, @Nullable Dur
 	 * @return a new {@link ClientHttpConnectorSettings} instance
 	 */
 	public ClientHttpConnectorSettings withRedirects(@Nullable HttpRedirects redirects) {
-		return new ClientHttpConnectorSettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
+		return new ClientHttpConnectorSettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle,
+				this.dnsResolver);
+	}
+
+	/**
+	 * Return a new {@link ClientHttpConnectorSettings} instance with an updated DNS
+	 * resolver setting.
+	 * @param dnsResolver the new DNS resolver setting
+	 * @return a new {@link ClientHttpConnectorSettings} instance
+	 */
+	public ClientHttpConnectorSettings withDnsResolver(@Nullable Object dnsResolver) {
+		return new ClientHttpConnectorSettings(this.redirects, this.connectTimeout, this.readTimeout, this.sslBundle,
+				dnsResolver);
 	}
 
 	/**

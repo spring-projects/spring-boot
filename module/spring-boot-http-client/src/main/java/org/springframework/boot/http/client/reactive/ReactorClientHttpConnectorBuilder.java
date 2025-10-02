@@ -26,6 +26,7 @@ import org.jspecify.annotations.Nullable;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.http.client.ReactorHttpClientBuilder;
+import org.springframework.boot.web.client.SecurityDnsHandler;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.Assert;
@@ -101,6 +102,11 @@ public final class ReactorClientHttpConnectorBuilder
 
 	@Override
 	protected ReactorClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
+		Object dnsResolver = settings.dnsResolver();
+		if (dnsResolver instanceof SecurityDnsHandler securityDnsHandler) {
+			this.httpClientBuilder.withHttpClientCustomizer((httpClient) -> httpClient
+				.resolvedAddressesSelector(new NettyHttpClientAddressSelector(securityDnsHandler)));
+		}
 		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings));
 		return new ReactorClientHttpConnector(httpClient);
 	}
