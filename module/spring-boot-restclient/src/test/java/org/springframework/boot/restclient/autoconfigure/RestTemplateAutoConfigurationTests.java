@@ -17,14 +17,12 @@
 package org.springframework.boot.restclient.autoconfigure;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RestTemplateCustomizer;
@@ -36,10 +34,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
@@ -82,19 +79,6 @@ class RestTemplateAutoConfigurationTests {
 		this.contextRunner
 			.run((context) -> assertThat(context.getBeanFactory().getBeanDefinition("restTemplateBuilder").isLazyInit())
 				.isTrue());
-	}
-
-	@Test
-	void restTemplateWhenMessageConvertersDefinedShouldHaveMessageConverters() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withUserConfiguration(RestTemplateConfig.class)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(RestTemplate.class);
-				RestTemplate restTemplate = context.getBean(RestTemplate.class);
-				List<HttpMessageConverter<?>> converters = context.getBean(HttpMessageConverters.class).getConverters();
-				assertThat(restTemplate.getMessageConverters()).containsExactlyElementsOf(converters);
-				assertThat(restTemplate.getRequestFactory()).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
-			});
 	}
 
 	@Test
@@ -297,7 +281,7 @@ class RestTemplateAutoConfigurationTests {
 
 	}
 
-	static class CustomHttpMessageConverter extends StringHttpMessageConverter {
+	static class CustomHttpMessageConverter extends ByteArrayHttpMessageConverter {
 
 	}
 

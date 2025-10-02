@@ -30,6 +30,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 
@@ -46,6 +48,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Dmitry Sulman
+ * @author Brian Clozel
  * @since 4.0.0
  */
 @AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
@@ -61,9 +64,23 @@ public final class HttpMessageConvertersAutoConfiguration {
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
 	@Bean
-	@ConditionalOnMissingBean
-	HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
-		return new HttpMessageConverters(converters.orderedStream().toList());
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	@SuppressWarnings("deprecation")
+	ClientHttpMessageConvertersCustomizer clientConvertersCustomizer(
+			ObjectProvider<HttpMessageConverters> legacyConverters,
+			ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new DefaultClientHttpMessageConvertersCustomizer(legacyConverters.getIfAvailable(),
+				converters.orderedStream().toList());
+	}
+
+	@Bean
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	@SuppressWarnings("deprecation")
+	ServerHttpMessageConvertersCustomizer serverConvertersCustomizer(
+			ObjectProvider<HttpMessageConverters> legacyConverters,
+			ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new DefaultServerHttpMessageConvertersCustomizer(legacyConverters.getIfAvailable(),
+				converters.orderedStream().toList());
 	}
 
 	@Configuration(proxyBeanMethods = false)

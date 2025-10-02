@@ -16,62 +16,35 @@
 
 package org.springframework.boot.restclient.autoconfigure;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Consumer;
-
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
+import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HttpMessageConvertersRestClientCustomizer}
  *
- * @author Phillip Webb
+ * @author Brian Clozel
  */
 class HttpMessageConvertersRestClientCustomizerTests {
-
-	@Test
-	void createWhenNullMessageConvertersArrayThrowsException() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new HttpMessageConvertersRestClientCustomizer((HttpMessageConverter<?>[]) null))
-			.withMessage("'messageConverters' must not be null");
-	}
-
-	@Test
-	void createWhenNullMessageConvertersDoesNotCustomize() {
-		HttpMessageConverter<?> c0 = mock();
-		assertThat(apply(new HttpMessageConvertersRestClientCustomizer((HttpMessageConverters) null), c0))
-			.containsExactly(c0);
-	}
 
 	@Test
 	void customizeConfiguresMessageConverters() {
 		HttpMessageConverter<?> c0 = mock();
 		HttpMessageConverter<?> c1 = mock();
-		HttpMessageConverter<?> c2 = mock();
-		assertThat(apply(new HttpMessageConvertersRestClientCustomizer(c1, c2), c0)).containsExactly(c1, c2);
-	}
+		ClientHttpMessageConvertersCustomizer customizer = (clientBuilder) -> clientBuilder.customMessageConverter(c0)
+			.customMessageConverter(c1);
 
-	@SuppressWarnings({ "unchecked", "removal" })
-	private List<HttpMessageConverter<?>> apply(HttpMessageConvertersRestClientCustomizer customizer,
-			HttpMessageConverter<?>... converters) {
-		List<HttpMessageConverter<?>> messageConverters = new ArrayList<>(Arrays.asList(converters));
-		RestClient.Builder restClientBuilder = mock();
-		ArgumentCaptor<Consumer<List<HttpMessageConverter<?>>>> captor = ArgumentCaptor.forClass(Consumer.class);
-		given(restClientBuilder.messageConverters(captor.capture())).willReturn(restClientBuilder);
-		customizer.customize(restClientBuilder);
-		captor.getValue().accept(messageConverters);
-		return messageConverters;
+		RestClient.Builder builder = RestClient.builder();
+		new HttpMessageConvertersRestClientCustomizer(customizer).customize(builder);
+		assertThat(builder.build()).extracting("messageConverters")
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
+			.containsSubsequence(c0, c1);
 	}
 
 }

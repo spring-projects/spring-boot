@@ -58,7 +58,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -174,13 +174,12 @@ public class WebMvcEndpointManagementContextConfiguration {
 		}
 
 		@Override
-		@SuppressWarnings("removal")
-		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-			for (HttpMessageConverter<?> converter : converters) {
+		public void configureMessageConverters(ServerBuilder builder) {
+			builder.configureMessageConverters((converter) -> {
 				if (converter instanceof JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter) {
 					configure(jacksonJsonHttpMessageConverter);
 				}
-			}
+			});
 		}
 
 		private void configure(JacksonJsonHttpMessageConverter converter) {

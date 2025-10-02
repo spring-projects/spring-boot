@@ -31,7 +31,6 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.ssl.SslBundle;
@@ -42,8 +41,8 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.ApiVersionFormatter;
 import org.springframework.web.client.ApiVersionInserter;
@@ -71,7 +70,6 @@ class RestClientAutoConfigurationTests {
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
 			assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
 			assertThat(context).hasSingleBean(RestClient.Builder.class);
 		});
@@ -164,21 +162,6 @@ class RestClientAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void restClientWhenMessageConvertersDefinedShouldHaveMessageConverters() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withUserConfiguration(RestClientConfig.class)
-			.run((context) -> {
-				RestClient restClient = context.getBean(RestClient.class);
-				List<HttpMessageConverter<?>> expectedConverters = context.getBean(HttpMessageConverters.class)
-					.getConverters();
-				List<HttpMessageConverter<?>> actualConverters = (List<HttpMessageConverter<?>>) ReflectionTestUtils
-					.getField(restClient, "messageConverters");
-				assertThat(actualConverters).containsExactlyElementsOf(expectedConverters);
-			});
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
 	void restClientWhenNoMessageConvertersDefinedShouldHaveDefaultMessageConverters() {
 		this.contextRunner.withUserConfiguration(RestClientConfig.class).run((context) -> {
 			RestClient restClient = context.getBean(RestClient.class);
@@ -257,15 +240,13 @@ class RestClientAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class)
 					.hasSingleBean(ClientHttpRequestFactorySettings.class)
-					.hasSingleBean(ClientHttpRequestFactoryBuilder.class)
-					.hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
+					.hasSingleBean(ClientHttpRequestFactoryBuilder.class);
 				RestClientBuilderConfigurer configurer = context.getBean(RestClientBuilderConfigurer.class);
 				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactoryBuilder",
 						context.getBean(ClientHttpRequestFactoryBuilder.class));
 				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactorySettings",
 						context.getBean(ClientHttpRequestFactorySettings.class));
-				assertThat(configurer).hasFieldOrPropertyWithValue("customizers", List.of(customizer1, customizer2,
-						context.getBean(HttpMessageConvertersRestClientCustomizer.class)));
+				assertThat(configurer).hasFieldOrPropertyWithValue("customizers", List.of(customizer1, customizer2));
 			});
 	}
 
@@ -284,7 +265,6 @@ class RestClientAutoConfigurationTests {
 	void whenServletWebApplicationRestClientIsConfigured() {
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class))
 			.run((context) -> {
-				assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
 				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
 				assertThat(context).hasSingleBean(RestClient.Builder.class);
 			});
@@ -297,7 +277,6 @@ class RestClientAutoConfigurationTests {
 			.withConfiguration(
 					AutoConfigurations.of(RestClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class))
 			.run((context) -> {
-				assertThat(context).hasSingleBean(HttpMessageConvertersRestClientCustomizer.class);
 				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class);
 				assertThat(context).hasSingleBean(RestClient.Builder.class);
 			});
@@ -396,7 +375,7 @@ class RestClientAutoConfigurationTests {
 
 	}
 
-	static class CustomHttpMessageConverter extends StringHttpMessageConverter {
+	static class CustomHttpMessageConverter extends ByteArrayHttpMessageConverter {
 
 	}
 

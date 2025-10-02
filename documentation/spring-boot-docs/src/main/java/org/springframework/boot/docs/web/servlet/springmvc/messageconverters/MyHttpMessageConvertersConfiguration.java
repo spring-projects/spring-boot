@@ -16,19 +16,17 @@
 
 package org.springframework.boot.docs.web.servlet.springmvc.messageconverters;
 
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
+import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
 
 @Configuration(proxyBeanMethods = false)
 public class MyHttpMessageConvertersConfiguration {
 
 	@Bean
-	public HttpMessageConverters customConverters() {
-		HttpMessageConverter<?> additional = new AdditionalHttpMessageConverter();
-		HttpMessageConverter<?> another = new AnotherHttpMessageConverter();
-		return new HttpMessageConverters(additional, another);
+	public ClientHttpMessageConvertersCustomizer myClientConvertersCustomizer() {
+		return (clientBuilder) -> clientBuilder.customMessageConverter(new AdditionalHttpMessageConverter())
+			.customMessageConverter(new AnotherHttpMessageConverter());
 	}
 
 }

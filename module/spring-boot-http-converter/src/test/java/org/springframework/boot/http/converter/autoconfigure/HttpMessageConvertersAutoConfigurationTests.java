@@ -44,6 +44,9 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.TypeConstrainedJacksonJsonHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
@@ -262,14 +265,16 @@ class HttpMessageConvertersAutoConfigurationTests {
 	void whenServletWebApplicationHttpMessageConvertersIsConfigured() {
 		new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.run((context) -> assertThat(context).hasSingleBean(HttpMessageConverters.class));
+			.run((context) -> assertThat(context).hasSingleBean(ServerHttpMessageConvertersCustomizer.class)
+				.hasSingleBean(ClientHttpMessageConvertersCustomizer.class));
 	}
 
 	@Test
 	void whenReactiveWebApplicationHttpMessageConvertersIsNotConfigured() {
 		new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(HttpMessageConverters.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ServerHttpMessageConvertersCustomizer.class)
+				.doesNotHaveBean(ClientHttpMessageConvertersCustomizer.class));
 	}
 
 	@Test
@@ -318,15 +323,33 @@ class HttpMessageConvertersAutoConfigurationTests {
 	private void assertConverterBeanRegisteredWithHttpMessageConverters(AssertableApplicationContext context,
 			Class<? extends HttpMessageConverter<?>> type) {
 		HttpMessageConverter<?> converter = context.getBean(type);
-		HttpMessageConverters converters = context.getBean(HttpMessageConverters.class);
-		assertThat(converters.getConverters()).contains(converter);
+		ClientHttpMessageConvertersCustomizer clientCustomizer = context
+			.getBean(ClientHttpMessageConvertersCustomizer.class);
+		ClientBuilder clientBuilder = HttpMessageConverters.forClient().registerDefaults();
+		clientCustomizer.customize(clientBuilder);
+		assertThat(clientBuilder.build()).contains(converter);
+
+		ServerHttpMessageConvertersCustomizer serverCustomizer = context
+			.getBean(ServerHttpMessageConvertersCustomizer.class);
+		ServerBuilder serverBuilder = HttpMessageConverters.forServer().registerDefaults();
+		serverCustomizer.customize(serverBuilder);
+		assertThat(serverBuilder.build()).contains(converter);
 	}
 
 	private void assertConvertersBeanRegisteredWithHttpMessageConverters(AssertableApplicationContext context,
 			List<Class<? extends HttpMessageConverter<?>>> types) {
 		List<? extends HttpMessageConverter<?>> converterInstances = types.stream().map(context::getBean).toList();
-		HttpMessageConverters converters = context.getBean(HttpMessageConverters.class);
-		assertThat(converters.getConverters()).containsSubsequence(converterInstances);
+		ClientHttpMessageConvertersCustomizer clientCustomizer = context
+			.getBean(ClientHttpMessageConvertersCustomizer.class);
+		ClientBuilder clientBuilder = HttpMessageConverters.forClient().registerDefaults();
+		clientCustomizer.customize(clientBuilder);
+		assertThat(clientBuilder.build()).containsSubsequence(converterInstances);
+
+		ServerHttpMessageConvertersCustomizer serverCustomizer = context
+			.getBean(ServerHttpMessageConvertersCustomizer.class);
+		ServerBuilder serverBuilder = HttpMessageConverters.forServer().registerDefaults();
+		serverCustomizer.customize(serverBuilder);
+		assertThat(serverBuilder.build()).containsSubsequence(converterInstances);
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Phillip Webb
  */
+@SuppressWarnings("deprecation")
 class HttpMessageConvertersTests {
 
 	@Test

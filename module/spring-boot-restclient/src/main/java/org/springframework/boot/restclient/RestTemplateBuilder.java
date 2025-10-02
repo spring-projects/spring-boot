@@ -189,7 +189,7 @@ public class RestTemplateBuilder {
 	 * @return a new builder instance
 	 * @see #additionalMessageConverters(HttpMessageConverter...)
 	 */
-	public RestTemplateBuilder messageConverters(Collection<? extends HttpMessageConverter<?>> messageConverters) {
+	public RestTemplateBuilder messageConverters(Iterable<? extends HttpMessageConverter<?>> messageConverters) {
 		Assert.notNull(messageConverters, "'messageConverters' must not be null");
 		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
 				copiedSetOf(messageConverters), this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
@@ -726,8 +726,10 @@ public class RestTemplateBuilder {
 		return copiedSetOf(Arrays.asList(items));
 	}
 
-	private <T> Set<T> copiedSetOf(Collection<? extends T> collection) {
-		return Collections.unmodifiableSet(new LinkedHashSet<>(collection));
+	private <T> Set<T> copiedSetOf(Iterable<? extends T> collection) {
+		LinkedHashSet<T> set = new LinkedHashSet<>();
+		collection.forEach(set::add);
+		return Collections.unmodifiableSet(set);
 	}
 
 	private static <T> List<T> copiedListOf(T[] items) {
