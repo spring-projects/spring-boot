@@ -20,10 +20,12 @@ import java.util.List;
 
 import com.redis.testcontainers.RedisContainer;
 import com.redis.testcontainers.RedisStackContainer;
+import org.jspecify.annotations.Nullable;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -76,9 +78,13 @@ class RedisContainerConnectionDetailsFactory
 		}
 
 		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return super.getSslBundle();
+		}
+
+		@Override
 		public Standalone getStandalone() {
-			return Standalone.of(getContainer().getHost(), getContainer().getMappedPort(REDIS_PORT),
-					super.getSslBundle());
+			return Standalone.of(getContainer().getHost(), getContainer().getMappedPort(REDIS_PORT));
 		}
 
 	}

@@ -50,6 +50,14 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
+	 * SSL bundle to use.
+	 * @return the SSL bundle to use
+	 */
+	default @Nullable SslBundle getSslBundle() {
+		return null;
+	}
+
+	/**
 	 * Redis standalone configuration. Mutually exclusive with {@link #getSentinel()} and
 	 * {@link #getCluster()}.
 	 * @return the Redis standalone configuration
@@ -102,32 +110,13 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 		}
 
 		/**
-		 * SSL bundle to use.
-		 * @return the SSL bundle to use
-		 */
-		default @Nullable SslBundle getSslBundle() {
-			return null;
-		}
-
-		/**
 		 * Creates a new instance with the given host and port.
 		 * @param host the host
 		 * @param port the port
 		 * @return the new instance
 		 */
 		static Standalone of(String host, int port) {
-			return of(host, port, 0, null);
-		}
-
-		/**
-		 * Creates a new instance with the given host, port and SSL bundle.
-		 * @param host the host
-		 * @param port the port
-		 * @param sslBundle the SSL bundle
-		 * @return the new instance
-		 */
-		static Standalone of(String host, int port, @Nullable SslBundle sslBundle) {
-			return of(host, port, 0, sslBundle);
+			return of(host, port, 0);
 		}
 
 		/**
@@ -138,18 +127,6 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 		 * @return the new instance
 		 */
 		static Standalone of(String host, int port, int database) {
-			return of(host, port, database, null);
-		}
-
-		/**
-		 * Creates a new instance with the given host, port, database and SSL bundle.
-		 * @param host the host
-		 * @param port the port
-		 * @param database the database
-		 * @param sslBundle the SSL bundle
-		 * @return the new instance
-		 */
-		static Standalone of(String host, int port, int database, @Nullable SslBundle sslBundle) {
 			Assert.hasLength(host, "'host' must not be empty");
 			return new Standalone() {
 
@@ -168,10 +145,6 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 					return database;
 				}
 
-				@Override
-				public @Nullable SslBundle getSslBundle() {
-					return sslBundle;
-				}
 			};
 		}
 
@@ -212,14 +185,6 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 		 */
 		@Nullable String getPassword();
 
-		/**
-		 * SSL bundle to use.
-		 * @return the SSL bundle to use
-		 */
-		default @Nullable SslBundle getSslBundle() {
-			return null;
-		}
-
 	}
 
 	/**
@@ -233,14 +198,6 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 		 * @return nodes to bootstrap from
 		 */
 		List<Node> getNodes();
-
-		/**
-		 * SSL bundle to use.
-		 * @return the SSL bundle to use
-		 */
-		default @Nullable SslBundle getSslBundle() {
-			return null;
-		}
 
 	}
 

@@ -177,21 +177,21 @@ class PropertiesRedisConnectionDetailsTests {
 		SslBundle bundle1 = mock(SslBundle.class);
 		this.sslBundleRegistry.registerBundle("bundle-1", bundle1);
 		this.properties.getSsl().setBundle("bundle-1");
-		SslBundle sslBundle = this.connectionDetails.getStandalone().getSslBundle();
+		SslBundle sslBundle = this.connectionDetails.getSslBundle();
 		assertThat(sslBundle).isSameAs(bundle1);
 	}
 
 	@Test
 	void shouldReturnSystemBundleIfSslIsEnabledButBundleNotSet() {
 		this.properties.getSsl().setEnabled(true);
-		SslBundle sslBundle = this.connectionDetails.getStandalone().getSslBundle();
+		SslBundle sslBundle = this.connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNotNull();
 	}
 
 	@Test
 	void shouldReturnNullIfSslIsNotEnabled() {
 		this.properties.getSsl().setEnabled(false);
-		SslBundle sslBundle = this.connectionDetails.getStandalone().getSslBundle();
+		SslBundle sslBundle = this.connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNull();
 	}
 

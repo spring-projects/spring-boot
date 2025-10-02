@@ -46,8 +46,7 @@ class DataRedisDockerComposeConnectionDetailsFactoryIntegrationTests {
 			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key" })
 	void runWithSslCreatesConnectionDetails(DataRedisConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
-		Standalone standalone = connectionDetails.getStandalone();
-		SslBundle sslBundle = standalone.getSslBundle();
+		SslBundle sslBundle = connectionDetails.getSslBundle();
 		assertThat(sslBundle).isNotNull();
 		SSLContext sslContext = sslBundle.createSslContext();
 		assertThat(sslContext).isNotNull();

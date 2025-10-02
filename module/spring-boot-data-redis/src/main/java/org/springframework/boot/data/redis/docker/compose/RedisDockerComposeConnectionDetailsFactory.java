@@ -16,10 +16,13 @@
 
 package org.springframework.boot.data.redis.docker.compose;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
+import org.springframework.boot.ssl.SslBundle;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create
@@ -56,9 +59,17 @@ class RedisDockerComposeConnectionDetailsFactory
 
 		private final Standalone standalone;
 
+		private final @Nullable SslBundle sslBundle;
+
 		RedisDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.standalone = Standalone.of(service.host(), service.ports().get(REDIS_PORT), getSslBundle(service));
+			this.standalone = Standalone.of(service.host(), service.ports().get(REDIS_PORT));
+			this.sslBundle = getSslBundle(service);
+		}
+
+		@Override
+		public @Nullable SslBundle getSslBundle() {
+			return this.sslBundle;
 		}
 
 		@Override
