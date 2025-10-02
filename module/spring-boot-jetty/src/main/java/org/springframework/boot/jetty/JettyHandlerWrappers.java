@@ -16,8 +16,13 @@
 
 package org.springframework.boot.jetty;
 
+import org.eclipse.jetty.compression.gzip.GzipCompression;
+import org.eclipse.jetty.compression.server.CompressionConfig;
+import org.eclipse.jetty.compression.server.CompressionConfig.Builder;
+import org.eclipse.jetty.compression.server.CompressionHandler;
 import org.eclipse.jetty.http.HttpFields.Mutable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -35,15 +40,20 @@ final class JettyHandlerWrappers {
 	private JettyHandlerWrappers() {
 	}
 
-	@SuppressWarnings({ "deprecation", "removal" })
 	static Handler.Wrapper createGzipHandlerWrapper(Compression compression) {
-		org.eclipse.jetty.server.handler.gzip.GzipHandler handler = new org.eclipse.jetty.server.handler.gzip.GzipHandler();
-		handler.setMinGzipSize((int) compression.getMinResponseSize().toBytes());
-		handler.setIncludedMimeTypes(compression.getMimeTypes());
-		for (HttpMethod httpMethod : HttpMethod.values()) {
-			handler.addIncludedMethods(httpMethod.name());
+		CompressionHandler compressionHandler = new CompressionHandler();
+		GzipCompression gzip = new GzipCompression();
+		gzip.setMinCompressSize((int) compression.getMinResponseSize().toBytes());
+		compressionHandler.putCompression(gzip);
+		Builder configBuilder = CompressionConfig.builder();
+		for (String mimeType : compression.getMimeTypes()) {
+			configBuilder.compressIncludeMimeType(mimeType);
 		}
-		return handler;
+		for (HttpMethod httpMethod : HttpMethod.values()) {
+			configBuilder.compressIncludeMethod(httpMethod.name());
+		}
+		compressionHandler.putConfiguration(PathSpec.from("/"), configBuilder.build());
+		return compressionHandler;
 	}
 
 	static Handler.Wrapper createServerHeaderHandlerWrapper(String header) {

@@ -29,6 +29,9 @@ dependencies {
 	api("org.eclipse.jetty.ee11:jetty-ee11-servlets")
 	api("org.eclipse.jetty.ee11:jetty-ee11-webapp")
 
+	implementation("org.eclipse.jetty.compression:jetty-compression-server")
+	implementation("org.eclipse.jetty.compression:jetty-compression-gzip")
+
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-micrometer-metrics"))
