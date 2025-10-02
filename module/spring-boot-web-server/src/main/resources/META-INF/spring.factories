@@ -11,3 +11,8 @@ org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInit
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.web.server.PortInUseFailureAnalyzer,\
 org.springframework.boot.web.server.context.MissingWebServerFactoryBeanFailureAnalyzer
+
+# HTTP Server Test Base URL Providers
+org.springframework.boot.test.http.server.BaseUrlProvider=\
+org.springframework.boot.web.server.reactive.context.ReactiveWebServerApplicationContextBaseUrlProvider,\
+org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContextBaseUrlProvider
