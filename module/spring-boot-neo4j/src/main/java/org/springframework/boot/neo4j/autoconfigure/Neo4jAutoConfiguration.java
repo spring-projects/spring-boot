@@ -31,7 +31,6 @@ import org.neo4j.driver.AuthToken;
 import org.neo4j.driver.AuthTokenManager;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Config;
-import org.neo4j.driver.Config.ConfigBuilder;
 import org.neo4j.driver.Config.TrustStrategy;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -121,7 +120,7 @@ public final class Neo4jAutoConfiguration {
 		String lowerCaseScheme = scheme.toLowerCase(Locale.ENGLISH);
 		if (!ServiceLoader.load(BoltConnectionProviderFactory.class)
 			.stream()
-			.anyMatch(p -> p.get().supports(lowerCaseScheme))) {
+			.anyMatch((p) -> p.get().supports(lowerCaseScheme))) {
 			throw new IllegalArgumentException(String.format("'%s' is not a supported scheme.", scheme));
 		}
 		return !Scheme.isSecurityScheme(lowerCaseScheme);
@@ -140,7 +139,7 @@ public final class Neo4jAutoConfiguration {
 		builder.withMaxConnectionLifetime(pool.getMaxConnectionLifetime().toMillis(), TimeUnit.MILLISECONDS);
 		builder.withConnectionAcquisitionTimeout(pool.getConnectionAcquisitionTimeout().toMillis(),
 				TimeUnit.MILLISECONDS);
-		observationRegistryProvider.ifAvailable(orp -> {
+		observationRegistryProvider.ifAvailable((orp) -> {
 			if (pool.isMetricsEnabled() && HAS_DRIVER_METRICS) {
 				builder.withObservationProvider(MicrometerObservationProvider.builder(orp).build());
 			}
