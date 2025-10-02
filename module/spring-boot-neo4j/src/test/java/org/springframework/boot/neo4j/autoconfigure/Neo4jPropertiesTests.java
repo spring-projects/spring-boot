@@ -38,7 +38,6 @@ class Neo4jPropertiesTests {
 	void poolSettingsHaveConsistentDefaults() {
 		Config defaultConfig = Config.defaultConfig();
 		Pool pool = new Neo4jProperties().getPool();
-		assertThat(pool.isMetricsEnabled()).isEqualTo(defaultConfig.isMetricsEnabled());
 		assertThat(pool.isLogLeakedSessions()).isEqualTo(defaultConfig.logLeakedSessions());
 		assertThat(pool.getMaxConnectionPoolSize()).isEqualTo(defaultConfig.maxConnectionPoolSize());
 		assertDuration(pool.getIdleTimeBeforeConnectionTest(), defaultConfig.idleTimeBeforeConnectionTest());

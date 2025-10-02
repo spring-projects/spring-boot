@@ -36,6 +36,7 @@ dependencies {
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
 	optional("org.testcontainers:neo4j")
+	optional("org.neo4j.driver:neo4j-java-driver-observation-micrometer")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))

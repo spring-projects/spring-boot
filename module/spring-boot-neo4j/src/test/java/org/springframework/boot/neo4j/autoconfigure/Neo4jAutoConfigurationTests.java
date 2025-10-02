@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,6 +34,7 @@ import org.neo4j.driver.Config;
 import org.neo4j.driver.Config.ConfigBuilder;
 import org.neo4j.driver.Driver;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration.PropertiesNeo4jConnectionDetails;
@@ -218,13 +221,6 @@ class Neo4jAutoConfigurationTests {
 	}
 
 	@Test
-	void poolWithMetricsEnabled() {
-		Neo4jProperties properties = new Neo4jProperties();
-		properties.getPool().setMetricsEnabled(true);
-		assertThat(mapDriverConfig(properties).isMetricsEnabled()).isTrue();
-	}
-
-	@Test
 	void poolWithLogLeakedSessions() {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getPool().setLogLeakedSessions(true);
@@ -322,14 +318,15 @@ class Neo4jAutoConfigurationTests {
 			.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 	}
 
-	@Test
-	void driverConfigShouldBeConfiguredToUseUseSpringJclLogging() {
-		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isInstanceOf(Neo4jSpringJclLogging.class);
-	}
-
 	private Config mapDriverConfig(Neo4jProperties properties, ConfigBuilderCustomizer... customizers) {
 		return new Neo4jAutoConfiguration().mapDriverConfig(properties,
-				new PropertiesNeo4jConnectionDetails(properties, null), Arrays.asList(customizers));
+				new PropertiesNeo4jConnectionDetails(properties, null), Arrays.asList(customizers),
+				new ObjectProvider<>() {
+					@Override
+					public Stream<ObservationRegistry> stream() {
+						return Stream.empty();
+					}
+				});
 	}
 
 }
