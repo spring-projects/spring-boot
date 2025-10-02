@@ -168,7 +168,7 @@ class JtaAutoConfigurationTests {
 		public void beforeEach(ExtensionContext context) throws Exception {
 			Namespace namespace = Namespace.create(getClass(), context.getUniqueId());
 			context.getStore(namespace)
-				.getOrComputeIfAbsent(InitialContext.class, (k) -> createInitialContext(), InitialContext.class);
+				.computeIfAbsent(InitialContext.class, (k) -> createInitialContext(), InitialContext.class);
 		}
 
 		private InitialContext createInitialContext() {
