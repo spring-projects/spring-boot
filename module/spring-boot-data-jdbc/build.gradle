@@ -19,6 +19,7 @@ plugins {
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -30,6 +31,17 @@ dependencies {
 	api("org.springframework.data:spring-data-jdbc")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+
+	dockerTestImplementation(project(":core:spring-boot-test"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
+	dockerTestImplementation("ch.qos.logback:logback-classic")
+	dockerTestImplementation("org.testcontainers:mariadb")
+	dockerTestImplementation("org.testcontainers:mysql")
+
+	dockerTestRuntimeOnly("com.mysql:mysql-connector-j")
+	dockerTestRuntimeOnly("com.zaxxer:HikariCP")
+	dockerTestRuntimeOnly("org.mariadb.jdbc:mariadb-java-client")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

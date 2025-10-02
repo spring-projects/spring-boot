@@ -30,7 +30,9 @@ import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.PulsarContainer;
@@ -149,7 +151,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing MariaDB.
 	 */
-	MARIADB("mariadb", "10.10"),
+	MARIADB("mariadb", "10.10", () -> MariaDBContainer.class),
 
 	/**
 	 * A container image suitable for testing MongoDB.
@@ -168,7 +170,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing MySQL.
 	 */
-	MYSQL("mysql", "8.0"),
+	MYSQL("mysql", "8.0", () -> MySQLContainer.class),
 
 	/**
 	 * A container image suitable for testing Neo4j.

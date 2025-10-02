@@ -16,14 +16,20 @@
 
 package org.springframework.boot.data.jdbc.autoconfigure;
 
+import java.util.function.Function;
+
+import org.springframework.data.jdbc.core.dialect.DialectResolver;
 import org.springframework.data.jdbc.core.dialect.JdbcDb2Dialect;
 import org.springframework.data.jdbc.core.dialect.JdbcH2Dialect;
 import org.springframework.data.jdbc.core.dialect.JdbcHsqlDbDialect;
+import org.springframework.data.jdbc.core.dialect.JdbcMariaDbDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcMySqlDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcOracleDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcSqlServerDialect;
 import org.springframework.data.relational.core.dialect.Dialect;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.util.Assert;
 
 /**
  * List of database dialects that can be configured in Boot for use with Spring Data JDBC.
@@ -49,16 +55,16 @@ public enum DataJdbcDatabaseDialect {
 	HSQL(JdbcHsqlDbDialect.INSTANCE),
 
 	/**
-	 * Provides an instance of {@link JdbcMySqlDialect}.
+	 * Resolves an instance of {@link JdbcMariaDbDialect} by querying the database
+	 * configuration.
 	 */
-	@SuppressWarnings("removal")
-	MARIA(JdbcMySqlDialect.INSTANCE),
+	MARIA(JdbcMariaDbDialect.class),
 
 	/**
-	 * Provides an instance of {@link JdbcMySqlDialect}.
+	 * Resolves an instance of {@link JdbcMySqlDialect} by querying the database
+	 * configuration.
 	 */
-	@SuppressWarnings("removal")
-	MYSQL(JdbcMySqlDialect.INSTANCE),
+	MYSQL(JdbcMySqlDialect.class),
 
 	/**
 	 * Provides an instance of {@link JdbcOracleDialect}.
@@ -75,14 +81,22 @@ public enum DataJdbcDatabaseDialect {
 	 */
 	SQL_SERVER(JdbcSqlServerDialect.INSTANCE);
 
-	private final Dialect dialect;
+	private final Function<JdbcOperations, Dialect> dialectResolver;
 
-	DataJdbcDatabaseDialect(Dialect dialect) {
-		this.dialect = dialect;
+	DataJdbcDatabaseDialect(Class<? extends Dialect> dialectType) {
+		this.dialectResolver = (jdbc) -> {
+			Dialect dialect = DialectResolver.getDialect(jdbc);
+			Assert.isInstanceOf(dialectType, dialect);
+			return dialect;
+		};
 	}
 
-	final Dialect getDialect() {
-		return this.dialect;
+	DataJdbcDatabaseDialect(Dialect dialect) {
+		this.dialectResolver = (jdbc) -> dialect;
+	}
+
+	Dialect getDialect(JdbcOperations jdbc) {
+		return this.dialectResolver.apply(jdbc);
 	}
 
 }
