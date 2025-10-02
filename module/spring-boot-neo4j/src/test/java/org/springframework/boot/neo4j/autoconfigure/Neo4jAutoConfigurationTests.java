@@ -320,7 +320,8 @@ class Neo4jAutoConfigurationTests {
 
 	private Config mapDriverConfig(Neo4jProperties properties, ConfigBuilderCustomizer... customizers) {
 		return new Neo4jAutoConfiguration().mapDriverConfig(properties,
-				new PropertiesNeo4jConnectionDetails(properties, null), Arrays.asList(customizers), new ObjectProvider<ObservationRegistry>(){
+				new PropertiesNeo4jConnectionDetails(properties, null), Arrays.asList(customizers),
+				new ObjectProvider<>() {
 					@Override
 					public Stream<ObservationRegistry> stream() {
 						return Stream.empty();

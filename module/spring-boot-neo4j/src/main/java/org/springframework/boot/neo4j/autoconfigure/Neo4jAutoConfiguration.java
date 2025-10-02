@@ -75,7 +75,8 @@ public final class Neo4jAutoConfiguration {
 		try {
 			Class.forName("org.neo4j.driver.observation.micrometer.MicrometerObservationProvider", false,
 					Neo4jAutoConfiguration.class.getClassLoader());
-		} catch (ClassNotFoundException ex) {
+		}
+		catch (ClassNotFoundException ex) {
 			metricsObservationProviderFound = false;
 		}
 		HAS_DRIVER_METRICS = metricsObservationProviderFound;
@@ -91,7 +92,8 @@ public final class Neo4jAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	Driver neo4jDriver(Neo4jProperties properties, Environment environment, Neo4jConnectionDetails connectionDetails,
-			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers, ObjectProvider<ObservationRegistry> observationRegistryProvider) {
+			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers,
+			ObjectProvider<ObservationRegistry> observationRegistryProvider) {
 
 		Config config = mapDriverConfig(properties, connectionDetails,
 				configBuilderCustomizers.orderedStream().toList(), observationRegistryProvider);
@@ -104,7 +106,8 @@ public final class Neo4jAutoConfiguration {
 	}
 
 	Config mapDriverConfig(Neo4jProperties properties, Neo4jConnectionDetails connectionDetails,
-			List<ConfigBuilderCustomizer> customizers, ObjectProvider<ObservationRegistry> observationRegistryProvider) {
+			List<ConfigBuilderCustomizer> customizers,
+			ObjectProvider<ObservationRegistry> observationRegistryProvider) {
 		Config.ConfigBuilder builder = Config.builder();
 		configurePoolSettings(builder, properties.getPool(), observationRegistryProvider);
 		URI uri = connectionDetails.getUri();
@@ -116,13 +119,16 @@ public final class Neo4jAutoConfiguration {
 
 	private boolean isSimpleScheme(String scheme) {
 		String lowerCaseScheme = scheme.toLowerCase(Locale.ENGLISH);
-		if (!ServiceLoader.load(BoltConnectionProviderFactory.class).stream().anyMatch(p -> p.get().supports(lowerCaseScheme))) {
+		if (!ServiceLoader.load(BoltConnectionProviderFactory.class)
+			.stream()
+			.anyMatch(p -> p.get().supports(lowerCaseScheme))) {
 			throw new IllegalArgumentException(String.format("'%s' is not a supported scheme.", scheme));
 		}
 		return !Scheme.isSecurityScheme(lowerCaseScheme);
 	}
 
-	private void configurePoolSettings(Config.ConfigBuilder builder, Pool pool, ObjectProvider<ObservationRegistry> observationRegistryProvider) {
+	private void configurePoolSettings(Config.ConfigBuilder builder, Pool pool,
+			ObjectProvider<ObservationRegistry> observationRegistryProvider) {
 		if (pool.isLogLeakedSessions()) {
 			builder.withLeakedSessionsLogging();
 		}
