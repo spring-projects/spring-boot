@@ -131,7 +131,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 	 * LiveReload configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBooleanProperty(name = "spring.devtools.livereload.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.devtools.livereload.enabled")
 	static class LiveReloadConfiguration {
 
 		private final DevToolsProperties properties;

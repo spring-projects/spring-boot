@@ -102,8 +102,8 @@ class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	void liveReloadOnClassPathChanged() throws Exception {
-		configure();
+	void liveReloadOnClassPathChanged() {
+		configure("spring.devtools.livereload.enabled:true");
 		Set<ChangedFiles> changeSet = new HashSet<>();
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
 		this.clientContext.publishEvent(event);
@@ -112,8 +112,8 @@ class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	void liveReloadDisabled() {
-		configure("spring.devtools.livereload.enabled:false");
+	void liveReloadDisabledByDefault() {
+		configure();
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 			.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
 	}
