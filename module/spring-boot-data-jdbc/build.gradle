@@ -36,6 +36,7 @@ dependencies {
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:mariadb")
 	dockerTestImplementation("org.testcontainers:mysql")
 
