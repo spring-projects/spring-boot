@@ -1230,10 +1230,10 @@ bom {
 			]
 		}
 		links {
-			site("https://github.com/lettuce-io/lettuce-core")
+			site("https://github.com/redis/lettuce")
 			javadoc("https://javadoc.io/doc/io.lettuce/lettuce-core/{version}", "io.lettuce.core")
-			docs("https://lettuce.io/core/{version}/reference/index.html")
-			releaseNotes("https://github.com/lettuce-io/lettuce-core/releases/tag/{version}")
+			docs("https://redis.github.io/lettuce")
+			releaseNotes("https://github.com/redis/lettuce/releases/tag/{version}")
 		}
 	}
 	library("Liquibase", "4.33.0") {
