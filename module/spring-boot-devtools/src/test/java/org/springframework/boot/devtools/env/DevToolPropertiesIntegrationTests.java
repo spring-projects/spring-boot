@@ -18,7 +18,6 @@ package org.springframework.boot.devtools.env;
 
 import java.net.URL;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -31,9 +30,10 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
+import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +65,8 @@ class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
+	@ForkedClassPath
+	@WithResource(name = "META-INF/spring-devtools.properties", content = "defaults.com.example.enabled=true")
 	void classPropertyConditionIsAffectedByDevToolProperties() throws Exception {
 		SpringApplication application = new SpringApplication(ClassConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -73,6 +75,8 @@ class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
+	@ForkedClassPath
+	@WithResource(name = "META-INF/spring-devtools.properties", content = "defaults.com.example.enabled=true")
 	void beanMethodPropertyConditionIsAffectedByDevToolProperties() throws Exception {
 		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -81,6 +85,8 @@ class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
+	@ForkedClassPath
+	@WithResource(name = "META-INF/spring-devtools.properties", content = "defaults.com.example.enabled=true")
 	void postProcessWhenRestarterDisabledAndRemoteSecretNotSetShouldNotAddPropertySource() throws Exception {
 		Restarter.clearInstance();
 		Restarter.disable();
@@ -94,6 +100,8 @@ class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
+	@ForkedClassPath
+	@WithResource(name = "META-INF/spring-devtools.properties", content = "defaults.com.example.enabled=true")
 	void postProcessWhenRestarterDisabledAndRemoteSecretSetShouldAddPropertySource() throws Exception {
 		Restarter.clearInstance();
 		Restarter.disable();
@@ -105,17 +113,20 @@ class DevToolPropertiesIntegrationTests {
 	}
 
 	@Test
-	void postProcessEnablesIncludeStackTraceProperty() throws Exception {
+	@ForkedClassPath
+	@WithResource(name = "META-INF/spring-devtools.properties", content = """
+			defaults.com.example.one=alpha
+			defaults.com.example.two=bravo
+			""")
+	void postProcessSetsPropertyDefaults() throws Exception {
 		SpringApplication application = new SpringApplication(TestConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
 		ConfigurableEnvironment environment = this.context.getEnvironment();
-		String includeStackTrace = environment.getProperty("server.error.include-stacktrace");
-		assertThat(includeStackTrace)
-			.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
-		String includeMessage = environment.getProperty("server.error.include-message");
-		assertThat(includeMessage)
-			.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
+		String one = environment.getProperty("com.example.one");
+		assertThat(one).isEqualTo("alpha");
+		String two = environment.getProperty("com.example.two");
+		assertThat(two).isEqualTo("bravo");
 	}
 
 	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)
@@ -138,7 +149,7 @@ class DevToolPropertiesIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty("spring.h2.console.enabled")
+	@ConditionalOnProperty("com.example.enabled")
 	static class ClassConditionConfiguration {
 
 	}
@@ -147,7 +158,7 @@ class DevToolPropertiesIntegrationTests {
 	static class BeanConditionConfiguration {
 
 		@Bean
-		@ConditionalOnProperty("spring.h2.console.enabled")
+		@ConditionalOnProperty("com.example.enabled")
 		MyBean myBean() {
 			return new MyBean();
 		}

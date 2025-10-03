@@ -29,13 +29,6 @@ configurations {
 	intTestDependencies {
 		extendsFrom dependencyManagement
 	}
-	propertyDefaults
-}
-
-artifacts {
-	propertyDefaults(file("build/resources/main/org/springframework/boot/devtools/env/devtools-property-defaults.properties")) {
-		builtBy(processResources)
-	}
 }
 
 dependencies {
@@ -59,7 +52,6 @@ dependencies {
 	intTestImplementation(project(":test-support:spring-boot-test-support"))
 	intTestImplementation("org.apache.httpcomponents.client5:httpclient5")
 	intTestImplementation("net.bytebuddy:byte-buddy")
-
 
 	intTestRuntimeOnly("org.springframework:spring-web")
 
