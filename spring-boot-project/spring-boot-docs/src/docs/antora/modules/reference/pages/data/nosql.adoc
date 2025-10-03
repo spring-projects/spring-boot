@@ -25,10 +25,10 @@ Spring Boot also provides auto-configuration for the InfluxDB client but it is d
 == Redis
 
 https://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
-Spring Boot offers basic auto-configuration for the https://github.com/lettuce-io/lettuce-core/[Lettuce] and https://github.com/xetorthio/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
+Spring Boot offers basic auto-configuration for the https://github.com/redis/lettuce/[Lettuce] and https://github.com/redis/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
 
 There is a `spring-boot-starter-data-redis` starter for collecting the dependencies in a convenient way.
-By default, it uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
+By default, it uses https://github.com/redis/lettuce/[Lettuce].
 That starter handles both traditional and reactive applications.
 
 TIP: We also provide a `spring-boot-starter-data-redis-reactive` starter for consistency with the other stores with reactive support.
