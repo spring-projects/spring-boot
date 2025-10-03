@@ -9,8 +9,8 @@ This section answers questions that arise from using NoSQL with Spring Boot.
 [[howto.nosql.jedis-instead-of-lettuce]]
 == Use Jedis Instead of Lettuce
 
-By default, the Spring Boot starter (`spring-boot-starter-data-redis`) uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
-You need to exclude that dependency and include the https://github.com/xetorthio/jedis/[Jedis] one instead.
+By default, the Spring Boot starter (`spring-boot-starter-data-redis`) uses https://github.com/redis/lettuce/[Lettuce].
+You need to exclude that dependency and include the https://github.com/redis/jedis/[Jedis] one instead.
 Spring Boot manages both of these dependencies, allowing you to switch to Jedis without specifying a version.
 
 The following example shows how to accomplish this in Maven:

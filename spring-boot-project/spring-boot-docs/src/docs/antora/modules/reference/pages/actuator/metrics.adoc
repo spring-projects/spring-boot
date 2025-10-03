@@ -1124,7 +1124,7 @@ Metrics for Jetty's javadoc:org.eclipse.jetty.server.Connector[] instances are b
 === Redis Metrics
 
 Auto-configuration registers a javadoc:io.lettuce.core.metrics.MicrometerCommandLatencyRecorder[] for the auto-configured javadoc:org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory[].
-For more detail, see the {url-lettuce-docs}#command.latency.metrics.micrometer[Micrometer Metrics section] of the Lettuce documentation.
+For more detail, see the {url-lettuce-docs}/advanced-usage/#observability[Observability section] of the Lettuce documentation.
 
 
 
