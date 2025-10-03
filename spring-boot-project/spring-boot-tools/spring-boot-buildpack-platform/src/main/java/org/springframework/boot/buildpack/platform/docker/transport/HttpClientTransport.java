@@ -34,6 +34,7 @@ import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
 
 import org.springframework.boot.buildpack.platform.io.Content;
@@ -66,31 +67,66 @@ abstract class HttpClientTransport implements HttpTransport {
 		this.host = host;
 	}
 
+	/**
+	 * Perform an HTTP GET operation.
+	 * @param uri the destination URI
+	 * @return the operation response
+	 */
 	@Override
 	public Response get(URI uri) {
 		return execute(new HttpGet(uri));
 	}
 
+	/**
+	 * Perform an HTTP POST operation.
+	 * @param uri the destination URI
+	 * @return the operation response
+	 */
 	@Override
 	public Response post(URI uri) {
 		return execute(new HttpPost(uri));
 	}
 
+	/**
+	 * Perform an HTTP POST operation.
+	 * @param uri the destination URI
+	 * @param registryAuth registry authentication credentials
+	 * @return the operation response
+	 */
 	@Override
 	public Response post(URI uri, String registryAuth) {
 		return execute(new HttpPost(uri), registryAuth);
 	}
 
+	/**
+	 * Perform an HTTP POST operation.
+	 * @param uri the destination URI
+	 * @param contentType the content type to write
+	 * @param writer a content writer
+	 * @return the operation response
+	 */
 	@Override
 	public Response post(URI uri, String contentType, IOConsumer<OutputStream> writer) {
 		return execute(new HttpPost(uri), contentType, writer);
 	}
 
+	/**
+	 * Perform an HTTP PUT operation.
+	 * @param uri the destination URI
+	 * @param contentType the content type to write
+	 * @param writer a content writer
+	 * @return the operation response
+	 */
 	@Override
 	public Response put(URI uri, String contentType, IOConsumer<OutputStream> writer) {
 		return execute(new HttpPut(uri), contentType, writer);
 	}
 
+	/**
+	 * Perform an HTTP DELETE operation.
+	 * @param uri the destination URI
+	 * @return the operation response
+	 */
 	@Override
 	public Response delete(URI uri) {
 		return execute(new HttpDelete(uri));
@@ -115,11 +151,14 @@ abstract class HttpClientTransport implements HttpTransport {
 
 			if (statusCode >= 400 && statusCode <= 500) {
 				byte[] content = readContent(response);
-				// Always close the response for error paths
 				response.close();
 
-				if (statusCode == 407) {
+				if (statusCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED) {
 					String detail = null;
+
+					// Some Docker endpoints may still send a JSON body; prefer it if
+					// present,
+					// otherwise fall back to plain text.
 					Message json = deserializeMessage(content);
 					if (json != null && StringUtils.hasText(json.getMessage())) {
 						detail = json.getMessage();
@@ -129,8 +168,7 @@ abstract class HttpClientTransport implements HttpTransport {
 					}
 
 					String msg = "Proxy authentication required for host: " + this.host.toHostString() + ", uri: "
-							+ request.getUri()
-							+ (StringUtils.hasText(detail) ? " - " + detail : "");
+							+ request.getUri() + (StringUtils.hasText(detail) ? " - " + detail : "");
 
 					throw new ProxyAuthenticationException(msg);
 				}
