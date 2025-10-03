@@ -48,7 +48,7 @@ import org.springframework.boot.loader.net.protocol.jar.JarUrl;
  */
 class JarFileArchive implements Archive {
 
-	private static final String UNPACK_MARKER = "UNPACK:";
+	private static final String UNPACK_MARKER = "UNPACK";
 
 	private static final FileAttribute<?>[] NO_FILE_ATTRIBUTES = {};
 

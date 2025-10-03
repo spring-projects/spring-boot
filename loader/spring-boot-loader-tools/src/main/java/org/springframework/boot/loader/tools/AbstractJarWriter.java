@@ -345,7 +345,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
 			if (this.unpack) {
-				entry.setComment("UNPACK:");
+				entry.setComment("UNPACK");
 			}
 		}
 

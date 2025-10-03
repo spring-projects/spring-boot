@@ -610,7 +610,7 @@ class BootZipCopyAction implements CopyAction {
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
 			if (this.unpack) {
-				entry.setComment("UNPACK:");
+				entry.setComment("UNPACK");
 			}
 		}
 

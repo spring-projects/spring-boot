@@ -208,7 +208,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		ZipEntry entry = getPackagedEntry("BOOT-INF/lib/" + libJarFile.getName());
 		assertThat(entry.getTime()).isEqualTo(JAN_1_1985);
 		entry = getPackagedEntry("BOOT-INF/lib/" + libJarFileToUnpack.getName());
-		assertThat(entry.getComment()).isEqualTo("UNPACK:");
+		assertThat(entry.getComment()).isEqualTo("UNPACK");
 	}
 
 	@Test
@@ -423,7 +423,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		P packager = createPackager();
 		execute(packager, (callback) -> callback.library(newLibrary(nestedFile, LibraryScope.COMPILE, true)));
-		assertThat(getPackagedEntry(name).getComment()).startsWith("UNPACK:");
+		assertThat(getPackagedEntry(name).getComment()).isEqualTo("UNPACK");
 	}
 
 	@Test
@@ -538,7 +538,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(getPackagedEntryNames()).containsSubsequence("org/springframework/boot/loader/",
 				"WEB-INF/classes/com/example/Application.class", "WEB-INF/lib/" + library.getName());
 		ZipEntry unpackLibrary = getPackagedEntry("WEB-INF/lib/" + library.getName());
-		assertThat(unpackLibrary.getComment()).startsWith("UNPACK:");
+		assertThat(unpackLibrary.getComment()).isEqualTo("UNPACK");
 	}
 
 	@Test

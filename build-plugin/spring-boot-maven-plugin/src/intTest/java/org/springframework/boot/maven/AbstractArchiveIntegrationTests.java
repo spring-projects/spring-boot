@@ -159,7 +159,7 @@ abstract class AbstractArchiveIntegrationTests {
 					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
 						.findFirst();
 					assertThat(match).as("Name starting with %s", prefix)
-						.hasValueSatisfying((entry) -> assertThat(entry.getComment()).startsWith("UNPACK:"));
+						.hasValueSatisfying((entry) -> assertThat(entry.getComment()).isEqualTo("UNPACK"));
 				});
 			});
 			return this;
