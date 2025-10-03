@@ -151,11 +151,6 @@ public class Neo4jProperties {
 	public static class Pool {
 
 		/**
-		 * Whether to enable metrics.
-		 */
-		private boolean metricsEnabled = false;
-
-		/**
 		 * Whether to log leaked sessions.
 		 */
 		private boolean logLeakedSessions = false;
@@ -221,14 +216,6 @@ public class Neo4jProperties {
 
 		public void setConnectionAcquisitionTimeout(Duration connectionAcquisitionTimeout) {
 			this.connectionAcquisitionTimeout = connectionAcquisitionTimeout;
-		}
-
-		public boolean isMetricsEnabled() {
-			return this.metricsEnabled;
-		}
-
-		public void setMetricsEnabled(boolean metricsEnabled) {
-			this.metricsEnabled = metricsEnabled;
 		}
 
 	}
