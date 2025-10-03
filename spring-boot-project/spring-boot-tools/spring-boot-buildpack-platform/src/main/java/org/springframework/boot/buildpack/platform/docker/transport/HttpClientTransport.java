@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
@@ -33,6 +34,7 @@ import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
 
 import org.springframework.boot.buildpack.platform.io.Content;
@@ -146,14 +148,37 @@ abstract class HttpClientTransport implements HttpTransport {
 		try {
 			ClassicHttpResponse response = this.client.executeOpen(this.host, request, null);
 			int statusCode = response.getCode();
+
 			if (statusCode >= 400 && statusCode <= 500) {
 				byte[] content = readContent(response);
 				response.close();
+
+				if (statusCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED) {
+					String detail = null;
+
+					// Some Docker endpoints may still send a JSON body; prefer it if
+					// present,
+					// otherwise fall back to plain text.
+					Message json = deserializeMessage(content);
+					if (json != null && StringUtils.hasText(json.getMessage())) {
+						detail = json.getMessage();
+					}
+					else if (content != null && content.length > 0) {
+						detail = new String(content, StandardCharsets.UTF_8);
+					}
+
+					String msg = "Proxy authentication required for host: " + this.host.toHostString() + ", uri: "
+							+ request.getUri() + (StringUtils.hasText(detail) ? " - " + detail : "");
+
+					throw new ProxyAuthenticationException(msg);
+				}
+
 				Errors errors = (statusCode != 500) ? deserializeErrors(content) : null;
 				Message message = deserializeMessage(content);
 				throw new DockerEngineException(this.host.toHostString(), request.getUri(), statusCode,
 						response.getReasonPhrase(), errors, message);
 			}
+
 			return new HttpClientResponse(response);
 		}
 		catch (IOException | URISyntaxException ex) {
