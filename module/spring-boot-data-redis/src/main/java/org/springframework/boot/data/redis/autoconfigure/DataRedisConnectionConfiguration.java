@@ -33,6 +33,7 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -62,6 +63,8 @@ abstract class DataRedisConnectionConfiguration {
 
 	private final @Nullable RedisClusterConfiguration clusterConfiguration;
 
+	private final @Nullable RedisStaticMasterReplicaConfiguration masterReplicaConfiguration;
+
 	private final DataRedisConnectionDetails connectionDetails;
 
 	protected final Mode mode;
@@ -70,11 +73,13 @@ abstract class DataRedisConnectionConfiguration {
 			DataRedisConnectionDetails connectionDetails,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
+			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
+			ObjectProvider<RedisStaticMasterReplicaConfiguration> masterReplicaConfiguration) {
 		this.properties = properties;
 		this.standaloneConfiguration = standaloneConfigurationProvider.getIfAvailable();
 		this.sentinelConfiguration = sentinelConfigurationProvider.getIfAvailable();
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
+		this.masterReplicaConfiguration = masterReplicaConfiguration.getIfAvailable();
 		this.connectionDetails = connectionDetails;
 		this.mode = determineMode();
 	}
@@ -143,6 +148,25 @@ abstract class DataRedisConnectionConfiguration {
 		return null;
 	}
 
+	protected final @Nullable RedisStaticMasterReplicaConfiguration getMasterReplicaConfiguration() {
+		if (this.masterReplicaConfiguration != null) {
+			return this.masterReplicaConfiguration;
+		}
+		if (this.connectionDetails.getMasterReplica() != null) {
+			List<Node> nodes = this.connectionDetails.getMasterReplica().getNodes();
+			RedisStaticMasterReplicaConfiguration config = new RedisStaticMasterReplicaConfiguration(
+					nodes.get(0).host(), nodes.get(0).port());
+			nodes.stream().skip(1).forEach((node) -> config.addNode(node.host(), node.port()));
+			config.setUsername(this.connectionDetails.getUsername());
+			String password = this.connectionDetails.getPassword();
+			if (password != null) {
+				config.setPassword(RedisPassword.of(password));
+			}
+			return config;
+		}
+		return null;
+	}
+
 	private List<RedisNode> getNodes(Cluster cluster) {
 		return cluster.getNodes().stream().map(this::asRedisNode).toList();
 	}
@@ -191,12 +215,15 @@ abstract class DataRedisConnectionConfiguration {
 		if (getClusterConfiguration() != null) {
 			return Mode.CLUSTER;
 		}
+		if (getMasterReplicaConfiguration() != null) {
+			return Mode.MASTER_REPLICA;
+		}
 		return Mode.STANDALONE;
 	}
 
 	enum Mode {
 
-		STANDALONE, CLUSTER, SENTINEL
+		STANDALONE, CLUSTER, MASTER_REPLICA, SENTINEL
 
 	}
 

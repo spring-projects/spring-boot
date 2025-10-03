@@ -57,6 +57,7 @@ class PropertiesRedisConnectionDetailsTests {
 		assertThat(standalone.getDatabase()).isEqualTo(0);
 		assertThat(this.connectionDetails.getSentinel()).isNull();
 		assertThat(this.connectionDetails.getCluster()).isNull();
+		assertThat(this.connectionDetails.getMasterReplica()).isNull();
 		assertThat(this.connectionDetails.getUsername()).isNull();
 		assertThat(this.connectionDetails.getPassword()).isNull();
 	}
@@ -144,6 +145,15 @@ class PropertiesRedisConnectionDetailsTests {
 		cluster.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setCluster(cluster);
 		assertThat(this.connectionDetails.getCluster().getNodes()).containsExactly(new Node("localhost", 1111),
+				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
+	}
+
+	@Test
+	void masterReplicaIsConfigured() {
+		DataRedisProperties.Masterreplica masterReplica = new DataRedisProperties.Masterreplica();
+		masterReplica.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
+		this.properties.setMasterreplica(masterReplica);
+		assertThat(this.connectionDetails.getMasterReplica().getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
 	}
 

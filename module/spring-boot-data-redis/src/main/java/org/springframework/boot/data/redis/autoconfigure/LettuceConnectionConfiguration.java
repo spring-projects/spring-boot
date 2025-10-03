@@ -49,6 +49,7 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -74,9 +75,10 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
+			ObjectProvider<RedisStaticMasterReplicaConfiguration> masterReplicaConfiguration,
 			DataRedisConnectionDetails connectionDetails) {
 		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfigurationProvider,
-				clusterConfigurationProvider);
+				clusterConfigurationProvider, masterReplicaConfiguration);
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -131,6 +133,11 @@ class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 				RedisSentinelConfiguration sentinelConfig = getSentinelConfig();
 				Assert.state(sentinelConfig != null, "'sentinelConfig' must not be null");
 				yield new LettuceConnectionFactory(sentinelConfig, clientConfiguration);
+			}
+			case MASTER_REPLICA -> {
+				RedisStaticMasterReplicaConfiguration masterReplicaConfiguration = getMasterReplicaConfiguration();
+				Assert.state(masterReplicaConfiguration != null, "'masterReplicaConfig' must not be null");
+				yield new LettuceConnectionFactory(masterReplicaConfiguration, clientConfiguration);
 			}
 		};
 	}

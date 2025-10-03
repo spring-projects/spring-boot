@@ -94,6 +94,8 @@ public class DataRedisProperties {
 
 	private @Nullable Cluster cluster;
 
+	private @Nullable Masterreplica masterreplica;
+
 	private final Ssl ssl = new Ssl();
 
 	private final Jedis jedis = new Jedis();
@@ -198,6 +200,14 @@ public class DataRedisProperties {
 
 	public void setCluster(@Nullable Cluster cluster) {
 		this.cluster = cluster;
+	}
+
+	public @Nullable Masterreplica getMasterreplica() {
+		return this.masterreplica;
+	}
+
+	public void setMasterreplica(@Nullable Masterreplica masterreplica) {
+		this.masterreplica = masterreplica;
 	}
 
 	public Jedis getJedis() {
@@ -350,6 +360,26 @@ public class DataRedisProperties {
 
 		public void setMaxRedirects(@Nullable Integer maxRedirects) {
 			this.maxRedirects = maxRedirects;
+		}
+
+	}
+
+	/**
+	 * Master Replica properties.
+	 */
+	public static class Masterreplica {
+
+		/**
+		 * Static list of "host:port" pairs to use, at least one entry is required.
+		 */
+		private @Nullable List<String> nodes;
+
+		public @Nullable List<String> getNodes() {
+			return this.nodes;
+		}
+
+		public void setNodes(@Nullable List<String> nodes) {
+			this.nodes = nodes;
 		}
 
 	}

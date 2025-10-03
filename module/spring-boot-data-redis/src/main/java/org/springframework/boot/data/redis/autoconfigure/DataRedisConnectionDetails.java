@@ -58,8 +58,8 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * Redis standalone configuration. Mutually exclusive with {@link #getSentinel()} and
-	 * {@link #getCluster()}.
+	 * Redis standalone configuration. Mutually exclusive with {@link #getSentinel()},
+	 * {@link #getCluster()} and {@link #getMasterReplica()}.
 	 * @return the Redis standalone configuration
 	 */
 	default @Nullable Standalone getStandalone() {
@@ -67,8 +67,8 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * Redis sentinel configuration. Mutually exclusive with {@link #getStandalone()} and
-	 * {@link #getCluster()}.
+	 * Redis sentinel configuration. Mutually exclusive with {@link #getStandalone()},
+	 * {@link #getCluster()} and {@link #getMasterReplica()}.
 	 * @return the Redis sentinel configuration
 	 */
 	default @Nullable Sentinel getSentinel() {
@@ -76,11 +76,20 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 	}
 
 	/**
-	 * Redis cluster configuration. Mutually exclusive with {@link #getStandalone()} and
-	 * {@link #getSentinel()}.
+	 * Redis cluster configuration. Mutually exclusive with {@link #getStandalone()},
+	 * {@link #getSentinel()} and {@link #getMasterReplica()}.
 	 * @return the Redis cluster configuration
 	 */
 	default @Nullable Cluster getCluster() {
+		return null;
+	}
+
+	/**
+	 * Redis master replica configuration. Mutually exclusive with
+	 * {@link #getStandalone()}, {@link #getSentinel()} and {@link #getCluster()}.
+	 * @return the Redis master replica configuration
+	 */
+	default @Nullable MasterReplica getMasterReplica() {
 		return null;
 	}
 
@@ -196,6 +205,20 @@ public interface DataRedisConnectionDetails extends ConnectionDetails {
 		 * Nodes to bootstrap from. This represents an "initial" list of cluster nodes and
 		 * is required to have at least one entry.
 		 * @return nodes to bootstrap from
+		 */
+		List<Node> getNodes();
+
+	}
+
+	/**
+	 * Redis master replica configuration.
+	 */
+	interface MasterReplica {
+
+		/**
+		 * Static nodes to use. This represents the full list of cluster nodes and is
+		 * required to have at least one entry.
+		 * @return the nodes to use
 		 */
 		List<Node> getNodes();
 
