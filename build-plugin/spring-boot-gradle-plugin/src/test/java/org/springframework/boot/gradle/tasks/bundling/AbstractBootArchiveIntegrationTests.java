@@ -638,6 +638,15 @@ abstract class AbstractBootArchiveIntegrationTests {
 		}
 	}
 
+	@TestTemplate
+	void signed() throws IOException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
+		try (JarFile jarFile = new JarFile(jar)) {
+			assertThat(jarFile.getEntry("META-INF/BOOT.SF")).isNotNull();
+		}
+	}
+
 	private void copyMainClassApplication() throws IOException {
 		copyApplication("main");
 	}

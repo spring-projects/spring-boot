@@ -122,8 +122,7 @@ public abstract class BootWar extends War implements BootArchive {
 			layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
 		}
 		String jarmodeToolsLocation = isIncludeJarmodeTools() ? LIB_DIRECTORY : null;
-		return this.support.createCopyAction(this, this.resolvedDependencies, false, layerResolver,
-				jarmodeToolsLocation);
+		return this.support.createCopyAction(this, this.resolvedDependencies, layerResolver, jarmodeToolsLocation);
 	}
 
 	private boolean isIncludeJarmodeTools() {
