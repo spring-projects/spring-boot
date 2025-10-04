@@ -19,6 +19,7 @@ package org.springframework.boot.liquibase.autoconfigure;
 import javax.sql.DataSource;
 
 import liquibase.Liquibase;
+import liquibase.Scope;
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
 import liquibase.change.DatabaseChange;
@@ -50,6 +51,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.Assert;
@@ -101,7 +103,9 @@ public final class LiquibaseAutoConfiguration {
 		@Bean
 		SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource, LiquibaseProperties properties,
-				ObjectProvider<SpringLiquibaseCustomizer> customizers, LiquibaseConnectionDetails connectionDetails) {
+				ObjectProvider<SpringLiquibaseCustomizer> customizers, LiquibaseConnectionDetails connectionDetails,
+				Environment environment) {
+			registerLiquibaseConfigurationValueProvider(environment);
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
 					dataSource.getIfUnique(), connectionDetails);
 			liquibase.setChangeLog(properties.getChangeLog());
@@ -151,6 +155,20 @@ public final class LiquibaseAutoConfiguration {
 							: new DataSourceClosingSpringLiquibase();
 			liquibase.setDataSource(migrationDataSource);
 			return liquibase;
+		}
+
+		private void registerLiquibaseConfigurationValueProvider(Environment environment) {
+			liquibase.configuration.LiquibaseConfiguration liquibaseConfiguration = Scope.getCurrentScope()
+				.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+			// Remove any previously registered instance of our provider class
+			liquibaseConfiguration.getProviders()
+				.stream()
+				.filter((provider) -> provider.getClass() == EnvironmentConfigurationValueProvider.class)
+				.toList()
+				.forEach(liquibaseConfiguration::unregisterProvider);
+
+			liquibaseConfiguration.registerProvider(new EnvironmentConfigurationValueProvider(environment));
 		}
 
 		private DataSource getMigrationDataSource(@Nullable DataSource liquibaseDataSource,
