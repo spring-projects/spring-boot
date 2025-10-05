@@ -76,7 +76,7 @@ TIP: You can also register an arbitrary number of beans that implement javadoc:o
 javadoc:io.lettuce.core.resource.ClientResources[] can also be customized using javadoc:org.springframework.boot.data.redis.autoconfigure.ClientResourcesBuilderCustomizer[].
 If you use Jedis, javadoc:org.springframework.boot.data.redis.autoconfigure.JedisClientConfigurationBuilderCustomizer[] is also available.
 
-Alternatively, you can register a bean of type javadoc:org.springframework.data.redis.connection.RedisStandaloneConfiguration[], javadoc:org.springframework.data.redis.connection.RedisSentinelConfiguration[], javadoc:org.springframework.data.redis.connection.RedisClusterConfiguration[], or javadoc:org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration[]] to take full control over the configuration.
+Alternatively, you can register a bean of type javadoc:org.springframework.data.redis.connection.RedisStandaloneConfiguration[], javadoc:org.springframework.data.redis.connection.RedisSentinelConfiguration[], javadoc:org.springframework.data.redis.connection.RedisClusterConfiguration[], or javadoc:org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration[] to take full control over the configuration.
 
 NOTE: master/replica is not supported by Jedis.
 
