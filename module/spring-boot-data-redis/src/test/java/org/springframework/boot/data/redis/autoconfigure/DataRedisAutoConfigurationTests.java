@@ -501,6 +501,15 @@ class DataRedisAutoConfigurationTests {
 	}
 
 	@Test
+	void testRedisConfigurationWithMasterReplicaAndNoNode() {
+		this.contextRunner.withPropertyValues("spring.data.redis.masterreplica.nodes=")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.rootCause()
+				.hasMessage("At least one node is required for master-replica configuration"));
+	}
+
+	@Test
 	void testRedisConfigurationWithMasterReplica() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.masterreplica.nodes=127.0.0.1:28319,127.0.0.1:28320,[::1]:28321")
