@@ -27,9 +27,9 @@ description = "Spring Boot WebFlux"
 
 dependencies {
 	api(project(":core:spring-boot"))
+	api(project(":module:spring-boot-http-codec"))
 	api("org.springframework:spring-webflux")
 
-	implementation(project(":module:spring-boot-http-codec"))
 	implementation(project(":module:spring-boot-web-server"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
