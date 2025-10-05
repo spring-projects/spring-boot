@@ -154,6 +154,7 @@ abstract class DataRedisConnectionConfiguration {
 		}
 		if (this.connectionDetails.getMasterReplica() != null) {
 			List<Node> nodes = this.connectionDetails.getMasterReplica().getNodes();
+			Assert.state(!nodes.isEmpty(), "At least one node is required for master-replica configuration");
 			RedisStaticMasterReplicaConfiguration config = new RedisStaticMasterReplicaConfiguration(
 					nodes.get(0).host(), nodes.get(0).port());
 			nodes.stream().skip(1).forEach((node) -> config.addNode(node.host(), node.port()));
