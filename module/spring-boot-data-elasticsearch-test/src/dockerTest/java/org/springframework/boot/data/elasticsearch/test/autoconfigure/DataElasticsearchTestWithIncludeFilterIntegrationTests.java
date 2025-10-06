@@ -61,6 +61,7 @@ class DataElasticsearchTestWithIncludeFilterIntegrationTests {
 		String id = UUID.randomUUID().toString();
 		document.setId(id);
 		ExampleDocument savedDocument = this.exampleRepository.save(document);
+		assertThat(savedDocument.getId()).isNotNull();
 		assertThat(this.service.findById(savedDocument.getId())).isNotNull();
 	}
 

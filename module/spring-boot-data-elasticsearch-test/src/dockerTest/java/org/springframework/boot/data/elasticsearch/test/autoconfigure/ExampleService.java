@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.elasticsearch.test.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,7 @@ public class ExampleService {
 		this.elasticsearchTemplate = elasticsearchRestTemplate;
 	}
 
-	public ExampleDocument findById(String id) {
+	public @Nullable ExampleDocument findById(String id) {
 		return this.elasticsearchTemplate.get(id, ExampleDocument.class);
 	}
 
