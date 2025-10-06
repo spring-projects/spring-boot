@@ -23,7 +23,7 @@ inputs:
   java-version:
     description: 'Java version to use for the build'
     required: false
-    default: '24'
+    default: '25'
 runs:
   using: composite
   steps:
