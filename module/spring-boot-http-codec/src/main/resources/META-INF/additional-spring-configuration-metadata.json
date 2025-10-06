@@ -1,4 +1,31 @@
 {
-  "groups": [],
-  "properties": []
+  "properties": [
+    {
+      "name": "spring.http.codecs.preferred-json-mapper",
+      "type": "java.lang.String",
+      "defaultValue": "jackson",
+      "description": "Preferred JSON mapper to use for JSON encoder and decoder. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson' and 'kotlin-serialization'."
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.http.codecs.preferred-json-mapper",
+      "values": [
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "gson"
+        },
+        {
+          "value": "kotlin-serialization"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    }
+  ]
 }

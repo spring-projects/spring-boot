@@ -16,14 +16,17 @@
 
 package org.springframework.boot.http.codec.autoconfigure;
 
+import com.google.gson.Gson;
+import kotlinx.serialization.Serializable;
+import kotlinx.serialization.json.Json;
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.codec.CodecCustomizer;
@@ -32,8 +35,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.CodecConfigurer;
+import org.springframework.http.codec.CodecConfigurer.CustomCodecs;
+import org.springframework.http.codec.json.GsonDecoder;
+import org.springframework.http.codec.json.GsonEncoder;
 import org.springframework.http.codec.json.JacksonJsonDecoder;
 import org.springframework.http.codec.json.JacksonJsonEncoder;
+import org.springframework.http.codec.json.KotlinSerializationJsonDecoder;
+import org.springframework.http.codec.json.KotlinSerializationJsonEncoder;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -43,24 +51,65 @@ import org.springframework.web.reactive.function.client.WebClient;
  * {@link org.springframework.core.codec.Decoder Decoders}.
  *
  * @author Brian Clozel
+ * @author Vasily Pelikh
  * @since 2.0.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration")
+@AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+		"org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration",
+		"org.springframework.boot.kotlin.serialization.autoconfigure.KotlinSerializationAutoConfiguration" })
 @ConditionalOnClass({ CodecConfigurer.class, WebClient.class })
 public final class CodecsAutoConfiguration {
 
+	private static final String PREFERRED_MAPPER_PROPERTY = "spring.http.codecs.preferred-json-mapper";
+
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnClass(JsonMapper.class)
+	@ConditionalOnBean(JsonMapper.class)
+	@ConditionalOnProperty(name = PREFERRED_MAPPER_PROPERTY, havingValue = "jackson", matchIfMissing = true)
 	static class JacksonJsonCodecConfiguration {
 
 		@Bean
 		@Order(0)
-		@ConditionalOnBean(JsonMapper.class)
 		CodecCustomizer jacksonCodecCustomizer(JsonMapper jsonMapper) {
 			return (configurer) -> {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
 				defaults.jacksonJsonDecoder(new JacksonJsonDecoder(jsonMapper));
 				defaults.jacksonJsonEncoder(new JacksonJsonEncoder(jsonMapper));
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(Gson.class)
+	@ConditionalOnBean(Gson.class)
+	@ConditionalOnProperty(name = PREFERRED_MAPPER_PROPERTY, havingValue = "gson")
+	static class GsonJsonCodecConfiguration {
+
+		@Bean
+		CodecCustomizer gsonCodecCustomizer(Gson gson) {
+			return (configurer) -> {
+				CustomCodecs customCodecs = configurer.customCodecs();
+				customCodecs.registerWithDefaultConfig(new GsonDecoder(gson));
+				customCodecs.registerWithDefaultConfig(new GsonEncoder(gson));
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ Serializable.class, Json.class })
+	@ConditionalOnBean(Json.class)
+	@ConditionalOnProperty(name = PREFERRED_MAPPER_PROPERTY, havingValue = "kotlin-serialization")
+	static class KotlinSerializationJsonCodecConfiguration {
+
+		@Bean
+		@Order(-10) // configured ahead of JSON mappers
+		CodecCustomizer kotlinSerializationCodecCustomizer(Json json) {
+			return (configurer) -> {
+				CustomCodecs customCodecs = configurer.customCodecs();
+				customCodecs.registerWithDefaultConfig(new KotlinSerializationJsonDecoder(json));
+				customCodecs.registerWithDefaultConfig(new KotlinSerializationJsonEncoder(json));
 			};
 		}
 
