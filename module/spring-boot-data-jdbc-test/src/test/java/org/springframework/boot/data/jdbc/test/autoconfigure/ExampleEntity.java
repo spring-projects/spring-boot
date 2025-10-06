@@ -28,6 +28,7 @@ import org.springframework.data.relational.core.mapping.Table;
 public class ExampleEntity {
 
 	@Id
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 	private final String name;
