@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jdbc.test.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Example entity used with {@link JdbcTest @JdbcTest} tests.
  *
@@ -25,9 +27,9 @@ public class ExampleEntity {
 
 	private final int id;
 
-	private String name;
+	private @Nullable String name;
 
-	public ExampleEntity(int id, String name) {
+	public ExampleEntity(int id, @Nullable String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -40,11 +42,11 @@ public class ExampleEntity {
 		return this.id;
 	}
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 
