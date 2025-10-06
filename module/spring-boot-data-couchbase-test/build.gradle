@@ -39,11 +39,17 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
+	dockerTestCompileOnly("com.google.code.findbugs:jsr305")
+
 	testImplementation(project(":test-support:spring-boot-test-support"))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
 
 tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
 	options.nullability.checking = "tests"
 }

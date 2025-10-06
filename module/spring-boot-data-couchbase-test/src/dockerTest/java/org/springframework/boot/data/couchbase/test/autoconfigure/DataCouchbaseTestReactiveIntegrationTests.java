@@ -65,6 +65,7 @@ class DataCouchbaseTestReactiveIntegrationTests {
 		ExampleDocument document = new ExampleDocument();
 		document.setText("Look, new @DataCouchbaseTest!");
 		document = this.exampleReactiveRepository.save(document).block(Duration.ofSeconds(30));
+		assertThat(document).isNotNull();
 		assertThat(document.getId()).isNotNull();
 		assertThat(this.couchbaseTemplate.getBucketName()).isEqualTo(BUCKET_NAME);
 		this.exampleReactiveRepository.deleteAll();
