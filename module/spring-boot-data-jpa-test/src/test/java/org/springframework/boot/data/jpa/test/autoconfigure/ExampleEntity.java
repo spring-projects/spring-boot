@@ -30,10 +30,13 @@ public class ExampleEntity {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
+	@SuppressWarnings("NullAway.Init")
 	private String reference;
 
 	protected ExampleEntity() {
