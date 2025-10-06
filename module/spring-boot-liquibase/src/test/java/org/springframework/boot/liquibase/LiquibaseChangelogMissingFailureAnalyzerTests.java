@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -40,6 +41,7 @@ class LiquibaseChangelogMissingFailureAnalyzerTests {
 	@Test
 	void changelogParseExceptionDueToChangelogNotPresent() {
 		FailureAnalysis analysis = performAnalysis();
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
 			.isEqualTo("Liquibase failed to start because no changelog could be found at '"
 					+ "classpath:/db/changelog/db.changelog-master.yaml'.");
@@ -47,13 +49,13 @@ class LiquibaseChangelogMissingFailureAnalyzerTests {
 			.isEqualTo("Make sure a Liquibase changelog is present at the configured path.");
 	}
 
-	private FailureAnalysis performAnalysis() {
+	private @Nullable FailureAnalysis performAnalysis() {
 		BeanCreationException failure = createFailure();
 		assertThat(failure).isNotNull();
 		return new LiquibaseChangelogMissingFailureAnalyzer().analyze(failure);
 	}
 
-	private BeanCreationException createFailure() {
+	private @Nullable BeanCreationException createFailure() {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				LiquibaseConfiguration.class)) {
 			return null;
