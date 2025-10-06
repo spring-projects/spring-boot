@@ -89,15 +89,14 @@ class RSocketMessagingAutoConfigurationTests {
 	void shouldRegisterControllerAdvice() {
 		this.contextRunner.withBean(TestControllerAdvice.class).withBean(TestController.class).run((context) -> {
 			RSocketMessageHandler handler = context.getBean(RSocketMessageHandler.class);
-			TestControllerAdvice controllerAdvice = context.getBean(TestControllerAdvice.class);
-
 			MessageHeaderAccessor headers = new MessageHeaderAccessor();
 			RouteMatcher.Route route = handler.getRouteMatcher().parseRoute("exception");
 			headers.setHeader(DestinationPatternsMessageCondition.LOOKUP_DESTINATION_HEADER, route);
 			headers.setHeader(RSocketFrameTypeMessageCondition.FRAME_TYPE_HEADER, FrameType.REQUEST_FNF);
 			Message<?> message = MessageBuilder.createMessage(Mono.empty(), headers.getMessageHeaders());
+
 			StepVerifier.create(handler.handleMessage(message)).expectComplete().verify();
-			assertThat(controllerAdvice.isExceptionHandled()).isTrue();
+			assertThat(context.getBean(TestControllerAdvice.class).isExceptionHandled()).isTrue();
 		});
 	}
 

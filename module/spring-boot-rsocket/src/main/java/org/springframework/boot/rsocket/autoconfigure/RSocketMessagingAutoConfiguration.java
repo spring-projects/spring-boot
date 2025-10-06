@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.handler.MessagingAdviceBean;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
@@ -38,6 +39,7 @@ import org.springframework.web.method.ControllerAdviceBean;
  *
  * @author Brian Clozel
  * @author Dmitry Sulman
+ * @author Stephane Nicoll
  * @since 4.0.0
  */
 @AutoConfiguration(after = RSocketStrategiesAutoConfiguration.class)
@@ -51,10 +53,37 @@ public final class RSocketMessagingAutoConfiguration {
 		RSocketMessageHandler messageHandler = new RSocketMessageHandler();
 		messageHandler.setRSocketStrategies(rSocketStrategies);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(messageHandler));
-		ControllerAdviceBean.findAnnotatedBeans(context)
-			.forEach((controllerAdviceBean) -> messageHandler
-				.registerMessagingAdvice(new ControllerAdviceBeanWrapper(controllerAdviceBean)));
+
 		return messageHandler;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ControllerAdviceBean.class)
+	static class MessagingAdviceConfiguration {
+
+		@Bean
+		MessagingAdviceRSocketMessageHandlerCustomizer messagingAdviceRSocketMessageHandlerCustomizer(
+				ApplicationContext applicationContext) {
+			return new MessagingAdviceRSocketMessageHandlerCustomizer(applicationContext);
+		}
+
+	}
+
+	static final class MessagingAdviceRSocketMessageHandlerCustomizer implements RSocketMessageHandlerCustomizer {
+
+		private final ApplicationContext applicationContext;
+
+		MessagingAdviceRSocketMessageHandlerCustomizer(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		public void customize(RSocketMessageHandler messageHandler) {
+			ControllerAdviceBean.findAnnotatedBeans(this.applicationContext)
+				.forEach((controllerAdviceBean) -> messageHandler
+					.registerMessagingAdvice(new ControllerAdviceBeanWrapper(controllerAdviceBean)));
+		}
+
 	}
 
 	private static final class ControllerAdviceBeanWrapper implements MessagingAdviceBean {
