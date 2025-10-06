@@ -25,7 +25,7 @@ java {
 }
 
 repositories {
-	maven { url new File(project.rootDir, "../docker-test-maven-repository").toURI().toURL() }
+	maven { url new File("../docker-test-maven-repository") }
 	mavenCentral()
 	spring.mavenRepositories()
 }
