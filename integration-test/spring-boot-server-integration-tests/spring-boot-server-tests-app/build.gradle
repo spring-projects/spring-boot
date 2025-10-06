@@ -29,7 +29,7 @@ java {
 }
 
 repositories {
-	maven { url "file:${rootDir}/../test-repository"}
+	maven { url = layout.projectDirectory.dir("../test-repository") }
 	mavenCentral()
 	spring.mavenRepositoriesExcludingBootGroup()
 }
