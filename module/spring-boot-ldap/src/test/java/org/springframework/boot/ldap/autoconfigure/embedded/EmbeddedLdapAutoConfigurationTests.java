@@ -26,6 +26,7 @@ import com.unboundid.ldap.sdk.BindResult;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.schema.Schema;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -173,9 +174,10 @@ class EmbeddedLdapAutoConfigurationTests {
 					"spring.ldap.embedded.base-dn:dc=spring,dc=org")
 			.run((context) -> {
 				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
-
-				assertThat(server.getSchema().getObjectClass("exampleAuxiliaryClass")).isNotNull();
-				assertThat(server.getSchema().getAttributeType("exampleAttributeName")).isNotNull();
+				Schema schema = server.getSchema();
+				assertThat(schema).isNotNull();
+				assertThat(schema.getObjectClass("exampleAuxiliaryClass")).isNotNull();
+				assertThat(schema.getAttributeType("exampleAttributeName")).isNotNull();
 			});
 	}
 
