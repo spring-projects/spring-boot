@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.couchbase;
-
-import java.time.Duration;
+package org.springframework.boot.data.couchbase.test.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.couchbase.BucketDefinition;
@@ -28,46 +26,44 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.data.couchbase.core.ReactiveCouchbaseTemplate;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.stereotype.Service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Sample tests for {@link DataCouchbaseTest @DataCouchbaseTest} using reactive
- * repositories.
+ * Integration test with custom include filter for
+ * {@link DataCouchbaseTest @DataCouchbaseTest}.
  *
  * @author Eddú Meléndez
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@DataCouchbaseTest(properties = { "spring.data.couchbase.bucket-name=cbbucket",
-		"spring.couchbase.env.timeouts.connect=2m", "spring.couchbase.env.timeouts.key-value=1m" })
+@DataCouchbaseTest(includeFilters = @Filter(Service.class),
+		properties = { "spring.data.couchbase.bucket-name=cbbucket", "spring.couchbase.env.timeouts.connect=2m",
+				"spring.couchbase.env.timeouts.key-value=1m" })
 @Testcontainers(disabledWithoutDocker = true)
-class DataCouchbaseTestReactiveIntegrationTests {
-
-	private static final String BUCKET_NAME = "cbbucket";
+class DataCouchbaseTestWithIncludeFilterIntegrationTests {
 
 	@Container
 	@ServiceConnection
 	static final CouchbaseContainer couchbase = TestImage.container(CouchbaseContainer.class)
 		.withEnabledServices(CouchbaseService.KV, CouchbaseService.INDEX, CouchbaseService.QUERY)
-		.withBucket(new BucketDefinition(BUCKET_NAME));
+		.withBucket(new BucketDefinition("cbbucket"));
 
 	@Autowired
-	private ReactiveCouchbaseTemplate couchbaseTemplate;
+	private ExampleRepository exampleRepository;
 
 	@Autowired
-	private ExampleReactiveRepository exampleReactiveRepository;
+	private ExampleService service;
 
 	@Test
-	void testRepository() {
+	void testService() {
 		ExampleDocument document = new ExampleDocument();
 		document.setText("Look, new @DataCouchbaseTest!");
-		document = this.exampleReactiveRepository.save(document).block(Duration.ofSeconds(30));
-		assertThat(document.getId()).isNotNull();
-		assertThat(this.couchbaseTemplate.getBucketName()).isEqualTo(BUCKET_NAME);
-		this.exampleReactiveRepository.deleteAll();
+		document = this.exampleRepository.save(document);
+		assertThat(this.service.findById(document.getId())).isNotNull();
 	}
 
 }

@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.couchbase;
+package org.springframework.boot.data.couchbase.test.autoconfigure;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.couchbase.repository.CouchbaseRepository;
 
 /**
- * Example {@link SpringBootApplication @SpringBootApplication} used with
- * {@link DataCouchbaseTest @DataCouchbaseTest} tests.
+ * Example repository used with {@link DataCouchbaseTest @DataCouchbaseTest} tests.
  *
  * @author Eddú Meléndez
  */
-@SpringBootApplication
-public class ExampleCouchbaseApplication {
+interface ExampleRepository extends CouchbaseRepository<ExampleDocument, String> {
 
 }
