@@ -2,36 +2,22 @@ name: CI
 on:
   push:
     branches:
-      - 'main'
+      - 'temp/gradle-windows-problem'
 permissions:
   contents: read
 jobs:
   ci:
     name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
-    if: ${{ github.repository == 'spring-projects/spring-boot' || github.repository == 'spring-projects/spring-boot-commercial' }}
     runs-on: ${{ matrix.os.id }}
     strategy:
       fail-fast: false
       matrix:
         os:
-          - id: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
-            name: Linux
           - id: windows-latest
             name: Windows
         java:
           - version: 17
             toolchain: true
-          - version: 21
-            toolchain: true
-          - version: 25
-            toolchain: false
-        exclude:
-          - os:
-              name: Linux
-            java:
-              version: 25
-          - os:
-              name: ${{ github.repository == 'spring-projects/spring-boot-commercial' && 'Windows' }}
     steps:
       - name: Prepare Windows runner
         if: ${{ runner.os == 'Windows' }}
