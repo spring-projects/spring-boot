@@ -16,8 +16,9 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import org.cyclonedx.gradle.CycloneDxPlugin;
-import org.cyclonedx.gradle.CycloneDxTask;
+import org.cyclonedx.gradle.CyclonedxAggregateTask;
+import org.cyclonedx.gradle.CyclonedxPlugin;
+import org.cyclonedx.model.Component;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -34,91 +35,88 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
 /**
- * {@link Action} that is executed in response to the {@link CycloneDxPlugin} being
+ * {@link Action} that is executed in response to the {@link CyclonedxPlugin} being
  * applied.
  *
  * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
-final class CycloneDxPluginAction implements PluginApplicationAction {
+final class CyclonedxPluginAction implements PluginApplicationAction {
 
 	@Override
 	public Class<? extends Plugin<? extends Project>> getPluginClass() {
-		return CycloneDxPlugin.class;
+		return CyclonedxPlugin.class;
 	}
 
 	@Override
 	public void execute(Project project) {
-		TaskProvider<CycloneDxTask> cycloneDxTaskProvider = project.getTasks()
-			.named("cyclonedxBom", CycloneDxTask.class);
-		configureCycloneDxTask(cycloneDxTaskProvider);
+		TaskProvider<CyclonedxAggregateTask> cycloneDxTaskProvider = project.getTasks()
+			.named("cyclonedxBom", CyclonedxAggregateTask.class);
+		configureCycloneDxTask(cycloneDxTaskProvider, project);
 		configureJavaPlugin(project, cycloneDxTaskProvider);
 		configureSpringBootPlugin(project, cycloneDxTaskProvider);
 	}
 
-	private void configureCycloneDxTask(TaskProvider<CycloneDxTask> taskProvider) {
+	private void configureCycloneDxTask(TaskProvider<CyclonedxAggregateTask> taskProvider, Project project) {
 		taskProvider.configure((task) -> {
-			task.getProjectType().convention("application");
-			task.getOutputFormat().convention("json");
-			task.getOutputName().convention("application.cdx");
+			task.getProjectType().convention(Component.Type.APPLICATION);
+			task.getXmlOutput().unsetConvention();
+			task.getJsonOutput()
+				.convention(project.getLayout().getBuildDirectory().file("reports/cyclonedx/application.cdx.json"));
 			task.getIncludeLicenseText().convention(false);
 		});
 	}
 
-	private void configureJavaPlugin(Project project, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
+	private void configureJavaPlugin(Project project, TaskProvider<CyclonedxAggregateTask> cycloneDxTaskProvider) {
 		configurePlugin(project, JavaPlugin.class, (javaPlugin) -> {
 			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 			SourceSet main = javaPluginExtension.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			configureTask(project, main.getProcessResourcesTaskName(), Copy.class, (copy) -> {
 				copy.dependsOn(cycloneDxTaskProvider);
-				Provider<String> sbomFileName = cycloneDxTaskProvider
-					.map((cycloneDxTask) -> cycloneDxTask.getOutputName().get() + getSbomExtension(cycloneDxTask));
-				copy.from(cycloneDxTaskProvider, (spec) -> spec.include(sbomFileName.get()).into("META-INF/sbom"));
+				Provider<String> sbomFileName = cycloneDxTaskProvider.flatMap(
+						(cycloneDxTask) -> cycloneDxTask.getJsonOutput().map((file) -> file.getAsFile().getName()));
+				copy.from(cycloneDxTaskProvider,
+						(spec) -> spec.include((element) -> element.getName().equals(sbomFileName.get()))
+							.into("META-INF/sbom"));
 			});
 		});
 	}
 
-	private void configureSpringBootPlugin(Project project, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
+	private void configureSpringBootPlugin(Project project,
+			TaskProvider<CyclonedxAggregateTask> cycloneDxTaskProvider) {
 		configurePlugin(project, SpringBootPlugin.class, (springBootPlugin) -> {
 			configureBootJarTask(project, cycloneDxTaskProvider);
 			configureBootWarTask(project, cycloneDxTaskProvider);
 		});
 	}
 
-	private void configureBootJarTask(Project project, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
+	private void configureBootJarTask(Project project, TaskProvider<CyclonedxAggregateTask> cycloneDxTaskProvider) {
 		configureTask(project, SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class,
 				(bootJar) -> configureBootJarTask(bootJar, cycloneDxTaskProvider));
 	}
 
-	private void configureBootWarTask(Project project, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
+	private void configureBootWarTask(Project project, TaskProvider<CyclonedxAggregateTask> cycloneDxTaskProvider) {
 		configureTask(project, SpringBootPlugin.BOOT_WAR_TASK_NAME, BootWar.class,
 				(bootWar) -> configureBootWarTask(bootWar, cycloneDxTaskProvider));
 	}
 
-	private void configureBootJarTask(BootJar task, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
+	private void configureBootJarTask(BootJar task, TaskProvider<CyclonedxAggregateTask> cycloneDxTaskProvider) {
 		configureJarTask(task, cycloneDxTaskProvider, "");
 	}
 
-	private void configureBootWarTask(BootWar task, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
+	private void configureBootWarTask(BootWar task, TaskProvider<CyclonedxAggregateTask> cycloneDxTaskProvider) {
 		configureJarTask(task, cycloneDxTaskProvider, "WEB-INF/classes/");
 	}
 
-	private void configureJarTask(Jar task, TaskProvider<CycloneDxTask> cycloneDxTaskProvider,
+	private void configureJarTask(Jar task, TaskProvider<CyclonedxAggregateTask> cycloneDxTaskProvider,
 			String sbomLocationPrefix) {
-		Provider<String> sbomFileName = cycloneDxTaskProvider.map((cycloneDxTask) -> "META-INF/sbom/"
-				+ cycloneDxTask.getOutputName().get() + getSbomExtension(cycloneDxTask));
+		Provider<String> sbomFileName = cycloneDxTaskProvider
+			.map((cycloneDxTask) -> "META-INF/sbom/" + cycloneDxTask.getJsonOutput().get().getAsFile().getName());
 		task.manifest((manifest) -> {
 			manifest.getAttributes().put("Sbom-Format", "CycloneDX");
 			manifest.getAttributes()
 				.put("Sbom-Location", sbomFileName.map((fileName) -> sbomLocationPrefix + fileName));
 		});
-	}
-
-	private String getSbomExtension(CycloneDxTask task) {
-		String format = task.getOutputFormat().get();
-		if ("all".equals(format)) {
-			return ".json";
-		}
-		return "." + format;
 	}
 
 	private <T extends Task> void configureTask(Project project, String name, Class<T> type, Action<T> action) {

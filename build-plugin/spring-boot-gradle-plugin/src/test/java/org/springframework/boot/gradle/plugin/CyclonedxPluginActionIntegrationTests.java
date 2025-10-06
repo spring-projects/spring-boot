@@ -18,6 +18,8 @@ package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.BuildResult;
@@ -31,12 +33,12 @@ import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link CycloneDxPluginAction}.
+ * Integration tests for {@link CyclonedxPluginAction}.
  *
  * @author Andy Wilkinson
  */
 @GradleCompatibility
-class CycloneDxPluginActionIntegrationTests {
+class CyclonedxPluginActionIntegrationTests {
 
 	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
@@ -61,7 +63,8 @@ class CycloneDxPluginActionIntegrationTests {
 			assertThat(jar.getManifest().getMainAttributes().getValue("Sbom-Format")).isEqualTo("CycloneDX");
 			String sbomLocation = jar.getManifest().getMainAttributes().getValue("Sbom-Location");
 			assertThat(sbomLocation).isEqualTo(sbomLocationPrefix + "META-INF/sbom/application.cdx.json");
-			assertThat(jar.getEntry(sbomLocation)).isNotNull();
+			List<String> entryNames = jar.stream().map(JarEntry::getName).toList();
+			assertThat(entryNames).contains(sbomLocation);
 		}
 	}
 

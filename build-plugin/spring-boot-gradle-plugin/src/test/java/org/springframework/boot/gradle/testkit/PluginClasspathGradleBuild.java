@@ -29,7 +29,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
-import org.cyclonedx.gradle.CycloneDxPlugin;
+import org.cyclonedx.gradle.CyclonedxPlugin;
 import org.gradle.testkit.runner.GradleRunner;
 import org.jetbrains.kotlin.gradle.fus.BuildUidService;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
@@ -113,20 +113,20 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 		classpath.add(new File(pathOfJarContaining("org.graalvm.buildtools.gradle.NativeImagePlugin")));
 		classpath.add(new File(pathOfJarContaining("org.graalvm.reachability.GraalVMReachabilityMetadataRepository")));
 		classpath.add(new File(pathOfJarContaining("org.graalvm.buildtools.utils.SharedConstants")));
-		// CycloneDx dependencies
-		classpath.add(new File(pathOfJarContaining(CycloneDxPlugin.class)));
-		classpath.add(new File(pathOfJarContaining("com.github.packageurl.MalformedPackageURLException")));
-		classpath.add(new File(pathOfJarContaining("org.cyclonedx.parsers.Parser")));
-		classpath.add(new File(pathOfJarContaining("org.apache.maven.project.MavenProject")));
-		classpath.add(new File(pathOfJarContaining("org.apache.maven.model.building.ModelBuildingException")));
-		classpath.add(new File(pathOfJarContaining("org.codehaus.plexus.util.xml.pull.XmlPullParserException")));
-		classpath.add(new File(pathOfJarContaining("org.apache.commons.lang3.StringUtils")));
-		classpath.add(new File(pathOfJarContaining("com.networknt.schema.resource.SchemaMapper")));
+		// Cyclonedx dependencies
+		classpath.add(new File(pathOfJarContaining(CyclonedxPlugin.class)));
+		classpath.add(new File(pathOfJarContaining("com.ctc.wstx.api.WriterConfig")));
 		classpath.add(new File(pathOfJarContaining("com.fasterxml.jackson.core.Versioned")));
 		classpath.add(new File(pathOfJarContaining("com.fasterxml.jackson.databind.JsonSerializer")));
 		classpath.add(new File(pathOfJarContaining("com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator")));
+		classpath.add(new File(pathOfJarContaining("com.github.packageurl.MalformedPackageURLException")));
+		classpath.add(new File(pathOfJarContaining("com.google.common.collect.ImmutableMap")));
+		classpath.add(new File(pathOfJarContaining("com.networknt.schema.resource.SchemaMappers")));
 		classpath.add(new File(pathOfJarContaining("org.apache.commons.collections4.CollectionUtils")));
-		classpath.add(new File(pathOfJarContaining("org.apache.commons.io.FileUtils")));
+		classpath.add(new File(pathOfJarContaining("org.apache.maven.model.building.ModelBuildingException")));
+		classpath.add(new File(pathOfJarContaining("org.codehaus.plexus.util.xml.pull.XmlPullParserException")));
+		classpath.add(new File(pathOfJarContaining("org.codehaus.stax2.ri.Stax2WriterAdapter")));
+		classpath.add(new File(pathOfJarContaining("org.cyclonedx.model.ExternalReference")));
 		return classpath;
 	}
 
