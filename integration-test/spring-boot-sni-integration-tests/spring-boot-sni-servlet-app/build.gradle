@@ -27,7 +27,7 @@ java {
 }
 
 repositories {
-	maven { url "file:${rootDir}/../int-test-maven-repository"}
+	maven { url = layout.projectDirectory.dir("../int-test-maven-repository") }
 	mavenCentral()
 	spring.mavenRepositories()
 }
