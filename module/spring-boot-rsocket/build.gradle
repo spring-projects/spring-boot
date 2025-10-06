@@ -31,12 +31,11 @@ dependencies {
 
 	compileOnly("com.google.code.findbugs:jsr305")
 
-	implementation("org.springframework:spring-web")
-
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-reactor-netty"))
 	optional("io.rsocket:rsocket-transport-netty")
+	optional("org.springframework:spring-web")
 	optional("tools.jackson.dataformat:jackson-dataformat-cbor")
 
 	testImplementation(project(":core:spring-boot-test"))
