@@ -72,6 +72,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setServerCustomizers(null))
@@ -79,6 +80,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()

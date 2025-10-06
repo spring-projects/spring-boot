@@ -58,6 +58,7 @@ import org.eclipse.jetty.util.ClassMatcher;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -123,7 +124,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Override
-	protected JspServlet getJspServlet() throws Exception {
+	protected @Nullable JspServlet getJspServlet() throws Exception {
 		WebAppContext context = findWebAppContext((JettyWebServer) this.webServer);
 		ServletHolder holder = context.getServletHandler().getServlet("jsp");
 		if (holder == null) {
@@ -141,7 +142,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Override
-	protected Charset getCharset(Locale locale) {
+	protected @Nullable Charset getCharset(Locale locale) {
 		WebAppContext context = findWebAppContext((JettyWebServer) this.webServer);
 		String charsetName = context.getLocaleEncoding(locale);
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
@@ -314,7 +315,11 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		catch (NoSuchMethodError ex) {
 			Method getSslContextFactory = ReflectionUtils.findMethod(connectionFactory.getClass(),
 					"getSslContextFactory");
-			return (SslContextFactory) ReflectionUtils.invokeMethod(getSslContextFactory, connectionFactory);
+			assertThat(getSslContextFactory).isNotNull();
+			SslContextFactory sslContextFactory = (SslContextFactory) ReflectionUtils.invokeMethod(getSslContextFactory,
+					connectionFactory);
+			assertThat(sslContextFactory).isNotNull();
+			return sslContextFactory;
 		}
 	}
 
@@ -528,6 +533,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 				// Jetty 10
 				Method addEventListener = ReflectionUtils.findMethod(context.getClass(), "addEventListener",
 						EventListener.class);
+				assertThat(addEventListener).isNotNull();
 				ReflectionUtils.invokeMethod(addEventListener, context, eventListener);
 			}
 		});

@@ -217,7 +217,7 @@ class JettyMetricsAutoConfigurationTests {
 	}
 
 	private ApplicationStartedEvent createApplicationStartedEvent(ConfigurableApplicationContext context) {
-		return new ApplicationStartedEvent(new SpringApplication(), null, context, null);
+		return new ApplicationStartedEvent(new SpringApplication(), new String[0], context, null);
 	}
 
 	@Configuration(proxyBeanMethods = false)
