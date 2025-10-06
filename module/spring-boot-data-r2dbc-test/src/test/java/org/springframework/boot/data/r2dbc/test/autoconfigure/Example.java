@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.r2dbc.test.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -28,6 +30,6 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Example {
 
 	@Id
-	String id;
+	@Nullable String id;
 
 }
