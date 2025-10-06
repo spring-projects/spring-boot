@@ -56,3 +56,8 @@ dependencies {
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
 }
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}
+
