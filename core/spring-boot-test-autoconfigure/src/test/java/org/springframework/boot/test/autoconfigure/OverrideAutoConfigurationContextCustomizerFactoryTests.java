@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.test.context.ContextCustomizer;
@@ -33,26 +35,31 @@ class OverrideAutoConfigurationContextCustomizerFactoryTests {
 
 	@Test
 	void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(NoAnnotation.class,
+				Collections.emptyList());
 		assertThat(customizer).isNull();
 	}
 
 	@Test
 	void getContextCustomizerWhenHasAnnotationEnabledTrueShouldReturnNull() {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(WithAnnotationEnabledTrue.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithAnnotationEnabledTrue.class,
+				Collections.emptyList());
 		assertThat(customizer).isNull();
 	}
 
 	@Test
 	void getContextCustomizerWhenHasAnnotationEnabledFalseShouldReturnCustomizer() {
-		ContextCustomizer customizer = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
+		ContextCustomizer customizer = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class,
+				Collections.emptyList());
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
 	void hashCodeAndEquals() {
-		ContextCustomizer customizer1 = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
-		ContextCustomizer customizer2 = this.factory.createContextCustomizer(WithSameAnnotation.class, null);
+		ContextCustomizer customizer1 = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class,
+				Collections.emptyList());
+		ContextCustomizer customizer2 = this.factory.createContextCustomizer(WithSameAnnotation.class,
+				Collections.emptyList());
 		assertThat(customizer1).hasSameHashCodeAs(customizer2);
 		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2);
 	}
