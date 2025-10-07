@@ -38,15 +38,10 @@ It deals with `null` values at compile time rather than deferring the problem to
 This helps to eliminate a common source of bugs without paying the cost of wrappers like javadoc:java.util.Optional[].
 Kotlin also allows using functional constructs with nullable values as described in this https://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
 
-Although Java does not allow one to express null-safety in its type system, Spring Framework, Spring Data, and Reactor now provide null-safety of their API through tooling-friendly annotations.
-By default, types from Java APIs used in Kotlin are recognized as {url-kotlin-docs}/java-interop.html#null-safety-and-platform-types[platform types] for which null-checks are relaxed.
-{url-kotlin-docs}/java-interop.html#nullability-annotations[Kotlin's support for nullability annotations] provides null-safety for the annotated APIs like Spring's one in Kotlin.
+Although Java does not let you express null-safety in its type-system, most Spring projects
+provide {url-spring-framework-docs}/core/null-safety.html[null-safety] via https://jspecify.dev/[JSpecify] annotations.
 
-The https://jspecify.dev[JSpecify] strict checks are https://kotlinlang.org/docs/whatsnew21.html#change-of-jspecify-nullability-mismatch-diagnostics-severity-to-strict[enabled by default], while the JSR 305 checks can be configured by adding the `-Xjsr305` compiler flag with the following options: `-Xjsr305={strict|warn|ignore}`.
-The default behavior is the same as `-Xjsr305=warn`.
-The `strict` value is required to have null-safety taken in account in Kotlin types inferred from Spring API but should be used with the knowledge that Spring API nullability declaration could evolve even between minor releases and more checks may be added in the future).
-
-WARNING: Be aware that Spring Boot's own API is {url-github-issues}/10712[not yet annotated].
+As of Kotlin 2.1, Kotlin enforces strict handling of nullability annotations from the `org.jspecify.annotations` package.
 
 
 
