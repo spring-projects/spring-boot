@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.test.TestRestTemplate;
+import org.springframework.boot.restclient.test.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -51,6 +52,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		classes = { SampleWebSecureApplicationTests.SecurityConfiguration.class, SampleWebSecureApplication.class })
+@AutoConfigureTestRestTemplate
 class SampleWebSecureApplicationTests {
 
 	@Autowired

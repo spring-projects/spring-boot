@@ -2,6 +2,3 @@
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.restclient.test.autoconfigure.MockRestServiceServerResetTestExecutionListener
 
-# Spring Test Context Customizer Factories
-org.springframework.test.context.ContextCustomizerFactory=\
-org.springframework.boot.restclient.test.TestRestTemplateContextCustomizerFactory

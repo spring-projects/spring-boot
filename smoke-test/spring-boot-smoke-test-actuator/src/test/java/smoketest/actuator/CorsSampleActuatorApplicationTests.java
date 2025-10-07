@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.test.TestRestTemplate;
+import org.springframework.boot.restclient.test.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.http.server.BaseUrl;
 import org.springframework.boot.test.http.server.BaseUrlProviders;
@@ -44,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("cors")
+@AutoConfigureTestRestTemplate
 class CorsSampleActuatorApplicationTests {
 
 	private TestRestTemplate testRestTemplate;

@@ -20,6 +20,7 @@ import org.testng.annotations.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restclient.test.TestRestTemplate;
+import org.springframework.boot.restclient.test.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate
 public class SampleTestNGApplicationTests extends AbstractTestNGSpringContextTests {
 
 	@Autowired
