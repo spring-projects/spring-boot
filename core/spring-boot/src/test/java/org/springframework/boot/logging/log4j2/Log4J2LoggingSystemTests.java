@@ -981,26 +981,26 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		Configuration configuration = loggerContext.getConfiguration();
 		RollingFileAppender appender = (RollingFileAppender) configuration.getAppenders().get("File");
 		assertThat(appender).isNotNull();
-			TriggeringPolicy topPolicy = appender.getManager().getTriggeringPolicy();
-			SpringBootTriggeringPolicy policy = findSpringBootTriggeringPolicy(topPolicy);
-			assertThat(policy).isNotNull();
-			return policy;
-		}
+		TriggeringPolicy topPolicy = appender.getManager().getTriggeringPolicy();
+		SpringBootTriggeringPolicy policy = findSpringBootTriggeringPolicy(topPolicy);
+		assertThat(policy).isNotNull();
+		return policy;
+	}
 
-		private SpringBootTriggeringPolicy findSpringBootTriggeringPolicy(TriggeringPolicy policy) {
-			if (policy instanceof SpringBootTriggeringPolicy springBoot) {
-				return springBoot;
-			}
-			if (policy instanceof CompositeTriggeringPolicy composite) {
-				for (TriggeringPolicy child : composite.getTriggeringPolicies()) {
-					SpringBootTriggeringPolicy found = findSpringBootTriggeringPolicy(child);
-					if (found != null) {
-						return found;
-					}
+	private SpringBootTriggeringPolicy findSpringBootTriggeringPolicy(TriggeringPolicy policy) {
+		if (policy instanceof SpringBootTriggeringPolicy springBoot) {
+			return springBoot;
+		}
+		if (policy instanceof CompositeTriggeringPolicy composite) {
+			for (TriggeringPolicy child : composite.getTriggeringPolicies()) {
+				SpringBootTriggeringPolicy found = findSpringBootTriggeringPolicy(child);
+				if (found != null) {
+					return found;
 				}
 			}
-			return null;
 		}
+		return null;
+	}
 
 	@Target(ElementType.METHOD)
 	@Retention(RetentionPolicy.RUNTIME)
