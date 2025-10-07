@@ -123,10 +123,6 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		}
-
 	}
 
 	/**
@@ -141,11 +137,6 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.applicationContext = applicationContext;
-		}
-
-		@Override
-		public boolean isSingleton() {
-			return true;
 		}
 
 		@Override
@@ -164,7 +155,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		private WebTestClient createWebTestClient() {
 			Assert.state(this.applicationContext != null, "ApplicationContext not injected");
 			WebTestClient.Builder builder = WebTestClient.bindToServer();
-			customizeWebTestClientBuilder(builder, this.applicationContext);
+			customizeWebTestClientBuilder(builder);
 			BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrl();
 			if (baseUrl != null) {
 				builder.baseUrl(baseUrl.resolve());
@@ -172,7 +163,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 			return builder.build();
 		}
 
-		private void customizeWebTestClientBuilder(WebTestClient.Builder clientBuilder, ApplicationContext context) {
+		private void customizeWebTestClientBuilder(WebTestClient.Builder clientBuilder) {
 			Assert.state(this.applicationContext != null, "ApplicationContext not injected");
 			getWebTestClientBuilderCustomizers(this.applicationContext)
 				.forEach((customizer) -> customizer.customize(clientBuilder));
@@ -180,10 +171,9 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		private List<WebTestClientBuilderCustomizer> getWebTestClientBuilderCustomizers(ApplicationContext context) {
 			List<WebTestClientBuilderCustomizer> customizers = new ArrayList<>();
-			SpringFactoriesLoader.forDefaultResourceLocation(context.getClassLoader())
-				.load(WebTestClientBuilderCustomizer.class, ArgumentResolver.of(ApplicationContext.class, context))
-				.forEach(customizers::add);
-			context.getBeansOfType(WebTestClientBuilderCustomizer.class).values().forEach(customizers::add);
+			customizers.addAll(SpringFactoriesLoader.forDefaultResourceLocation(context.getClassLoader())
+				.load(WebTestClientBuilderCustomizer.class, ArgumentResolver.of(ApplicationContext.class, context)));
+			customizers.addAll(context.getBeansOfType(WebTestClientBuilderCustomizer.class).values());
 			return customizers;
 		}
 

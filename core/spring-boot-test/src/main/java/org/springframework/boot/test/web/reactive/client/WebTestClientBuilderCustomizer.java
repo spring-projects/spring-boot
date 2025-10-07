@@ -18,13 +18,12 @@ package org.springframework.boot.test.web.reactive.client;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.reactive.server.WebTestClient.Builder;
 
 /**
- * A customizer that can be implemented by beans wishing to customize the {@link Builder}
- * to fine-tune its auto-configuration before a {@link WebTestClient} is created.
- * Implementations can be registered in the {@link ApplicationContext} or
- * {@code spring.factories}.
+ * A customizer that can be implemented by beans wishing to customize the
+ * {@link WebTestClient.Builder} to fine-tune its auto-configuration before a
+ * {@link WebTestClient} is created. Implementations can be registered in the
+ * {@link ApplicationContext} or {@code spring.factories}.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
@@ -36,6 +35,6 @@ public interface WebTestClientBuilderCustomizer {
 	 * Customize the given {@code builder}.
 	 * @param builder the builder
 	 */
-	void customize(Builder builder);
+	void customize(WebTestClient.Builder builder);
 
 }

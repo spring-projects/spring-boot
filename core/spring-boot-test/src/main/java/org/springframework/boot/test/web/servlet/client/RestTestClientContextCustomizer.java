@@ -125,10 +125,6 @@ class RestTestClientContextCustomizer implements ContextCustomizer {
 
 		}
 
-		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		}
-
 	}
 
 	/**
@@ -143,11 +139,6 @@ class RestTestClientContextCustomizer implements ContextCustomizer {
 		@Override
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 			this.applicationContext = applicationContext;
-		}
-
-		@Override
-		public boolean isSingleton() {
-			return true;
 		}
 
 		@Override
@@ -166,13 +157,12 @@ class RestTestClientContextCustomizer implements ContextCustomizer {
 		private RestTestClient createRestTestClient() {
 			Assert.state(this.applicationContext != null, "ApplicationContext not injected");
 			RestTestClient.Builder<?> builder = RestTestClient.bindToServer();
-			customizeRestTestClientBuilder(builder, this.applicationContext);
+			customizeRestTestClientBuilder(builder);
 			BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrl();
 			return builder.uriBuilderFactory(BaseUrlUriBuilderFactory.get(baseUrl)).build();
 		}
 
-		private void customizeRestTestClientBuilder(RestTestClient.Builder<?> clientBuilder,
-				ApplicationContext context) {
+		private void customizeRestTestClientBuilder(RestTestClient.Builder<?> clientBuilder) {
 			Assert.state(this.applicationContext != null, "ApplicationContext not injected");
 			getRestTestClientBuilderCustomizers(this.applicationContext)
 				.forEach((customizer) -> customizer.customize(clientBuilder));
@@ -180,10 +170,9 @@ class RestTestClientContextCustomizer implements ContextCustomizer {
 
 		private List<RestTestClientBuilderCustomizer> getRestTestClientBuilderCustomizers(ApplicationContext context) {
 			List<RestTestClientBuilderCustomizer> customizers = new ArrayList<>();
-			SpringFactoriesLoader.forDefaultResourceLocation(context.getClassLoader())
-				.load(RestTestClientBuilderCustomizer.class, ArgumentResolver.of(ApplicationContext.class, context))
-				.forEach(customizers::add);
-			context.getBeansOfType(RestTestClientBuilderCustomizer.class).values().forEach(customizers::add);
+			customizers.addAll(SpringFactoriesLoader.forDefaultResourceLocation(context.getClassLoader())
+				.load(RestTestClientBuilderCustomizer.class, ArgumentResolver.of(ApplicationContext.class, context)));
+			customizers.addAll(context.getBeansOfType(RestTestClientBuilderCustomizer.class).values());
 			return customizers;
 		}
 

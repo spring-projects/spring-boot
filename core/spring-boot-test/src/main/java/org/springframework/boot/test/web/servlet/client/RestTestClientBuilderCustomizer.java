@@ -18,13 +18,12 @@ package org.springframework.boot.test.web.servlet.client;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.servlet.client.RestTestClient;
-import org.springframework.test.web.servlet.client.RestTestClient.Builder;
 
 /**
- * A customizer that can be implemented by beans wishing to customize the {@link Builder}
- * to fine-tune its auto-configuration before a {@link RestTestClient} is created.
- * Implementations can be registered in the {@link ApplicationContext} or
- * {@code spring.factories}.
+ * A customizer that can be implemented by beans wishing to customize the
+ * {@link RestTestClient.Builder} to fine-tune its auto-configuration before a
+ * {@link RestTestClient} is created. Implementations can be registered in the
+ * {@link ApplicationContext} or {@code spring.factories}.
  *
  * @author Stephane Nicoll
  * @since 4.0.0
@@ -33,9 +32,9 @@ import org.springframework.test.web.servlet.client.RestTestClient.Builder;
 public interface RestTestClientBuilderCustomizer {
 
 	/**
-	 * Customize the given {@link Builder Builder}.
+	 * Customize the given {@link RestTestClient.Builder Builder}.
 	 * @param builder the builder
 	 */
-	void customize(Builder<?> builder);
+	void customize(RestTestClient.Builder<?> builder);
 
 }
