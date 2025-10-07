@@ -8,6 +8,14 @@
       "defaultValue": true
     },
     {
+      "name": "spring.neo4j.pool.metrics-enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "reason": "Use 'management.metrics.enable' to restrict certain metrics.",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.neo4j.uri",
       "defaultValue": "bolt://localhost:7687"
     }

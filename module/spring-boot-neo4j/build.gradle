@@ -35,6 +35,8 @@ dependencies {
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
+	optional(project(":module:spring-boot-micrometer-observation"))
+	optional("org.neo4j.driver:neo4j-java-driver-observation-micrometer")
 	optional("org.testcontainers:neo4j")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
@@ -48,6 +50,7 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-testcontainers")))
+	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("io.projectreactor:reactor-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

@@ -1621,7 +1621,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "5.28.9") {
+	library("Neo4j Java Driver", "6.0.0") {
 		alignWith {
 			version {
 				from "org.springframework.data:spring-data-neo4j"
@@ -1630,7 +1630,8 @@ bom {
 		}
 		group("org.neo4j.driver") {
 			modules = [
-				"neo4j-java-driver"
+				"neo4j-java-driver",
+				"neo4j-java-driver-observation-micrometer"
 			]
 		}
 		links {

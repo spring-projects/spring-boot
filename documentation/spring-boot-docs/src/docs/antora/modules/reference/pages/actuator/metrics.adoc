@@ -1042,6 +1042,13 @@ management:
 
 
 
+[[actuator.metrics.supported.neo4j]]
+=== Neo4j Metrics
+
+Auto-configuration registers a javadoc:org.neo4j.driver.observation.micrometer.MicrometerObservationProvider[] for the auto-configured javadoc:org.neo4j.driver.Driver[].
+
+
+
 [[actuator.metrics.supported.jetty]]
 === Jetty Metrics
 

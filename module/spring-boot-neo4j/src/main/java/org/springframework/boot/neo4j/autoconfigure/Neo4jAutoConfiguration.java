@@ -44,7 +44,6 @@ import org.springframework.boot.neo4j.autoconfigure.Neo4jProperties.Authenticati
 import org.springframework.boot.neo4j.autoconfigure.Neo4jProperties.Pool;
 import org.springframework.boot.neo4j.autoconfigure.Neo4jProperties.Security;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -72,9 +71,8 @@ public final class Neo4jAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	Driver neo4jDriver(Neo4jProperties properties, Environment environment, Neo4jConnectionDetails connectionDetails,
+	Driver neo4jDriver(Neo4jProperties properties, Neo4jConnectionDetails connectionDetails,
 			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
-
 		Config config = mapDriverConfig(properties, connectionDetails,
 				configBuilderCustomizers.orderedStream().toList());
 		AuthTokenManager authTokenManager = connectionDetails.getAuthTokenManager();
@@ -92,20 +90,13 @@ public final class Neo4jAutoConfiguration {
 		URI uri = connectionDetails.getUri();
 		String scheme = (uri != null) ? uri.getScheme() : "bolt";
 		configureDriverSettings(builder, properties, isSimpleScheme(scheme));
-		builder.withLogging(new Neo4jSpringJclLogging());
 		customizers.forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
 	private boolean isSimpleScheme(String scheme) {
 		String lowerCaseScheme = scheme.toLowerCase(Locale.ENGLISH);
-		try {
-			Scheme.validateScheme(lowerCaseScheme);
-		}
-		catch (IllegalArgumentException ex) {
-			throw new IllegalArgumentException(String.format("'%s' is not a supported scheme.", scheme));
-		}
-		return lowerCaseScheme.equals("bolt") || lowerCaseScheme.equals("neo4j");
+		return !Scheme.isSecurityScheme(lowerCaseScheme);
 	}
 
 	private void configurePoolSettings(Config.ConfigBuilder builder, Pool pool) {
@@ -120,12 +111,6 @@ public final class Neo4jAutoConfiguration {
 		builder.withMaxConnectionLifetime(pool.getMaxConnectionLifetime().toMillis(), TimeUnit.MILLISECONDS);
 		builder.withConnectionAcquisitionTimeout(pool.getConnectionAcquisitionTimeout().toMillis(),
 				TimeUnit.MILLISECONDS);
-		if (pool.isMetricsEnabled()) {
-			builder.withDriverMetrics();
-		}
-		else {
-			builder.withoutDriverMetrics();
-		}
 	}
 
 	private void configureDriverSettings(Config.ConfigBuilder builder, Neo4jProperties properties,
