@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Eddú Meléndez
  * @author Ferenc Gratzer
  * @author Evgeniy Cheban
+ * @author Dylan Miska
  * @since 4.0.0
  */
 @ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)

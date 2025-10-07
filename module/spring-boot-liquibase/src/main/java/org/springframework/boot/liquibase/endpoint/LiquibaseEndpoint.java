@@ -20,10 +20,12 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
+import liquibase.Scope;
 import liquibase.changelog.ChangeSet.ExecType;
 import liquibase.changelog.RanChangeSet;
 import liquibase.changelog.StandardChangeLogHistoryService;
@@ -36,6 +38,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.liquibase.autoconfigure.EnvironmentConfigurationValueProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -45,6 +48,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Eddú Meléndez
  * @author Nabil Fawwaz Elqayyim
+ * @author Dylan Miska
  * @since 4.0.0
  */
 @Endpoint(id = "liquibase")
@@ -58,18 +62,26 @@ public class LiquibaseEndpoint {
 	}
 
 	@ReadOperation
-	public LiquibaseBeansDescriptor liquibaseBeans() {
+	public LiquibaseBeansDescriptor liquibaseBeans() throws Exception {
 		ApplicationContext target = this.context;
 		Map<@Nullable String, ContextLiquibaseBeansDescriptor> contextBeans = new HashMap<>();
 		while (target != null) {
-			Map<String, LiquibaseBeanDescriptor> liquibaseBeans = new HashMap<>();
-			DatabaseFactory factory = DatabaseFactory.getInstance();
-			target.getBeansOfType(SpringLiquibase.class)
-				.forEach((name, liquibase) -> liquibaseBeans.put(name, createReport(liquibase, factory)));
-			ApplicationContext parent = target.getParent();
-			contextBeans.put(target.getId(),
-					new ContextLiquibaseBeansDescriptor(liquibaseBeans, (parent != null) ? parent.getId() : null));
-			target = parent;
+			Map<String, Object> scopeValues = new HashMap<>();
+			scopeValues.put(EnvironmentConfigurationValueProvider.SPRING_ENV_ID_KEY,
+					Objects.requireNonNull(target.getId()));
+			ApplicationContext currentContext = target;
+			Scope.child(scopeValues, () -> {
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = new HashMap<>();
+				DatabaseFactory factory = DatabaseFactory.getInstance();
+				currentContext.getBeansOfType(SpringLiquibase.class)
+					.forEach((name, liquibase) -> liquibaseBeans.put(name, createReport(liquibase, factory)));
+				ApplicationContext parent = currentContext.getParent();
+				contextBeans.put(currentContext.getId(),
+						new ContextLiquibaseBeansDescriptor(liquibaseBeans, (parent != null) ? parent.getId() : null));
+				return null;
+			});
+
+			target = target.getParent();
 		}
 		return new LiquibaseBeansDescriptor(contextBeans);
 	}

@@ -16,82 +16,124 @@
 
 package org.springframework.boot.liquibase.autoconfigure;
 
+import liquibase.Scope;
 import liquibase.configuration.ProvidedValue;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link EnvironmentConfigurationValueProvider}.
+ *
+ * @author Dylan Miska
  */
 class EnvironmentConfigurationValueProviderTests {
 
 	@Test
 	void precedenceIsBetweenDefaultsAndEnvVars() {
-		var env = new MockEnvironment();
-		var provider = new EnvironmentConfigurationValueProvider(env);
+		EnvironmentConfigurationValueProvider provider = new EnvironmentConfigurationValueProvider();
 		assertThat(provider.getPrecedence()).isEqualTo(100);
 	}
 
 	@Test
-	void returnsProvidedValueWhenExactPropertyPresent() {
-		var env = new MockEnvironment().withProperty("spring.liquibase.properties.liquibase.duplicateFileMode", "WARN");
-		var provider = new EnvironmentConfigurationValueProvider(env);
+	void returnsProvidedValueWhenExactPropertyPresent() throws Exception {
+		MockEnvironment env = new MockEnvironment()
+			.withProperty("spring.liquibase.properties.liquibase.duplicateFileMode", "WARN");
+		runInScope(env, () -> {
+			EnvironmentConfigurationValueProvider provider = new EnvironmentConfigurationValueProvider();
 
-		ProvidedValue value = provider.getProvidedValue("liquibase.duplicateFileMode");
+			ProvidedValue value = provider.getProvidedValue("liquibase.duplicateFileMode");
 
-		assertThat(value).isNotNull();
-		assertThat(String.valueOf(value.getValue())).isEqualTo("WARN");
-		assertThat(value.getActualKey()).isEqualTo("liquibase.duplicateFileMode");
-		assertThat(value.getSourceDescription())
-			.contains("Spring Environment property 'spring.liquibase.properties.liquibase.duplicateFileMode'");
+			assertThat(value).isNotNull();
+			assertThat(String.valueOf(value.getValue())).isEqualTo("WARN");
+			assertThat(value.getActualKey()).isEqualTo("liquibase.duplicateFileMode");
+			assertThat(value.getSourceDescription())
+				.contains("Spring Environment property 'spring.liquibase.properties.liquibase.duplicateFileMode'");
+		});
 	}
 
 	@Test
-	void returnsNullWhenNoKeysProvided() {
-		var env = new MockEnvironment();
-		var provider = new EnvironmentConfigurationValueProvider(env);
+	void returnsNullWhenNoMatchingProperty() throws Exception {
+		MockEnvironment env = new MockEnvironment();
+		runInScope(env, () -> {
+			EnvironmentConfigurationValueProvider provider = new EnvironmentConfigurationValueProvider();
 
-		ProvidedValue value = provider.getProvidedValue((String[]) null);
+			ProvidedValue value = provider.getProvidedValue("liquibase.searchPath");
 
-		assertThat(value).isNull();
+			assertThat(value).isNull();
+		});
 	}
 
 	@Test
-	void returnsNullWhenNoMatchingProperty() {
-		var env = new MockEnvironment();
-		var provider = new EnvironmentConfigurationValueProvider(env);
+	void returnsNullWhenCalledOutsideOfLiquibaseScope() {
+		// Register an environment, but call getProvidedValue outside of a Liquibase scope
+		MockEnvironment env = new MockEnvironment()
+			.withProperty("spring.liquibase.properties.liquibase.duplicateFileMode", "WARN");
+		String environmentId = UUID.randomUUID().toString();
+		EnvironmentConfigurationValueProvider.registerEnvironment(environmentId, env);
+		try {
+			EnvironmentConfigurationValueProvider provider = new EnvironmentConfigurationValueProvider();
 
-		ProvidedValue value = provider.getProvidedValue("liquibase.searchPath");
+			// Call outside of Scope.child - no SPRING_ENV_ID_KEY in current scope
+			ProvidedValue value = provider.getProvidedValue("liquibase.duplicateFileMode");
 
-		assertThat(value).isNull();
+			assertThat(value).isNull();
+		}
+		finally {
+			EnvironmentConfigurationValueProvider.unregisterEnvironment(environmentId);
+		}
 	}
 
 	@Test
-	void skipsNullKeysAndResolvesFirstMatchingNonNull() {
-		var env = new MockEnvironment()
-			// Only the second alias is present
-			.withProperty("spring.liquibase.properties.liquibase.searchPath", "classpath:/db");
-		var provider = new EnvironmentConfigurationValueProvider(env);
+	void returnsNullWhenInsideLiquibaseScopeButEnvironmentNotRegistered() throws Exception {
+		EnvironmentConfigurationValueProvider provider = new EnvironmentConfigurationValueProvider();
 
-		ProvidedValue value = provider.getProvidedValue(null, "liquibase.searchPath");
+		// Create a Liquibase scope with an environment ID that doesn't exist in the
+		// registry
+		String nonExistentId = UUID.randomUUID().toString();
+		Map<String, Object> scopeValues = new HashMap<>();
+		scopeValues.put(EnvironmentConfigurationValueProvider.SPRING_ENV_ID_KEY, nonExistentId);
 
-		assertThat(value).isNotNull();
-		assertThat(String.valueOf(value.getValue())).isEqualTo("classpath:/db");
-		assertThat(value.getActualKey()).isEqualTo("liquibase.searchPath");
+		Scope.child(scopeValues, () -> {
+			ProvidedValue value = provider.getProvidedValue("liquibase.duplicateFileMode");
+
+			assertThat(value).isNull();
+		});
 	}
 
 	@Test
-	void doesNotApplyRelaxedBinding_exactKeyOnly() {
-		var env = new MockEnvironment().withProperty("spring.liquibase.properties.liquibase.duplicate-file-mode",
-				"WARN");
-		var provider = new EnvironmentConfigurationValueProvider(env);
+	void doesNotApplyRelaxedBinding_exactKeyOnly() throws Exception {
+		MockEnvironment env = new MockEnvironment()
+			.withProperty("spring.liquibase.properties.liquibase.duplicate-file-mode", "WARN");
+		runInScope(env, () -> {
+			EnvironmentConfigurationValueProvider provider = new EnvironmentConfigurationValueProvider();
 
-		// Request camelCase; should not match the kebab-case property
-		ProvidedValue value = provider.getProvidedValue("liquibase.duplicateFileMode");
+			// Request camelCase; should not match the kebab-case property
+			ProvidedValue value = provider.getProvidedValue("liquibase.duplicateFileMode");
 
-		assertThat(value).isNull();
+			assertThat(value).isNull();
+		});
+	}
+
+	private void runInScope(Environment environment, Runnable runnable) throws Exception {
+		String environmentId = UUID.randomUUID().toString();
+		EnvironmentConfigurationValueProvider.registerEnvironment(environmentId, environment);
+		try {
+			Map<String, Object> scopeValues = new HashMap<>();
+			scopeValues.put(EnvironmentConfigurationValueProvider.SPRING_ENV_ID_KEY, environmentId);
+			Scope.child(scopeValues, () -> {
+				runnable.run();
+			});
+		}
+		finally {
+			EnvironmentConfigurationValueProvider.unregisterEnvironment(environmentId);
+		}
 	}
 
 }
