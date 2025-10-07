@@ -53,7 +53,6 @@ public class SecurityRequestMatchersManagementContextConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnClass(DispatcherServlet.class)
 		public RequestMatcherProvider requestMatcherProvider(DispatcherServletPath servletPath) {
 			return new AntPathRequestMatcherProvider(servletPath::getRelativePath);
 		}

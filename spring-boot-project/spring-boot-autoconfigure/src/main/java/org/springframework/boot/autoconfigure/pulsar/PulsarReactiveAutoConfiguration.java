@@ -88,16 +88,6 @@ public class PulsarReactiveAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ProducerCacheProvider.class)
-	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
-	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
-	CaffeineShadedProducerCacheProvider reactivePulsarProducerCacheProvider() {
-		PulsarProperties.Producer.Cache properties = this.properties.getProducer().getCache();
-		return new CaffeineShadedProducerCacheProvider(properties.getExpireAfterAccess(), Duration.ofMinutes(10),
-				properties.getMaximumSize(), properties.getInitialCapacity());
-	}
-
-	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
 	ReactiveMessageSenderCache reactivePulsarMessageSenderCache(
@@ -203,6 +193,21 @@ public class PulsarReactiveAutoConfiguration {
 	ReactivePulsarTemplate<?> pulsarReactiveTemplate(ReactivePulsarSenderFactory<?> reactivePulsarSenderFactory,
 			SchemaResolver schemaResolver, TopicResolver topicResolver) {
 		return new ReactivePulsarTemplate<>(reactivePulsarSenderFactory, schemaResolver, topicResolver);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
+	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
+	static class PulsarCacheConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(ProducerCacheProvider.class)
+		CaffeineShadedProducerCacheProvider reactivePulsarProducerCacheProvider(PulsarProperties pulsarProperties) {
+			PulsarProperties.Producer.Cache properties = pulsarProperties.getProducer().getCache();
+			return new CaffeineShadedProducerCacheProvider(properties.getExpireAfterAccess(), Duration.ofMinutes(10),
+					properties.getMaximumSize(), properties.getInitialCapacity());
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
