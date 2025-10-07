@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.webflux.test.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -34,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.error.include-message=always")
+@AutoConfigureWebTestClient
 class SampleWebFluxApplicationTests {
 
 	@Autowired

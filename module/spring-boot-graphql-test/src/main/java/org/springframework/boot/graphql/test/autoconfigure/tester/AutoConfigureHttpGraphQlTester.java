@@ -31,11 +31,6 @@ import org.springframework.graphql.test.tester.HttpGraphQlTester;
 /**
  * Annotation that can be applied to a test class to enable an {@link HttpGraphQlTester}.
  *
- * <p>
- * This annotation should be used with
- * {@link org.springframework.boot.test.context.SpringBootTest @SpringBootTest} tests with
- * Spring MVC or Spring WebFlux mock infrastructures.
- *
  * @author Brian Clozel
  * @since 4.0.0
  * @see HttpGraphQlTesterAutoConfiguration

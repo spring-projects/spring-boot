@@ -26,7 +26,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.codec.CodecCustomizer;
+import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.boot.test.http.server.BaseUrlProviders;
 import org.springframework.boot.test.web.reactive.client.WebTestClientBuilderCustomizer;
+import org.springframework.boot.test.web.servlet.client.BaseUrlUriBuilderFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.reactive.server.MockServerConfigurer;
@@ -52,15 +55,24 @@ public final class WebTestClientAutoConfiguration {
 	@ConditionalOnBean(WebHandler.class)
 	WebTestClient webTestClient(ApplicationContext applicationContext, List<WebTestClientBuilderCustomizer> customizers,
 			List<MockServerConfigurer> configurers) {
-		WebTestClient.MockServerSpec<?> mockServerSpec = WebTestClient.bindToApplicationContext(applicationContext);
-		for (MockServerConfigurer configurer : configurers) {
-			mockServerSpec.apply(configurer);
-		}
-		WebTestClient.Builder builder = mockServerSpec.configureClient();
+		WebTestClient.Builder builder = prepareBuilder(applicationContext, configurers);
 		for (WebTestClientBuilderCustomizer customizer : customizers) {
 			customizer.customize(builder);
 		}
 		return builder.build();
+	}
+
+	private WebTestClient.Builder prepareBuilder(ApplicationContext applicationContext,
+			List<MockServerConfigurer> configurers) {
+		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrlOrDefault();
+		if (baseUrl == BaseUrl.DEFAULT) {
+			WebTestClient.MockServerSpec<?> mockServerSpec = WebTestClient.bindToApplicationContext(applicationContext);
+			for (MockServerConfigurer configurer : configurers) {
+				mockServerSpec.apply(configurer);
+			}
+			return mockServerSpec.configureClient();
+		}
+		return WebTestClient.bindToServer().uriBuilderFactory(BaseUrlUriBuilderFactory.get(baseUrl));
 	}
 
 	@Bean

@@ -30,6 +30,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
+import org.springframework.boot.webflux.test.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@AutoConfigureWebTestClient
 @AutoConfigureTestRestTemplate
 abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 

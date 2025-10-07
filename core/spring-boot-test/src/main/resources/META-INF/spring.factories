@@ -6,7 +6,6 @@ org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizerFacto
 org.springframework.boot.test.context.filter.annotation.TypeExcludeFiltersContextCustomizerFactory,\
 org.springframework.boot.test.http.client.DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory,\
 org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory,\
-org.springframework.boot.test.web.reactive.client.WebTestClientContextCustomizerFactory,\
 org.springframework.boot.test.web.servlet.client.RestTestClientContextCustomizerFactory
 
 # Application Context Initializers
