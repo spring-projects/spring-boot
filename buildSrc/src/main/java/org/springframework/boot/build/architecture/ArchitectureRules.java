@@ -82,11 +82,6 @@ final class ArchitectureRules {
 
 	private static final String TEST_AUTOCONFIGURATION_ANNOTATION = "org.springframework.boot.test.autoconfigure.TestAutoConfiguration";
 
-	private static final Predicate<JavaPackage> NULL_MARKED_PACKAGE_FILTER = (candidate) -> !List
-		.of("org.springframework.boot.cli.json", "org.springframework.boot.configurationmetadata.json",
-				"org.springframework.boot.configurationprocessor.json")
-		.contains(candidate.getName());
-
 	private ArchitectureRules() {
 	}
 
@@ -262,8 +257,8 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
-	static ArchRule packagesShouldBeAnnotatedWithNullMarked() {
-		return ArchRuleDefinition.all(packages(NULL_MARKED_PACKAGE_FILTER))
+	static ArchRule packagesShouldBeAnnotatedWithNullMarked(Set<String> ignoredPackages) {
+		return ArchRuleDefinition.all(packages((javaPackage) -> !ignoredPackages.contains(javaPackage.getName())))
 			.should(beAnnotatedWithNullMarked())
 			.allowEmptyShould(true);
 	}

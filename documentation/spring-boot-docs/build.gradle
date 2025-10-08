@@ -71,7 +71,9 @@ tasks.named('compileKotlin', KotlinCompilationTask.class) {
 }
 
 architectureCheck {
-	nullMarked = false
+	nullMarked {
+		enabled = false
+	}
 }
 
 plugins.withType(EclipsePlugin) {

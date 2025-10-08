@@ -39,7 +39,9 @@ dependencies {
 }
 
 architectureCheck {
-	nullMarked = false
+	nullMarked {
+		enabled = false
+	}
 }
 
 def dependenciesOf(String version) {
