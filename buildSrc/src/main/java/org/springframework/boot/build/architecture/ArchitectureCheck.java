@@ -44,6 +44,7 @@ import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
@@ -80,8 +81,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		getRules().addAll(ArchitectureRules.standard());
 		getRules().addAll(whenMainSources(
 				() -> Collections.singletonList(ArchitectureRules.allBeanMethodsShouldReturnNonPrivateType())));
-		getRules().addAll(and(getNullMarked(), isMainSourceSet()).map(whenTrue(
-				() -> Collections.singletonList(ArchitectureRules.packagesShouldBeAnnotatedWithNullMarked()))));
+		getRules().addAll(and(getNullMarkedEnabled(), isMainSourceSet()).map(whenTrue(() -> Collections.singletonList(
+				ArchitectureRules.packagesShouldBeAnnotatedWithNullMarked(getNullMarkedIgnoredPackages().get())))));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
 	}
 
@@ -196,6 +197,9 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	abstract ListProperty<String> getRuleDescriptions();
 
 	@Internal
-	abstract Property<Boolean> getNullMarked();
+	abstract Property<Boolean> getNullMarkedEnabled();
+
+	@Internal
+	abstract SetProperty<String> getNullMarkedIgnoredPackages();
 
 }
