@@ -420,8 +420,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
-				OffsetDateTime lastModifiedTime = entry.getLastModifiedTime().toInstant().atOffset(ZoneOffset.UTC);
-				assertThat(lastModifiedTime).isEqualTo(OffsetDateTime.of(1980, 2, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+				assertThat(entry.getLastModifiedTime().toMillis())
+					.isEqualTo(ZipEntryConstants.CONSTANT_TIME_FOR_ZIP_ENTRIES);
 				if (entry.getName().startsWith("files/")) {
 					files.add(entry.getName());
 				}
