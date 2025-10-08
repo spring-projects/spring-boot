@@ -22,4 +22,5 @@ description = "Starter for testing Java Bean Validation with Hibernate Validator
 
 dependencies {
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-validation"))
 }

@@ -21,7 +21,9 @@ plugins {
 description = "Starter for testing jOOQ to access SQL databases with JDBC"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-jooq"))
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-jdbc-test"))
 
 	api(project(":module:spring-boot-jooq-test"))
 }

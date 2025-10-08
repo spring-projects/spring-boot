@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing Spring Security"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-security"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-security-test"))

@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing Neo4j graph database and Spring Data Neo4j"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-data-neo4j"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-data-neo4j-test"))

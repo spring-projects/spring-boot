@@ -21,6 +21,8 @@ plugins {
 description = "Starter testing Spring's blocking HTTP clients (RestClient, RestTemplate and HTTP Service Clients)"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-restclient"))
+	api(project(":starter:spring-boot-starter-jackson-test"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-restclient-test"))

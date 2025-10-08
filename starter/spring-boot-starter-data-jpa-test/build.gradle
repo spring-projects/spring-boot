@@ -21,7 +21,9 @@ plugins {
 description = "Starter for testing Spring Data JPA with Hibernate"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-data-jpa"))
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-jdbc-test"))
 
 	api(project(":module:spring-boot-data-jpa-test"))
 }

@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing Spring's caching support"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-cache"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-cache-test"))

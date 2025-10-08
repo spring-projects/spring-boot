@@ -21,5 +21,6 @@ plugins {
 description = "Starter for testing Cassandra distributed database"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-cassandra"))
 	api(project(":starter:spring-boot-starter-test"))
 }

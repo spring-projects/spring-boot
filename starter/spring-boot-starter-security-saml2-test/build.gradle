@@ -21,5 +21,7 @@ plugins {
 description = "Starter for testing Spring Security with SAML2"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-security-saml2"))
+	api(project(":starter:spring-boot-starter-security-test"))
 	api(project(":starter:spring-boot-starter-test"))
 }

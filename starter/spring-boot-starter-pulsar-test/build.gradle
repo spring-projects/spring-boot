@@ -21,5 +21,12 @@ plugins {
 description = "Starter for testing Spring for Apache Pulsar"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-pulsar"))
 	api(project(":starter:spring-boot-starter-test"))
+}
+
+checkRuntimeClasspathForConflicts {
+	ignore { name -> name.startsWith("org/bouncycastle/") ||
+				name.matches("^org/apache/pulsar/.*/package-info.class\$") ||
+				name.equals("findbugsExclude.xml") }
 }

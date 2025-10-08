@@ -22,4 +22,6 @@ description = "Starter for testing Spring MVC WebSocket support"
 
 dependencies {
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-webmvc-test"))
+	api(project(":starter:spring-boot-starter-websocket"))
 }

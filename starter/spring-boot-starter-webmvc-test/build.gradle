@@ -21,7 +21,9 @@ plugins {
 description = "Starter for testing Spring MVC and Tomcat"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-jackson-test"))
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-webmvc"))
 
 	api(project(":module:spring-boot-webmvc-test"))
 }
