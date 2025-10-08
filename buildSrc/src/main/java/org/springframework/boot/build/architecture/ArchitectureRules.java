@@ -82,6 +82,11 @@ final class ArchitectureRules {
 
 	private static final String TEST_AUTOCONFIGURATION_ANNOTATION = "org.springframework.boot.test.autoconfigure.TestAutoConfiguration";
 
+	private static final Predicate<JavaPackage> NULL_MARKED_PACKAGE_FILTER = (candidate) -> !List
+		.of("org.springframework.boot.cli.json", "org.springframework.boot.configurationmetadata.json",
+				"org.springframework.boot.configurationprocessor.json")
+		.contains(candidate.getName());
+
 	private ArchitectureRules() {
 	}
 
@@ -258,7 +263,9 @@ final class ArchitectureRules {
 	}
 
 	static ArchRule packagesShouldBeAnnotatedWithNullMarked() {
-		return ArchRuleDefinition.all(packages()).should(beAnnotatedWithNullMarked()).allowEmptyShould(true);
+		return ArchRuleDefinition.all(packages(NULL_MARKED_PACKAGE_FILTER))
+			.should(beAnnotatedWithNullMarked())
+			.allowEmptyShould(true);
 	}
 
 	private static ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType() {
@@ -504,11 +511,11 @@ final class ArchitectureRules {
 		return string + " should be used instead";
 	}
 
-	static ClassesTransformer<JavaPackage> packages() {
+	static ClassesTransformer<JavaPackage> packages(Predicate<JavaPackage> filter) {
 		return new AbstractClassesTransformer<>("packages") {
 			@Override
 			public Iterable<JavaPackage> doTransform(JavaClasses collection) {
-				return collection.stream().map(JavaClass::getPackage).collect(Collectors.toSet());
+				return collection.stream().map(JavaClass::getPackage).filter(filter).collect(Collectors.toSet());
 			}
 		};
 	}
