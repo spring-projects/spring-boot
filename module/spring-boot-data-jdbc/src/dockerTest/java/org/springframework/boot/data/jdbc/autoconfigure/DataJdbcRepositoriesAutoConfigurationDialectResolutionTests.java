@@ -16,6 +16,7 @@
 
 package org.springframework.boot.data.jdbc.autoconfigure;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MariaDBContainer;
@@ -44,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @Testcontainers(disabledWithoutDocker = true)
+@Disabled("https://github.com/spring-projects/spring-data-relational/issues/2153")
 class DataJdbcRepositoriesAutoConfigurationDialectResolutionTests {
 
 	@Test
