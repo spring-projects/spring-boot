@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.Autowired;
+import org.springframework.boot.configurationsample.TestAutowired;
 
 /**
  * Properties with autowired constructor.
@@ -30,7 +30,7 @@ public class AutowiredProperties {
 	 */
 	private String theName;
 
-	@Autowired
+	@TestAutowired
 	public AutowiredProperties(String theName) {
 		this.theName = theName;
 	}

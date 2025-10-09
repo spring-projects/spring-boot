@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * A property that is exposed by static accessors.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("specific")
+@TestConfigurationProperties("specific")
 public class StaticAccessor {
 
 	private static String name;

@@ -16,7 +16,8 @@
 
 package org.springframework.boot.configurationsample.record;
 
-import org.springframework.boot.configurationsample.Name;
+import org.springframework.boot.configurationsample.TestName;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Example Record Javadoc sample
@@ -30,7 +31,7 @@ import org.springframework.boot.configurationsample.Name;
  * @since 1.0.0
  * @author Pavel Anisimov
  */
-@org.springframework.boot.configurationsample.ConfigurationProperties("record.descriptions")
+@TestConfigurationProperties("record.descriptions")
 public record ExampleRecord(String someString, Integer someInteger, Boolean someBoolean, Long someLong,
-		@Name("named.record.component") String namedComponent, Byte someByte) {
+							@TestName("named.record.component") String namedComponent, Byte someByte) {
 }

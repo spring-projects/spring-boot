@@ -16,11 +16,11 @@
 
 package org.springframework.boot.configurationsample.source.generation;
 
-import org.springframework.boot.configurationsample.ConfigurationPropertiesSource;
+import org.springframework.boot.configurationsample.TestConfigurationPropertiesSource;
 
 public class ConfigurationPropertySourcesContainer {
 
-	@ConfigurationPropertiesSource
+	@TestConfigurationPropertiesSource
 	public static class First {
 
 		/**
@@ -38,7 +38,7 @@ public class ConfigurationPropertySourcesContainer {
 
 	}
 
-	@ConfigurationPropertiesSource
+	@TestConfigurationPropertiesSource
 	public static class Second {
 
 		/**

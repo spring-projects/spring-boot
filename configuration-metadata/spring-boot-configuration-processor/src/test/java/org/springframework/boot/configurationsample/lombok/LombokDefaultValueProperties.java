@@ -18,7 +18,7 @@ package org.springframework.boot.configurationsample.lombok;
 
 import lombok.Data;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties with default values.
@@ -26,7 +26,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Stephane Nicoll
  */
 @Data
-@ConfigurationProperties("default")
+@TestConfigurationProperties("default")
 @SuppressWarnings("unused")
 public class LombokDefaultValueProperties {
 

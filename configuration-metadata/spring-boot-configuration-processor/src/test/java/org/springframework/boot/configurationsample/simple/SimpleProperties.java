@@ -19,14 +19,14 @@ package org.springframework.boot.configurationsample.simple;
 import java.beans.FeatureDescriptor;
 import java.util.Comparator;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Simple properties.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("simple")
+@TestConfigurationProperties("simple")
 public class SimpleProperties {
 
 	/**

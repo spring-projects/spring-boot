@@ -23,14 +23,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Properties with collections.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("collection")
+@TestConfigurationProperties("collection")
 public class SimpleCollectionProperties {
 
 	private Map<Integer, String> integersToNames;

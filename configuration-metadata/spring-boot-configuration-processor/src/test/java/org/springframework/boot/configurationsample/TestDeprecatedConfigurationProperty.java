@@ -23,14 +23,37 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Framework's {@code @Autowired} for testing (removes the need for
- * a dependency on the real annotation).
+ * Indicates that a getter in a {@link TestConfigurationProperties @ConfigurationProperties}
+ * object is deprecated. This annotation has no bearing on the actual binding processes,
+ * but it is used by the {@code spring-boot-configuration-processor} to add deprecation
+ * meta-data.
+ * <p>
+ * This annotation <strong>must</strong> be used on the getter of the deprecated element.
  *
- * @author Madhura Bhave
+ * @author Phillip Webb
+ * @since 1.3.0
  */
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Autowired {
+public @interface TestDeprecatedConfigurationProperty {
+
+	/**
+	 * The reason for the deprecation.
+	 * @return the deprecation reason
+	 */
+	String reason() default "";
+
+	/**
+	 * The field that should be used instead (if any).
+	 * @return the replacement field
+	 */
+	String replacement() default "";
+
+	/**
+	 * The version in which the property became deprecated.
+	 * @return the version
+	 */
+	String since() default "";
 
 }

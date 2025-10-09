@@ -23,18 +23,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @ServletEndpoint} for testing (removes the need for
- * a dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @DefaultValue} for testing (removes the need for a
+ * dependency on the real annotation).
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Pavel Anisimov
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ServletEndpoint {
+public @interface TestDefaultValue {
 
-	String id() default "";
-
-	Access defaultAccess() default Access.UNRESTRICTED;
+	String[] value() default {};
 
 }

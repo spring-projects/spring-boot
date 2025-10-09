@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.immutable;
 
-import org.springframework.boot.configurationsample.ConstructorBinding;
+import org.springframework.boot.configurationsample.TestConstructorBinding;
 
 /**
  * Simple immutable properties with several constructors.
@@ -37,7 +37,7 @@ public class ImmutableMultiConstructorProperties {
 		this(name, null);
 	}
 
-	@ConstructorBinding
+	@TestConstructorBinding
 	public ImmutableMultiConstructorProperties(String name, String description) {
 		this.name = name;
 		this.description = description;

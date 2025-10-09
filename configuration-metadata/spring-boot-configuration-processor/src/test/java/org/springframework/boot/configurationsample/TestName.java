@@ -23,18 +23,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @RestControllerEndpoint} for testing (removes the
- * need for a dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @Name} for testing (removes the need for a
+ * dependency on the real annotation).
  *
- * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RestControllerEndpoint {
+public @interface TestName {
 
-	String id() default "";
-
-	Access defaultAccess() default Access.UNRESTRICTED;
+	String value();
 
 }

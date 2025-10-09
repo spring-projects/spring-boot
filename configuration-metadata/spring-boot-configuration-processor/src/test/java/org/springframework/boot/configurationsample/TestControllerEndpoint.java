@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ControllerEndpoint {
+public @interface TestControllerEndpoint {
 
 	String id() default "";
 

@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.method;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample for testing method configuration.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("something")
+@TestConfigurationProperties("something")
 public class EmptyTypeMethodConfig {
 
 	private String name;
@@ -36,7 +36,7 @@ public class EmptyTypeMethodConfig {
 		this.name = name;
 	}
 
-	@ConfigurationProperties("something")
+	@TestConfigurationProperties("something")
 	public Foo foo() {
 		return new Foo();
 	}

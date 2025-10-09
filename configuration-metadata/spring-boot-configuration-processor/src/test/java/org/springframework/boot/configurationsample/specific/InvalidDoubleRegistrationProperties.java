@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Test that compilation fails if the same type is registered twice with the same prefix.
@@ -25,12 +25,12 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class InvalidDoubleRegistrationProperties {
 
-	@ConfigurationProperties("foo")
+	@TestConfigurationProperties("foo")
 	public Foo foo() {
 		return new Foo();
 	}
 
-	@ConfigurationProperties("foo")
+	@TestConfigurationProperties("foo")
 	public static class Foo {
 
 		private String name;

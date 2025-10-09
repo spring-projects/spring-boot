@@ -16,16 +16,16 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
 /**
  * Demonstrate inner classes end up in metadata regardless of position in hierarchy and
- * without the use of {@link NestedConfigurationProperty @NestedConfigurationProperty}.
+ * without the use of {@link TestNestedConfigurationProperty @NestedConfigurationProperty}.
  *
  * @author Madhura Bhave
  */
-@ConfigurationProperties("config")
+@TestConfigurationProperties("config")
 public class InnerClassHierarchicalProperties {
 
 	private Foo foo;

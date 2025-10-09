@@ -19,7 +19,7 @@ package org.springframework.boot.configurationsample.lombok;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Deprecated configuration properties.
@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 @Getter
 @Setter
-@ConfigurationProperties("deprecated")
+@TestConfigurationProperties("deprecated")
 @Deprecated
 @SuppressWarnings("unused")
 public class LombokDeprecatedProperties {

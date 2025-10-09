@@ -23,16 +23,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @Name} for testing (removes the need for a
- * dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @ConfigurationProperties} for testing (removes the
+ * need for a dependency on the real annotation).
  *
+ * @author Stephane Nicoll
  * @author Phillip Webb
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD })
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Name {
+public @interface TestConfigurationProperties {
 
-	String value();
+	String value() default "";
+
+	String prefix() default "";
 
 }

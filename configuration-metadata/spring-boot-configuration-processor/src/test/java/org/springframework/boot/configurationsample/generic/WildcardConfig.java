@@ -19,14 +19,14 @@ package org.springframework.boot.configurationsample.generic;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Demonstrate properties with a wildcard type.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("wildcard")
+@TestConfigurationProperties("wildcard")
 public class WildcardConfig {
 
 	private Map<String, ? extends Number> stringToNumber;
