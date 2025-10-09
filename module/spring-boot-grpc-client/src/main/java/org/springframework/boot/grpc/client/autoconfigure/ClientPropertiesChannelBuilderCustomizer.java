@@ -17,7 +17,6 @@
 package org.springframework.boot.grpc.client.autoconfigure;
 
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -62,7 +61,7 @@ class ClientPropertiesChannelBuilderCustomizer<T extends ManagedChannelBuilder<T
 		mapper.from(channel.getKeepAliveTimeout()).to(durationProperty(builder::keepAliveTimeout));
 		mapper.from(channel.getIdleTimeout()).to(durationProperty(builder::idleTimeout));
 		mapper.from(channel.isKeepAliveWithoutCalls()).to(builder::keepAliveWithoutCalls);
-		Map<String, Object> defaultServiceConfig = new HashMap<>(channel.getServiceConfig());
+		Map<String, Object> defaultServiceConfig = channel.extractServiceConfig();
 		if (channel.getHealth().isEnabled()) {
 			String serviceNameToCheck = (channel.getHealth().getServiceName() != null)
 					? channel.getHealth().getServiceName() : "";

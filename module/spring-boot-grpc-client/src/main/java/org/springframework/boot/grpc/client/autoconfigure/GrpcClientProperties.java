@@ -366,6 +366,16 @@ public class GrpcClientProperties implements EnvironmentAware, VirtualTargets {
 			return copy;
 		}
 
+		/**
+		 * Extracts the service configuration from the client properties, respecting the
+		 * yaml lists (e.g. `retryPolicy`).
+		 * @return the map for the `serviceConfig` property
+		 */
+		@SuppressWarnings("NullAway")
+		public Map<String, Object> extractServiceConfig() {
+			return ConfigurationPropertiesMapUtils.convertIntegerKeyedMapsToLists(getServiceConfig());
+		}
+
 		public static class Health {
 
 			/**
