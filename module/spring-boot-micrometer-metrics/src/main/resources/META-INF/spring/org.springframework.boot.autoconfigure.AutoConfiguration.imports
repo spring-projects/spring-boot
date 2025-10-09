@@ -13,6 +13,7 @@ org.springframework.boot.micrometer.metrics.autoconfigure.export.humio.HumioMetr
 org.springframework.boot.micrometer.metrics.autoconfigure.export.influx.InfluxMetricsExportAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.export.jmx.JmxMetricsExportAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.export.kairos.KairosMetricsExportAutoConfiguration
+org.springframework.boot.micrometer.metrics.autoconfigure.export.logging.LoggingMetricsExportAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.export.newrelic.NewRelicMetricsExportAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsExportAutoConfiguration
 org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus.PrometheusMetricsExportAutoConfiguration
