@@ -53,7 +53,8 @@ dependencies {
 
 	optional("org.graalvm.buildtools:native-gradle-plugin")
 	optional("org.cyclonedx:cyclonedx-gradle-plugin") {
-		exclude(group: "org.apache.maven", module: "maven-core")
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.inject", module: "javax.inject")
 	}
 	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion") {
 		exclude(group: "commons-logging", module: "commons-logging")
