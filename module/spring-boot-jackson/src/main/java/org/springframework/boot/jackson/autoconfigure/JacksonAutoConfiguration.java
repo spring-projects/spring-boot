@@ -111,7 +111,7 @@ public final class JacksonAutoConfiguration {
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean(JsonMapper.class)
+	@ConditionalOnMissingBean
 	JsonMapper jacksonJsonMapper(JsonMapper.Builder builder) {
 		return builder.build();
 	}

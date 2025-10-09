@@ -120,7 +120,7 @@ abstract class JmsClientConfigurations {
 	static class JmsClientConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(JmsClient.class)
+		@ConditionalOnMissingBean
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
 		JmsClient jmsClient(JmsTemplate jmsTemplate) {
 			return JmsClient.create(jmsTemplate);
