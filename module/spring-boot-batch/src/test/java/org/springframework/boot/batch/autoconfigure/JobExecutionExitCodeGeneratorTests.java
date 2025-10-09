@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.JobInstance;
+import org.springframework.batch.core.job.parameters.JobParameters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JobExecutionExitCodeGenerator}.
  *
  * @author Dave Syer
+ * @author Mahmoud Ben Hassine
  */
 class JobExecutionExitCodeGeneratorTests {
 
@@ -34,23 +37,27 @@ class JobExecutionExitCodeGeneratorTests {
 
 	@Test
 	void testExitCodeForRunning() {
-		this.generator.onApplicationEvent(new JobExecutionEvent(new JobExecution(0L)));
+		JobInstance jobInstance = new JobInstance(1L, "job");
+		JobExecution jobExecution = new JobExecution(1L, jobInstance, new JobParameters());
+		this.generator.onApplicationEvent(new JobExecutionEvent(jobExecution));
 		assertThat(this.generator.getExitCode()).isOne();
 	}
 
 	@Test
 	void testExitCodeForCompleted() {
-		JobExecution execution = new JobExecution(0L);
-		execution.setStatus(BatchStatus.COMPLETED);
-		this.generator.onApplicationEvent(new JobExecutionEvent(execution));
+		JobInstance jobInstance = new JobInstance(1L, "job");
+		JobExecution jobExecution = new JobExecution(1L, jobInstance, new JobParameters());
+		jobExecution.setStatus(BatchStatus.COMPLETED);
+		this.generator.onApplicationEvent(new JobExecutionEvent(jobExecution));
 		assertThat(this.generator.getExitCode()).isZero();
 	}
 
 	@Test
 	void testExitCodeForFailed() {
-		JobExecution execution = new JobExecution(0L);
-		execution.setStatus(BatchStatus.FAILED);
-		this.generator.onApplicationEvent(new JobExecutionEvent(execution));
+		JobInstance jobInstance = new JobInstance(1L, "job");
+		JobExecution jobExecution = new JobExecution(1L, jobInstance, new JobParameters());
+		jobExecution.setStatus(BatchStatus.FAILED);
+		this.generator.onApplicationEvent(new JobExecutionEvent(jobExecution));
 		assertThat(this.generator.getExitCode()).isEqualTo(5);
 	}
 
