@@ -57,6 +57,8 @@ class ArchitectureCheckTests {
 
 	private static final String SPRING_CONTEXT = "org.springframework:spring-context:6.2.9";
 
+	private static final String JUNIT_JUPITER = "org.junit.jupiter:junit-jupiter:5.12.0";
+
 	private static final String SPRING_INTEGRATION_JMX = "org.springframework.integration:spring-integration-jmx:6.5.1";
 
 	private GradleBuild gradleBuild;
@@ -268,6 +270,29 @@ class ArchitectureCheckTests {
 	void whenBeanMethodExposesNonPrivateTypeShouldSucceedAndWriteEmptyReport(Task task) throws IOException {
 		prepareTask(task, "beans/regular");
 		build(this.gradleBuild.withDependencies(SPRING_CONTEXT), task);
+	}
+
+	@Test
+	void whenEnumSourceValueIsInferredShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_TEST, "junit/enumsource/inferredfromparametertype");
+		build(this.gradleBuild.withDependencies(JUNIT_JUPITER), Task.CHECK_ARCHITECTURE_TEST);
+	}
+
+	@Test
+	void whenEnumSourceValueIsNotTheSameAsTypeOfMethodsFirstParameterShouldSucceedAndWriteEmptyReport()
+			throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_TEST, "junit/enumsource/valuenecessary");
+		build(this.gradleBuild.withDependencies(JUNIT_JUPITER), Task.CHECK_ARCHITECTURE_TEST);
+	}
+
+	@Test
+	void whenEnumSourceValueIsSameAsTypeOfMethodsFirstParameterShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_TEST, "junit/enumsource/sameasparametertype");
+		buildAndFail(this.gradleBuild.withDependencies(JUNIT_JUPITER), Task.CHECK_ARCHITECTURE_TEST,
+				"method <org.springframework.boot.build.architecture.junit.enumsource.sameasparametertype"
+						+ ".EnumSourceSameAsParameterType.exampleMethod(org.springframework.boot.build."
+						+ "architecture.junit.enumsource.sameasparametertype.EnumSourceSameAsParameterType$Example)>",
+				"should not have a value that is the same as the type of the method's first parameter");
 	}
 
 	private void prepareTask(Task task, String... sourceDirectories) throws IOException {

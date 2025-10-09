@@ -112,7 +112,7 @@ class SbomEndpointWebExtensionTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = SbomType.class, names = "UNKNOWN", mode = Mode.EXCLUDE)
+	@EnumSource(names = "UNKNOWN", mode = Mode.EXCLUDE)
 	void shouldAutodetectFormats(SbomType type) throws IOException {
 		String content = getSbomContent(type);
 		assertThat(type.matches(content)).isTrue();

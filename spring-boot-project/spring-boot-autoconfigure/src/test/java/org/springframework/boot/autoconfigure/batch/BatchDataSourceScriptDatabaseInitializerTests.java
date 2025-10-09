@@ -62,7 +62,7 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(value = DatabaseDriver.class, mode = Mode.EXCLUDE, names = { "AWS_WRAPPER", "CLICKHOUSE", "FIREBIRD",
+	@EnumSource(mode = Mode.EXCLUDE, names = { "AWS_WRAPPER", "CLICKHOUSE", "FIREBIRD",
 			"INFORMIX", "JTDS", "PHOENIX", "REDSHIFT", "TERADATA", "TESTCONTAINERS", "UNKNOWN" })
 	void batchSchemaCanBeLocated(DatabaseDriver driver) throws SQLException {
 		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
