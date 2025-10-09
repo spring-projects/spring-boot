@@ -59,7 +59,7 @@ public class ErrorWebFluxAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class, search = SearchStrategy.CURRENT)
+	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	@Order(-1)
 	public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes,
 			WebProperties webProperties, ObjectProvider<ViewResolver> viewResolvers,
