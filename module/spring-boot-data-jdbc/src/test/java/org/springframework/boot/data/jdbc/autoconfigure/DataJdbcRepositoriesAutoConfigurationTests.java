@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import javax.sql.DataSource;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
@@ -198,7 +197,6 @@ class DataJdbcRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	@Disabled("https://github.com/spring-projects/spring-data-relational/issues/2153")
 	void allowsConfigurationOfDialectByProperty() {
 		this.contextRunner.with(database())
 			.withPropertyValues("spring.data.jdbc.dialect=postgresql")
