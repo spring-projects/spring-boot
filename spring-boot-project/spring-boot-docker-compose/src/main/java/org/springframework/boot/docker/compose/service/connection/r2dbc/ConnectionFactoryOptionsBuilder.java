@@ -90,7 +90,7 @@ public class ConnectionFactoryOptionsBuilder {
 		Map<String, String> result = new LinkedHashMap<>();
 		for (String parameter : StringUtils.commaDelimitedListToStringArray(parameters)) {
 			String[] parts = parameter.split("=");
-			Assert.state(parts.length == 2, () -> "'parameters' [%s] must cotain parsable value".formatted(parameter));
+			Assert.state(parts.length == 2, () -> "'parameters' [%s] must contain parsable value".formatted(parameter));
 			result.put(parts[0], parts[1]);
 		}
 		return Collections.unmodifiableMap(result);
