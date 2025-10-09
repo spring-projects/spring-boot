@@ -127,7 +127,7 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnProperty("spring.jooq.config")
-	@ConditionalOnMissingBean(Settings.class)
+	@ConditionalOnMissingBean
 	Settings settings(JooqProperties properties) throws IOException {
 		if (!ClassUtils.isPresent("jakarta.xml.bind.JAXBContext", null)) {
 			throw new JaxbNotAvailableException();
