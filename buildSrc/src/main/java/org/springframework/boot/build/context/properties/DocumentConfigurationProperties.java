@@ -220,6 +220,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 
 	private void testingPrefixes(Config prefix) {
 		prefix.accept("spring.test.");
+		prefix.accept("spring.restdocs.");
 	}
 
 	private void testcontainersPrefixes(Config prefix) {
