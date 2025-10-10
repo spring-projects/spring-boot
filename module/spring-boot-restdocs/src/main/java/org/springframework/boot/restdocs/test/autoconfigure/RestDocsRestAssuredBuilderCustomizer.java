@@ -20,6 +20,7 @@ import io.restassured.specification.RequestSpecification;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.restdocs.test.autoconfigure.RestDocsProperties.Uri;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,11 +42,12 @@ class RestDocsRestAssuredBuilderCustomizer implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		PropertyMapper map = PropertyMapper.get();
-		String host = this.properties.getUriHost();
-		map.from(this.properties::getUriScheme)
+		Uri uri = this.properties.getUri();
+		String host = uri.getHost();
+		map.from(uri::getScheme)
 			.when((scheme) -> StringUtils.hasText(scheme) && StringUtils.hasText(host))
 			.to((scheme) -> this.delegate.baseUri(scheme + "://" + host));
-		map.from(this.properties::getUriPort).to(this.delegate::port);
+		map.from(uri::getPort).to(this.delegate::port);
 	}
 
 }
