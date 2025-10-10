@@ -17,34 +17,39 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Endpoint Jackson support.
+ * {@link EnableAutoConfiguration Auto-configuration} for Endpoint Jackson 2 support.
  *
  * @author Phillip Webb
  * @since 3.0.0
+ * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
  */
 @AutoConfiguration
 @ConditionalOnClass(ObjectMapper.class)
-public final class JacksonEndpointAutoConfiguration {
+@Deprecated(since = "4.0.0", forRemoval = true)
+@SuppressWarnings("removal")
+public final class Jackson2EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
-	EndpointJsonMapper endpointJsonMapper() {
-		JsonMapper jsonMapper = JsonMapper.builder()
-			.changeDefaultPropertyInclusion(
-					(value) -> value.withValueInclusion(Include.NON_NULL).withContentInclusion(Include.NON_NULL))
+	EndpointJackson2ObjectMapper jackson2EndpointJsonMapper() {
+		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
+			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
+					SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
+			.serializationInclusion(Include.NON_NULL)
 			.build();
-		return () -> jsonMapper;
+		return () -> objectMapper;
 	}
 
 }

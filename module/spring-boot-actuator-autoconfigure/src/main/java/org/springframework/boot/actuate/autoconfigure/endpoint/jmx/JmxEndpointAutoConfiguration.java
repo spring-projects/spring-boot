@@ -42,6 +42,7 @@ import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDisco
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
@@ -99,14 +100,16 @@ public final class JmxEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnSingleCandidate(MBeanServer.class)
+	@ConditionalOnClass(ObjectMapper.class)
 	JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer, EndpointObjectNameFactory endpointObjectNameFactory,
 			ObjectProvider<ObjectMapper> objectMapper, JmxEndpointsSupplier jmxEndpointsSupplier) {
 		JmxOperationResponseMapper responseMapper = new JacksonJmxOperationResponseMapper(
 				objectMapper.getIfAvailable());
 		return new JmxEndpointExporter(mBeanServer, endpointObjectNameFactory, responseMapper,
 				jmxEndpointsSupplier.getEndpoints());
-
 	}
+
+	// FIXME
 
 	@Bean
 	IncludeExcludeEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {

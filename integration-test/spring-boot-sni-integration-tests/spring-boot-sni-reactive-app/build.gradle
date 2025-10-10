@@ -50,6 +50,7 @@ dependencies {
 	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-jackson")
 
 	app(files(sourceSets.main.output))
 	app("org.springframework.boot:spring-boot-webflux")

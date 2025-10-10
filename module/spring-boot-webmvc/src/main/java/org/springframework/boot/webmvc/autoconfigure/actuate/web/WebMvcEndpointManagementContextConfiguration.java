@@ -78,6 +78,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableConfigurationProperties(CorsEndpointProperties.class)
 public class WebMvcEndpointManagementContextConfiguration {
 
+	private static final List<MediaType> MEDIA_TYPES = Collections
+		.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
+
 	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("removal")
@@ -157,33 +160,77 @@ public class WebMvcEndpointManagementContextConfiguration {
 		return new EndpointJsonMapperWebMvcConfigurer(endpointJsonMapper);
 	}
 
+	@Bean
+	@SuppressWarnings("removal")
+	@ConditionalOnBean(org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper.class)
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	static EndpointJackson2ObjectMapperWebMvcConfigurer endpointJackson2ObjectMapperWebMvcConfigurer(
+			org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper endpointJsonMapper) {
+		return new EndpointJackson2ObjectMapperWebMvcConfigurer(endpointJsonMapper);
+	}
+
 	/**
 	 * {@link WebMvcConfigurer} to apply {@link EndpointJsonMapper} for
 	 * {@link OperationResponseBody} to {@link JacksonJsonHttpMessageConverter} instances.
 	 */
 	static class EndpointJsonMapperWebMvcConfigurer implements WebMvcConfigurer {
 
-		private static final List<MediaType> MEDIA_TYPES = Collections
-			.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
+		private final EndpointJsonMapper mapper;
 
-		private final EndpointJsonMapper endpointJsonMapper;
-
-		EndpointJsonMapperWebMvcConfigurer(EndpointJsonMapper endpointJsonMapper) {
-			this.endpointJsonMapper = endpointJsonMapper;
+		EndpointJsonMapperWebMvcConfigurer(EndpointJsonMapper mapper) {
+			this.mapper = mapper;
 		}
 
 		@Override
 		public void configureMessageConverters(ServerBuilder builder) {
 			builder.configureMessageConverters((converter) -> {
-				if (converter instanceof JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter) {
-					configure(jacksonJsonHttpMessageConverter);
+				if (converter instanceof JacksonJsonHttpMessageConverter jacksonConverter) {
+					configure(jacksonConverter);
 				}
 			});
 		}
 
 		private void configure(JacksonJsonHttpMessageConverter converter) {
 			converter.registerMappersForType(OperationResponseBody.class, (associations) -> {
-				JsonMapper jsonMapper = this.endpointJsonMapper.get();
+				JsonMapper jsonMapper = this.mapper.get();
+				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, jsonMapper));
+			});
+		}
+
+	}
+
+	/**
+	 * {@link WebMvcConfigurer} to apply
+	 * {@link org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper}
+	 * for {@link OperationResponseBody} to
+	 * {@link org.springframework.http.converter.json.MappingJackson2HttpMessageConverter}
+	 * instances.
+	 *
+	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
+	 */
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	static class EndpointJackson2ObjectMapperWebMvcConfigurer implements WebMvcConfigurer {
+
+		private final org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper mapper;
+
+		EndpointJackson2ObjectMapperWebMvcConfigurer(
+				org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper mapper) {
+			this.mapper = mapper;
+		}
+
+		@Override
+		public void configureMessageConverters(ServerBuilder builder) {
+			builder.configureMessageConverters((converter) -> {
+				if (converter instanceof org.springframework.http.converter.json.MappingJackson2HttpMessageConverter jacksonConverter) {
+					configure(jacksonConverter);
+				}
+			});
+		}
+
+		private void configure(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter converter) {
+			converter.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
+				com.fasterxml.jackson.databind.ObjectMapper jsonMapper = this.mapper.get();
 				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, jsonMapper));
 			});
 		}
