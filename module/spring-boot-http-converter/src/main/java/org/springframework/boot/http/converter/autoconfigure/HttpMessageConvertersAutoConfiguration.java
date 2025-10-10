@@ -51,14 +51,17 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Brian Clozel
  * @since 4.0.0
  */
+@SuppressWarnings("removal")
 @AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+		"org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration",
 		"org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration",
 		"org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration",
 		"org.springframework.boot.kotlin.serialization.autoconfigure.KotlinSerializationAutoConfiguration" })
 @ConditionalOnClass(HttpMessageConverter.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
-@Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
-		JsonbHttpMessageConvertersConfiguration.class, KotlinSerializationHttpMessageConvertersConfiguration.class })
+@Import({ JacksonHttpMessageConvertersConfiguration.class, Jackson2HttpMessageConvertersConfiguration.class,
+		GsonHttpMessageConvertersConfiguration.class, JsonbHttpMessageConvertersConfiguration.class,
+		KotlinSerializationHttpMessageConvertersConfiguration.class })
 public final class HttpMessageConvertersAutoConfiguration {
 
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
