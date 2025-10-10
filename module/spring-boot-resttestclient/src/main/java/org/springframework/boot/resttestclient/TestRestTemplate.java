@@ -44,6 +44,7 @@ import org.springframework.boot.http.client.HttpComponentsHttpClientBuilder.TlsS
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RootUriTemplateHandler;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -77,9 +78,11 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link #getRestTemplate()}.
  * <p>
  * If you are using the {@code @SpringBootTest} annotation with an embedded server, a
- * {@link TestRestTemplate} is automatically available and can be {@code @Autowired} into
- * your test. If you need customizations (for example to adding additional message
- * converters) use a {@link RestTemplateBuilder} {@code @Bean}.
+ * {@link TestRestTemplate} can be auto-configured by adding
+ * {@link AutoConfigureTestRestTemplate @AutoConfigureTestRestTemplate} to your test
+ * class. It can then be {@code @Autowired} into your test. If you need customizations
+ * (for example to adding additional message converters) use a {@link RestTemplateBuilder}
+ * {@code @Bean}.
  *
  * @author Dave Syer
  * @author Phillip Webb

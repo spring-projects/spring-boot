@@ -86,7 +86,7 @@ runApplication<MyApplication>(*args) {
 Kotlin {url-kotlin-docs}/extensions.html[extensions] provide the ability to extend existing classes with additional functionality.
 The Spring Boot Kotlin API makes use of these extensions to add new Kotlin specific conveniences to existing APIs.
 
-javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] extensions, similar to those provided by Spring Framework for javadoc:org.springframework.web.client.RestOperations[] in Spring Framework, are provided.
+javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] extensions, similar to those provided by Spring Framework for javadoc:org.springframework.web.client.RestOperations[] in Spring Framework, are provided.
 Among other things, the extensions make it possible to take advantage of Kotlin reified type parameters.
 
 
