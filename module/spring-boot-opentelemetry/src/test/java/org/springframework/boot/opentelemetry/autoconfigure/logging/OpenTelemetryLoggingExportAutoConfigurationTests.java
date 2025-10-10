@@ -131,7 +131,6 @@ class OpenTelemetryLoggingExportAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasBean("customOtlpGrpcLogRecordExporter")
 				.hasSingleBean(LogRecordExporter.class));
 	}
-	// FIXME
 
 	@Test
 	void whenHasCustomLoggingConnectionDetailsDoesNotProvideExporterBean() {

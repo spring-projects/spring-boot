@@ -187,7 +187,7 @@ include "module:spring-boot-thymeleaf"
 include "module:spring-boot-tomcat"
 include "module:spring-boot-tx"
 include "module:spring-boot-validation"
-include "module:spring-boot-web-server" // FIXME move to core?
+include "module:spring-boot-web-server"
 include "module:spring-boot-webclient"
 include "module:spring-boot-webflux"
 include "module:spring-boot-webflux-test"
