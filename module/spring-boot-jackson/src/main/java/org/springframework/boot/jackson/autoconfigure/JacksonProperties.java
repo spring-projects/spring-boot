@@ -109,6 +109,12 @@ public class JacksonProperties {
 	 */
 	private @Nullable Locale locale;
 
+	/**
+	 * Whether to configure Jackson 3 with the same defaults as Spring Boot previously
+	 * used for Jackson 2.
+	 */
+	private boolean useJackson2Defaults = false;
+
 	private final Datatype datatype = new Datatype();
 
 	private final Json json = new Json();
@@ -183,6 +189,14 @@ public class JacksonProperties {
 
 	public void setLocale(@Nullable Locale locale) {
 		this.locale = locale;
+	}
+
+	public boolean isUseJackson2Defaults() {
+		return this.useJackson2Defaults;
+	}
+
+	public void setUseJackson2Defaults(boolean useJackson2Defaults) {
+		this.useJackson2Defaults = useJackson2Defaults;
 	}
 
 	public Datatype getDatatype() {

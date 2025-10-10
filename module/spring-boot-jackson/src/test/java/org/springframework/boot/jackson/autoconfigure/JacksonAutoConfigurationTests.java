@@ -29,6 +29,8 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.StreamWriteFeature;
 import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
@@ -536,6 +538,56 @@ class JacksonAutoConfigurationTests {
 			problemDetail.setProperty("spring", "boot");
 			String json = mapper.writeValueAsString(problemDetail);
 			assertThat(json).isEqualTo("{\"status\":404,\"title\":\"Not Found\",\"spring\":\"boot\"}");
+		});
+	}
+
+	@Test
+	void whenUsingJackson2DefaultsShouldBeConfiguredUsingConfigureForJackson2() {
+		this.contextRunner.withPropertyValues("spring.jackson.use-jackson2-defaults=true").run((context) -> {
+			JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+			JsonMapper jackson2ConfiguredJsonMapper = JsonMapper.builder().configureForJackson2().build();
+			for (DateTimeFeature feature : DateTimeFeature.values()) {
+				boolean expected = (feature == DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS
+						|| feature == DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS) ? false
+								: jackson2ConfiguredJsonMapper.isEnabled(feature);
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name()).isEqualTo(expected);
+			}
+			for (DeserializationFeature feature : DeserializationFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (EnumFeature feature : EnumFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (JsonNodeFeature feature : JsonNodeFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (JsonReadFeature feature : JsonReadFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (JsonWriteFeature feature : JsonWriteFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (MapperFeature feature : MapperFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (SerializationFeature feature : SerializationFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (StreamReadFeature feature : StreamReadFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (StreamWriteFeature feature : StreamWriteFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
 		});
 	}
 
