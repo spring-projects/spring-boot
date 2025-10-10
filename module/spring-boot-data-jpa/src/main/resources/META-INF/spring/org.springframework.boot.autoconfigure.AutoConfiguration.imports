@@ -1,1 +1,1 @@
-org.springframework.boot.data.jpa.autoconfigure.JpaRepositoriesAutoConfiguration
+org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration

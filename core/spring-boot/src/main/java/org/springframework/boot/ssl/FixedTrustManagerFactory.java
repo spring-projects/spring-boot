@@ -24,8 +24,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.TrustManagerFactorySpi;
 
-import org.springframework.boot.SpringBootVersion;
-
 /**
  * {@link TrustManagerFactory} which uses a fixed set of {@link TrustManager
  * TrustManagers}.
@@ -34,9 +32,7 @@ import org.springframework.boot.SpringBootVersion;
  */
 final class FixedTrustManagerFactory extends TrustManagerFactory {
 
-	private static final Provider PROVIDER = new Provider("FixedTrustManagerFactory", SpringBootVersion.getVersion(),
-			"") {
-	};
+	private static final Provider PROVIDER = new FixedTrustManagerFactoryProvider();
 
 	private FixedTrustManagerFactory(FixedTrustManagersSpi spi, String algorithm) {
 		super(spi, PROVIDER, algorithm);
@@ -66,6 +62,14 @@ final class FixedTrustManagerFactory extends TrustManagerFactory {
 		@Override
 		protected TrustManager[] engineGetTrustManagers() {
 			return this.trustManagers;
+		}
+
+	}
+
+	private static class FixedTrustManagerFactoryProvider extends Provider {
+
+		FixedTrustManagerFactoryProvider() {
+			super("FixedTrustManagerFactory", SpringBootProviderVersion.get(), "");
 		}
 
 	}

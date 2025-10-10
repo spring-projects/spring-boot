@@ -35,7 +35,7 @@ class DataMongoPropertiesTests {
 
 	@Test
 	void canBindAutoIndexCreation() {
-		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(MongoDataAutoConfiguration.class))
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(DataMongoAutoConfiguration.class))
 			.withPropertyValues("spring.data.mongodb.auto-index-creation=true")
 			.run((context) -> {
 				DataMongoProperties properties = context.getBean(DataMongoProperties.class);
@@ -51,8 +51,9 @@ class DataMongoPropertiesTests {
 	}
 
 	private BigDecimalRepresentation springDataDefaultBigDecimalRepresentation() {
-		return (BigDecimalRepresentation) ReflectionTestUtils.getField(new MongoConverterConfigurationAdapter(),
-				"bigDecimals");
+		Object field = ReflectionTestUtils.getField(new MongoConverterConfigurationAdapter(), "bigDecimals");
+		assertThat(field).isNotNull();
+		return (BigDecimalRepresentation) field;
 	}
 
 }

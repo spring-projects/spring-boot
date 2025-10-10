@@ -6,6 +6,7 @@ org.springframework.boot.context.config.ConfigDataLocationRuntimeHints,\
 org.springframework.boot.context.config.ConfigDataPropertiesRuntimeHints,\
 org.springframework.boot.env.PropertySourceRuntimeHints,\
 org.springframework.boot.logging.java.JavaLoggingSystemRuntimeHints,\
+org.springframework.boot.logging.log4j2.Log4J2RuntimeHints,\
 org.springframework.boot.logging.logback.LogbackRuntimeHints,\
 org.springframework.boot.logging.structured.ElasticCommonSchemaProperties$ElasticCommonSchemaPropertiesRuntimeHints,\
 org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties$GraylogExtendedLogFormatPropertiesRuntimeHints,\
@@ -13,8 +14,8 @@ org.springframework.boot.logging.structured.StructuredLoggingJsonProperties$Stru
 
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor,\
-org.springframework.boot.env.EnvironmentPostProcessorApplicationListener$EnvironmentBeanFactoryInitializationAotProcessor,\
-org.springframework.boot.logging.structured.StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor
+org.springframework.boot.logging.structured.StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor,\
+org.springframework.boot.support.EnvironmentPostProcessorApplicationListener$EnvironmentBeanFactoryInitializationAotProcessor
 
 org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor

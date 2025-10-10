@@ -38,7 +38,10 @@ import org.gradle.api.tasks.SkipWhenEmpty;
  */
 public abstract class AutoConfigurationImportsTask extends DefaultTask {
 
-	static final String IMPORTS_FILE = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
+	/**
+	 * The path of the {@code AutoConfiguration.imports} file.
+	 */
+	public static final String IMPORTS_FILE = "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports";
 
 	private FileCollection sourceFiles = getProject().getObjects().fileCollection();
 

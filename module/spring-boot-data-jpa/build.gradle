@@ -49,3 +49,7 @@ dependencies {
 	testRuntimeOnly("com.zaxxer:HikariCP")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

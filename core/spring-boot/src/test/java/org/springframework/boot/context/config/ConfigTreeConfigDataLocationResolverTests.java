@@ -42,6 +42,7 @@ class ConfigTreeConfigDataLocationResolverTests {
 	private final ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test

@@ -43,35 +43,32 @@ public class NewRelicPropertiesConfigAdapter extends StepRegistryPropertiesConfi
 
 	@Override
 	public boolean meterNameEventTypeEnabled() {
-		return getRequired(NewRelicProperties::isMeterNameEventTypeEnabled,
-				NewRelicConfig.super::meterNameEventTypeEnabled);
+		return obtain(NewRelicProperties::isMeterNameEventTypeEnabled, NewRelicConfig.super::meterNameEventTypeEnabled);
 	}
 
 	@Override
 	public String eventType() {
-		return getRequired(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
+		return obtain(NewRelicProperties::getEventType, NewRelicConfig.super::eventType);
 	}
 
 	@Override
 	public ClientProviderType clientProviderType() {
-		return getRequired(NewRelicProperties::getClientProviderType, NewRelicConfig.super::clientProviderType);
+		return obtain(NewRelicProperties::getClientProviderType, NewRelicConfig.super::clientProviderType);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String apiKey() {
 		return get(NewRelicProperties::getApiKey, NewRelicConfig.super::apiKey);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String accountId() {
 		return get(NewRelicProperties::getAccountId, NewRelicConfig.super::accountId);
 	}
 
 	@Override
 	public String uri() {
-		return getRequired(NewRelicProperties::getUri, NewRelicConfig.super::uri);
+		return obtain(NewRelicProperties::getUri, NewRelicConfig.super::uri);
 	}
 
 }

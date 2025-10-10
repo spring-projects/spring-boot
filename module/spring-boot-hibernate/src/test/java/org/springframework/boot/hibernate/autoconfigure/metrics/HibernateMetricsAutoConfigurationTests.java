@@ -29,6 +29,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.PersistenceException;
 import org.hibernate.SessionFactory;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
@@ -181,7 +182,7 @@ class HibernateMetricsAutoConfigurationTests {
 
 		@Id
 		@GeneratedValue
-		private Long id;
+		private @Nullable Long id;
 
 	}
 

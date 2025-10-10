@@ -31,7 +31,7 @@
     },
     {
       "name": "spring.redis.client-type",
-      "type": "org.springframework.boot.data.redis.autoconfigure.RedisProperties$ClientType",
+      "type": "org.springframework.boot.data.redis.autoconfigure.DataRedisProperties$ClientType",
       "deprecation": {
         "replacement": "spring.data.redis.client-type",
         "level": "error"

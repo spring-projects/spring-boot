@@ -19,6 +19,7 @@ package org.springframework.boot.build.autoconfigure;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,12 +55,21 @@ public record AutoConfigurationClass(String name, List<String> before, List<Stri
 				attributes.getOrDefault("afterName", Collections.emptyList()));
 	}
 
-	static AutoConfigurationClass of(File classFile) {
-		try (FileInputStream input = new FileInputStream(classFile)) {
+	public static AutoConfigurationClass of(InputStream input) {
+		try {
 			ClassReader classReader = new ClassReader(input);
 			AutoConfigurationClassVisitor visitor = new AutoConfigurationClassVisitor();
 			classReader.accept(visitor, ClassReader.SKIP_DEBUG | ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
 			return visitor.autoConfigurationClass;
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	static AutoConfigurationClass of(File classFile) {
+		try (InputStream input = new FileInputStream(classFile)) {
+			return of(input);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);

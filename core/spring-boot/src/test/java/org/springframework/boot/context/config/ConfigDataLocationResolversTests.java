@@ -27,11 +27,11 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.boot.BootstrapContext;
-import org.springframework.boot.BootstrapRegistry;
-import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
-import org.springframework.boot.ConfigurableBootstrapContext;
-import org.springframework.boot.DefaultBootstrapContext;
+import org.springframework.boot.bootstrap.BootstrapContext;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
+import org.springframework.boot.bootstrap.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
@@ -56,15 +56,19 @@ class ConfigDataLocationResolversTests {
 	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Binder binder;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ConfigDataLocationResolverContext context;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Profiles profiles;
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	private File tempDir;
 
 	@Test

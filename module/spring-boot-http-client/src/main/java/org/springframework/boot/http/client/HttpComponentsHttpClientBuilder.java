@@ -154,7 +154,7 @@ public final class HttpComponentsHttpClientBuilder {
 	 * @return a new {@link HttpClient} instance
 	 */
 	public CloseableHttpClient build(@Nullable HttpClientSettings settings) {
-		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
+		settings = (settings != null) ? settings : HttpClientSettings.defaults();
 		Assert.isTrue(settings.connectTimeout() == null, "'settings' must not have a 'connectTimeout'");
 		HttpClientBuilder builder = HttpClientBuilder.create()
 			.useSystemProperties()

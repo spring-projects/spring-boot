@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class CompositeHealthDescriptorTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenApiVersionIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new CompositeHealthDescriptor(null, Status.UP, Collections.emptyMap()))
@@ -47,6 +48,7 @@ class CompositeHealthDescriptorTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenStatusIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new CompositeHealthDescriptor(ApiVersion.V3, null, Collections.emptyMap()))

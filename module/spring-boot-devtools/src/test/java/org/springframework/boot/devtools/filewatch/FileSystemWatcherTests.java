@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -53,11 +54,12 @@ class FileSystemWatcherTests {
 	private final List<Set<ChangedFiles>> changes = Collections.synchronizedList(new ArrayList<>());
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@BeforeEach
 	void setup() {
-		setupWatcher(20, 10);
+		this.watcher = setupWatcher(20, 10);
 	}
 
 	@Test
@@ -82,6 +84,7 @@ class FileSystemWatcherTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void listenerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addListener(null))
 			.withMessageContaining("'fileChangeListener' must not be null");
@@ -95,6 +98,7 @@ class FileSystemWatcherTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void sourceDirectoryMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceDirectory(null))
 			.withMessageContaining("'directory' must not be null");
@@ -149,7 +153,7 @@ class FileSystemWatcherTests {
 
 	@Test
 	void waitsForPollingInterval() throws Exception {
-		setupWatcher(10, 1);
+		this.watcher = setupWatcher(10, 1);
 		File directory = startWithNewDirectory();
 		touch(new File(directory, "test1.txt"));
 		while (this.changes.size() != 1) {
@@ -162,7 +166,7 @@ class FileSystemWatcherTests {
 
 	@Test
 	void waitsForQuietPeriod() throws Exception {
-		setupWatcher(300, 200);
+		this.watcher = setupWatcher(300, 200);
 		File directory = startWithNewDirectory();
 		for (int i = 0; i < 100; i++) {
 			touch(new File(directory, i + "test.txt"));
@@ -270,7 +274,7 @@ class FileSystemWatcherTests {
 	@Test
 	void withSnapshotRepository() throws Exception {
 		SnapshotStateRepository repository = new TestSnapshotStateRepository();
-		setupWatcher(20, 10, repository);
+		this.watcher = setupWatcher(20, 10, repository);
 		File directory = new File(this.tempDir, UUID.randomUUID().toString());
 		directory.mkdir();
 		File file = touch(new File(directory, "file.txt"));
@@ -280,7 +284,7 @@ class FileSystemWatcherTests {
 		this.watcher.stopAfter(1);
 		this.changes.clear();
 		File recreate = touch(new File(directory, "file.txt"));
-		setupWatcher(20, 10, repository);
+		this.watcher = setupWatcher(20, 10, repository);
 		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
 		this.watcher.stopAfter(1);
@@ -290,14 +294,16 @@ class FileSystemWatcherTests {
 		assertThat(actual).isEqualTo(expected);
 	}
 
-	private void setupWatcher(long pollingInterval, long quietPeriod) {
-		setupWatcher(pollingInterval, quietPeriod, null);
+	private FileSystemWatcher setupWatcher(long pollingInterval, long quietPeriod) {
+		return setupWatcher(pollingInterval, quietPeriod, null);
 	}
 
-	private void setupWatcher(long pollingInterval, long quietPeriod, SnapshotStateRepository snapshotStateRepository) {
-		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval), Duration.ofMillis(quietPeriod),
-				snapshotStateRepository);
-		this.watcher.addListener(FileSystemWatcherTests.this.changes::add);
+	private FileSystemWatcher setupWatcher(long pollingInterval, long quietPeriod,
+			@Nullable SnapshotStateRepository snapshotStateRepository) {
+		FileSystemWatcher watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval),
+				Duration.ofMillis(quietPeriod), snapshotStateRepository);
+		watcher.addListener(FileSystemWatcherTests.this.changes::add);
+		return watcher;
 	}
 
 	private File startWithNewDirectory() {
@@ -328,7 +334,7 @@ class FileSystemWatcherTests {
 
 	private static final class TestSnapshotStateRepository implements SnapshotStateRepository {
 
-		private Object state;
+		private @Nullable Object state;
 
 		@Override
 		public void save(Object state) {
@@ -336,7 +342,7 @@ class FileSystemWatcherTests {
 		}
 
 		@Override
-		public Object restore() {
+		public @Nullable Object restore() {
 			return this.state;
 		}
 

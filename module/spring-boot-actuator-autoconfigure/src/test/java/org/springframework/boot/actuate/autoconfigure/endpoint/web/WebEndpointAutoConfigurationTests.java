@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -128,7 +129,7 @@ class WebEndpointAutoConfigurationTests {
 	static class TestPathMatcher implements PathMapper {
 
 		@Override
-		public String getRootPath(EndpointId endpointId) {
+		public @Nullable String getRootPath(EndpointId endpointId) {
 			if (endpointId.toString().endsWith("one")) {
 				return "1/" + endpointId;
 			}

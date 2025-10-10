@@ -122,6 +122,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupA = groups.get("a");
 				assertThat(primary.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UNKNOWN);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UNKNOWN);
 			});
@@ -140,8 +141,10 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupB = groups.get("b");
 				assertThat(primary.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UNKNOWN);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UP);
+				assertThat(groupB).isNotNull();
 				assertThat(groupB.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UNKNOWN);
 			});
@@ -158,6 +161,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupA = groups.get("a");
 				assertThat(primary.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN))
 					.isEqualTo(Status.UP);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN))
 					.isEqualTo(Status.UP);
 			});
@@ -177,8 +181,10 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupB = groups.get("b");
 				assertThat(primary.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UP);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UNKNOWN);
+				assertThat(groupB).isNotNull();
 				assertThat(groupB.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UP);
 			});
@@ -198,8 +204,10 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupB = groups.get("b");
 				assertThat(primary.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UP);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UNKNOWN);
+				assertThat(groupB).isNotNull();
 				assertThat(groupB.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UP);
 			});
@@ -219,8 +227,10 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupB = groups.get("b");
 				assertThat(primary.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.DOWN);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UNKNOWN);
+				assertThat(groupB).isNotNull();
 				assertThat(groupB.getStatusAggregator().getAggregateStatus(Status.UP, Status.DOWN, Status.UNKNOWN))
 					.isEqualTo(Status.UP);
 			});
@@ -236,6 +246,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup primary = groups.getPrimary();
 				HealthEndpointGroup groupA = groups.get("a");
 				assertThat(primary.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(200);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(200);
 			});
 	}
@@ -252,7 +263,9 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupA = groups.get("a");
 				HealthEndpointGroup groupB = groups.get("b");
 				assertThat(primary.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(200);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
+				assertThat(groupB).isNotNull();
 				assertThat(groupB.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(200);
 			});
 	}
@@ -267,6 +280,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup primary = groups.getPrimary();
 				HealthEndpointGroup groupA = groups.get("a");
 				assertThat(primary.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
 			});
 	}
@@ -284,7 +298,9 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupA = groups.get("a");
 				HealthEndpointGroup groupB = groups.get("b");
 				assertThat(primary.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(202);
+				assertThat(groupB).isNotNull();
 				assertThat(groupB.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
 			});
 	}
@@ -302,7 +318,9 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupA = groups.get("a");
 				HealthEndpointGroup groupB = groups.get("b");
 				assertThat(primary.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(200);
+				assertThat(groupB).isNotNull();
 				assertThat(groupB.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
 			});
 	}
@@ -320,7 +338,9 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroup groupA = groups.get("a");
 				HealthEndpointGroup groupB = groups.get("b");
 				assertThat(primary.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(503);
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(200);
+				assertThat(groupB).isNotNull();
 				assertThat(groupB.getHttpCodeStatusMapper().getStatusCode(Status.DOWN)).isEqualTo(201);
 			});
 	}
@@ -333,6 +353,7 @@ class AutoConfiguredHealthEndpointGroupsTests {
 			.run((context) -> {
 				HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 				HealthEndpointGroup groupA = groups.get("a");
+				assertThat(groupA).isNotNull();
 				assertThat(groupA.showDetails(SecurityContext.NONE)).isTrue();
 			});
 	}

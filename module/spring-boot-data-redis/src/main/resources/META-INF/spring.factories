@@ -5,5 +5,5 @@ org.springframework.boot.data.redis.testcontainers.RedisContainerConnectionDetai
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.data.redis.autoconfigure.RedisUrlSyntaxFailureAnalyzer
+org.springframework.boot.data.redis.autoconfigure.DataRedisUrlSyntaxFailureAnalyzer
 

@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Locale;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +36,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -267,18 +269,23 @@ class MessageSourceAutoConfigurationTests {
 	static class TestMessageSource implements MessageSource {
 
 		@Override
-		public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
+		public String getMessage(String code, Object @Nullable [] args, @Nullable String defaultMessage,
+				@Nullable Locale locale) {
 			return code;
 		}
 
 		@Override
-		public String getMessage(String code, Object[] args, Locale locale) {
+		public String getMessage(String code, Object @Nullable [] args, @Nullable Locale locale) {
 			return code;
 		}
 
 		@Override
-		public String getMessage(MessageSourceResolvable resolvable, Locale locale) {
-			return resolvable.getCodes()[0];
+		public String getMessage(MessageSourceResolvable resolvable, @Nullable Locale locale) {
+			String[] codes = resolvable.getCodes();
+			if (codes == null) {
+				throw new NoSuchMessageException("codes is null");
+			}
+			return codes[0];
 		}
 
 	}

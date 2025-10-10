@@ -22,21 +22,25 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.client.LocalHostUriTemplateHandler;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
+import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "server.error.include-message=always" })
+@AutoConfigureTestRestTemplate
 class SampleActuatorExtensionApplicationTests {
 
 	@Autowired
-	private Environment environment;
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -63,7 +67,8 @@ class SampleActuatorExtensionApplicationTests {
 	void healthExtensionWithAuthHeader() {
 		TestRestTemplate restTemplate = new TestRestTemplate(
 				this.restTemplateBuilder.defaultHeader("Authorization", "Bearer secret"));
-		restTemplate.setUriTemplateHandler(new LocalHostUriTemplateHandler(this.environment));
+		BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrlOrDefault();
+		restTemplate.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
 		ResponseEntity<Map> entity = restTemplate.getForEntity("/myextension/health", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}

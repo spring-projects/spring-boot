@@ -35,8 +35,8 @@ class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 	@Override
 	public void customize(FluentConfiguration configuration) {
 		if (configuration.getResourceProvider() == null) {
-			Scanner<JavaMigration> scanner = new Scanner<>(JavaMigration.class, false, new ResourceNameCache(),
-					new LocationScannerCache(), configuration);
+			Scanner<JavaMigration> scanner = new Scanner<>(JavaMigration.class, new ResourceNameCache(),
+					new LocationScannerCache(), configuration, configuration.getLocations());
 			NativeImageResourceProvider resourceProvider = new NativeImageResourceProvider(scanner,
 					configuration.getClassLoader(), Arrays.asList(configuration.getLocations()),
 					configuration.getEncoding(), configuration.isFailOnMissingLocations());

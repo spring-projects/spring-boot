@@ -22,9 +22,11 @@ description = "Spring Boot WebFlux smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
+	implementation(project(":starter:spring-boot-starter-mustache"))
 	implementation(project(":starter:spring-boot-starter-webflux"))
 
-	testImplementation(project(":starter:spring-boot-starter-restclient"))
+	testImplementation(project(":module:spring-boot-resttestclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webflux-test"))
 	testImplementation("io.projectreactor:reactor-test")
 }

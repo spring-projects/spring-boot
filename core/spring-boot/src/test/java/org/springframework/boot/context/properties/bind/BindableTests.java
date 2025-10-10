@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,12 +42,14 @@ import static org.mockito.Mockito.mock;
 class BindableTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofClassWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Bindable.of((Class<?>) null))
 			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofTypeWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Bindable.of((ResolvableType) null))
 			.withMessageContaining("'type' must not be null");
@@ -68,18 +71,23 @@ class BindableTests {
 		String instance = "foo";
 		ResolvableType type = ResolvableType.forClass(String.class);
 		assertThat(Bindable.ofInstance(instance).getType()).isEqualTo(type);
-		assertThat(Bindable.ofInstance(instance).getValue().get()).isEqualTo("foo");
+		Supplier<String> value = Bindable.ofInstance(instance).getValue();
+		assertThat(value).isNotNull();
+		assertThat(value.get()).isEqualTo("foo");
 	}
 
 	@Test
 	void ofClassWithExistingValueShouldSetTypeAndExistingValue() {
-		assertThat(Bindable.of(String.class).withExistingValue("foo").getValue().get()).isEqualTo("foo");
+		Supplier<String> value = Bindable.of(String.class).withExistingValue("foo").getValue();
+		assertThat(value).isNotNull();
+		assertThat(value.get()).isEqualTo("foo");
 	}
 
 	@Test
 	void ofTypeWithExistingValueShouldSetTypeAndExistingValue() {
-		assertThat(Bindable.of(ResolvableType.forClass(String.class)).withExistingValue("foo").getValue().get())
-			.isEqualTo("foo");
+		Supplier<Object> value = Bindable.of(ResolvableType.forClass(String.class)).withExistingValue("foo").getValue();
+		assertThat(value).isNotNull();
+		assertThat(value.get()).isEqualTo("foo");
 	}
 
 	@Test
@@ -93,7 +101,9 @@ class BindableTests {
 	void ofTypeWhenPrimitiveWithExistingValueWrapperShouldNotThrowException() {
 		Bindable<Integer> bindable = Bindable.<Integer>of(ResolvableType.forClass(int.class)).withExistingValue(123);
 		assertThat(bindable.getType().resolve()).isEqualTo(int.class);
-		assertThat(bindable.getValue().get()).isEqualTo(123);
+		Supplier<Integer> value = bindable.getValue();
+		assertThat(value).isNotNull();
+		assertThat(value.get()).isEqualTo(123);
 	}
 
 	@Test

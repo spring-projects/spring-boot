@@ -39,14 +39,12 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.freemarker.autoconfigure.FreeMarkerAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.testsupport.classpath.resources.WithResource;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
@@ -327,18 +325,6 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	@WithResource(name = "templates/error/507.ftlh", content = "We are out of storage")
-	void testConventionTemplateMapping() {
-		load();
-		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/noStorage")))
-			.accept(MediaType.TEXT_HTML)
-			.build();
-		ResponseEntity<String> entity = new TestRestTemplate().exchange(request, String.class);
-		String resp = entity.getBody();
-		assertThat(resp).contains("We are out of storage");
-	}
-
-	@Test
 	void testIncompatibleMediaType() {
 		load();
 		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/incompatibleType")))
@@ -406,7 +392,7 @@ class BasicErrorControllerIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
-	@ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
+	// @ImportAutoConfiguration(FreeMarkerAutoConfiguration.class)
 	public static class TestConfiguration {
 
 		// For manual testing
@@ -473,11 +459,6 @@ class BasicErrorControllerIntegrationTests {
 				return body.content;
 			}
 
-			@RequestMapping(path = "/noStorage")
-			String noStorage() {
-				throw new InsufficientStorageException();
-			}
-
 			@RequestMapping(path = "/incompatibleType", produces = "text/plain")
 			String incompatibleType() {
 				throw new ExpectedException();
@@ -486,11 +467,6 @@ class BasicErrorControllerIntegrationTests {
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")
 			@SuppressWarnings("serial")
 			static class ExpectedException extends RuntimeException {
-
-			}
-
-			@ResponseStatus(HttpStatus.INSUFFICIENT_STORAGE)
-			static class InsufficientStorageException extends RuntimeException {
 
 			}
 

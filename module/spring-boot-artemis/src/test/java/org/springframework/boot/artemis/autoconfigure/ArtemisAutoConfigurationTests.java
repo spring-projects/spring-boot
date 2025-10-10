@@ -406,7 +406,10 @@ class ArtemisAutoConfigurationTests {
 
 	private ActiveMQConnectionFactory getActiveMQConnectionFactory(ConnectionFactory connectionFactory) {
 		assertThat(connectionFactory).isInstanceOf(CachingConnectionFactory.class);
-		return (ActiveMQConnectionFactory) ((CachingConnectionFactory) connectionFactory).getTargetConnectionFactory();
+		ConnectionFactory targetConnectionFactory = ((CachingConnectionFactory) connectionFactory)
+			.getTargetConnectionFactory();
+		assertThat(targetConnectionFactory).isNotNull();
+		return (ActiveMQConnectionFactory) targetConnectionFactory;
 	}
 
 	private TransportConfiguration assertInVmConnectionFactory(ActiveMQConnectionFactory connectionFactory) {

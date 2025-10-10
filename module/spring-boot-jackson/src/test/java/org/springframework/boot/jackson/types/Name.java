@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jackson.types;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Sample object used for tests.
  *
@@ -23,13 +25,13 @@ package org.springframework.boot.jackson.types;
  */
 public class Name {
 
-	protected final String name;
+	protected final @Nullable String name;
 
-	public Name(String name) {
+	public Name(@Nullable String name) {
 		this.name = name;
 	}
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 

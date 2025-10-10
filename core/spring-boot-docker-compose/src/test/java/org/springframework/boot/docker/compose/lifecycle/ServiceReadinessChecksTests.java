@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.RunningService;
+import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Tcp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -103,7 +105,7 @@ class ServiceReadinessChecksTests {
 	 */
 	static class MockServiceReadinessCheck extends TcpConnectServiceReadinessCheck {
 
-		private final Integer failUntil;
+		private final @Nullable Integer failUntil;
 
 		private final List<RunningService> checked = new ArrayList<>();
 
@@ -111,8 +113,8 @@ class ServiceReadinessChecksTests {
 			this(null);
 		}
 
-		MockServiceReadinessCheck(Integer failUntil) {
-			super(null);
+		MockServiceReadinessCheck(@Nullable Integer failUntil) {
+			super(new Tcp());
 			this.failUntil = failUntil;
 		}
 

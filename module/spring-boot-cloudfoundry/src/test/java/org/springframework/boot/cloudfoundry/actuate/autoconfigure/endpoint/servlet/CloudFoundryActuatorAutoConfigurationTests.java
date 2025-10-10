@@ -98,9 +98,11 @@ class CloudFoundryActuatorAutoConfigurationTests {
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 				EndpointMapping endpointMapping = (EndpointMapping) ReflectionTestUtils.getField(handlerMapping,
 						"endpointMapping");
+				assertThat(endpointMapping).isNotNull();
 				assertThat(endpointMapping.getPath()).isEqualTo("/cloudfoundryapplication");
 				CorsConfiguration corsConfiguration = (CorsConfiguration) ReflectionTestUtils.getField(handlerMapping,
 						"corsConfiguration");
+				assertThat(corsConfiguration).isNotNull();
 				assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
 				assertThat(corsConfiguration.getAllowedMethods())
 					.containsAll(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
@@ -128,6 +130,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 			.run((context) -> {
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				assertThat(interceptor).isNotNull();
 				String applicationId = (String) ReflectionTestUtils.getField(interceptor, "applicationId");
 				assertThat(applicationId).isEqualTo("my-app-id");
 			});
@@ -141,8 +144,10 @@ class CloudFoundryActuatorAutoConfigurationTests {
 			.run((context) -> {
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				assertThat(interceptor).isNotNull();
 				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
 						"cloudFoundrySecurityService");
+				assertThat(interceptorSecurityService).isNotNull();
 				String cloudControllerUrl = (String) ReflectionTestUtils.getField(interceptorSecurityService,
 						"cloudControllerUrl");
 				assertThat(cloudControllerUrl).isEqualTo("https://my-cloud-controller.com");
@@ -158,10 +163,13 @@ class CloudFoundryActuatorAutoConfigurationTests {
 			.run((context) -> {
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 				Object interceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				assertThat(interceptor).isNotNull();
 				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
 						"cloudFoundrySecurityService");
+				assertThat(interceptorSecurityService).isNotNull();
 				RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(interceptorSecurityService,
 						"restTemplate");
+				assertThat(restTemplate).isNotNull();
 				assertThat(restTemplate.getRequestFactory()).isInstanceOf(SkipSslVerificationHttpRequestFactory.class);
 			});
 	}
@@ -172,6 +180,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 			.run((context) -> {
 				CloudFoundryWebEndpointServletHandlerMapping handlerMapping = getHandlerMapping(context);
 				Object securityInterceptor = ReflectionTestUtils.getField(handlerMapping, "securityInterceptor");
+				assertThat(securityInterceptor).isNotNull();
 				Object interceptorSecurityService = ReflectionTestUtils.getField(securityInterceptor,
 						"cloudFoundrySecurityService");
 				assertThat(interceptorSecurityService).isNull();
@@ -214,8 +223,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 	private SecurityFilterChain getSecurityFilterChain(AssertableWebApplicationContext context) {
 		Filter springSecurityFilterChain = context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		FilterChainProxy filterChainProxy = getFilterChainProxy(springSecurityFilterChain);
-		SecurityFilterChain securityFilterChain = filterChainProxy.getFilterChains().get(0);
-		return securityFilterChain;
+		return filterChainProxy.getFilterChains().get(0);
 	}
 
 	private FilterChainProxy getFilterChainProxy(Filter filter) {
@@ -224,6 +232,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 		}
 		if (filter instanceof CompositeFilter) {
 			List<?> filters = (List<?>) ReflectionTestUtils.getField(filter, "filters");
+			assertThat(filters).isNotNull();
 			return (FilterChainProxy) filters.stream()
 				.filter(FilterChainProxy.class::isInstance)
 				.findFirst()

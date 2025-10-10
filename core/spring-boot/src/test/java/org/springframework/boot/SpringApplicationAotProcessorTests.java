@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.nio.file.Path;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -101,7 +102,7 @@ class SpringApplicationAotProcessorTests {
 	@Configuration(proxyBeanMethods = false)
 	public static class SampleApplication {
 
-		public static String[] argsHolder;
+		public static String @Nullable [] argsHolder;
 
 		public static boolean postRunInvoked;
 

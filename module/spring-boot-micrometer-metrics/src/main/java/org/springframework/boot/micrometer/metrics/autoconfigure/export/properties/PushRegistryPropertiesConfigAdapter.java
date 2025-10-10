@@ -44,17 +44,17 @@ public abstract class PushRegistryPropertiesConfigAdapter<T extends PushRegistry
 
 	@Override
 	public Duration step() {
-		return getRequired(T::getStep, PushRegistryConfig.super::step);
+		return obtain(T::getStep, PushRegistryConfig.super::step);
 	}
 
 	@Override
 	public boolean enabled() {
-		return getRequired(T::isEnabled, PushRegistryConfig.super::enabled);
+		return obtain(T::isEnabled, PushRegistryConfig.super::enabled);
 	}
 
 	@Override
 	public int batchSize() {
-		return getRequired(T::getBatchSize, PushRegistryConfig.super::batchSize);
+		return obtain(T::getBatchSize, PushRegistryConfig.super::batchSize);
 	}
 
 }

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.context;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SpringBootTestCustomConfigNameTests {
 
 	@Value("${test.foo}")
-	private String foo;
+	private @Nullable String foo;
 
 	@Test
 	void propertyIsLoadedFromConfigFileWithCustomName() {

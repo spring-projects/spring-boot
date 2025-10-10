@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.mock;
 class PathMappedEndpointsTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PathMappedEndpoints(null, (WebEndpointsSupplier) null))
@@ -47,6 +49,7 @@ class PathMappedEndpointsTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSuppliersIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PathMappedEndpoints(null, (Collection<EndpointsSupplier<?>>) null))
@@ -120,7 +123,9 @@ class PathMappedEndpointsTests {
 	@Test
 	void getEndpointWhenContainsIdShouldReturnPathMappedEndpoint() {
 		PathMappedEndpoints mapped = createTestMapped(null);
-		assertThat(mapped.getEndpoint(EndpointId.of("e2")).getRootPath()).isEqualTo("p2");
+		PathMappedEndpoint endpoint = mapped.getEndpoint(EndpointId.of("e2"));
+		assertThat(endpoint).isNotNull();
+		assertThat(endpoint.getRootPath()).isEqualTo("p2");
 	}
 
 	@Test
@@ -138,7 +143,7 @@ class PathMappedEndpointsTests {
 		assertThat(mapped.getAdditionalPaths(WebServerNamespace.SERVER, EndpointId.of("e3"))).isEmpty();
 	}
 
-	private PathMappedEndpoints createTestMapped(String basePath) {
+	private PathMappedEndpoints createTestMapped(@Nullable String basePath) {
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
 		endpoints.add(mockEndpoint(EndpointId.of("e1")));
 		endpoints.add(mockEndpoint(EndpointId.of("e2"), "p2", WebServerNamespace.SERVER, List.of("/a2", "A2")));
@@ -151,8 +156,8 @@ class PathMappedEndpointsTests {
 		return mockEndpoint(id, rootPath, null, null);
 	}
 
-	private TestPathMappedEndpoint mockEndpoint(EndpointId id, String rootPath, WebServerNamespace webServerNamespace,
-			List<String> additionalPaths) {
+	private TestPathMappedEndpoint mockEndpoint(EndpointId id, String rootPath,
+			@Nullable WebServerNamespace webServerNamespace, @Nullable List<String> additionalPaths) {
 		TestPathMappedEndpoint endpoint = mock(TestPathMappedEndpoint.class);
 		given(endpoint.getEndpointId()).willReturn(id);
 		given(endpoint.getRootPath()).willReturn(rootPath);

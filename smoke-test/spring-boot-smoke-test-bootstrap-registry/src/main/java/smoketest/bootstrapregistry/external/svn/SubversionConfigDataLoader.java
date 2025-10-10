@@ -19,10 +19,10 @@ package smoketest.bootstrapregistry.external.svn;
 import java.io.IOException;
 import java.util.Collections;
 
-import org.springframework.boot.BootstrapContext;
-import org.springframework.boot.BootstrapContextClosedEvent;
-import org.springframework.boot.BootstrapRegistry;
-import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.bootstrap.BootstrapContext;
+import org.springframework.boot.bootstrap.BootstrapContextClosedEvent;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
+import org.springframework.boot.bootstrap.BootstrapRegistry.InstanceSupplier;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.boot.context.config.ConfigDataLoader;
 import org.springframework.boot.context.config.ConfigDataLoaderContext;

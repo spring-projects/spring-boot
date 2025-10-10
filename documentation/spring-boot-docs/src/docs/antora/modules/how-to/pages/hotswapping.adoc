@@ -37,7 +37,7 @@ If you use the `spring-boot-devtools` module, these properties are xref:referenc
 === Thymeleaf Templates
 
 If you use Thymeleaf, set `spring.thymeleaf.cache` to `false`.
-See {code-spring-boot-autoconfigure-src}/thymeleaf/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`] for other Thymeleaf customization options.
+See {code-spring-boot-thymeleaf-src}/autoconfigure/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`] for other Thymeleaf customization options.
 
 
 
@@ -45,7 +45,7 @@ See {code-spring-boot-autoconfigure-src}/thymeleaf/ThymeleafAutoConfiguration.ja
 === FreeMarker Templates
 
 If you use FreeMarker, set `spring.freemarker.cache` to `false`.
-See {code-spring-boot-autoconfigure-src}/freemarker/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`] for other FreeMarker customization options.
+See {code-spring-boot-freemarker-src}/autoconfigure/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`] for other FreeMarker customization options.
 
 NOTE: Template caching for FreeMarker is not supported with WebFlux.
 
@@ -55,7 +55,7 @@ NOTE: Template caching for FreeMarker is not supported with WebFlux.
 === Groovy Templates
 
 If you use Groovy templates, set `spring.groovy.template.cache` to `false`.
-See {code-spring-boot-autoconfigure-src}/groovy/template/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`] for other Groovy customization options.
+See {code-spring-boot-groovy-templates-src}/autoconfigure/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`] for other Groovy customization options.
 
 
 

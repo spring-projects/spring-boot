@@ -51,6 +51,7 @@ class StaticResourceRequestTests {
 		assertMatcher(matcher).matches("/favicon.ico");
 		assertMatcher(matcher).matches("/favicon.png");
 		assertMatcher(matcher).matches("/icons/icon-48x48.png");
+		assertMatcher(matcher).matches("/fonts/font.woff2");
 		assertMatcher(matcher).doesNotMatch("/bar");
 	}
 

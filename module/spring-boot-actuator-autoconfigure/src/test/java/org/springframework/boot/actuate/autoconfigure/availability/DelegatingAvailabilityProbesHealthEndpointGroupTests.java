@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.availability;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
@@ -61,8 +62,8 @@ class DelegatingAvailabilityProbesHealthEndpointGroupTests {
 		assertThat(this.group.getHttpCodeStatusMapper()).isEqualTo(this.mapper);
 		assertThat(this.group.getStatusAggregator()).isEqualTo(this.aggregator);
 		assertThat(this.group.isMember("test")).isTrue();
-		assertThat(this.group.showDetails(null)).isFalse();
-		assertThat(this.group.showComponents(null)).isTrue();
+		assertThat(this.group.showDetails(SecurityContext.NONE)).isFalse();
+		assertThat(this.group.showComponents(SecurityContext.NONE)).isTrue();
 		assertThat(this.group.getAdditionalPath().getValue()).isEqualTo("test");
 	}
 

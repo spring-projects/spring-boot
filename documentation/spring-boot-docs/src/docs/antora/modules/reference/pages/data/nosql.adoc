@@ -25,10 +25,10 @@ Spring Boot also provides auto-configuration for the InfluxDB client but it is d
 == Redis
 
 https://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
-Spring Boot offers basic auto-configuration for the https://github.com/lettuce-io/lettuce-core/[Lettuce] and https://github.com/xetorthio/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
+Spring Boot offers basic auto-configuration for the https://github.com/redis/lettuce/[Lettuce] and https://github.com/redis/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
 
 There is a `spring-boot-starter-data-redis` starter for collecting the dependencies in a convenient way.
-By default, it uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
+By default, it uses https://github.com/redis/lettuce/[Lettuce].
 That starter handles both traditional and reactive applications.
 
 TIP: We also provide a `spring-boot-starter-data-redis-reactive` starter for consistency with the other stores with reactive support.
@@ -75,7 +75,10 @@ spring:
 TIP: You can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.data.redis.autoconfigure.LettuceClientConfigurationBuilderCustomizer[] for more advanced customizations.
 javadoc:io.lettuce.core.resource.ClientResources[] can also be customized using javadoc:org.springframework.boot.data.redis.autoconfigure.ClientResourcesBuilderCustomizer[].
 If you use Jedis, javadoc:org.springframework.boot.data.redis.autoconfigure.JedisClientConfigurationBuilderCustomizer[] is also available.
-Alternatively, you can register a bean of type javadoc:org.springframework.data.redis.connection.RedisStandaloneConfiguration[], javadoc:org.springframework.data.redis.connection.RedisSentinelConfiguration[], or javadoc:org.springframework.data.redis.connection.RedisClusterConfiguration[] to take full control over the configuration.
+
+Alternatively, you can register a bean of type javadoc:org.springframework.data.redis.connection.RedisStandaloneConfiguration[], javadoc:org.springframework.data.redis.connection.RedisSentinelConfiguration[], javadoc:org.springframework.data.redis.connection.RedisClusterConfiguration[], or javadoc:org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration[] to take full control over the configuration.
+
+NOTE: master/replica is not supported by Jedis.
 
 If you add your own javadoc:org.springframework.context.annotation.Bean[format=annotation] of any of the auto-configured types, it replaces the default (except in the case of javadoc:org.springframework.data.redis.core.RedisTemplate[], when the exclusion is based on the bean name, `redisTemplate`, not its type).
 
@@ -127,7 +130,7 @@ If you have defined your own javadoc:{url-mongodb-driver-sync-javadoc}/com.mongo
 The auto-configured javadoc:{url-mongodb-driver-sync-javadoc}/com.mongodb.client.MongoClient[] is created using a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] bean.
 If you have defined your own javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[], it will be used without modification and the `spring.data.mongodb` properties will be ignored.
 Otherwise a javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
-In either case, you can declare one or more javadoc:org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer[] beans to fine-tune the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] configuration.
+In either case, you can declare one or more javadoc:org.springframework.boot.mongodb.autoconfigure.MongoClientSettingsBuilderCustomizer[] beans to fine-tune the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[] configuration.
 Each will be called in order with the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings$Builder[] that is used to build the javadoc:{url-mongodb-driver-core-javadoc}/com.mongodb.MongoClientSettings[].
 
 You can set the configprop:spring.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
@@ -220,7 +223,7 @@ include-code::CityRepository[]
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.mongodb.repository.config.EnableMongoRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.mongodb.repository.config.EnableMongoRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data MongoDB, including its rich object mapping technologies, see its {url-spring-data-mongodb-docs}[reference documentation].
 
@@ -279,7 +282,7 @@ When Project Reactor is available on the classpath, the reactive style is also a
 
 Repositories and entities are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 [NOTE]
 ====
@@ -350,6 +353,8 @@ spring:
         delay-after-failure: "30s"
 ----
 
+To disable auto-configuration of the Sniffer, set configprop:spring.elasticsearch.restclient.sniffer.enabled[] to `false`.
+
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]
@@ -402,7 +407,7 @@ You could take the JPA example from earlier and, assuming that `City` is now an 
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data Elasticsearch, see the {url-spring-data-elasticsearch-docs}[reference documentation].
 
@@ -520,7 +525,7 @@ Currently, this is more limited than the JPA repositories discussed earlier and 
 
 Repositories and entities are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.cassandra.repository.config.EnableCassandraRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and entities by using javadoc:org.springframework.data.cassandra.repository.config.EnableCassandraRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data Cassandra, see the {url-spring-data-cassandra-docs}[reference documentation].
 
@@ -610,7 +615,7 @@ Spring Data includes repository support for Couchbase.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 For complete details of Spring Data Couchbase, see the {url-spring-data-couchbase-docs}[reference documentation].
 
@@ -683,7 +688,7 @@ Spring Data includes repository support for LDAP.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
-You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.ldap.repository.config.EnableLdapRepositories[format=annotation] and javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] respectively.
+You can customize the locations to look for repositories and documents by using javadoc:org.springframework.data.ldap.repository.config.EnableLdapRepositories[format=annotation] and javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] respectively.
 
 TIP: For complete details of Spring Data LDAP, see the {url-spring-data-ldap-docs}[reference documentation].
 

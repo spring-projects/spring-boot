@@ -23,12 +23,13 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.jspecify.annotations.Nullable;
 
 class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
 	private final List<String> availableClasses = new ArrayList<>();
 
-	private String[] standardConfigLocations;
+	private String @Nullable [] standardConfigLocations;
 
 	TestLog4J2LoggingSystem() {
 		super(TestLog4J2LoggingSystem.class.getClassLoader());

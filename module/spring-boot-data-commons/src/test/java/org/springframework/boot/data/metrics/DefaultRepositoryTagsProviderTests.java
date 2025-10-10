@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 
 import io.micrometer.core.instrument.Tag;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.data.repository.Repository;
@@ -80,9 +81,10 @@ class DefaultRepositoryTagsProviderTests {
 		return createInvocation(null);
 	}
 
-	private RepositoryMethodInvocation createInvocation(Throwable error) {
+	private RepositoryMethodInvocation createInvocation(@Nullable Throwable error) {
 		Class<?> repositoryInterface = ExampleRepository.class;
 		Method method = ReflectionUtils.findMethod(repositoryInterface, "findById", long.class);
+		assertThat(method).isNotNull();
 		RepositoryMethodInvocationResult result = mock(RepositoryMethodInvocationResult.class);
 		given(result.getState()).willReturn((error != null) ? State.ERROR : State.SUCCESS);
 		given(result.getError()).willReturn(error);

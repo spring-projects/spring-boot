@@ -33,7 +33,7 @@ import org.jspecify.annotations.Nullable;
  * @author Phillip Webb
  */
 record DockerCliInspectResponse(String id, DockerCliInspectResponse.Config config,
-		DockerCliInspectResponse.NetworkSettings networkSettings,
+		DockerCliInspectResponse.@Nullable NetworkSettings networkSettings,
 		DockerCliInspectResponse.@Nullable HostConfig hostConfig) {
 
 	/**

@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.record;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
-@ConfigurationProperties("record-nested")
-public record NestedPropertiesRecord(String myProperty, @NestedConfigurationProperty NestedRecord nested,
+@TestConfigurationProperties("record-nested")
+public record NestedPropertiesRecord(String myProperty, @TestNestedConfigurationProperty NestedRecord nested,
 		InnerPropertiesRecord inner) {
 
-	public record InnerPropertiesRecord(String myInnerProperty, @NestedConfigurationProperty NestedRecord nested) {
+	public record InnerPropertiesRecord(String myInnerProperty, @TestNestedConfigurationProperty NestedRecord nested) {
 	}
 
 }

@@ -62,6 +62,10 @@ These features are described in several enums (in Jackson) that map onto propert
 |===
 | Enum | Property | Values
 
+| javadoc:tools.jackson.databind.cfg.DateTimeFeature[]
+| `spring.jackson.datatype.datetime.<feature_name>`
+| `true`, `false`
+
 | javadoc:tools.jackson.databind.cfg.EnumFeature[]
 | `spring.jackson.datatype.enum.<feature_name>`
 | `true`, `false`
@@ -70,33 +74,29 @@ These features are described in several enums (in Jackson) that map onto propert
 | `spring.jackson.datatype.json-node.<feature_name>`
 | `true`, `false`
 
-| javadoc:tools.jackson.databind.DateTimeFeature[]
-| `spring.jackson.datetime.<feature_name>`
-| `true`, `false`
+| javadoc:com.fasterxml.jackson.annotation.JsonInclude$Include[]
+| configprop:spring.jackson.default-property-inclusion[]
+| `always`, `non_null`, `non_absent`, `non_default`, `non_empty`
 
 | javadoc:tools.jackson.databind.DeserializationFeature[]
 | `spring.jackson.deserialization.<feature_name>`
+| `true`, `false`
+
+| javadoc:tools.jackson.core.JsonReadFeature[]
+| `spring.jackson.json.read.<feature_name>`
+| `true`, `false`
+
+| javadoc:tools.jackson.core.JsonWriteFeature[]
+| `spring.jackson.json.write.<feature_name>`
 | `true`, `false`
 
 | javadoc:tools.jackson.databind.MapperFeature[]
 | `spring.jackson.mapper.<feature_name>`
 | `true`, `false`
 
-| javadoc:tools.jackson.core.JsonReadFeature[]
-| `spring.jackson.read.<feature_name>`
-| `true`, `false`
-
-| javadoc:tools.jackson.core.JsonWriteFeature[]
-| `spring.jackson.write.<feature_name>`
-| `true`, `false`
-
 | javadoc:tools.jackson.databind.SerializationFeature[]
 | `spring.jackson.serialization.<feature_name>`
 | `true`, `false`
-
-| javadoc:com.fasterxml.jackson.annotation.JsonInclude$Include[]
-| configprop:spring.jackson.default-property-inclusion[]
-| `always`, `non_null`, `non_absent`, `non_default`, `non_empty`
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
@@ -104,7 +104,9 @@ Note that, thanks to the use of xref:reference:features/external-config.adoc#fea
 
 This environment-based configuration is applied to the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[] bean and applies to any mappers created by using the builder, including the auto-configured javadoc:tools.jackson.databind.json.JsonMapper[] bean.
 
-The context's javadoc:tools.jackson.databind.json.JsonMapper.Builder[] can be customized by one or more javadoc:org.springframework.boot.autoconfigure.jackson.JsonMapperBuilderCustomizer[] beans.
+To ease the migration when working on an application that previously used Jackson 2, the auto-configured `JsonMapper` can be configured to use defaults that are as close as possible to those that Spring Boot used for Jackson 2. To enable these defaults, set configprop:spring.jackson.use-jackson2-defaults[] to `true`.
+
+The context's javadoc:tools.jackson.databind.json.JsonMapper.Builder[] can be customized by one or more javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
 Such customizer beans can be ordered (Boot's own customizer has an order of 0), letting additional customization be applied both before and after Boot's customization.
 
 Any beans of type javadoc:tools.jackson.databind.JacksonModule[] are automatically registered with the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[] and are applied to any javadoc:tools.jackson.databind.json.JsonMapper[] instances that it creates.
@@ -114,11 +116,11 @@ If you want to replace the default javadoc:tools.jackson.databind.json.JsonMappe
 When defining an javadoc:tools.jackson.databind.json.JsonMapper[] bean, marking it as javadoc:org.springframework.context.annotation.Primary[format=annotation] is recommended as the auto-configuration's javadoc:tools.jackson.databind.json.JsonMapper[] that it will replace is javadoc:org.springframework.context.annotation.Primary[format=annotation].
 Note that, in either case, doing so disables all auto-configuration of the javadoc:tools.jackson.databind.json.JsonMapper[].
 
-If you provide any javadoc:java.beans.Beans[format=annotation] of type javadoc:org.springframework.http.converter.json.JacksonJsonHttpMessageConverter[], they replace the default value in the MVC configuration.
+If you provide any javadoc:org.springframework.context.annotation.Bean[format=annotation]s of type javadoc:org.springframework.http.converter.json.JacksonJsonHttpMessageConverter[], they replace the default value in the MVC configuration.
 Also, a convenience bean of type javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
-See the xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[] section and the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[] section and the {code-spring-boot-webmvc-src}/autoconfigure/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 
@@ -135,7 +137,7 @@ As in normal MVC usage, any javadoc:org.springframework.web.servlet.config.annot
 However, unlike with normal MVC, you can supply only additional converters that you need (because Spring Boot uses the same mechanism to contribute its defaults).
 Finally, if you opt out of the default Spring Boot MVC configuration by providing your own javadoc:org.springframework.web.servlet.config.annotation.EnableWebMvc[format=annotation] configuration, you can take control completely and do everything manually by using `getMessageConverters` from javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport[].
 
-See the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the {code-spring-boot-webmvc-src}/autoconfigure/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 
@@ -149,7 +151,7 @@ For example, if you want to specify that files be unlimited, set the configprop:
 
 The multipart support is helpful when you want to receive multipart encoded file data as a javadoc:org.springframework.web.bind.annotation.RequestParam[format=annotation]-annotated parameter of type javadoc:org.springframework.web.multipart.MultipartFile[] in a Spring MVC controller handler method.
 
-See the {code-spring-boot-autoconfigure-src}/web/servlet/MultipartAutoConfiguration.java[`MultipartAutoConfiguration`] source for more details.
+See the {code-spring-boot-servlet-src}/autoconfigure/MultipartAutoConfiguration.java[`MultipartAutoConfiguration`] source for more details.
 
 NOTE: It is recommended to use the container's built-in support for multipart uploads rather than introduce an additional dependency such as Apache Commons File Upload.
 
@@ -173,7 +175,7 @@ If you have additional servlets you can declare a javadoc:org.springframework.co
 It is also possible to use javadoc:org.springframework.boot.web.servlet.ServletRegistration[format=annotation] as an annotation-based alternative to javadoc:org.springframework.boot.web.servlet.ServletRegistrationBean[].
 Because servlets are registered that way, they can be mapped to a sub-context of the javadoc:org.springframework.web.servlet.DispatcherServlet[] without invoking it.
 
-Configuring the javadoc:org.springframework.web.servlet.DispatcherServlet[] yourself is unusual but if you really need to do it, a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath[] must be provided as well to provide the path of your custom javadoc:org.springframework.web.servlet.DispatcherServlet[].
+Configuring the javadoc:org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath[] yourself is unusual but if you really need to do it, a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath[] must be provided as well to provide the path of your custom javadoc:org.springframework.web.servlet.DispatcherServlet[].
 
 
 
@@ -195,7 +197,7 @@ Spring Boot, on the other hand, installs one or two for you, depending on what i
 The javadoc:org.springframework.web.servlet.DispatcherServlet[] uses all the resolvers it finds in the application context, trying each one in turn until it gets a result.
 If you add your own, you have to be aware of the order and in which position your resolver is added.
 
-javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration[] adds the following javadoc:org.springframework.web.servlet.ViewResolver[] beans to your context:
+javadoc:org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration[] adds the following javadoc:org.springframework.web.servlet.ViewResolver[] beans to your context:
 
 * An javadoc:org.springframework.web.servlet.view.InternalResourceViewResolver[] named '`defaultViewResolver`'.
   This one locates physical resources that can be rendered by using the `DefaultServlet` (including static resources and JSP pages, if you use those).
@@ -218,7 +220,7 @@ javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurati
   The prefix is externalized to `spring.freemarker.prefix`, and the suffix is externalized to `spring.freemarker.suffix`.
   The default values of the prefix and suffix are empty and '`.ftlh`', respectively.
   You can override javadoc:org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver[] by providing a bean of the same name.
-  FreeMarker variables can be customized by defining a bean of type javadoc:org.springframework.boot.autoconfigure.freemarker.FreeMarkerVariablesCustomizer[].
+  FreeMarker variables can be customized by defining a bean of type javadoc:org.springframework.boot.freemarker.autoconfigure.FreeMarkerVariablesCustomizer[].
 * If you use Groovy templates (actually, if `groovy-templates` is on your classpath), you also have a javadoc:org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver[] named '`groovyMarkupViewResolver`'.
   It looks for resources in a loader path by surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix` and `spring.groovy.template.suffix`).
   The prefix and suffix have default values of '`classpath:/templates/`' and '`.tpl`', respectively.
@@ -231,10 +233,10 @@ javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurati
 
 For more detail, see the following sections:
 
-* {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`]
-* {code-spring-boot-autoconfigure-src}/thymeleaf/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`]
-* {code-spring-boot-autoconfigure-src}/freemarker/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`]
-* {code-spring-boot-autoconfigure-src}/groovy/template/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`]
+* {code-spring-boot-webmvc-src}/autoconfigure/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`]
+* {code-spring-boot-thymeleaf-src}/autoconfigure/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`]
+* {code-spring-boot-freemarker-src}/autoconfigure/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`]
+* {code-spring-boot-groovy-templates-src}/autoconfigure/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`]
 
 
 
@@ -252,6 +254,6 @@ For example, if you use Thymeleaf, you can add an `error.html` template.
 If you use FreeMarker, you can add an `error.ftlh` template.
 In general, you need a javadoc:org.springframework.web.servlet.View[] that resolves with a name of `error` or a javadoc:org.springframework.stereotype.Controller[format=annotation] that handles the `/error` path.
 Unless you replaced some of the default configuration, you should find a javadoc:org.springframework.web.servlet.view.BeanNameViewResolver[] in your javadoc:org.springframework.context.ApplicationContext[], so a javadoc:org.springframework.context.annotation.Bean[format=annotation] named `error` would be one way of doing that.
-See {code-spring-boot-autoconfigure-src}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
+See {code-spring-boot-webmvc-src}/autoconfigure/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
 See also the section on xref:reference:web/servlet.adoc#web.servlet.spring-mvc.error-handling[] for details of how to register handlers in the servlet container.

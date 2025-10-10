@@ -136,7 +136,9 @@ class SslHealthIndicatorTests {
 
 	@SuppressWarnings("unchecked")
 	private static List<CertificateChainInfo> getChains(Health health, String name) {
-		return (List<CertificateChainInfo>) health.getDetails().get(name);
+		Object details = health.getDetails().get(name);
+		assertThat(details).isNotNull();
+		return (List<CertificateChainInfo>) details;
 	}
 
 }

@@ -27,14 +27,15 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import org.springframework.boot.ConfigurableBootstrapContext;
-import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.MockApplicationEnvironment;
+import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
+import org.springframework.boot.bootstrap.DefaultBootstrapContext;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.ImportPhase;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.config.TestConfigDataEnvironmentUpdateListener.AddedPropertySource;
@@ -81,8 +82,9 @@ class ConfigDataEnvironmentTests {
 		this.environment.setProperty("spring", "boot");
 		TestConfigDataEnvironment configDataEnvironment = new TestConfigDataEnvironment(this.logFactory,
 				this.bootstrapContext, this.environment, this.resourceLoader, this.additionalProfiles, null);
-		assertThat(configDataEnvironment.getConfigDataLocationResolversBinder().bind("spring", String.class).get())
-			.isEqualTo("boot");
+		Binder binder = configDataEnvironment.getConfigDataLocationResolversBinder();
+		assertThat(binder).isNotNull();
+		assertThat(binder.bind("spring", String.class).get()).isEqualTo("boot");
 	}
 
 	@Test
@@ -335,8 +337,9 @@ class ConfigDataEnvironmentTests {
 		AddedPropertySource addedPropertySource = listener.getAddedPropertySources().get(0);
 		assertThat(addedPropertySource.getPropertySource().getProperty("spring")).isEqualTo("boot");
 		assertThat(addedPropertySource.getLocation()).hasToString("classpath:custom/config.properties");
-		assertThat(addedPropertySource.getResource().toString()).contains("class path resource")
-			.contains("custom/config.properties");
+		ConfigDataResource resource = addedPropertySource.getResource();
+		assertThat(resource).isNotNull();
+		assertThat(resource.toString()).contains("class path resource").contains("custom/config.properties");
 	}
 
 	@Test
@@ -346,7 +349,9 @@ class ConfigDataEnvironmentTests {
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, listener);
 		configDataEnvironment.processAndApply();
-		assertThat(listener.getProfiles().getActive()).containsExactly("one", "two", "three");
+		Profiles profiles = listener.getProfiles();
+		assertThat(profiles).isNotNull();
+		assertThat(profiles.getActive()).containsExactly("one", "two", "three");
 	}
 
 	@Test
@@ -384,11 +389,12 @@ class ConfigDataEnvironmentTests {
 
 	static class TestConfigDataEnvironment extends ConfigDataEnvironment {
 
-		private Binder configDataLocationResolversBinder;
+		private @Nullable Binder configDataLocationResolversBinder;
 
 		TestConfigDataEnvironment(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
 				ConfigurableEnvironment environment, ResourceLoader resourceLoader,
-				Collection<String> additionalProfiles, ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
+				Collection<String> additionalProfiles,
+				@Nullable ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 			super(logFactory, bootstrapContext, environment, resourceLoader, additionalProfiles,
 					environmentUpdateListener);
 		}
@@ -400,7 +406,7 @@ class ConfigDataEnvironmentTests {
 			return super.createConfigDataLocationResolvers(logFactory, bootstrapContext, binder, resourceLoader);
 		}
 
-		Binder getConfigDataLocationResolversBinder() {
+		@Nullable Binder getConfigDataLocationResolversBinder() {
 			return this.configDataLocationResolversBinder;
 		}
 
@@ -409,7 +415,7 @@ class ConfigDataEnvironmentTests {
 	static class SeparateClassLoaderConfigDataLoader implements ConfigDataLoader<ConfigDataResource> {
 
 		@Override
-		public ConfigData load(ConfigDataLoaderContext context, ConfigDataResource resource)
+		public @Nullable ConfigData load(ConfigDataLoaderContext context, ConfigDataResource resource)
 				throws IOException, ConfigDataResourceNotFoundException {
 			return null;
 		}

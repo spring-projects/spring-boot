@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -89,7 +90,7 @@ class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 
 		private int foo;
 
-		private Map<String, String> map;
+		private @Nullable Map<String, String> map;
 
 		int getFoo() {
 			return this.foo;
@@ -99,11 +100,11 @@ class IgnoreTopLevelConverterNotFoundBindHandlerTests {
 			throw new IllegalStateException();
 		}
 
-		Map<String, String> getMap() {
+		@Nullable Map<String, String> getMap() {
 			return this.map;
 		}
 
-		void setMap(Map<String, String> map) {
+		void setMap(@Nullable Map<String, String> map) {
 			this.map = map;
 		}
 

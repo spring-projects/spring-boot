@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Class used to test multi-constructor binding. Must be public and have public
  * constructors.
@@ -24,7 +26,7 @@ package org.springframework.boot.context.properties;
  */
 public class MultiConstructorConfigurationProperties {
 
-	private String name;
+	private @Nullable String name;
 
 	private int age;
 
@@ -35,11 +37,11 @@ public class MultiConstructorConfigurationProperties {
 		this.name = name;
 	}
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(@Nullable String name) {
 		this.name = name;
 	}
 

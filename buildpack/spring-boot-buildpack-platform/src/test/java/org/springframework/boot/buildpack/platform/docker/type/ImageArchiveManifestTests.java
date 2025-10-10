@@ -63,7 +63,7 @@ class ImageArchiveManifestTests extends AbstractJsonTests {
 	}
 
 	private ImageArchiveManifest getManifest(String content) {
-		return new ImageArchiveManifest(getObjectMapper().readTree(content));
+		return new ImageArchiveManifest(getJsonMapper().readTree(content));
 	}
 
 }

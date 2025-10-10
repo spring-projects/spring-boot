@@ -52,7 +52,7 @@ class ConfigDataActivationContext {
 	 * @param cloudPlatform the cloud platform
 	 * @param profiles the profiles
 	 */
-	ConfigDataActivationContext(@Nullable CloudPlatform cloudPlatform, Profiles profiles) {
+	ConfigDataActivationContext(@Nullable CloudPlatform cloudPlatform, @Nullable Profiles profiles) {
 		this.cloudPlatform = cloudPlatform;
 		this.profiles = profiles;
 	}

@@ -60,7 +60,9 @@ class JdbcContainerConnectionDetailsFactoryTests {
 	void connectionCanBeMadeToJdbcContainer() {
 		assertThat(this.connectionDetails).isNotNull();
 		JdbcTemplate jdbc = new JdbcTemplate(this.dataSource);
-		assertThatNoException().isThrownBy(() -> jdbc.execute(DatabaseDriver.POSTGRESQL.getValidationQuery()));
+		String validationQuery = DatabaseDriver.POSTGRESQL.getValidationQuery();
+		assertThat(validationQuery).isNotNull();
+		assertThatNoException().isThrownBy(() -> jdbc.execute(validationQuery));
 	}
 
 	@Configuration(proxyBeanMethods = false)

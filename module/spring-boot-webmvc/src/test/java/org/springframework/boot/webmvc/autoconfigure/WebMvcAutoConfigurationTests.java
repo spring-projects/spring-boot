@@ -46,7 +46,6 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -185,8 +184,7 @@ class WebMvcAutoConfigurationTests {
 	void handlerAdaptersCreated() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBeans(HandlerAdapter.class).hasSize(4);
-			assertThat(context.getBean(RequestMappingHandlerAdapter.class).getMessageConverters()).isNotEmpty()
-				.isEqualTo(context.getBean(HttpMessageConverters.class).getConverters());
+			assertThat(context.getBean(RequestMappingHandlerAdapter.class).getMessageConverters()).isNotEmpty();
 		});
 	}
 

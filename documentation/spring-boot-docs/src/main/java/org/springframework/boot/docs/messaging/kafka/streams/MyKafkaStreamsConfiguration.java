@@ -33,7 +33,7 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 public class MyKafkaStreamsConfiguration {
 
 	@Bean
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "deprecation", "removal" })
 	public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {
 		KStream<Integer, String> stream = streamsBuilder.stream("ks1In");
 		stream.map(this::uppercaseValue)

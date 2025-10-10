@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties where some of them are being ignored.
  *
  * @author Moritz Halbritter
  */
-@ConfigurationProperties("ignored")
+@TestConfigurationProperties("ignored")
 public class IgnoredProperties {
 
 	private String prop1;

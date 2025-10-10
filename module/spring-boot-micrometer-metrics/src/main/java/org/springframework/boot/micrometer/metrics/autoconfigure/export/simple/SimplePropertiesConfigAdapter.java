@@ -48,12 +48,12 @@ public class SimplePropertiesConfigAdapter extends PropertiesConfigAdapter<Simpl
 
 	@Override
 	public Duration step() {
-		return getRequired(SimpleProperties::getStep, SimpleConfig.super::step);
+		return obtain(SimpleProperties::getStep, SimpleConfig.super::step);
 	}
 
 	@Override
 	public CountingMode mode() {
-		return getRequired(SimpleProperties::getMode, SimpleConfig.super::mode);
+		return obtain(SimpleProperties::getMode, SimpleConfig.super::mode);
 	}
 
 }

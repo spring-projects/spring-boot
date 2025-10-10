@@ -18,6 +18,8 @@ package org.springframework.boot.io;
 
 import java.nio.charset.StandardCharsets;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
@@ -33,7 +35,7 @@ class ReverseStringProtocolResolver implements ProtocolResolver {
 	private static final String PREFIX = "reverse:";
 
 	@Override
-	public Resource resolve(String location, ResourceLoader resourceLoader) {
+	public @Nullable Resource resolve(String location, ResourceLoader resourceLoader) {
 		if (!location.startsWith(PREFIX)) {
 			return null;
 		}

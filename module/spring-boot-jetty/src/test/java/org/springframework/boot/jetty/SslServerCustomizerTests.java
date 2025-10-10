@@ -96,7 +96,8 @@ class SslServerCustomizerTests {
 	void configureSslWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		Ssl ssl = new Ssl();
 		assertThatIllegalStateException().isThrownBy(() -> {
-			SslServerCustomizer customizer = new SslServerCustomizer(null, null, null, WebServerSslBundle.get(ssl));
+			SslServerCustomizer customizer = new SslServerCustomizer(null, new InetSocketAddress(0), null,
+					WebServerSslBundle.get(ssl));
 			customizer.configureSsl(new SslContextFactory.Server(), ssl.getClientAuth());
 		}).withMessageContaining("SSL is enabled but no trust material is configured");
 	}
@@ -110,7 +111,8 @@ class SslServerCustomizerTests {
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
 		assertThatIllegalStateException().isThrownBy(() -> {
-			SslServerCustomizer customizer = new SslServerCustomizer(null, null, null, WebServerSslBundle.get(ssl));
+			SslServerCustomizer customizer = new SslServerCustomizer(null, new InetSocketAddress(0), null,
+					WebServerSslBundle.get(ssl));
 			customizer.configureSsl(new SslContextFactory.Server(), ssl.getClientAuth());
 		}).withMessageContaining("must be empty or null for PKCS11 hardware key stores");
 	}
@@ -122,7 +124,8 @@ class SslServerCustomizerTests {
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStorePassword("1234");
 		assertThatNoException().isThrownBy(() -> {
-			SslServerCustomizer customizer = new SslServerCustomizer(null, null, null, WebServerSslBundle.get(ssl));
+			SslServerCustomizer customizer = new SslServerCustomizer(null, new InetSocketAddress(0), null,
+					WebServerSslBundle.get(ssl));
 			customizer.configureSsl(new SslContextFactory.Server(), ssl.getClientAuth());
 		});
 	}

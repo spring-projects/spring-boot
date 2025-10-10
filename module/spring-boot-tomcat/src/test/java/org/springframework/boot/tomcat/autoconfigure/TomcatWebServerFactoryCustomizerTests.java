@@ -16,6 +16,7 @@
 
 package org.springframework.boot.tomcat.autoconfigure;
 
+import java.time.Duration;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -323,6 +324,20 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void resourceCacheMatchesDefault() {
+		TomcatServerProperties properties = new TomcatServerProperties();
+		customizeAndRunServer((server) -> {
+			Tomcat tomcat = server.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(properties.getResource().isAllowCaching()).isEqualTo(context.getResources().isCachingAllowed());
+			assertThat(properties.getResource().getCacheMaxSize())
+				.isEqualTo(DataSize.ofKilobytes(context.getResources().getCacheMaxSize()));
+			assertThat(properties.getResource().getCacheTtl())
+				.isEqualTo(Duration.ofMillis(context.getResources().getCacheTtl()));
+		});
+	}
+
+	@Test
 	void customStaticResourceAllowCaching() {
 		bind("server.tomcat.resource.allow-caching=false");
 		customizeAndRunServer((server) -> {
@@ -333,8 +348,18 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customStaticResourceCacheMaxSize() {
+		bind("server.tomcat.resource.cache-max-size=4MB");
+		customizeAndRunServer((server) -> {
+			Tomcat tomcat = server.getTomcat();
+			Context context = (Context) tomcat.getHost().findChildren()[0];
+			assertThat(context.getResources().getCacheMaxSize()).isEqualTo(4096L);
+		});
+	}
+
+	@Test
 	void customStaticResourceCacheTtl() {
-		bind("server.tomcat.resource.cache-ttl=10000");
+		bind("server.tomcat.resource.cache-ttl=10s");
 		customizeAndRunServer((server) -> {
 			Tomcat tomcat = server.getTomcat();
 			Context context = (Context) tomcat.getHost().findChildren()[0];

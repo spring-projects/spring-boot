@@ -29,6 +29,7 @@ dependencies {
 	api("org.springframework:spring-web")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-test"))
 	optional(project(":module:spring-boot-jackson"))
 	optional("org.springframework:spring-webflux")
 
@@ -36,4 +37,8 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

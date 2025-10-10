@@ -241,5 +241,5 @@ The properties supported by auto-configuration are shown in the xref:appendix:ap
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Pulsar configuration properties.
 See the Apache Pulsar documentation for details.
 
-Only a subset of the properties supported by Pulsar are available directly through the javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarProperties[] class.
+Only a subset of the properties supported by Pulsar are available directly through the javadoc:org.springframework.boot.pulsar.autoconfigure.PulsarProperties[] class.
 If you wish to tune the auto-configured components with additional properties that are not directly supported, you can use the customizer supported by each aforementioned component.

@@ -20,6 +20,7 @@ plugins {
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot Freemarker"
@@ -30,13 +31,23 @@ dependencies {
 	api("org.springframework:spring-context-support")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional("org.springframework:spring-webmvc")
-	optional("org.springframework:spring-webflux")
+	optional(project(":module:spring-boot-webflux"))
+	optional(project(":module:spring-boot-webflux-test"))
+	optional(project(":module:spring-boot-webmvc"))
+	optional(project(":module:spring-boot-webmvc-test"))
 	optional("jakarta.servlet:jakarta.servlet-api")
 
 	testImplementation(project(":core:spring-boot-test"))
+	testImplementation(project(":core:spring-boot-test-autoconfigure"))
 	testImplementation(project(":module:spring-boot-servlet"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
+
+	testCompileOnly("com.google.code.findbugs:jsr305")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -207,6 +207,7 @@ class ApplicationResourceLoaderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getWithClassPathAndSpringFactoriesLoaderWhenSpringFactoriesLoaderIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApplicationResourceLoader.get((ClassLoader) null, null))
 			.withMessage("'springFactoriesLoader' must not be null");
@@ -227,6 +228,7 @@ class ApplicationResourceLoaderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getWithResourceLoaderWhenResourceLoaderIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApplicationResourceLoader.get((ResourceLoader) null))
 			.withMessage("'resourceLoader' must not be null");
@@ -241,6 +243,7 @@ class ApplicationResourceLoaderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getWithResourceLoaderAndSpringFactoriesLoaderWhenResourceLoaderIsNullThrowsException() {
 		SpringFactoriesLoader springFactoriesLoader = SpringFactoriesLoader
 			.forResourceLocation(TEST_PROTOCOL_RESOLVERS_FACTORIES);
@@ -250,6 +253,7 @@ class ApplicationResourceLoaderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getWithResourceLoaderAndSpringFactoriesLoaderWhenSpringFactoriesLoaderIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ApplicationResourceLoader.get(new TestResourceLoader(), null))
@@ -276,6 +280,7 @@ class ApplicationResourceLoaderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getResourceWhenPathIsNull() {
 		ResourceLoader loader = ApplicationResourceLoader.get();
 		assertThatIllegalArgumentException().isThrownBy(() -> loader.getResource(null))

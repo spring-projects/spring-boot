@@ -25,12 +25,13 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -54,10 +55,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "server.servlet.session.timeout:2", "debug=true" })
+@AutoConfigureTestRestTemplate
 class SampleSessionJdbcApplicationTests {
 
-	private static final ClientHttpRequestFactorySettings DONT_FOLLOW_REDIRECTS = ClientHttpRequestFactorySettings
-		.defaults()
+	private static final HttpClientSettings DONT_FOLLOW_REDIRECTS = HttpClientSettings.defaults()
 		.withRedirects(HttpRedirects.DONT_FOLLOW);
 
 	@Autowired
@@ -83,7 +84,7 @@ class SampleSessionJdbcApplicationTests {
 	}
 
 	private String performLogin() {
-		RestTemplate restTemplate = this.restTemplateBuilder.requestFactorySettings(DONT_FOLLOW_REDIRECTS).build();
+		RestTemplate restTemplate = this.restTemplateBuilder.clientSettings(DONT_FOLLOW_REDIRECTS).build();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

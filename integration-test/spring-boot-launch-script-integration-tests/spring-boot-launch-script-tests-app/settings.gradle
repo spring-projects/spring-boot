@@ -17,7 +17,7 @@
 pluginManagement {
 	evaluate(new File("${gradle.parent.rootProject.rootDir}/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
-		maven { url "file:${rootDir}/../docker-test-maven-repository"}
+		maven { url = layout.settingsDirectory.dir("../docker-test-maven-repository") }
 		mavenCentral()
 		spring.mavenRepositories()
 	}

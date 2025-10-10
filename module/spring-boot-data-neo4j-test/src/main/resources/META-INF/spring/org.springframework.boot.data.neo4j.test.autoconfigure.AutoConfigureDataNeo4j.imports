@@ -1,0 +1,7 @@
+org.springframework.boot.data.neo4j.autoconfigure.DataNeo4jAutoConfiguration
+org.springframework.boot.data.neo4j.autoconfigure.DataNeo4jReactiveAutoConfiguration
+org.springframework.boot.data.neo4j.autoconfigure.DataNeo4jReactiveRepositoriesAutoConfiguration
+org.springframework.boot.data.neo4j.autoconfigure.DataNeo4jRepositoriesAutoConfiguration
+org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration
+org.springframework.boot.transaction.autoconfigure.TransactionAutoConfiguration
+optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

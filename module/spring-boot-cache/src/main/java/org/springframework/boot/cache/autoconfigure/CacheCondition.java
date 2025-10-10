@@ -27,7 +27,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.ClassMetadata;
+import org.springframework.util.Assert;
 
 /**
  * General cache condition used with all cache configuration classes.
@@ -40,10 +40,12 @@ class CacheCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		String sourceClass = "";
-		if (metadata instanceof ClassMetadata classMetadata) {
-			sourceClass = classMetadata.getClassName();
-		}
+		Assert.isInstanceOf(AnnotationMetadata.class, metadata);
+		return extracted(context, (AnnotationMetadata) metadata);
+	}
+
+	private ConditionOutcome extracted(ConditionContext context, AnnotationMetadata metadata) {
+		String sourceClass = metadata.getClassName();
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Cache", sourceClass);
 		Environment environment = context.getEnvironment();
 		try {
@@ -51,7 +53,7 @@ class CacheCondition extends SpringBootCondition {
 			if (!specified.isBound()) {
 				return ConditionOutcome.match(message.because("automatic cache type"));
 			}
-			CacheType required = CacheConfigurations.getType(((AnnotationMetadata) metadata).getClassName());
+			CacheType required = CacheConfigurations.getType(metadata.getClassName());
 			if (specified.get() == required) {
 				return ConditionOutcome.match(message.because(specified.get() + " cache type"));
 			}

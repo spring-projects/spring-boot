@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Phillip Webb
  */
+@SuppressWarnings("deprecation")
 class HttpMessageConvertersTests {
 
 	@Test
@@ -171,10 +173,12 @@ class HttpMessageConvertersTests {
 
 	private List<HttpMessageConverter<?>> extractFormPartConverters(List<HttpMessageConverter<?>> converters) {
 		AllEncompassingFormHttpMessageConverter formConverter = findFormConverter(converters);
+		assertThat(formConverter).isNotNull();
 		return formConverter.getPartConverters();
 	}
 
-	private AllEncompassingFormHttpMessageConverter findFormConverter(Collection<HttpMessageConverter<?>> converters) {
+	private @Nullable AllEncompassingFormHttpMessageConverter findFormConverter(
+			Collection<HttpMessageConverter<?>> converters) {
 		for (HttpMessageConverter<?> converter : converters) {
 			if (converter instanceof AllEncompassingFormHttpMessageConverter allEncompassingConverter) {
 				return allEncompassingConverter;

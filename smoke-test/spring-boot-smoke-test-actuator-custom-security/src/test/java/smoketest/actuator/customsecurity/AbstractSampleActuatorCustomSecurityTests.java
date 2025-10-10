@@ -20,9 +20,11 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.web.server.test.client.LocalHostUriTemplateHandler;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
+import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -39,7 +41,7 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 
 	abstract String getManagementPath();
 
-	abstract Environment getEnvironment();
+	abstract ApplicationContext getApplicationContext();
 
 	@Test
 	void homeIsSecure() {
@@ -200,7 +202,8 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 	}
 
 	private TestRestTemplate configure(TestRestTemplate restTemplate) {
-		restTemplate.setUriTemplateHandler(new LocalHostUriTemplateHandler(getEnvironment()));
+		BaseUrl baseUrl = new BaseUrlProviders(getApplicationContext()).getBaseUrlOrDefault();
+		restTemplate.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
 		return restTemplate;
 	}
 

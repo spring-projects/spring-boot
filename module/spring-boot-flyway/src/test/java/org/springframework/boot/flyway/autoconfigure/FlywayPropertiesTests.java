@@ -54,6 +54,8 @@ class FlywayPropertiesTests {
 		assertThat(properties.isFailOnMissingLocations()).isEqualTo(configuration.isFailOnMissingLocations());
 		assertThat(properties.getLocations().stream().map(Location::new).toArray(Location[]::new))
 			.isEqualTo(configuration.getLocations());
+		assertThat(properties.getCallbackLocations().stream().map(Location::new).toArray(Location[]::new))
+			.isEqualTo(configuration.getCallbackLocations());
 		assertThat(properties.getEncoding()).isEqualTo(configuration.getEncoding());
 		assertThat(properties.getConnectRetries()).isEqualTo(configuration.getConnectRetries());
 		assertThat(properties.getConnectRetriesInterval()).extracting(Duration::getSeconds)
@@ -130,7 +132,7 @@ class FlywayPropertiesTests {
 				"environmentProvisionMode", "provisionMode", "cleanOnValidationError");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
-				"targetAsString");
+				"callbackLocationsAsStrings", "targetAsString");
 		// Handled as initSql array
 		ignoreProperties(configuration, "initSql");
 		ignoreProperties(properties, "initSqls");

@@ -46,6 +46,7 @@ class DiskSpaceHealthIndicatorTests {
 	private static final DataSize TOTAL_SPACE = DataSize.ofKilobytes(10);
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private File fileMock;
 
 	private HealthIndicator healthIndicator;
@@ -63,6 +64,7 @@ class DiskSpaceHealthIndicatorTests {
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
 		given(this.fileMock.getAbsolutePath()).willReturn("/absolute-path");
 		Health health = this.healthIndicator.health();
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("threshold", THRESHOLD.toBytes());
 		assertThat(health.getDetails()).containsEntry("free", freeSpace);
@@ -79,6 +81,7 @@ class DiskSpaceHealthIndicatorTests {
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
 		given(this.fileMock.getAbsolutePath()).willReturn("/absolute-path");
 		Health health = this.healthIndicator.health();
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails()).containsEntry("threshold", THRESHOLD.toBytes());
 		assertThat(health.getDetails()).containsEntry("free", freeSpace);

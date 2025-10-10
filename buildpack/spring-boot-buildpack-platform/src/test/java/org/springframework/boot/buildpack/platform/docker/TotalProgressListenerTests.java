@@ -59,7 +59,7 @@ class TotalProgressListenerTests extends AbstractJsonTests {
 	}
 
 	private void run(TestTotalProgressListener listener) throws IOException {
-		JsonStream jsonStream = new JsonStream(getObjectMapper());
+		JsonStream jsonStream = new JsonStream(getJsonMapper());
 		listener.onStart();
 		jsonStream.get(getContent("pull-stream.json"), TestImageUpdateEvent.class, listener::onUpdate);
 		listener.onFinish();

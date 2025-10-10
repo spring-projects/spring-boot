@@ -25,10 +25,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.env.MockEnvironment;
@@ -201,8 +203,8 @@ class DevToolsHomePropertiesPostProcessorTests {
 		return getPostProcessedEnvironment(env, null);
 	}
 
-	private ConfigurableEnvironment getPostProcessedEnvironment(Map<String, String> env, Properties systemProperties)
-			throws Exception {
+	private ConfigurableEnvironment getPostProcessedEnvironment(@Nullable Map<String, String> env,
+			@Nullable Properties systemProperties) throws Exception {
 		if (systemProperties == null) {
 			systemProperties = new Properties();
 			systemProperties.setProperty("user.home", this.home.getAbsolutePath());
@@ -210,7 +212,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		DevToolsHomePropertiesPostProcessor postProcessor = new DevToolsHomePropertiesPostProcessor(
 				(env != null) ? env : Collections.emptyMap(), systemProperties);
-		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, null));
+		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, new SpringApplication()));
 		return environment;
 	}
 

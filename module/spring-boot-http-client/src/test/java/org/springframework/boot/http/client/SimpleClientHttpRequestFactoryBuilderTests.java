@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -41,12 +42,16 @@ class SimpleClientHttpRequestFactoryBuilderTests
 
 	@Override
 	protected long connectTimeout(SimpleClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+		Object field = ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+		assertThat(field).isNotNull();
+		return (int) field;
 	}
 
 	@Override
 	protected long readTimeout(SimpleClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		Object field = ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		assertThat(field).isNotNull();
+		return (int) field;
 	}
 
 	@Override

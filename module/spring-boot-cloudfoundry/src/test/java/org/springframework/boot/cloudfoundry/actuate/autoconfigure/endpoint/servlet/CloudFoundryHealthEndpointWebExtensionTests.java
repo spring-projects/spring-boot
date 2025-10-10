@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.servlet;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -68,11 +70,10 @@ class CloudFoundryHealthEndpointWebExtensionTests {
 			CloudFoundryHealthEndpointWebExtension extension = context
 				.getBean(CloudFoundryHealthEndpointWebExtension.class);
 			HealthDescriptor descriptor = extension.health(ApiVersion.V3).getBody();
-			HealthDescriptor component = ((CompositeHealthDescriptor) descriptor).getComponents()
-				.entrySet()
-				.iterator()
-				.next()
-				.getValue();
+			assertThat(descriptor).isNotNull();
+			Map<String, HealthDescriptor> components = ((CompositeHealthDescriptor) descriptor).getComponents();
+			assertThat(components).isNotNull();
+			HealthDescriptor component = components.entrySet().iterator().next().getValue();
 			assertThat(((IndicatedHealthDescriptor) component).getDetails()).containsEntry("spring", "boot");
 		});
 	}

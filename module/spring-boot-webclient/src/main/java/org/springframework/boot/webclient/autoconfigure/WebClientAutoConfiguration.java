@@ -23,10 +23,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorAutoConfiguration;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
-import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.ssl.SslBundles;
@@ -36,9 +35,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.client.reactive.ClientHttpConnector;
-import org.springframework.web.client.ApiVersionFormatter;
-import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -53,21 +51,15 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(after = { ClientHttpConnectorAutoConfiguration.class, CodecsAutoConfiguration.class })
+@AutoConfiguration(after = { ReactiveHttpClientAutoConfiguration.class, CodecsAutoConfiguration.class })
 @ConditionalOnClass(WebClient.class)
-@EnableConfigurationProperties(WebClientProperties.class)
 public final class WebClientAutoConfiguration {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider,
-			ObjectProvider<ApiVersionInserter> apiVersionInserter,
-			ObjectProvider<ApiVersionFormatter> apiVersionFormatter, WebClientProperties webClientProperties) {
+	WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider) {
 		WebClient.Builder builder = WebClient.builder();
-		PropertiesWebClientCustomizer propertiesCustomizer = new PropertiesWebClientCustomizer(
-				apiVersionInserter.getIfAvailable(), apiVersionFormatter.getIfAvailable(), webClientProperties);
-		propertiesCustomizer.customize(builder);
 		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
@@ -83,9 +75,13 @@ public final class WebClientAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(WebClientSsl.class)
 	@ConditionalOnBean(SslBundles.class)
-	AutoConfiguredWebClientSsl webClientSsl(ClientHttpConnectorBuilder<?> clientHttpConnectorBuilder,
-			ClientHttpConnectorSettings clientHttpConnectorSettings, SslBundles sslBundles) {
-		return new AutoConfiguredWebClientSsl(clientHttpConnectorBuilder, clientHttpConnectorSettings, sslBundles);
+	AutoConfiguredWebClientSsl webClientSsl(ResourceLoader resourceLoader,
+			ObjectProvider<ClientHttpConnectorBuilder<?>> clientHttpConnectorBuilder,
+			ObjectProvider<HttpClientSettings> httpClientSettings, SslBundles sslBundles) {
+		return new AutoConfiguredWebClientSsl(
+				clientHttpConnectorBuilder
+					.getIfAvailable(() -> ClientHttpConnectorBuilder.detect(resourceLoader.getClassLoader())),
+				httpClientSettings.getIfAvailable(HttpClientSettings::defaults), sslBundles);
 	}
 
 	@Configuration(proxyBeanMethods = false)

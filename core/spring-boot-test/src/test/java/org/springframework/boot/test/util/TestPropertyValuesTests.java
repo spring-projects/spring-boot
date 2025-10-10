@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues.Pair;
@@ -191,8 +192,10 @@ class TestPropertyValuesTests {
 
 	@Test
 	void pairOfCreatesPair() {
-		Map<String, Object> map = new LinkedHashMap<>();
-		Pair.of("spring", "boot").addTo(map);
+		Map<String, @Nullable Object> map = new LinkedHashMap<>();
+		Pair pair = Pair.of("spring", "boot");
+		assertThat(pair).isNotNull();
+		pair.addTo(map);
 		assertThat(map).containsOnly(entry("spring", "boot"));
 	}
 
@@ -203,8 +206,10 @@ class TestPropertyValuesTests {
 
 	@Test
 	void pairFromMapEntryCreatesPair() {
-		Map<String, Object> map = new LinkedHashMap<>();
-		Pair.fromMapEntry(entry("spring", "boot")).addTo(map);
+		Map<String, @Nullable Object> map = new LinkedHashMap<>();
+		Pair pair = Pair.fromMapEntry(entry("spring", "boot"));
+		assertThat(pair).isNotNull();
+		pair.addTo(map);
 		assertThat(map).containsOnly(entry("spring", "boot"));
 	}
 

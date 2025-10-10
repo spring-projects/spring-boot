@@ -18,6 +18,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 import org.springframework.boot.build.docs.ConfigureJavadocLinks
+import org.springframework.boot.build.optional.OptionalDependenciesPlugin
 
 plugins {
 	id "dev.adamko.dokkatoo-html"
@@ -83,6 +84,7 @@ dependencies {
 	implementation(project(path: ":cli:spring-boot-cli"))
 	implementation(project(path: ":core:spring-boot-docker-compose"))
 	implementation(project(path: ":core:spring-boot-test"))
+	implementation(project(path: ":core:spring-boot-test-autoconfigure"))
 	implementation(project(path: ":core:spring-boot-testcontainers"))
 	implementation(project(path: ":loader:spring-boot-loader-tools"))
 	implementation(project(path: ":module:spring-boot-actuator"))
@@ -90,9 +92,18 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-amqp"))
 	implementation(project(path: ":module:spring-boot-cache"))
 	implementation(project(path: ":module:spring-boot-data-cassandra"))
+	implementation(project(path: ":module:spring-boot-data-cassandra-test"))
+	implementation(project(path: ":module:spring-boot-data-couchbase-test"))
 	implementation(project(path: ":module:spring-boot-data-elasticsearch"))
+	implementation(project(path: ":module:spring-boot-data-elasticsearch-test"))
+	implementation(project(path: ":module:spring-boot-data-jpa-test"))
+	implementation(project(path: ":module:spring-boot-data-ldap-test"))
+	implementation(project(path: ":module:spring-boot-data-mongodb-test"))
 	implementation(project(path: ":module:spring-boot-data-neo4j"))
+	implementation(project(path: ":module:spring-boot-data-neo4j-test"))
+	implementation(project(path: ":module:spring-boot-data-redis-test"))
 	implementation(project(path: ":module:spring-boot-devtools"))
+	implementation(project(path: ":module:spring-boot-graphql-test"))
 	implementation(project(path: ":module:spring-boot-health"))
 	implementation(project(path: ":module:spring-boot-hibernate"))
 	implementation(project(path: ":module:spring-boot-http-converter"))
@@ -100,22 +111,31 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-integration"))
 	implementation(project(path: ":module:spring-boot-jackson"))
 	implementation(project(path: ":module:spring-boot-jdbc"))
+	implementation(project(path: ":module:spring-boot-jdbc-test"))
+	implementation(project(path: ":module:spring-boot-jooq-test"))
 	implementation(project(path: ":module:spring-boot-jpa"))
 	implementation(project(path: ":module:spring-boot-jms"))
 	implementation(project(path: ":module:spring-boot-jsonb"))
 	implementation(project(path: ":module:spring-boot-ldap"))
 	implementation(project(path: ":module:spring-boot-micrometer-metrics"))
+	implementation(project(path: ":module:spring-boot-persistence"))
 	implementation(project(path: ":module:spring-boot-r2dbc"))
+	implementation(project(path: ":module:spring-boot-restdocs"))
 	implementation(project(path: ":module:spring-boot-reactor-netty"))
 	implementation(project(path: ":module:spring-boot-restclient"))
+	implementation(project(path: ":module:spring-boot-restclient-test"))
+	implementation(project(path: ":module:spring-boot-resttestclient"))
 	implementation(project(path: ":module:spring-boot-security"))
-	implementation(project(path: ":module:spring-boot-test-autoconfigure"))
 	implementation(project(path: ":module:spring-boot-tomcat"))
-	implementation(project(path: ":module:spring-boot-web-server-test"))
 	implementation(project(path: ":module:spring-boot-webclient"))
+	implementation(project(path: ":module:spring-boot-webclient-test"))
 	implementation(project(path: ":module:spring-boot-webflux"))
+	implementation(project(path: ":module:spring-boot-webflux-test"))
 	implementation(project(path: ":module:spring-boot-webmvc"))
+	implementation(project(path: ":module:spring-boot-webmvc-test"))
 	implementation(project(path: ":module:spring-boot-webservices"))
+	implementation(project(path: ":module:spring-boot-webservices-test"))
+	implementation(project(path: ":module:spring-boot-webtestclient"))
 	implementation("ch.qos.logback:logback-classic")
 	implementation("com.redis:testcontainers-redis")
 	implementation("com.zaxxer:HikariCP")
@@ -179,12 +199,8 @@ dependencies {
 	implementation("org.springframework.graphql:spring-graphql-test")
 	implementation("org.springframework.kafka:spring-kafka")
 	implementation("org.springframework.kafka:spring-kafka-test")
-	implementation("org.springframework.pulsar:spring-pulsar") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	implementation("org.springframework.pulsar:spring-pulsar-reactive") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	implementation("org.springframework.pulsar:spring-pulsar")
+	implementation("org.springframework.pulsar:spring-pulsar-reactive")
 	implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	implementation("org.springframework.restdocs:spring-restdocs-restassured")
 	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
@@ -218,16 +234,55 @@ dependencies {
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("org.springframework:spring-jdbc")
 
-	testSlices(project(path: ":module:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
+	testSlices(project(path: ":core:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
 }
 
 dokkatoo {
 	moduleName.set("Spring Boot Kotlin API")
 }
 
+configurations {
+	javadoc {
+		canBeConsumed = true
+		canBeResolved = false
+		attributes {
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EMBEDDED))
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC))
+		}
+	}
+	javadocSource {
+		transitive = false
+		canBeConsumed = false
+		canBeResolved = true
+		attributes {
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.VERIFICATION))
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.SOURCES))
+			attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.class, VerificationType.MAIN_SOURCES))
+		}
+		extendsFrom configurations.javadoc
+	}
+	javadocClasspath {
+		canBeConsumed = false
+		canBeResolved = true
+		attributes {
+			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+		}
+		extendsFrom configurations.javadoc
+		resolutionStrategy.eachDependency {
+			if (it.requested.group == 'org.opensaml') {
+				it.useVersion '4.0.1'
+			}
+		}
+	}
+}
+
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 	dependsOn configurations.resolvedBom
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
+	source = configurations.javadocSource
+	classpath = configurations.javadocClasspath
+	include("**/*.java")
 	options {
 		author = true
 		docTitle = "Spring Boot ${project.version} API"
@@ -241,7 +296,7 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 }
 
 project.rootProject.gradle.projectsEvaluated {
-	Set<Project> publishedProjects = rootProject.subprojects
+	rootProject.subprojects
 		.findAll { it != project }
 		.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
 		.findAll { !it.path.contains(":build-plugin:") }
@@ -249,17 +304,26 @@ project.rootProject.gradle.projectsEvaluated {
 		.findAll { !it.path.contains(":configuration-metadata:") }
 		.findAll { !it.path.contains(":core:spring-boot-properties-migrator") }
 		.findAll { !it.path.contains(":loader:spring-boot-jarmode-tools") }
-		.findAll { !it.path.contains(":loader:spring-boot-loader-classic") }
 		.findAll { !it.name.startsWith('spring-boot-starter') }
-	aggregatedJavadoc.configure {
-		dependsOn publishedProjects.javadoc
-		source publishedProjects.javadoc.source
-		classpath = project.files(publishedProjects.javadoc.classpath)
+		.each { javadocProject ->
+			dependencies {
+				javadoc(project(javadocProject.path))
+				if (javadocProject.plugins.hasPlugin(OptionalDependenciesPlugin)) {
+					javadoc(project(path: javadocProject.path, configuration: 'optional'))
+				}
+			}
+		}
+}
+
+aggregates {
+	testSliceMetadata {
+		category = Category.DOCUMENTATION
+		usage = "test-slice-metadata"
 	}
 }
 
 tasks.register("documentTestSlices", org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
-	testSlices = configurations.testSlices
+	testSlices = aggregates.testSliceMetadata.files
 	outputFile = layout.buildDirectory.file("generated/docs/test-auto-configuration/documented-slices.adoc")
 }
 

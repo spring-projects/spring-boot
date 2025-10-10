@@ -65,7 +65,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	public static final String CHECK_ADDITIONAL_SPRING_CONFIGURATION_METADATA_TASK_NAME = "checkAdditionalSpringConfigurationMetadata";
 
 	/**
-	 * Name of the {@link CheckAdditionalSpringConfigurationMetadata} task.
+	 * Name of the {@link CheckSpringConfigurationMetadata} task.
 	 */
 	public static final String CHECK_SPRING_CONFIGURATION_METADATA_TASK_NAME = "checkSpringConfigurationMetadata";
 

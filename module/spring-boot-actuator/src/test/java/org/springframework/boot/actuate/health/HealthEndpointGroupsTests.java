@@ -32,12 +32,14 @@ import static org.mockito.Mockito.mock;
 class HealthEndpointGroupsTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenPrimaryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> HealthEndpointGroups.of(null, Collections.emptyMap()))
 			.withMessage("'primary' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenAdditionalIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> HealthEndpointGroups.of(mock(HealthEndpointGroup.class), null))

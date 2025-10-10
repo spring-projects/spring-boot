@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class DockerComposeFileTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test
@@ -74,6 +75,7 @@ class DockerComposeFileTests {
 		File file = new File(this.temp, "docker-compose.yml").getCanonicalFile();
 		FileCopyUtils.copy(new byte[0], file);
 		DockerComposeFile composeFile = DockerComposeFile.find(file.getParentFile());
+		assertThat(composeFile).isNotNull();
 		assertThat(composeFile.getFiles()).containsExactly(file);
 	}
 
@@ -84,6 +86,7 @@ class DockerComposeFileTests {
 		File f2 = new File(this.temp, "compose.yml").getCanonicalFile();
 		FileCopyUtils.copy(new byte[0], f2);
 		DockerComposeFile composeFile = DockerComposeFile.find(f1.getParentFile());
+		assertThat(composeFile).isNotNull();
 		assertThat(composeFile.getFiles()).containsExactly(f2);
 	}
 
@@ -127,6 +130,7 @@ class DockerComposeFileTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenFileIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DockerComposeFile.of((File) null))
 			.withMessage("'file' must not be null");

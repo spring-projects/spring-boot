@@ -30,5 +30,6 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
+	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

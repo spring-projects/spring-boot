@@ -49,52 +49,52 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 
 	@Override
 	public StatsdFlavor flavor() {
-		return getRequired(StatsdProperties::getFlavor, StatsdConfig.super::flavor);
+		return obtain(StatsdProperties::getFlavor, StatsdConfig.super::flavor);
 	}
 
 	@Override
 	public boolean enabled() {
-		return getRequired(StatsdProperties::isEnabled, StatsdConfig.super::enabled);
+		return obtain(StatsdProperties::isEnabled, StatsdConfig.super::enabled);
 	}
 
 	@Override
 	public String host() {
-		return getRequired(StatsdProperties::getHost, StatsdConfig.super::host);
+		return obtain(StatsdProperties::getHost, StatsdConfig.super::host);
 	}
 
 	@Override
 	public int port() {
-		return getRequired(StatsdProperties::getPort, StatsdConfig.super::port);
+		return obtain(StatsdProperties::getPort, StatsdConfig.super::port);
 	}
 
 	@Override
 	public StatsdProtocol protocol() {
-		return getRequired(StatsdProperties::getProtocol, StatsdConfig.super::protocol);
+		return obtain(StatsdProperties::getProtocol, StatsdConfig.super::protocol);
 	}
 
 	@Override
 	public int maxPacketLength() {
-		return getRequired(StatsdProperties::getMaxPacketLength, StatsdConfig.super::maxPacketLength);
+		return obtain(StatsdProperties::getMaxPacketLength, StatsdConfig.super::maxPacketLength);
 	}
 
 	@Override
 	public Duration pollingFrequency() {
-		return getRequired(StatsdProperties::getPollingFrequency, StatsdConfig.super::pollingFrequency);
+		return obtain(StatsdProperties::getPollingFrequency, StatsdConfig.super::pollingFrequency);
 	}
 
 	@Override
 	public Duration step() {
-		return getRequired(StatsdProperties::getStep, StatsdConfig.super::step);
+		return obtain(StatsdProperties::getStep, StatsdConfig.super::step);
 	}
 
 	@Override
 	public boolean publishUnchangedMeters() {
-		return getRequired(StatsdProperties::isPublishUnchangedMeters, StatsdConfig.super::publishUnchangedMeters);
+		return obtain(StatsdProperties::isPublishUnchangedMeters, StatsdConfig.super::publishUnchangedMeters);
 	}
 
 	@Override
 	public boolean buffered() {
-		return getRequired(StatsdProperties::isBuffered, StatsdConfig.super::buffered);
+		return obtain(StatsdProperties::isBuffered, StatsdConfig.super::buffered);
 	}
 
 }

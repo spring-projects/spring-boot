@@ -77,26 +77,6 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenJarWithClassicLoaderIsRepackagedInPlaceOnlyRepackagedJarIsInstalled(MavenBuild mavenBuild) {
-		mavenBuild.project("jar-with-classic-loader").goals("install").execute((project) -> {
-			File original = new File(project, "target/jar-with-classic-loader-0.0.1.BUILD-SNAPSHOT.jar.original");
-			assertThat(original).isFile();
-			File repackaged = new File(project, "target/jar-with-classic-loader-0.0.1.BUILD-SNAPSHOT.jar");
-			assertThat(launchScript(repackaged)).isEmpty();
-			assertThat(jar(repackaged)).manifest((manifest) -> {
-				manifest.hasMainClass("org.springframework.boot.loader.launch.JarLauncher");
-				manifest.hasStartClass("some.random.Main");
-				manifest.hasAttribute("Not-Used", "Foo");
-			}).hasEntryWithName("org/springframework/boot/loader/launch/JarLauncher.class");
-			assertThat(buildLog(project))
-				.contains("Replacing main artifact " + repackaged + " with repackaged archive,")
-				.contains("The original artifact has been renamed to " + original)
-				.contains("Installing " + repackaged + " to")
-				.doesNotContain("Installing " + original + " to");
-		});
-	}
-
-	@TestTemplate
 	void whenAttachIsDisabledOnlyTheOriginalJarIsInstalled(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-attach-disabled").goals("install").execute((project) -> {
 			File original = new File(project, "target/jar-attach-disabled-0.0.1.BUILD-SNAPSHOT.jar.original");
@@ -196,7 +176,40 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/commons-logging")
-				.doesNotHaveEntryWithName("BOOT-INF/lib/servlet-api-2.5.jar");
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/servlet-api-");
+		});
+	}
+
+	@TestTemplate
+	void whenAnEntryIsOptionalByDefaultDoesNotAppearInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-optional-default").goals("install").execute((project) -> {
+			File repackaged = new File(project, "target/jar-optional-default-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
+		});
+	}
+
+	@TestTemplate
+	void whenAnEntryIsOptionalAndOptionalsIncludedAppearsInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-optional-include").goals("install").execute((project) -> {
+			File repackaged = new File(project, "target/jar-optional-include-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
+		});
+	}
+
+	@TestTemplate
+	void whenAnEntryIsOptionalAndOptionalsExcludedDoesNotAppearInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-optional-exclude").goals("install").execute((project) -> {
+			File repackaged = new File(project, "target/jar-optional-exclude-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/log4j-api-");
 		});
 	}
 
@@ -248,9 +261,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File repackaged = new File(project, "target/jar-exclude-group-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
-				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/commons-logging")
-				.doesNotHaveEntryWithName("BOOT-INF/lib/log4j-api-2.4.1.jar");
+				.doesNotHaveEntryWithName("BOOT-INF/lib/log4j-api-");
 		});
 	}
 
@@ -388,7 +400,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 				assertThat(layerIndex.get("application")).contains("BOOT-INF/lib/jar-release-0.0.1.RELEASE.jar",
 						"BOOT-INF/lib/jar-snapshot-0.0.1.BUILD-SNAPSHOT.jar");
 				assertThat(layerIndex.get("dependencies"))
-					.anyMatch((dependency) -> dependency.startsWith("BOOT-INF/lib/log4j-api-2"));
+					.anyMatch((dependency) -> dependency.startsWith("BOOT-INF/lib/log4j-api-"));
 			}
 			catch (IOException ex) {
 				// Ignore

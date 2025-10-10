@@ -19,9 +19,9 @@ package org.springframework.boot.docs.testing.springbootapplications.withrunning
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

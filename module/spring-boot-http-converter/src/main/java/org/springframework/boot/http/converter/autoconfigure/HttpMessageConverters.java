@@ -53,7 +53,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * @see #HttpMessageConverters(HttpMessageConverter...)
  * @see #HttpMessageConverters(Collection)
  * @see #getConverters()
+ * @deprecated since 4.0 in favor of {@link ClientHttpMessageConvertersCustomizer} and
+ * {@link ServerHttpMessageConvertersCustomizer}.
  */
+@Deprecated(since = "4.0")
 public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> {
 
 	private static final List<Class<?>> NON_REPLACING_CONVERTERS;

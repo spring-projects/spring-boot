@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.env.RandomValuePropertySource;
@@ -41,6 +42,7 @@ import static org.mockito.Mockito.mock;
 class SpringConfigurationPropertySourceTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new SpringConfigurationPropertySource(null, false, mock(PropertyMapper.class)))
@@ -59,7 +61,9 @@ class SpringConfigurationPropertySourceTests {
 		mapper.addFromConfigurationProperty(name, "key2");
 		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, false,
 				mapper);
-		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
+		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("value2");
 	}
 
 	@Test
@@ -73,6 +77,7 @@ class SpringConfigurationPropertySourceTests {
 		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, false,
 				mapper);
 		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
 		assertThat(configurationProperty.getOrigin()).hasToString("\"key\" from property source \"test\"");
 		assertThat(configurationProperty.getSource()).isEqualTo(adapter);
 	}
@@ -87,7 +92,9 @@ class SpringConfigurationPropertySourceTests {
 		mapper.addFromConfigurationProperty(name, "key");
 		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource, false,
 				mapper);
-		assertThat(adapter.getConfigurationProperty(name).getOrigin()).hasToString("TestOrigin key");
+		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getOrigin()).hasToString("TestOrigin key");
 	}
 
 	@Test
@@ -102,6 +109,7 @@ class SpringConfigurationPropertySourceTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SpringConfigurationPropertySource.from(null))
 			.withMessageContaining("'source' must not be null");
@@ -112,7 +120,7 @@ class SpringConfigurationPropertySourceTests {
 		PropertySource<?> propertySource = new PropertySource<>("test", new Object()) {
 
 			@Override
-			public Object getProperty(String name) {
+			public @Nullable Object getProperty(String name) {
 				return null;
 			}
 
@@ -242,7 +250,7 @@ class SpringConfigurationPropertySourceTests {
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			name = name.toLowerCase(Locale.ROOT);
 			if (!name.startsWith(this.prefix)) {
 				return null;
@@ -267,7 +275,7 @@ class SpringConfigurationPropertySourceTests {
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			return this.propertySource.getProperty(name);
 		}
 

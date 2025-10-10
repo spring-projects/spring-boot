@@ -38,9 +38,10 @@ import static org.mockito.Mockito.mock;
  */
 class JdbcUrlBuilderTests {
 
-	private JdbcUrlBuilder builder = new JdbcUrlBuilder("mydb", 1234);
+	private final JdbcUrlBuilder builder = new JdbcUrlBuilder("mydb", 1234);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenDriverProtocolIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new JdbcUrlBuilder(null, 123))
 			.withMessage("'driverProtocol' must not be null");
@@ -82,6 +83,7 @@ class JdbcUrlBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void buildWhenServiceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.build(null, "mydb"))
 			.withMessage("'service' must not be null");

@@ -28,9 +28,9 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("tools.jackson.core:jackson-databind")
 
-	implementation("org.springframework:spring-web")
-
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-test-autoconfigure"))
+	optional("org.springframework:spring-web")
 	optional("tools.jackson.dataformat:jackson-dataformat-cbor")
 	optional("tools.jackson.dataformat:jackson-dataformat-xml")
 	optional("tools.jackson.module:jackson-module-jakarta-xmlbind-annotations")
@@ -38,4 +38,8 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -35,6 +35,7 @@ class DefaultApplicationArgumentsTests {
 	private static final String[] ARGS = new String[] { "--foo=bar", "--foo=baz", "--debug", "spring", "boot" };
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void argumentsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DefaultApplicationArguments((String[]) null))
 			.withMessageContaining("'args' must not be null");

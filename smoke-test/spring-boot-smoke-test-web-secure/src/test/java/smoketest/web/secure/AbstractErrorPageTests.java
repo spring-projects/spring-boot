@@ -20,7 +20,8 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JsonNode;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
+@AutoConfigureTestRestTemplate
 abstract class AbstractErrorPageTests {
 
 	@Autowired

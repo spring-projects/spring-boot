@@ -18,8 +18,6 @@ package org.springframework.boot.jdbc.docker.compose;
 
 import java.sql.Driver;
 
-import org.junit.jupiter.api.Disabled;
-
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
@@ -43,14 +41,6 @@ class ClickHouseJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		checkDatabaseAccess(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "clickhouse-bitnami-compose.yaml", image = TestImage.BITNAMI_CLICKHOUSE)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
-	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
-		// See https://github.com/bitnami/containers/issues/73550
-		// checkDatabaseAccess(connectionDetails);
-	}
-
 	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
@@ -66,7 +56,9 @@ class ClickHouseJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
 				getClass().getClassLoader()));
 		JdbcTemplate template = new JdbcTemplate(dataSource);
-		assertThat(template.queryForObject(DatabaseDriver.CLICKHOUSE.getValidationQuery(), Integer.class)).isEqualTo(1);
+		String validationQuery = DatabaseDriver.CLICKHOUSE.getValidationQuery();
+		assertThat(validationQuery).isNotNull();
+		assertThat(template.queryForObject(validationQuery, Integer.class)).isEqualTo(1);
 	}
 
 }

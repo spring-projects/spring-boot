@@ -124,7 +124,7 @@ class PackagingDocumentationTests {
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/lib/jruby-complete-1.7.25.jar");
 			assertThat(entry).isNotNull();
-			assertThat(entry.getComment()).startsWith("UNPACK:");
+			assertThat(entry.getComment()).isEqualTo("UNPACK");
 		}
 	}
 

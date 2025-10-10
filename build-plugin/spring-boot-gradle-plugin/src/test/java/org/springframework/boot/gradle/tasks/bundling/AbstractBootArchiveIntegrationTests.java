@@ -109,16 +109,6 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void classicLoader() throws IOException {
-		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
-		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
-		try (JarFile jarFile = new JarFile(jar)) {
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
-		}
-	}
-
-	@TestTemplate
 	void upToDateWhenBuiltTwice() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 			.isEqualTo(TaskOutcome.SUCCESS);
@@ -243,14 +233,8 @@ abstract class AbstractBootArchiveIntegrationTests {
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
 				.filter((name) -> name.startsWith(this.libPath));
-			if (this.gradleBuild.gradleVersionIsLessThan("9.0.0-rc-1")) {
-				assertThat(libEntryNames).containsExactly(this.libPath + "two-1.0.jar",
-						this.libPath + "commons-io-2.19.0.jar");
-			}
-			else {
-				assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.19.0.jar",
-						this.libPath + "two-1.0.jar");
-			}
+			assertThat(libEntryNames).containsExactly(this.libPath + "two-1.0.jar",
+					this.libPath + "commons-io-2.19.0.jar");
 		}
 	}
 
@@ -293,6 +277,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	void jarTypeFilteringIsApplied() throws IOException {
 		File flatDirRepository = new File(this.gradleBuild.getProjectDir(), "repository");
 		createDependenciesStarterJar(new File(flatDirRepository, "starter.jar"));
+		createDependenciesDeveloperToolsJar(new File(flatDirRepository, "devonly.jar"));
 		createStandardJar(new File(flatDirRepository, "standard.jar"));
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 			.isEqualTo(TaskOutcome.SUCCESS);
@@ -667,6 +652,10 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	private void createDependenciesStarterJar(File location) throws IOException {
 		createJar(location, (attributes) -> attributes.putValue("Spring-Boot-Jar-Type", "dependencies-starter"));
+	}
+
+	private void createDependenciesDeveloperToolsJar(File location) throws IOException {
+		createJar(location, (attributes) -> attributes.putValue("Spring-Boot-Jar-Type", "development-tool"));
 	}
 
 	private void createJar(File location, Consumer<Attributes> attributesConfigurer) throws IOException {

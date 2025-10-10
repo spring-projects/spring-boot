@@ -223,6 +223,7 @@ class HealthEndpointAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.endpoint.health.show-details=always").run((context) -> {
 			HealthEndpoint endpoint = context.getBean(HealthEndpoint.class);
 			IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) endpoint.healthForPath("simple");
+			assertThat(descriptor).isNotNull();
 			assertThat(descriptor.getDetails()).containsEntry("counter", 42);
 		});
 	}
@@ -263,6 +264,7 @@ class HealthEndpointAutoConfigurationTests {
 					WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
 			IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) response.getBody();
 			assertThat(response.getStatus()).isEqualTo(200);
+			assertThat(descriptor).isNotNull();
 			assertThat(descriptor.getDetails()).containsEntry("counter", 42);
 		});
 	}
@@ -281,9 +283,12 @@ class HealthEndpointAutoConfigurationTests {
 	void runCreatesReactiveHealthEndpointWebExtension() {
 		this.reactiveContextRunner.run((context) -> {
 			ReactiveHealthEndpointWebExtension webExtension = context.getBean(ReactiveHealthEndpointWebExtension.class);
-			Mono<WebEndpointResponse<? extends HealthDescriptor>> response = webExtension.health(ApiVersion.V3,
+			Mono<WebEndpointResponse<? extends HealthDescriptor>> responseMono = webExtension.health(ApiVersion.V3,
 					WebServerNamespace.SERVER, SecurityContext.NONE, true, "simple");
-			IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) (response.block().getBody());
+			WebEndpointResponse<? extends HealthDescriptor> response = responseMono.block();
+			assertThat(response).isNotNull();
+			IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) (response.getBody());
+			assertThat(descriptor).isNotNull();
 			assertThat(descriptor.getDetails()).containsEntry("counter", 42);
 		});
 	}

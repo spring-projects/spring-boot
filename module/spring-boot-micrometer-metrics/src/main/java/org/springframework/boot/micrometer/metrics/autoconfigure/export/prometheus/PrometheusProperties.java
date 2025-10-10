@@ -22,8 +22,8 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export

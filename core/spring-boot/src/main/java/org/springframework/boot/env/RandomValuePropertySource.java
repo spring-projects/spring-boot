@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -143,11 +144,21 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		return HexFormat.of().withLowerCase().formatHex(bytes);
 	}
 
+	/**
+	 * Add a {@link RandomValuePropertySource} to the given {@link Environment}.
+	 * @param environment the environment to add the random property source to
+	 */
 	public static void addToEnvironment(ConfigurableEnvironment environment) {
 		addToEnvironment(environment, logger);
 	}
 
-	static void addToEnvironment(ConfigurableEnvironment environment, Log logger) {
+	/**
+	 * Add a {@link RandomValuePropertySource} to the given {@link Environment}.
+	 * @param environment the environment to add the random property source to
+	 * @param logger logger used for debug and trace information
+	 * @since 4.0.0
+	 */
+	public static void addToEnvironment(ConfigurableEnvironment environment, Log logger) {
 		MutablePropertySources sources = environment.getPropertySources();
 		PropertySource<?> existing = sources.get(RANDOM_PROPERTY_SOURCE_NAME);
 		if (existing != null) {

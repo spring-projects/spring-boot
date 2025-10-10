@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class DurationStyleTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void detectAndParseWhenValueIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detectAndParse(null))
 			.withMessageContaining("'value' must not be null");
@@ -207,8 +208,11 @@ class DurationStyleTests {
 
 	@Test
 	void parseSimpleWhenUnknownUnitShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.SIMPLE.parse("10mb"))
-			.satisfies((ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Unknown unit 'mb'"));
+		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.SIMPLE.parse("10mb")).satisfies((ex) -> {
+			Throwable cause = ex.getCause();
+			assertThat(cause).isNotNull();
+			assertThat(cause.getMessage()).isEqualTo("Unknown unit 'mb'");
+		});
 	}
 
 	@Test

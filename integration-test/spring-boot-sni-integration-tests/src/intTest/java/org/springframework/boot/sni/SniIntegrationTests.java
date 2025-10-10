@@ -82,7 +82,7 @@ class SniIntegrationTests {
 		assertThat(clientLogs).contains("Calling server at 'https://" + serverName + ":8443/'")
 			.contains("Hello from https://" + serverName + ":8443/");
 		assertThat(clientLogs).contains("Calling server actuator at 'https://" + serverName + ":8444/actuator/health'")
-			.contains("{\"status\":\"UP\"}");
+			.contains("\"status\":\"UP\"");
 	}
 
 	static final class ClientApplicationContainer extends ApplicationContainer {

@@ -23,11 +23,13 @@ import java.util.function.BiFunction;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RestTemplateCustomizer;
 import org.springframework.boot.restclient.RestTemplateRequestCustomizer;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -44,9 +46,9 @@ public final class RestTemplateBuilderConfigurer {
 
 	private @Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
-	private @Nullable ClientHttpRequestFactorySettings requestFactorySettings;
+	private @Nullable HttpClientSettings clientSettings;
 
-	private @Nullable HttpMessageConverters httpMessageConverters;
+	private @Nullable List<ClientHttpMessageConvertersCustomizer> httpMessageConvertersCustomizers;
 
 	private @Nullable List<RestTemplateCustomizer> restTemplateCustomizers;
 
@@ -56,12 +58,13 @@ public final class RestTemplateBuilderConfigurer {
 		this.requestFactoryBuilder = requestFactoryBuilder;
 	}
 
-	void setRequestFactorySettings(@Nullable ClientHttpRequestFactorySettings requestFactorySettings) {
-		this.requestFactorySettings = requestFactorySettings;
+	void setClientSettings(@Nullable HttpClientSettings clientSettings) {
+		this.clientSettings = clientSettings;
 	}
 
-	void setHttpMessageConverters(@Nullable HttpMessageConverters httpMessageConverters) {
-		this.httpMessageConverters = httpMessageConverters;
+	void setHttpMessageConvertersCustomizers(
+			@Nullable List<ClientHttpMessageConvertersCustomizer> httpMessageConvertersCustomizers) {
+		this.httpMessageConvertersCustomizers = httpMessageConvertersCustomizers;
 	}
 
 	void setRestTemplateCustomizers(@Nullable List<RestTemplateCustomizer> restTemplateCustomizers) {
@@ -83,11 +86,13 @@ public final class RestTemplateBuilderConfigurer {
 		if (this.requestFactoryBuilder != null) {
 			builder = builder.requestFactoryBuilder(this.requestFactoryBuilder);
 		}
-		if (this.requestFactorySettings != null) {
-			builder = builder.requestFactorySettings(this.requestFactorySettings);
+		if (this.clientSettings != null) {
+			builder = builder.clientSettings(this.clientSettings);
 		}
-		if (this.httpMessageConverters != null) {
-			builder = builder.messageConverters(this.httpMessageConverters.getConverters());
+		if (this.httpMessageConvertersCustomizers != null) {
+			ClientBuilder clientBuilder = HttpMessageConverters.forClient();
+			this.httpMessageConvertersCustomizers.forEach((customizer) -> customizer.customize(clientBuilder));
+			builder = builder.messageConverters(clientBuilder.build());
 		}
 		builder = addCustomizers(builder, this.restTemplateCustomizers, RestTemplateBuilder::customizers);
 		builder = addCustomizers(builder, this.restTemplateRequestCustomizers, RestTemplateBuilder::requestCustomizers);

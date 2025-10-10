@@ -41,6 +41,6 @@ public interface ClassLoaderFileRepository {
 	 * @param name the name of the file
 	 * @return a {@link ClassLoaderFile} or {@code null}
 	 */
-	@Nullable ClassLoaderFile getFile(String name);
+	@Nullable ClassLoaderFile getFile(@Nullable String name);
 
 }

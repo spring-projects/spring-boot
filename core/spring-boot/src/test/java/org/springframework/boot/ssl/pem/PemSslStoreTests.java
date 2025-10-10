@@ -51,6 +51,7 @@ class PemSslStoreTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenNullCertificatesThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> PemSslStore.of(null, null, null, null, null))
 			.withMessage("'certificates' must not be empty");

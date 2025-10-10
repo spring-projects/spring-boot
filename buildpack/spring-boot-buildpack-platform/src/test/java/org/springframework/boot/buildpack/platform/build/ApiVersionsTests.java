@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.buildpack.platform.docker.type.ApiVersion;
+import org.springframework.boot.buildpack.platform.docker.ApiVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;

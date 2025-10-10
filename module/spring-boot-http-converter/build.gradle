@@ -50,3 +50,7 @@ dependencies {
 	testRuntimeOnly("org.springframework:spring-webflux")
 	testRuntimeOnly("tools.jackson.dataformat:jackson-dataformat-cbor")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import tools.jackson.databind.json.JsonMapper;
 
@@ -58,7 +57,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -174,23 +173,19 @@ public class WebMvcEndpointManagementContextConfiguration {
 		}
 
 		@Override
-		@SuppressWarnings("removal")
-		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-			for (HttpMessageConverter<?> converter : converters) {
+		public void configureMessageConverters(ServerBuilder builder) {
+			builder.configureMessageConverters((converter) -> {
 				if (converter instanceof JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter) {
 					configure(jacksonJsonHttpMessageConverter);
 				}
-			}
+			});
 		}
 
 		private void configure(JacksonJsonHttpMessageConverter converter) {
-			this.endpointJsonMapper.getSupportedTypes()
-				.forEach((type) -> converter.registerMappersForType(type, this::registerForAllMimeTypes));
-		}
-
-		private void registerForAllMimeTypes(Map<MediaType, JsonMapper> registrar) {
-			JsonMapper jsonMapper = this.endpointJsonMapper.get();
-			MEDIA_TYPES.forEach((mimeType) -> registrar.put(mimeType, jsonMapper));
+			converter.registerMappersForType(OperationResponseBody.class, (associations) -> {
+				JsonMapper jsonMapper = this.endpointJsonMapper.get();
+				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, jsonMapper));
+			});
 		}
 
 	}

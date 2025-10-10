@@ -63,22 +63,22 @@ public class HikariDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata
 	}
 
 	@Override
-	public Integer getMax() {
+	public @Nullable Integer getMax() {
 		return getDataSource().getMaximumPoolSize();
 	}
 
 	@Override
-	public Integer getMin() {
+	public @Nullable Integer getMin() {
 		return getDataSource().getMinimumIdle();
 	}
 
 	@Override
-	public String getValidationQuery() {
+	public @Nullable String getValidationQuery() {
 		return getDataSource().getConnectionTestQuery();
 	}
 
 	@Override
-	public Boolean getDefaultAutoCommit() {
+	public @Nullable Boolean getDefaultAutoCommit() {
 		return getDataSource().isAutoCommit();
 	}
 

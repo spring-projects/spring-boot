@@ -40,7 +40,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration;
 import org.springframework.boot.graphql.autoconfigure.GraphQlCorsProperties;
 import org.springframework.boot.graphql.autoconfigure.GraphQlProperties;
-import org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -60,7 +59,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
@@ -178,24 +176,23 @@ public final class GraphQlWebMvcAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ HttpMessageConverters.class, ServerContainer.class, WebSocketHandler.class })
+	@ConditionalOnClass({ HttpMessageConverter.class, ServerContainer.class, WebSocketHandler.class })
 	@ConditionalOnProperty("spring.graphql.websocket.path")
 	static class WebSocketConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
 		GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
-				GraphQlProperties properties, HttpMessageConverters converters) {
+				GraphQlProperties properties, ObjectProvider<HttpMessageConverter<?>> converters) {
 			return new GraphQlWebSocketHandler(webGraphQlHandler, getJsonConverter(converters),
 					properties.getWebsocket().getConnectionInitTimeout(), properties.getWebsocket().getKeepAlive());
 		}
 
-		private GenericHttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
-			return converters.getConverters()
-				.stream()
+		private HttpMessageConverter<Object> getJsonConverter(ObjectProvider<HttpMessageConverter<?>> converters) {
+			return converters.orderedStream()
 				.filter(this::canReadJsonMap)
 				.findFirst()
-				.map(this::asGenericHttpMessageConverter)
+				.map(this::asObjectHttpMessageConverter)
 				.orElseThrow(() -> new IllegalStateException("No JSON converter"));
 		}
 
@@ -204,8 +201,8 @@ public final class GraphQlWebMvcAutoConfiguration {
 		}
 
 		@SuppressWarnings("unchecked")
-		private GenericHttpMessageConverter<Object> asGenericHttpMessageConverter(HttpMessageConverter<?> converter) {
-			return (GenericHttpMessageConverter<Object>) converter;
+		private HttpMessageConverter<Object> asObjectHttpMessageConverter(HttpMessageConverter<?> converter) {
+			return (HttpMessageConverter<Object>) converter;
 		}
 
 		@Bean

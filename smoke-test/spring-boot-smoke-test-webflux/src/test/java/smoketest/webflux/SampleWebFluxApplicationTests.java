@@ -22,15 +22,20 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.webtestclient.AutoConfigureWebTestClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Basic integration tests for WebFlux application.
  *
  * @author Brian Clozel
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.error.include-message=always")
+@AutoConfigureWebTestClient
 class SampleWebFluxApplicationTests {
 
 	@Autowired
@@ -68,6 +73,42 @@ class SampleWebFluxApplicationTests {
 			.isOk()
 			.expectBody()
 			.json("{\"status\":\"UP\"}");
+	}
+
+	@Test
+	void templated404ErrorPage() {
+		this.webClient.get()
+			.uri("/404")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.expectStatus()
+			.isNotFound()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).isEqualToNormalizingNewlines("404 page\n"));
+	}
+
+	@Test
+	void templated4xxErrorPage() {
+		this.webClient.get()
+			.uri("/bad-request")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.expectStatus()
+			.isBadRequest()
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).isEqualToNormalizingNewlines("4xx page\n"));
+	}
+
+	@Test
+	void htmlErrorPage() {
+		this.webClient.get()
+			.uri("/five-hundred")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody(String.class)
+			.value((body) -> assertThat(body).contains("status: 500").contains("message: Expected!"));
 	}
 
 }

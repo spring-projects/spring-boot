@@ -19,11 +19,11 @@ package smoketest.actuator.customsecurity;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.LocalManagementPort;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.test.web.server.LocalManagementPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -46,7 +46,7 @@ class ManagementPortCustomServletPathSampleActuatorTests extends AbstractSampleA
 	private int managementPort;
 
 	@Autowired
-	private Environment environment;
+	private ApplicationContext applicationContext;
 
 	@Test
 	void actuatorPathOnMainPortShouldNotMatch() {
@@ -66,8 +66,8 @@ class ManagementPortCustomServletPathSampleActuatorTests extends AbstractSampleA
 	}
 
 	@Override
-	Environment getEnvironment() {
-		return this.environment;
+	ApplicationContext getApplicationContext() {
+		return this.applicationContext;
 	}
 
 }

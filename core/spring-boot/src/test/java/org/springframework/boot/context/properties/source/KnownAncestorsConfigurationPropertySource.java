@@ -19,6 +19,8 @@ package org.springframework.boot.context.properties.source;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class KnownAncestorsConfigurationPropertySource implements ConfigurationPropertySource {
@@ -26,7 +28,7 @@ class KnownAncestorsConfigurationPropertySource implements ConfigurationProperty
 	private final Map<ConfigurationPropertyName, ConfigurationPropertyState> ancestors = new HashMap<>();
 
 	@Override
-	public ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
+	public @Nullable ConfigurationProperty getConfigurationProperty(ConfigurationPropertyName name) {
 		return null;
 	}
 

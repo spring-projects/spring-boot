@@ -104,7 +104,6 @@ class WarPluginAction implements PluginApplicationAction {
 					.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
 				bootWar.resolvedArtifacts(runtimeClasspath.getIncoming().getArtifacts().getResolvedArtifacts());
 			});
-		bootWarProvider.map(War::getClasspath);
 		return bootWarProvider;
 	}
 

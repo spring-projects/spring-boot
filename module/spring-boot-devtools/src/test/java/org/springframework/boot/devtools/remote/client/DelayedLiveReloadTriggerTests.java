@@ -49,21 +49,27 @@ class DelayedLiveReloadTriggerTests {
 	private static final String URL = "http://localhost:8080";
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private OptionalLiveReloadServer liveReloadServer;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequestFactory requestFactory;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequest errorRequest;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequest okRequest;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientHttpResponse errorResponse;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientHttpResponse okResponse;
 
 	private DelayedLiveReloadTrigger trigger;
@@ -74,6 +80,7 @@ class DelayedLiveReloadTriggerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void liveReloadServerMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
@@ -81,6 +88,7 @@ class DelayedLiveReloadTriggerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
@@ -88,6 +96,7 @@ class DelayedLiveReloadTriggerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void urlMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null))

@@ -47,7 +47,7 @@ In addition to Spring MVC's defaults, the auto-configuration provides the follow
 
 If you want to keep those Spring Boot MVC customizations and make more {url-spring-framework-docs}/web/webmvc.html[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own javadoc:org.springframework.context.annotation.Configuration[format=annotation] class of type javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[] but *without* javadoc:org.springframework.web.servlet.config.annotation.EnableWebMvc[format=annotation].
 
-If you want to provide custom instances of javadoc:org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping[], javadoc:org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter[], or javadoc:org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver[], and still keep the Spring Boot MVC customizations, you can declare a bean of type javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations[] and use it to provide custom instances of those components.
+If you want to provide custom instances of javadoc:org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping[], javadoc:org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter[], or javadoc:org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver[], and still keep the Spring Boot MVC customizations, you can declare a bean of type javadoc:org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations[] and use it to provide custom instances of those components.
 The custom instances will be subject to further initialization and configuration by Spring MVC.
 To participate in, and if desired, override that subsequent processing, a javadoc:org.springframework.web.servlet.config.annotation.WebMvcConfigurer[] should be used.
 
@@ -97,12 +97,10 @@ By default, strings are encoded in `UTF-8`.
 Any javadoc:org.springframework.http.converter.HttpMessageConverter[] bean that is present in the context is added to the list of converters.
 You can also override default converters in the same way.
 
-If you need to add or customize converters, you can use Spring Boot's javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] class, as shown in the following listing:
+If you need to add or customize converters, you can declare one or more javadoc:org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer[] or
+javadoc:org.springframework.boot.http.converter.autoconfigure.ServerHttpMessageConvertersCustomizer[] as beans, as shown in the following listing:
 
 include-code::MyHttpMessageConvertersConfiguration[]
-
-For further control, you can also sub-class javadoc:org.springframework.boot.http.converter.autoconfigure.HttpMessageConverters[] and override its `postProcessConverters` and/or `postProcessPartConverters` methods.
-This can be useful when you want to re-order or remove some of the converters that Spring MVC configures by default.
 
 
 
@@ -346,9 +344,9 @@ See the xref:appendix:application-properties/index.adoc#appendix.application-pro
 
 To replace the default behavior completely, you can implement javadoc:org.springframework.boot.web.servlet.error.ErrorController[] and register a bean definition of that type or add a bean of type javadoc:org.springframework.boot.web.servlet.error.ErrorAttributes[] to use the existing mechanism but replace the contents.
 
-TIP: The javadoc:org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController[] can be used as a base class for a custom javadoc:org.springframework.boot.web.servlet.error.ErrorController[].
+TIP: The javadoc:org.springframework.boot.webmvc.autoconfigure.error.BasicErrorController[] can be used as a base class for a custom javadoc:org.springframework.boot.web.servlet.error.ErrorController[].
 This is particularly useful if you want to add a handler for a new content type (the default is to handle `text/html` specifically and provide a fallback for everything else).
-To do so, extend javadoc:org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController[], add a public method with a javadoc:org.springframework.web.bind.annotation.RequestMapping[format=annotation] that has a `produces` attribute, and create a bean of your new type.
+To do so, extend javadoc:org.springframework.boot.webmvc.autoconfigure.error.BasicErrorController[], add a public method with a javadoc:org.springframework.web.bind.annotation.RequestMapping[format=annotation] that has a `produces` attribute, and create a bean of your new type.
 
 As of Spring Framework 6.0, {url-spring-framework-docs}/web/webmvc/mvc-ann-rest-exceptions.html[RFC 9457 Problem Details] is supported.
 Spring MVC can produce custom error messages with the `application/problem+json` media type, like:
@@ -414,7 +412,7 @@ src/
              +- <other templates>
 ----
 
-For more complex mappings, you can also add beans that implement the javadoc:org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver[] interface, as shown in the following example:
+For more complex mappings, you can also add beans that implement the javadoc:org.springframework.boot.webmvc.autoconfigure.error.ErrorViewResolver[] interface, as shown in the following example:
 
 include-code::MyErrorViewResolver[]
 
@@ -601,7 +599,7 @@ Spring Boot tries as much as possible to expose common settings, but this is not
 For those cases, dedicated namespaces offer server-specific customizations (see `server.tomcat`).
 For instance, xref:how-to:webserver.adoc#howto.webserver.configure-access-logs[access logs] can be configured with specific features of the embedded servlet container.
 
-TIP: See the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class for a complete list.
+TIP: See the javadoc:org.springframework.boot.web.server.autoconfigure.ServerProperties[] class for a complete list.
 
 
 

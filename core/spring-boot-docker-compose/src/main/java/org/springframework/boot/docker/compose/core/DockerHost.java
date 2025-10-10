@@ -83,7 +83,7 @@ final class DockerHost {
 	 * {@link DockerCliContextResponse}
 	 * @return a new docker host instance
 	 */
-	static DockerHost get(@Nullable String host, Function<String, String> systemEnv,
+	static DockerHost get(@Nullable String host, Function<String, @Nullable String> systemEnv,
 			Supplier<List<DockerCliContextResponse>> contextsSupplier) {
 		host = (StringUtils.hasText(host)) ? host : fromServicesHostEnv(systemEnv);
 		host = (StringUtils.hasText(host)) ? host : fromDockerHostEnv(systemEnv);
@@ -92,11 +92,11 @@ final class DockerHost {
 		return new DockerHost(host);
 	}
 
-	private static String fromServicesHostEnv(Function<String, String> systemEnv) {
+	private static @Nullable String fromServicesHostEnv(Function<String, @Nullable String> systemEnv) {
 		return systemEnv.apply("SERVICES_HOST");
 	}
 
-	private static @Nullable String fromDockerHostEnv(Function<String, String> systemEnv) {
+	private static @Nullable String fromDockerHostEnv(Function<String, @Nullable String> systemEnv) {
 		return fromEndpoint(systemEnv.apply("DOCKER_HOST"));
 	}
 

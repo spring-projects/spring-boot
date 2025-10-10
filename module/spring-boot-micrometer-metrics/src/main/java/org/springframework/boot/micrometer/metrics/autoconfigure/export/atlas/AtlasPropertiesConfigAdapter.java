@@ -42,77 +42,77 @@ class AtlasPropertiesConfigAdapter extends PropertiesConfigAdapter<AtlasProperti
 
 	@Override
 	public Duration step() {
-		return getRequired(AtlasProperties::getStep, AtlasConfig.super::step);
+		return obtain(AtlasProperties::getStep, AtlasConfig.super::step);
 	}
 
 	@Override
 	public boolean enabled() {
-		return getRequired(AtlasProperties::isEnabled, AtlasConfig.super::enabled);
+		return obtain(AtlasProperties::isEnabled, AtlasConfig.super::enabled);
 	}
 
 	@Override
 	public Duration connectTimeout() {
-		return getRequired(AtlasProperties::getConnectTimeout, AtlasConfig.super::connectTimeout);
+		return obtain(AtlasProperties::getConnectTimeout, AtlasConfig.super::connectTimeout);
 	}
 
 	@Override
 	public Duration readTimeout() {
-		return getRequired(AtlasProperties::getReadTimeout, AtlasConfig.super::readTimeout);
+		return obtain(AtlasProperties::getReadTimeout, AtlasConfig.super::readTimeout);
 	}
 
 	@Override
 	public int numThreads() {
-		return getRequired(AtlasProperties::getNumThreads, AtlasConfig.super::numThreads);
+		return obtain(AtlasProperties::getNumThreads, AtlasConfig.super::numThreads);
 	}
 
 	@Override
 	public int batchSize() {
-		return getRequired(AtlasProperties::getBatchSize, AtlasConfig.super::batchSize);
+		return obtain(AtlasProperties::getBatchSize, AtlasConfig.super::batchSize);
 	}
 
 	@Override
 	public String uri() {
-		return getRequired(AtlasProperties::getUri, AtlasConfig.super::uri);
+		return obtain(AtlasProperties::getUri, AtlasConfig.super::uri);
 	}
 
 	@Override
 	public Duration meterTTL() {
-		return getRequired(AtlasProperties::getMeterTimeToLive, AtlasConfig.super::meterTTL);
+		return obtain(AtlasProperties::getMeterTimeToLive, AtlasConfig.super::meterTTL);
 	}
 
 	@Override
 	public boolean lwcEnabled() {
-		return getRequired(AtlasProperties::isLwcEnabled, AtlasConfig.super::lwcEnabled);
+		return obtain(AtlasProperties::isLwcEnabled, AtlasConfig.super::lwcEnabled);
 	}
 
 	@Override
 	public Duration lwcStep() {
-		return getRequired(AtlasProperties::getLwcStep, AtlasConfig.super::lwcStep);
+		return obtain(AtlasProperties::getLwcStep, AtlasConfig.super::lwcStep);
 	}
 
 	@Override
 	public boolean lwcIgnorePublishStep() {
-		return getRequired(AtlasProperties::isLwcIgnorePublishStep, AtlasConfig.super::lwcIgnorePublishStep);
+		return obtain(AtlasProperties::isLwcIgnorePublishStep, AtlasConfig.super::lwcIgnorePublishStep);
 	}
 
 	@Override
 	public Duration configRefreshFrequency() {
-		return getRequired(AtlasProperties::getConfigRefreshFrequency, AtlasConfig.super::configRefreshFrequency);
+		return obtain(AtlasProperties::getConfigRefreshFrequency, AtlasConfig.super::configRefreshFrequency);
 	}
 
 	@Override
 	public Duration configTTL() {
-		return getRequired(AtlasProperties::getConfigTimeToLive, AtlasConfig.super::configTTL);
+		return obtain(AtlasProperties::getConfigTimeToLive, AtlasConfig.super::configTTL);
 	}
 
 	@Override
 	public String configUri() {
-		return getRequired(AtlasProperties::getConfigUri, AtlasConfig.super::configUri);
+		return obtain(AtlasProperties::getConfigUri, AtlasConfig.super::configUri);
 	}
 
 	@Override
 	public String evalUri() {
-		return getRequired(AtlasProperties::getEvalUri, AtlasConfig.super::evalUri);
+		return obtain(AtlasProperties::getEvalUri, AtlasConfig.super::evalUri);
 	}
 
 }

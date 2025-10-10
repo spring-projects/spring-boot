@@ -105,8 +105,10 @@ class ConditionalOnJavaTests {
 		FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClasses);
 		Class<?> javaVersionClass = Class.forName(JavaVersion.class.getName(), false, classLoader);
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass, "getJavaVersion");
+		assertThat(getJavaVersionMethod).isNotNull();
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
 		classLoader.close();
+		assertThat(javaVersion).isNotNull();
 		return javaVersion.toString();
 	}
 

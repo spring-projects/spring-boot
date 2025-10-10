@@ -28,13 +28,13 @@ import org.jspecify.annotations.Nullable;
  */
 class DelegatingLoggingSystemFactory implements LoggingSystemFactory {
 
-	private final @Nullable Function<ClassLoader, List<LoggingSystemFactory>> delegates;
+	private final @Nullable Function<ClassLoader, @Nullable List<LoggingSystemFactory>> delegates;
 
 	/**
 	 * Create a new {@link DelegatingLoggingSystemFactory} instance.
 	 * @param delegates a function that provides the delegates
 	 */
-	DelegatingLoggingSystemFactory(@Nullable Function<ClassLoader, List<LoggingSystemFactory>> delegates) {
+	DelegatingLoggingSystemFactory(@Nullable Function<ClassLoader, @Nullable List<LoggingSystemFactory>> delegates) {
 		this.delegates = delegates;
 	}
 

@@ -106,7 +106,7 @@ public class Profiles implements Iterable<String> {
 				? Collections.emptySet()
 				: StringUtils.commaDelimitedListToSet(StringUtils.trimAllWhitespace(environmentPropertyValue));
 		validator.validate(environmentPropertyProfiles,
-				() -> "Invalid profile property value found in Envronment under '%s'".formatted(type.getName()));
+				() -> "Invalid profile property value found in Environment under '%s'".formatted(type.getName()));
 		Set<String> environmentProfiles = new LinkedHashSet<>(Arrays.asList(type.get(environment)));
 		BindResult<Set<String>> boundProfiles = binder.bind(type.getName(), STRING_SET, validator);
 		if (hasProgrammaticallySetProfiles(type, environmentPropertyValue, environmentPropertyProfiles,

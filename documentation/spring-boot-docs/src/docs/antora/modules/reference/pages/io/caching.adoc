@@ -57,7 +57,7 @@ TIP: Use the `spring-boot-starter-cache` starter to quickly add basic caching de
 The starter brings in `spring-context-support`.
 If you add dependencies manually, you must include `spring-context-support` in order to use the JCache or Caffeine support.
 
-If the javadoc:org.springframework.cache.CacheManager[] is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the javadoc:org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer[] interface.
+If the javadoc:org.springframework.cache.CacheManager[] is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the javadoc:org.springframework.boot.cache.autoconfigure.CacheManagerCustomizer[] interface.
 The following example sets a flag to say that `null` values should not be passed down to the underlying map:
 
 include-code::MyCacheManagerConfiguration[]
@@ -105,7 +105,7 @@ There are two ways to customize the underlying javadoc:javax.cache.CacheManager[
 
 * Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
 If a custom javadoc:javax.cache.configuration.Configuration[] bean is defined, it is used to customize them.
-* javadoc:org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer[] beans are invoked with the reference of the javadoc:javax.cache.CacheManager[] for full customization.
+* javadoc:org.springframework.boot.cache.autoconfigure.CacheManagerCustomizer[] beans are invoked with the reference of the javadoc:javax.cache.CacheManager[] for full customization.
 
 TIP: If a standard javadoc:javax.cache.CacheManager[] bean is defined, it is wrapped automatically in an javadoc:org.springframework.cache.CacheManager[] implementation that the abstraction expects.
 No further customization is applied to it.
@@ -164,7 +164,7 @@ spring:
       expiration: "10m"
 ----
 
-If you need more control over the configuration, consider registering a javadoc:org.springframework.boot.autoconfigure.cache.CouchbaseCacheManagerBuilderCustomizer[] bean.
+If you need more control over the configuration, consider registering a javadoc:org.springframework.boot.cache.autoconfigure.CouchbaseCacheManagerBuilderCustomizer[] bean.
 The following example shows a customizer that configures a specific entry expiration for `cache1` and `cache2`:
 
 include-code::MyCouchbaseCacheManagerConfiguration[]
@@ -193,7 +193,7 @@ We strongly recommend keeping this setting enabled if you create your own javado
 TIP: You can take full control of the default configuration by adding a javadoc:org.springframework.data.redis.cache.RedisCacheConfiguration[] javadoc:org.springframework.context.annotation.Bean[format=annotation] of your own.
 This can be useful if you need to customize the default serialization strategy.
 
-If you need more control over the configuration, consider registering a javadoc:org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer[] bean.
+If you need more control over the configuration, consider registering a javadoc:org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer[] bean.
 The following example shows a customizer that configures a specific time to live for `cache1` and `cache2`:
 
 include-code::MyRedisCacheManagerConfiguration[]
@@ -235,7 +235,7 @@ https://cache2k.org/[Cache2k] is an in-memory cache.
 If the Cache2k spring integration is present, a `SpringCache2kCacheManager` is auto-configured.
 
 Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
-Cache defaults can be customized using a javadoc:org.springframework.boot.autoconfigure.cache.Cache2kBuilderCustomizer[] bean.
+Cache defaults can be customized using a javadoc:org.springframework.boot.cache.autoconfigure.Cache2kBuilderCustomizer[] bean.
 The following example shows a customizer that configures the capacity of the cache to 200 entries, with an expiration of 5 minutes:
 
 include-code::MyCache2kDefaultsConfiguration[]
@@ -267,7 +267,7 @@ This is similar to the way the "real" cache providers behave if you use an undec
 
 When javadoc:org.springframework.cache.annotation.EnableCaching[format=annotation] is present in your configuration, a suitable cache configuration is expected as well.
 If you have a custom ` org.springframework.cache.CacheManager`, consider defining it in a separate javadoc:org.springframework.context.annotation.Configuration[format=annotation] class so that you can override it if necessary.
-None uses a no-op implementation that is useful in tests, and slice tests use that by default via javadoc:org.springframework.boot.test.autoconfigure.core.AutoConfigureCache[format=annotation].
+None uses a no-op implementation that is useful in tests, and slice tests use that by default through javadoc:org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache[format=annotation] when the `spring-boot-cache-test` module is present.
 
 If you need to use a no-op cache rather than the auto-configured cache manager in a certain environment, set the cache type to `none`, as shown in the following example:
 

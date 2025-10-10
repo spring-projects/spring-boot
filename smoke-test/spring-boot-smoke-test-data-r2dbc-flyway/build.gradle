@@ -30,8 +30,9 @@ dependencies {
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
 	runtimeOnly("org.springframework:spring-jdbc")
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":module:spring-boot-data-r2dbc-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("io.projectreactor:reactor-test")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")

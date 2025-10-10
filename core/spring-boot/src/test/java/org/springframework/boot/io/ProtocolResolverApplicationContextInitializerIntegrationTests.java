@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
@@ -62,13 +63,13 @@ class ProtocolResolverApplicationContextInitializerIntegrationTests {
 	@ConfigurationProperties("test")
 	static class TestProperties {
 
-		Resource resource;
+		@Nullable Resource resource;
 
-		Resource getResource() {
+		@Nullable Resource getResource() {
 			return this.resource;
 		}
 
-		void setResource(Resource resource) {
+		void setResource(@Nullable Resource resource) {
 			this.resource = resource;
 		}
 

@@ -9,8 +9,8 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 {"groups": [
 	{
 		"name": "server",
-		"type": "org.springframework.boot.autoconfigure.web.ServerProperties",
-		"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		"type": "org.springframework.boot.web.server.autoconfigure.ServerProperties",
+		"sourceType": "org.springframework.boot.web.server.autoconfigure.ServerProperties"
 	},
 	{
 		"name": "spring.jpa.hibernate",
@@ -23,12 +23,12 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 	{
 		"name": "server.port",
 		"type": "java.lang.Integer",
-		"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		"sourceType": "org.springframework.boot.web.server.autoconfigure.ServerProperties"
 	},
 	{
 		"name": "server.address",
 		"type": "java.net.InetAddress",
-		"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		"sourceType": "org.springframework.boot.web.server.autoconfigure.ServerProperties"
 	},
 	{
 		  "name": "spring.jpa.hibernate.ddl-auto",

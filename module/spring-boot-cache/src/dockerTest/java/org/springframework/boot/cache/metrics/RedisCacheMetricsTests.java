@@ -29,7 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.cache.autoconfigure.CacheAutoConfiguration;
-import org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -55,7 +55,7 @@ class RedisCacheMetricsTests {
 	private static final Tags TAGS = Tags.of("app", "test").and("cache", "test");
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class, CacheAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(DataRedisAutoConfiguration.class, CacheAutoConfiguration.class))
 		.withUserConfiguration(CachingConfiguration.class)
 		.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
 				"spring.data.redis.port=" + redis.getFirstMappedPort(), "spring.cache.type=redis",

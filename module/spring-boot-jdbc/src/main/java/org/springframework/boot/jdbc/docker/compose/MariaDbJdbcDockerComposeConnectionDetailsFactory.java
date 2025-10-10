@@ -33,10 +33,8 @@ import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 class MariaDbJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final String[] MARIADB_CONTAINER_NAMES = { "mariadb", "bitnami/mariadb" };
-
 	protected MariaDbJdbcDockerComposeConnectionDetailsFactory() {
-		super(MARIADB_CONTAINER_NAMES);
+		super("mariadb");
 	}
 
 	@Override

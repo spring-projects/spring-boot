@@ -18,6 +18,7 @@ package org.springframework.boot.convert;
 
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionFailedException;
@@ -98,11 +99,11 @@ class StringToDataSizeConverterTests {
 		assertThat(convert(conversionService, "")).isNull();
 	}
 
-	private DataSize convert(ConversionService conversionService, String source) {
+	private @Nullable DataSize convert(ConversionService conversionService, String source) {
 		return conversionService.convert(source, DataSize.class);
 	}
 
-	private DataSize convert(ConversionService conversionService, String source, DataUnit unit) {
+	private @Nullable DataSize convert(ConversionService conversionService, String source, @Nullable DataUnit unit) {
 		return (DataSize) conversionService.convert(source, TypeDescriptor.forObject(source),
 				MockDataSizeTypeDescriptor.get(unit));
 	}

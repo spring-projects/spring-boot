@@ -31,7 +31,7 @@ import tools.jackson.databind.node.ObjectNode;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.json.MappedObject;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -149,7 +149,7 @@ class BuilderMetadata extends MappedObject {
 	 */
 	void attachTo(ImageConfig.Update update) {
 		try {
-			String json = SharedObjectMapper.get().writeValueAsString(getNode());
+			String json = SharedJsonMapper.get().writeValueAsString(getNode());
 			update.withLabel(LABEL_NAME, json);
 		}
 		catch (JacksonException ex) {
@@ -189,7 +189,7 @@ class BuilderMetadata extends MappedObject {
 	 * @throws IOException on IO error
 	 */
 	static BuilderMetadata fromJson(String json) throws IOException {
-		return new BuilderMetadata(SharedObjectMapper.get().readTree(json));
+		return new BuilderMetadata(SharedJsonMapper.get().readTree(json));
 	}
 
 	/**

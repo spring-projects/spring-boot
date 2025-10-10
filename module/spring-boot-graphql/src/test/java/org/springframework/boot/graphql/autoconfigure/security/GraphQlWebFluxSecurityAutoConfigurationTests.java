@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 import graphql.schema.idl.TypeRuntimeWiring;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -80,7 +79,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 		    booksOnSale(minPages: Int) : Book!
 		}
 		""")
-@Disabled("Waiting on compatible release")
 class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 	private static final String BASE_URL = "https://spring.example.org/graphql";
@@ -155,8 +153,11 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher(BookService bookService) {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
-				.dataFetcher("bookById", (env) -> bookService.getBookdById(env.getArgument("id"))));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById", (env) -> {
+				String id = env.getArgument("id");
+				assertThat(id).isNotNull();
+				return bookService.getBookdById(id);
+			}));
 		}
 
 		@Bean

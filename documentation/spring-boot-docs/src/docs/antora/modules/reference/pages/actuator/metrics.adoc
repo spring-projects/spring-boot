@@ -870,7 +870,7 @@ Metrics are also tagged by the name of the javadoc:javax.sql.DataSource[] comput
 
 TIP: By default, Spring Boot provides metadata for all supported data sources.
 You can add additional javadoc:org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider[] beans if your favorite data source is not supported.
-See javadoc:org.springframework.boot.autoconfigure.jdbc.metadata.DataSourcePoolMetadataProvidersConfiguration[] for examples.
+See javadoc:org.springframework.boot.jdbc.autoconfigure.DataSourcePoolMetadataProvidersConfiguration[] for examples.
 
 Also, Hikari-specific metrics are exposed with a `hikaricp` prefix.
 Each metric is tagged by the name of the pool (you can control it with `spring.datasource.name`).
@@ -1042,6 +1042,13 @@ management:
 
 
 
+[[actuator.metrics.supported.neo4j]]
+=== Neo4j Metrics
+
+Auto-configuration registers a javadoc:org.neo4j.driver.observation.micrometer.MicrometerObservationProvider[] for the auto-configured javadoc:org.neo4j.driver.Driver[].
+
+
+
 [[actuator.metrics.supported.jetty]]
 === Jetty Metrics
 
@@ -1053,8 +1060,8 @@ Metrics for Jetty's javadoc:org.eclipse.jetty.server.Connector[] instances are b
 [[actuator.metrics.supported.redis]]
 === Redis Metrics
 
-Auto-configuration registers a javadoc:io.lettuce.core.metrics.MicrometerCommandLatencyRecorder[] for the auto-configured javadoc:org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory[].
-For more detail, see the {url-lettuce-docs}#command.latency.metrics.micrometer[Micrometer Metrics section] of the Lettuce documentation.
+Auto-configuration registers a javadoc:io.lettuce.core.tracing.MicrometerTracing[] for the auto-configured javadoc:org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory[].
+For more detail, see the {url-lettuce-docs}/advanced-usage/#observability[Observability section] of the Lettuce documentation.
 
 
 

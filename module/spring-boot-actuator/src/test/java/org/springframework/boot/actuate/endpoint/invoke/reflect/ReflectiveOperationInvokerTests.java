@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
+import java.lang.reflect.Method;
 import java.util.Collections;
 
 import org.jspecify.annotations.Nullable;
@@ -51,12 +52,13 @@ class ReflectiveOperationInvokerTests {
 	@BeforeEach
 	void setup() {
 		this.target = new Example();
-		this.operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class, "reverse",
-				ApiVersion.class, SecurityContext.class, String.class), OperationType.READ);
+		this.operationMethod = new OperationMethod(
+				findMethod("reverse", ApiVersion.class, SecurityContext.class, String.class), OperationType.READ);
 		this.parameterValueMapper = (parameter, value) -> (value != null) ? value.toString() : null;
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(null, this.operationMethod, this.parameterValueMapper))
@@ -64,6 +66,7 @@ class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenOperationMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, null, this.parameterValueMapper))
@@ -71,6 +74,7 @@ class ReflectiveOperationInvokerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenParameterValueMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ReflectiveOperationInvoker(this.target, this.operationMethod, null))
@@ -96,8 +100,9 @@ class ReflectiveOperationInvokerTests {
 
 	@Test
 	void invokeWhenMissingOptionalArgumentShouldInvoke() {
-		OperationMethod operationMethod = new OperationMethod(ReflectionUtils.findMethod(Example.class,
-				"reverseOptional", ApiVersion.class, SecurityContext.class, String.class), OperationType.READ);
+		OperationMethod operationMethod = new OperationMethod(
+				findMethod("reverseOptional", ApiVersion.class, SecurityContext.class, String.class),
+				OperationType.READ);
 		ReflectiveOperationInvoker invoker = new ReflectiveOperationInvoker(this.target, operationMethod,
 				this.parameterValueMapper);
 		Object result = invoker
@@ -112,6 +117,12 @@ class ReflectiveOperationInvokerTests {
 		Object result = invoker
 			.invoke(new InvocationContext(mock(SecurityContext.class), Collections.singletonMap("name", 1234)));
 		assertThat(result).isEqualTo("4321");
+	}
+
+	private Method findMethod(String name, Class<?>... parameters) {
+		Method method = ReflectionUtils.findMethod(Example.class, name, parameters);
+		assertThat(method).as("Method '%s'", name).isNotNull();
+		return method;
 	}
 
 	static class Example {

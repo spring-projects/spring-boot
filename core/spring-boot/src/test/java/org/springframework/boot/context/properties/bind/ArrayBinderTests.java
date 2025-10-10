@@ -142,7 +142,9 @@ class ArrayBinderTests {
 		this.sources.add(source);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", INTEGER_ARRAY))
 			.satisfies((ex) -> {
-				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+				Throwable cause = ex.getCause();
+				assertThat(cause).isNotNull();
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) cause)
 					.getUnboundProperties();
 				assertThat(unbound).hasSize(1);
 				ConfigurationProperty property = unbound.iterator().next();

@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "spring.test.metrics.auto-configure",
+      "type": "java.lang.Boolean",
+      "description": "Whether metrics should be auto-configured in tests.",
+      "defaultValue": false
+    }
+  ]
+}

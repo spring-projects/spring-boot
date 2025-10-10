@@ -31,5 +31,6 @@ dependencies {
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("jakarta.transaction:jakarta.transaction-api")
 
+	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

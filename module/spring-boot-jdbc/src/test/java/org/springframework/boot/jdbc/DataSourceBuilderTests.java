@@ -39,6 +39,7 @@ import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.Driver;
 import org.h2.jdbcx.JdbcDataSource;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.postgresql.ds.PGSimpleDataSource;
@@ -63,7 +64,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  */
 class DataSourceBuilderTests {
 
-	private DataSource dataSource;
+	private @Nullable DataSource dataSource;
 
 	@AfterEach
 	void shutdownDataSource() throws IOException {
@@ -621,33 +622,33 @@ class DataSourceBuilderTests {
 
 	static class CustomTomcatDataSource extends org.apache.tomcat.jdbc.pool.DataSource {
 
-		private String jdbcUrl;
+		private @Nullable String jdbcUrl;
 
-		private String user;
+		private @Nullable String user;
 
-		private String driverClass;
+		private @Nullable String driverClass;
 
-		String getJdbcUrl() {
+		@Nullable String getJdbcUrl() {
 			return this.jdbcUrl;
 		}
 
-		void setJdbcUrl(String jdbcUrl) {
+		void setJdbcUrl(@Nullable String jdbcUrl) {
 			this.jdbcUrl = jdbcUrl;
 		}
 
-		String getUser() {
+		@Nullable String getUser() {
 			return this.user;
 		}
 
-		void setUser(String user) {
+		void setUser(@Nullable String user) {
 			this.user = user;
 		}
 
-		String getDriverClass() {
+		@Nullable String getDriverClass() {
 			return this.driverClass;
 		}
 
-		void setDriverClass(String driverClass) {
+		void setDriverClass(@Nullable String driverClass) {
 			this.driverClass = driverClass;
 		}
 
@@ -655,9 +656,9 @@ class DataSourceBuilderTests {
 
 	static class LimitedCustomDataSource extends AbstractDataSource {
 
-		private String username;
+		private @Nullable String username;
 
-		private String password;
+		private @Nullable String password;
 
 		@Override
 		public Connection getConnection() throws SQLException {
@@ -669,19 +670,19 @@ class DataSourceBuilderTests {
 			throw new UnsupportedOperationException();
 		}
 
-		String getUsername() {
+		@Nullable String getUsername() {
 			return this.username;
 		}
 
-		void setUsername(String username) {
+		void setUsername(@Nullable String username) {
 			this.username = username;
 		}
 
-		String getPassword() {
+		@Nullable String getPassword() {
 			return this.password;
 		}
 
-		void setPassword(String password) {
+		void setPassword(@Nullable String password) {
 			this.password = password;
 		}
 
@@ -689,13 +690,13 @@ class DataSourceBuilderTests {
 
 	static class NoDriverClassNameDataSource extends LimitedCustomDataSource {
 
-		private String url;
+		private @Nullable String url;
 
-		String getUrl() {
+		@Nullable String getUrl() {
 			return this.url;
 		}
 
-		void setUrl(String url) {
+		void setUrl(@Nullable String url) {
 			this.url = url;
 		}
 
@@ -703,23 +704,23 @@ class DataSourceBuilderTests {
 
 	static class CustomDataSource extends LimitedCustomDataSource {
 
-		private String driverClassName;
+		private @Nullable String driverClassName;
 
-		private String url;
+		private @Nullable String url;
 
-		String getDriverClassName() {
+		@Nullable String getDriverClassName() {
 			return this.driverClassName;
 		}
 
-		void setDriverClassName(String driverClassName) {
+		void setDriverClassName(@Nullable String driverClassName) {
 			this.driverClassName = driverClassName;
 		}
 
-		String getUrl() {
+		@Nullable String getUrl() {
 			return this.url;
 		}
 
-		void setUrl(String url) {
+		void setUrl(@Nullable String url) {
 			this.url = url;
 		}
 

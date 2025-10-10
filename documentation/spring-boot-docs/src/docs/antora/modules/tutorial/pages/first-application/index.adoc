@@ -100,21 +100,6 @@ Open your favorite text editor and add the following:
 
 	<!-- Additional lines to be added here... -->
 
-ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
-		<!-- (you don't need this if you are using a release version) -->
-		<repositories>
-			<repository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</repository>
-		</repositories>
-		<pluginRepositories>
-			<pluginRepository>
-				<id>spring-milestones</id>
-				<url>https://repo.spring.io/milestone</url>
-			</pluginRepository>
-		</pluginRepositories>
-endif::[]
 ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
 		<!-- (you don't need this if you are using a release version) -->
 		<repositories>
@@ -180,12 +165,14 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+
+java {
+	sourceCompatibility = '17'
+}
 
 repositories {
 	mavenCentral()
-ifeval::["{artifact-release-type}" != "release"]
-	maven { url 'https://repo.spring.io/milestone' }
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
 	maven { url 'https://repo.spring.io/snapshot' }
 endif::[]
 }

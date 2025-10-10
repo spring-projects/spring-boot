@@ -29,6 +29,7 @@ import groovy.text.markup.DelegatingIndentWriter;
 import groovy.text.markup.MarkupTemplateEngine;
 import groovy.text.markup.TemplateConfiguration;
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -320,7 +321,7 @@ class GroovyTemplateAutoConfigurationTests {
 		}
 
 		@Override
-		public Object run() {
+		public @Nullable Object run() {
 			return null;
 		}
 

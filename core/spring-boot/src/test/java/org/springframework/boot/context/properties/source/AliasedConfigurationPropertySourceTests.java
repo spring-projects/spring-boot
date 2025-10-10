@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,7 +99,7 @@ class AliasedConfigurationPropertySourceTests {
 			.isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
-	private Object getValue(ConfigurationPropertySource source, String name) {
+	private @Nullable Object getValue(ConfigurationPropertySource source, String name) {
 		ConfigurationProperty property = source.getConfigurationProperty(ConfigurationPropertyName.of(name));
 		return (property != null) ? property.getValue() : null;
 	}

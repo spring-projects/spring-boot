@@ -155,7 +155,7 @@ public class ResourceBanner implements Banner {
 		return environment.getProperty("spring.application.version");
 	}
 
-	protected String getBootVersion() {
+	protected @Nullable String getBootVersion() {
 		return SpringBootVersion.getVersion();
 	}
 

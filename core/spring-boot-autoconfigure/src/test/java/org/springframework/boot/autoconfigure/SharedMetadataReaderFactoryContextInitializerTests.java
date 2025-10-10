@@ -57,6 +57,7 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 			.getField(application, "initializers");
 		// Simulate what would happen if an initializer was added using spring.factories
 		// and happened to be loaded first
+		assertThat(initializers).isNotNull();
 		initializers.add(0, new Initializer());
 		GenericApplicationContext context = (GenericApplicationContext) application.run();
 		BeanDefinition definition = context.getBeanDefinition(SharedMetadataReaderFactoryContextInitializer.BEAN_NAME);

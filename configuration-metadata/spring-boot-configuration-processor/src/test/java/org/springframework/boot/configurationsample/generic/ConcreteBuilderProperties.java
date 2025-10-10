@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.generic;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Builder pattern with a resolved generic
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("builder")
+@TestConfigurationProperties("builder")
 public class ConcreteBuilderProperties extends GenericBuilderProperties<ConcreteBuilderProperties> {
 
 	private String description;

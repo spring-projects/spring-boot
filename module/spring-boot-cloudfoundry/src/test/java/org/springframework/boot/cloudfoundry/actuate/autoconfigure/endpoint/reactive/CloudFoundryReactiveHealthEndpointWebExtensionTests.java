@@ -17,6 +17,7 @@
 package org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.reactive;
 
 import java.time.Duration;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.health.CompositeHealthDescriptor;
 import org.springframework.boot.actuate.health.HealthDescriptor;
 import org.springframework.boot.actuate.health.IndicatedHealthDescriptor;
@@ -71,12 +73,14 @@ class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 		this.contextRunner.run((context) -> {
 			CloudFoundryReactiveHealthEndpointWebExtension extension = context
 				.getBean(CloudFoundryReactiveHealthEndpointWebExtension.class);
-			HealthDescriptor descriptor = extension.health(ApiVersion.V3).block(Duration.ofSeconds(30)).getBody();
-			HealthDescriptor component = ((CompositeHealthDescriptor) descriptor).getComponents()
-				.entrySet()
-				.iterator()
-				.next()
-				.getValue();
+			WebEndpointResponse<? extends HealthDescriptor> response = extension.health(ApiVersion.V3)
+				.block(Duration.ofSeconds(30));
+			assertThat(response).isNotNull();
+			HealthDescriptor descriptor = response.getBody();
+			assertThat(descriptor).isNotNull();
+			Map<String, HealthDescriptor> components = ((CompositeHealthDescriptor) descriptor).getComponents();
+			assertThat(components).isNotNull();
+			HealthDescriptor component = components.entrySet().iterator().next().getValue();
 			assertThat(((IndicatedHealthDescriptor) component).getDetails()).containsEntry("spring", "boot");
 		});
 	}

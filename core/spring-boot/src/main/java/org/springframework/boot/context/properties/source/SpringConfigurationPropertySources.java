@@ -25,7 +25,7 @@ import java.util.function.Function;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.origin.OriginLookup;
+import org.springframework.boot.env.PropertySourceInfo;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -69,8 +69,8 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 			return result;
 		}
 		result = SpringConfigurationPropertySource.from(source);
-		if (source instanceof OriginLookup<?> originLookup) {
-			result = result.withPrefix(originLookup.getPrefix());
+		if (source instanceof PropertySourceInfo propertySourceInfo) {
+			result = result.withPrefix(propertySourceInfo.getPrefix());
 		}
 		this.cache.put(source, result);
 		return result;

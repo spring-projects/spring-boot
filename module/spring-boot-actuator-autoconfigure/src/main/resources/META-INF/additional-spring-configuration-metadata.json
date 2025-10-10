@@ -34,7 +34,7 @@
       "name": "management.endpoint.health.probes.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable liveness and readiness probes.",
-      "defaultValue": false
+      "defaultValue": true
     },
     {
       "name": "management.endpoint.health.status.order",
@@ -137,6 +137,7 @@
       "description": "Whether to enable liveness and readiness probes.",
       "defaultValue": false,
       "deprecation": {
+        "level": "error",
         "replacement": "management.endpoint.health.probes.enabled"
       }
     },

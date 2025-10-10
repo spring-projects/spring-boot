@@ -42,30 +42,39 @@ import static org.assertj.core.api.Assertions.assertThatException;
 class MessageSourceMessageInterpolatorIntegrationTests {
 
 	@NotNull
+	@SuppressWarnings("NullAway.Init")
 	private String defaultMessage;
 
 	@NotNull(message = "{null}")
+	@SuppressWarnings("NullAway.Init")
 	private String nullable;
 
 	@NotNull(message = "{blank}")
+	@SuppressWarnings("NullAway.Init")
 	private String blank;
 
 	@NotNull(message = "{unknown}")
+	@SuppressWarnings("NullAway.Init")
 	private String unknown;
 
 	@NotNull(message = "{recursion}")
+	@SuppressWarnings("NullAway.Init")
 	private String recursion;
 
 	@NotNull(message = "\\{null}")
+	@SuppressWarnings("NullAway.Init")
 	private String escapePrefix;
 
 	@NotNull(message = "{null\\}")
+	@SuppressWarnings("NullAway.Init")
 	private String escapeSuffix;
 
 	@NotNull(message = "\\{null\\}")
+	@SuppressWarnings("NullAway.Init")
 	private String escapePrefixSuffix;
 
 	@NotNull(message = "\\\\{null}")
+	@SuppressWarnings("NullAway.Init")
 	private String escapeEscape;
 
 	@Test

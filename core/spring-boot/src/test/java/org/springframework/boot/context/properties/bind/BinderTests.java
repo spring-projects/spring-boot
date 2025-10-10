@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.validation.Validation;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
@@ -71,12 +72,14 @@ class BinderTests {
 	private Binder binder = new Binder(this.sources);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSourcesIsNullArrayShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((ConfigurationPropertySource[]) null))
 			.withMessageContaining("'sources' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSourcesIsNullIterableShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
 			.withMessageContaining("'sources' must not be null");
@@ -95,6 +98,7 @@ class BinderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void bindWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null, Bindable.of(String.class),
@@ -103,6 +107,7 @@ class BinderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void bindWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null, BindHandler.DEFAULT))
@@ -268,7 +273,7 @@ class BinderTests {
 		ConfigurationPropertySources.from(new PropertySource<String>("test") {
 
 			@Override
-			public Object getProperty(String name) {
+			public @Nullable Object getProperty(String name) {
 				return null;
 			}
 
@@ -301,7 +306,7 @@ class BinderTests {
 		Map<String, Object> source = new HashMap<>();
 		source.put("value", "hello");
 		source.put("", "bar");
-		Iterable<ConfigurationPropertySource> propertySources = ConfigurationPropertySources
+		Iterable<@Nullable ConfigurationPropertySource> propertySources = ConfigurationPropertySources
 			.from(new MapPropertySource("test", source));
 		propertySources.forEach(this.sources::add);
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
@@ -330,7 +335,8 @@ class BinderTests {
 		BindResult<JavaBean> result = this.binder.bind("foo", Bindable.of(JavaBean.class), new BindHandler() {
 
 			@Override
-			public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+			public <T> @Nullable Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
+					BindContext context) {
 				return null;
 			}
 
@@ -372,15 +378,15 @@ class BinderTests {
 
 	static class JavaBean {
 
-		private String value;
+		private @Nullable String value;
 
 		private final List<String> items = Collections.emptyList();
 
-		String getValue() {
+		@Nullable String getValue() {
 			return this.value;
 		}
 
-		void setValue(String value) {
+		void setValue(@Nullable String value) {
 			this.value = value;
 		}
 
@@ -433,13 +439,13 @@ class BinderTests {
 	@Validated
 	static class ResourceBean {
 
-		private Resource resource;
+		private @Nullable Resource resource;
 
-		Resource getResource() {
+		@Nullable Resource getResource() {
 			return this.resource;
 		}
 
-		void setResource(Resource resource) {
+		void setResource(@Nullable Resource resource) {
 			this.resource = resource;
 		}
 
@@ -447,13 +453,13 @@ class BinderTests {
 
 	static class CycleBean1 {
 
-		private CycleBean2 two;
+		private @Nullable CycleBean2 two;
 
-		CycleBean2 getTwo() {
+		@Nullable CycleBean2 getTwo() {
 			return this.two;
 		}
 
-		void setTwo(CycleBean2 two) {
+		void setTwo(@Nullable CycleBean2 two) {
 			this.two = two;
 		}
 
@@ -461,13 +467,13 @@ class BinderTests {
 
 	static class CycleBean2 {
 
-		private CycleBean1 one;
+		private @Nullable CycleBean1 one;
 
-		CycleBean1 getOne() {
+		@Nullable CycleBean1 getOne() {
 			return this.one;
 		}
 
-		void setOne(CycleBean1 one) {
+		void setOne(@Nullable CycleBean1 one) {
 			this.one = one;
 		}
 
@@ -475,13 +481,13 @@ class BinderTests {
 
 	static class GenericBean<T> {
 
-		private T bar;
+		private @Nullable T bar;
 
-		T getBar() {
+		@Nullable T getBar() {
 			return this.bar;
 		}
 
-		void setBar(T bar) {
+		void setBar(@Nullable T bar) {
 			this.bar = bar;
 		}
 

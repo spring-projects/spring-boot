@@ -30,7 +30,9 @@ import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.PulsarContainer;
@@ -149,7 +151,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing MariaDB.
 	 */
-	MARIADB("mariadb", "10.10"),
+	MARIADB("mariadb", "10.10", () -> MariaDBContainer.class),
 
 	/**
 	 * A container image suitable for testing MongoDB.
@@ -168,7 +170,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing MySQL.
 	 */
-	MYSQL("mysql", "8.0"),
+	MYSQL("mysql", "8.0", () -> MySQLContainer.class),
 
 	/**
 	 * A container image suitable for testing Neo4j.
@@ -256,57 +258,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Zipkin.
 	 */
-	ZIPKIN("openzipkin/zipkin", "3.0.6", () -> ZipkinContainer.class),
-
-	/**
-	 * A container image suitable for testing Cassandra via Bitnami.
-	 */
-	BITNAMI_CASSANDRA("bitnami/cassandra", "4.1.3"),
-
-	/**
-	 * A container image suitable for testing ClickHouse via Bitnami.
-	 */
-	BITNAMI_CLICKHOUSE("bitnami/clickhouse", "24.3"),
-
-	/**
-	 * A container image suitable for testing Elasticsearch via Bitnami.
-	 */
-	BITNAMI_ELASTICSEARCH("bitnami/elasticsearch", "9.0.2"),
-
-	/**
-	 * A container image suitable for testing MariaDB via Bitnami.
-	 */
-	BITNAMI_MARIADB("bitnami/mariadb", "11.2.3"),
-
-	/**
-	 * A container image suitable for testing MongoDB via Bitnami.
-	 */
-	BITNAMI_MONGODB("bitnami/mongodb", "7.0.5"),
-
-	/**
-	 * A container image suitable for testing MySQL via Bitnami.
-	 */
-	BITNAMI_MYSQL("bitnami/mysql", "8.0.36"),
-
-	/**
-	 * A container image suitable for testing Neo4j via Bitnami.
-	 */
-	BITNAMI_NEO4J("bitnami/neo4j", "5.16.0"),
-
-	/**
-	 * A container image suitable for testing Postgres via Bitnami.
-	 */
-	BITNAMI_POSTGRESQL("bitnami/postgresql", "16.2.0"),
-
-	/**
-	 * A container image suitable for testing RabbitMQ via Bitnami.
-	 */
-	BITNAMI_RABBITMQ("bitnami/rabbitmq", "3.11.28"),
-
-	/**
-	 * A container image suitable for testing Redis via Bitnami.
-	 */
-	BITNAMI_REDIS("bitnami/redis", "7.2.4");
+	ZIPKIN("openzipkin/zipkin", "3.0.6", () -> ZipkinContainer.class);
 
 	private final String name;
 

@@ -36,6 +36,8 @@
 	<suppress files="Ansi.*\.java" checks="JavadocStyle" />
 	<suppress files="LogLevel\.java" checks="JavadocVariable" />
 	<suppress files="HelpMojo\.java" checks=".*"/>
+	<suppress files="[\\/]org.springframework.boot.cli.json[\\/].*\.java$" checks=".*" />
+	<suppress files="[\\/]org.springframework.boot.configurationmetadata.json[\\/].*\.java$" checks=".*" />
 	<suppress files="[\\/]org.springframework.boot.configurationprocessor.json[\\/].*\.java$" checks=".*" />
 	<suppress files="TripType\.java" checks="JavadocVariable" />
 	<suppress files="Rating\.java" checks="JavadocVariable" />
@@ -61,6 +63,7 @@
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
 	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
+	<suppress files="SpringBootProviderVersion" checks="JavadocPackage" />
 	<suppress files="spring-boot-configuration-processor[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]configurationsample[\\/]" checks="SpringDeprecatedCheck"/>
 	<suppress files="ImportTestcontainersTests\.java" checks="InterfaceIsType" />
 	<suppress files="MyContainers\.java" checks="InterfaceIsType" />
@@ -76,4 +79,7 @@
 	<suppress files="EntityManagerFactoryBuilder\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="DockerApi\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="InvocationContext\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
+	<!-- https://github.com/apache/logging-log4j2/issues/2769#issuecomment-3049020222 -->
+	<suppress files="SpringProfileArbiter\.java" checks="SpringMethodVisibility"/>
+	<suppress files="StructuredLogLayout\.java" checks="SpringMethodVisibility"/>
 </suppressions>

@@ -21,7 +21,6 @@ import java.time.Duration;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
-import org.junit.jupiter.api.Disabled;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
@@ -56,13 +55,6 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionFactoryOptions.getValue(ConnectionFactoryOptions.PASSWORD)).isNull();
 		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.DATABASE))
 			.isEqualTo("mydatabase");
-		checkDatabaseAccess(connectionDetails);
-	}
-
-	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
-	@Disabled("https://github.com/spring-projects/spring-boot/issues/46983")
-	void runWithBitnamiImageCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
-		assertConnectionDetails(connectionDetails);
 		checkDatabaseAccess(connectionDetails);
 	}
 

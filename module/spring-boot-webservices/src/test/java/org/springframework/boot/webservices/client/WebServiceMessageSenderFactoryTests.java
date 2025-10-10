@@ -22,7 +22,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -75,7 +75,7 @@ class WebServiceMessageSenderFactoryTests {
 	@Test
 	@ClassPathExclusions("httpclient5-*.jar")
 	void httpWithSettingsUsesSettings() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+		HttpClientSettings settings = HttpClientSettings.defaults()
 			.withConnectTimeout(Duration.ofSeconds(5))
 			.withReadTimeout(Duration.ofSeconds(2));
 		WebServiceMessageSender sender = WebServiceMessageSenderFactory.http(settings).getWebServiceMessageSender();
@@ -84,7 +84,7 @@ class WebServiceMessageSenderFactoryTests {
 
 	@Test
 	void httpWithFactoryAndSettingsUsesFactoryAndSettings() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+		HttpClientSettings settings = HttpClientSettings.defaults()
 			.withConnectTimeout(Duration.ofSeconds(5))
 			.withReadTimeout(Duration.ofSeconds(2));
 		WebServiceMessageSender sender = WebServiceMessageSenderFactory

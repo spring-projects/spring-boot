@@ -15,7 +15,7 @@
  */
 
 /**
- * Auto-configuration for RestClient and RestTemplate.
+ * Auto-configuration for RestClient.
  */
 @NullMarked
 package org.springframework.boot.restclient.autoconfigure;

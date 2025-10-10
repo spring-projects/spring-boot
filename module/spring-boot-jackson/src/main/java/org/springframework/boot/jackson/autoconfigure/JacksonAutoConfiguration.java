@@ -36,6 +36,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.PropertyNamingStrategy;
 import tools.jackson.databind.cfg.ConstructorDetector;
+import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.aot.hint.ReflectionHints;
@@ -59,6 +60,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.json.ProblemDetailJacksonMixin;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -66,10 +69,10 @@ import org.springframework.util.ReflectionUtils;
 /**
  * Auto configuration for Jackson. The following auto-configuration will get applied:
  * <ul>
- * <li>an {@link JsonMapper} in case none is already configured.</li>
  * <li>a {@link tools.jackson.databind.json.JsonMapper.Builder} in case none is already
  * configured.</li>
- * <li>auto-registration for all {@link JacksonModule} beans with all {@link ObjectMapper}
+ * <li>a {@link JsonMapper} in case none is already configured.</li>
+ * <li>auto-registration for all {@link JacksonModule} beans with all {@link JsonMapper}
  * beans (including the defaulted ones).</li>
  * </ul>
  *
@@ -109,7 +112,7 @@ public final class JacksonAutoConfiguration {
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean(ObjectMapper.class)
+	@ConditionalOnMissingBean
 	JsonMapper jacksonJsonMapper(JsonMapper.Builder builder) {
 		return builder.build();
 	}
@@ -162,6 +165,11 @@ public final class JacksonAutoConfiguration {
 
 			@Override
 			public void customize(JsonMapper.Builder builder) {
+				if (this.jacksonProperties.isUseJackson2Defaults()) {
+					builder.configureForJackson2()
+						.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS,
+								DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
+				}
 				if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
 					builder.changeDefaultPropertyInclusion((handler) -> handler
 						.withValueInclusion(this.jacksonProperties.getDefaultPropertyInclusion()));
@@ -173,9 +181,9 @@ public final class JacksonAutoConfiguration {
 				configureFeatures(builder, this.jacksonProperties.getDeserialization(), builder::configure);
 				configureFeatures(builder, this.jacksonProperties.getSerialization(), builder::configure);
 				configureFeatures(builder, this.jacksonProperties.getMapper(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getRead(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getWrite(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getDatetime(), builder::configure);
+				configureFeatures(builder, this.jacksonProperties.getJson().getRead(), builder::configure);
+				configureFeatures(builder, this.jacksonProperties.getJson().getWrite(), builder::configure);
+				configureFeatures(builder, this.jacksonProperties.getDatatype().getDatetime(), builder::configure);
 				configureFeatures(builder, this.jacksonProperties.getDatatype().getEnum(), builder::configure);
 				configureFeatures(builder, this.jacksonProperties.getDatatype().getJsonNode(), builder::configure);
 				configureDateFormat(builder);
@@ -299,6 +307,26 @@ public final class JacksonAutoConfiguration {
 						default -> builder.constructorDetector(ConstructorDetector.DEFAULT);
 					}
 				}
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ProblemDetail.class)
+	static class ProblemDetailsConfiguration {
+
+		@Bean
+		ProblemDetailJsonMapperBuilderCustomizer problemDetailJsonMapperBuilderCustomizer() {
+			return new ProblemDetailJsonMapperBuilderCustomizer();
+		}
+
+		static final class ProblemDetailJsonMapperBuilderCustomizer implements JsonMapperBuilderCustomizer {
+
+			@Override
+			public void customize(JsonMapper.Builder builder) {
+				builder.addMixIn(ProblemDetail.class, ProblemDetailJacksonMixin.class);
 			}
 
 		}

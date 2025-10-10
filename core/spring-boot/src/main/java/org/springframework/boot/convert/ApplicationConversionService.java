@@ -379,13 +379,6 @@ public class ApplicationConversionService extends FormattingConversionService {
 		}
 	}
 
-	private static <B, T> void addBean(FormatterRegistry registry, B bean, @Nullable ResolvableType beanType,
-			Class<T> type, Consumer<B> standardRegistrar,
-			BiFunction<B, @Nullable ResolvableType, BeanAdapter<?>> beanAdapterFactory) {
-		addBean(registry, bean, beanType, type, standardRegistrar,
-				() -> registry.addConverter(beanAdapterFactory.apply(bean, beanType)));
-	}
-
 	private static <B, T> void addBeanWithType(FormatterRegistry registry, B bean, ResolvableType beanType,
 			Class<T> type, Consumer<B> standardRegistrar,
 			BiFunction<B, ResolvableType, BeanAdapter<?>> beanAdapterFactory) {

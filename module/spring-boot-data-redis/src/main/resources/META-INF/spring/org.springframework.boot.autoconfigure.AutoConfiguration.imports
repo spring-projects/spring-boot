@@ -1,6 +1,6 @@
-org.springframework.boot.data.redis.autoconfigure.LettuceMetricsAutoConfiguration
-org.springframework.boot.data.redis.autoconfigure.RedisAutoConfiguration
-org.springframework.boot.data.redis.autoconfigure.RedisReactiveAutoConfiguration
-org.springframework.boot.data.redis.autoconfigure.RedisRepositoriesAutoConfiguration
-org.springframework.boot.data.redis.autoconfigure.health.RedisHealthContributorAutoConfiguration
-org.springframework.boot.data.redis.autoconfigure.health.RedisReactiveHealthContributorAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.DataRedisReactiveAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.DataRedisRepositoriesAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.health.DataRedisHealthContributorAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.health.DataRedisReactiveHealthContributorAutoConfiguration
+org.springframework.boot.data.redis.autoconfigure.observation.LettuceObservationAutoConfiguration

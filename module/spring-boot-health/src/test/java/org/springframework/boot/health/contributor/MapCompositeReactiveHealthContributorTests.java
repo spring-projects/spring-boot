@@ -20,9 +20,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.health.contributor.ReactiveHealthContributors.Entry;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MapCompositeReactiveHealthContributor}.
@@ -33,8 +36,9 @@ class MapCompositeReactiveHealthContributorTests
 		extends MapCompositeTests<CompositeReactiveHealthContributor, ReactiveHealthContributor, Entry> {
 
 	@Override
+	@SuppressWarnings("NullAway") // Test null check
 	protected CompositeReactiveHealthContributor create(Map<String, String> map,
-			Function<String, ReactiveHealthContributor> valueAdapter) {
+			@Nullable Function<String, ReactiveHealthContributor> valueAdapter) {
 		return new MapCompositeReactiveHealthContributor<>(map, valueAdapter);
 	}
 
@@ -44,7 +48,8 @@ class MapCompositeReactiveHealthContributorTests
 	}
 
 	@Override
-	protected ReactiveHealthContributor getContributor(CompositeReactiveHealthContributor composite, String name) {
+	protected @Nullable ReactiveHealthContributor getContributor(CompositeReactiveHealthContributor composite,
+			String name) {
 		return composite.getContributor(name);
 	}
 
@@ -54,8 +59,10 @@ class MapCompositeReactiveHealthContributorTests
 	}
 
 	@Override
-	protected String getData(ReactiveHealthContributor contributor) {
-		return (String) ((ReactiveHealthIndicator) contributor).health().block().getDetails().get("data");
+	protected @Nullable String getData(ReactiveHealthContributor contributor) {
+		Health health = ((ReactiveHealthIndicator) contributor).health().block();
+		assertThat(health).isNotNull();
+		return (String) health.getDetails().get("data");
 	}
 
 	@Override

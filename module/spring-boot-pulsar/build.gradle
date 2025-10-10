@@ -27,16 +27,12 @@ description = "Spring Boot Pulsar"
 
 dependencies {
 	api(project(":module:spring-boot-tx"))
-	api("org.springframework.pulsar:spring-pulsar") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	api("org.springframework.pulsar:spring-pulsar")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
-	optional("org.springframework.pulsar:spring-pulsar-reactive") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("org.springframework.pulsar:spring-pulsar-reactive")
 	optional("org.testcontainers:pulsar")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))

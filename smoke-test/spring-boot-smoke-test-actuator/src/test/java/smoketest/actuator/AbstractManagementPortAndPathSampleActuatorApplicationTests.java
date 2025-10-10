@@ -21,9 +21,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.test.LocalManagementPort;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalManagementPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +67,8 @@ abstract class AbstractManagementPortAndPathSampleActuatorApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
 			.getForEntity("http://localhost:" + this.managementPort + "/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("{\"groups\":[\"comp\",\"live\",\"ready\"],\"status\":\"UP\"}");
+		assertThat(entity.getBody())
+			.isEqualTo("{\"groups\":[\"comp\",\"live\",\"liveness\",\"readiness\",\"ready\"],\"status\":\"UP\"}");
 	}
 
 	@Test

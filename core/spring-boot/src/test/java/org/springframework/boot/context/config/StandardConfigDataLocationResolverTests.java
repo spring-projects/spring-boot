@@ -258,7 +258,7 @@ class StandardConfigDataLocationResolverTests {
 		assertThat(locations).hasSize(1);
 		StandardConfigDataResource resolved = locations.get(0);
 		assertThat(resolved.getResource().getFilename()).endsWith("application-props-no-extension");
-		ConfigData loaded = new StandardConfigDataLoader().load(null, resolved);
+		ConfigData loaded = new StandardConfigDataLoader().load(mock(ConfigDataLoaderContext.class), resolved);
 		PropertySource<?> propertySource = loaded.getPropertySources().get(0);
 		assertThat(propertySource.getProperty("withnoextension")).isEqualTo("test");
 	}

@@ -77,7 +77,9 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '17'");
+			out.println("java {");
+			out.println("    sourceCompatibility = '17'");
+			out.println("}");
 			out.println("description 'Test project for manifest customization'");
 			out.println("jar.archiveFileName = 'test.jar'");
 		}
@@ -107,7 +109,9 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '17'");
+			out.println("java {");
+			out.println("    sourceCompatibility = '17'");
+			out.println("}");
 			out.println("description 'Test'");
 		}
 		runGradle("assemble");
@@ -136,7 +140,9 @@ class ConventionsPluginTests {
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
 			out.println("version = '1.2.3'");
-			out.println("sourceCompatibility = '17'");
+			out.println("java {");
+			out.println("    sourceCompatibility = '17'");
+			out.println("}");
 			out.println("description 'Test'");
 		}
 		runGradle("assemble");

@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -38,7 +40,7 @@ public final class MockDurationTypeDescriptor {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static TypeDescriptor get(ChronoUnit unit, DurationStyle style) {
+	public static TypeDescriptor get(@Nullable ChronoUnit unit, @Nullable DurationStyle style) {
 		TypeDescriptor descriptor = mock(TypeDescriptor.class);
 		if (unit != null) {
 			DurationUnit unitAnnotation = AnnotationUtils.synthesizeAnnotation(Collections.singletonMap("value", unit),

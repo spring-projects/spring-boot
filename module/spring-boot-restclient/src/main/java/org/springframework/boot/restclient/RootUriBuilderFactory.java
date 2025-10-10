@@ -31,7 +31,12 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 public class RootUriBuilderFactory extends RootUriTemplateHandler implements UriBuilderFactory {
 
-	RootUriBuilderFactory(String rootUri, UriTemplateHandler delegate) {
+	/**
+	 * Create an instance with the root URI to use.
+	 * @param rootUri the root URI
+	 * @param delegate the {@link UriTemplateHandler} to delegate to
+	 */
+	public RootUriBuilderFactory(String rootUri, UriTemplateHandler delegate) {
 		super(rootUri, delegate);
 	}
 

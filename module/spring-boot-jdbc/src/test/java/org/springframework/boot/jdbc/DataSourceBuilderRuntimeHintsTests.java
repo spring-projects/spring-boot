@@ -49,6 +49,7 @@ class DataSourceBuilderRuntimeHintsTests {
 				TypeHint typeHint = hints.getTypeHint(dataSourceType);
 				assertThat(typeHint).withFailMessage(() -> "No hints found for data source type " + dataSourceType)
 					.isNotNull();
+				assertThat(typeHint).isNotNull();
 				Set<MemberCategory> memberCategories = typeHint.getMemberCategories();
 				assertThat(memberCategories).containsExactly(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 			});

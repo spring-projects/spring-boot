@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.Access;
@@ -72,6 +73,7 @@ import static org.mockito.Mockito.mock;
 class EndpointDiscovererTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
@@ -80,6 +82,7 @@ class EndpointDiscovererTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenParameterValueMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null, Collections.emptyList(),
@@ -88,6 +91,7 @@ class EndpointDiscovererTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenInvokerAdvisorsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
@@ -96,6 +100,7 @@ class EndpointDiscovererTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenFiltersIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
@@ -130,7 +135,9 @@ class EndpointDiscovererTests {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context);
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
-			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
+			TestExposableEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+			assertThat(endpoint).isNotNull();
+			Map<Method, TestOperation> operations = mapOperations(endpoint);
 			assertThat(operations).hasSize(5);
 			assertThat(operations).containsKeys(testEndpointMethods());
 			assertThat(operations).containsKeys(ReflectionUtils.findMethod(TestEndpointSubclass.class,
@@ -161,7 +168,9 @@ class EndpointDiscovererTests {
 			TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context, (endpointId) -> 0L);
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
-			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
+			TestExposableEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+			assertThat(endpoint).isNotNull();
+			Map<Method, TestOperation> operations = mapOperations(endpoint);
 			operations.values()
 				.forEach((operation) -> assertThat(operation.getInvoker())
 					.isNotInstanceOf(CachingOperationInvoker.class));
@@ -175,7 +184,9 @@ class EndpointDiscovererTests {
 					(endpointId) -> (endpointId.equals(EndpointId.of("foo")) ? 500L : 0L));
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
-			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
+			TestExposableEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+			assertThat(endpoint).isNotNull();
+			Map<Method, TestOperation> operations = mapOperations(endpoint);
 			operations.values()
 				.forEach((operation) -> assertThat(operation.getInvoker())
 					.isNotInstanceOf(CachingOperationInvoker.class));
@@ -189,11 +200,16 @@ class EndpointDiscovererTests {
 					(endpointId) -> (endpointId.equals(EndpointId.of("test")) ? 500L : 0L));
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
-			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
+			TestExposableEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+			assertThat(endpoint).isNotNull();
+			Map<Method, TestOperation> operations = mapOperations(endpoint);
 			TestOperation getAll = operations.get(findTestEndpointMethod("getAll"));
+			assertThat(getAll).isNotNull();
 			TestOperation getOne = operations.get(findTestEndpointMethod("getOne", String.class));
+			assertThat(getOne).isNotNull();
 			TestOperation update = operations
 				.get(ReflectionUtils.findMethod(TestEndpoint.class, "update", String.class, String.class));
+			assertThat(update).isNotNull();
 			assertThat(((CachingOperationInvoker) getAll.getInvoker()).getTimeToLive()).isEqualTo(500);
 			assertThat(getOne.getInvoker()).isNotInstanceOf(CachingOperationInvoker.class);
 			assertThat(update.getInvoker()).isNotInstanceOf(CachingOperationInvoker.class);
@@ -224,7 +240,9 @@ class EndpointDiscovererTests {
 		load(SpecializedEndpointsConfiguration.class, (context) -> {
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
 			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
-			Map<Method, SpecializedOperation> operations = mapOperations(endpoints.get(EndpointId.of("specialized")));
+			SpecializedExposableEndpoint endpoint = endpoints.get(EndpointId.of("specialized"));
+			assertThat(endpoint).isNotNull();
+			Map<Method, SpecializedOperation> operations = mapOperations(endpoint);
 			assertThat(operations).containsKeys(ReflectionUtils.findMethod(SpecializedExtension.class, "getSpecial"));
 
 		});
@@ -235,7 +253,9 @@ class EndpointDiscovererTests {
 		load(SubSpecializedEndpointsConfiguration.class, (context) -> {
 			SpecializedEndpointDiscoverer discoverer = new SpecializedEndpointDiscoverer(context);
 			Map<EndpointId, SpecializedExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
-			Map<Method, SpecializedOperation> operations = mapOperations(endpoints.get(EndpointId.of("specialized")));
+			SpecializedExposableEndpoint endpoint = endpoints.get(EndpointId.of("specialized"));
+			assertThat(endpoint).isNotNull();
+			Map<Method, SpecializedOperation> operations = mapOperations(endpoint);
 			assertThat(operations).containsKeys(ReflectionUtils.findMethod(SpecializedTestEndpoint.class, "getAll"));
 			assertThat(operations).containsKeys(
 					ReflectionUtils.findMethod(SubSpecializedTestEndpoint.class, "getSpecialOne", String.class));
@@ -285,7 +305,9 @@ class EndpointDiscovererTests {
 		TestEndpointDiscoverer discoverer = new TestEndpointDiscoverer(context);
 		Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 		assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
-		Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
+		TestExposableEndpoint endpoint = endpoints.get(EndpointId.of("test"));
+		assertThat(endpoint).isNotNull();
+		Map<Method, TestOperation> operations = mapOperations(endpoint);
 		assertThat(operations).containsOnlyKeys(testEndpointMethods());
 	}
 
@@ -299,7 +321,9 @@ class EndpointDiscovererTests {
 	}
 
 	private Method findTestEndpointMethod(String name, Class<?>... paramTypes) {
-		return ReflectionUtils.findMethod(TestEndpoint.class, name, paramTypes);
+		Method method = ReflectionUtils.findMethod(TestEndpoint.class, name, paramTypes);
+		assertThat(method).isNotNull();
+		return method;
 	}
 
 	private <E extends ExposableEndpoint<?>> Map<EndpointId, E> mapEndpoints(Collection<E> endpoints) {
@@ -331,12 +355,12 @@ class EndpointDiscovererTests {
 		load(null, configuration, consumer);
 	}
 
-	private void loadWithParent(ApplicationContext parent, Class<?> configuration,
+	private void loadWithParent(@Nullable ApplicationContext parent, Class<?> configuration,
 			Consumer<AnnotationConfigApplicationContext> consumer) {
 		load(parent, configuration, consumer);
 	}
 
-	private void load(ApplicationContext parent, Class<?> configuration,
+	private void load(@Nullable ApplicationContext parent, Class<?> configuration,
 			Consumer<AnnotationConfigApplicationContext> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		try (context) {
@@ -437,12 +461,12 @@ class EndpointDiscovererTests {
 	static class TestEndpoint {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
 		@ReadOperation
-		Object getOne(@Selector String id) {
+		@Nullable Object getOne(@Selector String id) {
 			return null;
 		}
 
@@ -487,7 +511,7 @@ class EndpointDiscovererTests {
 	static class SpecializedExtension {
 
 		@ReadOperation
-		Object getSpecial() {
+		@Nullable Object getSpecial() {
 			return null;
 		}
 
@@ -505,7 +529,7 @@ class EndpointDiscovererTests {
 	static class SpecializedTestEndpoint {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
@@ -519,7 +543,7 @@ class EndpointDiscovererTests {
 	static class SpecializedSuperclassTestEndpoint extends AbstractFilteredEndpoint {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
@@ -528,7 +552,7 @@ class EndpointDiscovererTests {
 	static class SubSpecializedTestEndpoint extends SpecializedTestEndpoint {
 
 		@ReadOperation
-		Object getSpecialOne(@Selector String id) {
+		@Nullable Object getSpecialOne(@Selector String id) {
 			return null;
 		}
 
@@ -540,11 +564,11 @@ class EndpointDiscovererTests {
 			this(applicationContext, (id) -> null);
 		}
 
-		TestEndpointDiscoverer(ApplicationContext applicationContext, Function<EndpointId, Long> timeToLive) {
+		TestEndpointDiscoverer(ApplicationContext applicationContext, Function<EndpointId, @Nullable Long> timeToLive) {
 			this(applicationContext, timeToLive, Collections.emptyList());
 		}
 
-		TestEndpointDiscoverer(ApplicationContext applicationContext, Function<EndpointId, Long> timeToLive,
+		TestEndpointDiscoverer(ApplicationContext applicationContext, Function<EndpointId, @Nullable Long> timeToLive,
 				Collection<EndpointFilter<TestExposableEndpoint>> filters) {
 			this(applicationContext, new ConversionServiceParameterValueMapper(),
 					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)), filters);

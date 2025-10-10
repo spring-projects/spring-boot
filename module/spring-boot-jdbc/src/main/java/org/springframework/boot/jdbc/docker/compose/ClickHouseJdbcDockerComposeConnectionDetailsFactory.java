@@ -30,10 +30,8 @@ import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 class ClickHouseJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	private static final String[] CLICKHOUSE_CONTAINER_NAMES = { "clickhouse/clickhouse-server", "bitnami/clickhouse" };
-
 	protected ClickHouseJdbcDockerComposeConnectionDetailsFactory() {
-		super(CLICKHOUSE_CONTAINER_NAMES);
+		super("clickhouse/clickhouse-server");
 	}
 
 	@Override

@@ -29,7 +29,7 @@ bootWar {
 		baseName = 'foo'
 	}
 	else {
-		archiveBaseName = 'foo'	
+		archiveBaseName = 'foo'
 	}
 }
 

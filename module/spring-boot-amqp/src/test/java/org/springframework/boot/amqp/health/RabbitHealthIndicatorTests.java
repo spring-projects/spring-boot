@@ -45,12 +45,15 @@ import static org.mockito.Mockito.mock;
 class RabbitHealthIndicatorTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private RabbitTemplate rabbitTemplate;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Channel channel;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenRabbitTemplateIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RabbitHealthIndicator(null))
 			.withMessageContaining("'rabbitTemplate' must not be null");

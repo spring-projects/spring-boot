@@ -23,13 +23,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -63,7 +60,6 @@ import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
-import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.boot.loader.tools.NativeImageArgFile;
 import org.springframework.boot.loader.tools.ReachabilityMetadataProperties;
 import org.springframework.util.Assert;
@@ -120,15 +116,13 @@ class BootZipCopyAction implements CopyAction {
 
 	private final @Nullable LayerResolver layerResolver;
 
-	private final LoaderImplementation loaderImplementation;
-
 	BootZipCopyAction(File output, Manifest manifest, boolean preserveFileTimestamps, @Nullable Integer dirMode,
 			@Nullable Integer fileMode, boolean includeDefaultLoader, @Nullable String jarmodeToolsLocation,
 			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 			@Nullable LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver, @Nullable String encoding,
 			ResolvedDependencies resolvedDependencies, boolean supportsSignatureFile,
-			@Nullable LayerResolver layerResolver, LoaderImplementation loaderImplementation) {
+			@Nullable LayerResolver layerResolver) {
 		this.output = output;
 		this.manifest = manifest;
 		this.preserveFileTimestamps = preserveFileTimestamps;
@@ -145,7 +139,6 @@ class BootZipCopyAction implements CopyAction {
 		this.resolvedDependencies = resolvedDependencies;
 		this.supportsSignatureFile = supportsSignatureFile;
 		this.layerResolver = layerResolver;
-		this.loaderImplementation = loaderImplementation;
 	}
 
 	@Override
@@ -329,8 +322,7 @@ class BootZipCopyAction implements CopyAction {
 				// Always write loader entries after META-INF directory (see gh-16698)
 				return;
 			}
-			LoaderZipEntries loaderEntries = new LoaderZipEntries(getTime(), getDirMode(), getFileMode(),
-					BootZipCopyAction.this.loaderImplementation);
+			LoaderZipEntries loaderEntries = new LoaderZipEntries(getTime(), getDirMode(), getFileMode());
 			this.writtenLoaderEntries = loaderEntries.writeTo(this.out);
 			if (BootZipCopyAction.this.layerResolver != null) {
 				for (String name : this.writtenLoaderEntries.getFiles()) {
@@ -512,9 +504,13 @@ class BootZipCopyAction implements CopyAction {
 					? details.getPermissions().toUnixNumeric() : getMode(details);
 		}
 
-		@SuppressWarnings("deprecation")
 		private int getMode(FileCopyDetails details) {
-			return details.getMode();
+			try {
+				return (int) details.getClass().getMethod("getMode").invoke(details);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException("Failed to get mode from FileCopyDetails", ex);
+			}
 		}
 
 	}
@@ -590,25 +586,16 @@ class BootZipCopyAction implements CopyAction {
 
 		private static final int BUFFER_SIZE = 32 * 1024;
 
-		private final @Nullable MessageDigest messageDigest;
+		private final boolean unpack;
 
 		private final CRC32 crc = new CRC32();
 
 		private long size;
 
 		StoredEntryPreparator(InputStream inputStream, boolean unpack) throws IOException {
-			this.messageDigest = (unpack) ? sha1Digest() : null;
+			this.unpack = unpack;
 			try (inputStream) {
 				load(inputStream);
-			}
-		}
-
-		private static MessageDigest sha1Digest() {
-			try {
-				return MessageDigest.getInstance("SHA-1");
-			}
-			catch (NoSuchAlgorithmException ex) {
-				throw new IllegalStateException(ex);
 			}
 		}
 
@@ -617,9 +604,6 @@ class BootZipCopyAction implements CopyAction {
 			int bytesRead;
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
 				this.crc.update(buffer, 0, bytesRead);
-				if (this.messageDigest != null) {
-					this.messageDigest.update(buffer, 0, bytesRead);
-				}
 				this.size += bytesRead;
 			}
 		}
@@ -629,8 +613,8 @@ class BootZipCopyAction implements CopyAction {
 			entry.setCompressedSize(this.size);
 			entry.setCrc(this.crc.getValue());
 			entry.setMethod(ZipEntry.STORED);
-			if (this.messageDigest != null) {
-				entry.setComment("UNPACK:" + HexFormat.of().formatHex(this.messageDigest.digest()));
+			if (this.unpack) {
+				entry.setComment("UNPACK");
 			}
 		}
 

@@ -33,10 +33,10 @@ import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.message.StatusLine;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.cli.json.JSONException;
+import org.springframework.boot.cli.json.JSONObject;
 import org.springframework.boot.cli.util.Log;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;

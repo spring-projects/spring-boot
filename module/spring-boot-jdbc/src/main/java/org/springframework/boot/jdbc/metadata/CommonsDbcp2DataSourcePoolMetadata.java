@@ -19,6 +19,7 @@ package org.springframework.boot.jdbc.metadata;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.jspecify.annotations.Nullable;
 
 /**
  * {@link DataSourcePoolMetadata} for an Apache Commons DBCP2 {@link DataSource}.
@@ -33,32 +34,32 @@ public class CommonsDbcp2DataSourcePoolMetadata extends AbstractDataSourcePoolMe
 	}
 
 	@Override
-	public Integer getActive() {
+	public @Nullable Integer getActive() {
 		return getDataSource().getNumActive();
 	}
 
 	@Override
-	public Integer getIdle() {
+	public @Nullable Integer getIdle() {
 		return getDataSource().getNumIdle();
 	}
 
 	@Override
-	public Integer getMax() {
+	public @Nullable Integer getMax() {
 		return getDataSource().getMaxTotal();
 	}
 
 	@Override
-	public Integer getMin() {
+	public @Nullable Integer getMin() {
 		return getDataSource().getMinIdle();
 	}
 
 	@Override
-	public String getValidationQuery() {
+	public @Nullable String getValidationQuery() {
 		return getDataSource().getValidationQuery();
 	}
 
 	@Override
-	public Boolean getDefaultAutoCommit() {
+	public @Nullable Boolean getDefaultAutoCommit() {
 		return getDataSource().getDefaultAutoCommit();
 	}
 

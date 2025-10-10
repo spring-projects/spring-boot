@@ -20,12 +20,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.env.OriginTrackedPropertiesLoader.Document;
+import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
@@ -375,19 +378,23 @@ class OriginTrackedPropertiesLoaderTests {
 		assertThat(getValue(value)).isEqualTo("abc");
 	}
 
-	private OriginTrackedValue getFromFirst(String key) {
+	private @Nullable OriginTrackedValue getFromFirst(String key) {
 		return this.documents.get(0).asMap().get(key);
 	}
 
-	private Object getValue(OriginTrackedValue value) {
+	private @Nullable Object getValue(@Nullable OriginTrackedValue value) {
 		return (value != null) ? value.getValue() : null;
 	}
 
-	private String getLocation(OriginTrackedValue value) {
+	private @Nullable String getLocation(@Nullable OriginTrackedValue value) {
 		if (value == null) {
 			return null;
 		}
-		return ((TextResourceOrigin) value.getOrigin()).getLocation().toString();
+		Origin origin = value.getOrigin();
+		assertThat(origin).isNotNull();
+		Location location = ((TextResourceOrigin) origin).getLocation();
+		assertThat(location).isNotNull();
+		return location.toString();
 	}
 
 }

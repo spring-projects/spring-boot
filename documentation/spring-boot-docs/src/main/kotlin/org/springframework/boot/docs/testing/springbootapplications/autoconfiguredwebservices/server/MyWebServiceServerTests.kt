@@ -18,7 +18,7 @@ package org.springframework.boot.docs.testing.springbootapplications.autoconfigu
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.webservices.server.WebServiceServerTest
+import org.springframework.boot.webservices.test.autoconfigure.server.WebServiceServerTest
 import org.springframework.ws.test.server.MockWebServiceClient
 import org.springframework.ws.test.server.RequestCreators
 import org.springframework.ws.test.server.ResponseMatchers

@@ -42,7 +42,7 @@ class ImageArchiveIndexTests extends AbstractJsonTests {
 	}
 
 	private ImageArchiveIndex getIndex(String content) {
-		return new ImageArchiveIndex(getObjectMapper().readTree(content));
+		return new ImageArchiveIndex(getJsonMapper().readTree(content));
 	}
 
 }

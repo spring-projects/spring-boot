@@ -32,6 +32,7 @@ class HealthIndicatorTests {
 	@Test
 	void getHealthWhenIncludeDetailsIsTrueReturnsHealthWithDetails() {
 		Health health = this.indicator.health(true);
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("spring", "boot");
 	}
@@ -39,6 +40,7 @@ class HealthIndicatorTests {
 	@Test
 	void getHealthWhenIncludeDetailsIsFalseReturnsHealthWithoutDetails() {
 		Health health = this.indicator.health(false);
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).isEmpty();
 	}

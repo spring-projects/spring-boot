@@ -45,6 +45,7 @@ class ValidationErrorsTests {
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(), Collections.emptyList()))
@@ -52,12 +53,14 @@ class ValidationErrorsTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenBoundPropertiesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, null, Collections.emptyList()))
 			.withMessageContaining("'boundProperties' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenErrorsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, Collections.emptySet(), null))
 			.withMessageContaining("'errors' must not be null");

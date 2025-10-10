@@ -1,5 +1,3 @@
-import org.springframework.boot.build.autoconfigure.CheckAutoConfigurationClasses
-
 /*
  * Copyright 2012-present the original author or authors.
  *
@@ -39,4 +37,8 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

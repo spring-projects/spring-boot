@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +50,7 @@ import static org.mockito.Mockito.reset;
 @ExtendWith({ MockitoExtension.class, OutputCaptureExtension.class })
 class BannerTests {
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@AfterEach
 	void cleanUp() {
@@ -59,6 +60,7 @@ class BannerTests {
 	}
 
 	@Captor
+	@SuppressWarnings("NullAway.Init")
 	private ArgumentCaptor<Class<?>> sourceClassCaptor;
 
 	@Test
@@ -123,7 +125,7 @@ class BannerTests {
 	static class DummyBanner implements Banner {
 
 		@Override
-		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+		public void printBanner(Environment environment, @Nullable Class<?> sourceClass, PrintStream out) {
 			out.println("My Banner");
 		}
 

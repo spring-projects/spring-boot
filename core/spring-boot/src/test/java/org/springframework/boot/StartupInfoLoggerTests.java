@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -133,11 +134,11 @@ class StartupInfoLoggerTests {
 
 		private final long startTime = System.currentTimeMillis();
 
-		private final Long uptime;
+		private final @Nullable Long uptime;
 
 		private final String action;
 
-		TestStartup(Long uptime, String action) {
+		TestStartup(@Nullable Long uptime, String action) {
 			this.uptime = uptime;
 			this.action = action;
 			started();
@@ -149,7 +150,7 @@ class StartupInfoLoggerTests {
 		}
 
 		@Override
-		protected Long processUptime() {
+		protected @Nullable Long processUptime() {
 			return this.uptime;
 		}
 

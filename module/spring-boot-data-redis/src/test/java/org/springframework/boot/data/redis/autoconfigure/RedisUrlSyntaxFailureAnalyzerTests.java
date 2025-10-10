@@ -23,7 +23,7 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RedisUrlSyntaxFailureAnalyzer}.
+ * Tests for {@link DataRedisUrlSyntaxFailureAnalyzer}.
  *
  * @author Scott Frederick
  */
@@ -31,16 +31,18 @@ class RedisUrlSyntaxFailureAnalyzerTests {
 
 	@Test
 	void analyzeInvalidUrlSyntax() {
-		RedisUrlSyntaxException exception = new RedisUrlSyntaxException("redis://invalid");
-		FailureAnalysis analysis = new RedisUrlSyntaxFailureAnalyzer().analyze(exception);
+		DataRedisUrlSyntaxException exception = new DataRedisUrlSyntaxException("redis://invalid");
+		FailureAnalysis analysis = new DataRedisUrlSyntaxFailureAnalyzer().analyze(exception);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains("The URL 'redis://invalid' is not valid");
 		assertThat(analysis.getAction()).contains("Review the value of the property 'spring.data.redis.url'");
 	}
 
 	@Test
 	void analyzeRedisHttpUrl() {
-		RedisUrlSyntaxException exception = new RedisUrlSyntaxException("http://127.0.0.1:26379/mymaster");
-		FailureAnalysis analysis = new RedisUrlSyntaxFailureAnalyzer().analyze(exception);
+		DataRedisUrlSyntaxException exception = new DataRedisUrlSyntaxException("http://127.0.0.1:26379/mymaster");
+		FailureAnalysis analysis = new DataRedisUrlSyntaxFailureAnalyzer().analyze(exception);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains("The URL 'http://127.0.0.1:26379/mymaster' is not valid")
 			.contains("The scheme 'http' is not supported");
 		assertThat(analysis.getAction()).contains("Use the scheme 'redis://' for insecure or 'rediss://' for secure");
@@ -48,9 +50,10 @@ class RedisUrlSyntaxFailureAnalyzerTests {
 
 	@Test
 	void analyzeRedisSentinelUrl() {
-		RedisUrlSyntaxException exception = new RedisUrlSyntaxException(
+		DataRedisUrlSyntaxException exception = new DataRedisUrlSyntaxException(
 				"redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster");
-		FailureAnalysis analysis = new RedisUrlSyntaxFailureAnalyzer().analyze(exception);
+		FailureAnalysis analysis = new DataRedisUrlSyntaxFailureAnalyzer().analyze(exception);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(
 				"The URL 'redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster' is not valid")
 			.contains("The scheme 'redis-sentinel' is not supported");
@@ -59,8 +62,9 @@ class RedisUrlSyntaxFailureAnalyzerTests {
 
 	@Test
 	void analyzeRedisSocketUrl() {
-		RedisUrlSyntaxException exception = new RedisUrlSyntaxException("redis-socket:///redis/redis.sock");
-		FailureAnalysis analysis = new RedisUrlSyntaxFailureAnalyzer().analyze(exception);
+		DataRedisUrlSyntaxException exception = new DataRedisUrlSyntaxException("redis-socket:///redis/redis.sock");
+		FailureAnalysis analysis = new DataRedisUrlSyntaxFailureAnalyzer().analyze(exception);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains("The URL 'redis-socket:///redis/redis.sock' is not valid")
 			.contains("The scheme 'redis-socket' is not supported");
 		assertThat(analysis.getAction()).contains("Configure the appropriate Spring Data Redis connection beans");

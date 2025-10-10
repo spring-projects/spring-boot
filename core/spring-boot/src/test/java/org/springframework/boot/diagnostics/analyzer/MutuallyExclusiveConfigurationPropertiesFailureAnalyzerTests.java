@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
@@ -77,6 +78,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
 		FailureAnalysis analysis = performAnalysis(failure);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getAction()).isEqualTo(
 				"Update your configuration so that only one of the mutually exclusive properties is configured.");
 		assertThat(analysis.getDescription()).contains(String.format(
@@ -100,6 +102,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
 		FailureAnalysis analysis = performAnalysis(failure);
+		assertThat(analysis).isNotNull();
 		assertThat(analysis.getAction()).isEqualTo(
 				"Update your configuration so that only one of the mutually exclusive properties is configured.");
 		assertThat(analysis.getDescription()).contains(String.format(
@@ -112,7 +115,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 							+ "\tcom.example.b (originating from 'TestOrigin test-two')%n"));
 	}
 
-	private FailureAnalysis performAnalysis(MutuallyExclusiveConfigurationPropertiesException failure) {
+	private @Nullable FailureAnalysis performAnalysis(MutuallyExclusiveConfigurationPropertiesException failure) {
 		MutuallyExclusiveConfigurationPropertiesFailureAnalyzer analyzer = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(
 				this.environment);
 		return analyzer.analyze(failure);
@@ -128,7 +131,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			return this.propertySource.getProperty(name);
 		}
 

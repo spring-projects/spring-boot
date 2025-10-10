@@ -67,6 +67,7 @@ class SpringBootTestWithActiveProfilesAndSystemEnvironmentPropertyTests {
 			ConfigurableEnvironment environment = new StandardEnvironment();
 			MutablePropertySources sources = environment.getPropertySources();
 			PropertySource<?> source = sources.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+			assertThat(source).isNotNull();
 			Map<String, Object> map = new LinkedHashMap<>((Map<String, Object>) source.getSource());
 			map.put("SPRING_PROFILES_ACTIVE", "local");
 			sources.replace(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,

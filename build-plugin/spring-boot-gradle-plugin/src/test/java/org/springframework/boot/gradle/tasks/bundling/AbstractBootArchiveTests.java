@@ -27,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -65,7 +68,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
-import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -284,24 +286,13 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void loaderIsWrittenToTheRootOfTheJarWhenUsingClassicLoader() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		this.task.getLoaderImplementation().set(LoaderImplementation.CLASSIC);
-		executeTask();
-		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
-			assertThat(jarFile.getEntry("org/springframework/boot/loader/")).isNotNull();
-		}
-	}
-
-	@Test
 	void unpackCommentIsAddedToEntryIdentifiedByAPattern() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
 		this.task.classpath(jarFile("one.jar"), jarFile("two.jar"));
 		this.task.requiresUnpack("**/one.jar");
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.libPath + "one.jar").getComment()).startsWith("UNPACK:");
+			assertThat(jarFile.getEntry(this.libPath + "one.jar").getComment()).isEqualTo("UNPACK");
 			assertThat(jarFile.getEntry(this.libPath + "two.jar").getComment()).isNull();
 		}
 	}
@@ -313,7 +304,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.requiresUnpack((element) -> element.getName().endsWith("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.libPath + "two.jar").getComment()).startsWith("UNPACK:");
+			assertThat(jarFile.getEntry(this.libPath + "two.jar").getComment()).isEqualTo("UNPACK");
 			assertThat(jarFile.getEntry(this.libPath + "one.jar").getComment()).isNull();
 		}
 	}
@@ -419,23 +410,46 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void reproducibleOrderingCanBeEnabled() throws IOException {
+	void archiveIsReproducibleByDefault() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
-		this.task.from(newFile("bravo.txt"), newFile("alpha.txt"), newFile("charlie.txt"));
-		this.task.setReproducibleFileOrder(true);
+		this.task.from(newFiles("files/b/bravo.txt", "files/a/alpha.txt", "files/c/charlie.txt"));
 		executeTask();
 		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
-		List<String> textFiles = new ArrayList<>();
+		List<String> files = new ArrayList<>();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
-				if (entry.getName().endsWith(".txt")) {
-					textFiles.add(entry.getName());
+				assertThat(entry.getLastModifiedTime().toMillis())
+					.isEqualTo(ZipEntryConstants.CONSTANT_TIME_FOR_ZIP_ENTRIES);
+				if (entry.getName().startsWith("files/")) {
+					files.add(entry.getName());
 				}
 			}
 		}
-		assertThat(textFiles).containsExactly("alpha.txt", "bravo.txt", "charlie.txt");
+		assertThat(files).containsExactly("files/", "files/a/", "files/a/alpha.txt", "files/b/", "files/b/bravo.txt",
+				"files/c/", "files/c/charlie.txt");
+	}
+
+	@Test
+	void archiveReproducibilityCanBeDisabled() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		this.task.from(newFiles("files/b/bravo.txt", "files/a/alpha.txt", "files/c/charlie.txt"));
+		this.task.setPreserveFileTimestamps(true);
+		this.task.setReproducibleFileOrder(false);
+		executeTask();
+		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				if (entry.getName().endsWith(".txt") || entry.getName().startsWith("BOOT-INF/lib/")) {
+					OffsetDateTime lastModifiedTime = entry.getLastModifiedTime().toInstant().atOffset(ZoneOffset.UTC);
+					assertThat(lastModifiedTime)
+						.isNotEqualTo(OffsetDateTime.of(1980, 2, 1, 0, 0, 0, 0, ZoneOffset.UTC));
+				}
+			}
+		}
 	}
 
 	@Test
@@ -673,6 +687,19 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			entryNames.add(entries.nextElement().getName());
 		}
 		return entryNames;
+	}
+
+	protected File newFiles(String... names) throws IOException {
+		File dir = new File(this.temp, UUID.randomUUID().toString());
+		dir.mkdir();
+		List<File> files = new ArrayList<>();
+		for (String name : names) {
+			File file = new File(dir, name);
+			file.getParentFile().mkdirs();
+			file.createNewFile();
+			files.add(file);
+		}
+		return dir;
 	}
 
 	protected File newFile(String name) throws IOException {

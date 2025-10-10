@@ -90,44 +90,50 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String OPTIONAL_PREFIX = "optional:";
 
-	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
+	/**
+	 * JUL handler that routes messages to the Log4j API (optional dependency).
+	 */
+	static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
-	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
+	/**
+	 * JUL LogManager that routes messages to the Log4j API as the backend.
+	 */
+	static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
 
 	/**
 	 * JSON tree parser used by Log4j 2 (optional dependency).
 	 */
-	private static final String JSON_TREE_PARSER_V2 = "com.fasterxml.jackson.databind.ObjectMapper";
+	static final String JSON_TREE_PARSER_V2 = "com.fasterxml.jackson.databind.ObjectMapper";
 
 	/**
 	 * JSON tree parser embedded in Log4j 3.
 	 */
-	private static final String JSON_TREE_PARSER_V3 = "org.apache.logging.log4j.kit.json.JsonReader";
+	static final String JSON_TREE_PARSER_V3 = "org.apache.logging.log4j.kit.json.JsonReader";
 
 	/**
 	 * Configuration factory for properties files (Log4j 2).
 	 */
-	private static final String PROPS_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory";
+	static final String PROPS_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory";
 
 	/**
 	 * Configuration factory for properties files (Log4j 3, optional dependency).
 	 */
-	private static final String PROPS_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory";
+	static final String PROPS_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory";
 
 	/**
 	 * YAML tree parser used by Log4j 2 (optional dependency).
 	 */
-	private static final String YAML_TREE_PARSER_V2 = "com.fasterxml.jackson.dataformat.yaml.YAMLMapper";
+	static final String YAML_TREE_PARSER_V2 = "com.fasterxml.jackson.dataformat.yaml.YAMLMapper";
 
 	/**
 	 * Configuration factory for YAML files (Log4j 2, embedded).
 	 */
-	private static final String YAML_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory";
+	static final String YAML_CONFIGURATION_FACTORY_V2 = "org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory";
 
 	/**
 	 * Configuration factory for YAML files (Log4j 3, optional dependency).
 	 */
-	private static final String YAML_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.yaml.YamlConfigurationFactory";
+	static final String YAML_CONFIGURATION_FACTORY_V3 = "org.apache.logging.log4j.config.yaml.YamlConfigurationFactory";
 
 	private static final SpringEnvironmentPropertySource propertySource = new SpringEnvironmentPropertySource();
 
@@ -176,10 +182,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		LoggerContext loggerContext = getLoggerContext();
 		String contextName = loggerContext.getName();
 		List<String> extensions = getStandardConfigExtensions();
-		extensions.forEach((e) -> locations.add("log4j2-test" + contextName + e));
-		extensions.forEach((e) -> locations.add("log4j2-test" + e));
-		extensions.forEach((e) -> locations.add("log4j2" + contextName + e));
-		extensions.forEach((e) -> locations.add("log4j2" + e));
+		addLocation(locations, "log4j2-test" + contextName, extensions);
+		addLocation(locations, "log4j2-test", extensions);
+		addLocation(locations, "log4j2" + contextName, extensions);
+		addLocation(locations, "log4j2", extensions);
 	}
 
 	private List<String> getStandardConfigExtensions() {
@@ -188,22 +194,26 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		ClassLoader classLoader = LoggerContext.class.getClassLoader();
 		// The order of the extensions corresponds to the order in which Log4j Core 2 and
 		// 3 will try to load them, in decreasing value of @Order.
-		if (isClassAvailable(classLoader, PROPS_CONFIGURATION_FACTORY_V2)
-				|| isClassAvailable(classLoader, PROPS_CONFIGURATION_FACTORY_V3)) {
+		if (isPresent(classLoader, PROPS_CONFIGURATION_FACTORY_V2)
+				|| isPresent(classLoader, PROPS_CONFIGURATION_FACTORY_V3)) {
 			extensions.add(".properties");
 		}
-		if (areAllClassesAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V2, YAML_TREE_PARSER_V2)
-				|| isClassAvailable(classLoader, YAML_CONFIGURATION_FACTORY_V3)) {
+		if (isPresent(classLoader, YAML_CONFIGURATION_FACTORY_V2, YAML_TREE_PARSER_V2)
+				|| isPresent(classLoader, YAML_CONFIGURATION_FACTORY_V3)) {
 			Collections.addAll(extensions, ".yaml", ".yml");
 		}
-		if (isClassAvailable(classLoader, JSON_TREE_PARSER_V2) || isClassAvailable(classLoader, JSON_TREE_PARSER_V3)) {
+		if (isPresent(classLoader, JSON_TREE_PARSER_V2) || isPresent(classLoader, JSON_TREE_PARSER_V3)) {
 			Collections.addAll(extensions, ".json", ".jsn");
 		}
 		extensions.add(".xml");
 		return extensions;
 	}
 
-	private boolean areAllClassesAvailable(ClassLoader classLoader, String... classNames) {
+	private void addLocation(List<String> locations, String location, List<String> extensions) {
+		extensions.forEach((extension) -> locations.add(location + extension));
+	}
+
+	private boolean isPresent(ClassLoader classLoader, String... classNames) {
 		for (String className : classNames) {
 			if (!isClassAvailable(classLoader, className)) {
 				return false;
@@ -212,13 +222,13 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		return true;
 	}
 
+	protected boolean isClassAvailable(ClassLoader classLoader, String className) {
+		return ClassUtils.isPresent(className, classLoader);
+	}
+
 	@Deprecated(since = "4.0.0", forRemoval = true)
 	protected boolean isClassAvailable(String className) {
 		return ClassUtils.isPresent(className, getClassLoader());
-	}
-
-	protected boolean isClassAvailable(ClassLoader classLoader, String className) {
-		return ClassUtils.isPresent(className, classLoader);
 	}
 
 	@Override
@@ -612,8 +622,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	@Order(0)
 	public static class Factory implements LoggingSystemFactory {
 
-		private static final boolean PRESENT = ClassUtils
-			.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
+		static final String LOG4J_CORE_CONTEXT_FACTORY = "org.apache.logging.log4j.core.impl.Log4jContextFactory";
+
+		private static final boolean PRESENT = ClassUtils.isPresent(LOG4J_CORE_CONTEXT_FACTORY,
+				Factory.class.getClassLoader());
 
 		@Override
 		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {

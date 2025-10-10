@@ -28,10 +28,10 @@ import com.sun.jna.Platform;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.Cache.Bind;
+import org.springframework.boot.buildpack.platform.docker.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
-import org.springframework.boot.buildpack.platform.docker.type.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;

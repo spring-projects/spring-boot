@@ -79,8 +79,12 @@ class EnvironmentEndpointAutoConfigurationTests {
 				EnvironmentDescriptor env = endpoint.environment(null);
 				Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env)
 					.getProperties();
-				assertThat(systemProperties.get("custom").getValue()).isEqualTo("$$$111$$$");
-				assertThat(systemProperties.get("password").getValue()).isEqualTo("$$$222$$$");
+				PropertyValueDescriptor custom = systemProperties.get("custom");
+				assertThat(custom).isNotNull();
+				assertThat(custom.getValue()).isEqualTo("$$$111$$$");
+				PropertyValueDescriptor password = systemProperties.get("password");
+				assertThat(password).isNotNull();
+				assertThat(password.getValue()).isEqualTo("$$$222$$$");
 			});
 	}
 
@@ -122,14 +126,19 @@ class EnvironmentEndpointAutoConfigurationTests {
 				.doesNotHaveBean(EnvironmentEndpointWebExtension.class));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(String dbPassword, String apiKey) {
+	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(String expectedPassword,
+			String expectedApiKey) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
 			EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
 			EnvironmentDescriptor env = endpoint.environment(null);
 			Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env).getProperties();
-			assertThat(systemProperties.get("dbPassword").getValue()).isEqualTo(dbPassword);
-			assertThat(systemProperties.get("apiKey").getValue()).isEqualTo(apiKey);
+			PropertyValueDescriptor dbPassword = systemProperties.get("dbPassword");
+			assertThat(dbPassword).isNotNull();
+			assertThat(dbPassword.getValue()).isEqualTo(expectedPassword);
+			PropertyValueDescriptor apiKey = systemProperties.get("apiKey");
+			assertThat(apiKey).isNotNull();
+			assertThat(apiKey.getValue()).isEqualTo(expectedApiKey);
 		};
 	}
 

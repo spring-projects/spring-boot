@@ -18,6 +18,8 @@ package org.springframework.boot.jdbc.autoconfigure;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * {@link JdbcConnectionDetails} used in tests.
  *
@@ -42,12 +44,16 @@ class TestJdbcConnectionDetails implements JdbcConnectionDetails {
 
 	@Override
 	public String getDriverClassName() {
-		return DatabaseDriver.POSTGRESQL.getDriverClassName();
+		String driverClassName = DatabaseDriver.POSTGRESQL.getDriverClassName();
+		assertThat(driverClassName).isNotNull();
+		return driverClassName;
 	}
 
 	@Override
 	public String getXaDataSourceClassName() {
-		return DatabaseDriver.POSTGRESQL.getXaDataSourceClassName();
+		String xaDataSourceClassName = DatabaseDriver.POSTGRESQL.getXaDataSourceClassName();
+		assertThat(xaDataSourceClassName).isNotNull();
+		return xaDataSourceClassName;
 	}
 
 }

@@ -45,6 +45,7 @@ import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.Clou
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +59,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -213,7 +215,9 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 	}
 
 	private int getPort(AnnotationConfigServletWebServerApplicationContext context) {
-		return context.getWebServer().getPort();
+		WebServer webServer = context.getWebServer();
+		assertThat(webServer).isNotNull();
+		return webServer.getPort();
 	}
 
 	private String mockAccessToken() {

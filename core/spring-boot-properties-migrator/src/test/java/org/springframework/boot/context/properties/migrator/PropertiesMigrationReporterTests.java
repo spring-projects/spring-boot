@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
@@ -230,12 +231,13 @@ class PropertiesMigrationReporterTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Origin getOrigin(PropertySource<?> propertySource, String name) {
+	private @Nullable Origin getOrigin(PropertySource<?> propertySource, String name) {
 		return ((OriginLookup<String>) propertySource).getOrigin(name);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertMappedProperty(PropertySource<?> propertySource, String name, Object value, Origin origin) {
+	private void assertMappedProperty(PropertySource<?> propertySource, String name, Object value,
+			@Nullable Origin origin) {
 		assertThat(propertySource.containsProperty(name)).isTrue();
 		assertThat(propertySource.getProperty(name)).isEqualTo(value);
 		if (origin != null) {
@@ -269,11 +271,11 @@ class PropertiesMigrationReporterTests {
 		}
 	}
 
-	private String createWarningReport(ConfigurationMetadataRepository repository) {
+	private @Nullable String createWarningReport(ConfigurationMetadataRepository repository) {
 		return createAnalyzer(repository).getReport().getWarningReport();
 	}
 
-	private String createErrorReport(ConfigurationMetadataRepository repository) {
+	private @Nullable String createErrorReport(ConfigurationMetadataRepository repository) {
 		return createAnalyzer(repository).getReport().getErrorReport();
 	}
 

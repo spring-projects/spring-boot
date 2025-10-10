@@ -19,6 +19,7 @@ package org.springframework.boot.docker.compose.service.connection;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.ImageReference;
@@ -96,7 +97,7 @@ class ConnectionNamePredicateTests {
 		return sourceOf(connectionName, null);
 	}
 
-	private DockerComposeConnectionSource sourceOf(String connectionName, String label) {
+	private DockerComposeConnectionSource sourceOf(String connectionName, @Nullable String label) {
 		DockerComposeConnectionSource source = mock(DockerComposeConnectionSource.class);
 		RunningService runningService = mock(RunningService.class);
 		given(source.getRunningService()).willReturn(runningService);

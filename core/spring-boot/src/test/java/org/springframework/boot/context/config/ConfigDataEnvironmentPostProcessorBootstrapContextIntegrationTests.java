@@ -19,9 +19,9 @@ package org.springframework.boot.context.config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.bootstrap.BootstrapRegistry;
 import org.springframework.boot.context.config.TestConfigDataBootstrap.LoaderHelper;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ConfigurableApplicationContext;

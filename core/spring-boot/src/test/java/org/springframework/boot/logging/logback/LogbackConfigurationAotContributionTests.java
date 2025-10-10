@@ -59,12 +59,15 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.logback.SpringBootJoranConfigurator.LogbackConfigurationAotContribution;
 import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.io.InputStreamSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link LogbackConfigurationAotContribution}.
@@ -92,8 +95,10 @@ class LogbackConfigurationAotContributionTests {
 			.map(TypeReference::getName))
 			.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
 		assertThat(generationContext.getRuntimeHints().reflection().typeHints()).isEmpty();
-		Properties patternRules = load(
-				generatedFiles.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
+		InputStreamSource generatedFile = generatedFiles.getGeneratedFile(Kind.RESOURCE,
+				"META-INF/spring/logback-pattern-rules");
+		assertThat(generatedFile).isNotNull();
+		Properties patternRules = load(generatedFile);
 		assertThat(patternRules).isEmpty();
 	}
 
@@ -112,8 +117,10 @@ class LogbackConfigurationAotContributionTests {
 			.map(TypeReference::getName))
 			.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
 		assertThat(generationContext.getRuntimeHints().reflection().typeHints()).isEmpty();
-		Properties patternRules = load(
-				generatedFiles.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
+		InputStreamSource generatedFile = generatedFiles.getGeneratedFile(Kind.RESOURCE,
+				"META-INF/spring/logback-pattern-rules");
+		assertThat(generatedFile).isNotNull();
+		Properties patternRules = load(generatedFile);
 		assertThat(patternRules).isEmpty();
 	}
 
@@ -136,8 +143,10 @@ class LogbackConfigurationAotContributionTests {
 		TestGenerationContext generationContext = applyContribution(new Model());
 		assertThat(invokePublicConstructorsOf("com.example.Alpha")).accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsOf("com.example.Bravo")).accepts(generationContext.getRuntimeHints());
-		Properties patternRules = load(generationContext.getGeneratedFiles()
-			.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
+		InputStreamSource generatedFile = generationContext.getGeneratedFiles()
+			.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules");
+		assertThat(generatedFile).isNotNull();
+		Properties patternRules = load(generatedFile);
 		assertThat(patternRules).hasSize(2);
 		assertThat(patternRules).containsEntry("a", "com.example.Alpha");
 		assertThat(patternRules).containsEntry("b", "com.example.Bravo");
@@ -312,12 +321,13 @@ class LogbackConfigurationAotContributionTests {
 			TestGenerationContext generationContext) {
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		contextCustomizer.accept(context);
-		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(null);
+		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(
+				new LoggingInitializationContext(null));
 		configurator.setContext(context);
 		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true", () -> configurator.processModel(model));
 		LogbackConfigurationAotContribution contribution = (LogbackConfigurationAotContribution) context
 			.getObject(BeanFactoryInitializationAotContribution.class.getName());
-		contribution.applyTo(generationContext, null);
+		contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
 	}
 
 	private String[] namesOf(Class<?>... types) {

@@ -49,12 +49,14 @@ class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrat
 			new MockServletContext());
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void targetBeanNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(null))
 			.withMessageContaining("'targetBeanName' must not be empty");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void targetBeanNameMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(""))
 			.withMessageContaining("'targetBeanName' must not be empty");
@@ -86,6 +88,7 @@ class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrat
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createServletRegistrationBeanMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(

@@ -37,12 +37,14 @@ import static org.mockito.Mockito.withSettings;
 class PropertySourceOriginTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(null, "name"))
 			.withMessageContaining("'propertySource' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPropertyNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))

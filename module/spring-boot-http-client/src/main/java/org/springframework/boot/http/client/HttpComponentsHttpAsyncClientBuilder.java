@@ -152,7 +152,7 @@ public final class HttpComponentsHttpAsyncClientBuilder {
 	 * @return a new {@link CloseableHttpAsyncClient} instance
 	 */
 	public CloseableHttpAsyncClient build(@Nullable HttpClientSettings settings) {
-		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
+		settings = (settings != null) ? settings : HttpClientSettings.defaults();
 		HttpAsyncClientBuilder builder = HttpAsyncClientBuilder.create()
 			.useSystemProperties()
 			.setRedirectStrategy(HttpComponentsRedirectStrategy.get(settings.redirects()))

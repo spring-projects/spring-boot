@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for LDAP"
+description = "Starter for using LDAP"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))

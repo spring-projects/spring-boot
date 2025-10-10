@@ -136,20 +136,25 @@ def dependenciesOf(String version) {
 			modules += [
 				"spring-boot-jersey"
 			]
-			if (version.equals("4.0.0-M1")) {
-				modules += [
-					"spring-boot-metrics",
-					"spring-boot-observation",
-					"spring-boot-tracing"
-				]
-			}
-			else {
-				modules += [
-					"spring-boot-micrometer-metrics",
-					"spring-boot-micrometer-observation",
-					"spring-boot-micrometer-tracing"
-				]
-			}
+		}
+		if (version.equals("4.0.0-M1")) {
+			modules += [
+				"spring-boot-metrics",
+				"spring-boot-observation",
+				"spring-boot-tracing"
+			]
+		}
+		else {
+			modules += [
+				"spring-boot-micrometer-metrics",
+				"spring-boot-micrometer-observation",
+				"spring-boot-micrometer-tracing"
+			]
+		}
+		if (version.equals("4.0.0-RC1")) {
+			modules += [
+				"spring-boot-batch-jdbc"
+			]
 		}
 		return modules
 	}

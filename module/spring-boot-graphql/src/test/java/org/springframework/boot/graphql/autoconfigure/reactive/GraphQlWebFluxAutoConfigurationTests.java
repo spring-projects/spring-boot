@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import graphql.schema.idl.TypeRuntimeWiring;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -79,7 +79,6 @@ import static org.hamcrest.Matchers.containsString;
 		    booksOnSale(minPages: Int) : Book!
 		}
 		""")
-@Disabled("Waiting on compatible release")
 class GraphQlWebFluxAutoConfigurationTests {
 
 	private static final String BASE_URL = "https://spring.example.org/";
@@ -356,13 +355,13 @@ class GraphQlWebFluxAutoConfigurationTests {
 		@Bean
 		@Order(-1)
 		RouterFunction<?> before() {
-			return (r) -> null;
+			return (r) -> Mono.empty();
 		}
 
 		@Bean
 		@Order(1)
 		RouterFunction<?> after() {
-			return (r) -> null;
+			return (r) -> Mono.empty();
 		}
 
 	}

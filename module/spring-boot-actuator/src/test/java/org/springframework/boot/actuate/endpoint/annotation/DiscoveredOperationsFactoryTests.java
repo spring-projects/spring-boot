@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,15 +51,13 @@ class DiscoveredOperationsFactoryTests {
 
 	private TestDiscoveredOperationsFactory factory;
 
-	private ParameterValueMapper parameterValueMapper;
-
 	private List<OperationInvokerAdvisor> invokerAdvisors;
 
 	@BeforeEach
 	void setup() {
-		this.parameterValueMapper = (parameter, value) -> value.toString();
+		ParameterValueMapper parameterValueMapper = (parameter, value) -> (value != null) ? value.toString() : null;
 		this.invokerAdvisors = new ArrayList<>();
-		this.factory = new TestDiscoveredOperationsFactory(this.parameterValueMapper, this.invokerAdvisors);
+		this.factory = new TestDiscoveredOperationsFactory(parameterValueMapper, this.invokerAdvisors);
 	}
 
 	@Test
@@ -220,11 +219,11 @@ class DiscoveredOperationsFactoryTests {
 
 	static class TestOperationInvokerAdvisor implements OperationInvokerAdvisor {
 
-		private EndpointId endpointId;
+		private @Nullable EndpointId endpointId;
 
-		private OperationType operationType;
+		private @Nullable OperationType operationType;
 
-		private OperationParameters parameters;
+		private @Nullable OperationParameters parameters;
 
 		@Override
 		public OperationInvoker apply(EndpointId endpointId, OperationType operationType,
@@ -235,15 +234,15 @@ class DiscoveredOperationsFactoryTests {
 			return invoker;
 		}
 
-		EndpointId getEndpointId() {
+		@Nullable EndpointId getEndpointId() {
 			return this.endpointId;
 		}
 
-		OperationType getOperationType() {
+		@Nullable OperationType getOperationType() {
 			return this.operationType;
 		}
 
-		OperationParameters getParameters() {
+		@Nullable OperationParameters getParameters() {
 			return this.parameters;
 		}
 

@@ -21,8 +21,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.json.JSONException;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.configurationmetadata.json.JSONException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;

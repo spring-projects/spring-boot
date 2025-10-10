@@ -45,7 +45,7 @@ dependencies {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
 	}
 	optional("org.springframework:spring-webflux")
-	
+
 	runtimeOnly("jakarta.annotation:jakarta.annotation-api")
 
 	testImplementation(project(":core:spring-boot-test"))

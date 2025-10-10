@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.bind;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.Environment;
@@ -38,9 +39,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class PropertySourcesPlaceholdersResolverTests {
 
-	private PropertySourcesPlaceholdersResolver resolver;
+	private @Nullable PropertySourcesPlaceholdersResolver resolver;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void placeholderResolverIfEnvironmentNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PropertySourcesPlaceholdersResolver((Environment) null))

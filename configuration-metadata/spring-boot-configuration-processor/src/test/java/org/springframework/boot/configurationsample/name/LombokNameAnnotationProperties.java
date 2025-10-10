@@ -19,8 +19,8 @@ package org.springframework.boot.configurationsample.name;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.Name;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestName;
 
 /**
  * Lombok properties making use of {@code @Name}.
@@ -29,19 +29,19 @@ import org.springframework.boot.configurationsample.Name;
  */
 @Getter
 @Setter
-@ConfigurationProperties("named")
+@TestConfigurationProperties("named")
 public class LombokNameAnnotationProperties {
 
 	/**
 	 * Imports to apply.
 	 */
-	@Name("import")
+	@TestName("import")
 	private String imports;
 
 	/**
 	 * Whether default mode is enabled.
 	 */
-	@Name("default")
+	@TestName("default")
 	private boolean defaultValue = true;
 
 }

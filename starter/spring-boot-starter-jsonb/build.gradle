@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for JSON-B"
+description = "Starter for using JSON-B"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))

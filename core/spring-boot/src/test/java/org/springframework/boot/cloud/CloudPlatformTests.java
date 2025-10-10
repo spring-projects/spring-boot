@@ -58,6 +58,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasVcapApplicationShouldReturnCloudFoundry() {
 		Environment environment = new MockEnvironment().withProperty("VCAP_APPLICATION", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -66,6 +67,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasVcapServicesShouldReturnCloudFoundry() {
 		Environment environment = new MockEnvironment().withProperty("VCAP_SERVICES", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.CLOUD_FOUNDRY);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -74,6 +76,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasDynoShouldReturnHeroku() {
 		Environment environment = new MockEnvironment().withProperty("DYNO", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.HEROKU);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -82,6 +85,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasHcLandscapeShouldReturnSap() {
 		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.SAP);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -90,6 +94,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasNomadAllocIdShouldReturnNomad() {
 		Environment environment = new MockEnvironment().withProperty("NOMAD_ALLOC_ID", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.NOMAD);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -101,6 +106,7 @@ class CloudPlatformTests {
 		envVars.put("KUBERNETES_SERVICE_PORT", "8080");
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -128,6 +134,7 @@ class CloudPlatformTests {
 		envVars.put("EXAMPLE_SERVICE_PORT", "8080");
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.KUBERNETES);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
@@ -149,6 +156,7 @@ class CloudPlatformTests {
 		envVars.put("WEBSITE_SKU", "1234");
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNotNull();
 		assertThat(platform).isEqualTo(CloudPlatform.AZURE_APP_SERVICE);
 		assertThat(platform.isActive(environment)).isTrue();
 	}

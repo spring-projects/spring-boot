@@ -81,6 +81,7 @@ class CloudFoundryInfoEndpointWebExtensionTests {
 			CloudFoundryInfoEndpointWebExtension extension = context
 				.getBean(CloudFoundryInfoEndpointWebExtension.class);
 			Map<String, Object> git = (Map<String, Object>) extension.info().get("git");
+			assertThat(git).isNotNull();
 			Map<String, Object> commit = (Map<String, Object>) git.get("commit");
 			assertThat(commit).hasSize(4);
 		});

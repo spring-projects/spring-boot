@@ -37,8 +37,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
-import org.springframework.boot.data.redis.autoconfigure.RedisProperties.Lettuce.Cluster.Refresh;
-import org.springframework.boot.data.redis.autoconfigure.RedisProperties.Pool;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties.Lettuce.Cluster.Refresh;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties.Pool;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.thread.Threading;
@@ -49,6 +49,7 @@ import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.RedisStaticMasterReplicaConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -68,15 +69,16 @@ import org.springframework.util.StringUtils;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
 @ConditionalOnProperty(name = "spring.data.redis.client-type", havingValue = "lettuce", matchIfMissing = true)
-class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
+class LettuceConnectionConfiguration extends DataRedisConnectionConfiguration {
 
-	LettuceConnectionConfiguration(RedisProperties properties,
+	LettuceConnectionConfiguration(DataRedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			RedisConnectionDetails connectionDetails) {
+			ObjectProvider<RedisStaticMasterReplicaConfiguration> masterReplicaConfiguration,
+			DataRedisConnectionDetails connectionDetails) {
 		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfigurationProvider,
-				clusterConfigurationProvider);
+				clusterConfigurationProvider, masterReplicaConfiguration);
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -132,6 +134,11 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 				Assert.state(sentinelConfig != null, "'sentinelConfig' must not be null");
 				yield new LettuceConnectionFactory(sentinelConfig, clientConfiguration);
 			}
+			case MASTER_REPLICA -> {
+				RedisStaticMasterReplicaConfiguration masterReplicaConfiguration = getMasterReplicaConfiguration();
+				Assert.state(masterReplicaConfiguration != null, "'masterReplicaConfig' must not be null");
+				yield new LettuceConnectionFactory(masterReplicaConfiguration, clientConfiguration);
+			}
 		};
 	}
 
@@ -167,7 +174,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			builder.commandTimeout(getProperties().getTimeout());
 		}
 		if (getProperties().getLettuce() != null) {
-			RedisProperties.Lettuce lettuce = getProperties().getLettuce();
+			DataRedisProperties.Lettuce lettuce = getProperties().getLettuce();
 			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}

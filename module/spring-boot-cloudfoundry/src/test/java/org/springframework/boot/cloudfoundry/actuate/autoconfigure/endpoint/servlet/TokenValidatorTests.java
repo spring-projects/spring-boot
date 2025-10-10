@@ -59,6 +59,7 @@ class TokenValidatorTests {
 	private static final byte[] DOT = ".".getBytes();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private SecurityService securityService;
 
 	private TokenValidator tokenValidator;

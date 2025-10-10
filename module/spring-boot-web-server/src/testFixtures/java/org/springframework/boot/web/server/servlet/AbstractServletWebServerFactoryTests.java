@@ -106,6 +106,7 @@ import org.awaitility.Awaitility;
 import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.http2.client.HTTP2Client;
 import org.eclipse.jetty.http2.client.transport.HttpClientTransportOverHTTP2;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -1507,7 +1508,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected abstract Map<String, String> getActualMimeMappings();
 
-	protected abstract Charset getCharset(Locale locale);
+	protected abstract @Nullable Charset getCharset(Locale locale);
 
 	protected void addTestTxtFile(ConfigurableServletWebServerFactory factory) throws IOException {
 		FileCopyUtils.copy("test", new FileWriter(new File(this.tempDir, "test.txt")));
@@ -1588,7 +1589,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected abstract ConfigurableServletWebServerFactory getFactory();
 
-	protected abstract org.apache.jasper.servlet.JspServlet getJspServlet() throws Exception;
+	protected abstract org.apache.jasper.servlet.@Nullable JspServlet getJspServlet() throws Exception;
 
 	protected ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean<>(new ExampleServlet(), "/hello");

@@ -47,24 +47,31 @@ class ConfigDataImporterTests {
 	private final DeferredLogFactory logFactory = Supplier::get;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ConfigDataLocationResolvers resolvers;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ConfigDataLoaders loaders;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Binder binder;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ConfigDataLocationResolverContext locationResolverContext;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ConfigDataLoaderContext loaderContext;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ConfigDataActivationContext activationContext;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Profiles profiles;
 
 	@BeforeEach

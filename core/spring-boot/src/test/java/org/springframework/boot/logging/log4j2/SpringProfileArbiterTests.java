@@ -91,7 +91,9 @@ class SpringProfileArbiterTests {
 	private void cleanUpPropertySources() { // https://issues.apache.org/jira/browse/LOG4J2-3618
 		PropertiesUtil properties = PropertiesUtil.getProperties();
 		Object environment = ReflectionTestUtils.getField(properties, "environment");
+		assertThat(environment).isNotNull();
 		Set<PropertySource> sources = (Set<PropertySource>) ReflectionTestUtils.getField(environment, "sources");
+		assertThat(sources).isNotNull();
 		sources.removeIf((candidate) -> candidate instanceof SpringEnvironmentPropertySource
 				|| candidate instanceof SpringBootPropertySource);
 	}

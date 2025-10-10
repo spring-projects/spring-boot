@@ -54,9 +54,11 @@ class HttpHeaderInterceptorTests {
 	private byte[] body;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientHttpRequestExecution execution;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientHttpResponse response;
 
 	private MockHttpServletRequest httpRequest;
@@ -72,6 +74,7 @@ class HttpHeaderInterceptorTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void constructorNullHeaderName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(null, this.value))
 			.withMessageContaining("'name' must not be empty");
@@ -84,6 +87,7 @@ class HttpHeaderInterceptorTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void constructorNullHeaderValue() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpHeaderInterceptor(this.name, null))
 			.withMessageContaining("'value' must not be empty");

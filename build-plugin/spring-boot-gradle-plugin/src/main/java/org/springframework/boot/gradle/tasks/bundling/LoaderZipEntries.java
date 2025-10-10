@@ -29,7 +29,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.gradle.api.file.FileTreeElement;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -42,27 +41,22 @@ import org.springframework.util.StreamUtils;
  */
 class LoaderZipEntries {
 
-	private final LoaderImplementation loaderImplementation;
-
 	private final @Nullable Long entryTime;
 
 	private final int dirMode;
 
 	private final int fileMode;
 
-	LoaderZipEntries(@Nullable Long entryTime, int dirMode, int fileMode,
-			@Nullable LoaderImplementation loaderImplementation) {
+	LoaderZipEntries(@Nullable Long entryTime, int dirMode, int fileMode) {
 		this.entryTime = entryTime;
 		this.dirMode = dirMode;
 		this.fileMode = fileMode;
-		this.loaderImplementation = (loaderImplementation != null) ? loaderImplementation
-				: LoaderImplementation.DEFAULT;
 	}
 
 	WrittenEntries writeTo(ZipArchiveOutputStream out) throws IOException {
 		WrittenEntries written = new WrittenEntries();
 		try (ZipInputStream loaderJar = new ZipInputStream(
-				getResourceAsStream("/" + this.loaderImplementation.getJarResourceName()))) {
+				getResourceAsStream("/META-INF/loader/spring-boot-loader.jar"))) {
 			java.util.zip.ZipEntry entry = loaderJar.getNextEntry();
 			while (entry != null) {
 				if (entry.isDirectory() && !entry.getName().equals("META-INF/")) {

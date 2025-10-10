@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,16 +80,24 @@ class SslAutoConfigurationTests {
 			assertThat(first.getManagers()).isNotNull();
 			assertThat(first.getKey().getAlias()).isEqualTo("alias1");
 			assertThat(first.getKey().getPassword()).isEqualTo("secret1");
-			assertThat(first.getStores().getKeyStore().getType()).isEqualTo("PKCS12");
-			assertThat(first.getStores().getTrustStore().getType()).isEqualTo("PKCS12");
+			KeyStore firstKeyStore = first.getStores().getKeyStore();
+			assertThat(firstKeyStore).isNotNull();
+			assertThat(firstKeyStore.getType()).isEqualTo("PKCS12");
+			KeyStore firstTrustStore = first.getStores().getTrustStore();
+			assertThat(firstTrustStore).isNotNull();
+			assertThat(firstTrustStore.getType()).isEqualTo("PKCS12");
 			SslBundle second = bundles.getBundle("second");
 			assertThat(second).isNotNull();
 			assertThat(second.getStores()).isNotNull();
 			assertThat(second.getManagers()).isNotNull();
 			assertThat(second.getKey().getAlias()).isEqualTo("alias2");
 			assertThat(second.getKey().getPassword()).isEqualTo("secret2");
-			assertThat(second.getStores().getKeyStore().getType()).isEqualTo("PKCS12");
-			assertThat(second.getStores().getTrustStore().getType()).isEqualTo("PKCS12");
+			KeyStore secondKeyStore = second.getStores().getKeyStore();
+			assertThat(secondKeyStore).isNotNull();
+			assertThat(secondKeyStore.getType()).isEqualTo("PKCS12");
+			KeyStore secondTrustStore = second.getStores().getTrustStore();
+			assertThat(secondTrustStore).isNotNull();
+			assertThat(secondTrustStore.getType()).isEqualTo("PKCS12");
 		});
 	}
 
@@ -114,8 +123,12 @@ class SslAutoConfigurationTests {
 				assertThat(bundle.getManagers()).isNotNull();
 				assertThat(bundle.getKey().getAlias()).isEqualTo("alias1");
 				assertThat(bundle.getKey().getPassword()).isEqualTo("secret1");
-				assertThat(bundle.getStores().getKeyStore().getType()).isEqualTo("PKCS12");
-				assertThat(bundle.getStores().getTrustStore().getType()).isEqualTo("PKCS12");
+				KeyStore keyStore = bundle.getStores().getKeyStore();
+				assertThat(keyStore).isNotNull();
+				assertThat(keyStore.getType()).isEqualTo("PKCS12");
+				KeyStore trustStore = bundle.getStores().getTrustStore();
+				assertThat(trustStore).isNotNull();
+				assertThat(trustStore.getType()).isEqualTo("PKCS12");
 			});
 	}
 
@@ -132,8 +145,12 @@ class SslAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SslBundles.class);
 			SslBundles bundles = context.getBean(SslBundles.class);
 			SslBundle bundle = bundles.getBundle("test");
-			assertThat(bundle.getStores().getKeyStore().getCertificate("alias1")).isNotNull();
-			assertThat(bundle.getStores().getTrustStore().getCertificate("ssl")).isNotNull();
+			KeyStore keyStore = bundle.getStores().getKeyStore();
+			assertThat(keyStore).isNotNull();
+			assertThat(keyStore.getCertificate("alias1")).isNotNull();
+			KeyStore trustStore = bundle.getStores().getTrustStore();
+			assertThat(trustStore).isNotNull();
+			assertThat(trustStore.getCertificate("ssl")).isNotNull();
 		});
 	}
 

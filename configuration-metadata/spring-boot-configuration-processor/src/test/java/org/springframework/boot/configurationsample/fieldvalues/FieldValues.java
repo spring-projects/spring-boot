@@ -22,7 +22,7 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
 
@@ -33,7 +33,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  */
 @SuppressWarnings("unused")
-@ConfigurationProperties
+@TestConfigurationProperties
 public class FieldValues {
 
 	private static final String STRING_CONST = "c";

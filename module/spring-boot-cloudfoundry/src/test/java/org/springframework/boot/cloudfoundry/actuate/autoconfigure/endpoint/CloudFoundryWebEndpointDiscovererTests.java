@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -96,8 +97,8 @@ class CloudFoundryWebEndpointDiscovererTests {
 		load((id) -> null, EndpointId::toString, configuration, consumer);
 	}
 
-	private void load(Function<EndpointId, Long> timeToLive, PathMapper endpointPathMapper, Class<?> configuration,
-			Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
+	private void load(Function<EndpointId, @Nullable Long> timeToLive, PathMapper endpointPathMapper,
+			Class<?> configuration, Consumer<CloudFoundryWebEndpointDiscoverer> consumer) {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			ConversionServiceParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
@@ -147,7 +148,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 	static class TestEndpoint {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
@@ -157,7 +158,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 	static class TestEndpointWebExtension {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 
@@ -167,7 +168,7 @@ class CloudFoundryWebEndpointDiscovererTests {
 	static class HealthEndpointWebExtension {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 

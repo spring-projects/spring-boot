@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
@@ -56,6 +57,7 @@ class HealthEndpointWebExtensionTests extends
 		WebEndpointResponse<HealthDescriptor> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
 				SecurityContext.NONE);
 		HealthDescriptor descriptor = response.getBody();
+		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
 		assertThat(descriptor).isInstanceOf(SystemHealthDescriptor.class);
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -70,6 +72,7 @@ class HealthEndpointWebExtensionTests extends
 				SecurityContext.NONE);
 		assertThat(response.getStatus()).isEqualTo(200);
 		HealthDescriptor descriptor = response.getBody();
+		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
 		assertThat(descriptor).isInstanceOf(IndicatedHealthDescriptor.class);
 	}
@@ -91,6 +94,7 @@ class HealthEndpointWebExtensionTests extends
 		WebEndpointResponse<HealthDescriptor> response = endpoint.health(ApiVersion.LATEST, WebServerNamespace.SERVER,
 				SecurityContext.NONE, "test");
 		IndicatedHealthDescriptor descriptor = (IndicatedHealthDescriptor) response.getBody();
+		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getStatus()).isEqualTo(Status.UP);
 		assertThat(descriptor.getDetails()).containsEntry("spring", "boot");
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -98,13 +102,13 @@ class HealthEndpointWebExtensionTests extends
 
 	@Override
 	protected HealthEndpointWebExtension create(HealthContributorRegistry registry, HealthEndpointGroups groups,
-			Duration slowIndicatorLoggingThreshold) {
+			@Nullable Duration slowIndicatorLoggingThreshold) {
 		return new HealthEndpointWebExtension(registry, null, groups, slowIndicatorLoggingThreshold);
 	}
 
 	@Override
 	protected HealthContributorRegistry createRegistry(
-			Consumer<BiConsumer<String, HealthContributor>> initialRegistrations) {
+			@Nullable Consumer<BiConsumer<String, HealthContributor>> initialRegistrations) {
 		return new DefaultHealthContributorRegistry(Collections.emptyList(), initialRegistrations);
 	}
 

@@ -32,7 +32,7 @@ class PullUpdateEventTests extends AbstractJsonTests {
 	@Test
 	@SuppressWarnings("removal")
 	void readValueWhenFullDeserializesJson() throws Exception {
-		PullImageUpdateEvent event = getObjectMapper().readValue(getContent("pull-update-full.json"),
+		PullImageUpdateEvent event = getJsonMapper().readValue(getContent("pull-update-full.json"),
 				PullImageUpdateEvent.class);
 		assertThat(event.getId()).isEqualTo("4f4fb700ef54");
 		assertThat(event.getStatus()).isEqualTo("Extracting");
@@ -42,7 +42,7 @@ class PullUpdateEventTests extends AbstractJsonTests {
 
 	@Test
 	void readValueWhenMinimalDeserializesJson() throws Exception {
-		PullImageUpdateEvent event = getObjectMapper().readValue(getContent("pull-update-minimal.json"),
+		PullImageUpdateEvent event = getJsonMapper().readValue(getContent("pull-update-minimal.json"),
 				PullImageUpdateEvent.class);
 		assertThat(event.getId()).isNull();
 		assertThat(event.getStatus()).isEqualTo("Status: Downloaded newer image for paketo-buildpacks/cnb:base");
@@ -52,7 +52,7 @@ class PullUpdateEventTests extends AbstractJsonTests {
 
 	@Test
 	void readValueWhenEmptyDetailsDeserializesJson() throws Exception {
-		PullImageUpdateEvent event = getObjectMapper().readValue(getContent("pull-with-empty-details.json"),
+		PullImageUpdateEvent event = getJsonMapper().readValue(getContent("pull-with-empty-details.json"),
 				PullImageUpdateEvent.class);
 		assertThat(event.getId()).isEqualTo("d837a2a1365e");
 		assertThat(event.getStatus()).isEqualTo("Pulling fs layer");

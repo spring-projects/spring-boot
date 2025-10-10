@@ -34,8 +34,6 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.loader.tools.LoaderImplementation;
-
 /**
  * A Spring Boot "fat" archive task.
  *
@@ -136,15 +134,6 @@ public interface BootArchive extends Task {
 	 * @since 3.0.7
 	 */
 	void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts);
-
-	/**
-	 * The loader implementation that should be used with the archive.
-	 * @return the loader implementation
-	 * @since 3.2.0
-	 */
-	@Input
-	@Optional
-	Property<LoaderImplementation> getLoaderImplementation();
 
 	/**
 	 * Returns whether the JAR tools should be included as a dependency in the layered

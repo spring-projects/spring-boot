@@ -68,7 +68,7 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 * @since 3.2.0
 	 */
 	public LogbackLoggingSystemProperties(Environment environment,
-			Function<@Nullable String, @Nullable String> defaultValueResolver,
+			@Nullable Function<@Nullable String, @Nullable String> defaultValueResolver,
 			@Nullable BiConsumer<String, @Nullable String> setter) {
 		super(environment, defaultValueResolver, setter);
 	}

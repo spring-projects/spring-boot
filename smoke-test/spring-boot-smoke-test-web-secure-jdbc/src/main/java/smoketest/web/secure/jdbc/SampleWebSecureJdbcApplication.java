@@ -60,9 +60,7 @@ public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 
 		@Bean
 		public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
-			JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
-			jdbcUserDetailsManager.setDataSource(dataSource);
-			return jdbcUserDetailsManager;
+			return new JdbcUserDetailsManager(dataSource);
 		}
 
 	}

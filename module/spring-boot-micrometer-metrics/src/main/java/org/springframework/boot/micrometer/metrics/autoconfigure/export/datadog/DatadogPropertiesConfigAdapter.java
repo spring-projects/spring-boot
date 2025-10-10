@@ -41,29 +41,27 @@ class DatadogPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter
 
 	@Override
 	public String apiKey() {
-		return getRequired(DatadogProperties::getApiKey, DatadogConfig.super::apiKey);
+		return obtain(DatadogProperties::getApiKey, DatadogConfig.super::apiKey);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String applicationKey() {
 		return get(DatadogProperties::getApplicationKey, DatadogConfig.super::applicationKey);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String hostTag() {
 		return get(DatadogProperties::getHostTag, DatadogConfig.super::hostTag);
 	}
 
 	@Override
 	public String uri() {
-		return getRequired(DatadogProperties::getUri, DatadogConfig.super::uri);
+		return obtain(DatadogProperties::getUri, DatadogConfig.super::uri);
 	}
 
 	@Override
 	public boolean descriptions() {
-		return getRequired(DatadogProperties::isDescriptions, DatadogConfig.super::descriptions);
+		return obtain(DatadogProperties::isDescriptions, DatadogConfig.super::descriptions);
 	}
 
 }

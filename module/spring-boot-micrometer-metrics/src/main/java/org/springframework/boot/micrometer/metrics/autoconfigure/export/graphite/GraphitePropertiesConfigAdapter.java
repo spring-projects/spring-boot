@@ -49,47 +49,47 @@ class GraphitePropertiesConfigAdapter extends PropertiesConfigAdapter<GraphitePr
 
 	@Override
 	public boolean enabled() {
-		return getRequired(GraphiteProperties::isEnabled, GraphiteConfig.super::enabled);
+		return obtain(GraphiteProperties::isEnabled, GraphiteConfig.super::enabled);
 	}
 
 	@Override
 	public Duration step() {
-		return getRequired(GraphiteProperties::getStep, GraphiteConfig.super::step);
+		return obtain(GraphiteProperties::getStep, GraphiteConfig.super::step);
 	}
 
 	@Override
 	public TimeUnit rateUnits() {
-		return getRequired(GraphiteProperties::getRateUnits, GraphiteConfig.super::rateUnits);
+		return obtain(GraphiteProperties::getRateUnits, GraphiteConfig.super::rateUnits);
 	}
 
 	@Override
 	public TimeUnit durationUnits() {
-		return getRequired(GraphiteProperties::getDurationUnits, GraphiteConfig.super::durationUnits);
+		return obtain(GraphiteProperties::getDurationUnits, GraphiteConfig.super::durationUnits);
 	}
 
 	@Override
 	public String host() {
-		return getRequired(GraphiteProperties::getHost, GraphiteConfig.super::host);
+		return obtain(GraphiteProperties::getHost, GraphiteConfig.super::host);
 	}
 
 	@Override
 	public int port() {
-		return getRequired(GraphiteProperties::getPort, GraphiteConfig.super::port);
+		return obtain(GraphiteProperties::getPort, GraphiteConfig.super::port);
 	}
 
 	@Override
 	public GraphiteProtocol protocol() {
-		return getRequired(GraphiteProperties::getProtocol, GraphiteConfig.super::protocol);
+		return obtain(GraphiteProperties::getProtocol, GraphiteConfig.super::protocol);
 	}
 
 	@Override
 	public boolean graphiteTagsEnabled() {
-		return getRequired(GraphiteProperties::getGraphiteTagsEnabled, GraphiteConfig.super::graphiteTagsEnabled);
+		return obtain(GraphiteProperties::getGraphiteTagsEnabled, GraphiteConfig.super::graphiteTagsEnabled);
 	}
 
 	@Override
 	public String[] tagsAsPrefix() {
-		return getRequired(GraphiteProperties::getTagsAsPrefix, GraphiteConfig.super::tagsAsPrefix);
+		return obtain(GraphiteProperties::getTagsAsPrefix, GraphiteConfig.super::tagsAsPrefix);
 	}
 
 }

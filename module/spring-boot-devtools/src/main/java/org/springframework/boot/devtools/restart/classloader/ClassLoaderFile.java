@@ -47,7 +47,7 @@ public class ClassLoaderFile implements Serializable {
 	 * @param kind the kind of file
 	 * @param contents the file contents
 	 */
-	public ClassLoaderFile(Kind kind, byte[] contents) {
+	public ClassLoaderFile(Kind kind, byte @Nullable [] contents) {
 		this(kind, System.currentTimeMillis(), contents);
 	}
 

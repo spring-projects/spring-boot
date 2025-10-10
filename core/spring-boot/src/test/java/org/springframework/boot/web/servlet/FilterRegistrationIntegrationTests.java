@@ -22,6 +22,7 @@ import jakarta.servlet.Filter;
 import jakarta.servlet.FilterRegistration.Dynamic;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,7 @@ import org.springframework.boot.web.servlet.mock.MockFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -44,7 +46,7 @@ import static org.mockito.Mockito.times;
  */
 class FilterRegistrationIntegrationTests {
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	@AfterEach
 	void cleanUp() {
@@ -56,6 +58,7 @@ class FilterRegistrationIntegrationTests {
 	@Test
 	void normalFiltersAreRegistered() {
 		load(FilterConfiguration.class);
+		assertThat(this.context).isNotNull();
 		then(this.context.getServletContext()).should()
 			.addFilter("myFilter", this.context.getBean("myFilter", MockFilter.class));
 	}
@@ -63,6 +66,7 @@ class FilterRegistrationIntegrationTests {
 	@Test
 	void scopedTargetFiltersAreNotRegistered() {
 		load(ScopedTargetFilterConfiguration.class);
+		assertThat(this.context).isNotNull();
 		then(this.context.getServletContext()).should(times(0)).addFilter(any(String.class), any(Filter.class));
 	}
 

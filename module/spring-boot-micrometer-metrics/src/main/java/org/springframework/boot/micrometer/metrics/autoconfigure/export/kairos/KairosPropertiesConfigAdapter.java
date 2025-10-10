@@ -40,17 +40,15 @@ class KairosPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<
 
 	@Override
 	public String uri() {
-		return getRequired(KairosProperties::getUri, KairosConfig.super::uri);
+		return obtain(KairosProperties::getUri, KairosConfig.super::uri);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String userName() {
 		return get(KairosProperties::getUserName, KairosConfig.super::userName);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String password() {
 		return get(KairosProperties::getPassword, KairosConfig.super::password);
 	}

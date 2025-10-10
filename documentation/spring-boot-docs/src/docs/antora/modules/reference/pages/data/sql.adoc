@@ -93,7 +93,7 @@ If you need to specify a specific class, you can use the configprop:spring.datas
 NOTE: For a pooling javadoc:javax.sql.DataSource[] to be created, we need to be able to verify that a valid javadoc:java.sql.Driver[] class is available, so we check for that before doing anything.
 In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`, then that class has to be loadable.
 
-See javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] API documentation for more of the supported options.
+See javadoc:org.springframework.boot.jdbc.autoconfigure.DataSourceProperties[] API documentation for more of the supported options.
 These are the standard options that work regardless of xref:data/sql.adoc#data.sql.datasource.connection-pool[the actual implementation].
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
 See the documentation of the connection pool implementation you are using for more details.
@@ -227,7 +227,7 @@ A typical entity class resembles the following example:
 
 include-code::City[]
 
-TIP: You can customize entity scanning locations by using the javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] annotation.
+TIP: You can customize entity scanning locations by using the javadoc:org.springframework.boot.persistence.autoconfigure.EntityScan[format=annotation] annotation.
 See the xref:how-to:data-access.adoc#howto.data-access.separate-entity-definitions-from-spring-configuration[] section of the "`How-to Guides`".
 
 
@@ -490,7 +490,7 @@ Information specified in the URL takes precedence over individual properties, th
 
 TIP: The "`How-to Guides`" section includes a xref:how-to:data-initialization.adoc#howto.data-initialization.using-basic-sql-scripts[section on how to initialize a database].
 
-To customize the connections created by a javadoc:io.r2dbc.spi.ConnectionFactory[], that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a javadoc:org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryOptionsBuilderCustomizer[] javadoc:org.springframework.context.annotation.Bean[format=annotation].
+To customize the connections created by a javadoc:io.r2dbc.spi.ConnectionFactory[], that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a javadoc:org.springframework.boot.r2dbc.autoconfigure.ConnectionFactoryOptionsBuilderCustomizer[] javadoc:org.springframework.context.annotation.Bean[format=annotation].
 The following example shows how to manually override the database port while the rest of the options are taken from the application configuration:
 
 include-code::MyR2dbcConfiguration[]

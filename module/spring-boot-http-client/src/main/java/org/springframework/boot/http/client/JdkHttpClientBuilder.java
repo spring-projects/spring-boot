@@ -79,11 +79,11 @@ public final class JdkHttpClientBuilder {
 	 * @return a new {@link HttpClient} instance
 	 */
 	public HttpClient build(@Nullable HttpClientSettings settings) {
-		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
+		settings = (settings != null) ? settings : HttpClientSettings.defaults();
 		Assert.isTrue(settings.readTimeout() == null, "'settings' must not have a 'readTimeout'");
 		HttpClient.Builder builder = HttpClient.newBuilder();
 		PropertyMapper map = PropertyMapper.get();
-		map.from(settings::redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
+		map.from(settings::redirects).always().as(this::asHttpClientRedirect).to(builder::followRedirects);
 		map.from(settings::connectTimeout).to(builder::connectTimeout);
 		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
 		map.from(settings::sslBundle).as(this::asSslParameters).to(builder::sslParameters);
@@ -99,7 +99,10 @@ public final class JdkHttpClientBuilder {
 		return parameters;
 	}
 
-	private Redirect asHttpClientRedirect(HttpRedirects redirects) {
+	private Redirect asHttpClientRedirect(@Nullable HttpRedirects redirects) {
+		if (redirects == null) {
+			return Redirect.NORMAL;
+		}
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> Redirect.NORMAL;
 			case DONT_FOLLOW -> Redirect.NEVER;

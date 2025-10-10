@@ -65,8 +65,8 @@ spring:
       max-connections: 50
 ----
 
-TIP: See javadoc:org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties[] for more of the supported options.
-You can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionFactoryCustomizer[] for more advanced customizations.
+TIP: See javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQProperties[] for more of the supported options.
+You can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.activemq.autoconfigure.ActiveMQConnectionFactoryCustomizer[] for more advanced customizations.
 
 By default, ActiveMQ "Classic" creates a destination if it does not yet exist so that destinations are resolved against their provided names.
 
@@ -120,7 +120,7 @@ spring:
       max-connections: 50
 ----
 
-See javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisProperties[] for more supported options.
+See javadoc:org.springframework.boot.artemis.autoconfigure.ArtemisProperties[] for more supported options.
 
 No JNDI lookup is involved, and destinations are resolved against their names, using either the `name` attribute in the ActiveMQ Artemis configuration or the names provided through configuration.
 

@@ -21,11 +21,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.springframework.boot.BootstrapContextClosedEvent;
-import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.boot.bootstrap.BootstrapContextClosedEvent;
+import org.springframework.boot.bootstrap.BootstrapRegistry.InstanceSupplier;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.MapPropertySource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test classes used with
@@ -50,6 +54,7 @@ class TestConfigDataBootstrap {
 			context.getBootstrapContext()
 				.registerIfAbsent(ResolverHelper.class, InstanceSupplier.from(() -> new ResolverHelper(location)));
 			ResolverHelper helper = context.getBootstrapContext().get(ResolverHelper.class);
+			assertThat(helper).isNotNull();
 			return Collections.singletonList(new Resource(helper));
 		}
 
@@ -63,6 +68,7 @@ class TestConfigDataBootstrap {
 				.registerIfAbsent(LoaderHelper.class,
 						(bootstrapContext) -> new LoaderHelper(location, () -> bootstrapContext.get(Binder.class)));
 			LoaderHelper helper = context.getBootstrapContext().get(LoaderHelper.class);
+			assertThat(helper).isNotNull();
 			context.getBootstrapContext().addCloseListener(helper);
 			return new ConfigData(
 					Collections.singleton(new MapPropertySource("loaded", Collections.singletonMap("test", "test"))));
@@ -118,11 +124,11 @@ class TestConfigDataBootstrap {
 			return this.location;
 		}
 
-		String getBound() {
+		@Nullable String getBound() {
 			return this.binder.get().bind("myprop", String.class).orElse(null);
 		}
 
-		String getProfileBound() {
+		@Nullable String getProfileBound() {
 			return this.binder.get().bind("myprofileprop", String.class).orElse(null);
 		}
 

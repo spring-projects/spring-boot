@@ -43,11 +43,12 @@ import static org.mockito.Mockito.mock;
  */
 class OperationMethodParametersTests {
 
-	private final Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
+	private final Method exampleMethod = findMethod("example", String.class);
 
-	private final Method exampleNoParamsMethod = ReflectionUtils.findMethod(getClass(), "exampleNoParams");
+	private final Method exampleNoParamsMethod = findMethod("exampleNoParams");
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class)))
@@ -55,6 +56,7 @@ class OperationMethodParametersTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenParameterNameDiscovererIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
 			.withMessageContaining("'parameterNameDiscoverer' must not be null");
@@ -102,6 +104,12 @@ class OperationMethodParametersTests {
 		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
 				new DefaultParameterNameDiscoverer());
 		assertParameters(parameters.stream());
+	}
+
+	private Method findMethod(String name, Class<?>... parameters) {
+		Method method = ReflectionUtils.findMethod(getClass(), name, parameters);
+		assertThat(method).as("Method '%s'", name).isNotNull();
+		return method;
 	}
 
 	private void assertParameters(Stream<OperationParameter> stream) {

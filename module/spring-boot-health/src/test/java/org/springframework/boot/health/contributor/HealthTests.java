@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.entry;
 class HealthTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void statusMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Health.Builder(null, null))
 			.withMessageContaining("'status' must not be null");

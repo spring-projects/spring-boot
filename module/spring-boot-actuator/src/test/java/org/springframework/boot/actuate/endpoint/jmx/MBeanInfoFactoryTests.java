@@ -23,6 +23,7 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -109,7 +110,7 @@ class MBeanInfoFactoryTests {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private JmxOperationParameter mockParameter(String name, Class<?> type, String description) {
+	private JmxOperationParameter mockParameter(String name, Class<?> type, @Nullable String description) {
 		JmxOperationParameter parameter = mock(JmxOperationParameter.class);
 		given(parameter.getName()).willReturn(name);
 		given(parameter.getType()).willReturn((Class) type);

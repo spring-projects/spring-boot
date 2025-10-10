@@ -68,13 +68,17 @@ class PropertiesSslBundleTests {
 		assertThat(sslBundle.getOptions().getCiphers()).containsExactlyInAnyOrder("cipher1", "cipher2", "cipher3");
 		assertThat(sslBundle.getOptions().getEnabledProtocols()).containsExactlyInAnyOrder("protocol1", "protocol2");
 		assertThat(sslBundle.getStores()).isNotNull();
-		Certificate certificate = sslBundle.getStores().getKeyStore().getCertificate("alias");
+		KeyStore keyStore = sslBundle.getStores().getKeyStore();
+		assertThat(keyStore).isNotNull();
+		Certificate certificate = keyStore.getCertificate("alias");
 		assertThat(certificate).isNotNull();
 		assertThat(certificate.getType()).isEqualTo("X.509");
-		Key key = sslBundle.getStores().getKeyStore().getKey("alias", "secret".toCharArray());
+		Key key = keyStore.getKey("alias", "secret".toCharArray());
 		assertThat(key).isNotNull();
 		assertThat(key.getAlgorithm()).isEqualTo("RSA");
-		certificate = sslBundle.getStores().getTrustStore().getCertificate("ssl");
+		KeyStore trustStore = sslBundle.getStores().getTrustStore();
+		assertThat(trustStore).isNotNull();
+		certificate = trustStore.getCertificate("ssl");
 		assertThat(certificate).isNotNull();
 		assertThat(certificate.getType()).isEqualTo("X.509");
 	}
@@ -105,6 +109,7 @@ class PropertiesSslBundleTests {
 			.containsExactly("classpath:org/springframework/boot/autoconfigure/ssl/keystore.jks", "secret", "SUN",
 					"JKS");
 		KeyStore trustStore = sslBundle.getStores().getTrustStore();
+		assertThat(trustStore).isNotNull();
 		assertThat(trustStore.getType()).isEqualTo("PKCS12");
 		assertThat(trustStore.getProvider().getName()).isEqualTo("SUN");
 	}

@@ -103,7 +103,7 @@ public class OutputCaptureExtension
 	}
 
 	private OutputCapture getOutputCapture(ExtensionContext context) {
-		return getStore(context).getOrComputeIfAbsent(OutputCapture.class);
+		return getStore(context).computeIfAbsent(OutputCapture.class);
 	}
 
 	private Store getStore(ExtensionContext context) {

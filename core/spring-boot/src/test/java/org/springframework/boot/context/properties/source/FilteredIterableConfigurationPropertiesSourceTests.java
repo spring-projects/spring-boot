@@ -62,7 +62,9 @@ class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigu
 		IterableConfigurationPropertySource testSource = (IterableConfigurationPropertySource) createTestSource();
 		Map<String, Object> map = new LinkedHashMap<>();
 		for (ConfigurationPropertyName name : testSource) {
-			map.put(name.toString(), testSource.getConfigurationProperty(name).getValue());
+			ConfigurationProperty configurationProperty = testSource.getConfigurationProperty(name);
+			assertThat(configurationProperty).isNotNull();
+			map.put(name.toString(), configurationProperty.getValue());
 		}
 		PropertySource<?> propertySource = new OriginTrackedMapPropertySource("test", map, true);
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource.from(propertySource);
@@ -79,7 +81,9 @@ class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigu
 		IterableConfigurationPropertySource testSource = (IterableConfigurationPropertySource) createTestSource();
 		Map<String, Object> map = new LinkedHashMap<>();
 		for (ConfigurationPropertyName name : testSource) {
-			map.put(name.toString(), testSource.getConfigurationProperty(name).getValue());
+			ConfigurationProperty configurationProperty = testSource.getConfigurationProperty(name);
+			assertThat(configurationProperty).isNotNull();
+			map.put(name.toString(), configurationProperty.getValue());
 		}
 		PropertySource<?> propertySource = new OriginTrackedMapPropertySource("test", map, true);
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource.from(propertySource);

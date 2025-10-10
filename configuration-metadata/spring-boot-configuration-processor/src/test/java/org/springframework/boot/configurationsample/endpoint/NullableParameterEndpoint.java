@@ -18,18 +18,18 @@ package org.springframework.boot.configurationsample.endpoint;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.ReadOperation;
+import org.springframework.boot.configurationsample.TestEndpoint;
+import org.springframework.boot.configurationsample.TestReadOperation;
 
 /**
  * An endpoint that uses {@code Nullable} to signal an optional parameter.
  *
  * @author Wonyong Hwang
  */
-@Endpoint(id = "nullable")
+@TestEndpoint(id = "nullable")
 public class NullableParameterEndpoint {
 
-	@ReadOperation
+	@TestReadOperation
 	public String invoke(@Nullable String parameter) {
 		return "test with " + parameter;
 	}

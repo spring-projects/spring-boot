@@ -38,6 +38,8 @@ import org.springframework.util.StringUtils;
  */
 public final class ConfigDataLocation implements OriginProvider {
 
+	private static final ConfigDataLocation EMPTY = new ConfigDataLocation(false, "", null);
+
 	/**
 	 * Prefix used to indicate that a {@link ConfigDataResource} is optional.
 	 */
@@ -89,10 +91,7 @@ public final class ConfigDataLocation implements OriginProvider {
 	 * @return the value with the prefix removed
 	 */
 	public String getNonPrefixedValue(String prefix) {
-		if (hasPrefix(prefix)) {
-			return this.value.substring(prefix.length());
-		}
-		return this.value;
+		return (!hasPrefix(prefix)) ? this.value : this.value.substring(prefix.length());
 	}
 
 	@Override
@@ -118,15 +117,24 @@ public final class ConfigDataLocation implements OriginProvider {
 	 * @since 2.4.7
 	 */
 	public ConfigDataLocation[] split(String delimiter) {
+		Assert.state(!this.value.isEmpty(), "Unable to split empty locations");
 		String[] values = StringUtils.delimitedListToStringArray(toString(), delimiter);
 		ConfigDataLocation[] result = new ConfigDataLocation[values.length];
 		for (int i = 0; i < values.length; i++) {
 			int index = i;
 			ConfigDataLocation configDataLocation = of(values[index]);
-			Assert.state(configDataLocation != null, () -> "Unable to parse '%s'".formatted(values[index]));
 			result[i] = configDataLocation.withOrigin(getOrigin());
 		}
 		return result;
+	}
+
+	/**
+	 * Create a new {@link ConfigDataLocation} with a specific {@link Origin}.
+	 * @param origin the origin to set
+	 * @return a new {@link ConfigDataLocation} instance.
+	 */
+	ConfigDataLocation withOrigin(@Nullable Origin origin) {
+		return new ConfigDataLocation(this.optional, this.value, origin);
 	}
 
 	@Override
@@ -152,34 +160,18 @@ public final class ConfigDataLocation implements OriginProvider {
 	}
 
 	/**
-	 * Create a new {@link ConfigDataLocation} with a specific {@link Origin}.
-	 * @param origin the origin to set
-	 * @return a new {@link ConfigDataLocation} instance.
-	 */
-	ConfigDataLocation withOrigin(@Nullable Origin origin) {
-		return new ConfigDataLocation(this.optional, this.value, origin);
-	}
-
-	/**
 	 * Factory method to create a new {@link ConfigDataLocation} from a string.
 	 * @param location the location string
-	 * @return a {@link ConfigDataLocation} instance or {@code null} if no location was
-	 * provided
+	 * @return the {@link ConfigDataLocation} (which may be empty)
 	 */
-	public static @Nullable ConfigDataLocation of(@Nullable String location) {
+	public static ConfigDataLocation of(@Nullable String location) {
 		boolean optional = location != null && location.startsWith(OPTIONAL_PREFIX);
-		String value;
-		if (optional) {
-			Assert.state(location != null, "'location' can't be null here");
-			value = location.substring(OPTIONAL_PREFIX.length());
-		}
-		else {
-			value = location;
-		}
-		if (!StringUtils.hasText(value)) {
-			return null;
-		}
-		return new ConfigDataLocation(optional, value, null);
+		String value = (location != null && optional) ? location.substring(OPTIONAL_PREFIX.length()) : location;
+		return (StringUtils.hasText(value)) ? new ConfigDataLocation(optional, value, null) : EMPTY;
+	}
+
+	static boolean isNotEmpty(@Nullable ConfigDataLocation location) {
+		return (location != null) && !location.getValue().isEmpty();
 	}
 
 }

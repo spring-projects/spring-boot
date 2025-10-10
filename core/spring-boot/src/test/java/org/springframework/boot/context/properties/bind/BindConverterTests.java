@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -53,6 +54,7 @@ import static org.mockito.BDDMockito.then;
 class BindConverterTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Consumer<PropertyEditorRegistry> propertyEditorInitializer;
 
 	@Test
@@ -121,6 +123,7 @@ class BindConverterTests {
 	void convertWhenHasCustomEditorShouldConvert() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		SampleType converted = bindConverter.convert("test", ResolvableType.forClass(SampleType.class));
+		assertThat(converted).isNotNull();
 		assertThat(converted.getText()).isEqualTo("test");
 	}
 
@@ -128,6 +131,7 @@ class BindConverterTests {
 	void convertWhenHasEditorByConventionShouldConvert() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(null);
 		ConventionType converted = bindConverter.convert("test", ResolvableType.forClass(ConventionType.class));
+		assertThat(converted).isNotNull();
 		assertThat(converted.getText()).isEqualTo("test");
 	}
 
@@ -144,6 +148,7 @@ class BindConverterTests {
 	void convertWhenHasEditorForArrayElementShouldConvert() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		SampleType[] converted = bindConverter.convert("test", ResolvableType.forClass(SampleType[].class));
+		assertThat(converted).isNotNull();
 		assertThat(converted).isNotEmpty();
 		assertThat(converted[0].getText()).isEqualTo("test");
 	}
@@ -152,6 +157,7 @@ class BindConverterTests {
 	void convertWhenConversionServiceCanConvertShouldConvert() {
 		BindConverter bindConverter = getBindConverter(new SampleTypeConverter());
 		SampleType converted = bindConverter.convert("test", ResolvableType.forClass(SampleType.class));
+		assertThat(converted).isNotNull();
 		assertThat(converted.getText()).isEqualTo("test");
 	}
 
@@ -169,6 +175,7 @@ class BindConverterTests {
 		BindConverter bindConverter = BindConverter.get(Collections.singletonList(new GenericConversionService()),
 				null);
 		File result = bindConverter.convert(".", ResolvableType.forClass(File.class));
+		assertThat(result).isNotNull();
 		assertThat(result.getPath()).isEqualTo(".");
 	}
 
@@ -177,6 +184,7 @@ class BindConverterTests {
 		BindConverter bindConverter = BindConverter.get(Collections.singletonList(new GenericConversionService()),
 				null);
 		Duration result = bindConverter.convert("10s", ResolvableType.forClass(Duration.class));
+		assertThat(result).isNotNull();
 		assertThat(result.getSeconds()).isEqualTo(10);
 	}
 
@@ -215,7 +223,7 @@ class BindConverterTests {
 	}
 
 	private BindConverter getPropertyEditorOnlyBindConverter(
-			Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
+			@Nullable Consumer<PropertyEditorRegistry> propertyEditorInitializer) {
 		return BindConverter.get(Collections.singletonList(new ThrowingConversionService()), propertyEditorInitializer);
 	}
 
@@ -231,9 +239,9 @@ class BindConverterTests {
 
 	static class SampleType {
 
-		private String text;
+		private @Nullable String text;
 
-		String getText() {
+		@Nullable String getText() {
 			return this.text;
 		}
 
@@ -266,9 +274,9 @@ class BindConverterTests {
 
 	static class ConventionType {
 
-		private String text;
+		private @Nullable String text;
 
-		String getText() {
+		@Nullable String getText() {
 			return this.text;
 		}
 
@@ -291,22 +299,22 @@ class BindConverterTests {
 	static class ThrowingConversionService implements ConversionService {
 
 		@Override
-		public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
+		public boolean canConvert(@Nullable Class<?> sourceType, Class<?> targetType) {
 			throw new AssertionError("Should not call conversion service");
 		}
 
 		@Override
-		public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
 			throw new AssertionError("Should not call conversion service");
 		}
 
 		@Override
-		public <T> T convert(Object source, Class<T> targetType) {
+		public <T> T convert(@Nullable Object source, Class<T> targetType) {
 			throw new AssertionError("Should not call conversion service");
 		}
 
 		@Override
-		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		public Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
 			throw new AssertionError("Should not call conversion service");
 		}
 

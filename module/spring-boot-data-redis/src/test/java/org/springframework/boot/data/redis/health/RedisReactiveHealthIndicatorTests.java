@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Properties;
 
 import io.lettuce.core.RedisConnectionException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -39,7 +40,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link RedisReactiveHealthIndicator}.
+ * Tests for {@link DataRedisReactiveHealthIndicator}.
  *
  * @author Stephane Nicoll
  * @author Mark Paluch
@@ -57,7 +58,7 @@ class RedisReactiveHealthIndicatorTests {
 		given(redisConnection.closeLater()).willReturn(Mono.empty());
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
 		given(commands.info("server")).willReturn(Mono.just(info));
-		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
+		DataRedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
@@ -70,7 +71,7 @@ class RedisReactiveHealthIndicatorTests {
 	@Test
 	void healthWhenClusterStateIsAbsentShouldBeUp() {
 		ReactiveRedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory(null);
-		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
+		DataRedisReactiveHealthIndicator healthIndicator = new DataRedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
@@ -84,7 +85,7 @@ class RedisReactiveHealthIndicatorTests {
 	@Test
 	void healthWhenClusterStateIsOkShouldBeUp() {
 		ReactiveRedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory("ok");
-		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
+		DataRedisReactiveHealthIndicator healthIndicator = new DataRedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
@@ -97,7 +98,7 @@ class RedisReactiveHealthIndicatorTests {
 	@Test
 	void healthWhenClusterStateIsFailShouldBeDown() {
 		ReactiveRedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory("fail");
-		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
+		DataRedisReactiveHealthIndicator healthIndicator = new DataRedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
@@ -112,7 +113,7 @@ class RedisReactiveHealthIndicatorTests {
 		given(commands.info("server")).willReturn(Mono.error(new RedisConnectionFailureException("Connection failed")));
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
 		given(redisConnection.closeLater()).willReturn(Mono.empty());
-		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
+		DataRedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health)
 			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
@@ -126,7 +127,7 @@ class RedisReactiveHealthIndicatorTests {
 		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
 		given(redisConnectionFactory.getReactiveConnection())
 			.willThrow(new RedisConnectionException("Unable to connect to localhost:6379"));
-		RedisReactiveHealthIndicator healthIndicator = new RedisReactiveHealthIndicator(redisConnectionFactory);
+		DataRedisReactiveHealthIndicator healthIndicator = new DataRedisReactiveHealthIndicator(redisConnectionFactory);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health)
 			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
@@ -134,15 +135,15 @@ class RedisReactiveHealthIndicatorTests {
 			.verify(Duration.ofSeconds(30));
 	}
 
-	private RedisReactiveHealthIndicator createHealthIndicator(ReactiveRedisConnection redisConnection,
+	private DataRedisReactiveHealthIndicator createHealthIndicator(ReactiveRedisConnection redisConnection,
 			ReactiveServerCommands serverCommands) {
 		ReactiveRedisConnectionFactory redisConnectionFactory = mock(ReactiveRedisConnectionFactory.class);
 		given(redisConnectionFactory.getReactiveConnection()).willReturn(redisConnection);
 		given(redisConnection.serverCommands()).willReturn(serverCommands);
-		return new RedisReactiveHealthIndicator(redisConnectionFactory);
+		return new DataRedisReactiveHealthIndicator(redisConnectionFactory);
 	}
 
-	private ReactiveRedisConnectionFactory createClusterConnectionFactory(String state) {
+	private ReactiveRedisConnectionFactory createClusterConnectionFactory(@Nullable String state) {
 		Properties clusterProperties = new Properties();
 		if (state != null) {
 			clusterProperties.setProperty("cluster_state", state);

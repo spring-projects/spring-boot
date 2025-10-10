@@ -18,7 +18,7 @@ spring:
 TIP: To create a topic on startup, add a bean of type javadoc:org.apache.kafka.clients.admin.NewTopic[].
 If the topic already exists, the bean is ignored.
 
-See javadoc:org.springframework.boot.autoconfigure.kafka.KafkaProperties[] for more supported options.
+See javadoc:org.springframework.boot.kafka.autoconfigure.KafkaProperties[] for more supported options.
 
 
 
@@ -91,7 +91,7 @@ Most of these common properties can be overridden for one or more of the client 
 Apache Kafka designates properties with an importance of HIGH, MEDIUM, or LOW.
 Spring Boot auto-configuration supports all HIGH importance properties, some selected MEDIUM and LOW properties, and any properties that do not have a default value.
 
-Only a subset of the properties supported by Kafka are available directly through the javadoc:org.springframework.boot.autoconfigure.kafka.KafkaProperties[] class.
+Only a subset of the properties supported by Kafka are available directly through the javadoc:org.springframework.boot.kafka.autoconfigure.KafkaProperties[] class.
 If you wish to configure the individual client types with additional properties that are not directly supported, use the following properties:
 
 [configprops,yaml]

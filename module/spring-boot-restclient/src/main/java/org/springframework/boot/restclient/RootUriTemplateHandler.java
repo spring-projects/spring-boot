@@ -62,7 +62,8 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	}
 
 	String apply(String uriTemplate) {
-		if (StringUtils.startsWithIgnoreCase(uriTemplate, "/")) {
+		String rootUri = getRootUri();
+		if (rootUri != null && StringUtils.startsWithIgnoreCase(uriTemplate, "/")) {
 			return getRootUri() + uriTemplate;
 		}
 		return uriTemplate;

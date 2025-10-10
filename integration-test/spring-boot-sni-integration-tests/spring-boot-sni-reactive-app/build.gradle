@@ -27,7 +27,7 @@ java {
 }
 
 repositories {
-	maven { url "file:${rootDir}/../int-test-maven-repository"}
+	maven { url = layout.projectDirectory.dir("../int-test-maven-repository") }
 	mavenCentral()
 	spring.mavenRepositories()
 }
@@ -62,7 +62,7 @@ dependencies {
 		task.mainClass = "org.springframework.boot.sni.server.SniServerApplication"
 		task.classpath = configurations.getByName(webServer)
 		task.archiveClassifier = webServer
-		task.targetJavaVersion = project.getTargetCompatibility()
+		task.targetJavaVersion = project.java.targetCompatibility
 	}
 	tasks.register("${webServer}ServerApp", BootJar, configurer)
 }

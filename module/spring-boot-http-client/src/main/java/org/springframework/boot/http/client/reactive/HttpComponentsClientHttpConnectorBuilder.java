@@ -19,6 +19,7 @@ package org.springframework.boot.http.client.reactive;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -28,6 +29,7 @@ import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBu
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsHttpAsyncClientBuilder;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
@@ -126,9 +128,21 @@ public final class HttpComponentsClientHttpConnectorBuilder
 				this.httpClientBuilder.withDefaultRequestConfigCustomizer(defaultRequestConfigCustomizer));
 	}
 
+	/**
+	 * Return a new {@link HttpComponentsClientHttpConnectorBuilder} that applies the
+	 * given customizer. This can be useful for applying pre-packaged customizations.
+	 * @param customizer the customizer to apply
+	 * @return a new {@link HttpComponentsClientHttpConnectorBuilder}
+	 * @since 4.0.0
+	 */
+	public HttpComponentsClientHttpConnectorBuilder with(
+			UnaryOperator<HttpComponentsClientHttpConnectorBuilder> customizer) {
+		return customizer.apply(this);
+	}
+
 	@Override
-	protected HttpComponentsClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
-		CloseableHttpAsyncClient client = this.httpClientBuilder.build(asHttpClientSettings(settings));
+	protected HttpComponentsClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
+		CloseableHttpAsyncClient client = this.httpClientBuilder.build(settings);
 		return new HttpComponentsClientHttpConnector(client);
 	}
 

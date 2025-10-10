@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -134,7 +135,7 @@ class IncludeExcludeGroupMemberPredicateTests {
 			return new IncludeExcludeGroupMemberPredicate(asSet(this.include), asSet(exclude));
 		}
 
-		private Set<String> asSet(String[] names) {
+		private @Nullable Set<String> asSet(String @Nullable [] names) {
 			return (names != null) ? new LinkedHashSet<>(Arrays.asList(names)) : null;
 		}
 

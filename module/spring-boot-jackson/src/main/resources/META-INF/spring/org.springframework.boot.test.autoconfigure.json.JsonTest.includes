@@ -1,0 +1,2 @@
+org.springframework.boot.jackson.JsonComponent
+tools.jackson.databind.JacksonModule

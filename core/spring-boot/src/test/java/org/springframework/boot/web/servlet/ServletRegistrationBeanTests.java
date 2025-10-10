@@ -52,9 +52,11 @@ class ServletRegistrationBeanTests {
 	private final MockServlet servlet = new MockServlet();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ServletContext servletContext;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ServletRegistration.Dynamic registration;
 
 	@Test
@@ -140,12 +142,14 @@ class ServletRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createServletMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ServletRegistrationBean<MockServlet>(null))
 			.withMessageContaining("'servlet' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlMappings(null))
@@ -153,6 +157,7 @@ class ServletRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createMappingMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
@@ -160,6 +165,7 @@ class ServletRegistrationBeanTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlMappings((String[]) null))

@@ -103,7 +103,7 @@ public class DataMongoProperties {
 		/**
 		 * Representation to use when converting a BigDecimal.
 		 */
-		private @Nullable BigDecimalRepresentation bigDecimal;
+		private @Nullable BigDecimalRepresentation bigDecimal = BigDecimalRepresentation.UNSPECIFIED;
 
 		public @Nullable BigDecimalRepresentation getBigDecimal() {
 			return this.bigDecimal;

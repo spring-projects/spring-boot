@@ -29,7 +29,7 @@ java {
 }
 
 repositories {
-	maven { url "file:${rootDir}/../test-repository"}
+	maven { url = layout.projectDirectory.dir("../test-repository") }
 	mavenCentral()
 	spring.mavenRepositoriesExcludingBootGroup()
 }
@@ -86,7 +86,7 @@ static boolean isWindows() {
 		task.mainClass = "com.example.ResourceHandlingApplication"
 		task.classpath = configurations.getByName(webServer)
 		task.archiveClassifier = webServer
-		task.targetJavaVersion = project.getTargetCompatibility()
+		task.targetJavaVersion = java.targetCompatibility
 	}
 	tasks.register("${webServer}BootJar", BootJar, configurer)
 	tasks.register("${webServer}BootWar", BootWar, configurer)

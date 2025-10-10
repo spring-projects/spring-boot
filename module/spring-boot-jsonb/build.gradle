@@ -29,11 +29,15 @@ dependencies {
 	api("org.eclipse:yasson")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-test-autoconfigure"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("org.eclipse:yasson")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }

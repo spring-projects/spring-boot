@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.mock;
 class SpringIterableConfigurationPropertySourceTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new SpringIterableConfigurationPropertySource(null, false, mock(PropertyMapper.class)))
@@ -87,7 +89,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		mapper.addFromConfigurationProperty(name, "key2");
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, false, mapper);
-		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
+		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("value2");
 	}
 
 	@Test
@@ -103,7 +107,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, false, mapper);
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.key");
-		assertThat(adapter.getConfigurationProperty(name).getValue()).isEqualTo("value2");
+		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getValue()).isEqualTo("value2");
 	}
 
 	@Test
@@ -116,8 +122,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		mapper.addFromConfigurationProperty(name, "key");
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, false, mapper);
-		assertThat(adapter.getConfigurationProperty(name).getOrigin())
-			.hasToString("\"key\" from property source \"test\"");
+		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getOrigin()).hasToString("\"key\" from property source \"test\"");
 	}
 
 	@Test
@@ -131,7 +138,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		mapper.addFromConfigurationProperty(name, "key");
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, false, mapper);
-		assertThat(adapter.getConfigurationProperty(name).getOrigin()).hasToString("TestOrigin key");
+		ConfigurationProperty configurationProperty = adapter.getConfigurationProperty(name);
+		assertThat(configurationProperty).isNotNull();
+		assertThat(configurationProperty.getOrigin()).hasToString("TestOrigin key");
 	}
 
 	@Test
@@ -185,10 +194,14 @@ class SpringIterableConfigurationPropertySourceTests {
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, source);
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, true, SystemEnvironmentPropertyMapper.INSTANCE, DefaultPropertyMapper.INSTANCE);
-		assertThat(adapter.getConfigurationProperty(ConfigurationPropertyName.of("test.value-upper")).getValue())
-			.isEqualTo("upper");
-		assertThat(adapter.getConfigurationProperty(ConfigurationPropertyName.of("test.value-lower")).getValue())
-			.isEqualTo("lower");
+		ConfigurationProperty valueUpper = adapter
+			.getConfigurationProperty(ConfigurationPropertyName.of("test.value-upper"));
+		assertThat(valueUpper).isNotNull();
+		assertThat(valueUpper.getValue()).isEqualTo("upper");
+		ConfigurationProperty valueLower = adapter
+			.getConfigurationProperty(ConfigurationPropertyName.of("test.value-lower"));
+		assertThat(valueLower).isNotNull();
+		assertThat(valueLower.getValue()).isEqualTo("lower");
 	}
 
 	@Test
@@ -292,7 +305,7 @@ class SpringIterableConfigurationPropertySourceTests {
 		}
 
 		@Override
-		public Object getProperty(String name) {
+		public @Nullable Object getProperty(String name) {
 			return this.propertySource.getProperty(name);
 		}
 

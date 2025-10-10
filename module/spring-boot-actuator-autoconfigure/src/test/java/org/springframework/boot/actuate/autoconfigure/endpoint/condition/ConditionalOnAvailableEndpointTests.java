@@ -223,7 +223,11 @@ class ConditionalOnAvailableEndpointTests {
 			.withPropertyValues("management.endpoints.web.exposure.include=*")
 			.run((context) -> {
 				assertThat(context).hasFailed();
-				assertThat(context.getStartupFailure().getCause().getMessage())
+				Throwable startupFailure = context.getStartupFailure();
+				assertThat(startupFailure).isNotNull();
+				Throwable cause = startupFailure.getCause();
+				assertThat(cause).isNotNull();
+				assertThat(cause.getMessage())
 					.contains("No endpoint is specified and the return type of the @Bean method "
 							+ "is neither an @Endpoint, nor an @EndpointExtension");
 			});

@@ -29,6 +29,7 @@ dependencies {
 	api("org.springframework:spring-web")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-test"))
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework:spring-test")

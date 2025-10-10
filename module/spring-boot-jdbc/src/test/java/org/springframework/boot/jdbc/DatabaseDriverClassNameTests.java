@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import javax.sql.XADataSource;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -71,19 +72,20 @@ class DatabaseDriverClassNameTests {
 	}
 
 	static Stream<? extends Arguments> databaseClassIsOfRequiredType() {
-		return Stream.concat(argumentsForType(Driver.class, DatabaseDriver::getDriverClassName),
+		Function<DatabaseDriver, @Nullable String> getDriverClassName = DatabaseDriver::getDriverClassName;
+		return Stream.concat(argumentsForType(Driver.class, getDriverClassName),
 				argumentsForType(XADataSource.class,
 						(databaseDriver) -> databaseDriver.getXaDataSourceClassName() != null,
 						DatabaseDriver::getXaDataSourceClassName));
 	}
 
 	private static Stream<? extends Arguments> argumentsForType(Class<?> type,
-			Function<DatabaseDriver, String> classNameExtractor) {
+			Function<DatabaseDriver, @Nullable String> classNameExtractor) {
 		return argumentsForType(type, (databaseDriver) -> true, classNameExtractor);
 	}
 
 	private static Stream<? extends Arguments> argumentsForType(Class<?> type, Predicate<DatabaseDriver> predicate,
-			Function<DatabaseDriver, String> classNameExtractor) {
+			Function<DatabaseDriver, @Nullable String> classNameExtractor) {
 		return Stream.of(DatabaseDriver.values())
 			.filter((databaseDriver) -> !EXCLUDED_DRIVERS.contains(databaseDriver))
 			.filter(predicate)

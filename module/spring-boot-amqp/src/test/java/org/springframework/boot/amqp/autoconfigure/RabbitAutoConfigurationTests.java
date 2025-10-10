@@ -572,7 +572,9 @@ class RabbitAutoConfigurationTests {
 			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
 				.isInstanceOf(VirtualThreadTaskExecutor.class);
 			Object taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			assertThat(taskExecutor).isNotNull();
 			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+			assertThat(virtualThread).isNotNull();
 			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
 			assertThat(threadCreated.getName()).containsPattern("rabbit-simple-[0-9]+");
 		});
@@ -588,7 +590,9 @@ class RabbitAutoConfigurationTests {
 			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
 				.isInstanceOf(VirtualThreadTaskExecutor.class);
 			Object taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			assertThat(taskExecutor).isNotNull();
 			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+			assertThat(virtualThread).isNotNull();
 			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
 			assertThat(threadCreated.getName()).containsPattern("rabbit-direct-[0-9]+");
 		});

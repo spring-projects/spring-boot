@@ -22,6 +22,7 @@ import java.util.List;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggerContextVO;
 import ch.qos.logback.classic.spi.LoggingEvent;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +81,7 @@ class EnclosedInSquareBracketsConverterTests {
 		});
 	}
 
-	private void withLoggedApplicationName(String name, String value, Runnable action) {
+	private void withLoggedApplicationName(String name, @Nullable String value, Runnable action) {
 		if (value == null) {
 			System.clearProperty(name);
 		}

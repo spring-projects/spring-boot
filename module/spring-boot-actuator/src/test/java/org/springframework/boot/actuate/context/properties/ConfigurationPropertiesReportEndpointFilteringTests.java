@@ -60,6 +60,7 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
 				.get(context.getId());
+			assertThat(contextProperties).isNotNull();
 			assertThat(contextProperties.getBeans()).containsOnlyKeys("primaryFoo", "secondaryFoo");
 		});
 	}
@@ -76,6 +77,7 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
 				.get(context.getId());
+			assertThat(contextProperties).isNotNull();
 			assertThat(contextProperties.getBeans()).isEmpty();
 		});
 	}
@@ -105,12 +107,14 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
 				.get(context.getId());
+			assertThat(contextProperties).isNotNull();
 			Optional<String> key = contextProperties.getBeans()
 				.keySet()
 				.stream()
 				.filter((id) -> findIdFromPrefix("only.bar", id))
 				.findAny();
 			ConfigurationPropertiesBeanDescriptor descriptor = contextProperties.getBeans().get(key.get());
+			assertThat(descriptor).isNotNull();
 			assertThat(descriptor.getPrefix()).isEqualTo("only.bar");
 			assertThat(descriptor.getProperties()).containsEntry("name", value);
 		});

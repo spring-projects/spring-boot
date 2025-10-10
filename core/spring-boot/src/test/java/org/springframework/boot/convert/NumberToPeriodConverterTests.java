@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.annotation.AnnotationUtils;
@@ -58,12 +59,13 @@ class NumberToPeriodConverterTests {
 		assertThat(convert(conversionService, -10, ChronoUnit.YEARS)).hasYears(-10);
 	}
 
-	private Period convert(ConversionService conversionService, Integer source) {
+	private @Nullable Period convert(ConversionService conversionService, Integer source) {
 		return conversionService.convert(source, Period.class);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Period convert(ConversionService conversionService, Integer source, ChronoUnit defaultUnit) {
+	private @Nullable Period convert(ConversionService conversionService, Integer source,
+			@Nullable ChronoUnit defaultUnit) {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
 			PeriodUnit unitAnnotation = AnnotationUtils

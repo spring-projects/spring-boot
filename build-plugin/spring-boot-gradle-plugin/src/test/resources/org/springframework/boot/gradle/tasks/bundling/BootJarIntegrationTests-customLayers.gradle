@@ -33,7 +33,7 @@ bootJar {
 				include "*:*:*SNAPSHOT"
 			}
 			intoLayer("commons-dependencies") {
-				include "org.apache.commons:*" 
+				include "org.apache.commons:*"
 			}
 			intoLayer("dependencies")
 		}

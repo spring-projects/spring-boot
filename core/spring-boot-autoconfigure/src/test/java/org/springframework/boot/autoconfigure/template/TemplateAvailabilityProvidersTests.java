@@ -53,6 +53,7 @@ class TemplateAvailabilityProvidersTests {
 	private TemplateAvailabilityProviders providers;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private TemplateAvailabilityProvider provider;
 
 	private final String view = "view";
@@ -62,6 +63,7 @@ class TemplateAvailabilityProvidersTests {
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ResourceLoader resourceLoader;
 
 	@BeforeEach
@@ -70,6 +72,7 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TemplateAvailabilityProviders((ApplicationContext) null))
@@ -89,6 +92,7 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenClassLoaderIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TemplateAvailabilityProviders((ClassLoader) null))
 			.withMessageContaining("'classLoader' must not be null");
@@ -103,6 +107,7 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenProvidersIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TemplateAvailabilityProviders((Collection<TemplateAvailabilityProvider>) null))
@@ -117,12 +122,14 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getProviderWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.providers.getProvider(this.view, null))
 			.withMessageContaining("'applicationContext' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getProviderWhenViewIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.providers.getProvider(null, this.environment, this.classLoader, this.resourceLoader))
@@ -130,6 +137,7 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getProviderWhenEnvironmentIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.providers.getProvider(this.view, null, this.classLoader, this.resourceLoader))
@@ -137,6 +145,7 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getProviderWhenClassLoaderIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.providers.getProvider(this.view, this.environment, null, this.resourceLoader))
@@ -144,6 +153,7 @@ class TemplateAvailabilityProvidersTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getProviderWhenResourceLoaderIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.providers.getProvider(this.view, this.environment, this.classLoader, null))

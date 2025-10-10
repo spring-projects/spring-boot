@@ -19,9 +19,12 @@ package org.springframework.boot.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.util.LambdaSafe.Filter;
@@ -44,12 +47,14 @@ import static org.mockito.Mockito.mock;
 class LambdaSafeTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void callbackWhenCallbackTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LambdaSafe.callback(null, new Object(), null))
 			.withMessageContaining("'callbackType' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void callbackWhenCallbackInstanceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LambdaSafe.callback(Object.class, null, null))
 			.withMessageContaining("'callbackInstance' must not be null");
@@ -112,83 +117,90 @@ class LambdaSafeTests {
 		NonGenericFactory callbackInstance = mock(NonGenericFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(123);
+		Function<NonGenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		InvocationResult<Integer> result = LambdaSafe.callback(NonGenericFactory.class, callbackInstance, argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result.hasResult()).isTrue();
 		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbackInvokeAndWhenHasGenericShouldReturnResult() {
 		StringFactory callbackInstance = mock(StringFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(123);
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result.hasResult()).isTrue();
 		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbackInvokeAndWhenReturnNullShouldReturnResult() {
 		StringFactory callbackInstance = mock(StringFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(null);
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result.hasResult()).isTrue();
 		assertThat(result.get()).isNull();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbackInvokeAndWhenHasResolvableGenericMatchShouldReturnResult() {
 		StringBuilderFactory callbackInstance = mock(StringBuilderFactory.class);
 		StringBuilder argument = new StringBuilder("foo");
 		given(callbackInstance.handle(any(StringBuilder.class))).willReturn(123);
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		then(callbackInstance).should().handle(argument);
 		assertThat(result.hasResult()).isTrue();
 		assertThat(result.get()).isEqualTo(123);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbackInvokeAndWhenHasResolvableGenericNonMatchShouldReturnNoResult() {
 		GenericFactory<?> callbackInstance = mock(StringBuilderFactory.class);
 		String argument = "foo";
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result.hasResult()).isFalse();
 		then(callbackInstance).shouldHaveNoInteractions();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbackInvokeAndWhenLambdaMismatchShouldSwallowException() {
 		GenericFactory<StringBuilder> callbackInstance = (s) -> {
 			fail("Should not get here");
 			return 123;
 		};
 		String argument = "foo";
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericFactory.class, callbackInstance, argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result.hasResult()).isFalse();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbackInvokeAndWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
 		GenericMultiArgFactory<StringBuilder> callbackInstance = (n, s, b) -> {
 			fail("Should not get here");
 			return 123;
 		};
 		String argument = "foo";
+		Function<GenericMultiArgFactory, @Nullable Integer> handle = (c) -> c.handle(1, argument, false);
 		InvocationResult<Integer> result = LambdaSafe.callback(GenericMultiArgFactory.class, callbackInstance, argument)
-			.invokeAnd((c) -> c.handle(1, argument, false));
+			.invokeAnd(handle);
 		assertThat(result.hasResult()).isFalse();
 	}
 
@@ -196,57 +208,59 @@ class LambdaSafeTests {
 	void callbacksInvokeWhenNoGenericShouldInvokeCallbacks() {
 		NonGenericCallback callbackInstance = mock(NonGenericCallback.class);
 		String argument = "foo";
+		Consumer<NonGenericCallback> handle = (c) -> c.handle(argument);
 		LambdaSafe.callbacks(NonGenericCallback.class, Collections.singleton(callbackInstance), argument)
-			.invoke((c) -> c.handle(argument));
+			.invoke(handle);
 		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeWhenHasGenericShouldInvokeCallback() {
 		StringCallback callbackInstance = mock(StringCallback.class);
 		String argument = "foo";
-		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
-			.invoke((c) -> c.handle(argument));
+		Consumer<GenericCallback> handle = (c) -> c.handle(argument);
+		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument).invoke(handle);
 		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeWhenHasResolvableGenericMatchShouldInvokeCallback() {
 		StringBuilderCallback callbackInstance = mock(StringBuilderCallback.class);
 		StringBuilder argument = new StringBuilder("foo");
-		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
-			.invoke((c) -> c.handle(argument));
+		Consumer<GenericCallback> handle = (c) -> c.handle(argument);
+		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument).invoke(handle);
 		then(callbackInstance).should().handle(argument);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeWhenHasResolvableGenericNonMatchShouldNotInvokeCallback() {
 		GenericCallback<?> callbackInstance = mock(StringBuilderCallback.class);
 		String argument = "foo";
-		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
-			.invoke((c) -> c.handle(null));
+		Consumer<GenericCallback> handle = (c) -> c.handle(null);
+		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument).invoke(handle);
 		then(callbackInstance).shouldHaveNoInteractions();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeWhenLambdaMismatchShouldSwallowException() {
 		GenericCallback<StringBuilder> callbackInstance = (s) -> fail("Should not get here");
 		String argument = "foo";
-		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument)
-			.invoke((c) -> c.handle(argument));
+		Consumer<GenericCallback> handle = (c) -> c.handle(argument);
+		LambdaSafe.callbacks(GenericCallback.class, Collections.singleton(callbackInstance), argument).invoke(handle);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
 		GenericMultiArgCallback<StringBuilder> callbackInstance = (n, s, b) -> fail("Should not get here");
 		String argument = "foo";
+		Consumer<GenericMultiArgCallback> handle = (c) -> c.handle(1, argument, false);
 		LambdaSafe.callbacks(GenericMultiArgCallback.class, Collections.singleton(callbackInstance), argument)
-			.invoke((c) -> c.handle(1, argument, false));
+			.invoke(handle);
 	}
 
 	@Test
@@ -254,89 +268,96 @@ class LambdaSafeTests {
 		NonGenericFactory callbackInstance = mock(NonGenericFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(123);
+		Function<NonGenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		Stream<Integer> result = LambdaSafe
 			.callbacks(NonGenericFactory.class, Collections.singleton(callbackInstance), argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result).containsExactly(123);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeAndWhenHasGenericShouldReturnResult() {
 		StringFactory callbackInstance = mock(StringFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(123);
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		Stream<Integer> result = LambdaSafe
 			.callbacks(GenericFactory.class, Collections.singleton(callbackInstance), argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result).containsExactly(123);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeAndWhenReturnNullShouldReturnResult() {
 		StringFactory callbackInstance = mock(StringFactory.class);
 		String argument = "foo";
 		given(callbackInstance.handle("foo")).willReturn(null);
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		Stream<Integer> result = LambdaSafe
 			.callbacks(GenericFactory.class, Collections.singleton(callbackInstance), argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result).containsExactly((Integer) null);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeAndWhenHasResolvableGenericMatchShouldReturnResult() {
 		StringBuilderFactory callbackInstance = mock(StringBuilderFactory.class);
 		StringBuilder argument = new StringBuilder("foo");
 		given(callbackInstance.handle(any(StringBuilder.class))).willReturn(123);
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		Stream<Integer> result = LambdaSafe
 			.callbacks(GenericFactory.class, Collections.singleton(callbackInstance), argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result).containsExactly(123);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeAndWhenHasResolvableGenericNonMatchShouldReturnNoResult() {
 		GenericFactory<?> callbackInstance = mock(StringBuilderFactory.class);
 		String argument = "foo";
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		Stream<Integer> result = LambdaSafe
 			.callbacks(GenericFactory.class, Collections.singleton(callbackInstance), argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result).isEmpty();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeAndWhenLambdaMismatchShouldSwallowException() {
 		GenericFactory<StringBuilder> callbackInstance = (s) -> {
 			fail("Should not get here");
 			return 123;
 		};
 		String argument = "foo";
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> (c).handle(argument);
 		Stream<Integer> result = LambdaSafe
 			.callbacks(GenericFactory.class, Collections.singleton(callbackInstance), argument)
-			.invokeAnd((c) -> (c).handle(argument));
+			.invokeAnd(handle);
 		assertThat(result).isEmpty();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeAndWhenLambdaMismatchOnDifferentArgumentShouldSwallowException() {
 		GenericMultiArgFactory<StringBuilder> callbackInstance = (n, s, b) -> {
 			fail("Should not get here");
 			return 123;
 		};
 		String argument = "foo";
+		Function<GenericMultiArgFactory, @Nullable Integer> handle = (c) -> c.handle(1, argument, false);
 		Stream<Integer> result = LambdaSafe
 			.callbacks(GenericMultiArgFactory.class, Collections.singleton(callbackInstance), argument)
-			.invokeAnd((c) -> c.handle(1, argument, false));
+			.invokeAnd(handle);
 		assertThat(result).isEmpty();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void callbacksInvokeWhenMultipleShouldInvokeSuitable() {
 		List<GenericFactory<?>> callbackInstances = new ArrayList<>();
 		GenericFactory<String> callback1 = (s) -> 1;
@@ -352,8 +373,9 @@ class LambdaSafeTests {
 		callbackInstances.add(callback4);
 		callbackInstances.add(callback5);
 		String argument = "foo";
+		Function<GenericFactory, @Nullable Integer> handle = (c) -> c.handle(argument);
 		Stream<Integer> result = LambdaSafe.callbacks(GenericFactory.class, callbackInstances, argument)
-			.invokeAnd((c) -> c.handle(argument));
+			.invokeAnd(handle);
 		assertThat(result).containsExactly(1, 2, 4);
 	}
 
@@ -391,7 +413,7 @@ class LambdaSafeTests {
 
 	interface GenericCallback<T extends CharSequence> {
 
-		void handle(T argument);
+		void handle(@Nullable T argument);
 
 	}
 

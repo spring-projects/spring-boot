@@ -50,6 +50,7 @@ class BeansEndpointTests {
 		contextRunner.run((context) -> {
 			BeansDescriptor result = context.getBean(BeansEndpoint.class).beans();
 			ContextBeansDescriptor descriptor = result.getContexts().get(context.getId());
+			assertThat(descriptor).isNotNull();
 			assertThat(descriptor.getParentId()).isNull();
 			Map<String, BeanDescriptor> beans = descriptor.getBeans();
 			assertThat(beans).hasSizeLessThanOrEqualTo(context.getBeanDefinitionCount());
@@ -69,6 +70,7 @@ class BeansEndpointTests {
 				.toList();
 			BeansDescriptor result = context.getBean(BeansEndpoint.class).beans();
 			ContextBeansDescriptor contextDescriptor = result.getContexts().get(context.getId());
+			assertThat(contextDescriptor).isNotNull();
 			Map<String, BeanDescriptor> beans = contextDescriptor.getBeans();
 			for (String infrastructureBean : infrastructureBeans) {
 				assertThat(beans).doesNotContainKey(infrastructureBean);
@@ -82,8 +84,9 @@ class BeansEndpointTests {
 			.withUserConfiguration(EndpointConfiguration.class, LazyBeanConfiguration.class);
 		contextRunner.run((context) -> {
 			BeansDescriptor result = context.getBean(BeansEndpoint.class).beans();
-			ContextBeansDescriptor contextDescriptor = result.getContexts().get(context.getId());
 			assertThat(context).hasBean("lazyBean");
+			ContextBeansDescriptor contextDescriptor = result.getContexts().get(context.getId());
+			assertThat(contextDescriptor).isNotNull();
 			assertThat(contextDescriptor.getBeans()).doesNotContainKey("lazyBean");
 		});
 	}
@@ -97,8 +100,12 @@ class BeansEndpointTests {
 				.withParent(parent)
 				.run((child) -> {
 					BeansDescriptor result = child.getBean(BeansEndpoint.class).beans();
-					assertThat(result.getContexts().get(parent.getId()).getBeans()).containsKey("bean");
-					assertThat(result.getContexts().get(child.getId()).getBeans()).containsKey("endpoint");
+					ContextBeansDescriptor parentContext = result.getContexts().get(parent.getId());
+					assertThat(parentContext).isNotNull();
+					assertThat(parentContext.getBeans()).containsKey("bean");
+					ContextBeansDescriptor childContext = result.getContexts().get(child.getId());
+					assertThat(childContext).isNotNull();
+					assertThat(childContext.getBeans()).containsKey("endpoint");
 				});
 		});
 	}

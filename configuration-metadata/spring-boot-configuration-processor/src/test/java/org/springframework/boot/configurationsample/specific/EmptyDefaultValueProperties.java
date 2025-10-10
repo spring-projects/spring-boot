@@ -16,22 +16,22 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.ConstructorBinding;
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConstructorBinding;
+import org.springframework.boot.configurationsample.TestDefaultValue;
 
 /**
  * Demonstrates that an empty default value on a property leads to no default value.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("test")
+@TestConfigurationProperties("test")
 public class EmptyDefaultValueProperties {
 
 	private final String name;
 
-	@ConstructorBinding
-	public EmptyDefaultValueProperties(@DefaultValue String name) {
+	@TestConstructorBinding
+	public EmptyDefaultValueProperties(@TestDefaultValue String name) {
 		this.name = name;
 	}
 

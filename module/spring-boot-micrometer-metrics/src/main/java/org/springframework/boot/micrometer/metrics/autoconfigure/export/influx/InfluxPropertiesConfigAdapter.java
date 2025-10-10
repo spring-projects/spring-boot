@@ -43,83 +43,75 @@ class InfluxPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<
 
 	@Override
 	public String db() {
-		return getRequired(InfluxProperties::getDb, InfluxConfig.super::db);
+		return obtain(InfluxProperties::getDb, InfluxConfig.super::db);
 	}
 
 	@Override
 	public InfluxConsistency consistency() {
-		return getRequired(InfluxProperties::getConsistency, InfluxConfig.super::consistency);
+		return obtain(InfluxProperties::getConsistency, InfluxConfig.super::consistency);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String userName() {
 		return get(InfluxProperties::getUserName, InfluxConfig.super::userName);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String password() {
 		return get(InfluxProperties::getPassword, InfluxConfig.super::password);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String retentionPolicy() {
 		return get(InfluxProperties::getRetentionPolicy, InfluxConfig.super::retentionPolicy);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable Integer retentionReplicationFactor() {
 		return get(InfluxProperties::getRetentionReplicationFactor, InfluxConfig.super::retentionReplicationFactor);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String retentionDuration() {
 		return get(InfluxProperties::getRetentionDuration, InfluxConfig.super::retentionDuration);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String retentionShardDuration() {
 		return get(InfluxProperties::getRetentionShardDuration, InfluxConfig.super::retentionShardDuration);
 	}
 
 	@Override
 	public String uri() {
-		return getRequired(InfluxProperties::getUri, InfluxConfig.super::uri);
+		return obtain(InfluxProperties::getUri, InfluxConfig.super::uri);
 	}
 
 	@Override
 	public boolean compressed() {
-		return getRequired(InfluxProperties::isCompressed, InfluxConfig.super::compressed);
+		return obtain(InfluxProperties::isCompressed, InfluxConfig.super::compressed);
 	}
 
 	@Override
 	public boolean autoCreateDb() {
-		return getRequired(InfluxProperties::isAutoCreateDb, InfluxConfig.super::autoCreateDb);
+		return obtain(InfluxProperties::isAutoCreateDb, InfluxConfig.super::autoCreateDb);
 	}
 
 	@Override
 	public InfluxApiVersion apiVersion() {
-		return getRequired(InfluxProperties::getApiVersion, InfluxConfig.super::apiVersion);
+		return obtain(InfluxProperties::getApiVersion, InfluxConfig.super::apiVersion);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String org() {
 		return get(InfluxProperties::getOrg, InfluxConfig.super::org);
 	}
 
 	@Override
 	public String bucket() {
-		return getRequired(InfluxProperties::getBucket, InfluxConfig.super::bucket);
+		return obtain(InfluxProperties::getBucket, InfluxConfig.super::bucket);
 	}
 
 	@Override
-	@SuppressWarnings("NullAway") // Lambda isn't detected with the correct nullability
 	public @Nullable String token() {
 		return get(InfluxProperties::getToken, InfluxConfig.super::token);
 	}

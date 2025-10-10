@@ -57,18 +57,28 @@ class JdkClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBuil
 		Executor executor = new SimpleAsyncTaskExecutor();
 		JdkClientHttpConnector connector = ClientHttpConnectorBuilder.jdk().withExecutor(executor).build();
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient).isNotNull();
 		assertThat(httpClient.executor()).containsSame(executor);
+	}
+
+	@Test
+	void with() {
+		TestCustomizer<HttpClient.Builder> customizer = new TestCustomizer<>();
+		ClientHttpConnectorBuilder.jdk().with((builder) -> builder.withHttpClientCustomizer(customizer)).build();
+		customizer.assertCalled();
 	}
 
 	@Override
 	protected long connectTimeout(JdkClientHttpConnector connector) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient).isNotNull();
 		return httpClient.connectTimeout().get().toMillis();
 	}
 
 	@Override
 	protected long readTimeout(JdkClientHttpConnector connector) {
 		Duration readTimeout = (Duration) ReflectionTestUtils.getField(connector, "readTimeout");
+		assertThat(readTimeout).isNotNull();
 		return readTimeout.toMillis();
 	}
 
