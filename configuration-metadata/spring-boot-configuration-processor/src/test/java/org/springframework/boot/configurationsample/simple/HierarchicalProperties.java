@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties with inherited values.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("hierarchical")
+@TestConfigurationProperties("hierarchical")
 public class HierarchicalProperties extends HierarchicalPropertiesParent {
 
 	/**

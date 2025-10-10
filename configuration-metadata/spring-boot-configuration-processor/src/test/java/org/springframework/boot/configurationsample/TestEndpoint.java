@@ -23,18 +23,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @WebEndpoint} for testing (removes the need for a
+ * Alternative to Spring Boot's {@code @Endpoint} for testing (removes the need for a
  * dependency on the real annotation).
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface WebEndpoint {
+public @interface TestEndpoint {
 
 	String id() default "";
 
-	Access defaultAccess() default Access.UNRESTRICTED;
+	TestAccess defaultAccess() default TestAccess.UNRESTRICTED;
 
 }

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.method;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample for testing deprecated method configuration.
@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class DeprecatedMethodConfig {
 
-	@ConfigurationProperties("foo")
+	@TestConfigurationProperties("foo")
 	@Deprecated
 	public Foo foo() {
 		return new Foo();

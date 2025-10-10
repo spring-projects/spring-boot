@@ -23,19 +23,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @ConfigurationProperties} for testing (removes the
- * need for a dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @ServletEndpoint} for testing (removes the need for
+ * a dependency on the real annotation).
  *
- * @author Stephane Nicoll
- * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ConfigurationProperties {
+public @interface TestServletEndpoint {
 
-	String value() default "";
+	String id() default "";
 
-	String prefix() default "";
+	TestAccess defaultAccess() default TestAccess.UNRESTRICTED;
 
 }

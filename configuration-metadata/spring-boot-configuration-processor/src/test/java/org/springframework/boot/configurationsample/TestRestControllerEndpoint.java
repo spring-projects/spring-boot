@@ -23,14 +23,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @ConstructorBinding} for testing (removes the need
- * for a dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @RestControllerEndpoint} for testing (removes the
+ * need for a dependency on the real annotation).
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-@Target({ ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ConstructorBinding {
+public @interface TestRestControllerEndpoint {
+
+	String id() default "";
+
+	TestAccess defaultAccess() default TestAccess.UNRESTRICTED;
 
 }

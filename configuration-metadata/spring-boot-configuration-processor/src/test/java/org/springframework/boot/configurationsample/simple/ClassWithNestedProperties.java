@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Class with nested configuration properties.
@@ -39,7 +39,7 @@ public class ClassWithNestedProperties {
 
 	}
 
-	@ConfigurationProperties("nestedChildProps")
+	@TestConfigurationProperties("nestedChildProps")
 	public static class NestedChildClass extends NestedParentClass {
 
 		private int childClassProperty = 20;

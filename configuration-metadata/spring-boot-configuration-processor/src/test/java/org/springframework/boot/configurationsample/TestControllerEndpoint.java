@@ -31,13 +31,13 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ControllerEndpoint {
+public @interface TestControllerEndpoint {
 
 	String id() default "";
 
 	@Deprecated
 	boolean enableByDefault() default true;
 
-	Access defaultAccess() default Access.UNRESTRICTED;
+	TestAccess defaultAccess() default TestAccess.UNRESTRICTED;
 
 }

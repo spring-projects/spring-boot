@@ -16,20 +16,20 @@
 
 package org.springframework.boot.configurationsample.immutable;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestDefaultValue;
 
 /**
  * Inner properties, in immutable format.
  *
  * @author Phillip Webb
  */
-@ConfigurationProperties("test")
+@TestConfigurationProperties("test")
 public class DeducedImmutableClassProperties {
 
 	private final Nested nested;
 
-	public DeducedImmutableClassProperties(@DefaultValue Nested nested) {
+	public DeducedImmutableClassProperties(@TestDefaultValue Nested nested) {
 		this.nested = nested;
 	}
 

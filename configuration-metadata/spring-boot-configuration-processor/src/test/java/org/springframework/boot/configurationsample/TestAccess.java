@@ -16,23 +16,18 @@
 
 package org.springframework.boot.configurationsample;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Alternative to Spring Boot's {@code @ReadOperation} for testing (removes the need for a
+ * Alternative to Spring Boot's {@code @Access} for testing (removes the need for a
  * dependency on the real annotation).
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface ReadOperation {
+public enum TestAccess {
 
-	String[] produces() default {};
+	NONE,
+
+	READ_ONLY,
+
+	UNRESTRICTED
 
 }

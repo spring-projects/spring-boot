@@ -23,20 +23,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a getter in a {@link ConfigurationProperties @ConfigurationProperties}
- * object is deprecated. This annotation has no bearing on the actual binding processes,
- * but it is used by the {@code spring-boot-configuration-processor} to add deprecation
- * meta-data.
- * <p>
- * This annotation <strong>must</strong> be used on the getter of the deprecated element.
+ * Alternative to Spring Boot's {@code @DeprecatedConfigurationProperty} for testing
+ * (removes the need for a dependency on the real annotation).
  *
  * @author Phillip Webb
- * @since 1.3.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DeprecatedConfigurationProperty {
+public @interface TestDeprecatedConfigurationProperty {
 
 	/**
 	 * The reason for the deprecation.

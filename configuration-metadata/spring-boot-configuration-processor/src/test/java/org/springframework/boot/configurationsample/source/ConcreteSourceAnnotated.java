@@ -16,13 +16,13 @@
 
 package org.springframework.boot.configurationsample.source;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
-@ConfigurationProperties("example")
+@TestConfigurationProperties("example")
 public class ConcreteSourceAnnotated {
 
-	@NestedConfigurationProperty
+	@TestNestedConfigurationProperty
 	private final ConcreteSource nested = new ConcreteSource();
 
 	public ConcreteSource getNested() {

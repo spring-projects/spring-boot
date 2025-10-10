@@ -23,16 +23,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @NestedConfigurationProperty} for testing (removes
- * the need for a dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @DefaultValue} for testing (removes the need for a
+ * dependency on the real annotation).
  *
  * @author Stephane Nicoll
- * @author Phillip Webb
- * @since 1.2.0
+ * @author Pavel Anisimov
  */
-@Target({ ElementType.FIELD, ElementType.RECORD_COMPONENT, ElementType.METHOD })
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface NestedConfigurationProperty {
+public @interface TestDefaultValue {
+
+	String[] value() default {};
 
 }

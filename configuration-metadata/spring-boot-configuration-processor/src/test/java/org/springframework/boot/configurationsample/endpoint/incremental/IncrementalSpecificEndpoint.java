@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.endpoint.incremental;
 
-import org.springframework.boot.configurationsample.JmxEndpoint;
+import org.springframework.boot.configurationsample.TestJmxEndpoint;
 
 /**
  * A meta-annotated endpoint.
@@ -24,7 +24,7 @@ import org.springframework.boot.configurationsample.JmxEndpoint;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@JmxEndpoint(id = "incremental")
+@TestJmxEndpoint(id = "incremental")
 public class IncrementalSpecificEndpoint {
 
 }

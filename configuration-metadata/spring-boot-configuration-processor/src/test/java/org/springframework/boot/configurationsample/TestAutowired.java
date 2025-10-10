@@ -23,18 +23,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @Endpoint} for testing (removes the need for a
- * dependency on the real annotation).
+ * Alternative to Spring Framework's {@code @Autowired} for testing (removes the need for
+ * a dependency on the real annotation).
  *
- * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Endpoint {
-
-	String id() default "";
-
-	Access defaultAccess() default Access.UNRESTRICTED;
+public @interface TestAutowired {
 
 }
