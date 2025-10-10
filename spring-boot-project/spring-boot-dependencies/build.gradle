@@ -2115,7 +2115,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-authorization-server/releases/tag/{version}")
 		}
 	}
-	library("Spring Batch", "5.2.3") {
+	library("Spring Batch", "5.2.4-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.batch") {
 			bom("spring-batch-bom")
