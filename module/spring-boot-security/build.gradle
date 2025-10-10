@@ -53,6 +53,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-http-converter"))
 	testImplementation(project(":module:spring-boot-jackson"))
 	testImplementation(project(":module:spring-boot-restclient"))
+	testImplementation(project(":module:spring-boot-resttestclient"))
 	testImplementation(project(":module:spring-boot-rsocket"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

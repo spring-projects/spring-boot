@@ -40,7 +40,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.restclient.test.TestRestTemplate;
+import org.springframework.boot.testrestclient.TestRestTemplate;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;

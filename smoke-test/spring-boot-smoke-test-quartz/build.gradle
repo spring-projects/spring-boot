@@ -28,7 +28,7 @@ dependencies {
 
 	runtimeOnly("com.h2database:h2")
 
-	testImplementation(project(":starter:spring-boot-starter-restclient-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.awaitility:awaitility")
 }

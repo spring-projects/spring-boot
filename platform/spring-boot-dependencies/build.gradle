@@ -2068,6 +2068,7 @@ bom {
 				"spring-boot-reactor-netty",
 				"spring-boot-restclient",
 				"spring-boot-restclient-test",
+				"spring-boot-resttestclient",
 				"spring-boot-rsocket",
 				"spring-boot-rsocket-test",
 				"spring-boot-security",
@@ -2266,6 +2267,7 @@ bom {
 				"spring-boot-webservices",
 				"spring-boot-webservices-test",
 				"spring-boot-websocket",
+				"spring-boot-webtestclient",
 				"spring-boot-zipkin",
 				"spring-boot-starter-zipkin-test"
 			]

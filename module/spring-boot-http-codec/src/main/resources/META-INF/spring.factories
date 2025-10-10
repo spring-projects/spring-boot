@@ -1,3 +1,0 @@
-# WebTestClient Builder Customizers
-org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer=\
-org.springframework.boot.http.codec.CodecWebTestClientBuilderCustomizer

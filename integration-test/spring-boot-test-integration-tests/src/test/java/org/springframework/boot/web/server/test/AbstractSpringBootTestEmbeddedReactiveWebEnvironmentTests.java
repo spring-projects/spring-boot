@@ -23,14 +23,14 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.restclient.test.TestRestTemplate;
-import org.springframework.boot.restclient.test.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.testrestclient.TestRestTemplate;
+import org.springframework.boot.testrestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
-import org.springframework.boot.webflux.test.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.AutoConfigureWebTestClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

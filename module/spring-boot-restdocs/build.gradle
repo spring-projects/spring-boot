@@ -29,13 +29,13 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-test-autoconfigure"))
+	optional(project(":module:spring-boot-webflux-test"))
 	optional(project(":module:spring-boot-webmvc-test"))
 	optional("org.springframework.restdocs:spring-restdocs-mockmvc")
 	optional("org.springframework.restdocs:spring-restdocs-restassured")
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation(project(":module:spring-boot-webflux-test"))
 	testImplementation(project(":module:spring-boot-webmvc-test"))
 	testImplementation(project(":module:spring-boot-hateoas"))
 	testImplementation("org.springframework.security:spring-security-test")

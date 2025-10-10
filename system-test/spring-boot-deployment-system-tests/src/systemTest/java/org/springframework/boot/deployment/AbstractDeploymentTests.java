@@ -32,7 +32,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.images.builder.dockerfile.DockerfileBuilder;
 
 import org.springframework.boot.restclient.RestTemplateBuilder;
-import org.springframework.boot.restclient.test.TestRestTemplate;
+import org.springframework.boot.testrestclient.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;

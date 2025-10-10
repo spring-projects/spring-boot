@@ -22,11 +22,11 @@ import org.junit.jupiter.api.Test;
 import smoketest.actuator.ManagementPortSampleActuatorApplicationTests.CustomErrorAttributes;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.restclient.test.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.testrestclient.TestRestTemplate;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.webmvc.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.Import;
