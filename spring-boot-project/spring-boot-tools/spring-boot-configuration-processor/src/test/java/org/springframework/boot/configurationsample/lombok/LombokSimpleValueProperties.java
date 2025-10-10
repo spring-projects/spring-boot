@@ -21,7 +21,7 @@ import java.util.List;
 
 import lombok.Value;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties using Lombok {@code @Value}.
@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Mark Jeffrey
  */
 @Value
-@ConfigurationProperties(prefix = "value")
+@TestConfigurationProperties(prefix = "value")
 @SuppressWarnings("unused")
 public class LombokSimpleValueProperties {
 

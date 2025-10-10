@@ -19,14 +19,14 @@ package org.springframework.boot.configurationsample.specific;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample config for enum and default values.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("test")
+@TestConfigurationProperties("test")
 public class EnumValuesPojo {
 
 	private ChronoUnit seconds = ChronoUnit.SECONDS;

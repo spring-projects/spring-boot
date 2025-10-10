@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.TestEndpoint;
 
 /**
  * An endpoint that is disabled unless configured explicitly.
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "disabled", enableByDefault = false)
+@TestEndpoint(id = "disabled", enableByDefault = false)
 public class DisabledEndpoint {
 
 }

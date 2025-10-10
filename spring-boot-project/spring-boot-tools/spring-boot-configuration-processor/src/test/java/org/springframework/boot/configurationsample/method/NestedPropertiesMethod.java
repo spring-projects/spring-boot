@@ -16,10 +16,10 @@
 
 package org.springframework.boot.configurationsample.method;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 
-@ConfigurationProperties("method-nested")
+@TestConfigurationProperties("method-nested")
 public class NestedPropertiesMethod {
 
 	private String myProperty;
@@ -36,7 +36,7 @@ public class NestedPropertiesMethod {
 		this.myProperty = myProperty;
 	}
 
-	@NestedConfigurationProperty
+	@TestNestedConfigurationProperty
 	public NestedProperty getNested() {
 		return this.nested;
 	}
@@ -59,7 +59,7 @@ public class NestedPropertiesMethod {
 			this.myInnerProperty = myInnerProperty;
 		}
 
-		@NestedConfigurationProperty
+		@TestNestedConfigurationProperty
 		public NestedProperty getNested() {
 			return this.nested;
 		}

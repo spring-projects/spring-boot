@@ -18,7 +18,7 @@ package org.springframework.boot.configurationsample.specific;
 
 import jakarta.validation.constraints.NotEmpty;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * An annotated getter with {@code NotEmpty} that triggers a different class type in the
@@ -26,7 +26,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("specific")
+@TestConfigurationProperties("specific")
 public class AnnotatedGetter {
 
 	private String name;

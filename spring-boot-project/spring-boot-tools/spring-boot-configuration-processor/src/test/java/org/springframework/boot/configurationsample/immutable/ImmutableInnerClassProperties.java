@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.immutable;
 
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 import org.springframework.boot.configurationsample.specific.SimplePojo;
 
 /**
@@ -30,7 +30,7 @@ public class ImmutableInnerClassProperties {
 
 	private Foo second;
 
-	@NestedConfigurationProperty
+	@TestNestedConfigurationProperty
 	private final SimplePojo third;
 
 	private final Fourth fourth;

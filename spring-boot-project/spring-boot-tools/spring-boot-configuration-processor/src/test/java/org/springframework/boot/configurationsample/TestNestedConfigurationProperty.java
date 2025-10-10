@@ -23,21 +23,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @WebEndpoint} for testing (removes the need for a
- * dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @NestedConfigurationProperty} for testing (removes
+ * the need for a dependency on the real annotation).
  *
- * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Phillip Webb
+ * @since 1.2.0
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.FIELD, ElementType.RECORD_COMPONENT, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface WebEndpoint {
-
-	String id() default "";
-
-	@Deprecated
-	boolean enableByDefault() default true;
-
-	Access defaultAccess() default Access.UNRESTRICTED;
+public @interface TestNestedConfigurationProperty {
 
 }

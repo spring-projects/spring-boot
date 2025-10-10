@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.ReadOperation;
-import org.springframework.boot.configurationsample.WebEndpoint;
+import org.springframework.boot.configurationsample.TestReadOperation;
+import org.springframework.boot.configurationsample.TestWebEndpoint;
 import org.springframework.lang.Nullable;
 
 /**
@@ -26,10 +26,10 @@ import org.springframework.lang.Nullable;
  *
  * @author Stephane Nicoll
  */
-@WebEndpoint(id = "specific", enableByDefault = true)
+@TestWebEndpoint(id = "specific", enableByDefault = true)
 public class SpecificEndpoint {
 
-	@ReadOperation
+	@TestReadOperation
 	String invoke(@Nullable String param) {
 		return "test";
 	}

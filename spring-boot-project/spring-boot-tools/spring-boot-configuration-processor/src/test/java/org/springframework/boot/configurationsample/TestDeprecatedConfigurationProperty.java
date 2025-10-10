@@ -23,14 +23,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @ConstructorBinding} for testing (removes the need
- * for a dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @DeprecatedConfigurationProperty} for testing
+ * (removes the need for a dependency on the real annotation).
  *
- * @author Stephane Nicoll
+ * @author Phillip Webb
  */
-@Target({ ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ConstructorBinding {
+public @interface TestDeprecatedConfigurationProperty {
+
+	/**
+	 * The reason for the deprecation.
+	 * @return the deprecation reason
+	 */
+	String reason() default "";
+
+	/**
+	 * The field that should be used instead (if any).
+	 * @return the replacement field
+	 */
+	String replacement() default "";
+
+	/**
+	 * The version in which the property became deprecated.
+	 * @return the version
+	 */
+	String since() default "";
 
 }

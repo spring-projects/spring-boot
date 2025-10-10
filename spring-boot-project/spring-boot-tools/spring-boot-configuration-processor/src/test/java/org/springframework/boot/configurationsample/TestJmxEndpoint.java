@@ -23,14 +23,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Framework's {@code @Autowired} for testing (removes the need for
- * a dependency on the real annotation).
+ * Alternative to Spring Boot's {@code @JmxEndpoint} for testing (removes the need for a
+ * dependency on the real annotation).
  *
- * @author Madhura Bhave
+ * @author Andy Wilkinson
  */
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Autowired {
+public @interface TestJmxEndpoint {
+
+	String id() default "";
+
+	@Deprecated
+	boolean enableByDefault() default true;
+
+	TestAccess defaultAccess() default TestAccess.UNRESTRICTED;
 
 }

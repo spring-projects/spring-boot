@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties using lombok @Getter and @Setter with explicitly defining
@@ -30,7 +30,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 @Getter(AccessLevel.PUBLIC)
 @Setter(AccessLevel.PUBLIC)
-@ConfigurationProperties(prefix = "accesslevel.overwrite.explicit")
+@TestConfigurationProperties(prefix = "accesslevel.overwrite.explicit")
 @SuppressWarnings("unused")
 public class LombokAccessLevelOverwriteExplicitProperties {
 
