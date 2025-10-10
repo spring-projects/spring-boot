@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jackson;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
@@ -29,7 +26,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Endpoint Jackson support.
@@ -40,8 +36,6 @@ import org.springframework.util.ClassUtils;
 @AutoConfiguration
 public final class JacksonEndpointAutoConfiguration {
 
-	private static final String CONTRIBUTED_HEALTH = "org.springframework.boot.health.contributor.ContributedHealth";
-
 	@Bean
 	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
 	@ConditionalOnClass(ObjectMapper.class)
@@ -50,24 +44,7 @@ public final class JacksonEndpointAutoConfiguration {
 			.changeDefaultPropertyInclusion(
 					(value) -> value.withValueInclusion(Include.NON_NULL).withContentInclusion(Include.NON_NULL))
 			.build();
-		Set<Class<?>> supportedTypes = new HashSet<>(EndpointJsonMapper.DEFAULT_SUPPORTED_TYPES);
-		if (ClassUtils.isPresent(CONTRIBUTED_HEALTH, null)) {
-			supportedTypes.add(ClassUtils.resolveClassName(CONTRIBUTED_HEALTH, null));
-		}
-		return new EndpointJsonMapper() {
-
-			@Override
-			public JsonMapper get() {
-				return jsonMapper;
-			}
-
-			@Override
-			public Set<Class<?>> getSupportedTypes() {
-				return supportedTypes;
-			}
-
-		};
-
+		return () -> jsonMapper;
 	}
 
 }

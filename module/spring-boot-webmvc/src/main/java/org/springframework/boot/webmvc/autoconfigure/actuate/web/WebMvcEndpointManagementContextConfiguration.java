@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import tools.jackson.databind.json.JsonMapper;
 
@@ -183,13 +182,10 @@ public class WebMvcEndpointManagementContextConfiguration {
 		}
 
 		private void configure(JacksonJsonHttpMessageConverter converter) {
-			this.endpointJsonMapper.getSupportedTypes()
-				.forEach((type) -> converter.registerMappersForType(type, this::registerForAllMimeTypes));
-		}
-
-		private void registerForAllMimeTypes(Map<MediaType, JsonMapper> registrar) {
-			JsonMapper jsonMapper = this.endpointJsonMapper.get();
-			MEDIA_TYPES.forEach((mimeType) -> registrar.put(mimeType, jsonMapper));
+			converter.registerMappersForType(OperationResponseBody.class, (associations) -> {
+				JsonMapper jsonMapper = this.endpointJsonMapper.get();
+				MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, jsonMapper));
+			});
 		}
 
 	}

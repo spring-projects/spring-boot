@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.jackson;
 
-import java.util.Set;
-
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
@@ -30,12 +28,8 @@ import org.springframework.boot.actuate.endpoint.OperationResponseBody;
  * @since 4.0.0
  * @see OperationResponseBody
  */
+@FunctionalInterface
 public interface EndpointJsonMapper {
-
-	/**
-	 * The default supported types.
-	 */
-	Set<Class<?>> DEFAULT_SUPPORTED_TYPES = Set.of(OperationResponseBody.class);
 
 	/**
 	 * Return the {@link JsonMapper} that should be used to serialize
@@ -43,13 +37,5 @@ public interface EndpointJsonMapper {
 	 * @return the object mapper
 	 */
 	JsonMapper get();
-
-	/**
-	 * Return the types that this endpoint mapper supports.
-	 * @return the supported types
-	 */
-	default Set<Class<?>> getSupportedTypes() {
-		return DEFAULT_SUPPORTED_TYPES;
-	}
 
 }
