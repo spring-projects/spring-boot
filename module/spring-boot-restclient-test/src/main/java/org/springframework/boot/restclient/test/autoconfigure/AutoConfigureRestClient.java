@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson;
 import org.springframework.web.client.RestClient.Builder;
 
 /**
@@ -38,6 +39,7 @@ import org.springframework.web.client.RestClient.Builder;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@AutoConfigureJson
 @ImportAutoConfiguration
 public @interface AutoConfigureRestClient {
 
