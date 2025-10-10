@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webclient.autoconfigure;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.web.reactive.function.client.WebClient;
-
 /**
- * Properties for {@link WebClient}.
- *
- * @author Phillip Webb
- * @since 4.0.0
+ * Auto-configuration support classes for HTTP Service Clients.
  */
-@ConfigurationProperties("spring.http.reactiveclient.webclient")
-public class WebClientProperties extends AbstractWebClientProperties {
+@NullMarked
+package org.springframework.boot.http.client.autoconfigure.service;
 
-}
+import org.jspecify.annotations.NullMarked;

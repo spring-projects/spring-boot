@@ -18,15 +18,13 @@ package org.springframework.boot.webclient.autoconfigure.service;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.webclient.WebClientCustomizer;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.registry.HttpServiceGroup;
 
 /**
- * A {@link RestClientHttpServiceGroupConfigurer} to apply auto-configured
- * {@link WebClientCustomizer} beans to the group's {@link RestClient}.
+ * A {@link WebClientHttpServiceGroupConfigurer} to apply auto-configured
+ * {@link WebClientCustomizer} beans to the group's {@link WebClient}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Phillip Webb

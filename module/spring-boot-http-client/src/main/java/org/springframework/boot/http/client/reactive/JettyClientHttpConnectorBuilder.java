@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.io.ClientConnector;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.JettyHttpClientBuilder;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.util.Assert;
@@ -127,8 +128,8 @@ public final class JettyClientHttpConnectorBuilder
 	}
 
 	@Override
-	protected JettyClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings));
+	protected JettyClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings);
 		return new JettyClientHttpConnector(httpClient);
 	}
 

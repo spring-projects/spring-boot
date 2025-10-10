@@ -37,7 +37,10 @@ final class HttpComponentsRedirectStrategy {
 	private HttpComponentsRedirectStrategy() {
 	}
 
-	static RedirectStrategy get(HttpRedirects redirects) {
+	static RedirectStrategy get(@Nullable HttpRedirects redirects) {
+		if (redirects == null) {
+			return DefaultRedirectStrategy.INSTANCE;
+		}
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> DefaultRedirectStrategy.INSTANCE;
 			case DONT_FOLLOW -> NoFollowRedirectStrategy.INSTANCE;

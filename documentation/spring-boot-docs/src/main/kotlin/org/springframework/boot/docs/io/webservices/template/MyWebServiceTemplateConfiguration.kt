@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.io.webservices.template
 
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings
+import org.springframework.boot.http.client.HttpClientSettings
 import org.springframework.boot.webservices.client.WebServiceMessageSenderFactory
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -29,7 +29,7 @@ class MyWebServiceTemplateConfiguration {
 
 	@Bean
 	fun webServiceTemplate(builder: WebServiceTemplateBuilder): WebServiceTemplate {
-		val settings = ClientHttpRequestFactorySettings.defaults()
+		val settings = HttpClientSettings.defaults()
 				.withConnectTimeout(Duration.ofSeconds(2))
 				.withReadTimeout(Duration.ofSeconds(2))
 		builder.httpMessageSenderFactory(WebServiceMessageSenderFactory.http(settings))

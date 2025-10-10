@@ -34,7 +34,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequest;
@@ -72,7 +72,7 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 public class RestTemplateBuilder {
 
-	private final ClientHttpRequestFactorySettings requestFactorySettings;
+	private final HttpClientSettings clientSettings;
 
 	private final boolean detectRequestFactory;
 
@@ -103,7 +103,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder(RestTemplateCustomizer... customizers) {
 		Assert.notNull(customizers, "'customizers' must not be null");
-		this.requestFactorySettings = ClientHttpRequestFactorySettings.defaults();
+		this.clientSettings = HttpClientSettings.defaults();
 		this.detectRequestFactory = true;
 		this.rootUri = null;
 		this.messageConverters = null;
@@ -117,14 +117,14 @@ public class RestTemplateBuilder {
 		this.requestCustomizers = Collections.emptySet();
 	}
 
-	private RestTemplateBuilder(ClientHttpRequestFactorySettings requestFactorySettings, boolean detectRequestFactory,
+	private RestTemplateBuilder(HttpClientSettings clientSettings, boolean detectRequestFactory,
 			@Nullable String rootUri, @Nullable Set<HttpMessageConverter<?>> messageConverters,
 			Set<ClientHttpRequestInterceptor> interceptors,
 			@Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder,
 			@Nullable UriTemplateHandler uriTemplateHandler, @Nullable ResponseErrorHandler errorHandler,
 			@Nullable BasicAuthentication basicAuthentication, Map<String, List<String>> defaultHeaders,
 			Set<RestTemplateCustomizer> customizers, Set<RestTemplateRequestCustomizer<?>> requestCustomizers) {
-		this.requestFactorySettings = requestFactorySettings;
+		this.clientSettings = clientSettings;
 		this.detectRequestFactory = detectRequestFactory;
 		this.rootUri = rootUri;
 		this.messageConverters = messageConverters;
@@ -146,10 +146,9 @@ public class RestTemplateBuilder {
 	 * @return a new builder instance
 	 */
 	public RestTemplateBuilder detectRequestFactory(boolean detectRequestFactory) {
-		return new RestTemplateBuilder(this.requestFactorySettings, detectRequestFactory, this.rootUri,
-				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
-				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
-				this.requestCustomizers);
+		return new RestTemplateBuilder(this.clientSettings, detectRequestFactory, this.rootUri, this.messageConverters,
+				this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler,
+				this.basicAuthentication, this.defaultHeaders, this.customizers, this.requestCustomizers);
 	}
 
 	/**
@@ -160,10 +159,9 @@ public class RestTemplateBuilder {
 	 * @return a new builder instance
 	 */
 	public RestTemplateBuilder rootUri(@Nullable String rootUri) {
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, rootUri,
-				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
-				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
-				this.requestCustomizers);
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, rootUri, this.messageConverters,
+				this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler,
+				this.basicAuthentication, this.defaultHeaders, this.customizers, this.requestCustomizers);
 	}
 
 	/**
@@ -191,7 +189,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder messageConverters(Iterable<? extends HttpMessageConverter<?>> messageConverters) {
 		Assert.notNull(messageConverters, "'messageConverters' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				copiedSetOf(messageConverters), this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
@@ -221,7 +219,7 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder additionalMessageConverters(
 			Collection<? extends HttpMessageConverter<?>> messageConverters) {
 		Assert.notNull(messageConverters, "'messageConverters' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				append(this.messageConverters, messageConverters), this.interceptors, this.requestFactoryBuilder,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
@@ -235,7 +233,7 @@ public class RestTemplateBuilder {
 	 * @see #messageConverters(HttpMessageConverter...)
 	 */
 	public RestTemplateBuilder defaultMessageConverters() {
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				copiedSetOf(new RestTemplate().getMessageConverters()), this.interceptors, this.requestFactoryBuilder,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
@@ -266,7 +264,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder interceptors(Collection<ClientHttpRequestInterceptor> interceptors) {
 		Assert.notNull(interceptors, "'interceptors' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, copiedSetOf(interceptors), this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
@@ -295,7 +293,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder additionalInterceptors(Collection<? extends ClientHttpRequestInterceptor> interceptors) {
 		Assert.notNull(interceptors, "'interceptors' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, append(this.interceptors, interceptors), this.requestFactoryBuilder,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
@@ -338,7 +336,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder requestFactoryBuilder(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
 		Assert.notNull(requestFactoryBuilder, "'requestFactoryBuilder' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
@@ -352,7 +350,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder uriTemplateHandler(UriTemplateHandler uriTemplateHandler) {
 		Assert.notNull(uriTemplateHandler, "'uriTemplateHandler' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
@@ -366,7 +364,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder errorHandler(ResponseErrorHandler errorHandler) {
 		Assert.notNull(errorHandler, "'errorHandler' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers, this.requestCustomizers);
 	}
@@ -394,7 +392,7 @@ public class RestTemplateBuilder {
 	 * @since 2.2.0
 	 */
 	public RestTemplateBuilder basicAuthentication(String username, String password, @Nullable Charset charset) {
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, new BasicAuthentication(username, password, charset), this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
@@ -411,42 +409,40 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder defaultHeader(String name, String... values) {
 		Assert.notNull(name, "'name' must not be null");
 		Assert.notNull(values, "'values' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, append(this.defaultHeaders, name, values),
 				this.customizers, this.requestCustomizers);
 	}
 
 	/**
-	 * Sets the {@link ClientHttpRequestFactorySettings}. This will replace any previously
-	 * set {@link #connectTimeout(Duration) connectTimeout}, {@link #readTimeout(Duration)
+	 * Sets the {@link HttpClientSettings}. This will replace any previously set
+	 * {@link #connectTimeout(Duration) connectTimeout}, {@link #readTimeout(Duration)
 	 * readTimeout} and {@link #sslBundle(SslBundle) sslBundle} values.
-	 * @param requestFactorySettings the request factory settings
+	 * @param clientSettings the client settings
 	 * @return a new builder instance
-	 * @since 3.4.0
+	 * @since 4.0.0
 	 */
-	public RestTemplateBuilder requestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
-		Assert.notNull(requestFactorySettings, "'requestFactorySettings' must not be null");
-		return new RestTemplateBuilder(requestFactorySettings, this.detectRequestFactory, this.rootUri,
-				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
-				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
-				this.requestCustomizers);
+	public RestTemplateBuilder clientSettings(HttpClientSettings clientSettings) {
+		Assert.notNull(clientSettings, "'clientSettings' must not be null");
+		return new RestTemplateBuilder(clientSettings, this.detectRequestFactory, this.rootUri, this.messageConverters,
+				this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler,
+				this.basicAuthentication, this.defaultHeaders, this.customizers, this.requestCustomizers);
 	}
 
 	/**
-	 * Update the {@link ClientHttpRequestFactorySettings} using the given customizer.
-	 * @param requestFactorySettingsCustomizer a {@link UnaryOperator} to update request
-	 * factory settings
+	 * Update the {@link HttpClientSettings} using the given customizer.
+	 * @param clientSettingsCustomizer a {@link UnaryOperator} to update client factory
+	 * settings
 	 * @return a new builder instance
-	 * @since 3.4.1
+	 * @since 4.0.0
 	 */
-	public RestTemplateBuilder requestFactorySettings(
-			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
-		Assert.notNull(requestFactorySettingsCustomizer, "'requestFactorySettingsCustomizer' must not be null");
-		return new RestTemplateBuilder(requestFactorySettingsCustomizer.apply(this.requestFactorySettings),
-				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors,
-				this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
-				this.defaultHeaders, this.customizers, this.requestCustomizers);
+	public RestTemplateBuilder clientSettings(UnaryOperator<HttpClientSettings> clientSettingsCustomizer) {
+		Assert.notNull(clientSettingsCustomizer, "'clientSettingsCustomizer' must not be null");
+		return new RestTemplateBuilder(clientSettingsCustomizer.apply(this.clientSettings), this.detectRequestFactory,
+				this.rootUri, this.messageConverters, this.interceptors, this.requestFactoryBuilder,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
+				this.customizers, this.requestCustomizers);
 	}
 
 	/**
@@ -456,7 +452,7 @@ public class RestTemplateBuilder {
 	 * @since 3.4.0
 	 */
 	public RestTemplateBuilder connectTimeout(Duration connectTimeout) {
-		return new RestTemplateBuilder(this.requestFactorySettings.withConnectTimeout(connectTimeout),
+		return new RestTemplateBuilder(this.clientSettings.withConnectTimeout(connectTimeout),
 				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors,
 				this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
 				this.defaultHeaders, this.customizers, this.requestCustomizers);
@@ -469,10 +465,10 @@ public class RestTemplateBuilder {
 	 * @since 3.4.0
 	 */
 	public RestTemplateBuilder readTimeout(Duration readTimeout) {
-		return new RestTemplateBuilder(this.requestFactorySettings.withReadTimeout(readTimeout),
-				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors,
-				this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
-				this.defaultHeaders, this.customizers, this.requestCustomizers);
+		return new RestTemplateBuilder(this.clientSettings.withReadTimeout(readTimeout), this.detectRequestFactory,
+				this.rootUri, this.messageConverters, this.interceptors, this.requestFactoryBuilder,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
+				this.customizers, this.requestCustomizers);
 	}
 
 	/**
@@ -482,7 +478,7 @@ public class RestTemplateBuilder {
 	 * @since 4.0.0
 	 */
 	public RestTemplateBuilder redirects(HttpRedirects redirects) {
-		return new RestTemplateBuilder(this.requestFactorySettings.withRedirects(redirects), this.detectRequestFactory,
+		return new RestTemplateBuilder(this.clientSettings.withRedirects(redirects), this.detectRequestFactory,
 				this.rootUri, this.messageConverters, this.interceptors, this.requestFactoryBuilder,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
@@ -495,7 +491,7 @@ public class RestTemplateBuilder {
 	 * @since 3.4.0
 	 */
 	public RestTemplateBuilder sslBundle(SslBundle sslBundle) {
-		return new RestTemplateBuilder(this.requestFactorySettings.withSslBundle(sslBundle), this.detectRequestFactory,
+		return new RestTemplateBuilder(this.clientSettings.withSslBundle(sslBundle), this.detectRequestFactory,
 				this.rootUri, this.messageConverters, this.interceptors, this.requestFactoryBuilder,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
@@ -526,7 +522,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder customizers(Collection<? extends RestTemplateCustomizer> customizers) {
 		Assert.notNull(customizers, "'customizers' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, copiedSetOf(customizers),
 				this.requestCustomizers);
@@ -555,7 +551,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder additionalCustomizers(Collection<? extends RestTemplateCustomizer> customizers) {
 		Assert.notNull(customizers, "'customizers' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, append(this.customizers, customizers),
 				this.requestCustomizers);
@@ -589,7 +585,7 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder requestCustomizers(
 			Collection<? extends RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		Assert.notNull(requestCustomizers, "'requestCustomizers' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				copiedSetOf(requestCustomizers));
@@ -621,7 +617,7 @@ public class RestTemplateBuilder {
 	public RestTemplateBuilder additionalRequestCustomizers(
 			Collection<? extends RestTemplateRequestCustomizer<?>> requestCustomizers) {
 		Assert.notNull(requestCustomizers, "'requestCustomizers' must not be null");
-		return new RestTemplateBuilder(this.requestFactorySettings, this.detectRequestFactory, this.rootUri,
+		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				append(this.requestCustomizers, requestCustomizers));
@@ -693,7 +689,7 @@ public class RestTemplateBuilder {
 	 */
 	public @Nullable ClientHttpRequestFactory buildRequestFactory() {
 		ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder = requestFactoryBuilder();
-		return (requestFactoryBuilder != null) ? requestFactoryBuilder.build(this.requestFactorySettings) : null;
+		return (requestFactoryBuilder != null) ? requestFactoryBuilder.build(this.clientSettings) : null;
 	}
 
 	/**

@@ -16,10 +16,8 @@
 
 package org.springframework.boot.restclient.autoconfigure;
 
-import java.net.URI;
 import java.time.Duration;
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -28,9 +26,11 @@ import org.junit.jupiter.api.condition.JRE;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.blocking.BlockingHttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.ssl.SslBundle;
@@ -44,8 +44,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.ApiVersionFormatter;
-import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
 
@@ -65,7 +63,8 @@ import static org.mockito.Mockito.mock;
 class RestClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class, HttpClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class, HttpClientAutoConfiguration.class,
+				BlockingHttpClientAutoConfiguration.class, ReactiveHttpClientAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
@@ -78,7 +77,7 @@ class RestClientAutoConfigurationTests {
 	@Test
 	void shouldSupplyRestClientSslIfSslBundlesIsThereWithCustomHttpSettingsAndBuilder() {
 		SslBundles sslBundles = mock(SslBundles.class);
-		ClientHttpRequestFactorySettings clientHttpRequestFactorySettings = ClientHttpRequestFactorySettings.defaults()
+		HttpClientSettings clientSettings = HttpClientSettings.defaults()
 			.withRedirects(HttpRedirects.DONT_FOLLOW)
 			.withConnectTimeout(Duration.ofHours(1))
 			.withReadTimeout(Duration.ofDays(1))
@@ -86,14 +85,14 @@ class RestClientAutoConfigurationTests {
 		ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder = mock(
 				ClientHttpRequestFactoryBuilder.class);
 		this.contextRunner.withBean(SslBundles.class, () -> sslBundles)
-			.withBean(ClientHttpRequestFactorySettings.class, () -> clientHttpRequestFactorySettings)
+			.withBean(HttpClientSettings.class, () -> clientSettings)
 			.withBean(ClientHttpRequestFactoryBuilder.class, () -> clientHttpRequestFactoryBuilder)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestClientSsl.class);
 				RestClientSsl restClientSsl = context.getBean(RestClientSsl.class);
 				assertThat(restClientSsl).hasFieldOrPropertyWithValue("sslBundles", sslBundles);
 				assertThat(restClientSsl).hasFieldOrPropertyWithValue("builder", clientHttpRequestFactoryBuilder);
-				assertThat(restClientSsl).hasFieldOrPropertyWithValue("settings", clientHttpRequestFactorySettings);
+				assertThat(restClientSsl).hasFieldOrPropertyWithValue("settings", clientSettings);
 			});
 	}
 
@@ -102,14 +101,14 @@ class RestClientAutoConfigurationTests {
 		SslBundles sslBundles = mock(SslBundles.class);
 		this.contextRunner.withBean(SslBundles.class, () -> sslBundles).run((context) -> {
 			assertThat(context).hasSingleBean(RestClientSsl.class)
-				.hasSingleBean(ClientHttpRequestFactorySettings.class)
+				.hasSingleBean(HttpClientSettings.class)
 				.hasSingleBean(ClientHttpRequestFactoryBuilder.class);
 			RestClientSsl restClientSsl = context.getBean(RestClientSsl.class);
 			assertThat(restClientSsl).hasFieldOrPropertyWithValue("sslBundles", sslBundles);
 			assertThat(restClientSsl).hasFieldOrPropertyWithValue("builder",
 					context.getBean(ClientHttpRequestFactoryBuilder.class));
 			assertThat(restClientSsl).hasFieldOrPropertyWithValue("settings",
-					context.getBean(ClientHttpRequestFactorySettings.class));
+					context.getBean(HttpClientSettings.class));
 		});
 	}
 
@@ -192,7 +191,7 @@ class RestClientAutoConfigurationTests {
 	void whenHasFactoryProperty() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 			.withUserConfiguration(RestClientConfig.class)
-			.withPropertyValues("spring.http.client.factory=simple")
+			.withPropertyValues("spring.http.clients.blocking.factory=simple")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestClient.class);
 				RestClient restClient = context.getBean(RestClient.class);
@@ -203,15 +202,14 @@ class RestClientAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyRestClientBuilderConfigurerWithCustomSettings() {
-		ClientHttpRequestFactorySettings clientHttpRequestFactorySettings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(HttpRedirects.DONT_FOLLOW);
+		HttpClientSettings clientSettings = HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
 		ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder = mock(
 				ClientHttpRequestFactoryBuilder.class);
 		RestClientCustomizer customizer1 = mock(RestClientCustomizer.class);
 		RestClientCustomizer customizer2 = mock(RestClientCustomizer.class);
 		HttpMessageConvertersRestClientCustomizer httpMessageConverterCustomizer = mock(
 				HttpMessageConvertersRestClientCustomizer.class);
-		this.contextRunner.withBean(ClientHttpRequestFactorySettings.class, () -> clientHttpRequestFactorySettings)
+		this.contextRunner.withBean(HttpClientSettings.class, () -> clientSettings)
 			.withBean(ClientHttpRequestFactoryBuilder.class, () -> clientHttpRequestFactoryBuilder)
 			.withBean("customizer1", RestClientCustomizer.class, () -> customizer1)
 			.withBean("customizer2", RestClientCustomizer.class, () -> customizer2)
@@ -219,13 +217,12 @@ class RestClientAutoConfigurationTests {
 					() -> httpMessageConverterCustomizer)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class)
-					.hasSingleBean(ClientHttpRequestFactorySettings.class)
+					.hasSingleBean(HttpClientSettings.class)
 					.hasSingleBean(ClientHttpRequestFactoryBuilder.class);
 				RestClientBuilderConfigurer configurer = context.getBean(RestClientBuilderConfigurer.class);
 				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactoryBuilder",
 						clientHttpRequestFactoryBuilder);
-				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactorySettings",
-						clientHttpRequestFactorySettings);
+				assertThat(configurer).hasFieldOrPropertyWithValue("clientSettings", clientSettings);
 				assertThat(configurer).hasFieldOrPropertyWithValue("customizers",
 						List.of(customizer1, customizer2, httpMessageConverterCustomizer));
 			});
@@ -239,13 +236,13 @@ class RestClientAutoConfigurationTests {
 			.withBean("customizer2", RestClientCustomizer.class, () -> customizer2)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestClientBuilderConfigurer.class)
-					.hasSingleBean(ClientHttpRequestFactorySettings.class)
+					.hasSingleBean(HttpClientSettings.class)
 					.hasSingleBean(ClientHttpRequestFactoryBuilder.class);
 				RestClientBuilderConfigurer configurer = context.getBean(RestClientBuilderConfigurer.class);
 				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactoryBuilder",
 						context.getBean(ClientHttpRequestFactoryBuilder.class));
-				assertThat(configurer).hasFieldOrPropertyWithValue("requestFactorySettings",
-						context.getBean(ClientHttpRequestFactorySettings.class));
+				assertThat(configurer).hasFieldOrPropertyWithValue("clientSettings",
+						context.getBean(HttpClientSettings.class));
 				assertThat(configurer).hasFieldOrPropertyWithValue("customizers", List.of(customizer1, customizer2));
 			});
 	}
@@ -299,48 +296,6 @@ class RestClientAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(RestClient.Builder.class));
 	}
 
-	@Test
-	void whenHasApiVersionProperties() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withPropertyValues("spring.http.client.restclient.apiversion.default=123",
-					"spring.http.client.restclient.apiversion.insert.query-parameter=version")
-			.run((context) -> {
-				RestClient restClient = context.getBean(RestClient.Builder.class).build();
-				assertThat(restClient).extracting("defaultApiVersion").isEqualTo("123");
-				ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(restClient,
-						"apiVersionInserter");
-				assertThat(apiVersionInserter.insertVersion("123", new URI("https://example.com")))
-					.hasToString("https://example.com?version=123");
-			});
-	}
-
-	@Test
-	void whenHasCustomApiVersionInserter() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withUserConfiguration(ApiVersionInserterConfig.class)
-			.run((context) -> {
-				RestClient restClient = context.getBean(RestClient.Builder.class).build();
-				ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(restClient,
-						"apiVersionInserter");
-				assertThat(apiVersionInserter.insertVersion("123", new URI("https://example.com")))
-					.hasToString("https://example.com?version=123");
-			});
-	}
-
-	@Test
-	void whenHasCustomApiVersionFormatter() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-			.withPropertyValues("spring.http.client.restclient.apiversion.insert.query-parameter=version")
-			.withUserConfiguration(ApiVersionFormatterConfig.class)
-			.run((context) -> {
-				RestClient restClient = context.getBean(RestClient.Builder.class).build();
-				ApiVersionInserter apiVersionInserter = (ApiVersionInserter) ReflectionTestUtils.getField(restClient,
-						"apiVersionInserter");
-				assertThat(apiVersionInserter.insertVersion("best", new URI("https://example.com")))
-					.hasToString("https://example.com?version=BEST");
-			});
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class RestClientCustomizerConfig {
 
@@ -376,26 +331,6 @@ class RestClientAutoConfigurationTests {
 	}
 
 	static class CustomHttpMessageConverter extends ByteArrayHttpMessageConverter {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ApiVersionInserterConfig {
-
-		@Bean
-		ApiVersionInserter apiVersionInserter() {
-			return ApiVersionInserter.useQueryParam("version");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ApiVersionFormatterConfig {
-
-		@Bean
-		ApiVersionFormatter apiVersionFormatter() {
-			return (version) -> String.valueOf(version).toUpperCase(Locale.ROOT);
-		}
 
 	}
 

@@ -29,6 +29,7 @@ import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBu
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsHttpAsyncClientBuilder;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
@@ -140,8 +141,8 @@ public final class HttpComponentsClientHttpConnectorBuilder
 	}
 
 	@Override
-	protected HttpComponentsClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
-		CloseableHttpAsyncClient client = this.httpClientBuilder.build(asHttpClientSettings(settings));
+	protected HttpComponentsClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
+		CloseableHttpAsyncClient client = this.httpClientBuilder.build(settings);
 		return new HttpComponentsClientHttpConnector(client);
 	}
 

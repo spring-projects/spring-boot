@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client.autoconfigure;
+package org.springframework.boot.http.client.autoconfigure.blocking;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,16 +24,16 @@ import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.JettyClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ReactorClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.SimpleClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.autoconfigure.AbstractHttpRequestFactoryProperties.Factory;
+import org.springframework.boot.http.client.autoconfigure.blocking.BlockingHttpClientsProperties.Factory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HttpClientProperties}.
+ * Tests for {@link BlockingHttpClientsProperties}.
  *
  * @author Phillip Webb
  */
-class HttpClientPropertiesTests {
+class BlockingHttpClientsPropertiesTests {
 
 	@Nested
 	class FactoryTests {

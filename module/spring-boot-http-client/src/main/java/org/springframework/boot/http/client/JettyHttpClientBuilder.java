@@ -134,13 +134,13 @@ public final class JettyHttpClientBuilder {
 	 * @return a new {@link HttpClient} instance
 	 */
 	public HttpClient build(@Nullable HttpClientSettings settings) {
-		settings = (settings != null) ? settings : HttpClientSettings.DEFAULTS;
+		settings = (settings != null) ? settings : HttpClientSettings.defaults();
 		HttpClientTransport transport = createTransport(settings);
 		this.httpClientTransportCustomizer.accept(transport);
 		HttpClient httpClient = createHttpClient(settings.readTimeout(), transport);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).as(Duration::toMillis).to(httpClient::setConnectTimeout);
-		map.from(settings::redirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
+		map.from(settings::redirects).always().as(this::followRedirects).to(httpClient::setFollowRedirects);
 		this.customizer.accept(httpClient);
 		return httpClient;
 	}
@@ -182,7 +182,10 @@ public final class JettyHttpClientBuilder {
 		return factory;
 	}
 
-	private boolean followRedirects(HttpRedirects redirects) {
+	private boolean followRedirects(@Nullable HttpRedirects redirects) {
+		if (redirects == null) {
+			return true;
+		}
 		return switch (redirects) {
 			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> true;
 			case DONT_FOLLOW -> false;

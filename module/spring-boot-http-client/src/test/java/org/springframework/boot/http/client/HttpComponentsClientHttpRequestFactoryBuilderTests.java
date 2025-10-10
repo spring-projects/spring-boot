@@ -80,7 +80,7 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 	@Test
 	@WithPackageResources("test.jks")
 	void withTlsSocketStrategyFactory() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(sslBundle());
+		HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundle());
 		List<SslBundle> bundles = new ArrayList<>();
 		TlsSocketStrategyFactory tlsSocketStrategyFactory = (bundle) -> {
 			bundles.add(bundle);

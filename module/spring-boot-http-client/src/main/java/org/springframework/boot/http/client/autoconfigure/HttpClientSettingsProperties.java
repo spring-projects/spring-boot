@@ -17,27 +17,22 @@
 package org.springframework.boot.http.client.autoconfigure;
 
 import java.time.Duration;
-import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
- * Base {@link ConfigurationProperties @ConfigurationProperties} for configuring a
- * {@link ClientHttpRequestFactory}.
+ * Base class for configuration properties configure {@link HttpClientSettings}.
  *
  * @author Phillip Webb
  * @since 4.0.0
- * @see ClientHttpRequestFactorySettings
+ * @see HttpClientSettings
  */
 @ConfigurationPropertiesSource
-public abstract class AbstractHttpRequestFactoryProperties {
+public abstract class HttpClientSettingsProperties {
 
 	/**
 	 * Handling for HTTP redirects.
@@ -58,11 +53,6 @@ public abstract class AbstractHttpRequestFactoryProperties {
 	 * Default SSL configuration for a client HTTP request.
 	 */
 	private final Ssl ssl = new Ssl();
-
-	/**
-	 * Default factory used for a client HTTP request.
-	 */
-	private @Nullable Factory factory;
 
 	public @Nullable HttpRedirects getRedirects() {
 		return this.redirects;
@@ -92,14 +82,6 @@ public abstract class AbstractHttpRequestFactoryProperties {
 		return this.ssl;
 	}
 
-	public @Nullable Factory getFactory() {
-		return this.factory;
-	}
-
-	public void setFactory(@Nullable Factory factory) {
-		this.factory = factory;
-	}
-
 	/**
 	 * SSL configuration.
 	 */
@@ -117,48 +99,6 @@ public abstract class AbstractHttpRequestFactoryProperties {
 
 		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
-		}
-
-	}
-
-	/**
-	 * Supported factory types.
-	 */
-	public enum Factory {
-
-		/**
-		 * Apache HttpComponents HttpClient.
-		 */
-		HTTP_COMPONENTS(ClientHttpRequestFactoryBuilder::httpComponents),
-
-		/**
-		 * Jetty's HttpClient.
-		 */
-		JETTY(ClientHttpRequestFactoryBuilder::jetty),
-
-		/**
-		 * Reactor-Netty.
-		 */
-		REACTOR(ClientHttpRequestFactoryBuilder::reactor),
-
-		/**
-		 * Java's HttpClient.
-		 */
-		JDK(ClientHttpRequestFactoryBuilder::jdk),
-
-		/**
-		 * Standard JDK facilities.
-		 */
-		SIMPLE(ClientHttpRequestFactoryBuilder::simple);
-
-		private final Supplier<ClientHttpRequestFactoryBuilder<?>> builderSupplier;
-
-		Factory(Supplier<ClientHttpRequestFactoryBuilder<?>> builderSupplier) {
-			this.builderSupplier = builderSupplier;
-		}
-
-		ClientHttpRequestFactoryBuilder<?> builder() {
-			return this.builderSupplier.get();
 		}
 
 	}

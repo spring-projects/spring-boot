@@ -30,9 +30,10 @@ import reactor.netty.resources.LoopResources;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
-import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.http.client.reactive.JdkClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.JettyClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
@@ -51,15 +52,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ClientHttpConnectorAutoConfiguration}
+ * Tests for {@link ReactiveHttpClientAutoConfiguration}
  *
  * @author Brian Clozel
  * @author Phillip Webb
  */
-class ClientHttpConnectorAutoConfigurationTests {
+class ReactiveHttpClientAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class, SslAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(ReactiveHttpClientAutoConfiguration.class,
+				HttpClientAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void whenReactorIsAvailableThenReactorBeansAreDefined() {
@@ -145,7 +147,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 
 	@Test
 	void configuresDefinedClientHttpConnectorBuilder() {
-		this.contextRunner.withPropertyValues("spring.http.reactiveclient.connector=jetty")
+		this.contextRunner.withPropertyValues("spring.http.clients.reactive.connector=jetty")
 			.run((context) -> assertThat(context.getBean(ClientHttpConnectorBuilder.class))
 				.isInstanceOf(JettyClientHttpConnectorBuilder.class));
 	}
@@ -153,11 +155,10 @@ class ClientHttpConnectorAutoConfigurationTests {
 	@Test
 	void configuresClientHttpConnectorSettings() {
 		this.contextRunner.withPropertyValues(sslPropertyValues().toArray(String[]::new))
-			.withPropertyValues("spring.http.reactiveclient.redirects=dont-follow",
-					"spring.http.reactiveclient.connect-timeout=10s", "spring.http.reactiveclient.read-timeout=20s",
-					"spring.http.reactiveclient.ssl.bundle=test")
+			.withPropertyValues("spring.http.clients.redirects=dont-follow", "spring.http.clients.connect-timeout=10s",
+					"spring.http.clients.read-timeout=20s", "spring.http.clients.ssl.bundle=test")
 			.run((context) -> {
-				ClientHttpConnectorSettings settings = context.getBean(ClientHttpConnectorSettings.class);
+				HttpClientSettings settings = context.getBean(HttpClientSettings.class);
 				assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
 				assertThat(settings.connectTimeout()).isEqualTo(Duration.ofSeconds(10));
 				assertThat(settings.readTimeout()).isEqualTo(Duration.ofSeconds(20));
@@ -175,14 +176,15 @@ class ClientHttpConnectorAutoConfigurationTests {
 		assertThatIllegalStateException().as("enough filtering")
 			.isThrownBy(() -> ClientHttpConnectorBuilder.detect(classLoader));
 		this.contextRunner.withClassLoader(classLoader)
-			.run((context) -> assertThat(context).doesNotHaveBean(ClientHttpConnectorSettings.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ClientHttpConnector.class)
+				.hasSingleBean(HttpClientSettings.class));
 	}
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenVirtualThreadsEnabledAndUsingJdkHttpClientUsesVirtualThreadExecutor() {
 		this.contextRunner
-			.withPropertyValues("spring.http.reactiveclient.connector=jdk", "spring.threads.virtual.enabled=true")
+			.withPropertyValues("spring.http.clients.reactive.connector=jdk", "spring.threads.virtual.enabled=true")
 			.run((context) -> {
 				ClientHttpConnector connector = context.getBean(ClientHttpConnectorBuilder.class).build();
 				java.net.http.HttpClient httpClient = (java.net.http.HttpClient) ReflectionTestUtils.getField(connector,
@@ -204,7 +206,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 
 	@Test
 	void clientHttpConnectorBuilderCustomizersAreApplied() {
-		this.contextRunner.withPropertyValues("spring.http.reactiveclient.connector=jdk")
+		this.contextRunner.withPropertyValues("spring.http.clients.reactive.connector=jdk")
 			.withUserConfiguration(ClientHttpConnectorBuilderCustomizersConfiguration.class)
 			.run((context) -> {
 				ClientHttpConnector connector = context.getBean(ClientHttpConnectorBuilder.class).build();

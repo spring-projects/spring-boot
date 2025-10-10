@@ -14,43 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webclient.autoconfigure.service;
+package org.springframework.boot.http.client.autoconfigure.service;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.webclient.autoconfigure.AbstractWebClientProperties;
+import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
 
 /**
- * Properties for Reactive HTTP Service clients.
+ * Properties for HTTP Service clients.
  *
  * @author Olga Maciaszek-Sharma
  * @author Rossen Stoyanchev
  * @author Phillip Webb
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.http.reactiveclient.service")
-public class ReactiveHttpClientServiceProperties extends AbstractWebClientProperties {
-
-	/**
-	 * Group settings.
-	 */
-	private Map<String, Group> group = new LinkedHashMap<>();
-
-	public Map<String, Group> getGroup() {
-		return this.group;
-	}
-
-	public void setGroup(Map<String, Group> group) {
-		this.group = group;
-	}
-
-	/**
-	 * Properties for a single HTTP Service client group.
-	 */
-	public static class Group extends AbstractWebClientProperties {
-
-	}
+@ConfigurationProperties("spring.http.serviceclient")
+public class HttpServiceClientProperties extends LinkedHashMap<String, HttpClientProperties> {
 
 }

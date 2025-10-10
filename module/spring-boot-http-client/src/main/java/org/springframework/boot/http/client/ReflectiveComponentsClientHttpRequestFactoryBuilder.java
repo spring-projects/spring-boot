@@ -66,7 +66,7 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 	}
 
 	@Override
-	public T build(@Nullable ClientHttpRequestFactorySettings settings) {
+	public T build(@Nullable HttpClientSettings settings) {
 		T requestFactory = this.requestFactorySupplier.get();
 		if (settings != null) {
 			configure(requestFactory, settings);
@@ -74,9 +74,9 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 		return requestFactory;
 	}
 
-	private void configure(ClientHttpRequestFactory requestFactory, ClientHttpRequestFactorySettings settings) {
+	private void configure(ClientHttpRequestFactory requestFactory, HttpClientSettings settings) {
 		Assert.state(settings.sslBundle() == null, "Unable to set SSL bundle using reflection");
-		Assert.state(settings.redirects() == HttpRedirects.FOLLOW_WHEN_POSSIBLE,
+		Assert.state(settings.redirects() == null || settings.redirects() == HttpRedirects.FOLLOW_WHEN_POSSIBLE,
 				"Unable to set redirect follow using reflection");
 		ClientHttpRequestFactory unwrapped = unwrapRequestFactoryIfNecessary(requestFactory);
 		PropertyMapper map = PropertyMapper.get();

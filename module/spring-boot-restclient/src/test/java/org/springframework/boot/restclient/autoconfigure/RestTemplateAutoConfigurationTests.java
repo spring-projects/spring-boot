@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.blocking.BlockingHttpClientAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RestTemplateCustomizer;
@@ -56,8 +57,9 @@ import static org.mockito.Mockito.mock;
  */
 class RestTemplateAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(RestTemplateAutoConfiguration.class, HttpClientAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class, HttpClientAutoConfiguration.class,
+				BlockingHttpClientAutoConfiguration.class));
 
 	@Test
 	void restTemplateBuilderConfigurerShouldBeLazilyDefined() {
@@ -182,7 +184,7 @@ class RestTemplateAutoConfigurationTests {
 	void whenHasFactoryProperty() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 			.withUserConfiguration(RestTemplateConfig.class)
-			.withPropertyValues("spring.http.client.factory=simple")
+			.withPropertyValues("spring.http.clients.blocking.factory=simple")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestTemplate.class);
 				RestTemplate restTemplate = context.getBean(RestTemplate.class);

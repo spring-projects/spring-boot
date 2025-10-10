@@ -55,29 +55,19 @@ You can learn more about the {url-spring-framework-docs}/web/webflux-webclient/c
 [[io.rest-client.webclient.configuration]]
 === Global HTTP Connector Configuration
 
-If the auto-detected javadoc:org.springframework.http.client.reactive.ClientHttpConnector[] does not meet your needs, you can use the configprop:spring.http.reactiveclient.connector[] property to pick a specific connector.
+If the auto-detected javadoc:org.springframework.http.client.reactive.ClientHttpConnector[] does not meet your needs, you can use the configprop:spring.http.clients.reactive.connector[] property to pick a specific connector.
 For example, if you have Reactor Netty on your classpath, but you prefer Jetty's javadoc:org.eclipse.jetty.client.HttpClient[] you can add the following:
 
 [configprops,yaml]
 ----
 spring:
   http:
-    reactiveclient:
-      connector: jetty
+    clients:
+      reactive:
+        connector: jetty
 ----
 
-You can also set properties to change defaults that will be applied to all reactive connectors.
-For example, you may want to change timeouts and if redirects are followed:
-
-[configprops,yaml]
-----
-spring:
-  http:
-    reactiveclient:
-      connect-timeout: 2s
-      read-timeout: 1s
-      redirects: dont-follow
-----
+TIP: You can also use xref:io/rest-client.adoc#io.rest-client.global-configuration[global configuration properties] which apply to all HTTP clients.
 
 For more complex customizations, you can use javadoc:org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorBuilderCustomizer[] or declare your own javadoc:org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder[] bean which will cause auto-configuration to back off.
 This can be useful when you need to customize some of the internals of the underlying HTTP library.
@@ -85,7 +75,6 @@ This can be useful when you need to customize some of the internals of the under
 For example, the following will use a JDK client configured with a specific javadoc:java.net.ProxySelector[]:
 
 include-code::MyConnectorHttpConfiguration[]
-
 
 
 
@@ -246,29 +235,19 @@ If multiple clients are available on the classpath, and not global configuration
 [[io.rest-client.clienthttprequestfactory.configuration]]
 === Global HTTP Client Configuration
 
-If the auto-detected HTTP client does not meet your needs, you can use the configprop:spring.http.client.factory[] property to pick a specific factory.
+If the auto-detected HTTP client does not meet your needs, you can use the configprop:spring.http.clients.blocking.factory[] property to pick a specific factory.
 For example, if you have Apache HttpClient on your classpath, but you prefer Jetty's javadoc:org.eclipse.jetty.client.HttpClient[] you can add the following:
 
 [configprops,yaml]
 ----
 spring:
   http:
-    client:
-      factory: jetty
+    clients:
+      blocking:
+        factory: jetty
 ----
 
-You can also set properties to change defaults that will be applied to all clients.
-For example, you may want to change timeouts and if redirects are followed:
-
-[configprops,yaml]
-----
-spring:
-  http:
-    client:
-      connect-timeout: 2s
-      read-timeout: 1s
-      redirects: dont-follow
-----
+TIP: You can also use xref:io/rest-client.adoc#io.rest-client.global-configuration[global configuration properties] which apply to all HTTP clients.
 
 For more complex customizations, you can use javadoc:org.springframework.boot.http.client.autoconfigure.ClientHttpRequestFactoryBuilderCustomizer[] or declare your own javadoc:org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder[] bean which will cause auto-configuration to back off.
 This can be useful when you need to customize some of the internals of the underlying HTTP library.
@@ -286,23 +265,6 @@ Both `WebClient` and `RestClient` support making versioned remote HTTP calls so 
 Commonly this involves sending an HTTP header, a query parameter or URL path segment that indicates the version of the API that should be used.
 
 You can configure API versioning using methods on `WebClient.Builder` or `RestClient.Builder`.
-You can also the `spring.http.reactiveclient.webclient.apiversion` or `spring.http.client.restclient.apiversion` properties if you want to apply the same configuration to all builders.
-
-For example, the following adds an `X-Version` HTTP header to all calls from the `RestClient` and uses the version `1.0.0` unless overridden for specific requests:
-
-[configprops,yaml]
-----
-spring:
-  http:
-    client:
-      restclient:
-        apiversion:
-          default: 1.0.0
-          insert:
-            header: X-Version
-----
-
-You can also define javadoc:org.springframework.web.client.ApiVersionInserter[] and javadoc:org.springframework.web.client.ApiVersionFormatter[] beans if you need more control of the way that version information should be inserted and formatted.
 
 TIP: API versioning is also supported on the server-side.
 See the xref:web/servlet.adoc#web.servlet.spring-mvc.api-versioning[Spring MVC] and xref:web/reactive.adoc#web.reactive.webflux.api-versioning[Spring WebFlux] sections for details.
@@ -363,32 +325,15 @@ We can then write:
 
 include-code::MyApplication[]
 
-And finally we can then use a `base-url` property to link the `echo` group to an actual URL.
-
-For a `RestClient` backed HTTP Service client this would be:
+And finally we can then use a `base-url` property to link the `echo` group to an actual URL:
 
 [configprops,yaml]
 ----
 spring:
   http:
-    client:
-      service:
-        group:
-          echo:
-            base-url: "https://echo.zuplo.io"
-----
-
-For a `WebClient` backed HTTP Service client, we'd use the reactive variant:
-
-[configprops,yaml]
-----
-spring:
-  http:
-    reactiveclient:
-      service:
-        group:
-          echo:
-            base-url: "https://echo.zuplo.io"
+    serviceclient:
+      echo:
+        base-url: "https://echo.zuplo.io"
 ----
 
 TIP: HTTP Service clients will be associated with a group named "`default`" if you don't specify a group.
@@ -408,7 +353,7 @@ include-code::repeat/MyApplication[]
 [[io.rest-client.httpservice.properties]]
 === Configuration Properties
 
-Configuration properties for HTTP Services can be specified under `spring.http.client.service` for `RestClient` backed clients and `spring.http.reactiveclient.service` for `WebClient` backed clients.
+Configuration properties for HTTP Services can be specified under `spring.http.serviceclient.<group-name>`:
 
 You can use properties to configure aspects such as:
 
@@ -419,26 +364,30 @@ You can use properties to configure aspects such as:
 * Connection and read timeouts.
 * SSL bundles to use.
 
-Properties are hierarchical and can be specified per-group, or for all HTTP Service clients.
-Some properties can also be specified as xref:/io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[global client configuration], so that they are considered for both HTTP Service clients and direct use of `RestClient` or `WebClient`.
+TIP: You can also use xref:io/rest-client.adoc#io.rest-client.global-configuration[global configuration properties] which apply to all HTTP clients.
 
 For example, the properties below will:
 
-* Configure all HTTP Service client and `RestClient` beans to use a one second connect timeout (unless otherwise overridden).
-* Configure all HTTP Service clients to use a two second read timeout (unless otherwise overridden).
-* Configure HTTP Service clients in the "`echo`" group to use a specific base URL.
+* Configure all HTTP clients to use a one second connect timeout (unless otherwise overridden).
+* Configure HTTP Service clients in the "`echo`" group to:
+** Use a specific base URL.
+** Have a two second read timeout.
+** Insert API version information using an `X-Version` header.
 
 [configprops,yaml]
 ----
 spring:
   http:
-    client:
+    clients:
       connect-timeout: 1s
-      service:
+    serviceclient:
+      echo:
+        base-url: "https://echo.zuplo.io"
         read-timeout: 2s;
-        group:
-          echo:
-            base-url: "https://echo.zuplo.io"
+        apiversion:
+          default: 1.0.0
+          insert:
+            header: X-Version
 ----
 
 
@@ -466,3 +415,31 @@ You can javadoc:org.springframework.context.annotation.Import[format=annotation]
 For more details, see {url-spring-framework-docs}/integration/rest-clients.html#rest-http-service-client-group-config[Spring Framework reference documentation].
 
 Regardless of which method you use to register HTTP Service clients, Spring Boot's support remains the same.
+
+
+
+[[io.rest-client.global-configuration]]
+== Applying Global Configuration to All HTTP Clients
+
+Regardless of the underlying technology being used, all HTTP clients have common settings that can be configured.
+
+These include:
+
+* Connection Timeouts.
+* Read Timeouts.
+* How HTTP redirects should be handled.
+* Which SSL bundle should be used when connecting.
+
+These common settings are represented by the javadoc:org.springframework.boot.http.client.HttpClientSettings[] class which can be passed into the `build(...)` methods of javadoc:org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder[] and javadoc:org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder[].
+
+If you want to apply the same configuration to all auto-configured clients, you can use `spring.http.clients` properties to do so:
+
+[configprops,yaml]
+----
+spring:
+  http:
+    clients:
+      connect-timeout: 2s
+      read-timeout: 1s
+      redirects: dont-follow
+----

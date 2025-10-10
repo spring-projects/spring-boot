@@ -23,7 +23,7 @@ import java.util.function.BiFunction;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.RestTemplateCustomizer;
@@ -46,7 +46,7 @@ public final class RestTemplateBuilderConfigurer {
 
 	private @Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
-	private @Nullable ClientHttpRequestFactorySettings requestFactorySettings;
+	private @Nullable HttpClientSettings clientSettings;
 
 	private @Nullable List<ClientHttpMessageConvertersCustomizer> httpMessageConvertersCustomizers;
 
@@ -58,8 +58,8 @@ public final class RestTemplateBuilderConfigurer {
 		this.requestFactoryBuilder = requestFactoryBuilder;
 	}
 
-	void setRequestFactorySettings(@Nullable ClientHttpRequestFactorySettings requestFactorySettings) {
-		this.requestFactorySettings = requestFactorySettings;
+	void setClientSettings(@Nullable HttpClientSettings clientSettings) {
+		this.clientSettings = clientSettings;
 	}
 
 	void setHttpMessageConvertersCustomizers(
@@ -86,8 +86,8 @@ public final class RestTemplateBuilderConfigurer {
 		if (this.requestFactoryBuilder != null) {
 			builder = builder.requestFactoryBuilder(this.requestFactoryBuilder);
 		}
-		if (this.requestFactorySettings != null) {
-			builder = builder.requestFactorySettings(this.requestFactorySettings);
+		if (this.clientSettings != null) {
+			builder = builder.clientSettings(this.clientSettings);
 		}
 		if (this.httpMessageConvertersCustomizers != null) {
 			ClientBuilder clientBuilder = HttpMessageConverters.forClient();

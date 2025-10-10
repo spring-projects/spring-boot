@@ -30,10 +30,11 @@ import org.mockito.ArgumentCaptor;
 
 import org.springframework.aop.Advisor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
-import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
-import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.webclient.WebClientCustomizer;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
@@ -60,7 +61,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ReactiveHttpServiceClientAutoConfiguration},
- * {@link WebClientPropertiesHttpServiceGroupConfigurer} and
+ * {@link PropertiesWebClientHttpServiceGroupConfigurer} and
  * {@link WebClientCustomizerHttpServiceGroupConfigurer}.
  *
  * @author Phillip Webb
@@ -69,15 +70,16 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ReactiveHttpServiceClientAutoConfiguration.class,
-				ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class));
+				ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class));
 
 	@Test
 	void configuresClientFromProperties() {
 		this.contextRunner
-			.withPropertyValues("spring.http.reactiveclient.service.base-url=https://example.com",
-					"spring.http.reactiveclient.service.default-header.test=true",
-					"spring.http.reactiveclient.service.group.one.base-url=https://example.com/one",
-					"spring.http.reactiveclient.service.group.two.default-header.two=iam2")
+			.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com/one",
+					"spring.http.serviceclient.one.default-header.test=true",
+					"spring.http.serviceclient.two.base-url=https://example.com/two",
+					"spring.http.serviceclient.two.default-header.test=true",
+					"spring.http.serviceclient.two.default-header.two=iam2")
 			.withUserConfiguration(HttpClientConfiguration.class)
 			.run((context) -> {
 				HttpServiceProxyRegistry serviceProxyRegistry = context.getBean(HttpServiceProxyRegistry.class);
@@ -89,7 +91,7 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 					.containsExactlyInAnyOrder(Map.entry("test", List.of("true")));
 				TestClientTwo clientTwo = context.getBean(TestClientTwo.class);
 				WebClient webClientTwo = getWebClient(clientTwo);
-				assertThat(getUriComponentsBuilder(webClientTwo).toUriString()).isEqualTo("https://example.com");
+				assertThat(getUriComponentsBuilder(webClientTwo).toUriString()).isEqualTo("https://example.com/two");
 				assertThat(getHttpHeaders(webClientTwo).headerSet())
 					.containsExactlyInAnyOrder(Map.entry("test", List.of("true")), Map.entry("two", List.of("iam2")));
 			});
@@ -97,14 +99,13 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 
 	@Test // gh-46915
 	void configuresClientFromPropertiesWhenHasHttpConnectorAutoConfiguration() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(ClientHttpConnectorAutoConfiguration.class))
-			.withPropertyValues("spring.http.reactiveclient.service.connect-timeout=10s",
-					"spring.http.reactiveclient.service.group.one.connect-timeout=5s",
-					"spring.http.reactiveclient.connector=jdk")
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpClientAutoConfiguration.class))
+			.withPropertyValues("spring.http.serviceclient.one.connect-timeout=5s",
+					"spring.http.serviceclient.two.connect-timeout=10s", "spring.http.clients.reactive.connector=jdk")
 			.withUserConfiguration(HttpClientConfiguration.class)
 			.run((context) -> {
-				WebClientPropertiesHttpServiceGroupConfigurer configurer = context
-					.getBean(WebClientPropertiesHttpServiceGroupConfigurer.class);
+				PropertiesWebClientHttpServiceGroupConfigurer configurer = context
+					.getBean(PropertiesWebClientHttpServiceGroupConfigurer.class);
 				Groups<WebClient.Builder> groups = mock();
 				configurer.configureGroups(groups);
 				ArgumentCaptor<ClientCallback<WebClient.Builder>> callbackCaptor = ArgumentCaptor.captor();
@@ -141,8 +142,8 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 	@Test
 	void whenHasUserDefinedRequestFactorySettings() {
 		this.contextRunner
-			.withPropertyValues("spring.http.reactiveclient.service.base-url=https://example.com",
-					"spring.http.reactiveclient.connector=jdk")
+			.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com",
+					"spring.http.clients.reactive.connector=jdk")
 			.withUserConfiguration(HttpClientConfiguration.class, HttpConnectorSettingsConfiguration.class)
 			.run((context) -> {
 				TestClientOne clientOne = context.getBean(TestClientOne.class);
@@ -152,7 +153,7 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasUserDefinedWebClientCustomizer() {
-		this.contextRunner.withPropertyValues("spring.http.reactiveclient.service.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com")
 			.withUserConfiguration(HttpClientConfiguration.class, WebClientCustomizerConfiguration.class)
 			.run((context) -> {
 				TestClientOne clientOne = context.getBean(TestClientOne.class);
@@ -164,7 +165,7 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasUserDefinedHttpServiceGroupConfigurer() {
-		this.contextRunner.withPropertyValues("spring.http.reactiveclient.service.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com")
 			.withUserConfiguration(HttpClientConfiguration.class, HttpServiceGroupConfigurerConfiguration.class)
 			.run((context) -> {
 				TestClientOne clientOne = context.getBean(TestClientOne.class);
@@ -176,7 +177,7 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasNoHttpServiceProxyRegistryBean() {
-		this.contextRunner.withPropertyValues("spring.http.client.reactiveclient.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com")
 			.run((context) -> assertThat(context).doesNotHaveBean(HttpServiceProxyRegistry.class));
 	}
 
@@ -222,8 +223,8 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 	static class HttpConnectorSettingsConfiguration {
 
 		@Bean
-		ClientHttpConnectorSettings httpConnectorSettings() {
-			return ClientHttpConnectorSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
+		HttpClientSettings httpClientSettings() {
+			return HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
 		}
 
 	}

@@ -38,7 +38,7 @@ import org.apache.hc.core5.ssl.TrustStrategy;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpComponentsHttpClientBuilder.TlsSocketStrategyFactory;
 import org.springframework.boot.http.client.HttpRedirects;
@@ -968,34 +968,34 @@ public class TestRestTemplate {
 	 * @return the new template
 	 */
 	public TestRestTemplate withRedirects(HttpRedirects redirects) {
-		return withRequestFactorySettings((settings) -> settings.withRedirects(redirects));
+		return withClientSettings((settings) -> settings.withRedirects(redirects));
 	}
 
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
-	 * except that it will apply the given {@link ClientHttpRequestFactorySettings}. The
-	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
-	 * request factory type (when possible).
-	 * @param requestFactorySettings the new request factory settings
+	 * except that it will apply the given {@link HttpClientSettings}. The request factory
+	 * used is a new instance of the underlying {@link RestTemplate}'s request factory
+	 * type (when possible).
+	 * @param clientSettings the new client settings
 	 * @return the new template
+	 * @since 4.0.0
 	 */
-	public TestRestTemplate withRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
-		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettings),
+	public TestRestTemplate withClientSettings(HttpClientSettings clientSettings) {
+		return new TestRestTemplate(this.builder.clientSettings(clientSettings),
 				this.restTemplate.getUriTemplateHandler());
 	}
 
 	/**
 	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
-	 * except that it will customize the {@link ClientHttpRequestFactorySettings}. The
-	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
-	 * request factory type (when possible).
-	 * @param requestFactorySettingsCustomizer a {@link UnaryOperator} to update the
-	 * settings
+	 * except that it will customize the {@link HttpClientSettings}. The request factory
+	 * used is a new instance of the underlying {@link RestTemplate}'s request factory
+	 * type (when possible).
+	 * @param clientSettingsCustomizer a {@link UnaryOperator} to update the settings
 	 * @return the new template
+	 * @since 4.0.0
 	 */
-	public TestRestTemplate withRequestFactorySettings(
-			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
-		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettingsCustomizer),
+	public TestRestTemplate withClientSettings(UnaryOperator<HttpClientSettings> clientSettingsCustomizer) {
+		return new TestRestTemplate(this.builder.clientSettings(clientSettingsCustomizer),
 				this.restTemplate.getUriTemplateHandler());
 	}
 

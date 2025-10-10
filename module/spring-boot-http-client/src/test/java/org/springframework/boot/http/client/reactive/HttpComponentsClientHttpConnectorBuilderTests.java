@@ -31,6 +31,7 @@ import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpComponentsHttpAsyncClientBuilder;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
@@ -82,7 +83,7 @@ class HttpComponentsClientHttpConnectorBuilderTests
 	@Test
 	@WithPackageResources("test.jks")
 	void withTlsSocketStrategyFactory() {
-		ClientHttpConnectorSettings settings = ClientHttpConnectorSettings.ofSslBundle(sslBundle());
+		HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundle());
 		List<SslBundle> bundles = new ArrayList<>();
 		Function<@Nullable SslBundle, @Nullable TlsStrategy> tlsSocketStrategyFactory = (bundle) -> {
 			bundles.add(bundle);

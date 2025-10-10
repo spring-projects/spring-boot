@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.restclient.autoconfigure;
+package org.springframework.boot.http.client.autoconfigure;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.web.client.RestClient;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
- * Properties for {@link RestClient}.
+ * Tests for {@link HttpClientSettingsPropertyMapper}.
  *
  * @author Phillip Webb
- * @since 4.0.0
  */
-@ConfigurationProperties("spring.http.client.restclient")
-public class RestClientProperties extends AbstractRestClientProperties {
+@Disabled("TODO")
+class HttpClientSettingsPropertyMapperTests {
+
+	@Test
+	void mapMapsProperties() {
+
+	}
 
 }

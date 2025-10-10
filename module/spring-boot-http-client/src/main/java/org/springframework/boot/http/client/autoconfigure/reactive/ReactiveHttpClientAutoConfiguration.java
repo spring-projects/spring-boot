@@ -20,20 +20,18 @@ import java.util.List;
 
 import reactor.core.publisher.Mono;
 
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
-import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.http.client.reactive.JdkClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
 import org.springframework.boot.reactor.netty.autoconfigure.ReactorNettyConfigurations;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.thread.Threading;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
@@ -43,46 +41,38 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link ClientHttpConnectorBuilder} and {@link ClientHttpConnectorSettings}.
+ * {@link EnableAutoConfiguration Auto-configuration} for reactive HTTP clients.
  *
  * @author Phillip Webb
  * @since 4.0.0
+ * @see HttpClientAutoConfiguration
  */
-@AutoConfiguration(after = SslAutoConfiguration.class)
+@AutoConfiguration(after = HttpClientAutoConfiguration.class)
 @ConditionalOnClass({ ClientHttpConnector.class, Mono.class })
 @Conditional(ConditionalOnClientHttpConnectorBuilderDetection.class)
-@EnableConfigurationProperties(HttpReactiveClientProperties.class)
-public final class ClientHttpConnectorAutoConfiguration implements BeanClassLoaderAware {
-
-	private final ClientHttpConnectors connectors;
+@EnableConfigurationProperties(ReactiveHttpClientsProperties.class)
+public final class ReactiveHttpClientAutoConfiguration {
 
 	private final Environment environment;
 
-	@SuppressWarnings("NullAway.Init")
-	private ClassLoader beanClassLoader;
-
-	ClientHttpConnectorAutoConfiguration(Environment environment, ObjectProvider<SslBundles> sslBundles,
-			HttpReactiveClientProperties properties) {
+	ReactiveHttpClientAutoConfiguration(Environment environment) {
 		this.environment = environment;
-		this.connectors = new ClientHttpConnectors(sslBundles, properties);
-	}
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClientHttpConnectorBuilder<?> clientHttpConnectorBuilder(
+	ClientHttpConnectorBuilder<?> clientHttpConnectorBuilder(ResourceLoader resourceLoader,
+			ReactiveHttpClientsProperties properties,
 			ObjectProvider<ClientHttpConnectorBuilderCustomizer<?>> clientHttpConnectorBuilderCustomizers) {
-		ClientHttpConnectorBuilder<?> builder = this.connectors.builder(this.beanClassLoader);
+		ClientHttpConnectorBuilder<?> builder = (properties.getConnector() != null)
+				? properties.getConnector().builder()
+				: ClientHttpConnectorBuilder.detect(resourceLoader.getClassLoader());
 		if (builder instanceof JdkClientHttpConnectorBuilder jdk && Threading.VIRTUAL.isActive(this.environment)) {
 			builder = jdk.withExecutor(new VirtualThreadTaskExecutor("httpclient-"));
 		}
@@ -99,17 +89,14 @@ public final class ClientHttpConnectorAutoConfiguration implements BeanClassLoad
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	ClientHttpConnectorSettings clientHttpConnectorSettings() {
-		return this.connectors.settings();
-	}
-
-	@Bean
 	@Lazy
 	@ConditionalOnMissingBean
-	ClientHttpConnector clientHttpConnector(ClientHttpConnectorBuilder<?> clientHttpConnectorBuilder,
-			ClientHttpConnectorSettings clientHttpRequestFactorySettings) {
-		return clientHttpConnectorBuilder.build(clientHttpRequestFactorySettings);
+	ClientHttpConnector clientHttpConnector(ResourceLoader resourceLoader,
+			ObjectProvider<ClientHttpConnectorBuilder<?>> clientHttpConnectorBuilder,
+			ObjectProvider<HttpClientSettings> httpClientSettings) {
+		return clientHttpConnectorBuilder
+			.getIfAvailable(() -> ClientHttpConnectorBuilder.detect(resourceLoader.getClassLoader()))
+			.build(httpClientSettings.getIfAvailable(HttpClientSettings::defaults));
 	}
 
 	@Configuration(proxyBeanMethods = false)

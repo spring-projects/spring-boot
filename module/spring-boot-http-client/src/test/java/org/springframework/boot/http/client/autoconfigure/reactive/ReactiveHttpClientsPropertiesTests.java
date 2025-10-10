@@ -19,7 +19,7 @@ package org.springframework.boot.http.client.autoconfigure.reactive;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.http.client.autoconfigure.reactive.AbstractClientHttpConnectorProperties.Connector;
+import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientsProperties.Connector;
 import org.springframework.boot.http.client.reactive.HttpComponentsClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.JdkClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.JettyClientHttpConnectorBuilder;
@@ -28,11 +28,11 @@ import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorB
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HttpReactiveClientProperties}.
+ * Tests for {@link ReactiveHttpClientsProperties}.
  *
  * @author Phillip Webb
  */
-class HttpReactiveClientSettingsPropertiesTests {
+class ReactiveHttpClientsPropertiesTests {
 
 	@Nested
 	class ConnectorTests {

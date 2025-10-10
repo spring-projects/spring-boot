@@ -16,81 +16,29 @@
 
 package org.springframework.boot.http.client.autoconfigure.reactive;
 
-import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesSource;
-import org.springframework.boot.http.client.HttpRedirects;
+import org.springframework.boot.http.client.autoconfigure.HttpClientsProperties;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
-import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
-import org.springframework.http.client.reactive.ClientHttpConnector;
 
 /**
- * Base {@link ConfigurationProperties @ConfigurationProperties} for configuring a
- * {@link ClientHttpConnector}.
+ * {@link ConfigurationProperties @ConfigurationProperties} to configure the defaults used
+ * for reactive HTTP clients.
  *
  * @author Phillip Webb
- * @since 3.5.0
- * @see ClientHttpConnectorSettings
+ * @since 4.0.0
+ * @see HttpClientsProperties
  */
-@ConfigurationPropertiesSource
-public abstract class AbstractClientHttpConnectorProperties {
-
-	/**
-	 * Handling for HTTP redirects.
-	 */
-	private @Nullable HttpRedirects redirects;
-
-	/**
-	 * Default connect timeout for a client HTTP request.
-	 */
-	private @Nullable Duration connectTimeout;
-
-	/**
-	 * Default read timeout for a client HTTP request.
-	 */
-	private @Nullable Duration readTimeout;
-
-	/**
-	 * Default SSL configuration for a client HTTP request.
-	 */
-	private final Ssl ssl = new Ssl();
+@ConfigurationProperties("spring.http.clients.reactive")
+public class ReactiveHttpClientsProperties {
 
 	/**
 	 * Default connector used for a client HTTP request.
 	 */
 	private @Nullable Connector connector;
-
-	public @Nullable HttpRedirects getRedirects() {
-		return this.redirects;
-	}
-
-	public void setRedirects(@Nullable HttpRedirects redirects) {
-		this.redirects = redirects;
-	}
-
-	public @Nullable Duration getConnectTimeout() {
-		return this.connectTimeout;
-	}
-
-	public void setConnectTimeout(@Nullable Duration connectTimeout) {
-		this.connectTimeout = connectTimeout;
-	}
-
-	public @Nullable Duration getReadTimeout() {
-		return this.readTimeout;
-	}
-
-	public void setReadTimeout(@Nullable Duration readTimeout) {
-		this.readTimeout = readTimeout;
-	}
-
-	public Ssl getSsl() {
-		return this.ssl;
-	}
 
 	public @Nullable Connector getConnector() {
 		return this.connector;
@@ -98,27 +46,6 @@ public abstract class AbstractClientHttpConnectorProperties {
 
 	public void setConnector(@Nullable Connector connector) {
 		this.connector = connector;
-	}
-
-	/**
-	 * SSL configuration.
-	 */
-	@ConfigurationPropertiesSource
-	public static class Ssl {
-
-		/**
-		 * SSL bundle to use.
-		 */
-		private @Nullable String bundle;
-
-		public @Nullable String getBundle() {
-			return this.bundle;
-		}
-
-		public void setBundle(@Nullable String bundle) {
-			this.bundle = bundle;
-		}
-
 	}
 
 	/**

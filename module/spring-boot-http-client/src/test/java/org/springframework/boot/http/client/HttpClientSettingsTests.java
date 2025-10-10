@@ -26,27 +26,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ClientHttpRequestFactorySettings}.
+ * Tests for {@link HttpClientSettings}.
  *
  * @author Phillip Webb
  */
-class ClientHttpRequestFactorySettingsTests {
+class HttpClientSettingsTests {
 
 	private static final Duration ONE_SECOND = Duration.ofSeconds(1);
 
+	private static final Duration TWO_SECONDS = Duration.ofSeconds(2);
+
 	@Test
 	void defaults() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults();
-		assertThat(settings.redirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
+		HttpClientSettings settings = HttpClientSettings.defaults();
+		assertThat(settings.redirects()).isNull();
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
 	}
 
 	@Test
-	void createWithNullsUsesDefaults() {
-		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null);
-		assertThat(settings.redirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
+	void createWithNulls() {
+		HttpClientSettings settings = new HttpClientSettings(null, null, null, null);
+		assertThat(settings.redirects()).isNull();
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -54,8 +56,8 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void withConnectTimeoutReturnsInstanceWithUpdatedConnectionTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(ONE_SECOND);
+		HttpClientSettings settings = HttpClientSettings.defaults().withConnectTimeout(ONE_SECOND);
+		assertThat(settings.redirects()).isNull();
 		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -63,8 +65,8 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void withReadTimeoutReturnsInstanceWithUpdatedReadTimeout() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withReadTimeout(ONE_SECOND);
+		HttpClientSettings settings = HttpClientSettings.defaults().withReadTimeout(ONE_SECOND);
+		assertThat(settings.redirects()).isNull();
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.sslBundle()).isNull();
@@ -73,8 +75,8 @@ class ClientHttpRequestFactorySettingsTests {
 	@Test
 	void withSslBundleReturnsInstanceWithUpdatedSslBundle() {
 		SslBundle sslBundle = mock(SslBundle.class);
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withSslBundle(sslBundle);
+		HttpClientSettings settings = HttpClientSettings.defaults().withSslBundle(sslBundle);
+		assertThat(settings.redirects()).isNull();
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isSameAs(sslBundle);
@@ -82,9 +84,32 @@ class ClientHttpRequestFactorySettingsTests {
 
 	@Test
 	void withRedirectsReturnsInstanceWithUpdatedRedirect() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withRedirects(HttpRedirects.DONT_FOLLOW);
+		HttpClientSettings settings = HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
 		assertThat(settings.redirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
+		assertThat(settings.connectTimeout()).isNull();
+		assertThat(settings.readTimeout()).isNull();
+		assertThat(settings.sslBundle()).isNull();
+	}
+
+	@Test
+	void orElseReturnsNewInstanceWithUpdatedValues() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		HttpClientSettings settings = new HttpClientSettings(null, ONE_SECOND, null, null)
+			.orElse(new HttpClientSettings(HttpRedirects.FOLLOW_WHEN_POSSIBLE, TWO_SECONDS, TWO_SECONDS, sslBundle));
+		assertThat(settings.redirects()).isEqualTo(HttpRedirects.FOLLOW_WHEN_POSSIBLE);
+		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
+		assertThat(settings.readTimeout()).isEqualTo(TWO_SECONDS);
+		assertThat(settings.sslBundle()).isEqualTo(sslBundle);
+	}
+
+	@Test
+	void ofSslBundleCreatesNewSettings() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		HttpClientSettings settings = HttpClientSettings.ofSslBundle(sslBundle);
+		assertThat(settings.redirects()).isNull();
+		assertThat(settings.connectTimeout()).isNull();
+		assertThat(settings.readTimeout()).isNull();
+		assertThat(settings.sslBundle()).isSameAs(sslBundle);
 	}
 
 }
