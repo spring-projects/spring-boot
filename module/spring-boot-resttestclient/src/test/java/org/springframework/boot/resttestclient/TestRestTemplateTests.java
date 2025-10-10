@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.restclient.test;
+package org.springframework.boot.resttestclient;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -36,10 +36,9 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
 import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.testrestclient.TestRestTemplate;
-import org.springframework.boot.testrestclient.TestRestTemplate.HttpClientOption;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

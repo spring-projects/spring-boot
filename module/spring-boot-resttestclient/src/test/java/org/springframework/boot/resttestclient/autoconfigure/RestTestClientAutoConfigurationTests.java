@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testrestclient.autoconfigure;
+package org.springframework.boot.resttestclient.autoconfigure;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -72,7 +72,7 @@ class RestTestClientAutoConfigurationTests {
 	@WithResource(name = "META-INF/spring.factories",
 			content = """
 					org.springframework.boot.test.http.server.BaseUrlProvider=\
-					org.springframework.boot.testrestclient.autoconfigure.RestTestClientAutoConfigurationTests.TestBaseUrlProvider
+					org.springframework.boot.resttestclient.autoconfigure.RestTestClientAutoConfigurationTests.TestBaseUrlProvider
 					""")
 	void shouldDefineWebTestClientBoundToWebServer() {
 		this.contextRunner.run((context) -> {

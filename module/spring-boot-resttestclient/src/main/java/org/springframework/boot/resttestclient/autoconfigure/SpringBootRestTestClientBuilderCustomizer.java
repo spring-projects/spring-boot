@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testrestclient.autoconfigure;
+package org.springframework.boot.resttestclient.autoconfigure;
 
 import java.util.Collection;
 

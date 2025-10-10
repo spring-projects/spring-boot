@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testrestclient;
+package org.springframework.boot.resttestclient;
 
 import java.net.URI;
 import java.security.KeyManagementException;

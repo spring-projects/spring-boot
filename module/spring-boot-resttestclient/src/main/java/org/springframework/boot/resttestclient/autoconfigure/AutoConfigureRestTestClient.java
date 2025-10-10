@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testrestclient.autoconfigure;
+package org.springframework.boot.resttestclient.autoconfigure;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.test.web.servlet.client.RestTestClient;
-import org.springframework.test.web.servlet.client.RestTestClient.Builder;
 
 /**
- * A customizer that can be implemented by beans wishing to customize the {@link Builder
- * RestTestClient.Builder} to fine-tune its auto-configuration before a
- * {@link RestTestClient} is created.
+ * Annotation that can be applied to a test class to enable a {@link RestTestClient}.
  *
  * @author Stephane Nicoll
  * @since 4.0.0
+ * @see RestTestClientAutoConfiguration
  */
-@FunctionalInterface
-public interface RestTestClientBuilderCustomizer {
-
-	/**
-	 * Customize the given {@link Builder RestTestClient.Builder}.
-	 * @param builder the builder
-	 */
-	void customize(RestTestClient.Builder<?> builder);
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@ImportAutoConfiguration
+public @interface AutoConfigureRestTestClient {
 
 }

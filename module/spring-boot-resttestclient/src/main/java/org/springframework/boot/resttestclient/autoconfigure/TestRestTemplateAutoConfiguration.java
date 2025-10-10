@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testrestclient.autoconfigure;
+package org.springframework.boot.resttestclient.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
 import org.springframework.boot.test.http.server.BaseUrl;
 import org.springframework.boot.test.http.server.BaseUrlProviders;
-import org.springframework.boot.testrestclient.TestRestTemplate;
-import org.springframework.boot.testrestclient.TestRestTemplate.HttpClientOption;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -41,7 +41,7 @@ public final class TestRestTemplateAutoConfiguration {
 
 	private static final HttpClientOption[] SSL_OPTIONS = { HttpClientOption.SSL };
 
-	@Bean(name = "org.springframework.boot.testrestclient.TestRestTemplate")
+	@Bean(name = "org.springframework.boot.resttestclient.TestRestTemplate")
 	@ConditionalOnMissingBean
 	TestRestTemplate testRestTemplate(ObjectProvider<RestTemplateBuilder> builderProvider,
 			ApplicationContext applicationContext) {

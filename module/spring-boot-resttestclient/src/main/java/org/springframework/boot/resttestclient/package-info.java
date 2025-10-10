@@ -15,9 +15,10 @@
  */
 
 /**
- * Auto-configuration for RestTestClient and TestRestTemplate.
+ * Test support classes that use {@link org.springframework.web.client.RestClient} and
+ * {@link org.springframework.web.client.RestTemplate}.
  */
 @NullMarked
-package org.springframework.boot.testrestclient.autoconfigure;
+package org.springframework.boot.resttestclient;
 
 import org.jspecify.annotations.NullMarked;

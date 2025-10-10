@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testrestclient
+package org.springframework.boot.resttestclient
 
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -44,7 +44,7 @@ inline fun <reified T : Any> TestRestTemplate.getForObject(url: String, vararg u
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.getForObject(url: String, uriVariables: Map<String, Any?>): T? =
@@ -57,7 +57,7 @@ inline fun <reified T : Any> TestRestTemplate.getForObject(url: String, uriVaria
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.getForObject(url: URI): T? =
@@ -70,7 +70,7 @@ inline fun <reified T : Any> TestRestTemplate.getForObject(url: URI): T? =
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.getForEntity(url: URI): ResponseEntity<T> =
@@ -83,7 +83,7 @@ inline fun <reified T : Any> TestRestTemplate.getForEntity(url: URI): ResponseEn
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String, vararg uriVariables: Any): ResponseEntity<T> =
@@ -96,7 +96,7 @@ inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String, vararg u
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String,
@@ -110,7 +110,7 @@ inline fun <reified T : Any> TestRestTemplate.getForEntity(url: String,
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.patchForObject(url: String, request: Any? = null,
@@ -124,7 +124,7 @@ inline fun <reified T : Any> TestRestTemplate.patchForObject(url: String, reques
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.patchForObject(url: String, request: Any? = null,
@@ -138,7 +138,7 @@ inline fun <reified T : Any> TestRestTemplate.patchForObject(url: String, reques
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.patchForObject(url: URI, request: Any? = null): T? =
@@ -151,7 +151,7 @@ inline fun <reified T : Any> TestRestTemplate.patchForObject(url: URI, request: 
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.postForObject(url: String, request: Any? = null,
@@ -165,7 +165,7 @@ inline fun <reified T : Any> TestRestTemplate.postForObject(url: String, request
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.postForObject(url: String, request: Any? = null,
@@ -179,7 +179,7 @@ inline fun <reified T : Any> TestRestTemplate.postForObject(url: String, request
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.postForObject(url: URI, request: Any? = null): T? =
@@ -192,7 +192,7 @@ inline fun <reified T : Any> TestRestTemplate.postForObject(url: URI, request: A
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.postForEntity(url: String, request: Any? = null,
@@ -206,7 +206,7 @@ inline fun <reified T : Any> TestRestTemplate.postForEntity(url: String, request
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.postForEntity(url: String, request: Any? = null,
@@ -220,7 +220,7 @@ inline fun <reified T : Any> TestRestTemplate.postForEntity(url: String, request
  * generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.postForEntity(url: URI, request: Any? = null): ResponseEntity<T> =
@@ -232,7 +232,7 @@ inline fun <reified T : Any> TestRestTemplate.postForEntity(url: URI, request: A
  * type erasure and retains actual generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.exchange(url: String, method: HttpMethod,
@@ -245,7 +245,7 @@ inline fun <reified T : Any> TestRestTemplate.exchange(url: String, method: Http
  * type erasure and retains actual generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.exchange(url: String, method: HttpMethod,
@@ -258,7 +258,7 @@ inline fun <reified T : Any> TestRestTemplate.exchange(url: String, method: Http
  * type erasure and retains actual generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.exchange(url: URI, method: HttpMethod,
@@ -271,7 +271,7 @@ inline fun <reified T : Any> TestRestTemplate.exchange(url: URI, method: HttpMet
  * type erasure and retains actual generic type arguments.
  *
  * @author Sebastien Deleuze
- * @since 2.0.0
+ * @since 4.0.0
  */
 @Throws(RestClientException::class)
 inline fun <reified T : Any> TestRestTemplate.exchange(requestEntity: RequestEntity<*>): ResponseEntity<T> =

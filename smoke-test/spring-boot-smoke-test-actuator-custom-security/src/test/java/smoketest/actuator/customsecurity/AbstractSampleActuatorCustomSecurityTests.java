@@ -20,10 +20,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
 import org.springframework.boot.test.http.server.BaseUrl;
 import org.springframework.boot.test.http.server.BaseUrlProviders;
-import org.springframework.boot.testrestclient.TestRestTemplate;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
