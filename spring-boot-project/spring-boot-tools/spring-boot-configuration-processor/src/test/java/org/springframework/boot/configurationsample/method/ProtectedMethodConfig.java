@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.method;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample for testing protected method configuration.
@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class ProtectedMethodConfig {
 
-	@ConfigurationProperties("foo")
+	@TestConfigurationProperties("foo")
 	protected Foo foo() {
 		return new Foo();
 	}

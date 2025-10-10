@@ -46,35 +46,35 @@ import org.springframework.boot.configurationprocessor.ConfigurationMetadataAnno
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationMetadataAnnotationProcessor {
 
-	public static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.ConfigurationProperties";
+	public static final String CONFIGURATION_PROPERTIES_ANNOTATION = "org.springframework.boot.configurationsample.TestConfigurationProperties";
 
-	public static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.NestedConfigurationProperty";
+	public static final String NESTED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.TestNestedConfigurationProperty";
 
-	public static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.DeprecatedConfigurationProperty";
+	public static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.configurationsample.TestDeprecatedConfigurationProperty";
 
-	public static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.configurationsample.ConstructorBinding";
+	public static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.configurationsample.TestConstructorBinding";
 
-	public static final String AUTOWIRED_ANNOTATION = "org.springframework.boot.configurationsample.Autowired";
+	public static final String AUTOWIRED_ANNOTATION = "org.springframework.boot.configurationsample.TestAutowired";
 
-	public static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.configurationsample.DefaultValue";
+	public static final String DEFAULT_VALUE_ANNOTATION = "org.springframework.boot.configurationsample.TestDefaultValue";
 
-	public static final String CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.ControllerEndpoint";
+	public static final String CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.TestControllerEndpoint";
 
-	public static final String ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.Endpoint";
+	public static final String ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.TestEndpoint";
 
-	public static final String JMX_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.JmxEndpoint";
+	public static final String JMX_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.TestJmxEndpoint";
 
-	public static final String REST_CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.RestControllerEndpoint";
+	public static final String REST_CONTROLLER_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.TestRestControllerEndpoint";
 
-	public static final String SERVLET_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.ServletEndpoint";
+	public static final String SERVLET_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.TestServletEndpoint";
 
-	public static final String WEB_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.WebEndpoint";
+	public static final String WEB_ENDPOINT_ANNOTATION = "org.springframework.boot.configurationsample.TestWebEndpoint";
 
-	public static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.configurationsample.ReadOperation";
+	public static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.configurationsample.TestReadOperation";
 
-	public static final String NAME_ANNOTATION = "org.springframework.boot.configurationsample.Name";
+	public static final String NAME_ANNOTATION = "org.springframework.boot.configurationsample.TestName";
 
-	public static final String ENDPOINT_ACCESS_ENUM = "org.springframework.boot.configurationsample.Access";
+	public static final String ENDPOINT_ACCESS_ENUM = "org.springframework.boot.configurationsample.TestAccess";
 
 	public TestConfigurationMetadataAnnotationProcessor() {
 	}

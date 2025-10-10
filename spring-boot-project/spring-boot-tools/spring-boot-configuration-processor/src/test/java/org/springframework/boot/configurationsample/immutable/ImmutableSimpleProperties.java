@@ -18,16 +18,16 @@ package org.springframework.boot.configurationsample.immutable;
 
 import java.util.Comparator;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.ConstructorBinding;
-import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConstructorBinding;
+import org.springframework.boot.configurationsample.TestDefaultValue;
 
 /**
  * Simple properties, in immutable format.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("immutable")
+@TestConfigurationProperties("immutable")
 public class ImmutableSimpleProperties {
 
 	/**
@@ -48,8 +48,8 @@ public class ImmutableSimpleProperties {
 	@SuppressWarnings("unused")
 	private final Long counter;
 
-	@ConstructorBinding
-	public ImmutableSimpleProperties(@DefaultValue("boot") String theName, boolean flag, Comparator<?> comparator,
+	@TestConstructorBinding
+	public ImmutableSimpleProperties(@TestDefaultValue("boot") String theName, boolean flag, Comparator<?> comparator,
 			Long counter) {
 		this.theName = theName;
 		this.flag = flag;

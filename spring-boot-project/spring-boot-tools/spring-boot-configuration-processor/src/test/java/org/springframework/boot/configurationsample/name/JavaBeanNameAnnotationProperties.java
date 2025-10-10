@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationsample.name;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.Name;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestName;
 
 /**
  * Java bean properties making use of {@code @Name}.
@@ -25,19 +25,19 @@ import org.springframework.boot.configurationsample.Name;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("named")
+@TestConfigurationProperties("named")
 public class JavaBeanNameAnnotationProperties {
 
 	/**
 	 * Imports to apply.
 	 */
-	@Name("import")
+	@TestName("import")
 	private String imports;
 
 	/**
 	 * Whether default mode is enabled.
 	 */
-	@Name("default")
+	@TestName("default")
 	private boolean defaultValue = true;
 
 	public String getImports() {

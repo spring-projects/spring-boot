@@ -16,15 +16,15 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Access;
-import org.springframework.boot.configurationsample.Endpoint;
+import org.springframework.boot.configurationsample.TestAccess;
+import org.springframework.boot.configurationsample.TestEndpoint;
 
 /**
  * An endpoint with read-only access unless configured explicitly.
  *
  * @author Andy Wilkinson
  */
-@Endpoint(id = "readonlyaccess", defaultAccess = Access.READ_ONLY)
+@TestEndpoint(id = "readonlyaccess", defaultAccess = TestAccess.READ_ONLY)
 public class ReadOnlyAccessEndpoint {
 
 }

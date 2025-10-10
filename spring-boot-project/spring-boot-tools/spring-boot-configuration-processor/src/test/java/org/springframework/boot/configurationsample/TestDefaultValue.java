@@ -23,16 +23,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @Name} for testing (removes the need for a
+ * Alternative to Spring Boot's {@code @DefaultValue} for testing (removes the need for a
  * dependency on the real annotation).
  *
- * @author Phillip Webb
+ * @author Stephane Nicoll
+ * @author Pavel Anisimov
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD })
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Name {
+public @interface TestDefaultValue {
 
-	String value();
+	String[] value() default {};
 
 }

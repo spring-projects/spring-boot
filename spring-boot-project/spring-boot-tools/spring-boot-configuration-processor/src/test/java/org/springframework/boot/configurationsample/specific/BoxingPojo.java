@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationsample.specific;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Demonstrate the use of boxing/unboxing. Even if the type does not strictly match, it
@@ -24,7 +24,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("boxing")
+@TestConfigurationProperties("boxing")
 public class BoxingPojo {
 
 	private boolean flag;

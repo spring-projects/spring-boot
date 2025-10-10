@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationsample.endpoint.incremental;
 
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.ReadOperation;
+import org.springframework.boot.configurationsample.TestEndpoint;
+import org.springframework.boot.configurationsample.TestReadOperation;
 import org.springframework.lang.Nullable;
 
 /**
@@ -25,10 +25,10 @@ import org.springframework.lang.Nullable;
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "incremental")
+@TestEndpoint(id = "incremental")
 public class IncrementalEndpoint {
 
-	@ReadOperation
+	@TestReadOperation
 	public String invoke(@Nullable String param) {
 		return "test";
 	}

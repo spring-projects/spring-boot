@@ -16,17 +16,23 @@
 
 package org.springframework.boot.configurationsample;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * Permitted level of access to an endpoint.
+ * Alternative to Spring Boot's {@code @Name} for testing (removes the need for a
+ * dependency on the real annotation).
  *
- * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-public enum Access {
+@Target({ ElementType.PARAMETER, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface TestName {
 
-	NONE,
-
-	READ_ONLY,
-
-	UNRESTRICTED
+	String value();
 
 }

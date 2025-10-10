@@ -21,7 +21,7 @@ import java.util.List;
 
 import lombok.Data;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties using lombok @Data.
@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Stephane Nicoll
  */
 @Data
-@ConfigurationProperties("data")
+@TestConfigurationProperties("data")
 @SuppressWarnings("unused")
 public class LombokSimpleDataProperties {
 

@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.name;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.DefaultValue;
-import org.springframework.boot.configurationsample.Name;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestDefaultValue;
+import org.springframework.boot.configurationsample.TestName;
 
 /**
  * Record properties making use of {@code @Name}.
@@ -28,8 +28,8 @@ import org.springframework.boot.configurationsample.Name;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("named")
-public record RecordComponentNameAnnotationProperties(@Name("import") String imports,
-		@Name("default") @DefaultValue("true") boolean defaultValue) {
+@TestConfigurationProperties("named")
+public record RecordComponentNameAnnotationProperties(@TestName("import") String imports,
+		@TestName("default") @TestDefaultValue("true") boolean defaultValue) {
 
 }

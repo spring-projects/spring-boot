@@ -16,22 +16,22 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.Endpoint;
-import org.springframework.boot.configurationsample.ReadOperation;
+import org.springframework.boot.configurationsample.TestEndpoint;
+import org.springframework.boot.configurationsample.TestReadOperation;
 
 /**
  * An endpoint that is enabled unless configured explicitly.
  *
  * @author Stephane Nicoll
  */
-@Endpoint(id = "enabled")
+@TestEndpoint(id = "enabled")
 public class EnabledEndpoint {
 
 	public String someMethod() {
 		return "not a read operation";
 	}
 
-	@ReadOperation
+	@TestReadOperation
 	public String retrieve(String parameter, Integer anotherParameter) {
 		return "not a main read operation";
 	}

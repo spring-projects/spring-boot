@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
-import org.springframework.boot.configurationsample.Access;
+import org.springframework.boot.configurationsample.TestAccess;
 import org.springframework.boot.configurationsample.endpoint.CamelCaseEndpoint;
 import org.springframework.boot.configurationsample.endpoint.CustomPropertiesEndpoint;
 import org.springframework.boot.configurationsample.endpoint.DisabledEndpoint;
@@ -54,7 +54,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
 		assertThat(metadata).has(enabledFlag("simple", true));
-		assertThat(metadata).has(access("simple", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("simple", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
@@ -64,7 +64,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(DisabledEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.disabled").fromSource(DisabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("disabled", false));
-		assertThat(metadata).has(access("disabled", Access.NONE));
+		assertThat(metadata).has(access("disabled", TestAccess.NONE));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -73,7 +73,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(EnabledEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.enabled").fromSource(EnabledEndpoint.class));
 		assertThat(metadata).has(enabledFlag("enabled", true));
-		assertThat(metadata).has(access("enabled", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("enabled", TestAccess.UNRESTRICTED));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -82,7 +82,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(NoAccessEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.noaccess").fromSource(NoAccessEndpoint.class));
 		assertThat(metadata).has(enabledFlag("noaccess", false));
-		assertThat(metadata).has(access("noaccess", Access.NONE));
+		assertThat(metadata).has(access("noaccess", TestAccess.NONE));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -92,7 +92,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.readonlyaccess").fromSource(ReadOnlyAccessEndpoint.class));
 		assertThat(metadata).has(enabledFlag("readonlyaccess", true));
-		assertThat(metadata).has(access("readonlyaccess", Access.READ_ONLY));
+		assertThat(metadata).has(access("readonlyaccess", TestAccess.READ_ONLY));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -102,7 +102,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.unrestrictedaccess")
 			.fromSource(UnrestrictedAccessEndpoint.class));
 		assertThat(metadata).has(enabledFlag("unrestrictedaccess", true));
-		assertThat(metadata).has(access("unrestrictedaccess", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("unrestrictedaccess", TestAccess.UNRESTRICTED));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -115,7 +115,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 			.ofType(String.class)
 			.withDefaultValue("test"));
 		assertThat(metadata).has(enabledFlag("customprops", true));
-		assertThat(metadata).has(access("customprops", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("customprops", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("customprops"));
 		assertThat(metadata.getItems()).hasSize(5);
 	}
@@ -125,7 +125,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(SpecificEndpoint.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));
-		assertThat(metadata).has(access("specific", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("specific", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
@@ -136,7 +136,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.pascal-case").fromSource(CamelCaseEndpoint.class));
 		assertThat(metadata).has(enabledFlag("PascalCase", "pascal-case", true));
-		assertThat(metadata).has(defaultAccess("PascalCase", "pascal-case", Access.UNRESTRICTED));
+		assertThat(metadata).has(defaultAccess("PascalCase", "pascal-case", TestAccess.UNRESTRICTED));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -147,7 +147,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
-		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("incremental", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(4);
 		project.replaceText(IncrementalEndpoint.class, "id = \"incremental\"",
@@ -156,7 +156,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", false));
-		assertThat(metadata).has(access("incremental", Access.NONE));
+		assertThat(metadata).has(access("incremental", TestAccess.NONE));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
@@ -168,7 +168,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
-		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("incremental", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(4);
 		project.replaceText(IncrementalEndpoint.class, "@Nullable String param", "String param");
@@ -176,7 +176,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata)
 			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
-		assertThat(metadata).has(access("incremental", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("incremental", TestAccess.UNRESTRICTED));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 
@@ -186,14 +186,14 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", true));
-		assertThat(metadata).has(access("specific", Access.UNRESTRICTED));
+		assertThat(metadata).has(access("specific", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(4);
 		project.replaceText(SpecificEndpoint.class, "enableByDefault = true", "enableByDefault = false");
 		metadata = project.compile();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));
 		assertThat(metadata).has(enabledFlag("specific", false));
-		assertThat(metadata).has(access("specific", Access.NONE));
+		assertThat(metadata).has(access("specific", TestAccess.NONE));
 		assertThat(metadata).has(cacheTtl("specific"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
@@ -203,7 +203,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(SimpleEndpoint.class, SimpleEndpoint2.class);
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.simple").fromSource(SimpleEndpoint.class));
 		assertThat(metadata).has(enabledFlag("simple", "simple", true));
-		assertThat(metadata).has(defaultAccess("simple", "simple", Access.UNRESTRICTED));
+		assertThat(metadata).has(defaultAccess("simple", "simple", TestAccess.UNRESTRICTED));
 		assertThat(metadata).has(cacheTtl("simple"));
 		assertThat(metadata.getItems()).hasSize(4);
 	}
@@ -228,12 +228,12 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 			.withDeprecation(null, "management.endpoint.%s.access".formatted(endpointSuffix), "3.4.0");
 	}
 
-	private Metadata.MetadataItemCondition access(String endpointId, Access defaultValue) {
+	private Metadata.MetadataItemCondition access(String endpointId, TestAccess defaultValue) {
 		return defaultAccess(endpointId, endpointId, defaultValue);
 	}
 
 	private Metadata.MetadataItemCondition defaultAccess(String endpointId, String endpointSuffix,
-			Access defaultValue) {
+			TestAccess defaultValue) {
 		return Metadata.withAccess("management.endpoint." + endpointSuffix + ".access")
 			.withDefaultValue(defaultValue.name().toLowerCase(Locale.ENGLISH))
 			.withDescription("Permitted level of access for the %s endpoint.".formatted(endpointId));
