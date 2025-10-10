@@ -53,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Leo Li
+ * @author Dylan Miska
  */
 @WithResource(name = "db/changelog/db.changelog-master.yaml", content = """
 		databaseChangeLog:
@@ -173,6 +174,26 @@ class LiquibaseEndpointTests {
 				assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets()).hasSize(1);
 				assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets().get(0).getChangeLog())
 					.isEqualTo("db/changelog/db.changelog-master-backup.yaml");
+			});
+	}
+
+	@Test
+	@WithResource(name = "db/create-custom-schema.sql", content = "CREATE SCHEMA \"CustomSchema\";")
+	void customLiquibasePropertyIsAppliedDuringEndpointCall() {
+		this.contextRunner.withUserConfiguration(Config.class, DataSourceWithSchemaConfiguration.class)
+			.withPropertyValues("spring.liquibase.default-schema=CustomSchema",
+					"spring.liquibase.properties.liquibase.preserveSchemaCase=true")
+			.run((context) -> {
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					.liquibaseBeans()
+					.getContexts()
+					.get(context.getId())
+					.getLiquibaseBeans();
+				// If preserveSchemaCase wasn't applied, Liquibase would fail to find the
+				// mixed-case schema
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())
+					.isEqualTo("db/changelog/db.changelog-master.yaml");
 			});
 	}
 
