@@ -70,7 +70,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * <p>
  * A {@code TestRestTemplate} can optionally carry Basic authentication headers. If Apache
  * Http Client 4.3.2 or better is available (recommended) it will be used as the client,
- * and by default configured to ignore cookies and redirects.
+ * and by default configured to ignore cookies.
  * <p>
  * Note: To prevent injection problems this class intentionally does not extend
  * {@link RestTemplate}. If you need access to the underlying {@link RestTemplate} use
