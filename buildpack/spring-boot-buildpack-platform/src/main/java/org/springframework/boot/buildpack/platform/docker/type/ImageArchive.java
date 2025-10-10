@@ -41,7 +41,7 @@ import org.springframework.boot.buildpack.platform.io.InspectedContent;
 import org.springframework.boot.buildpack.platform.io.Layout;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 
 /**
@@ -273,7 +273,7 @@ public class ImageArchive implements TarArchive {
 		private ImageArchive applyTo(IOConsumer<Update> update) throws IOException {
 			update.accept(this);
 			Instant createDate = (this.createDate != null) ? this.createDate : WINDOWS_EPOCH_PLUS_SECOND;
-			return new ImageArchive(SharedObjectMapper.get(), this.config, createDate, this.tag, this.image.getOs(),
+			return new ImageArchive(SharedJsonMapper.get(), this.config, createDate, this.tag, this.image.getOs(),
 					this.image.getArchitecture(), this.image.getVariant(), this.image.getLayers(),
 					Collections.unmodifiableList(this.newLayers));
 		}

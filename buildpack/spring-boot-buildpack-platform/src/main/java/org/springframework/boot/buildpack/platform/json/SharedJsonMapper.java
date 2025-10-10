@@ -18,20 +18,19 @@ package org.springframework.boot.buildpack.platform.json;
 
 import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Provides access to a shared pre-configured {@link ObjectMapper}.
+ * Provides access to a shared pre-configured {@link JsonMapper}.
  *
  * @author Phillip Webb
- * @since 2.3.0
+ * @since 4.0.0
  */
-public final class SharedObjectMapper {
+public final class SharedJsonMapper {
 
-	private static final ObjectMapper INSTANCE;
+	private static final JsonMapper INSTANCE;
 
 	static {
 		INSTANCE = JsonMapper.builder()
@@ -42,10 +41,10 @@ public final class SharedObjectMapper {
 			.build();
 	}
 
-	private SharedObjectMapper() {
+	private SharedJsonMapper() {
 	}
 
-	public static ObjectMapper get() {
+	public static JsonMapper get() {
 		return INSTANCE;
 	}
 

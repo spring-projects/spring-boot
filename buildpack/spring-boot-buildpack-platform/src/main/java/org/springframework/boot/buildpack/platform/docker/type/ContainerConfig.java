@@ -27,11 +27,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.ObjectNode;
 
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
@@ -54,8 +54,8 @@ public class ContainerConfig {
 			List<String> securityOptions) {
 		Assert.notNull(image, "'image' must not be null");
 		Assert.hasText(command, "'command' must not be empty");
-		ObjectMapper objectMapper = SharedObjectMapper.get();
-		ObjectNode node = objectMapper.createObjectNode();
+		JsonMapper jsonMapper = SharedJsonMapper.get();
+		ObjectNode node = jsonMapper.createObjectNode();
 		if (StringUtils.hasText(user)) {
 			node.put("User", user);
 		}
@@ -77,7 +77,7 @@ public class ContainerConfig {
 			ArrayNode securityOptsNode = hostConfigNode.putArray("SecurityOpt");
 			securityOptions.forEach(securityOptsNode::add);
 		}
-		this.json = objectMapper.writeValueAsString(node);
+		this.json = jsonMapper.writeValueAsString(node);
 	}
 
 	/**

@@ -48,7 +48,7 @@ class ManifestTests extends AbstractJsonTests {
 	}
 
 	private Manifest getManifest(String content) {
-		return new Manifest(getObjectMapper().readTree(content));
+		return new Manifest(getJsonMapper().readTree(content));
 	}
 
 }

@@ -34,6 +34,7 @@ import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -145,7 +146,7 @@ public class MappedObject {
 			return null;
 		}
 		try {
-			return SharedObjectMapper.get().treeToValue(result, type);
+			return SharedJsonMapper.get().treeToValue(result, type);
 		}
 		catch (JacksonException ex) {
 			throw new IllegalStateException(ex);
@@ -189,8 +190,8 @@ public class MappedObject {
 	 */
 	protected static <T extends MappedObject, C> T of(C content, ContentReader<C> reader, Function<JsonNode, T> factory)
 			throws IOException {
-		ObjectMapper objectMapper = SharedObjectMapper.get();
-		JsonNode node = reader.read(objectMapper, content);
+		JsonMapper jsonMapper = SharedJsonMapper.get();
+		JsonNode node = reader.read(jsonMapper, content);
 		return factory.apply(node);
 	}
 

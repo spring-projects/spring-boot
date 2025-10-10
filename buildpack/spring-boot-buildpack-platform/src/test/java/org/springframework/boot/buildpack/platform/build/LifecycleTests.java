@@ -53,7 +53,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.boot.testsupport.junit.BooleanValueSource;
 import org.springframework.util.FileCopyUtils;
 
@@ -491,7 +491,7 @@ class LifecycleTests {
 	}
 
 	private ArrayNode getCommand(ContainerConfig config) {
-		JsonNode node = SharedObjectMapper.get().readTree(config.toString());
+		JsonNode node = SharedJsonMapper.get().readTree(config.toString());
 		return (ArrayNode) node.at("/Cmd");
 	}
 

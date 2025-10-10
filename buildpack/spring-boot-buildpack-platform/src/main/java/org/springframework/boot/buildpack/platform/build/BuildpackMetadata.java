@@ -25,7 +25,7 @@ import tools.jackson.databind.JsonNode;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.json.MappedObject;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -113,7 +113,7 @@ final class BuildpackMetadata extends MappedObject {
 	 * @throws IOException on IO error
 	 */
 	static BuildpackMetadata fromJson(String json) throws IOException {
-		return fromJson(SharedObjectMapper.get().readTree(json));
+		return fromJson(SharedJsonMapper.get().readTree(json));
 	}
 
 	/**

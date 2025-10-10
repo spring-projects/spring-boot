@@ -27,7 +27,7 @@ import java.util.Set;
 import com.sun.jna.Platform;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 
 /**
  * Invokes a Docker credential helper executable that can be used to get {@link Credential
@@ -59,7 +59,7 @@ class CredentialHelper {
 			int exitCode = process.waitFor();
 			try (InputStream response = process.getInputStream()) {
 				if (exitCode == 0) {
-					return new Credential(SharedObjectMapper.get().readTree(response));
+					return new Credential(SharedJsonMapper.get().readTree(response));
 				}
 				String errorMessage = new String(response.readAllBytes(), StandardCharsets.UTF_8);
 				if (!isCredentialsNotFoundError(errorMessage)) {

@@ -34,7 +34,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.NullNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.boot.buildpack.platform.system.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -202,7 +202,7 @@ final class DockerConfigurationMetadata {
 		}
 
 		static DockerConfig fromJson(String json) {
-			return new DockerConfig(SharedObjectMapper.get().readTree(json));
+			return new DockerConfig(SharedJsonMapper.get().readTree(json));
 		}
 
 		static DockerConfig empty() {
@@ -286,7 +286,7 @@ final class DockerConfigurationMetadata {
 		}
 
 		static DockerContext fromJson(String json) {
-			return new DockerContext(SharedObjectMapper.get().readTree(json), null);
+			return new DockerContext(SharedJsonMapper.get().readTree(json), null);
 		}
 
 		static DockerContext empty() {

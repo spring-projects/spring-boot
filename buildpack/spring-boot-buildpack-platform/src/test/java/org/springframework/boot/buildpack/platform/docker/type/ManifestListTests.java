@@ -39,7 +39,7 @@ class ManifestListTests extends AbstractJsonTests {
 	}
 
 	private ManifestList getManifestList(String content) {
-		return new ManifestList(getObjectMapper().readTree(content));
+		return new ManifestList(getJsonMapper().readTree(content));
 	}
 
 }

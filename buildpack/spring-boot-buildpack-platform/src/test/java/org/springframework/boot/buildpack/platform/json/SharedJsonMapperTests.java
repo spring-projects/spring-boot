@@ -18,22 +18,22 @@ package org.springframework.boot.buildpack.platform.json;
 
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SharedObjectMapper}.
+ * Tests for {@link SharedJsonMapper}.
  *
  * @author Phillip Webb
  */
-class SharedObjectMapperTests {
+class SharedJsonMapperTests {
 
 	@Test
-	void getReturnsConfiguredObjectMapper() {
-		ObjectMapper mapper = SharedObjectMapper.get();
+	void getReturnsConfiguredJsonMapper() {
+		JsonMapper mapper = SharedJsonMapper.get();
 		assertThat(mapper).isNotNull();
 		assertThat(
 				SerializationFeature.INDENT_OUTPUT.enabledIn(mapper.serializationConfig().getSerializationFeatures()))
