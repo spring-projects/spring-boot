@@ -2260,6 +2260,7 @@ bom {
 				"spring-boot-validation",
 				"spring-boot-web-server",
 				"spring-boot-webclient",
+				"spring-boot-webclient-test",
 				"spring-boot-webflux",
 				"spring-boot-webflux-test",
 				"spring-boot-webmvc",

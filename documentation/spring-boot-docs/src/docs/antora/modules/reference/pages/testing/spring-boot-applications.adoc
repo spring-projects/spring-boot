@@ -729,6 +729,20 @@ include-code::MyRestClientServiceTests[]
 
 
 
+[[testing.spring-boot-applications.autoconfigured-web-client]]
+== Auto-configured Web Clients
+
+You can use the javadoc:org.springframework.boot.webclient.test.autoconfigure.WebClientTest[format=annotation] annotation from the `spring-boot-webclient-test` module to test code that uses `WebClient`.
+By default, it auto-configures Jackson, GSON, and Jsonb support, and configures a javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[].
+Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.webclient.test.autoconfigure.WebClientTest[format=annotation] annotation is used.
+javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
+
+TIP: A list of the auto-configuration settings that are enabled by javadoc:org.springframework.boot.webclient.test.autoconfigure.WebClientTest[format=annotation] can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
+
+The specific beans that you want to test should be specified by using the `value` or `components` attribute of javadoc:org.springframework.boot.webclient.test.autoconfigure.WebClientTest[format=annotation].
+
+
+
 [[testing.spring-boot-applications.autoconfigured-spring-restdocs]]
 == Auto-configured Spring REST Docs Tests
 

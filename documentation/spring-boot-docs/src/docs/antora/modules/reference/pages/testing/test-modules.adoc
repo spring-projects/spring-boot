@@ -64,6 +64,9 @@ Spring Boot offers several focused, feature-specific `-test` modules:
 |`spring-boot-security-test`
 |Testing applications that use Spring Security.
 
+|`spring-boot-webclient-test`
+|Testing applications that use `WebClient`. Provides the `@WebClientTest` test slice.
+
 |`spring-boot-webflux-test`
 |Testing applications that use Spring WebFlux. Provides the `@WebFluxTest` test slice.
 

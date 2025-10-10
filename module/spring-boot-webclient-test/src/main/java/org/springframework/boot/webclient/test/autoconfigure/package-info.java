@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
+/**
+ * Auto-configuration for web clients.
+ */
+@NullMarked
+package org.springframework.boot.webclient.test.autoconfigure;
 
-description = "Starter testing Spring's reactive HTTP clients (WebClient and HTTP Service Clients)"
-
-dependencies {
-	api(project(":starter:spring-boot-starter-jackson-test"))
-	api(project(":starter:spring-boot-starter-test"))
-	api(project(":starter:spring-boot-starter-webclient"))
-
-	api(project(":module:spring-boot-webclient-test"))
-}
+import org.jspecify.annotations.NullMarked;
