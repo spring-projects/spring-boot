@@ -63,6 +63,7 @@ import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Role;
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -75,6 +76,7 @@ import org.springframework.util.ResourceUtils;
  * @author Phillip Webb
  * @author Ngoc Nhan
  * @author Moritz Halbritter
+ * @author Stefano Cordio
  */
 final class ArchitectureRules {
 
@@ -135,6 +137,30 @@ final class ArchitectureRules {
 					}
 				}))
 			.allowEmptyShould(true);
+	}
+
+	static ArchRule allCustomAssertionMethodsNotReturningSelfShouldBeAnnotatedWithCheckReturnValue() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areDeclaredInClassesThat()
+			.implement("org.assertj.core.api.Assert")
+			.and()
+			.arePublic()
+			.and(dontReturnSelfType())
+			.should()
+			.beAnnotatedWith(CheckReturnValue.class)
+			.allowEmptyShould(true);
+	}
+
+	private static DescribedPredicate<JavaMethod> dontReturnSelfType() {
+		return DescribedPredicate.describe("don't return self type",
+				(method) -> !method.getRawReturnType().equals(method.getOwner())
+						|| isOverridingMethodNotReturningSelfType(method));
+	}
+
+	private static boolean isOverridingMethodNotReturningSelfType(JavaMethod method) {
+		return superMethods(method).anyMatch((superMethod) -> isOverridden(superMethod, method)
+				&& !superMethod.getOwner().equals(method.getRawReturnType()));
 	}
 
 	private static ArchRule allPackagesShouldBeFreeOfTangles() {
@@ -538,37 +564,37 @@ final class ArchitectureRules {
 		};
 	}
 
-	private static class OverridesPublicMethod<T extends JavaMember> extends DescribedPredicate<T> {
+	private static Stream<JavaMethod> superMethods(JavaMethod method) {
+		Stream<JavaMethod> superClassMethods = method.getOwner()
+			.getAllRawSuperclasses()
+			.stream()
+			.flatMap((superClass) -> superClass.getMethods().stream());
+		Stream<JavaMethod> interfaceMethods = method.getOwner()
+			.getAllRawInterfaces()
+			.stream()
+			.flatMap((iface) -> iface.getMethods().stream());
+		return Stream.concat(superClassMethods, interfaceMethods);
+	}
 
-		OverridesPublicMethod() {
-			super("overrides public method");
-		}
+	private static boolean isOverridden(JavaMethod superMethod, JavaMethod method) {
+		return superMethod.getName().equals(method.getName())
+				&& superMethod.getRawParameterTypes().size() == method.getRawParameterTypes().size()
+				&& superMethod.getDescriptor().equals(method.getDescriptor());
+	}
+
+	private static final class OverridesPublicMethod<T extends JavaMember> implements Predicate<T> {
 
 		@Override
 		public boolean test(T member) {
 			if (!(member instanceof JavaMethod javaMethod)) {
 				return false;
 			}
-			Stream<JavaMethod> superClassMethods = member.getOwner()
-				.getAllRawSuperclasses()
-				.stream()
-				.flatMap((superClass) -> superClass.getMethods().stream());
-			Stream<JavaMethod> interfaceMethods = member.getOwner()
-				.getAllRawInterfaces()
-				.stream()
-				.flatMap((iface) -> iface.getMethods().stream());
-			return Stream.concat(superClassMethods, interfaceMethods)
+			return superMethods(javaMethod)
 				.anyMatch((superMethod) -> isPublic(superMethod) && isOverridden(superMethod, javaMethod));
 		}
 
-		private boolean isPublic(JavaMethod method) {
+		private static boolean isPublic(JavaMethod method) {
 			return method.getModifiers().contains(JavaModifier.PUBLIC);
-		}
-
-		private boolean isOverridden(JavaMethod superMethod, JavaMethod method) {
-			return superMethod.getName().equals(method.getName())
-					&& superMethod.getRawParameterTypes().size() == method.getRawParameterTypes().size()
-					&& superMethod.getDescriptor().equals(method.getDescriptor());
 		}
 
 	}
