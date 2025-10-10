@@ -710,7 +710,7 @@ include-code::server/MyDataLdapTests[]
 [[testing.spring-boot-applications.autoconfigured-rest-client]]
 == Auto-configured REST Clients
 
-You can use the javadoc:org.springframework.boot.restclient.test.autoconfigure.RestClientTest[format=annotation] annotation from the `spring-boot-restclient-test` moule to test REST clients.
+You can use the javadoc:org.springframework.boot.restclient.test.autoconfigure.RestClientTest[format=annotation] annotation from the `spring-boot-restclient-test` module to test REST clients.
 By default, it auto-configures Jackson, GSON, and Jsonb support, configures a javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] and a javadoc:org.springframework.web.client.RestClient$Builder[], and adds support for javadoc:org.springframework.test.web.client.MockRestServiceServer[].
 Regular javadoc:org.springframework.stereotype.Component[format=annotation] and javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans are not scanned when the javadoc:org.springframework.boot.restclient.test.autoconfigure.RestClientTest[format=annotation] annotation is used.
 javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation] can be used to include javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] beans.
