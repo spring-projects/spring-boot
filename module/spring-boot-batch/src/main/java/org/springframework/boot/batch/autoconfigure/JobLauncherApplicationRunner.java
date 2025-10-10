@@ -179,9 +179,8 @@ public class JobLauncherApplicationRunner
 		if (this.jobRegistry != null && StringUtils.hasText(this.jobName)) {
 			if (!isLocalJob(this.jobName)) {
 				Job job = this.jobRegistry.getJob(this.jobName);
-				if (job != null) {
-					execute(job, jobParameters);
-				}
+				Assert.notNull(job, () -> "No job found with name '" + this.jobName + "'");
+				execute(job, jobParameters);
 			}
 		}
 	}
