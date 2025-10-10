@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "@antora/cli": "3.2.0-alpha.4",
-    "@antora/site-generator": "3.2.0-alpha.4",
+    "@antora/site-generator": "3.2.0-alpha.10",
     "@antora/atlas-extension": "1.0.0-alpha.2",
     "@springio/antora-extensions": "1.14.7",
     "@springio/antora-xref-extension": "1.0.0-alpha.4",
