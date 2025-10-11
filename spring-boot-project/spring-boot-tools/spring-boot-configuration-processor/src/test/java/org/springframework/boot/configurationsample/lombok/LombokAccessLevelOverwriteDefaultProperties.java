@@ -31,6 +31,7 @@ import org.springframework.boot.configurationsample.TestConfigurationProperties;
 @Getter
 @Setter
 @TestConfigurationProperties(prefix = "accesslevel.overwrite.default")
+@SuppressWarnings("deprecation")
 public class LombokAccessLevelOverwriteDefaultProperties {
 
 	@SuppressWarnings("unused")
