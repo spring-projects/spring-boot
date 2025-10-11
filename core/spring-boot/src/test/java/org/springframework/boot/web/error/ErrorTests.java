@@ -19,7 +19,7 @@ package org.springframework.boot.web.error;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -46,7 +46,7 @@ class ErrorTests {
 
 	@Test
 	void errorCauseDoesNotAppearInJson() {
-		String json = new ObjectMapper()
+		String json = new JsonMapper()
 			.writeValueAsString(Error.wrapIfNecessary(List.of(new CustomMessageSourceResolvable("code"))));
 		assertThat(json).doesNotContain("some detail");
 	}

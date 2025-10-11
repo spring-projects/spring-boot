@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
@@ -34,7 +33,7 @@ import org.springframework.context.annotation.Bean;
  * @since 3.0.0
  */
 @AutoConfiguration
-@ConditionalOnClass(ObjectMapper.class)
+@ConditionalOnClass(JsonMapper.class)
 public final class JacksonEndpointAutoConfiguration {
 
 	@Bean

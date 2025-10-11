@@ -46,7 +46,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.security.autoconfigure.actuate.web.reactive.ReactiveManagementWebSecurityAutoConfiguration;
@@ -773,7 +773,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
 	private void setupMockResponse(String issuer) {
 		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
-			.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
+			.setBody(new JsonMapper().writeValueAsString(getResponse(issuer)))
 			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		assertThat(this.server).isNotNull();
 		this.server.enqueue(mockResponse);
