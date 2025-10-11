@@ -674,6 +674,9 @@ To do this, you can use one or more of the following properties:
 
 | configprop:logging.structured.json.stacktrace.include-hashes[]
 | If a hash of the stack trace should be included
+
+| configprop:logging.structured.json.stacktrace.exluded-frames[]
+| List of patterns excluded from stacktrace, f.e. `java.lang.reflect.Method`, `ByCGLIB`
 |===
 
 For example, the following will use root first stack traces, limit their length, and include hashes.

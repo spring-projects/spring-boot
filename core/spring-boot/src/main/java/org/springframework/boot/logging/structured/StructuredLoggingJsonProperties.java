@@ -24,7 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.jspecify.annotations.Nullable;
@@ -97,10 +99,12 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 	 * @param maxThrowableDepth the maximum throwable depth to print
 	 * @param includeCommonFrames whether common frames should be included
 	 * @param includeHashes whether stack trace hashes should be included
+	 * @param excludedFrames list of patterns excluded from stacktrace, f.e.
+	 * java.lang.reflect.Method
 	 */
 	record StackTrace(@Nullable String printer, @Nullable Root root, @Nullable Integer maxLength,
-			@Nullable Integer maxThrowableDepth, @Nullable Boolean includeCommonFrames,
-			@Nullable Boolean includeHashes) {
+			@Nullable Integer maxThrowableDepth, @Nullable Boolean includeCommonFrames, @Nullable Boolean includeHashes,
+			@Nullable List<String> excludedFrames) {
 
 		@Nullable StackTracePrinter createPrinter() {
 			String name = sanitizePrinter();
@@ -130,7 +134,8 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		}
 
 		private boolean hasAnyOtherProperty() {
-			return Stream.of(root(), maxLength(), maxThrowableDepth(), includeCommonFrames(), includeHashes())
+			return Stream
+				.of(root(), maxLength(), maxThrowableDepth(), includeCommonFrames(), includeHashes(), excludedFrames())
 				.anyMatch(Objects::nonNull);
 		}
 
@@ -144,12 +149,24 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 			printer = map.from(this::includeCommonFrames)
 				.to(printer, apply(StandardStackTracePrinter::withCommonFrames));
 			printer = map.from(this::includeHashes).to(printer, apply(StandardStackTracePrinter::withHashes));
+			printer = map.from(this::excludedFrames)
+				.whenNot(List::isEmpty)
+				.as(this::biPredicate)
+				.to(printer, StandardStackTracePrinter::withFrameFilter);
 			return printer;
 		}
 
 		private BiFunction<StandardStackTracePrinter, Boolean, StandardStackTracePrinter> apply(
 				UnaryOperator<StandardStackTracePrinter> action) {
 			return (printer, value) -> (!value) ? printer : action.apply(printer);
+		}
+
+		private BiPredicate<Integer, StackTraceElement> biPredicate(List<String> excludedFrames) {
+			List<Pattern> exclusionPatterns = excludedFrames.stream().map(Pattern::compile).toList();
+			return (ignored, element) -> {
+				String classNameAndMethod = element.getClassName() + "." + element.getMethodName();
+				return exclusionPatterns.stream().noneMatch((pattern) -> pattern.matcher(classNameAndMethod).find());
+			};
 		}
 
 		/**
