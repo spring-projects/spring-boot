@@ -27,7 +27,7 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework:spring-test")
 
-	optional("tools.jackson.core:jackson-databind")
+	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("jakarta.json.bind:jakarta.json.bind-api")
@@ -45,6 +45,7 @@ dependencies {
 	optional("org.seleniumhq.selenium:selenium-api")
 	optional("org.skyscreamer:jsonassert")
 	optional("org.springframework:spring-web")
+	optional("tools.jackson.core:jackson-databind")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
