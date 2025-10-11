@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -182,7 +182,7 @@ class HealthTests {
 	@Test
 	void serializeWithJacksonReturnsValidJson() throws Exception {
 		Health health = Health.down().withDetail("a", "b").build();
-		ObjectMapper mapper = new ObjectMapper();
+		JsonMapper mapper = new JsonMapper();
 		String json = mapper.writeValueAsString(health);
 		assertThat(json).isEqualTo("{\"details\":{\"a\":\"b\"},\"status\":\"DOWN\"}");
 	}

@@ -371,8 +371,8 @@ class JacksonAutoConfigurationTests {
 	@Test
 	void defaultSerializationInclusion() {
 		this.contextRunner.run((context) -> {
-			ObjectMapper objectMapper = context.getBean(JsonMapper.Builder.class).build();
-			assertThat(objectMapper.serializationConfig().getDefaultPropertyInclusion().getValueInclusion())
+			JsonMapper jsonMapper = context.getBean(JsonMapper.Builder.class).build();
+			assertThat(jsonMapper.serializationConfig().getDefaultPropertyInclusion().getValueInclusion())
 				.isEqualTo(JsonInclude.Include.USE_DEFAULTS);
 		});
 	}
@@ -380,8 +380,8 @@ class JacksonAutoConfigurationTests {
 	@Test
 	void customSerializationInclusion() {
 		this.contextRunner.withPropertyValues("spring.jackson.default-property-inclusion:non_null").run((context) -> {
-			ObjectMapper objectMapper = context.getBean(JsonMapper.Builder.class).build();
-			assertThat(objectMapper.serializationConfig().getDefaultPropertyInclusion().getValueInclusion())
+			JsonMapper jsonMapper = context.getBean(JsonMapper.Builder.class).build();
+			assertThat(jsonMapper.serializationConfig().getDefaultPropertyInclusion().getValueInclusion())
 				.isEqualTo(JsonInclude.Include.NON_NULL);
 		});
 	}
@@ -390,9 +390,9 @@ class JacksonAutoConfigurationTests {
 	void customTimeZoneFormattingADate() {
 		this.contextRunner.withPropertyValues("spring.jackson.time-zone:GMT+10", "spring.jackson.date-format:z")
 			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(JsonMapper.Builder.class).build();
+				JsonMapper jsonMapper = context.getBean(JsonMapper.Builder.class).build();
 				Date date = new Date(1436966242231L);
-				assertThat(objectMapper.writeValueAsString(date)).isEqualTo("\"GMT+10:00\"");
+				assertThat(jsonMapper.writeValueAsString(date)).isEqualTo("\"GMT+10:00\"");
 			});
 	}
 
