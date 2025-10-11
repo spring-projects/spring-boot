@@ -37,7 +37,7 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * {@link SourceTask} that checks additional Spring configuration metadata files.
@@ -75,11 +75,11 @@ public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceT
 
 	@SuppressWarnings("unchecked")
 	private Report createReport() {
-		ObjectMapper objectMapper = new ObjectMapper();
+		JsonMapper jsonMapper = new JsonMapper();
 		Report report = new Report();
 		for (File file : getSource().getFiles()) {
 			Analysis analysis = report.analysis(this.projectDir.toPath().relativize(file.toPath()));
-			Map<String, Object> json = objectMapper.readValue(file, Map.class);
+			Map<String, Object> json = jsonMapper.readValue(file, Map.class);
 			check("groups", json, analysis);
 			check("properties", json, analysis);
 			check("hints", json, analysis);

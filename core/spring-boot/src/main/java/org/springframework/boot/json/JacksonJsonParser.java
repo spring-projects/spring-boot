@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Thin wrapper to adapt Jackson 2 {@link ObjectMapper} to {@link JsonParser}.
+ * Thin wrapper to adapt Jackson 3 {@link JsonMapper} to {@link JsonParser}.
  *
  * @author Dave Syer
  * @since 1.0.0
@@ -36,37 +36,37 @@ public class JacksonJsonParser extends AbstractJsonParser {
 
 	private static final ListTypeReference LIST_TYPE = new ListTypeReference();
 
-	private @Nullable ObjectMapper objectMapper; // Late binding
+	private @Nullable JsonMapper jsonMapper; // Late binding
 
 	/**
-	 * Creates an instance with the specified {@link ObjectMapper}.
-	 * @param objectMapper the object mapper to use
+	 * Creates an instance with the specified {@link JsonMapper}.
+	 * @param jsonMapper the json mapper to use
 	 */
-	public JacksonJsonParser(ObjectMapper objectMapper) {
-		this.objectMapper = objectMapper;
+	public JacksonJsonParser(JsonMapper jsonMapper) {
+		this.jsonMapper = jsonMapper;
 	}
 
 	/**
-	 * Creates an instance with a default {@link ObjectMapper} that is created lazily.
+	 * Creates an instance with a default {@link JsonMapper} that is created lazily.
 	 */
 	public JacksonJsonParser() {
 	}
 
 	@Override
 	public Map<String, Object> parseMap(@Nullable String json) {
-		return tryParse(() -> getObjectMapper().readValue(json, MAP_TYPE), Exception.class);
+		return tryParse(() -> getJsonMapper().readValue(json, MAP_TYPE), Exception.class);
 	}
 
 	@Override
 	public List<Object> parseList(@Nullable String json) {
-		return tryParse(() -> getObjectMapper().readValue(json, LIST_TYPE), Exception.class);
+		return tryParse(() -> getJsonMapper().readValue(json, LIST_TYPE), Exception.class);
 	}
 
-	private ObjectMapper getObjectMapper() {
-		if (this.objectMapper == null) {
-			this.objectMapper = new ObjectMapper();
+	private JsonMapper getJsonMapper() {
+		if (this.jsonMapper == null) {
+			this.jsonMapper = new JsonMapper();
 		}
-		return this.objectMapper;
+		return this.jsonMapper;
 	}
 
 	private static final class MapTypeReference extends TypeReference<Map<String, Object>> {

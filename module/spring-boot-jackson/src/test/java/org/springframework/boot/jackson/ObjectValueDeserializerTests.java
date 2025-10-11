@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.NullNode;
@@ -55,7 +54,7 @@ class ObjectValueDeserializerTests {
 		Deserializer deserializer = new NameAndAgeJacksonComponent.Deserializer();
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(NameAndAge.class, deserializer);
-		ObjectMapper mapper = JsonMapper.builder().addModule(module).build();
+		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
 		NameAndAge nameAndAge = mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class);
 		assertThat(nameAndAge.getName()).isEqualTo("spring");
 		assertThat(nameAndAge.getAge()).isEqualTo(100);

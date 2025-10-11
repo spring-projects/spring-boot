@@ -25,7 +25,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties.Provider;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties.Registration;
@@ -328,7 +328,7 @@ class OAuth2ClientPropertiesMapperTests {
 
 	private void setupMockResponse(String issuer) {
 		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
-			.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
+			.setBody(new JsonMapper().writeValueAsString(getResponse(issuer)))
 			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		assertThat(this.server).isNotNull();
 		this.server.enqueue(mockResponse);
