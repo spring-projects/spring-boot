@@ -57,13 +57,18 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @EnableConfigurationProperties(HateoasProperties.class)
 public class HypermediaAutoConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "com.fasterxml.jackson.databind.ObjectMapper")
 	@ConditionalOnProperty(prefix = "spring.hateoas", name = "use-hal-as-default-json-media-type",
 			matchIfMissing = true)
-	HalConfiguration applicationJsonHalConfiguration() {
-		return new HalConfiguration().withMediaType(MediaType.APPLICATION_JSON);
+	static class JacksonJsonHalConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		HalConfiguration applicationJsonHalConfiguration() {
+			return new HalConfiguration().withMediaType(MediaType.APPLICATION_JSON);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
