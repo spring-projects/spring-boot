@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.MapperFeature;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
@@ -47,7 +46,7 @@ class SystemHealthDescriptorTests {
 		components.put("db2", new IndicatedHealthDescriptor(Health.down().withDetail("a", "b").build()));
 		Set<String> groups = new LinkedHashSet<>(Arrays.asList("liveness", "readiness"));
 		SystemHealthDescriptor descriptor = new SystemHealthDescriptor(ApiVersion.V3, Status.UP, components, groups);
-		ObjectMapper mapper = JsonMapper.builder().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build();
+		JsonMapper mapper = JsonMapper.builder().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build();
 		String json = mapper.writeValueAsString(descriptor);
 		assertThat(json).isEqualTo(
 				"""
@@ -60,7 +59,7 @@ class SystemHealthDescriptorTests {
 		components.put("db1", new IndicatedHealthDescriptor(Health.up().build()));
 		components.put("db2", new IndicatedHealthDescriptor(Health.down().withDetail("a", "b").build()));
 		SystemHealthDescriptor descriptor = new SystemHealthDescriptor(ApiVersion.V3, Status.UP, components, null);
-		ObjectMapper mapper = JsonMapper.builder().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build();
+		JsonMapper mapper = JsonMapper.builder().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build();
 		String json = mapper.writeValueAsString(descriptor);
 		assertThat(json).isEqualTo("""
 				{"components":{"db1":{"status":"UP"},"db2":{"details":{"a":"b"},"status":"DOWN"}},"status":"UP"}""");
@@ -72,7 +71,7 @@ class SystemHealthDescriptorTests {
 		components.put("db1", new IndicatedHealthDescriptor(Health.up().build()));
 		components.put("db2", new IndicatedHealthDescriptor(Health.down().withDetail("a", "b").build()));
 		SystemHealthDescriptor descriptor = new SystemHealthDescriptor(ApiVersion.V2, Status.UP, components, null);
-		ObjectMapper mapper = JsonMapper.builder()
+		JsonMapper mapper = JsonMapper.builder()
 			.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
 			.disable(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS)
 			.build();

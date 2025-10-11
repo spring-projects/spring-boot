@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.MapperFeature;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.actuate.endpoint.ApiVersion;
@@ -76,7 +75,7 @@ class CompositeHealthDescriptorTests {
 		components.put("db1", new IndicatedHealthDescriptor(Health.up().build()));
 		components.put("db2", new IndicatedHealthDescriptor(Health.down().withDetail("a", "b").build()));
 		CompositeHealthDescriptor descriptor = new CompositeHealthDescriptor(ApiVersion.V3, Status.UP, components);
-		ObjectMapper mapper = JsonMapper.builder().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build();
+		JsonMapper mapper = JsonMapper.builder().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build();
 		String json = mapper.writeValueAsString(descriptor);
 		assertThat(json).isEqualTo("""
 				{"components":{"db1":{"status":"UP"},"db2":{"details":{"a":"b"},"status":"DOWN"}},"status":"UP"}""");
@@ -88,7 +87,7 @@ class CompositeHealthDescriptorTests {
 		components.put("db1", new IndicatedHealthDescriptor(Health.up().build()));
 		components.put("db2", new IndicatedHealthDescriptor(Health.down().withDetail("a", "b").build()));
 		CompositeHealthDescriptor descriptor = new CompositeHealthDescriptor(ApiVersion.V2, Status.UP, components);
-		ObjectMapper mapper = JsonMapper.builder().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build();
+		JsonMapper mapper = JsonMapper.builder().enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY).build();
 		String json = mapper.writeValueAsString(descriptor);
 		assertThat(json).isEqualTo("""
 				{"details":{"db1":{"status":"UP"},"db2":{"details":{"a":"b"},"status":"DOWN"}},"status":"UP"}""");

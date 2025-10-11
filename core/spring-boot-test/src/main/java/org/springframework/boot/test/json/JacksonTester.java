@@ -37,7 +37,6 @@ import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.JavaType;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.ObjectReader;
 import tools.jackson.databind.ObjectWriter;
 import tools.jackson.databind.json.JsonMapper;
@@ -214,13 +213,13 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	private static final class JacksonJsonProvider extends AbstractJsonProvider {
 
-		private final ObjectMapper objectMapper;
+		private final JsonMapper jsonMapper;
 
 		private final ObjectReader objectReader;
 
-		private JacksonJsonProvider(ObjectMapper objectMapper) {
-			this.objectMapper = objectMapper;
-			this.objectReader = objectMapper.reader().forType(Object.class);
+		private JacksonJsonProvider(JsonMapper jsonMapper) {
+			this.jsonMapper = jsonMapper;
+			this.objectReader = jsonMapper.reader().forType(Object.class);
 		}
 
 		@Override
@@ -256,8 +255,8 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		@Override
 		public String toJson(Object obj) {
 			StringWriter writer = new StringWriter();
-			try (JsonGenerator generator = this.objectMapper.createGenerator(writer)) {
-				this.objectMapper.writeValue(generator, obj);
+			try (JsonGenerator generator = this.jsonMapper.createGenerator(writer)) {
+				this.jsonMapper.writeValue(generator, obj);
 			}
 			catch (JacksonException ex) {
 				throw new InvalidJsonException(ex);
@@ -279,10 +278,10 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	private static final class JacksonMappingProvider implements MappingProvider {
 
-		private final ObjectMapper objectMapper;
+		private final JsonMapper jsonMapper;
 
-		private JacksonMappingProvider(ObjectMapper objectMapper) {
-			this.objectMapper = objectMapper;
+		private JacksonMappingProvider(JsonMapper jsonMapper) {
+			this.jsonMapper = jsonMapper;
 		}
 
 		@Override
@@ -291,7 +290,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 				return null;
 			}
 			try {
-				return this.objectMapper.convertValue(source, targetType);
+				return this.jsonMapper.convertValue(source, targetType);
 			}
 			catch (Exception ex) {
 				throw new MappingException(ex);
@@ -305,9 +304,9 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 			if (source == null) {
 				return null;
 			}
-			JavaType type = this.objectMapper.getTypeFactory().constructType(targetType.getType());
+			JavaType type = this.jsonMapper.getTypeFactory().constructType(targetType.getType());
 			try {
-				return (T) this.objectMapper.convertValue(source, type);
+				return (T) this.jsonMapper.convertValue(source, type);
 			}
 			catch (Exception ex) {
 				throw new MappingException(ex);

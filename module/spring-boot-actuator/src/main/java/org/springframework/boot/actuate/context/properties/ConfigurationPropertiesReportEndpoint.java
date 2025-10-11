@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.BeanDescription;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationConfig;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.SerializationFeature;
@@ -116,7 +115,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	@SuppressWarnings("NullAway.Init")
 	private ApplicationContext context;
 
-	private @Nullable ObjectMapper objectMapper;
+	private @Nullable JsonMapper jsonMapper;
 
 	public ConfigurationPropertiesReportEndpoint(Iterable<SanitizingFunction> sanitizingFunctions, Show showValues) {
 		this.sanitizer = new Sanitizer(sanitizingFunctions);
@@ -151,7 +150,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private ConfigurationPropertiesDescriptor getConfigurationProperties(ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
-		ObjectMapper mapper = getObjectMapper();
+		JsonMapper mapper = getJsonMapper();
 		Map<@Nullable String, ContextConfigurationPropertiesDescriptor> contexts = new HashMap<>();
 		ApplicationContext target = context;
 
@@ -162,13 +161,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		return new ConfigurationPropertiesDescriptor(contexts);
 	}
 
-	private ObjectMapper getObjectMapper() {
-		if (this.objectMapper == null) {
+	private JsonMapper getJsonMapper() {
+		if (this.jsonMapper == null) {
 			JsonMapper.Builder builder = JsonMapper.builder();
 			configureJsonMapper(builder);
-			this.objectMapper = builder.build();
+			this.jsonMapper = builder.build();
 		}
-		return this.objectMapper;
+		return this.jsonMapper;
 	}
 
 	/**
@@ -203,7 +202,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		builder.serializerFactory(factory);
 	}
 
-	private ContextConfigurationPropertiesDescriptor describeBeans(ObjectMapper mapper, ApplicationContext context,
+	private ContextConfigurationPropertiesDescriptor describeBeans(JsonMapper mapper, ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
 		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values()
@@ -215,7 +214,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
 
-	private ConfigurationPropertiesBeanDescriptor describeBean(ObjectMapper mapper, ConfigurationPropertiesBean bean,
+	private ConfigurationPropertiesBeanDescriptor describeBean(JsonMapper mapper, ConfigurationPropertiesBean bean,
 			boolean showUnsanitized) {
 		String prefix = bean.getAnnotation().prefix();
 		Map<String, @Nullable Object> serialized = safeSerialize(mapper, bean.getInstance(), prefix);
@@ -233,7 +232,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * @return the serialized instance
 	 */
 	@SuppressWarnings({ "unchecked" })
-	private Map<String, @Nullable Object> safeSerialize(ObjectMapper mapper, @Nullable Object bean, String prefix) {
+	private Map<String, @Nullable Object> safeSerialize(JsonMapper mapper, @Nullable Object bean, String prefix) {
 		try {
 			return new HashMap<>(mapper.convertValue(bean, Map.class));
 		}

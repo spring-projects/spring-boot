@@ -28,7 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.logging.structured.MockStructuredLoggingJsonMembersCustomizerBuilder;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
@@ -45,7 +45,7 @@ abstract class AbstractStructuredLoggingTests {
 
 	static final Instant EVENT_TIME = Instant.ofEpochMilli(1719910193000L);
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final JsonMapper JSON_MAPPER = new JsonMapper();
 
 	@Mock
 	@SuppressWarnings("NullAway.Init")
@@ -79,7 +79,7 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected Map<String, Object> deserialize(String json) {
-		return OBJECT_MAPPER.readValue(json, new TypeReference<>() {
+		return JSON_MAPPER.readValue(json, new TypeReference<>() {
 		});
 	}
 

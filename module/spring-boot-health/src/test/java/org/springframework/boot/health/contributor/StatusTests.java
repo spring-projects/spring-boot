@@ -17,7 +17,7 @@
 package org.springframework.boot.health.contributor;
 
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -72,7 +72,7 @@ class StatusTests {
 	@Test
 	void serializeWithJacksonReturnsValidJson() throws Exception {
 		Status status = new Status("spring", "boot");
-		ObjectMapper mapper = new ObjectMapper();
+		JsonMapper mapper = new JsonMapper();
 		String json = mapper.writeValueAsString(status);
 		assertThat(json).isEqualTo("{\"description\":\"boot\",\"status\":\"spring\"}");
 	}

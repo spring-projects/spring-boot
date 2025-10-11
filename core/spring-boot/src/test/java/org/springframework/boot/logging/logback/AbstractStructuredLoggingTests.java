@@ -36,7 +36,7 @@ import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 import org.slf4j.helpers.BasicMarkerFactory;
 import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.logging.structured.MockStructuredLoggingJsonMembersCustomizerBuilder;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
@@ -53,7 +53,7 @@ abstract class AbstractStructuredLoggingTests {
 
 	static final Instant EVENT_TIME = Instant.ofEpochSecond(1719910193L);
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	private static final JsonMapper JSON_MAPPER = new JsonMapper();
 
 	private ThrowableProxyConverter throwableProxyConverter;
 
@@ -122,7 +122,7 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected Map<String, Object> deserialize(String json) {
-		return OBJECT_MAPPER.readValue(json, new TypeReference<>() {
+		return JSON_MAPPER.readValue(json, new TypeReference<>() {
 		});
 	}
 
