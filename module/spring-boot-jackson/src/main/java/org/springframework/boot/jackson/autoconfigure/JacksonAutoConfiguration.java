@@ -36,6 +36,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.PropertyNamingStrategy;
 import tools.jackson.databind.cfg.ConstructorDetector;
+import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.aot.hint.ReflectionHints;
@@ -111,7 +112,7 @@ public final class JacksonAutoConfiguration {
 
 	@Bean
 	@Primary
-	@ConditionalOnMissingBean(JsonMapper.class)
+	@ConditionalOnMissingBean
 	JsonMapper jacksonJsonMapper(JsonMapper.Builder builder) {
 		return builder.build();
 	}
@@ -164,6 +165,11 @@ public final class JacksonAutoConfiguration {
 
 			@Override
 			public void customize(JsonMapper.Builder builder) {
+				if (this.jacksonProperties.isUseJackson2Defaults()) {
+					builder.configureForJackson2()
+						.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS,
+								DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
+				}
 				if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
 					builder.changeDefaultPropertyInclusion((handler) -> handler
 						.withValueInclusion(this.jacksonProperties.getDefaultPropertyInclusion()));

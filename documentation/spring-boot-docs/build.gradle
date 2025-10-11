@@ -18,6 +18,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 import org.springframework.boot.build.docs.ConfigureJavadocLinks
+import org.springframework.boot.build.optional.OptionalDependenciesPlugin
 
 plugins {
 	id "dev.adamko.dokkatoo-html"
@@ -123,15 +124,18 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-reactor-netty"))
 	implementation(project(path: ":module:spring-boot-restclient"))
 	implementation(project(path: ":module:spring-boot-restclient-test"))
+	implementation(project(path: ":module:spring-boot-resttestclient"))
 	implementation(project(path: ":module:spring-boot-security"))
 	implementation(project(path: ":module:spring-boot-tomcat"))
 	implementation(project(path: ":module:spring-boot-webclient"))
+	implementation(project(path: ":module:spring-boot-webclient-test"))
 	implementation(project(path: ":module:spring-boot-webflux"))
 	implementation(project(path: ":module:spring-boot-webflux-test"))
 	implementation(project(path: ":module:spring-boot-webmvc"))
 	implementation(project(path: ":module:spring-boot-webmvc-test"))
 	implementation(project(path: ":module:spring-boot-webservices"))
 	implementation(project(path: ":module:spring-boot-webservices-test"))
+	implementation(project(path: ":module:spring-boot-webtestclient"))
 	implementation("ch.qos.logback:logback-classic")
 	implementation("com.redis:testcontainers-redis")
 	implementation("com.zaxxer:HikariCP")
@@ -237,9 +241,48 @@ dokkatoo {
 	moduleName.set("Spring Boot Kotlin API")
 }
 
+configurations {
+	javadoc {
+		canBeConsumed = true
+		canBeResolved = false
+		attributes {
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.DOCUMENTATION))
+			attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EMBEDDED))
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.JAVADOC))
+		}
+	}
+	javadocSource {
+		transitive = false
+		canBeConsumed = false
+		canBeResolved = true
+		attributes {
+			attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.VERIFICATION))
+			attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType, DocsType.SOURCES))
+			attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.class, VerificationType.MAIN_SOURCES))
+		}
+		extendsFrom configurations.javadoc
+	}
+	javadocClasspath {
+		canBeConsumed = false
+		canBeResolved = true
+		attributes {
+			attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+		}
+		extendsFrom configurations.javadoc
+		resolutionStrategy.eachDependency {
+			if (it.requested.group == 'org.opensaml') {
+				it.useVersion '4.0.1'
+			}
+		}
+	}
+}
+
 def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 	dependsOn configurations.resolvedBom
 	destinationDir = project.file(project.layout.buildDirectory.dir("docs/javadoc"))
+	source = configurations.javadocSource
+	classpath = configurations.javadocClasspath
+	include("**/*.java")
 	options {
 		author = true
 		docTitle = "Spring Boot ${project.version} API"
@@ -253,7 +296,7 @@ def aggregatedJavadoc = tasks.register('aggregatedJavadoc', Javadoc) {
 }
 
 project.rootProject.gradle.projectsEvaluated {
-	Set<Project> publishedProjects = rootProject.subprojects
+	rootProject.subprojects
 		.findAll { it != project }
 		.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
 		.findAll { !it.path.contains(":build-plugin:") }
@@ -262,11 +305,14 @@ project.rootProject.gradle.projectsEvaluated {
 		.findAll { !it.path.contains(":core:spring-boot-properties-migrator") }
 		.findAll { !it.path.contains(":loader:spring-boot-jarmode-tools") }
 		.findAll { !it.name.startsWith('spring-boot-starter') }
-	aggregatedJavadoc.configure {
-		dependsOn publishedProjects.javadoc
-		source publishedProjects.javadoc.source
-		classpath = project.files(publishedProjects.javadoc.classpath)
-	}
+		.each { javadocProject ->
+			dependencies {
+				javadoc(project(javadocProject.path))
+				if (javadocProject.plugins.hasPlugin(OptionalDependenciesPlugin)) {
+					javadoc(project(path: javadocProject.path, configuration: 'optional'))
+				}
+			}
+		}
 }
 
 aggregates {

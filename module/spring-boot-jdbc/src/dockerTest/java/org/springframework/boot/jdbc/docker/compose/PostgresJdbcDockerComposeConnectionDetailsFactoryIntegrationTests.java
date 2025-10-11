@@ -18,6 +18,8 @@ package org.springframework.boot.jdbc.docker.compose;
 
 import java.sql.Driver;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
@@ -72,12 +74,13 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	private void checkDatabaseAccess(JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
-		assertThat(executeQuery(connectionDetails, DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class))
-			.isEqualTo(1);
+		String validationQuery = DatabaseDriver.POSTGRESQL.getValidationQuery();
+		assertThat(validationQuery).isNotNull();
+		assertThat(executeQuery(connectionDetails, validationQuery, Integer.class)).isEqualTo(1);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T executeQuery(JdbcConnectionDetails connectionDetails, String sql, Class<T> resultClass)
+	private <T> @Nullable T executeQuery(JdbcConnectionDetails connectionDetails, String sql, Class<T> resultClass)
 			throws ClassNotFoundException {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUrl(connectionDetails.getJdbcUrl());

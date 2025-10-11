@@ -50,7 +50,7 @@ dependencies {
 	testImplementation("org.zeroturnaround:zt-zip:1.13")
 }
 
-tasks.register("reproducibleLoaderJar", Jar) {
+tasks.register("loaderJar", Jar) {
 	dependsOn configurations.loader
 	from {
 		zipTree(configurations.loader.incoming.files.singleFile).matching {
@@ -59,8 +59,6 @@ tasks.register("reproducibleLoaderJar", Jar) {
 			exclude "META-INF/spring-boot.properties"
 		}
 	}
-	reproducibleFileOrder = true
-	preserveFileTimestamps = false
 	archiveFileName = "spring-boot-loader.jar"
 	destinationDirectory = file(generatedResources.map {it.dir("META-INF/loader") })
 }
@@ -76,7 +74,7 @@ tasks.register("toolsJar", Sync) {
 
 sourceSets {
 	main {
-		output.dir(generatedResources, builtBy: [toolsJar, reproducibleLoaderJar])
+		output.dir(generatedResources, builtBy: [toolsJar, loaderJar])
 	}
 }
 

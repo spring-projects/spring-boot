@@ -15,9 +15,7 @@
  */
 
 plugins {
-	id "dev.adamko.dokkatoo-html"
 	id "java-library"
-	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-slice"
@@ -33,8 +31,6 @@ dependencies {
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-restclient"))
 	optional("org.apache.httpcomponents.client5:httpclient5")
-	optional("org.jetbrains.kotlin:kotlin-stdlib")
-	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.springframework:spring-test")
 

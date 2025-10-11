@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.source.generation;
 
-import org.springframework.boot.configurationsample.ConfigurationPropertiesSource;
+import org.springframework.boot.configurationsample.TestConfigurationPropertiesSource;
 
-@ConfigurationPropertiesSource
+@TestConfigurationPropertiesSource
 public class NestedPropertiesSource {
 
 	/**

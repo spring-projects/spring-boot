@@ -16,6 +16,7 @@
 
 package org.springframework.boot.http.client.reactive;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -99,16 +100,20 @@ class ReactorClientHttpConnectorBuilderTests
 
 	@Override
 	protected long connectTimeout(ReactorClientHttpConnector connector) {
-		return (int) ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).configuration()
-			.options()
-			.get(ChannelOption.CONNECT_TIMEOUT_MILLIS);
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient).isNotNull();
+		Object connectTimeout = httpClient.configuration().options().get(ChannelOption.CONNECT_TIMEOUT_MILLIS);
+		assertThat(connectTimeout).isNotNull();
+		return (int) connectTimeout;
 	}
 
 	@Override
 	protected long readTimeout(ReactorClientHttpConnector connector) {
-		return (int) ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).configuration()
-			.responseTimeout()
-			.toMillis();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient).isNotNull();
+		Duration responseTimeout = httpClient.configuration().responseTimeout();
+		assertThat(responseTimeout).isNotNull();
+		return (int) responseTimeout.toMillis();
 	}
 
 }

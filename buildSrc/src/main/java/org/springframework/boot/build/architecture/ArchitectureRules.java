@@ -82,6 +82,11 @@ final class ArchitectureRules {
 
 	private static final String TEST_AUTOCONFIGURATION_ANNOTATION = "org.springframework.boot.test.autoconfigure.TestAutoConfiguration";
 
+	private static final Predicate<JavaPackage> NULL_MARKED_PACKAGE_FILTER = (candidate) -> !List
+		.of("org.springframework.boot.cli.json", "org.springframework.boot.configurationmetadata.json",
+				"org.springframework.boot.configurationprocessor.json")
+		.contains(candidate.getName());
+
 	private ArchitectureRules() {
 	}
 
@@ -107,7 +112,7 @@ final class ArchitectureRules {
 		rules.add(noClassesShouldCallStringToUpperCaseWithoutLocale());
 		rules.add(noClassesShouldCallStringToLowerCaseWithoutLocale());
 		rules.add(conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
-		rules.add(enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
+		rules.add(enumSourceShouldNotHaveValueThatIsTheSameAsTypeOfMethodsFirstParameter());
 		rules.add(classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(conditionsShouldNotBePublic());
@@ -258,7 +263,9 @@ final class ArchitectureRules {
 	}
 
 	static ArchRule packagesShouldBeAnnotatedWithNullMarked() {
-		return ArchRuleDefinition.all(packages()).should(beAnnotatedWithNullMarked()).allowEmptyShould(true);
+		return ArchRuleDefinition.all(packages(NULL_MARKED_PACKAGE_FILTER))
+			.should(beAnnotatedWithNullMarked())
+			.allowEmptyShould(true);
 	}
 
 	private static ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType() {
@@ -266,7 +273,7 @@ final class ArchitectureRules {
 			JavaAnnotation<JavaMethod> conditionalAnnotation = item
 				.getAnnotationOfType("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean");
 			Map<String, Object> properties = conditionalAnnotation.getProperties();
-			if (!properties.containsKey("type") && !properties.containsKey("name")) {
+			if (!hasProperty("type", properties) && !hasProperty("name", properties)) {
 				conditionalAnnotation.get("value").ifPresent((value) -> {
 					if (containsOnlySingleType((JavaType[]) value, item.getReturnType())) {
 						addViolation(events, item, conditionalAnnotation.getDescription()
@@ -277,16 +284,24 @@ final class ArchitectureRules {
 		});
 	}
 
-	private static ArchRule enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType() {
+	private static boolean hasProperty(String name, Map<String, Object> properties) {
+		Object property = properties.get(name);
+		if (property == null) {
+			return false;
+		}
+		return !property.getClass().isArray() || ((Object[]) property).length > 0;
+	}
+
+	private static ArchRule enumSourceShouldNotHaveValueThatIsTheSameAsTypeOfMethodsFirstParameter() {
 		return ArchRuleDefinition.methods()
 			.that()
 			.areAnnotatedWith("org.junit.jupiter.params.provider.EnumSource")
-			.should(notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType())
+			.should(notHaveValueThatIsTheSameAsTheTypeOfTheMethodsFirstParameter())
 			.allowEmptyShould(true);
 	}
 
-	private static ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType() {
-		return check("not specify only a type that is the same as the method's parameter type",
+	private static ArchCondition<? super JavaMethod> notHaveValueThatIsTheSameAsTheTypeOfTheMethodsFirstParameter() {
+		return check("not have a value that is the same as the type of the method's first parameter",
 				ArchitectureRules::notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType);
 	}
 
@@ -294,15 +309,13 @@ final class ArchitectureRules {
 			ConditionEvents events) {
 		JavaAnnotation<JavaMethod> enumSourceAnnotation = item
 			.getAnnotationOfType("org.junit.jupiter.params.provider.EnumSource");
-		Map<String, Object> properties = enumSourceAnnotation.getProperties();
-		if (properties.size() == 1 && item.getParameterTypes().size() == 1) {
-			enumSourceAnnotation.get("value").ifPresent((value) -> {
-				if (value.equals(item.getParameterTypes().get(0))) {
-					addViolation(events, item, enumSourceAnnotation.getDescription()
-							+ " should not specify only a value that is the same as the method's parameter type");
-				}
-			});
-		}
+		enumSourceAnnotation.get("value").ifPresent((value) -> {
+			JavaType parameterType = item.getParameterTypes().get(0);
+			if (value.equals(parameterType)) {
+				addViolation(events, item, enumSourceAnnotation.getDescription()
+						+ " should not specify a value that is the same as the type of the method's first parameter");
+			}
+		});
 	}
 
 	private static ArchRule classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute() {
@@ -504,11 +517,11 @@ final class ArchitectureRules {
 		return string + " should be used instead";
 	}
 
-	static ClassesTransformer<JavaPackage> packages() {
+	static ClassesTransformer<JavaPackage> packages(Predicate<JavaPackage> filter) {
 		return new AbstractClassesTransformer<>("packages") {
 			@Override
 			public Iterable<JavaPackage> doTransform(JavaClasses collection) {
-				return collection.stream().map(JavaClass::getPackage).collect(Collectors.toSet());
+				return collection.stream().map(JavaClass::getPackage).filter(filter).collect(Collectors.toSet());
 			}
 		};
 	}

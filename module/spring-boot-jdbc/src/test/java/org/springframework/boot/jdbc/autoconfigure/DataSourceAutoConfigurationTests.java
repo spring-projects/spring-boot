@@ -37,6 +37,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -292,8 +293,9 @@ class DataSourceAutoConfigurationTests {
 			TestDataSource source = (TestDataSource) dataSource;
 			assertThat(source.getUsername()).isEqualTo("user-1");
 			assertThat(source.getPassword()).isEqualTo("password-1");
-			assertThat(source.getDriver().getClass().getName())
-				.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
+			Driver driver = source.getDriver();
+			assertThat(driver).isNotNull();
+			assertThat(driver.getClass().getName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 			assertThat(source.getUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 		});
 	}
@@ -326,7 +328,7 @@ class DataSourceAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class TestDataSourceConfiguration {
 
-		private BasicDataSource pool;
+		private @Nullable BasicDataSource pool;
 
 		@Bean
 		DataSource dataSource() {

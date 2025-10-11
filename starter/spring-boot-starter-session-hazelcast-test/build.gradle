@@ -21,5 +21,7 @@ plugins {
 description = "Starter for testing Spring Session with Hazelcast"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-session-hazelcast"))
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-hazelcast-test"))
 }

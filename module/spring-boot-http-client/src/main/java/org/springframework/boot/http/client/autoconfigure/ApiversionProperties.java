@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesSource
 import org.springframework.boot.context.properties.bind.Name;
 
 /**
- * API Version properties for reactive and blocking HTTP Clients.
+ * API Version properties for both reactive and blocking HTTP Clients.
  *
  * @author Phillip Webb
  * @since 4.0.0

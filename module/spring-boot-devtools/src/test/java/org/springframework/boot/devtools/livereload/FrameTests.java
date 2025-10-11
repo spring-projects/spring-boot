@@ -34,12 +34,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class FrameTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void payloadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Frame((String) null))
 			.withMessageContaining("'payload' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void typeMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Frame((Frame.Type) null))
 			.withMessageContaining("'type' must not be null");

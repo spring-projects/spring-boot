@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.JsonToken;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 
 /**
@@ -34,14 +34,15 @@ import tools.jackson.databind.node.ObjectNode;
  */
 public class JsonStream {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	/**
-	 * Create a new {@link JsonStream} backed by the given object mapper.
-	 * @param objectMapper the object mapper to use
+	 * Create a new {@link JsonStream} backed by the given JSON mapper.
+	 * @param jsonMapper the object mapper to use
+	 * @since 4.0.0
 	 */
-	public JsonStream(ObjectMapper objectMapper) {
-		this.objectMapper = objectMapper;
+	public JsonStream(JsonMapper jsonMapper) {
+		this.jsonMapper = jsonMapper;
 	}
 
 	/**
@@ -63,7 +64,7 @@ public class JsonStream {
 	 * @throws IOException on IO error
 	 */
 	public <T> void get(InputStream content, Class<T> type, Consumer<T> consumer) throws IOException {
-		try (JsonParser parser = this.objectMapper.createParser(content)) {
+		try (JsonParser parser = this.jsonMapper.createParser(content)) {
 			while (!parser.isClosed()) {
 				JsonToken token = parser.nextToken();
 				if (token != null && token != JsonToken.END_OBJECT) {
@@ -79,13 +80,13 @@ public class JsonStream {
 	@SuppressWarnings("unchecked")
 	private <T> @Nullable T read(JsonParser parser, Class<T> type) {
 		if (ObjectNode.class.isAssignableFrom(type)) {
-			ObjectNode node = (ObjectNode) this.objectMapper.readTree(parser);
+			ObjectNode node = (ObjectNode) this.jsonMapper.readTree(parser);
 			if (node == null || node.isMissingNode() || node.isEmpty()) {
 				return null;
 			}
 			return (T) node;
 		}
-		return this.objectMapper.readValue(parser, type);
+		return this.jsonMapper.readValue(parser, type);
 	}
 
 }

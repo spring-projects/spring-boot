@@ -20,7 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import graphql.schema.DataFetcher;
+import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Flux;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test utility class holding {@link DataFetcher} implementations.
@@ -39,14 +42,22 @@ public final class GraphQlTestDataFetchers {
 	}
 
 	public static DataFetcher<Book> getBookByIdDataFetcher() {
-		return (environment) -> getBookById(environment.getArgument("id"));
+		return (environment) -> {
+			String id = environment.getArgument("id");
+			assertThat(id).isNotNull();
+			return getBookById(id);
+		};
 	}
 
 	public static DataFetcher<Flux<Book>> getBooksOnSaleDataFetcher() {
-		return (environment) -> getBooksOnSale(environment.getArgument("minPages"));
+		return (environment) -> {
+			Integer minPages = environment.getArgument("minPages");
+			assertThat(minPages).isNotNull();
+			return getBooksOnSale(minPages);
+		};
 	}
 
-	public static Book getBookById(String id) {
+	public static @Nullable Book getBookById(String id) {
 		return books.stream().filter((book) -> book.getId().equals(id)).findFirst().orElse(null);
 	}
 

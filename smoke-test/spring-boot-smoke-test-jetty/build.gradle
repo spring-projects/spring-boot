@@ -26,6 +26,6 @@ dependencies {
 	}
 	implementation(project(":starter:spring-boot-starter-jetty"))
 
-	testImplementation(project(":starter:spring-boot-starter-restclient-test"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }

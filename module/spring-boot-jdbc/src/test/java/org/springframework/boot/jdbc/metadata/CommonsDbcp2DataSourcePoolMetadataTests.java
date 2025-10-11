@@ -19,6 +19,7 @@ package org.springframework.boot.jdbc.metadata;
 import java.time.Duration;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +43,7 @@ class CommonsDbcp2DataSourcePoolMetadataTests
 	void getPoolUsageWithNoCurrent() {
 		CommonsDbcp2DataSourcePoolMetadata dsm = new CommonsDbcp2DataSourcePoolMetadata(createDataSource()) {
 			@Override
-			public Integer getActive() {
+			public @Nullable Integer getActive() {
 				return null;
 			}
 		};
@@ -53,7 +54,7 @@ class CommonsDbcp2DataSourcePoolMetadataTests
 	void getPoolUsageWithNoMax() {
 		CommonsDbcp2DataSourcePoolMetadata dsm = new CommonsDbcp2DataSourcePoolMetadata(createDataSource()) {
 			@Override
-			public Integer getMax() {
+			public @Nullable Integer getMax() {
 				return null;
 			}
 		};

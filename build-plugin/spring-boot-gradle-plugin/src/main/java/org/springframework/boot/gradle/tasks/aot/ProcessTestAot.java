@@ -43,7 +43,7 @@ import org.springframework.util.Assert;
  * @since 3.0.0
  */
 @CacheableTask
-public class ProcessTestAot extends AbstractAot {
+public abstract class ProcessTestAot extends AbstractAot {
 
 	private @Nullable FileCollection classpathRoots;
 

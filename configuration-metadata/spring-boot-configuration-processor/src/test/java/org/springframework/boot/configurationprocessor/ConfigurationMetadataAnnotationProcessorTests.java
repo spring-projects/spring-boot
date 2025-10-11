@@ -521,7 +521,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	@Test
 	void recordProperties() {
 		String source = """
-				@org.springframework.boot.configurationsample.ConfigurationProperties("implicit")
+				@org.springframework.boot.configurationsample.TestConfigurationProperties("implicit")
 				public record ExampleRecord(String someString, Integer someInteger) {
 				}
 				""";
@@ -533,10 +533,10 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	@Test
 	void recordPropertiesWithDefaultValues() {
 		String source = """
-				@org.springframework.boot.configurationsample.ConfigurationProperties("record.defaults")
+				@org.springframework.boot.configurationsample.TestConfigurationProperties("record.defaults")
 				public record ExampleRecord(
-					@org.springframework.boot.configurationsample.DefaultValue("An1s9n") String someString,
-					@org.springframework.boot.configurationsample.DefaultValue("594") Integer someInteger) {
+					@org.springframework.boot.configurationsample.TestDefaultValue("An1s9n") String someString,
+					@org.springframework.boot.configurationsample.TestDefaultValue("594") Integer someInteger) {
 				}
 				""";
 		ConfigurationMetadata metadata = compile(source);
@@ -549,9 +549,9 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	@Test
 	void multiConstructorRecordProperties() {
 		String source = """
-				@org.springframework.boot.configurationsample.ConfigurationProperties("multi")
+				@org.springframework.boot.configurationsample.TestConfigurationProperties("multi")
 				public record ExampleRecord(String someString, Integer someInteger) {
-					@org.springframework.boot.configurationsample.ConstructorBinding
+					@org.springframework.boot.configurationsample.TestConstructorBinding
 					public ExampleRecord(String someString) {
 						this(someString, 42);
 					}

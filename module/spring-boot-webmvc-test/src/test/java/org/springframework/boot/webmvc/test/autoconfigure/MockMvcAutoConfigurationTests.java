@@ -21,17 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.web.reactive.client.WebTestClientBuilderCustomizer;
-import org.springframework.boot.test.web.servlet.client.RestTestClientBuilderCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
-import org.springframework.test.web.servlet.client.RestTestClient;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,68 +72,6 @@ class MockMvcAutoConfigurationTests {
 			mvc.get().uri("/dummy").exchange();
 			then(mockMvc).should().perform(any(RequestBuilder.class));
 		});
-	}
-
-	@Test
-	void registersWebTestClient() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(WebTestClient.class));
-	}
-
-	@Test
-	void shouldNotRegisterWebTestClientIfWebFluxMissing() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(WebClient.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(WebTestClient.class));
-	}
-
-	@Test
-	void shouldApplyWebTestClientCustomizers() {
-		this.contextRunner.withUserConfiguration(WebTestClientCustomConfig.class).run((context) -> {
-			assertThat(context).hasSingleBean(WebTestClient.class);
-			assertThat(context).hasBean("myWebTestClientCustomizer");
-			then(context.getBean("myWebTestClientCustomizer", WebTestClientBuilderCustomizer.class)).should()
-				.customize(any(WebTestClient.Builder.class));
-		});
-	}
-
-	@Test
-	void registersRestTestClient() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(RestTestClient.class));
-	}
-
-	@Test
-	void shouldNotRegisterRestTestClientIfRestClientIsMissing() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(RestClient.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(RestTestClient.class));
-	}
-
-	@Test
-	void shouldApplyRestTestClientCustomizers() {
-		this.contextRunner.withUserConfiguration(RestTestClientCustomConfig.class).run((context) -> {
-			assertThat(context).hasSingleBean(RestTestClient.class);
-			assertThat(context).hasBean("myRestTestClientCustomizer");
-			then(context.getBean("myRestTestClientCustomizer", RestTestClientBuilderCustomizer.class)).should()
-				.customize(any(RestTestClient.Builder.class));
-		});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class WebTestClientCustomConfig {
-
-		@Bean
-		WebTestClientBuilderCustomizer myWebTestClientCustomizer() {
-			return mock(WebTestClientBuilderCustomizer.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class RestTestClientCustomConfig {
-
-		@Bean
-		RestTestClientBuilderCustomizer myRestTestClientCustomizer() {
-			return mock(RestTestClientBuilderCustomizer.class);
-		}
-
 	}
 
 }

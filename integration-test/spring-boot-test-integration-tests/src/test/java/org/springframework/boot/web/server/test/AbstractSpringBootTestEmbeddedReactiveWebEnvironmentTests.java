@@ -23,12 +23,14 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.restclient.test.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.context.reactive.ReactiveWebApplicationContext;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
+import org.springframework.boot.webtestclient.AutoConfigureWebTestClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@AutoConfigureWebTestClient
+@AutoConfigureTestRestTemplate
 abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 
 	@LocalServerPort

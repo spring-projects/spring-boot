@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
  */
 class AutoConfiguredRestClientSslTests {
 
-	private final ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings
+	private final HttpClientSettings settings = HttpClientSettings
 		.ofSslBundle(mock(SslBundle.class, "Default SslBundle"))
 		.withRedirects(HttpRedirects.DONT_FOLLOW)
 		.withReadTimeout(Duration.ofSeconds(10))

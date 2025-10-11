@@ -30,7 +30,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -339,10 +339,9 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
-	void requestFactorySettingsAppliesSettings() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(1));
-		RestTemplate template = this.builder.requestFactorySettings(settings).build();
+	void clientSettingsAppliesSettings() {
+		HttpClientSettings settings = HttpClientSettings.defaults().withConnectTimeout(Duration.ofSeconds(1));
+		RestTemplate template = this.builder.clientSettings(settings).build();
 		assertThat(template.getRequestFactory()).extracting("connectTimeout").isEqualTo(1000L);
 	}
 
@@ -481,7 +480,7 @@ class RestTemplateBuilderTests {
 
 	@Test
 	void configureRedirects() {
-		assertThat(this.builder.redirects(HttpRedirects.DONT_FOLLOW)).extracting("requestFactorySettings")
+		assertThat(this.builder.redirects(HttpRedirects.DONT_FOLLOW)).extracting("clientSettings")
 			.extracting("redirects")
 			.isSameAs(HttpRedirects.DONT_FOLLOW);
 	}

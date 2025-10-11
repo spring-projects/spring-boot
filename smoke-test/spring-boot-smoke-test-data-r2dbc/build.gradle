@@ -28,4 +28,5 @@ dependencies {
 	runtimeOnly("io.r2dbc:r2dbc-h2")
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webflux-test"))
 }

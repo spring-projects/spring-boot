@@ -33,7 +33,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = { "org.springframework.boot.webflux.test.autoconfigure.WebTestClientAutoConfiguration",
+@AutoConfiguration(afterName = { "org.springframework.boot.webtestclient.WebTestClientAutoConfiguration",
 		"org.springframework.boot.webmvc.test.autoconfigure.MockMvcAutoConfiguration" })
 @ConditionalOnClass({ WebClient.class, WebTestClient.class, WebGraphQlTester.class })
 public final class HttpGraphQlTesterAutoConfiguration {

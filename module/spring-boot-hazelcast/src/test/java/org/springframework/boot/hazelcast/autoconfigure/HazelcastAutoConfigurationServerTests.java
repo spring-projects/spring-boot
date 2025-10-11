@@ -31,6 +31,7 @@ import com.hazelcast.map.EntryProcessor;
 import com.hazelcast.map.IMap;
 import com.hazelcast.spring.context.SpringAware;
 import com.hazelcast.spring.context.SpringManagedContext;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
@@ -319,7 +320,7 @@ class HazelcastAutoConfigurationServerTests {
 		private Environment environment;
 
 		@Override
-		public String process(Map.Entry<String, V> entry) {
+		public @Nullable String process(Map.Entry<String, V> entry) {
 			return this.environment.getProperty(entry.getKey());
 		}
 

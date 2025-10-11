@@ -26,8 +26,11 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.StreamWriteFeature;
 import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
@@ -538,6 +541,56 @@ class JacksonAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void whenUsingJackson2DefaultsShouldBeConfiguredUsingConfigureForJackson2() {
+		this.contextRunner.withPropertyValues("spring.jackson.use-jackson2-defaults=true").run((context) -> {
+			JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+			JsonMapper jackson2ConfiguredJsonMapper = JsonMapper.builder().configureForJackson2().build();
+			for (DateTimeFeature feature : DateTimeFeature.values()) {
+				boolean expected = (feature == DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS
+						|| feature == DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS) ? false
+								: jackson2ConfiguredJsonMapper.isEnabled(feature);
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name()).isEqualTo(expected);
+			}
+			for (DeserializationFeature feature : DeserializationFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (EnumFeature feature : EnumFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (JsonNodeFeature feature : JsonNodeFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (JsonReadFeature feature : JsonReadFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (JsonWriteFeature feature : JsonWriteFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (MapperFeature feature : MapperFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (SerializationFeature feature : SerializationFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (StreamReadFeature feature : StreamReadFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+			for (StreamWriteFeature feature : StreamWriteFeature.values()) {
+				assertThat(jsonMapper.isEnabled(feature)).as(feature.name())
+					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
+			}
+		});
+	}
+
 	static class MyDateFormat extends SimpleDateFormat {
 
 		MyDateFormat() {
@@ -624,9 +677,9 @@ class JacksonAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class JsonMapperBuilderConsumerConfig {
 
-		JsonMapper.Builder builderOne;
+		JsonMapper.@Nullable Builder builderOne;
 
-		JsonMapper.Builder builderTwo;
+		JsonMapper.@Nullable Builder builderTwo;
 
 		@Bean
 		String consumerOne(JsonMapper.Builder builder) {
@@ -644,7 +697,7 @@ class JacksonAutoConfigurationTests {
 
 	protected static final class Foo {
 
-		private String name;
+		private @Nullable String name;
 
 		private Foo() {
 		}
@@ -653,11 +706,11 @@ class JacksonAutoConfigurationTests {
 			return new Foo();
 		}
 
-		public String getName() {
+		public @Nullable String getName() {
 			return this.name;
 		}
 
-		public void setName(String name) {
+		public void setName(@Nullable String name) {
 			this.name = name;
 		}
 
@@ -665,13 +718,13 @@ class JacksonAutoConfigurationTests {
 
 	static class Bar {
 
-		private String propertyName;
+		private @Nullable String propertyName;
 
-		String getPropertyName() {
+		@Nullable String getPropertyName() {
 			return this.propertyName;
 		}
 
-		void setPropertyName(String propertyName) {
+		void setPropertyName(@Nullable String propertyName) {
 			this.propertyName = propertyName;
 		}
 
@@ -708,11 +761,11 @@ class JacksonAutoConfigurationTests {
 	@SuppressWarnings("unused")
 	static class VisibilityBean {
 
-		private String property1;
+		private @Nullable String property1;
 
-		public String property2;
+		public @Nullable String property2;
 
-		String getProperty3() {
+		@Nullable String getProperty3() {
 			return null;
 		}
 
@@ -721,13 +774,13 @@ class JacksonAutoConfigurationTests {
 	static class Person {
 
 		@JsonFormat(pattern = "yyyyMMdd")
-		private Date birthDate;
+		private @Nullable Date birthDate;
 
-		Date getBirthDate() {
+		@Nullable Date getBirthDate() {
 			return this.birthDate;
 		}
 
-		void setBirthDate(Date birthDate) {
+		void setBirthDate(@Nullable Date birthDate) {
 			this.birthDate = birthDate;
 		}
 

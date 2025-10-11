@@ -120,9 +120,8 @@ public final class ReactorClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	protected ReactorClientHttpRequestFactory createClientHttpRequestFactory(
-			ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withTimeouts(null, null)));
+	protected ReactorClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings.withTimeouts(null, null));
 		ReactorClientHttpRequestFactory requestFactory = new ReactorClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);

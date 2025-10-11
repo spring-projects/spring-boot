@@ -22,25 +22,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.Function;
 
 import org.gradle.api.file.ConfigurableFilePermissions;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
-import org.gradle.api.file.RelativePath;
 import org.gradle.api.internal.file.copy.CopyAction;
-import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
-import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.java.archives.Manifest;
 import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
-import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
 import org.gradle.util.GradleVersion;
@@ -142,7 +136,7 @@ class BootArchiveSupport {
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirPermissions,
 				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript,
 				librarySpec, compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver);
-		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
+		return action;
 	}
 
 	private @Nullable Integer getUnixNumericDirPermissions(CopySpec copySpec) {
@@ -159,14 +153,22 @@ class BootArchiveSupport {
 		return permissions.isPresent() ? permissions.get().toUnixNumeric() : null;
 	}
 
-	@SuppressWarnings("deprecation")
 	private @Nullable Integer getDirMode(CopySpec copySpec) {
-		return copySpec.getDirMode();
+		try {
+			return (Integer) copySpec.getClass().getMethod("getDirMode").invoke(copySpec);
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("Failed to get dir mode from CopySpec", ex);
+		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private @Nullable Integer getFileMode(CopySpec copySpec) {
-		return copySpec.getFileMode();
+		try {
+			return (Integer) copySpec.getClass().getMethod("getFileMode").invoke(copySpec);
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("Failed to get file mode from CopySpec", ex);
+		}
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {
@@ -227,28 +229,6 @@ class BootArchiveSupport {
 
 	void moveToRoot(FileCopyDetails details) {
 		details.setRelativePath(details.getRelativeSourcePath());
-	}
-
-	/**
-	 * {@link CopyAction} variant that sorts entries to ensure reproducible ordering.
-	 */
-	private static final class ReproducibleOrderingCopyAction implements CopyAction {
-
-		private final CopyAction delegate;
-
-		private ReproducibleOrderingCopyAction(CopyAction delegate) {
-			this.delegate = delegate;
-		}
-
-		@Override
-		public WorkResult execute(CopyActionProcessingStream stream) {
-			return this.delegate.execute((action) -> {
-				Map<RelativePath, FileCopyDetailsInternal> detailsByPath = new TreeMap<>();
-				stream.process((details) -> detailsByPath.put(details.getRelativePath(), details));
-				detailsByPath.values().forEach(action::processFile);
-			});
-		}
-
 	}
 
 }

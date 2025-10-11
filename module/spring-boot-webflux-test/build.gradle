@@ -26,6 +26,7 @@ description = "Spring Boot WebFlux Test"
 dependencies {
 	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-webflux"))
+	api(project(":module:spring-boot-webtestclient"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-http-codec"))

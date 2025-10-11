@@ -18,7 +18,7 @@ package org.springframework.boot.configurationsample.deprecation;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Test configuration for DBCP2 {@link BasicDataSource}.
@@ -27,7 +27,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class Dbcp2Configuration {
 
-	@ConfigurationProperties("spring.datasource.dbcp2")
+	@TestConfigurationProperties("spring.datasource.dbcp2")
 	BasicDataSource basicDataSource() {
 		return new BasicDataSource();
 	}

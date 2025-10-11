@@ -23,8 +23,10 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.http.MediaType
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.boot.webtestclient.AutoConfigureWebTestClient
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 class CoroutinesControllerTests(@Autowired private val webClient: WebTestClient) {
 
 	@Test

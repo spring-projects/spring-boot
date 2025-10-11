@@ -41,12 +41,14 @@ class ClassLoaderFilesTests {
 	private final ClassLoaderFiles files = new ClassLoaderFiles();
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addFileNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
 			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addFileFileMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile("test", null))
 			.withMessageContaining("'file' must not be null");
@@ -151,6 +153,7 @@ class ClassLoaderFilesTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void classLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFiles(null))
 			.withMessageContaining("'classLoaderFiles' must not be null");

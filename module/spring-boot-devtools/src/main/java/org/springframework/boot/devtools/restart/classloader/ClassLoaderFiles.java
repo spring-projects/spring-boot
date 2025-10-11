@@ -143,7 +143,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	}
 
 	@Override
-	public @Nullable ClassLoaderFile getFile(String name) {
+	public @Nullable ClassLoaderFile getFile(@Nullable String name) {
 		return this.filesByName.get(name);
 	}
 

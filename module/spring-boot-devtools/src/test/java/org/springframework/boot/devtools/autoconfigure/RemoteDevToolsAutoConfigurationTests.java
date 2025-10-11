@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import jakarta.servlet.Filter;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ class RemoteDevToolsAutoConfigurationTests {
 
 	private static final String DEFAULT_SECRET_HEADER_NAME = RemoteDevToolsProperties.DEFAULT_SECRET_HEADER_NAME;
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	private MockHttpServletRequest request;
 
@@ -90,8 +91,10 @@ class RemoteDevToolsAutoConfigurationTests {
 	@Test
 	void disabledIfRemoteSecretIsMissing() throws Exception {
 		this.context = getContext(() -> loadContext("a:b"));
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean(DispatcherFilter.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(DispatcherFilter.class);
+		});
 	}
 
 	@Test
@@ -182,8 +185,10 @@ class RemoteDevToolsAutoConfigurationTests {
 	void disableRestart() throws Exception {
 		this.context = getContext(() -> loadContext("spring.devtools.remote.secret:supersecret",
 				"spring.devtools.remote.restart.enabled:false"));
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean("remoteRestartHandlerMapper"));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean("remoteRestartHandlerMapper");
+		});
 	}
 
 	@Test
@@ -218,10 +223,13 @@ class RemoteDevToolsAutoConfigurationTests {
 		});
 		thread.start();
 		thread.join();
-		return atomicReference.get();
+		AnnotationConfigServletWebApplicationContext context = atomicReference.get();
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	private void assertRestartInvoked(boolean value) {
+		assertThat(this.context).isNotNull();
 		assertThat(this.context.getBean(MockHttpRestartServer.class).invoked).isEqualTo(value);
 	}
 

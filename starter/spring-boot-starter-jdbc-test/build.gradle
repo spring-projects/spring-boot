@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing JDBC with the HikariCP connection pool"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-jdbc"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-jdbc-test"))

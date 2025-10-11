@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.Launcher;
@@ -44,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ImportsContextCustomizerFactoryWithAutoConfigurationTests {
 
-	static ApplicationContext contextFromTest;
+	static @Nullable ApplicationContext contextFromTest;
 
 	@Test
 	void testClassesThatHaveSameAnnotationsShareAContext() {

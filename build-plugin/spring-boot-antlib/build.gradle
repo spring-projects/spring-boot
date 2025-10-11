@@ -80,7 +80,6 @@ tasks.register("integrationTest") {
 					ant.propertyref(name: "ivy.class.path")
 				}
 				plainlistener()
-				file(layout.buildDirectory.dir("test-results/integrationTest")).mkdirs()
 				xmllistener(toDir: resultsDir)
 				fileset(dir: layout.buildDirectory.dir("it").get().asFile.toString(), includes: "**/build.xml")
 			}

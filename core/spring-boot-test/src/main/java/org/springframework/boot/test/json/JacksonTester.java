@@ -56,7 +56,7 @@ import org.springframework.util.Assert;
  *     &#064;Before
  *     public void setup() {
  *         JsonMapper jsonMapper = new JsonMapper();
- *         JacksonTester.initFields(this, objectMapper);
+ *         JacksonTester.initFields(this, jsonMapper);
  *     }
  *
  *     &#064;Test
@@ -88,7 +88,7 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 	 * @since 4.0.0
 	 */
 	protected JacksonTester(JsonMapper jsonMapper) {
-		Assert.notNull(jsonMapper, "'objectMapper' must not be null");
+		Assert.notNull(jsonMapper, "'jsonMapper' must not be null");
 		this.jsonMapper = jsonMapper;
 	}
 

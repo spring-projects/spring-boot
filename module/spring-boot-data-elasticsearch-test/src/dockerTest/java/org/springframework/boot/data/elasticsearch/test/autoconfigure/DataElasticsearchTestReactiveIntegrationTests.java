@@ -58,6 +58,7 @@ class DataElasticsearchTestReactiveIntegrationTests {
 		ExampleDocument exampleDocument = new ExampleDocument();
 		exampleDocument.setText("Look, new @DataElasticsearchTest!");
 		exampleDocument = this.exampleReactiveRepository.save(exampleDocument).block(Duration.ofSeconds(30));
+		assertThat(exampleDocument).isNotNull();
 		assertThat(exampleDocument.getId()).isNotNull();
 		assertThat(this.elasticsearchTemplate.exists(exampleDocument.getId(), ExampleDocument.class)
 			.block(Duration.ofSeconds(30))).isTrue();

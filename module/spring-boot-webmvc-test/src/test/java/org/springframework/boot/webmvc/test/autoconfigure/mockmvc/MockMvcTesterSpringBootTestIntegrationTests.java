@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -27,7 +28,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.MockMvcPrint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest
 @AutoConfigureMockMvc(print = MockMvcPrint.SYSTEM_ERR, printOnlyOnFailure = false)
+@AutoConfigureRestTestClient
 @ExtendWith(OutputCaptureExtension.class)
 class MockMvcTesterSpringBootTestIntegrationTests {
 
@@ -74,11 +75,6 @@ class MockMvcTesterSpringBootTestIntegrationTests {
 	@Test
 	void shouldHaveRealService() {
 		assertThat(this.applicationContext.getBean(ExampleRealService.class)).isNotNull();
-	}
-
-	@Test
-	void shouldTestWithWebTestClient(@Autowired WebTestClient webTestClient) {
-		webTestClient.get().uri("/one").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("one");
 	}
 
 	@Test

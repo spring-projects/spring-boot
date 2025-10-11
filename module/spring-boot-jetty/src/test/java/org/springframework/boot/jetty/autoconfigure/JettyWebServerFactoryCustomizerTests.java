@@ -378,7 +378,9 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	private BlockingQueue<?> getQueue(ThreadPool threadPool) {
-		return ReflectionTestUtils.invokeMethod(threadPool, "getQueue");
+		BlockingQueue<?> queue = ReflectionTestUtils.invokeMethod(threadPool, "getQueue");
+		assertThat(queue).isNotNull();
+		return queue;
 	}
 
 	private void bind(String... inlinedProperties) {

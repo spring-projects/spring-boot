@@ -16,21 +16,21 @@
 
 package org.springframework.boot.configurationsample.simple;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.DeprecatedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestDeprecatedConfigurationProperty;
 
 /**
  * Configuration properties with a single deprecated element.
  *
  * @author Phillip Webb
  */
-@ConfigurationProperties("singledeprecated")
+@TestConfigurationProperties("singledeprecated")
 public class DeprecatedSingleProperty {
 
 	private String newName;
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(reason = "renamed", replacement = "singledeprecated.new-name", since = "1.2.3")
+	@TestDeprecatedConfigurationProperty(reason = "renamed", replacement = "singledeprecated.new-name", since = "1.2.3")
 	public String getName() {
 		return getNewName();
 	}

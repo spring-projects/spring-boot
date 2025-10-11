@@ -37,7 +37,6 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient.Builder;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Annotation for a Spring rest client test that focuses <strong>only</strong> on beans
@@ -59,10 +58,6 @@ import org.springframework.web.client.RestTemplate;
  * {@link AutoConfigureMockRestServiceServer @AutoConfigureMockRestServiceServer}
  * annotation can be used.
  * <p>
- * If you are testing a bean that doesn't use {@link RestTemplateBuilder} but instead
- * injects a {@link RestTemplate} directly, you can add
- * {@code @AutoConfigureWebClient(registerRestTemplate=true)}.
- * <p>
  * When using JUnit 4, this annotation should be used in combination with
  * {@code @RunWith(SpringRunner.class)}.
  *
@@ -79,8 +74,8 @@ import org.springframework.web.client.RestTemplate;
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(RestClientTypeExcludeFilter.class)
-@AutoConfigureWebClient
 @AutoConfigureMockRestServiceServer
+@AutoConfigureRestClient
 @ImportAutoConfiguration
 public @interface RestClientTest {
 

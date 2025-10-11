@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing Redis key-value data store with Spring Data Redis and the Lettuce client"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-data-redis"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-data-redis-test"))

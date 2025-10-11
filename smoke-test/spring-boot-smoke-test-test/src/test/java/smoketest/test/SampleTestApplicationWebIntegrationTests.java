@@ -24,7 +24,8 @@ import smoketest.test.service.VehicleDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
-import org.springframework.boot.restclient.test.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ import static org.mockito.BDDMockito.given;
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@AutoConfigureTestRestTemplate
 class SampleTestApplicationWebIntegrationTests {
 
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("01234567890123456");

@@ -21,5 +21,7 @@ plugins {
 description = "Starter for testing Spring HATEOS to build hypermedia-based RESTful Spring MVC web applications"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-hateoas"))
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-webmvc-test"))
 }

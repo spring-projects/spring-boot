@@ -21,7 +21,7 @@ import java.io.Writer;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Sample config with types that should not be added to the meta-data as we have no way to
@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("excluded")
+@TestConfigurationProperties("excluded")
 public class ExcludedTypesPojo {
 
 	private String name;

@@ -77,12 +77,16 @@ class JettyClientHttpRequestFactoryBuilderTests
 
 	@Override
 	protected long connectTimeout(JettyClientHttpRequestFactory requestFactory) {
-		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		assertThat(httpClient).isNotNull();
+		return httpClient.getConnectTimeout();
 	}
 
 	@Override
 	protected long readTimeout(JettyClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		Object field = ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		assertThat(field).isNotNull();
+		return (long) field;
 	}
 
 	static class TestHttpClientTransport extends HttpClientTransportOverHTTP {

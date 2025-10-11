@@ -30,7 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import tools.jackson.core.type.TypeReference;
 
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.boot.testsupport.classpath.resources.ResourcesRoot;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
@@ -405,13 +405,13 @@ class DockerRegistryConfigAuthenticationTests {
 
 	private Credential getCredentials(String resourceName) throws Exception {
 		try (InputStream inputStream = new ClassPathResource(resourceName).getInputStream()) {
-			return new Credential(SharedObjectMapper.get().readTree(inputStream));
+			return new Credential(SharedJsonMapper.get().readTree(inputStream));
 		}
 	}
 
 	private Map<String, String> decode(String authHeader) throws Exception {
 		assertThat(authHeader).isNotNull();
-		return SharedObjectMapper.get().readValue(Base64.getDecoder().decode(authHeader), new TypeReference<>() {
+		return SharedJsonMapper.get().readValue(Base64.getDecoder().decode(authHeader), new TypeReference<>() {
 		});
 	}
 

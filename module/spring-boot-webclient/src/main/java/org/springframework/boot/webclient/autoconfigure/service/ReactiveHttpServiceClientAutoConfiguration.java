@@ -16,21 +16,20 @@
 
 package org.springframework.boot.webclient.autoconfigure.service;
 
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorAutoConfiguration;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientProperties;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
-import org.springframework.boot.http.client.reactive.ClientHttpConnectorSettings;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.webclient.WebClientCustomizer;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.ApiVersionFormatter;
-import org.springframework.web.client.ApiVersionInserter;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
@@ -43,29 +42,19 @@ import org.springframework.web.service.registry.HttpServiceProxyRegistry;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(after = { ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class })
+@AutoConfiguration(after = { ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class })
 @ConditionalOnClass(WebClientAdapter.class)
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
-@EnableConfigurationProperties(ReactiveHttpClientServiceProperties.class)
-public final class ReactiveHttpServiceClientAutoConfiguration implements BeanClassLoaderAware {
-
-	@SuppressWarnings("NullAway.Init")
-	private ClassLoader beanClassLoader;
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
-	}
+@EnableConfigurationProperties(HttpServiceClientProperties.class)
+public final class ReactiveHttpServiceClientAutoConfiguration {
 
 	@Bean
-	WebClientPropertiesHttpServiceGroupConfigurer webClientPropertiesHttpServiceGroupConfigurer(
-			ObjectProvider<SslBundles> sslBundles, ReactiveHttpClientServiceProperties serviceProperties,
-			ObjectProvider<ClientHttpConnectorBuilder<?>> clientConnectorBuilder,
-			ObjectProvider<ClientHttpConnectorSettings> clientConnectorSettings,
-			ObjectProvider<ApiVersionInserter> apiVersionInserter,
-			ObjectProvider<ApiVersionFormatter> apiVersionFormatter) {
-		return new WebClientPropertiesHttpServiceGroupConfigurer(this.beanClassLoader, sslBundles, serviceProperties,
-				clientConnectorBuilder, clientConnectorSettings, apiVersionInserter, apiVersionFormatter);
+	PropertiesWebClientHttpServiceGroupConfigurer webClientPropertiesHttpServiceGroupConfigurer(
+			ResourceLoader resourceLoader, HttpServiceClientProperties properties,
+			ObjectProvider<SslBundles> sslBundles, ObjectProvider<ClientHttpConnectorBuilder<?>> clientConnectorBuilder,
+			ObjectProvider<HttpClientSettings> httpClientSettings) {
+		return new PropertiesWebClientHttpServiceGroupConfigurer(resourceLoader.getClassLoader(), properties,
+				sslBundles.getIfAvailable(), clientConnectorBuilder, httpClientSettings.getIfAvailable());
 	}
 
 	@Bean

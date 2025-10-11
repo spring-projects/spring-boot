@@ -26,6 +26,7 @@ import java.util.function.UnaryOperator;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.JdkHttpClientBuilder;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.util.Assert;
@@ -96,8 +97,8 @@ public final class JdkClientHttpConnectorBuilder extends AbstractClientHttpConne
 	}
 
 	@Override
-	protected JdkClientHttpConnector createClientHttpConnector(ClientHttpConnectorSettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withReadTimeout(null)));
+	protected JdkClientHttpConnector createClientHttpConnector(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings.withReadTimeout(null));
 		JdkClientHttpConnector connector = new JdkClientHttpConnector(httpClient);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::readTimeout).to(connector::setReadTimeout);

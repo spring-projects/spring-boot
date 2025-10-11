@@ -35,7 +35,9 @@ class ReactiveHealthContributorTests {
 		HealthIndicator indicator = () -> Health.outOfService().build();
 		ReactiveHealthContributor adapted = ReactiveHealthContributor.adapt(indicator);
 		assertThat(adapted).isInstanceOf(HealthIndicatorAdapter.class);
-		assertThat(((ReactiveHealthIndicator) adapted).health().block().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
+		Health health = ((ReactiveHealthIndicator) adapted).health().block();
+		assertThat(health).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
 
 	@Test
@@ -46,7 +48,10 @@ class ReactiveHealthContributorTests {
 		ReactiveHealthContributor adapted = ReactiveHealthContributor.adapt(contributor);
 		assertThat(adapted).isInstanceOf(CompositeHealthContributorAdapter.class);
 		ReactiveHealthContributor contained = ((CompositeReactiveHealthContributor) adapted).getContributor("a");
-		assertThat(((ReactiveHealthIndicator) contained).health().block().getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
+		assertThat(contained).isNotNull();
+		Health health = ((ReactiveHealthIndicator) contained).health().block();
+		assertThat(health).isNotNull();
+		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 	}
 
 }

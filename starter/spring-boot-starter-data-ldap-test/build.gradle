@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing Spring Data LDAP"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-data-ldap"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-data-ldap-test"))

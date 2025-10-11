@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing Spring Boot's Actuator which provides production ready features to help you monitor and manage your application"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-actuator"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-micrometer-metrics-test"))

@@ -19,6 +19,7 @@ package org.springframework.boot.data.rest.autoconfigure;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
@@ -57,29 +58,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DataRestAutoConfigurationTests {
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	@AfterEach
 	void tearDown() {
-		if (this.context != null) {
-			this.context.close();
+		if (getContext() != null) {
+			getContext().close();
 		}
 	}
 
 	@Test
 	void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		assertThat(getContext().getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
 	}
 
 	@Test
 	void testWithCustomBasePath() {
 		load(TestConfiguration.class, "spring.data.rest.base-path:foo");
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
-		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
+		assertThat(getContext().getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		RepositoryRestConfiguration bean = getContext().getBean(RepositoryRestConfiguration.class);
 		URI expectedUri = URI.create("/foo");
 		assertThat(bean.getBasePath()).as("Custom basePath not set").isEqualTo(expectedUri);
-		BaseUri baseUri = this.context.getBean(BaseUri.class);
+		BaseUri baseUri = getContext().getBean(BaseUri.class);
 		assertThat(expectedUri).as("Custom basePath has not been applied to BaseUri bean").isEqualTo(baseUri.getUri());
 	}
 
@@ -91,8 +92,8 @@ class DataRestAutoConfigurationTests {
 				"spring.data.rest.default-media-type:application/my-json",
 				"spring.data.rest.return-body-on-create:false", "spring.data.rest.return-body-on-update:false",
 				"spring.data.rest.enable-enum-translation:true");
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
-		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
+		assertThat(getContext().getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		RepositoryRestConfiguration bean = getContext().getBean(RepositoryRestConfiguration.class);
 		assertThat(bean.getDefaultPageSize()).isEqualTo(42);
 		assertThat(bean.getMaxPageSize()).isEqualTo(78);
 		assertThat(bean.getPageParamName()).isEqualTo("_page");
@@ -100,17 +101,24 @@ class DataRestAutoConfigurationTests {
 		assertThat(bean.getSortParamName()).isEqualTo("_sort");
 		assertThat(bean.getRepositoryDetectionStrategy()).isEqualTo(RepositoryDetectionStrategies.VISIBILITY);
 		assertThat(bean.getDefaultMediaType()).isEqualTo(MediaType.parseMediaType("application/my-json"));
+		assertReturnBody(bean);
+		assertThat(bean.isEnableEnumTranslation()).isTrue();
+	}
+
+	// https://github.com/spring-projects/spring-data-rest/issues/2515
+	// https://github.com/spring-projects/spring-data-rest/issues/2516
+	@SuppressWarnings("NullAway")
+	private void assertReturnBody(RepositoryRestConfiguration bean) {
 		assertThat(bean.returnBodyOnCreate(null)).isFalse();
 		assertThat(bean.returnBodyOnUpdate(null)).isFalse();
-		assertThat(bean.isEnableEnumTranslation()).isTrue();
 	}
 
 	@Test
 	void testWithCustomConfigurer() {
 		load(TestConfigurationWithConfigurer.class, "spring.data.rest.detection-strategy=visibility",
 				"spring.data.rest.default-media-type:application/my-json");
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
-		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
+		assertThat(getContext().getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		RepositoryRestConfiguration bean = getContext().getBean(RepositoryRestConfiguration.class);
 		assertThat(bean.getRepositoryDetectionStrategy()).isEqualTo(RepositoryDetectionStrategies.ALL);
 		assertThat(bean.getDefaultMediaType()).isEqualTo(MediaType.parseMediaType("application/my-custom-json"));
 		assertThat(bean.getMaxPageSize()).isEqualTo(78);
@@ -119,8 +127,8 @@ class DataRestAutoConfigurationTests {
 	@Test
 	void backOffWithCustomConfiguration() {
 		load(TestConfigurationWithRestMvcConfig.class, "spring.data.rest.base-path:foo");
-		assertThat(this.context.getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
-		RepositoryRestConfiguration bean = this.context.getBean(RepositoryRestConfiguration.class);
+		assertThat(getContext().getBean(RepositoryRestMvcConfiguration.class)).isNotNull();
+		RepositoryRestConfiguration bean = getContext().getBean(RepositoryRestConfiguration.class);
 		assertThat(bean.getBasePath()).isEqualTo(URI.create(""));
 	}
 
@@ -131,6 +139,12 @@ class DataRestAutoConfigurationTests {
 		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();
 		this.context = applicationContext;
+	}
+
+	private AnnotationConfigServletWebApplicationContext getContext() {
+		AnnotationConfigServletWebApplicationContext context = this.context;
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -22,7 +22,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
 /**
  * Configuration properties using lombok @Getter/@Setter at class level.
@@ -31,7 +31,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 @Getter
 @Setter
-@ConfigurationProperties("simple")
+@TestConfigurationProperties("simple")
 @SuppressWarnings("unused")
 public class LombokSimpleProperties {
 

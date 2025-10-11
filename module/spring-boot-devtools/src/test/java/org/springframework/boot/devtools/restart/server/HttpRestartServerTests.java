@@ -48,6 +48,7 @@ import static org.mockito.BDDMockito.then;
 class HttpRestartServerTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private RestartServer delegate;
 
 	private HttpRestartServer server;
@@ -58,12 +59,14 @@ class HttpRestartServerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void sourceDirectoryUrlFilterMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((SourceDirectoryUrlFilter) null))
 			.withMessageContaining("'sourceDirectoryUrlFilter' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void restartServerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpRestartServer((RestartServer) null))
 			.withMessageContaining("'restartServer' must not be null");

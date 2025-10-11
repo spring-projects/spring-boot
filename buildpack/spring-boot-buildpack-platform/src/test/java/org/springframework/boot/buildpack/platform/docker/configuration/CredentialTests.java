@@ -21,7 +21,7 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.core.io.ClassPathResource;
 
@@ -83,7 +83,7 @@ class CredentialTests {
 
 	private Credential getCredentials(String name) throws IOException {
 		try (InputStream inputStream = new ClassPathResource(name).getInputStream()) {
-			return new Credential(SharedObjectMapper.get().readTree(inputStream));
+			return new Credential(SharedJsonMapper.get().readTree(inputStream));
 		}
 	}
 

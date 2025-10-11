@@ -76,6 +76,7 @@ class JettyReactiveWebServerAutoConfigurationTests extends AbstractReactiveWebSe
 		this.serverRunner.run((context) -> {
 			WebServer webServer = ((ReactiveWebServerApplicationContext) context.getSourceApplicationContext())
 				.getWebServer();
+			assertThat(webServer).isNotNull();
 			ServletContextHandler servletContextHandler = (ServletContextHandler) ((StatisticsHandler) ((JettyWebServer) webServer)
 				.getServer()
 				.getHandler()).getHandler();

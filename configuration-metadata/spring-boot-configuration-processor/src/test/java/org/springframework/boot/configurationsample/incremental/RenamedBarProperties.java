@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.incremental;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
-@ConfigurationProperties("bar")
+@TestConfigurationProperties("bar")
 public class RenamedBarProperties {
 
 	private String name;

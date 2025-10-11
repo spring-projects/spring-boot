@@ -24,6 +24,8 @@ import tools.jackson.databind.SerializationContext;
 
 import org.springframework.boot.jackson.types.NameAndAge;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Sample {@link JsonComponent @JsonComponent} used for tests.
  *
@@ -48,6 +50,7 @@ public class NameAndAgeJsonComponent {
 		protected NameAndAge deserializeObject(JsonParser jsonParser, DeserializationContext context, JsonNode tree) {
 			String name = nullSafeValue(tree.get("name"), String.class);
 			Integer age = nullSafeValue(tree.get("age"), Integer.class);
+			assertThat(age).isNotNull();
 			return NameAndAge.create(name, age);
 		}
 

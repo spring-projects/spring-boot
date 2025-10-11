@@ -31,6 +31,7 @@ public class ExampleGraph {
 
 	@Id
 	@GeneratedValue
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
 	@Property

@@ -38,3 +38,8 @@ dependencies {
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("org.springframework:spring-context-support")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+

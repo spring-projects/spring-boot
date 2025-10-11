@@ -29,8 +29,8 @@ import org.springframework.boot.configurationprocessor.metadata.ConfigurationMet
 import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
 import org.springframework.boot.configurationprocessor.test.CompiledMetadataReader;
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.NestedConfigurationProperty;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestNestedConfigurationProperty;
 import org.springframework.core.test.tools.ResourceFile;
 import org.springframework.core.test.tools.SourceFile;
 import org.springframework.core.test.tools.SourceFiles;
@@ -50,8 +50,8 @@ import org.springframework.util.FileCopyUtils;
  */
 public class TestProject {
 
-	private static final Class<?>[] ALWAYS_INCLUDE = { ConfigurationProperties.class,
-			NestedConfigurationProperty.class };
+	private static final Class<?>[] ALWAYS_INCLUDE = { TestConfigurationProperties.class,
+			TestNestedConfigurationProperty.class };
 
 	private SourceFiles sources;
 

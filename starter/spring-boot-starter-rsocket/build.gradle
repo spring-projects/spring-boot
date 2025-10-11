@@ -28,5 +28,6 @@ dependencies {
 	api(project(":module:spring-boot-rsocket"))
 
 	api("io.rsocket:rsocket-transport-netty")
+	api("org.springframework:spring-web")
 	api("tools.jackson.dataformat:jackson-dataformat-cbor")
 }

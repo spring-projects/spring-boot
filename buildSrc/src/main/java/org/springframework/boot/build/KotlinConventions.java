@@ -20,9 +20,9 @@ import java.net.URI;
 
 import dev.adamko.dokkatoo.DokkatooExtension;
 import dev.adamko.dokkatoo.formats.DokkatooHtmlPlugin;
-import io.gitlab.arturbosch.detekt.Detekt;
-import io.gitlab.arturbosch.detekt.DetektPlugin;
-import io.gitlab.arturbosch.detekt.extensions.DetektExtension;
+import dev.detekt.gradle.Detekt;
+import dev.detekt.gradle.extensions.DetektExtension;
+import dev.detekt.gradle.plugin.DetektPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -76,6 +76,7 @@ class KotlinConventions {
 
 	private void configureDokkatoo(Project project) {
 		DokkatooExtension dokkatoo = project.getExtensions().getByType(DokkatooExtension.class);
+		dokkatoo.getVersions().getJetbrainsDokka().set("2.1.0-Beta");
 		dokkatoo.getDokkatooSourceSets().configureEach((sourceSet) -> {
 			if (SourceSet.MAIN_SOURCE_SET_NAME.equals(sourceSet.getName())) {
 				sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
@@ -103,7 +104,9 @@ class KotlinConventions {
 		project.getPlugins().apply(DetektPlugin.class);
 		DetektExtension detekt = project.getExtensions().getByType(DetektExtension.class);
 		detekt.getConfig().setFrom(project.getRootProject().file("config/detekt/config.yml"));
-		project.getTasks().withType(Detekt.class).configureEach((task) -> task.setJvmTarget(JVM_TARGET.getTarget()));
+		project.getTasks()
+			.withType(Detekt.class)
+			.configureEach((task) -> task.getJvmTarget().set(JVM_TARGET.getTarget()));
 	}
 
 }

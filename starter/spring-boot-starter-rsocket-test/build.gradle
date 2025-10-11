@@ -21,6 +21,8 @@ plugins {
 description = "Starter for testing RSocket"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-rsocket"))
+	api(project(":starter:spring-boot-starter-jackson-test"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-rsocket-test"))

@@ -21,5 +21,8 @@ plugins {
 description = "Starter for testing Spring Data repositories exposed over REST using Spring Data REST and Spring MVC"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-data-rest"))
+	api(project(":starter:spring-boot-starter-jackson-test"))
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-webmvc-test"))
 }

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.AutoConfigureWebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "APP-CLIENT-ID=my-client-id", "APP-CLIENT-SECRET=my-client-secret",
 				"YAHOO-CLIENT-ID=my-google-client-id", "YAHOO-CLIENT-SECRET=my-google-client-secret" })
+@AutoConfigureWebTestClient
 class SampleReactiveOAuth2ClientApplicationTests {
 
 	@Autowired

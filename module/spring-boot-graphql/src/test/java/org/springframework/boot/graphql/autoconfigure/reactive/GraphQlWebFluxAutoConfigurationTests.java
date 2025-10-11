@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import graphql.schema.idl.TypeRuntimeWiring;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -354,13 +355,13 @@ class GraphQlWebFluxAutoConfigurationTests {
 		@Bean
 		@Order(-1)
 		RouterFunction<?> before() {
-			return (r) -> null;
+			return (r) -> Mono.empty();
 		}
 
 		@Bean
 		@Order(1)
 		RouterFunction<?> after() {
-			return (r) -> null;
+			return (r) -> Mono.empty();
 		}
 
 	}

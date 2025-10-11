@@ -52,6 +52,7 @@ import static org.mockito.Mockito.withSettings;
 class DispatcherTests {
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private AccessManager accessManager;
 
 	private final MockHttpServletResponse response = new MockHttpServletResponse();
@@ -61,12 +62,14 @@ class DispatcherTests {
 	private final ServerHttpResponse serverResponse = new ServletServerHttpResponse(this.response);
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void accessManagerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Dispatcher(null, Collections.emptyList()))
 			.withMessageContaining("'accessManager' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void mappersMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Dispatcher(this.accessManager, null))
 			.withMessageContaining("'mappers' must not be null");

@@ -58,17 +58,17 @@ public class OracleUcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetad
 	}
 
 	@Override
-	public Integer getMax() {
+	public @Nullable Integer getMax() {
 		return getDataSource().getMaxPoolSize();
 	}
 
 	@Override
-	public Integer getMin() {
+	public @Nullable Integer getMin() {
 		return getDataSource().getMinPoolSize();
 	}
 
 	@Override
-	public String getValidationQuery() {
+	public @Nullable String getValidationQuery() {
 		return getDataSource().getSQLForValidateConnection();
 	}
 

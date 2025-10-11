@@ -17,6 +17,7 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-slice"
 }
@@ -30,7 +31,25 @@ dependencies {
 	optional(project(":core:spring-boot-testcontainers"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 
+	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:couchbase")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
+	dockerTestCompileOnly("com.google.code.findbugs:jsr305")
+
 	testImplementation(project(":test-support:spring-boot-test-support"))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

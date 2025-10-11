@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.jasper.EmbeddedServletOptions;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,7 +75,7 @@ import static org.mockito.Mockito.reset;
 @ExtendWith(MockRestarter.class)
 class LocalDevToolsAutoConfigurationTests {
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@AfterEach
 	void cleanup() {
@@ -152,8 +153,10 @@ class LocalDevToolsAutoConfigurationTests {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.livereload.enabled", false);
 		this.context = getContext(() -> initializeAndRun(Config.class, properties));
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(OptionalLiveReloadServer.class);
+		});
 	}
 
 	@Test
@@ -184,8 +187,10 @@ class LocalDevToolsAutoConfigurationTests {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.restart.enabled", false);
 		this.context = getContext(() -> initializeAndRun(Config.class, properties));
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean(ClassPathFileSystemWatcher.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(ClassPathFileSystemWatcher.class);
+		});
 	}
 
 	@Test
@@ -195,7 +200,9 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(Config.class, properties));
 		ClassPathFileSystemWatcher classPathWatcher = this.context.getBean(ClassPathFileSystemWatcher.class);
 		Object watcher = ReflectionTestUtils.getField(classPathWatcher, "fileSystemWatcher");
+		assertThat(watcher).isNotNull();
 		Object filter = ReflectionTestUtils.getField(watcher, "triggerFilter");
+		assertThat(filter).isNotNull();
 		assertThat(filter).isInstanceOf(TriggerFileFilter.class);
 	}
 
@@ -206,6 +213,7 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(Config.class, properties));
 		ClassPathFileSystemWatcher classPathWatcher = this.context.getBean(ClassPathFileSystemWatcher.class);
 		Object watcher = ReflectionTestUtils.getField(classPathWatcher, "fileSystemWatcher");
+		assertThat(watcher).isNotNull();
 		@SuppressWarnings("unchecked")
 		Map<File, Object> directories = (Map<File, Object>) ReflectionTestUtils.getField(watcher, "directories");
 		assertThat(directories).hasSize(2)
@@ -218,10 +226,12 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(Config.class));
 		TomcatWebServer tomcatContainer = (TomcatWebServer) ((ServletWebServerApplicationContext) this.context)
 			.getWebServer();
+		assertThat(tomcatContainer).isNotNull();
 		Container context = tomcatContainer.getTomcat().getHost().findChildren()[0];
 		StandardWrapper jspServletWrapper = (StandardWrapper) context.findChild("jsp");
 		EmbeddedServletOptions options = (EmbeddedServletOptions) ReflectionTestUtils
 			.getField(jspServletWrapper.getServlet(), "options");
+		assertThat(options).isNotNull();
 		assertThat(options.getDevelopment()).isTrue();
 	}
 
@@ -234,7 +244,9 @@ class LocalDevToolsAutoConfigurationTests {
 		});
 		thread.start();
 		thread.join();
-		return atomicReference.get();
+		ConfigurableApplicationContext context = atomicReference.get();
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	private ConfigurableApplicationContext initializeAndRun(Class<?> config, String... args) {

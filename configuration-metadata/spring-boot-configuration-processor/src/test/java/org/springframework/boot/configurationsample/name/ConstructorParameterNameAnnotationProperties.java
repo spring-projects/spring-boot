@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.name;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
-import org.springframework.boot.configurationsample.DefaultValue;
-import org.springframework.boot.configurationsample.Name;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
+import org.springframework.boot.configurationsample.TestDefaultValue;
+import org.springframework.boot.configurationsample.TestName;
 
 /**
  * Constructor properties making use of {@code @Name}.
@@ -26,7 +26,7 @@ import org.springframework.boot.configurationsample.Name;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("named")
+@TestConfigurationProperties("named")
 public class ConstructorParameterNameAnnotationProperties {
 
 	/**
@@ -39,8 +39,8 @@ public class ConstructorParameterNameAnnotationProperties {
 	 */
 	private final boolean defaultValue;
 
-	public ConstructorParameterNameAnnotationProperties(@Name("import") String imports,
-			@Name("default") @DefaultValue("true") boolean defaultValue) {
+	public ConstructorParameterNameAnnotationProperties(@TestName("import") String imports,
+			@TestName("default") @TestDefaultValue("true") boolean defaultValue) {
 		this.imports = imports;
 		this.defaultValue = defaultValue;
 	}

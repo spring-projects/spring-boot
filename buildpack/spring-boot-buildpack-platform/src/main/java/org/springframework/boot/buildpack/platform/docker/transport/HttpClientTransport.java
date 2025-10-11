@@ -42,7 +42,7 @@ import tools.jackson.core.JacksonException;
 
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -195,7 +195,7 @@ abstract class HttpClientTransport implements HttpTransport {
 			return null;
 		}
 		try {
-			return SharedObjectMapper.get().readValue(content, Errors.class);
+			return SharedJsonMapper.get().readValue(content, Errors.class);
 		}
 		catch (JacksonException ex) {
 			return null;
@@ -207,7 +207,7 @@ abstract class HttpClientTransport implements HttpTransport {
 			return null;
 		}
 		try {
-			Message message = SharedObjectMapper.get().readValue(content, Message.class);
+			Message message = SharedJsonMapper.get().readValue(content, Message.class);
 			return (message.getMessage() != null) ? message : null;
 		}
 		catch (JacksonException ex) {

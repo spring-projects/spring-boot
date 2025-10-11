@@ -26,5 +26,6 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-webflux"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webflux-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }

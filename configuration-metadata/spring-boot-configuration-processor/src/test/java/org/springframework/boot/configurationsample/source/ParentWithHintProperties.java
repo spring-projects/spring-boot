@@ -16,9 +16,9 @@
 
 package org.springframework.boot.configurationsample.source;
 
-import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.TestConfigurationProperties;
 
-@ConfigurationProperties("example")
+@TestConfigurationProperties("example")
 public class ParentWithHintProperties extends SimpleSource {
 
 	/**

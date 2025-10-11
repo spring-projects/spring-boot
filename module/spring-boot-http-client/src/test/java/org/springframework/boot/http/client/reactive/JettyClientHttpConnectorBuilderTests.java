@@ -78,13 +78,18 @@ class JettyClientHttpConnectorBuilderTests extends AbstractClientHttpConnectorBu
 
 	@Override
 	protected long connectTimeout(JettyClientHttpConnector connector) {
-		return ((HttpClient) ReflectionTestUtils.getField(connector, "httpClient")).getConnectTimeout();
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
+		assertThat(httpClient).isNotNull();
+		return httpClient.getConnectTimeout();
 	}
 
 	@Override
 	protected long readTimeout(JettyClientHttpConnector connector) {
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(connector, "httpClient");
-		return ((Duration) ReflectionTestUtils.getField(httpClient, "readTimeout")).toMillis();
+		assertThat(httpClient).isNotNull();
+		Object field = ReflectionTestUtils.getField(httpClient, "readTimeout");
+		assertThat(field).isNotNull();
+		return ((Duration) field).toMillis();
 	}
 
 	static class TestHttpClientTransport extends HttpClientTransportOverHTTP {

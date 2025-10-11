@@ -33,7 +33,7 @@ dependencies {
 	providedRuntime(project(":starter:spring-boot-starter-tomcat"))
 	providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper")
 
-	testImplementation(project(":starter:spring-boot-starter-restclient-test"))
+	testImplementation(project(":module:spring-boot-resttestclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }

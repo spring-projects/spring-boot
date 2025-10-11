@@ -157,9 +157,8 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	protected HttpComponentsClientHttpRequestFactory createClientHttpRequestFactory(
-			ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withConnectTimeout(null)));
+	protected HttpComponentsClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
+		HttpClient httpClient = this.httpClientBuilder.build(settings.withConnectTimeout(null));
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(factory::setConnectTimeout);

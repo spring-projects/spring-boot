@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jdbc.autoconfigure;
 
+import com.mchange.util.AssertException;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -62,7 +63,9 @@ class DataSourceBeanCreationFailureAnalyzerTests {
 		assertThat(failure).isNotNull();
 		DataSourceBeanCreationFailureAnalyzer failureAnalyzer = new DataSourceBeanCreationFailureAnalyzer(
 				this.environment);
-		return failureAnalyzer.analyze(failure);
+		FailureAnalysis analysis = failureAnalyzer.analyze(failure);
+		assertThat(analysis).isNotNull();
+		return analysis;
 	}
 
 	private BeanCreationException createFailure(Class<?> configuration) {
@@ -72,7 +75,7 @@ class DataSourceBeanCreationFailureAnalyzerTests {
 			context.register(configuration);
 			context.refresh();
 			context.close();
-			return null;
+			throw new AssertException("Shouldn't be reached!");
 		}
 		catch (BeanCreationException ex) {
 			return ex;

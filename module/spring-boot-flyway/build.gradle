@@ -58,8 +58,18 @@ dependencies {
 	testImplementation("org.postgresql:postgresql")
 	testImplementation("org.springframework:spring-orm")
 
+	testCompileOnly("org.checkerframework:checker-qual")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("com.zaxxer:HikariCP")
 	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

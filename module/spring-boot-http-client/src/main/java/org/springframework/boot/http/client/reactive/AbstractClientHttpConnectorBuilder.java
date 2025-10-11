@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.reactive.ClientHttpConnector;
-import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 
 /**
@@ -68,19 +67,13 @@ abstract class AbstractClientHttpConnectorBuilder<T extends ClientHttpConnector>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public final T build(@Nullable ClientHttpConnectorSettings settings) {
-		T connector = createClientHttpConnector((settings != null) ? settings : ClientHttpConnectorSettings.defaults());
+	public final T build(@Nullable HttpClientSettings settings) {
+		T connector = createClientHttpConnector((settings != null) ? settings : HttpClientSettings.defaults());
 		LambdaSafe.callbacks(Consumer.class, this.customizers, connector)
 			.invoke((consumer) -> consumer.accept(connector));
 		return connector;
 	}
 
-	protected abstract T createClientHttpConnector(ClientHttpConnectorSettings settings);
-
-	@Contract("!null -> !null")
-	protected final @Nullable HttpClientSettings asHttpClientSettings(@Nullable ClientHttpConnectorSettings settings) {
-		return (settings != null) ? new HttpClientSettings(settings.redirects(), settings.connectTimeout(),
-				settings.readTimeout(), settings.sslBundle()) : null;
-	}
+	protected abstract T createClientHttpConnector(HttpClientSettings settings);
 
 }

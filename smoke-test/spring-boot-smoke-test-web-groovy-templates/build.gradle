@@ -26,7 +26,6 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 	implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 
-	testImplementation(project(":module:spring-boot-webmvc-test"))
-	testImplementation(project(":starter:spring-boot-starter-restclient-test"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }

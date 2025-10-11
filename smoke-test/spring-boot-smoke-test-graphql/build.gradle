@@ -27,6 +27,7 @@ dependencies {
 
 	testImplementation(project(":module:spring-boot-graphql-test"))
 	testImplementation(project(":module:spring-boot-webmvc-test"))
+	testImplementation(project(":module:spring-boot-webtestclient"))
 	testImplementation(project(":starter:spring-boot-starter-test"))
 
 	testRuntimeOnly("org.springframework:spring-webflux")

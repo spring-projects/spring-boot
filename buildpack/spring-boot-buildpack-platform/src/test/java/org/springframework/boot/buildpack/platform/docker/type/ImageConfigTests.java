@@ -74,11 +74,11 @@ class ImageConfigTests extends AbstractJsonTests {
 	}
 
 	private ImageConfig getImageConfig() {
-		return new ImageConfig(getObjectMapper().readTree(getContent("image-config.json")));
+		return new ImageConfig(getJsonMapper().readTree(getContent("image-config.json")));
 	}
 
 	private ImageConfig getMinimalImageConfig() {
-		return new ImageConfig(getObjectMapper().readTree(getContent("minimal-image-config.json")));
+		return new ImageConfig(getJsonMapper().readTree(getContent("minimal-image-config.json")));
 	}
 
 }

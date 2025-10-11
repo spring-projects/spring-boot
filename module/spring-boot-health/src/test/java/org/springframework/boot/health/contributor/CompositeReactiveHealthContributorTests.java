@@ -39,11 +39,16 @@ class CompositeReactiveHealthContributorTests {
 			.fromMap(reactiveContributors);
 		CompositeHealthContributor adapted = contributor.asHealthContributor();
 		HealthIndicator byName = (HealthIndicator) adapted.getContributor("test");
-		assertThat(byName.health(true).getDetails()).containsEntry("spring", "boot");
+		assertThat(byName).isNotNull();
+		Health health = byName.health(true);
+		assertThat(health).isNotNull();
+		assertThat(health.getDetails()).containsEntry("spring", "boot");
 		HealthContributors.Entry entry = adapted.iterator().next();
 		assertThat(entry.name()).isEqualTo("test");
 		HealthIndicator byEntry = (HealthIndicator) entry.contributor();
-		assertThat(byEntry.health(true).getDetails()).containsEntry("spring", "boot");
+		health = byEntry.health(true);
+		assertThat(health).isNotNull();
+		assertThat(health.getDetails()).containsEntry("spring", "boot");
 	}
 
 	@Test

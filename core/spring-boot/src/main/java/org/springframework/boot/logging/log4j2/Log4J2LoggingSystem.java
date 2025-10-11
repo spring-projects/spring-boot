@@ -81,9 +81,15 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String OPTIONAL_PREFIX = "optional:";
 
-	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
+	/**
+	 * JUL handler that routes messages to the Log4j API (optional dependency).
+	 */
+	static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
-	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
+	/**
+	 * JUL LogManager that routes messages to the Log4j API as the backend.
+	 */
+	static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
 
 	private static final SpringEnvironmentPropertySource propertySource = new SpringEnvironmentPropertySource();
 
@@ -517,7 +523,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	@Order(0)
 	public static class Factory implements LoggingSystemFactory {
 
-		private static final String LOG4J_CORE_CONTEXT_FACTORY = "org.apache.logging.log4j.core.impl.Log4jContextFactory";
+		static final String LOG4J_CORE_CONTEXT_FACTORY = "org.apache.logging.log4j.core.impl.Log4jContextFactory";
 
 		private static final boolean PRESENT = ClassUtils.isPresent(LOG4J_CORE_CONTEXT_FACTORY,
 				Factory.class.getClassLoader());

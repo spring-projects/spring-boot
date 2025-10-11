@@ -459,7 +459,7 @@ bom {
 			]
 		}
 	}
-	library("GraphQL Java", "25.0.beta-5") {
+	library("GraphQL Java", "25.0.beta-8") {
 		prohibit {
 			startsWith(["2018-", "2019-", "2020-", "2021-", "230521-"])
 			because "we don't want thses snapshots"
@@ -1236,7 +1236,7 @@ bom {
 			releaseNotes("https://github.com/redis/lettuce/releases/tag/{version}")
 		}
 	}
-	library("Liquibase", "4.33.0") {
+	library("Liquibase", "5.0.1") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",
@@ -1506,7 +1506,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-war-plugin/releases/tag/maven-war-plugin-{version}")
 		}
 	}
-	library("Micrometer", "1.16.0-M3") {
+	library("Micrometer", "1.16.0-SNAPSHOT") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
@@ -1528,7 +1528,7 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
-	library("Micrometer Tracing", "1.6.0-M3") {
+	library("Micrometer Tracing", "1.6.0-SNAPSHOT") {
 		considerSnapshots()
 		group("io.micrometer") {
 			bom("micrometer-tracing-bom")
@@ -1621,7 +1621,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "5.28.9") {
+	library("Neo4j Java Driver", "6.0.0") {
 		alignWith {
 			version {
 				from "org.springframework.data:spring-data-neo4j"
@@ -1630,7 +1630,8 @@ bom {
 		}
 		group("org.neo4j.driver") {
 			modules = [
-				"neo4j-java-driver"
+				"neo4j-java-driver",
+				"neo4j-java-driver-observation-micrometer"
 			]
 		}
 		links {
@@ -1982,6 +1983,7 @@ bom {
 				"spring-boot-autoconfigure-classic-modules",
 				"spring-boot-autoconfigure-processor",
 				"spring-boot-batch",
+				"spring-boot-batch-jdbc",
 				"spring-boot-buildpack-platform",
 				"spring-boot-cache",
 				"spring-boot-cache-test",
@@ -2066,6 +2068,7 @@ bom {
 				"spring-boot-reactor-netty",
 				"spring-boot-restclient",
 				"spring-boot-restclient-test",
+				"spring-boot-resttestclient",
 				"spring-boot-rsocket",
 				"spring-boot-rsocket-test",
 				"spring-boot-security",
@@ -2094,6 +2097,8 @@ bom {
 				"spring-boot-starter-aspectj",
 				"spring-boot-starter-aspectj-test",
 				"spring-boot-starter-batch",
+				"spring-boot-starter-batch-jdbc",
+				"spring-boot-starter-batch-jdbc-test",
 				"spring-boot-starter-batch-test",
 				"spring-boot-starter-cache",
 				"spring-boot-starter-cache-test",
@@ -2255,6 +2260,7 @@ bom {
 				"spring-boot-validation",
 				"spring-boot-web-server",
 				"spring-boot-webclient",
+				"spring-boot-webclient-test",
 				"spring-boot-webflux",
 				"spring-boot-webflux-test",
 				"spring-boot-webmvc",
@@ -2262,6 +2268,7 @@ bom {
 				"spring-boot-webservices",
 				"spring-boot-webservices-test",
 				"spring-boot-websocket",
+				"spring-boot-webtestclient",
 				"spring-boot-zipkin",
 				"spring-boot-starter-zipkin-test"
 			]
@@ -2350,7 +2357,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "4.0.0-M5") {
+	library("Spring AMQP", "4.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.amqp") {
 			bom("spring-amqp-bom")
@@ -2365,7 +2372,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
-	library("Spring Batch", "6.0.0-M3") {
+	library("Spring Batch", "6.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.batch") {
 			bom("spring-batch-bom")
@@ -2380,7 +2387,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
 		}
 	}
-	library("Spring Data Bom", "2025.1.0-M6") {
+	library("Spring Data Bom", "2025.1.0-SNAPSHOT") {
 		considerSnapshots()
 		calendarName = "Spring Data Release"
 		group("org.springframework.data") {
@@ -2410,7 +2417,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
-	library("Spring GraphQL", "2.0.0-M3") {
+	library("Spring GraphQL", "2.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
@@ -2428,7 +2435,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
-	library("Spring HATEOAS", "3.0.0-M5") {
+	library("Spring HATEOAS", "3.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
@@ -2445,7 +2452,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
-	library("Spring Integration", "7.0.0-M3") {
+	library("Spring Integration", "7.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.integration") {
 			bom("spring-integration-bom")
@@ -2460,7 +2467,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
 		}
 	}
-	library("Spring Kafka", "4.0.0-M5") {
+	library("Spring Kafka", "4.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.kafka") {
 			modules = [
@@ -2478,7 +2485,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-kafka/releases/tag/v{version}")
 		}
 	}
-	library("Spring LDAP", "4.0.0-M3") {
+	library("Spring LDAP", "4.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.ldap") {
 			modules = [
@@ -2498,7 +2505,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
 		}
 	}
-	library("Spring Pulsar", "2.0.0-M3") {
+	library("Spring Pulsar", "2.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.pulsar") {
 			bom("spring-pulsar-bom")
@@ -2513,7 +2520,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-pulsar/releases/tag/v{version}")
 		}
 	}
-	library("Spring RESTDocs", "4.0.0-M3") {
+	library("Spring RESTDocs", "4.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.restdocs") {
 			bom("spring-restdocs-bom")
@@ -2543,7 +2550,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
-	library("Spring Session", "4.0.0-M2") {
+	library("Spring Session", "4.0.0-SNAPSHOT") {
 		considerSnapshots()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
@@ -2566,7 +2573,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-session/releases/tag/{version}")
 		}
 	}
-	library("Spring WS", "5.0.0-M1") {
+	library("Spring WS", "5.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.ws") {
 			bom("spring-ws-bom")

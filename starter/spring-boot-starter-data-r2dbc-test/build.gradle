@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing Spring Data R2DBC"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-data-r2dbc"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-data-r2dbc-test"))

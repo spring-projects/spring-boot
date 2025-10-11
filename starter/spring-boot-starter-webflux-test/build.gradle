@@ -21,7 +21,10 @@ plugins {
 description = "Starter for testing WebFlux and Reactor Netty"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-jackson-test"))
 	api(project(":starter:spring-boot-starter-test"))
+	api(project(":starter:spring-boot-starter-webflux"))
 
 	api(project(":module:spring-boot-webflux-test"))
+	api(project(":module:spring-boot-webtestclient"))
 }

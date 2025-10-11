@@ -21,6 +21,7 @@ plugins {
 description = "Starter for testing Couchbase document-oriented database and Spring Data Couchbase"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-data-couchbase"))
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-data-couchbase-test"))

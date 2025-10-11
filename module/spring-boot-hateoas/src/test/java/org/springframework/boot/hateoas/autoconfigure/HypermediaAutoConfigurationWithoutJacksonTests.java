@@ -16,6 +16,7 @@
 
 package org.springframework.boot.hateoas.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -31,7 +32,7 @@ import org.springframework.mock.web.MockServletContext;
 @ClassPathExclusions("jackson-*.jar")
 class HypermediaAutoConfigurationWithoutJacksonTests {
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	@Test
 	void jacksonRelatedConfigurationBacksOff() {

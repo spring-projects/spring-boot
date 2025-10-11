@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class DevToolPropertiesIntegrationTests {
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@BeforeEach
 	void setup() {
@@ -86,8 +87,10 @@ class DevToolPropertiesIntegrationTests {
 		SpringApplication application = new SpringApplication(BeanConditionConfiguration.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.context.getBean(MyBean.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(MyBean.class);
+		});
 	}
 
 	@Test
@@ -124,7 +127,9 @@ class DevToolPropertiesIntegrationTests {
 		});
 		thread.start();
 		thread.join();
-		return atomicReference.get();
+		ConfigurableApplicationContext context = atomicReference.get();
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	@Configuration(proxyBeanMethods = false)

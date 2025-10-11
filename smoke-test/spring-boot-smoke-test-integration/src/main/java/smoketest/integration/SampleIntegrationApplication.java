@@ -26,8 +26,8 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.dsl.SourcePollingChannelAdapterSpec;
-import org.springframework.integration.file.FileReadingMessageSource;
-import org.springframework.integration.file.FileWritingMessageHandler;
+import org.springframework.integration.file.inbound.FileReadingMessageSource;
+import org.springframework.integration.file.outbound.FileWritingMessageHandler;
 import org.springframework.util.Assert;
 
 @SpringBootApplication

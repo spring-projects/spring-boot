@@ -77,7 +77,7 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	}
 
 	@Override
-	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
+	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(HttpClientSettings settings) {
 		SslBundle sslBundle = settings.sslBundle();
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpsRequestFactory(settings);
 		Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
@@ -94,9 +94,9 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	 */
 	private static class SimpleClientHttpsRequestFactory extends SimpleClientHttpRequestFactory {
 
-		private final ClientHttpRequestFactorySettings settings;
+		private final HttpClientSettings settings;
 
-		SimpleClientHttpsRequestFactory(ClientHttpRequestFactorySettings settings) {
+		SimpleClientHttpsRequestFactory(HttpClientSettings settings) {
 			this.settings = settings;
 		}
 

@@ -61,7 +61,7 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 	 * @param settings the settings to apply or {@code null}
 	 * @return a fully configured {@link ClientHttpRequestFactory}.
 	 */
-	T build(@Nullable ClientHttpRequestFactorySettings settings);
+	T build(@Nullable HttpClientSettings settings);
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} that applies the given
@@ -175,7 +175,7 @@ public interface ClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFact
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactoryBuilder} from the given supplier, using
-	 * reflection to ultimately apply the {@link ClientHttpRequestFactorySettings}.
+	 * reflection to ultimately apply the {@link HttpClientSettings}.
 	 * @param <T> the {@link ClientHttpRequestFactory} type
 	 * @param requestFactorySupplier the {@link ClientHttpRequestFactory} supplier
 	 * @return a new {@link ClientHttpRequestFactoryBuilder}

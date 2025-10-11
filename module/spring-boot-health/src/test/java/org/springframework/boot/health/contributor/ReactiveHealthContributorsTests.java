@@ -18,6 +18,7 @@ package org.springframework.boot.health.contributor;
 
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
@@ -47,7 +48,7 @@ class ReactiveHealthContributorsTests {
 			}
 
 			@Override
-			public ReactiveHealthContributor getContributor(String name) {
+			public @Nullable ReactiveHealthContributor getContributor(String name) {
 				return null;
 			}
 
@@ -86,6 +87,7 @@ class ReactiveHealthContributorsTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createEntryWhenContributorIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Entry("test", null))
 			.withMessage("'contributor' must not be null");

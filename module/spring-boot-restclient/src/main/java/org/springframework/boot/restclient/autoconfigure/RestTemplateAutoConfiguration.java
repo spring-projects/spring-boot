@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.boot.restclient.RestTemplateBuilder;
@@ -51,13 +51,13 @@ public final class RestTemplateAutoConfiguration {
 	@Lazy
 	RestTemplateBuilderConfigurer restTemplateBuilderConfigurer(
 			ObjectProvider<ClientHttpRequestFactoryBuilder<?>> clientHttpRequestFactoryBuilder,
-			ObjectProvider<ClientHttpRequestFactorySettings> clientHttpRequestFactorySettings,
+			ObjectProvider<HttpClientSettings> httpClientSettings,
 			ObjectProvider<ClientHttpMessageConvertersCustomizer> convertersCustomizers,
 			ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers,
 			ObjectProvider<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers) {
 		RestTemplateBuilderConfigurer configurer = new RestTemplateBuilderConfigurer();
 		configurer.setRequestFactoryBuilder(clientHttpRequestFactoryBuilder.getIfAvailable());
-		configurer.setRequestFactorySettings(clientHttpRequestFactorySettings.getIfAvailable());
+		configurer.setClientSettings(httpClientSettings.getIfAvailable());
 		configurer.setHttpMessageConvertersCustomizers(convertersCustomizers.orderedStream().toList());
 		configurer.setRestTemplateCustomizers(restTemplateCustomizers.orderedStream().toList());
 		configurer.setRestTemplateRequestCustomizers(restTemplateRequestCustomizers.orderedStream().toList());

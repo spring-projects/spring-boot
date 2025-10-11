@@ -50,6 +50,7 @@ class DataR2dbcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
 			R2dbcMappingContext mappingContext = context.getBean(R2dbcMappingContext.class);
 			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes).isNotNull();
 			assertThat(managedTypes.toList()).containsOnly(City.class);
 		});
 	}

@@ -30,9 +30,10 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.aop.Advisor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.blocking.BlockingHttpClientAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -60,7 +61,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 /**
  * Tests for {@link HttpServiceClientAutoConfiguration},
- * {@link RestClientPropertiesHttpServiceGroupConfigurer} and
+ * {@link PropertiesRestClientHttpServiceGroupConfigurer} and
  * {@link RestClientCustomizerHttpServiceGroupConfigurer}.
  *
  * @author Phillip Webb
@@ -69,15 +70,15 @@ class HttpServiceClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(HttpServiceClientAutoConfiguration.class,
-				HttpClientAutoConfiguration.class, RestClientAutoConfiguration.class));
+				BlockingHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class));
 
 	@Test
 	void configuresClientFromProperties() {
 		this.contextRunner
-			.withPropertyValues("spring.http.client.service.base-url=https://example.com",
-					"spring.http.client.service.default-header.test=true",
-					"spring.http.client.service.group.one.base-url=https://example.com/one",
-					"spring.http.client.service.group.two.default-header.two=iam2")
+			.withPropertyValues("spring.http.serviceclient.one.default-header.test=true",
+					"spring.http.serviceclient.one.base-url=https://example.com/one",
+					"spring.http.serviceclient.two.default-header.test=true",
+					"spring.http.serviceclient.two.default-header.two=iam2")
 			.withUserConfiguration(HttpClientConfiguration.class, MockRestServiceServerConfiguration.class)
 			.run((context) -> {
 				HttpServiceProxyRegistry serviceProxyRegistry = context.getBean(HttpServiceProxyRegistry.class);
@@ -103,12 +104,12 @@ class HttpServiceClientAutoConfigurationTests {
 	@Test // gh-46915
 	void configuresClientFromPropertiesWhenHasHttpClientAutoConfiguration() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpClientAutoConfiguration.class))
-			.withPropertyValues("spring.http.client.service.connect-timeout=10s",
-					"spring.http.client.service.group.one.connect-timeout=5s")
+			.withPropertyValues("spring.http.serviceclient.one.connect-timeout=5s",
+					"spring.http.serviceclient.two.connect-timeout=10s")
 			.withUserConfiguration(HttpClientConfiguration.class, MockRestServiceServerConfiguration.class)
 			.run((context) -> {
-				RestClientPropertiesHttpServiceGroupConfigurer configurer = context
-					.getBean(RestClientPropertiesHttpServiceGroupConfigurer.class);
+				PropertiesRestClientHttpServiceGroupConfigurer configurer = context
+					.getBean(PropertiesRestClientHttpServiceGroupConfigurer.class);
 				Groups<RestClient.Builder> groups = mock();
 				configurer.configureGroups(groups);
 				ArgumentCaptor<ClientCallback<RestClient.Builder>> callbackCaptor = ArgumentCaptor.captor();
@@ -144,8 +145,8 @@ class HttpServiceClientAutoConfigurationTests {
 	@Test
 	void whenHasUserDefinedRequestFactorySettings() {
 		this.contextRunner
-			.withPropertyValues("spring.http.client.service.base-url=https://example.com",
-					"spring.http.client.factory=jdk")
+			.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com",
+					"spring.http.clients.blocking.factory=jdk")
 			.withUserConfiguration(HttpClientConfiguration.class, RequestFactorySettingsConfiguration.class)
 			.run((context) -> {
 				TestClientOne clientOne = context.getBean(TestClientOne.class);
@@ -155,7 +156,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasUserDefinedRestClientCustomizer() {
-		this.contextRunner.withPropertyValues("spring.http.client.service.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com")
 			.withUserConfiguration(HttpClientConfiguration.class, MockRestServiceServerConfiguration.class,
 					RestClientCustomizerConfiguration.class)
 			.run((context) -> {
@@ -172,7 +173,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasUserDefinedHttpServiceGroupConfigurer() {
-		this.contextRunner.withPropertyValues("spring.http.client.service.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com")
 			.withUserConfiguration(HttpClientConfiguration.class, MockRestServiceServerConfiguration.class,
 					HttpServiceGroupConfigurerConfiguration.class)
 			.run((context) -> {
@@ -189,7 +190,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 	@Test
 	void whenHasNoHttpServiceProxyRegistryBean() {
-		this.contextRunner.withPropertyValues("spring.http.client.service.base-url=https://example.com")
+		this.contextRunner.withPropertyValues("spring.http.clients.service.base-url=https://example.com")
 			.run((context) -> assertThat(context).doesNotHaveBean(HttpServiceProxyRegistry.class));
 	}
 
@@ -248,8 +249,8 @@ class HttpServiceClientAutoConfigurationTests {
 	static class RequestFactorySettingsConfiguration {
 
 		@Bean
-		ClientHttpRequestFactorySettings requestFactorySettings() {
-			return ClientHttpRequestFactorySettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
+		HttpClientSettings httpClientSettings() {
+			return HttpClientSettings.defaults().withRedirects(HttpRedirects.DONT_FOLLOW);
 		}
 
 	}

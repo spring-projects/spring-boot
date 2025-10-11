@@ -21,5 +21,7 @@ plugins {
 description = "Starter for testing Spring Security's OAuth2 resource server features"
 
 dependencies {
+	api(project(":starter:spring-boot-starter-security-oauth2-resource-server"))
+	api(project(":starter:spring-boot-starter-security-test"))
 	api(project(":starter:spring-boot-starter-test"))
 }

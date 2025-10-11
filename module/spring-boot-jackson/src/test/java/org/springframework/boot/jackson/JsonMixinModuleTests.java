@@ -19,6 +19,7 @@ package org.springframework.boot.jackson;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JacksonModule;
@@ -45,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class JsonMixinModuleTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void closeContext() {
@@ -65,7 +66,7 @@ class JsonMixinModuleTests {
 	@Test
 	void jsonWithModuleWithRenameMixInClassShouldBeMixedIn() throws Exception {
 		load(RenameMixInClass.class);
-		JsonMixinModule module = this.context.getBean(JsonMixinModule.class);
+		JsonMixinModule module = getContext().getBean(JsonMixinModule.class);
 		assertMixIn(module, new Name("spring"), "{\"username\":\"spring\"}");
 		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
 	}
@@ -73,7 +74,7 @@ class JsonMixinModuleTests {
 	@Test
 	void jsonWithModuleWithEmptyMixInClassShouldNotBeMixedIn() throws Exception {
 		load(EmptyMixInClass.class);
-		JsonMixinModule module = this.context.getBean(JsonMixinModule.class);
+		JsonMixinModule module = getContext().getBean(JsonMixinModule.class);
 		assertMixIn(module, new Name("spring"), "{\"name\":\"spring\"}");
 		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"name\":\"spring\"}");
 	}
@@ -81,15 +82,21 @@ class JsonMixinModuleTests {
 	@Test
 	void jsonWithModuleWithRenameMixInAbstractClassShouldBeMixedIn() throws Exception {
 		load(RenameMixInAbstractClass.class);
-		JsonMixinModule module = this.context.getBean(JsonMixinModule.class);
+		JsonMixinModule module = getContext().getBean(JsonMixinModule.class);
 		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
 	}
 
 	@Test
 	void jsonWithModuleWithRenameMixInInterfaceShouldBeMixedIn() throws Exception {
 		load(RenameMixInInterface.class);
-		JsonMixinModule module = this.context.getBean(JsonMixinModule.class);
+		JsonMixinModule module = getContext().getBean(JsonMixinModule.class);
 		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
+	}
+
+	private AnnotationConfigApplicationContext getContext() {
+		AnnotationConfigApplicationContext context = this.context;
+		assertThat(context).isNotNull();
+		return context;
 	}
 
 	private void load(Class<?>... basePackageClasses) {

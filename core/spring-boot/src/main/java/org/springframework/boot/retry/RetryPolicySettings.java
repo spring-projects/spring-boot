@@ -17,7 +17,10 @@
 package org.springframework.boot.retry;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.jspecify.annotations.Nullable;
 
@@ -53,6 +56,12 @@ public final class RetryPolicySettings {
 	 */
 	public static final Duration DEFAULT_MAX_DELAY = Duration.ofMillis(RetryPolicy.Builder.DEFAULT_MAX_DELAY);
 
+	private List<Class<? extends Throwable>> exceptionIncludes = new ArrayList<>();
+
+	private List<Class<? extends Throwable>> exceptionExcludes = new ArrayList<>();
+
+	private @Nullable Predicate<Throwable> exceptionPredicate;
+
 	private Long maxAttempts = DEFAULT_MAX_ATTEMPTS;
 
 	private Duration delay = DEFAULT_DELAY;
@@ -72,12 +81,73 @@ public final class RetryPolicySettings {
 	public RetryPolicy createRetryPolicy() {
 		PropertyMapper map = PropertyMapper.get();
 		RetryPolicy.Builder builder = RetryPolicy.builder();
+		map.from(this::getExceptionIncludes).to(builder::includes);
+		map.from(this::getExceptionExcludes).to(builder::excludes);
+		map.from(this::getExceptionPredicate).to(builder::predicate);
 		map.from(this::getMaxAttempts).to(builder::maxAttempts);
 		map.from(this::getDelay).to(builder::delay);
 		map.from(this::getJitter).to(builder::jitter);
 		map.from(this::getMultiplier).to(builder::multiplier);
 		map.from(this::getMaxDelay).to(builder::maxDelay);
 		return (this.factory != null) ? this.factory.apply(builder) : builder.build();
+	}
+
+	/**
+	 * Return the applicable exception types to attempt a retry for.
+	 * <p>
+	 * The default is empty, leading to a retry attempt for any exception.
+	 * @return the applicable exception types
+	 */
+	public List<Class<? extends Throwable>> getExceptionIncludes() {
+		return this.exceptionIncludes;
+	}
+
+	/**
+	 * Replace the applicable exception types to attempt a retry for by the given
+	 * {@code includes}. Alternatively consider using {@link #getExceptionIncludes()} to
+	 * mutate the existing list.
+	 * @param includes the applicable exception types
+	 */
+	public void setExceptionIncludes(List<Class<? extends Throwable>> includes) {
+		this.exceptionIncludes = new ArrayList<>(includes);
+	}
+
+	/**
+	 * Return the non-applicable exception types to avoid a retry for.
+	 * <p>
+	 * The default is empty, leading to a retry attempt for any exception.
+	 * @return the non-applicable exception types
+	 */
+	public List<Class<? extends Throwable>> getExceptionExcludes() {
+		return this.exceptionExcludes;
+	}
+
+	/**
+	 * Replace the non-applicable exception types to attempt a retry for by the given
+	 * {@code excludes}. Alternatively consider using {@link #getExceptionExcludes()} to
+	 * mutate the existing list.
+	 * @param excludes the non-applicable types
+	 */
+	public void setExceptionExcludes(List<Class<? extends Throwable>> excludes) {
+		this.exceptionExcludes = new ArrayList<>(excludes);
+	}
+
+	/**
+	 * Return the predicate to use to determine whether to retry a failed operation based
+	 * on a given {@link Throwable}.
+	 * @return the predicate to use
+	 */
+	public @Nullable Predicate<Throwable> getExceptionPredicate() {
+		return this.exceptionPredicate;
+	}
+
+	/**
+	 * Set the predicate to use to determine whether to retry a failed operation based on
+	 * a given {@link Throwable}.
+	 * @param exceptionPredicate the predicate to use
+	 */
+	public void setExceptionPredicate(@Nullable Predicate<Throwable> exceptionPredicate) {
+		this.exceptionPredicate = exceptionPredicate;
 	}
 
 	/**

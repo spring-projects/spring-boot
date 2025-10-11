@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.buildpack.platform.json.SharedJsonMapper;
 
 /**
  * {@link DockerRegistryAuthentication} that uses a Base64 encoded auth header value based
@@ -42,7 +42,7 @@ class JsonEncodedDockerRegistryAuthentication implements DockerRegistryAuthentic
 
 	protected void createAuthHeader() {
 		try {
-			this.authHeader = Base64.getUrlEncoder().encodeToString(SharedObjectMapper.get().writeValueAsBytes(this));
+			this.authHeader = Base64.getUrlEncoder().encodeToString(SharedJsonMapper.get().writeValueAsBytes(this));
 		}
 		catch (JacksonException ex) {
 			throw new IllegalStateException("Error creating Docker registry authentication header", ex);

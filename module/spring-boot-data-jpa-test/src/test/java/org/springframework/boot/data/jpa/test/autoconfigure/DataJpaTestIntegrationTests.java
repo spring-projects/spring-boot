@@ -67,7 +67,9 @@ class DataJpaTestIntegrationTests {
 		ExampleEntity entity = this.entities.persist(new ExampleEntity("spring", "123"));
 		this.entities.flush();
 		Object id = this.entities.getId(entity);
+		assertThat(id).isNotNull();
 		ExampleEntity found = this.entities.find(ExampleEntity.class, id);
+		assertThat(found).isNotNull();
 		assertThat(found.getName()).isEqualTo("spring");
 	}
 

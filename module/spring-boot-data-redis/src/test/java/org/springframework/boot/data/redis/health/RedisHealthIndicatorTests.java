@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.health.contributor.Health;
@@ -115,7 +116,7 @@ class RedisHealthIndicatorTests {
 		return new DataRedisHealthIndicator(redisConnectionFactory);
 	}
 
-	private RedisConnectionFactory createClusterConnectionFactory(String state) {
+	private RedisConnectionFactory createClusterConnectionFactory(@Nullable String state) {
 		Properties clusterProperties = new Properties();
 		if (state != null) {
 			clusterProperties.setProperty("cluster_state", state);

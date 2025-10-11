@@ -30,7 +30,8 @@ import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
 public interface ClientHttpMessageConvertersCustomizer {
 
 	/**
-	 * Callback to customize a {@link HttpMessageConverters.ClientBuilder} instance.
+	 * Callback to customize a {@link ClientBuilder HttpMessageConverters.ClientBuilder}
+	 * instance.
 	 * @param builder the builder to customize
 	 */
 	void customize(ClientBuilder builder);

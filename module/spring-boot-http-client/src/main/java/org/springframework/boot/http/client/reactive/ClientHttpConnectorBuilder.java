@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
@@ -58,7 +59,7 @@ public interface ClientHttpConnectorBuilder<T extends ClientHttpConnector> {
 	 * @param settings the settings to apply or {@code null}
 	 * @return a fully configured {@link ClientHttpConnector}.
 	 */
-	T build(@Nullable ClientHttpConnectorSettings settings);
+	T build(@Nullable HttpClientSettings settings);
 
 	/**
 	 * Return a new {@link ClientHttpConnectorBuilder} that applies the given customizer

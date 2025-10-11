@@ -17,6 +17,9 @@
 package org.springframework.boot.retry;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,6 +28,8 @@ import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.ExponentialBackOff;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -33,6 +38,78 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 class RetryPolicySettingsTests {
+
+	@Test
+	void exceptionIncludesCanBeReplaced() {
+		RetryPolicySettings settings = new RetryPolicySettings();
+		settings.getExceptionIncludes().add(IllegalStateException.class);
+		settings.setExceptionIncludes(List.of(IllegalArgumentException.class));
+		assertThat(settings.getExceptionIncludes()).containsExactly(IllegalArgumentException.class);
+	}
+
+	@Test
+	void exceptionIncludesListIsCopied() {
+		RetryPolicySettings settings = new RetryPolicySettings();
+		List<Class<? extends Throwable>> includes = new ArrayList<>();
+		includes.add(IllegalStateException.class);
+		settings.setExceptionIncludes(includes);
+		includes.add(IllegalArgumentException.class);
+		assertThat(settings.getExceptionIncludes()).containsExactly(IllegalStateException.class);
+	}
+
+	@Test
+	void createRetryPolicyWithExceptionIncludes() {
+		RetryPolicySettings settings = new RetryPolicySettings();
+		settings.getExceptionIncludes().add(IllegalStateException.class);
+		RetryPolicy retryPolicy = settings.createRetryPolicy();
+		assertThat(retryPolicy.shouldRetry(new IllegalStateException("test"))).isTrue();
+		assertThat(retryPolicy.shouldRetry(new IllegalArgumentException("test"))).isFalse();
+	}
+
+	@Test
+	void exceptionExcludesCanBeReplaced() {
+		RetryPolicySettings settings = new RetryPolicySettings();
+		settings.getExceptionExcludes().add(IllegalStateException.class);
+		settings.setExceptionExcludes(List.of(IllegalArgumentException.class));
+		assertThat(settings.getExceptionExcludes()).containsExactly(IllegalArgumentException.class);
+	}
+
+	@Test
+	void exceptionExcludesListIsCopied() {
+		RetryPolicySettings settings = new RetryPolicySettings();
+		List<Class<? extends Throwable>> excludes = new ArrayList<>();
+		excludes.add(IllegalStateException.class);
+		settings.setExceptionExcludes(excludes);
+		excludes.add(IllegalArgumentException.class);
+		assertThat(settings.getExceptionExcludes()).containsExactly(IllegalStateException.class);
+	}
+
+	@Test
+	void createRetryPolicyWithExceptionExcludes() {
+		RetryPolicySettings settings = new RetryPolicySettings();
+		settings.getExceptionExcludes().add(IllegalStateException.class);
+		RetryPolicy retryPolicy = settings.createRetryPolicy();
+		assertThat(retryPolicy.shouldRetry(new IllegalStateException("test"))).isFalse();
+		assertThat(retryPolicy.shouldRetry(new IllegalArgumentException("test"))).isTrue();
+	}
+
+	@Test
+	void getDefaultExceptionPredicate() {
+		assertThat(new RetryPolicySettings().getExceptionPredicate()).isNull();
+	}
+
+	@Test
+	void createRetryPolicyWithExceptionPredicate() {
+		IllegalArgumentException exception = new IllegalArgumentException("test");
+		Predicate<Throwable> exceptionPredicate = mock();
+		given(exceptionPredicate.test(exception)).willReturn(true);
+		RetryPolicySettings settings = new RetryPolicySettings();
+		settings.setExceptionPredicate(exceptionPredicate);
+		RetryPolicy retryPolicy = settings.createRetryPolicy();
+		assertThat(retryPolicy.shouldRetry(exception)).isTrue();
+		then(exceptionPredicate).should().test(exception);
+		then(exceptionPredicate).shouldHaveNoMoreInteractions();
+	}
 
 	@Test
 	void createRetryPolicyWithDefaultsMatchesBackOffDefaults() {
