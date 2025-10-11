@@ -31,7 +31,7 @@ import org.springframework.boot.configurationsample.TestConfigurationProperties;
  */
 @Data
 @TestConfigurationProperties("accesslevel.overwrite.data")
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "deprecation" })
 public class LombokAccessLevelOverwriteDataProperties {
 
 	private String name0;
