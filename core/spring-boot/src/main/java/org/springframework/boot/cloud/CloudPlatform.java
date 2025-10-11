@@ -164,6 +164,20 @@ public enum CloudPlatform {
 			return this.azureEnvVariables.stream().allMatch(environment::containsProperty);
 		}
 
+	},
+
+	/**
+	 * Amazon Web Services (AWS) Elastic Container Service (ECS) platform.
+	 * @since 4.0.0
+	 */
+	AWS_ECS {
+
+		@Override
+		public boolean isDetected(Environment environment) {
+			String awsExecutionEnv = environment.getProperty("AWS_EXECUTION_ENV");
+			return (awsExecutionEnv != null) && awsExecutionEnv.startsWith("AWS_ECS");
+		}
+
 	};
 
 	private static final String PROPERTY_NAME = "spring.main.cloud-platform";
