@@ -40,7 +40,6 @@ import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.filter.DenyAllFilter;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
-import org.apache.logging.log4j.spi.LoggerContextFactory;
 import org.apache.logging.log4j.status.StatusConsoleListener;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
@@ -110,9 +109,28 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private final LoggerContext loggerContext;
 
-	private Log4J2LoggingSystem(ClassLoader classLoader, org.apache.logging.log4j.spi.LoggerContext loggerContext) {
+	/**
+	 * Create a new {@link Log4J2LoggingSystem} instance.
+	 * @param classLoader the class loader to use.
+	 * @param loggerContext the {@link LoggerContext} to use.
+	 */
+	Log4J2LoggingSystem(ClassLoader classLoader, LoggerContext loggerContext) {
 		super(classLoader);
-		this.loggerContext = (LoggerContext) loggerContext;
+		this.loggerContext = loggerContext;
+	}
+
+	/**
+	 * Create a new {@link Log4J2LoggingSystem} instance.
+	 * @param classLoader the class loader to use
+	 * @return a new {@link Log4J2LoggingSystem} instance
+	 * @throws IllegalStateException if Log4j Core is not the active Log4j API provider.
+	 */
+	private static Log4J2LoggingSystem createLoggingSystem(ClassLoader classLoader) {
+		org.apache.logging.log4j.spi.LoggerContext loggerContext = LogManager.getContext(classLoader, false);
+		if (loggerContext instanceof LoggerContext) {
+			return new Log4J2LoggingSystem(classLoader, (LoggerContext) loggerContext);
+		}
+		throw new IllegalStateException("Log4j Core is not the active Log4j API provider");
 	}
 
 	/**
@@ -136,7 +154,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		ConfigurationFactory configurationFactory = ConfigurationFactory.getInstance();
 		Configuration springConfiguration = configurationFactory.getConfiguration(getLoggerContext(), "-spring", null,
 				getClassLoader());
-		return getConfigLocation(springConfiguration);
+		String configLocation = getConfigLocation(springConfiguration);
+		return (configLocation != null && configLocation.contains("-spring")) ? configLocation : null;
 	}
 
 	private @Nullable String getConfigLocation(Configuration configuration) {
@@ -460,7 +479,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		return configuration.getLoggers().get(name);
 	}
 
-	private LoggerContext getLoggerContext() {
+	LoggerContext getLoggerContext() {
 		return this.loggerContext;
 	}
 
@@ -496,20 +515,22 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	 * {@link LoggingSystemFactory} that returns {@link Log4J2LoggingSystem} if possible.
 	 */
 	@Order(0)
-	public static class Factory extends LogManager implements LoggingSystemFactory {
-
-		private static final String FQCN = Factory.class.getName();
+	public static class Factory implements LoggingSystemFactory {
 
 		private static final String LOG4J_CORE_CONTEXT_FACTORY = "org.apache.logging.log4j.core.impl.Log4jContextFactory";
 
+		private static final boolean PRESENT = ClassUtils.isPresent(LOG4J_CORE_CONTEXT_FACTORY,
+				Factory.class.getClassLoader());
+
 		@Override
 		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {
-			LoggerContextFactory contextFactory = getFactory();
-			// At the same time, we check that Log4j Core is present and that it is the
-			// active
-			// implementation.
-			if (LOG4J_CORE_CONTEXT_FACTORY.equals(contextFactory.getClass().getName())) {
-				return new Log4J2LoggingSystem(classLoader, contextFactory.getContext(FQCN, classLoader, null, false));
+			if (PRESENT) {
+				try {
+					return createLoggingSystem(classLoader);
+				}
+				catch (IllegalStateException ex) {
+					// Log4j Core is not the active Log4j API provider
+				}
 			}
 			return null;
 		}
