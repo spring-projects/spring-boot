@@ -445,7 +445,7 @@ bom {
 			releaseNotes("https://github.com/git-commit-id/git-commit-id-maven-plugin/releases/tag/v{version}")
 		}
 	}
-	library("Glassfish JAXB", "4.0.5") {
+	library("Glassfish JAXB", "4.0.6") {
 		group("org.glassfish.jaxb") {
 			bom("jaxb-bom") {
 				permit("com.sun.istack:istack-commons-runtime")
