@@ -32,6 +32,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.AuthenticationMethod;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,6 +46,12 @@ import org.springframework.util.StringUtils;
  * @since 4.0.0
  */
 public final class OAuth2ClientPropertiesMapper {
+	private static final boolean SPRING_SECURITY_CONFIG_PRESENT;
+                                                                                          
+	static {
+		ClassLoader loader = OAuth2ClientPropertiesMapper.class.getClassLoader();
+		SPRING_SECURITY_CONFIG_PRESENT = ClassUtils.isPresent("org.springframework.security.config.oauth2.client.CommonOAuth2Provider", loader);
+	}
 
 	private final OAuth2ClientProperties properties;
 
@@ -137,6 +144,10 @@ public final class OAuth2ClientPropertiesMapper {
 	}
 
 	private static @Nullable CommonOAuth2Provider getCommonProvider(String providerId) {
+		if (!SPRING_SECURITY_CONFIG_PRESENT) {
+			return null;
+		}
+		
 		try {
 			return ApplicationConversionService.getSharedInstance().convert(providerId, CommonOAuth2Provider.class);
 		}
