@@ -16,17 +16,12 @@
 
 package org.springframework.boot.http.codec.autoconfigure;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.CodecConfigurer.DefaultCodecs;
@@ -72,27 +67,6 @@ class CodecsAutoConfigurationTests {
 	}
 
 	@Test
-	void jacksonCodecCustomizerBacksOffWhenThereIsNoObjectMapper() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("jacksonCodecCustomizer"));
-	}
-
-	@Test
-	void jacksonCodecCustomizerIsAutoConfiguredWhenJsonMapperIsPresent() {
-		this.contextRunner.withUserConfiguration(JsonMapperConfiguration.class)
-			.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
-	}
-
-	@Test
-	void userProvidedCustomizerCanOverrideJacksonCodecCustomizer() {
-		this.contextRunner.withUserConfiguration(JsonMapperConfiguration.class, CodecCustomizerConfiguration.class)
-			.run((context) -> {
-				List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
-				assertThat(codecCustomizers).hasSize(3);
-				assertThat(codecCustomizers.get(2)).isInstanceOf(TestCodecCustomizer.class);
-			});
-	}
-
-	@Test
 	void maxInMemorySizeEnforcedInDefaultCodecs() {
 		this.contextRunner.withPropertyValues("spring.http.codecs.max-in-memory-size=1MB")
 			.run((context) -> assertThat(defaultCodecs(context)).hasFieldOrPropertyWithValue("maxInMemorySize",
@@ -104,49 +78,6 @@ class CodecsAutoConfigurationTests {
 		CodecConfigurer configurer = new DefaultClientCodecConfigurer();
 		customizer.customize(configurer);
 		return configurer.defaultCodecs();
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class JsonMapperConfiguration {
-
-		@Bean
-		JsonMapper jsonMapper() {
-			return new JsonMapper();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CodecCustomizerConfiguration {
-
-		@Bean
-		CodecCustomizer codecCustomizer() {
-			return new TestCodecCustomizer();
-		}
-
-		@Bean
-		CodecCustomizers codecCustomizers(List<CodecCustomizer> customizers) {
-			return new CodecCustomizers(customizers);
-		}
-
-	}
-
-	private static final class TestCodecCustomizer implements CodecCustomizer {
-
-		@Override
-		public void customize(CodecConfigurer configurer) {
-		}
-
-	}
-
-	private static final class CodecCustomizers {
-
-		private final List<CodecCustomizer> codecCustomizers;
-
-		private CodecCustomizers(List<CodecCustomizer> codecCustomizers) {
-			this.codecCustomizers = codecCustomizers;
-		}
-
 	}
 
 }

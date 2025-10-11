@@ -30,7 +30,9 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-test"))
+	optional(project(":module:spring-boot-gson"))
 	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-kotlin-serialization"))
 	optional("org.springframework:spring-webflux")
 
 	testImplementation(project(":core:spring-boot-test"))
