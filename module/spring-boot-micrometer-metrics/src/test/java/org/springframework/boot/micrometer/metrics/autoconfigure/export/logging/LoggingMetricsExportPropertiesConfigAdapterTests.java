@@ -36,12 +36,12 @@ class LoggingMetricsExportPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void whenPropertiesAggregationTemporalityIsNotSetAdapterAggregationTemporalityReturnsCumulative() {
+	void whenPropertiesLogInactiveIsNotSetAdapterLogInactiveReturnsFalse() {
 		assertThat(createAdapter().logInactive()).isFalse();
 	}
 
 	@Test
-	void whenPropertiesAggregationTemporalityIsSetAdapterAggregationTemporalityReturnsIt() {
+	void whenPropertiesLogInactiveIsSetAdapterLogInactiveReturnsIt() {
 		this.properties.setLogInactive(true);
 		assertThat(createAdapter().logInactive()).isTrue();
 	}

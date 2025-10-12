@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.logging.LoggingRegistryConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,16 @@ class LoggingMetricsExportAutoConfigurationTests {
 
 	@Test
 	void backsOffWithoutAClock() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(LoggingMeterRegistry.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(LoggingMeterRegistry.class)
+			.doesNotHaveBean(LoggingRegistryConfig.class));
+	}
+
+	@Test
+	void backOffWhenLoggingMeterRegistryIsMissing() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(LoggingMeterRegistry.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(LoggingMeterRegistry.class)
+				.doesNotHaveBean(LoggingRegistryConfig.class));
 	}
 
 	@Test
