@@ -20,8 +20,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
-import org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory;
 import org.apache.logging.log4j.core.impl.Log4jContextFactory;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.jul.LogManager;
@@ -52,8 +50,6 @@ class Log4J2RuntimeHintsTests {
 		assertThat(reflectionHints.onType(Log4jContextFactory.class)).accepts(runtimeHints);
 		assertThat(reflectionHints.onType(Log4jBridgeHandler.class)).accepts(runtimeHints);
 		assertThat(reflectionHints.onType(LogManager.class)).accepts(runtimeHints);
-		assertThat(reflectionHints.onType(PropertiesConfigurationFactory.class)).accepts(runtimeHints);
-		assertThat(reflectionHints.onType(YamlConfigurationFactory.class)).accepts(runtimeHints);
 	}
 
 	@Test
@@ -63,6 +59,7 @@ class Log4J2RuntimeHintsTests {
 			.accepts(runtimeHints);
 		assertThat(resourceHints.forResource("org/springframework/boot/logging/log4j2/log4j2-file.xml"))
 			.accepts(runtimeHints);
+		assertThat(resourceHints.forResource("log4j2.springboot")).accepts(runtimeHints);
 	}
 
 	@Test
