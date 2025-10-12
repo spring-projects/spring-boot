@@ -164,6 +164,17 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	@WithSpringXmlResource
+	void testSpringBootConfigLocation() {
+		this.loggingSystem.disableSelfInitialization();
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		Configuration configuration = this.loggingSystem.getConfiguration();
+		assertThat(configuration.getName()).isEqualTo("SpringBoot");
+		assertThat(configuration.getConfigurationSource().getLocation()).endsWith("log4j2-test-spring.xml");
+	}
+
+	@Test
 	void getSupportedLevels() {
 		assertThat(this.loggingSystem.getSupportedLogLevels()).isEqualTo(EnumSet.allOf(LogLevel.class));
 	}
@@ -801,6 +812,29 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 			</Configuration>
 			""")
 	private @interface WithOverrideXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "log4j2-test-spring.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<Configuration xmlns="https://logging.apache.org/xml/ns"
+					               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					               xsi:schemaLocation="https://logging.apache.org/xml/ns https://logging.apache.org/xml/ns/log4j-config-2.xsd"
+					               name="SpringBoot">
+						<Appenders>
+							<Console name="CONSOLE"/>
+						</Appenders>
+						<Loggers>
+							<Root level="INFO">
+								<AppenderRef ref="CONSOLE"/>
+							</Root>
+						</Loggers>
+					</Configuration>
+					""")
+	private @interface WithSpringXmlResource {
 
 	}
 
