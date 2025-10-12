@@ -16,7 +16,6 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +33,7 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.AbstractConfiguration;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationException;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
@@ -78,6 +78,8 @@ import org.springframework.util.StringUtils;
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
+
+	private static final org.apache.logging.log4j.Logger STATUS_LOGGER = StatusLogger.getLogger();
 
 	private static final String OPTIONAL_PREFIX = "optional:";
 
@@ -158,10 +160,16 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	@Override
 	protected @Nullable String getSpringInitializationConfig() {
 		ConfigurationFactory configurationFactory = ConfigurationFactory.getInstance();
-		Configuration springConfiguration = configurationFactory.getConfiguration(getLoggerContext(), "-spring", null,
-				getClassLoader());
-		String configLocation = getConfigLocation(springConfiguration);
-		return (configLocation != null && configLocation.contains("-spring")) ? configLocation : null;
+		try {
+			Configuration springConfiguration = configurationFactory.getConfiguration(getLoggerContext(), "-spring",
+					null, getClassLoader());
+			String configLocation = getConfigLocation(springConfiguration);
+			return (configLocation != null && configLocation.contains("-spring")) ? configLocation : null;
+		}
+		catch (ConfigurationException ex) {
+			STATUS_LOGGER.warn("Could not load Spring-specific Log4j Core configuration", ex);
+			return null;
+		}
 	}
 
 	private @Nullable String getConfigLocation(Configuration configuration) {
@@ -307,14 +315,26 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			this.loggerContext.reconfigure(mergeConfigurations(configurations));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Could not initialize Log4J2 logging from " + location, ex);
+			String message = "Could not initialize Log4J2 logging from " + location;
+			if (!overrides.isEmpty()) {
+				message += " with overrides " + overrides;
+			}
+			throw new IllegalStateException(message, ex);
 		}
 	}
 
 	private Configuration load(ResourceLoader resourceLoader, String location) throws IOException {
 		ConfigurationFactory factory = ConfigurationFactory.getInstance();
 		Resource resource = resourceLoader.getResource(location);
-		return factory.getConfiguration(getLoggerContext(), null, resource.getURI(), getClassLoader());
+		Configuration configuration = factory.getConfiguration(getLoggerContext(), null, resource.getURI(),
+				getClassLoader());
+		// The error handling in Log4j Core 2.25.x is not consistent:
+		// some loading and parsing errors result in a null configuration,
+		// others in an exception.
+		if (configuration == null) {
+			throw new ConfigurationException("Could not load Log4j Core configuration from " + location);
+		}
+		return configuration;
 	}
 
 	private @Nullable Configuration loadOverride(ResourceLoader resourceLoader, String location) throws IOException {
@@ -324,7 +344,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			try {
 				return (resource.exists()) ? load(resourceLoader, actualLocation) : null;
 			}
-			catch (FileNotFoundException ex) {
+			catch (ConfigurationException | IOException ex) {
+				STATUS_LOGGER.debug("Could not load optional Log4j2 override from {}", actualLocation, ex);
 				return null;
 			}
 		}
