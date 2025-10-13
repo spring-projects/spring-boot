@@ -65,7 +65,9 @@ class RSocketMessagingAutoConfigurationTests {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class))
 			.run((context) -> {
 				assertThat(context).hasFailed();
-				assertThat(context.getStartupFailure().getMessage()).contains("No qualifying bean of type "
+				Throwable startupFailure = context.getStartupFailure();
+				assertThat(startupFailure).isNotNull();
+				assertThat(startupFailure.getMessage()).contains("No qualifying bean of type "
 						+ "'org.springframework.messaging.rsocket.RSocketStrategies' available");
 			});
 	}
@@ -90,7 +92,9 @@ class RSocketMessagingAutoConfigurationTests {
 		this.contextRunner.withBean(TestControllerAdvice.class).withBean(TestController.class).run((context) -> {
 			RSocketMessageHandler handler = context.getBean(RSocketMessageHandler.class);
 			MessageHeaderAccessor headers = new MessageHeaderAccessor();
-			RouteMatcher.Route route = handler.getRouteMatcher().parseRoute("exception");
+			RouteMatcher routeMatcher = handler.getRouteMatcher();
+			assertThat(routeMatcher).isNotNull();
+			RouteMatcher.Route route = routeMatcher.parseRoute("exception");
 			headers.setHeader(DestinationPatternsMessageCondition.LOOKUP_DESTINATION_HEADER, route);
 			headers.setHeader(RSocketFrameTypeMessageCondition.FRAME_TYPE_HEADER, FrameType.REQUEST_FNF);
 			Message<?> message = MessageBuilder.createMessage(Mono.empty(), headers.getMessageHeaders());
