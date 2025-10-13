@@ -24,8 +24,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.ContextCustomizer;
+import org.springframework.test.context.ContextLoader;
+import org.springframework.test.context.MergedContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigureMetrics} and {@link MetricsContextCustomizerFactory}
@@ -131,7 +134,8 @@ class MetricsContextCustomizerFactoryTests {
 	}
 
 	private void applyCustomizerToContext(ContextCustomizer customizer, ConfigurableApplicationContext context) {
-		customizer.customizeContext(context, null);
+		customizer.customizeContext(context,
+				new MergedContextConfiguration(getClass(), null, null, null, mock(ContextLoader.class)));
 	}
 
 	private ContextCustomizer createContextCustomizer(Class<?> testClass) {
