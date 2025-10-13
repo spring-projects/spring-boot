@@ -41,7 +41,6 @@ abstract class AbstractCompositeHealthContributorConfiguration<C, I extends C, B
 	 * Creates a {@code AbstractCompositeHealthContributorConfiguration} that will use the
 	 * given {@code indicatorFactory} to create health indicator instances.
 	 * @param indicatorFactory the function to create health indicators
-	 * @since 3.0.0
 	 */
 	protected AbstractCompositeHealthContributorConfiguration(Function<B, I> indicatorFactory) {
 		this.indicatorFactory = indicatorFactory;
@@ -53,7 +52,6 @@ abstract class AbstractCompositeHealthContributorConfiguration<C, I extends C, B
 	 * @param beanFactory the bean factory from which the beans are retrieved
 	 * @param beanType the type of the beans that are retrieved
 	 * @return the contributor
-	 * @since 3.4.3
 	 */
 	protected final C createContributor(ConfigurableListableBeanFactory beanFactory, Class<B> beanType) {
 		return createContributor(SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, beanType));

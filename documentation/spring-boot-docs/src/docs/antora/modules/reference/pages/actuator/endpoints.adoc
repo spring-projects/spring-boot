@@ -618,7 +618,7 @@ with the `key` listed in the following table:
 | Checks that a connection to javadoc:javax.sql.DataSource[] can be obtained.
 
 | `diskspace`
-| javadoc:org.springframework.boot.actuate.system.DiskSpaceHealthIndicator[]
+| javadoc:org.springframework.boot.health.info.DiskSpaceHealthIndicator[]
 | Checks for low disk space.
 
 | `elasticsearch`
@@ -662,7 +662,7 @@ with the `key` listed in the following table:
 | Checks that a Redis server is up.
 
 | `ssl`
-| javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[]
+| javadoc:org.springframework.boot.health.info.SslHealthIndicator[]
 | Checks that SSL certificates are ok.
 |===
 
@@ -679,11 +679,11 @@ Additional javadoc:org.springframework.boot.actuate.health.HealthIndicator[] bea
 | Key | Name | Description
 
 | `livenessstate`
-| javadoc:org.springframework.boot.actuate.availability.LivenessStateHealthIndicator[]
+| javadoc:org.springframework.boot.health.application.LivenessStateHealthIndicator[]
 | Exposes the "`Liveness`" application availability state.
 
 | `readinessstate`
-| javadoc:org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator[]
+| javadoc:org.springframework.boot.health.application.ReadinessStateHealthIndicator[]
 | Exposes the "`Readiness`" application availability state.
 |===
 
@@ -928,7 +928,7 @@ Applications deployed on Kubernetes can provide information about their internal
 Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet calls those probes and reacts to the result.
 
 By default, Spring Boot manages your xref:features/spring-application.adoc#features.spring-application.application-availability[Application Availability] state.
-If deployed in a Kubernetes environment, actuator gathers the "`Liveness`" and "`Readiness`" information from the javadoc:org.springframework.boot.availability.ApplicationAvailability[] interface and uses that information in dedicated xref:actuator/endpoints.adoc#actuator.endpoints.health.auto-configured-health-indicators[health indicators]: javadoc:org.springframework.boot.actuate.availability.LivenessStateHealthIndicator[] and javadoc:org.springframework.boot.actuate.availability.ReadinessStateHealthIndicator[].
+If deployed in a Kubernetes environment, actuator gathers the "`Liveness`" and "`Readiness`" information from the javadoc:org.springframework.boot.availability.ApplicationAvailability[] interface and uses that information in dedicated xref:actuator/endpoints.adoc#actuator.endpoints.health.auto-configured-health-indicators[health indicators]: javadoc:org.springframework.boot.health.application.LivenessStateHealthIndicator[] and javadoc:org.springframework.boot.health.application.ReadinessStateHealthIndicator[].
 These indicators are shown on the global health endpoint (`"/actuator/health"`).
 They are also exposed as separate HTTP Probes by using xref:actuator/endpoints.adoc#actuator.endpoints.health.groups[health groups]: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
 
@@ -1255,7 +1255,7 @@ The `info` endpoint publishes information about your process, see javadoc:org.sp
 [[actuator.endpoints.info.ssl-information]]
 === SSL Information
 
-The `info` endpoint publishes information about your SSL certificates (that are configured through xref:features/ssl.adoc#features.ssl.bundles[SSL Bundles]), see javadoc:org.springframework.boot.info.SslInfo[] for more details. This endpoint reuses the "warning threshold" property of javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[]: if an SSL certificate will be invalid within the time span defined by this threshold, it will trigger a warning. See the `management.health.ssl.certificate-validity-warning-threshold` property.
+The `info` endpoint publishes information about your SSL certificates (that are configured through xref:features/ssl.adoc#features.ssl.bundles[SSL Bundles]), see javadoc:org.springframework.boot.info.SslInfo[] for more details. This endpoint reuses the "warning threshold" property of javadoc:org.springframework.boot.health.info.SslHealthIndicator[]: if an SSL certificate will be invalid within the time span defined by this threshold, it will trigger a warning. See the `management.health.ssl.certificate-validity-warning-threshold` property.
 
 
 

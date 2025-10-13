@@ -24,6 +24,7 @@ description = "Spring Boot Actuator Integration Tests"
 
 dependencies {
 	testImplementation(project(":module:spring-boot-actuator"))
+	testImplementation(project(":module:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":core:spring-boot-autoconfigure"))
 	testImplementation(project(":module:spring-boot-health"))
 	testImplementation(project(":module:spring-boot-http-converter"))

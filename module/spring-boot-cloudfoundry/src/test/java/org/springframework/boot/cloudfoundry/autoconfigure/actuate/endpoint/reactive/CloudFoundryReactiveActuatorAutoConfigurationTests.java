@@ -35,7 +35,6 @@ import reactor.netty.http.HttpResources;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
@@ -50,6 +49,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
 import org.springframework.boot.cloudfoundry.autoconfigure.actuate.endpoint.servlet.CloudFoundryInfoEndpointWebExtension;
+import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
@@ -260,7 +260,10 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 					"vcap.application.cf_api:https://my-cloud-controller.com")
 			.run((context) -> {
 				Collection<ExposableWebEndpoint> endpoints = getHandlerMapping(context).getEndpoints();
-				ExposableWebEndpoint endpoint = endpoints.iterator().next();
+				ExposableWebEndpoint endpoint = endpoints.stream()
+					.filter((candidate) -> candidate.getEndpointId().toLowerCaseString().equals("health"))
+					.findFirst()
+					.get();
 				assertThat(endpoint.getOperations()).hasSize(2);
 				WebOperation webOperation = findOperationWithRequestPath(endpoint, "health");
 				assertThat(webOperation).extracting("invoker")

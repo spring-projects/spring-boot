@@ -18,12 +18,12 @@ package org.springframework.boot.security.autoconfigure.actuate.servlet;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.health.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
@@ -49,7 +49,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @since 4.0.0
  */
 @AutoConfiguration(before = SecurityAutoConfiguration.class,
-		afterName = { "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration",
+		afterName = { "org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndpointAutoConfiguration",
 				"org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration" })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ RequestMatcher.class, WebEndpointAutoConfiguration.class })
@@ -58,11 +58,14 @@ public final class ManagementWebSecurityAutoConfiguration {
 
 	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	SecurityFilterChain managementSecurityFilterChain(Environment environment, HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests((requests) -> {
-			requests.requestMatchers(healthMatcher(), additionalHealthPathsMatcher()).permitAll();
-			requests.anyRequest().authenticated();
-		});
+	SecurityFilterChain managementSecurityFilterChain(Environment environment, HttpSecurity http) {
+		if (ClassUtils.isPresent("org.springframework.boot.health.actuate.endpoint.HealthEndpoint",
+				getClass().getClassLoader())) {
+			http.authorizeHttpRequests((requests) -> {
+				requests.requestMatchers(healthMatcher(), additionalHealthPathsMatcher()).permitAll();
+				requests.anyRequest().authenticated();
+			});
+		}
 		if (ClassUtils.isPresent("org.springframework.web.servlet.DispatcherServlet", null)) {
 			http.cors(withDefaults());
 		}

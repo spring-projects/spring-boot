@@ -31,7 +31,6 @@ dependencies {
 
 	implementation("tools.jackson.core:jackson-databind")
 
-	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-web-server"))
 	optional("io.micrometer:micrometer-core")
 	optional("io.projectreactor:reactor-core")
