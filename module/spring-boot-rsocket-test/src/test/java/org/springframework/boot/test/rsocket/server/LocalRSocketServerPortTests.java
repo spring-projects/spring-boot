@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.rsocket.server;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -37,10 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LocalRSocketServerPortTests {
 
 	@Value("${local.rsocket.server.port}")
-	private String fromValue;
+	private @Nullable String fromValue;
 
 	@LocalRSocketServerPort
-	private String fromAnnotation;
+	private @Nullable String fromAnnotation;
 
 	@Test
 	void testLocalRSocketServerPortAnnotation() {
