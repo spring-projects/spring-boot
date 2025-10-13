@@ -22,6 +22,7 @@ import brave.Tag;
 import brave.handler.MutableSpan;
 import brave.handler.SpanHandler;
 import brave.propagation.TraceContext;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import zipkin2.reporter.BytesEncoder;
 import zipkin2.reporter.BytesMessageSender;
@@ -186,7 +187,7 @@ class ZipkinConfigurationsBraveConfigurationTests {
 		Tag<Throwable> throwableTag() {
 			return new Tag<>("exception") {
 				@Override
-				protected String parseValue(Throwable throwable, TraceContext traceContext) {
+				protected @Nullable String parseValue(Throwable throwable, @Nullable TraceContext traceContext) {
 					return throwable.getMessage();
 				}
 			};

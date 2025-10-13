@@ -24,6 +24,7 @@ import java.util.Map;
 import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -92,7 +93,9 @@ class CompositePropagationFactoryTests {
 			Propagation<String> propagation = factory.get();
 			Map<String, String> request = Map.of("a", "a-value", "b", "b-value");
 			TraceContextOrSamplingFlags context = propagation.extractor(new MapGetter()).extract(request);
-			assertThat(context.context().extra()).containsExactly("a");
+			TraceContext traceContext = context.context();
+			assertThat(traceContext).isNotNull();
+			assertThat(traceContext.extra()).containsExactly("a");
 		}
 
 		@Test
@@ -127,7 +130,7 @@ class CompositePropagationFactoryTests {
 	private static final class MapGetter implements Propagation.Getter<Map<String, String>, String> {
 
 		@Override
-		public String get(Map<String, String> request, String key) {
+		public @Nullable String get(Map<String, String> request, String key) {
 			return request.get(key);
 		}
 

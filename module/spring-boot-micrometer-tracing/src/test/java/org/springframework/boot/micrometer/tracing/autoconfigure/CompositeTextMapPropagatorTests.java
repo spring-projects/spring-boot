@@ -29,6 +29,7 @@ import io.opentelemetry.context.propagation.TextMapGetter;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.context.propagation.TextMapSetter;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -147,7 +148,7 @@ class CompositeTextMapPropagatorTests {
 		}
 
 		@Override
-		public String get(Map<String, String> carrier, String key) {
+		public @Nullable String get(@Nullable Map<String, String> carrier, String key) {
 			if (carrier == null) {
 				return null;
 			}
@@ -173,12 +174,12 @@ class CompositeTextMapPropagatorTests {
 		}
 
 		@Override
-		public <C> void inject(Context context, C carrier, TextMapSetter<C> setter) {
+		public <C> void inject(Context context, @Nullable C carrier, TextMapSetter<C> setter) {
 			setter.set(carrier, this.field, this.field + "-value");
 		}
 
 		@Override
-		public <C> Context extract(Context context, C carrier, TextMapGetter<C> getter) {
+		public <C> Context extract(Context context, @Nullable C carrier, TextMapGetter<C> getter) {
 			String value = getter.get(carrier, this.field);
 			if (value != null) {
 				return context.with(this.contextKeyRegistry.get(this.field), value);

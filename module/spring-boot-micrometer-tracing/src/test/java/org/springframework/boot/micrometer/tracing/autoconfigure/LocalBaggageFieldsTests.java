@@ -25,6 +25,7 @@ import brave.propagation.Propagation.Factory;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link LocalBaggageFields}.
@@ -52,8 +53,9 @@ class LocalBaggageFieldsTests {
 	private static FactoryBuilder createBuilder() {
 		return BaggagePropagation.newFactoryBuilder(new Factory() {
 			@Override
+			@SuppressWarnings("unchecked")
 			public Propagation<String> get() {
-				return null;
+				return mock(Propagation.class);
 			}
 		});
 	}

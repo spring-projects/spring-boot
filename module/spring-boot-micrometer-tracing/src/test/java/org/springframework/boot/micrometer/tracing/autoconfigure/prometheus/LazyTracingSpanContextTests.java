@@ -19,6 +19,7 @@ package org.springframework.boot.micrometer.tracing.autoconfigure.prometheus;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.TraceContext;
 import io.micrometer.tracing.Tracer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
@@ -46,7 +47,7 @@ class LazyTracingSpanContextTests {
 		}
 
 		@Override
-		public Tracer getObject(Object... args) throws BeansException {
+		public Tracer getObject(@Nullable Object... args) throws BeansException {
 			return LazyTracingSpanContextTests.this.tracer;
 		}
 

@@ -275,7 +275,8 @@ class MicrometerTracingAutoConfigurationTests {
 
 		@Bean
 		SpanTagAnnotationHandler spanTagAnnotationHandler() {
-			return new SpanTagAnnotationHandler((valueResolverClass) -> null, (valueExpressionResolverClass) -> null);
+			return new SpanTagAnnotationHandler((valueResolverClass) -> mock(ValueResolver.class),
+					(valueExpressionResolverClass) -> mock(ValueExpressionResolver.class));
 		}
 
 	}
