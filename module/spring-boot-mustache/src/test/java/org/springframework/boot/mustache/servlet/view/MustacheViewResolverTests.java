@@ -16,6 +16,8 @@
 
 package org.springframework.boot.mustache.servlet.view;
 
+import java.util.Locale;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,20 +51,21 @@ class MustacheViewResolverTests {
 
 	@Test
 	void resolveNonExistent() throws Exception {
-		assertThat(this.resolver.resolveViewName("bar", null)).isNull();
+		assertThat(this.resolver.resolveViewName("bar", Locale.ROOT)).isNull();
 	}
 
 	@Test
 	@WithResource(name = "template.html", content = "Hello {{World}}")
 	void resolveExisting() throws Exception {
-		assertThat(this.resolver.resolveViewName("template", null)).isNotNull();
+		assertThat(this.resolver.resolveViewName("template", Locale.ROOT)).isNotNull();
 	}
 
 	@Test
 	@WithResource(name = "template.html", content = "Hello {{World}}")
 	void setsContentType() throws Exception {
 		this.resolver.setContentType("application/octet-stream");
-		View view = this.resolver.resolveViewName("template", null);
+		View view = this.resolver.resolveViewName("template", Locale.ROOT);
+		assertThat(view).isNotNull();
 		Assertions.assertThat(view.getContentType()).isEqualTo("application/octet-stream");
 
 	}

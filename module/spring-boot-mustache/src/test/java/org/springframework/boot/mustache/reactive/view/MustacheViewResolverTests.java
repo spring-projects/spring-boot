@@ -17,6 +17,7 @@
 package org.springframework.boot.mustache.reactive.view;
 
 import java.time.Duration;
+import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,13 +47,13 @@ class MustacheViewResolverTests {
 
 	@Test
 	void resolveNonExistent() {
-		assertThat(this.resolver.resolveViewName("bar", null).block(Duration.ofSeconds(30))).isNull();
+		assertThat(this.resolver.resolveViewName("bar", Locale.ROOT).block(Duration.ofSeconds(30))).isNull();
 	}
 
 	@Test
 	@WithResource(name = "template.html", content = "Hello {{World}}")
 	void resolveExisting() {
-		assertThat(this.resolver.resolveViewName("template", null).block(Duration.ofSeconds(30))).isNotNull();
+		assertThat(this.resolver.resolveViewName("template", Locale.ROOT).block(Duration.ofSeconds(30))).isNotNull();
 	}
 
 }

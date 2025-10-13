@@ -34,6 +34,7 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +64,9 @@ class MustacheAutoConfigurationServletIntegrationTests {
 
 	@BeforeEach
 	void init() {
-		this.port = this.context.getWebServer().getPort();
+		WebServer webServer = this.context.getWebServer();
+		assertThat(webServer).isNotNull();
+		this.port = webServer.getPort();
 	}
 
 	@Test
