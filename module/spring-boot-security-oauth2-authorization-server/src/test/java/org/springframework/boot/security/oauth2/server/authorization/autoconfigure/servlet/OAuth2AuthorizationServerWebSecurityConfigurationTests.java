@@ -19,6 +19,7 @@ package org.springframework.boot.security.oauth2.server.authorization.autoconfig
 import java.util.List;
 
 import jakarta.servlet.Filter;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -118,7 +119,7 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 			});
 	}
 
-	private Filter findFilter(AssertableWebApplicationContext context, Class<? extends Filter> filter,
+	private @Nullable Filter findFilter(AssertableWebApplicationContext context, Class<? extends Filter> filter,
 			int filterChainIndex) {
 		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
