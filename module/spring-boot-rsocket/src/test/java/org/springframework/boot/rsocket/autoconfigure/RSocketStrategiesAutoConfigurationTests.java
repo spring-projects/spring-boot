@@ -22,6 +22,7 @@ import tools.jackson.dataformat.cbor.CBORMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,6 +81,44 @@ class RSocketStrategiesAutoConfigurationTests {
 			assertThat(strategies.decoders()).hasAtLeastOneElementOfType(CustomDecoder.class);
 			assertThat(strategies.encoders()).hasAtLeastOneElementOfType(CustomEncoder.class);
 		});
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void shouldUseJackson2WhenPreferred() {
+		this.contextRunner
+			.withConfiguration(AutoConfigurations
+				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
+			.withPropertyValues("spring.rsocket.preferred-mapper=jackson2")
+			.run((context) -> {
+				RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
+				assertThat(strategies.decoders())
+					.hasAtLeastOneElementOfType(org.springframework.http.codec.cbor.Jackson2CborDecoder.class)
+					.hasAtLeastOneElementOfType(org.springframework.http.codec.json.Jackson2JsonDecoder.class);
+				assertThat(strategies.encoders())
+					.hasAtLeastOneElementOfType(org.springframework.http.codec.cbor.Jackson2CborEncoder.class)
+					.hasAtLeastOneElementOfType(org.springframework.http.codec.json.Jackson2JsonEncoder.class);
+			});
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void shouldUseJackson2WhenJacksonIsAbsent() {
+		this.contextRunner
+			.withConfiguration(AutoConfigurations
+				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class, CBORMapper.class))
+			.run((context) -> {
+				RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
+				assertThat(strategies.decoders())
+					.hasAtLeastOneElementOfType(org.springframework.http.codec.cbor.Jackson2CborDecoder.class)
+					.hasAtLeastOneElementOfType(org.springframework.http.codec.json.Jackson2JsonDecoder.class);
+				assertThat(strategies.encoders())
+					.hasAtLeastOneElementOfType(org.springframework.http.codec.cbor.Jackson2CborEncoder.class)
+					.hasAtLeastOneElementOfType(org.springframework.http.codec.json.Jackson2JsonEncoder.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
