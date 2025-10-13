@@ -35,7 +35,7 @@ class MyRestController(private val userRepository: UserRepository, private val c
 
 	@GetMapping("/{userId}/customers")
 	fun getUserCustomers(@PathVariable userId: Long): Flux<Customer> {
-		return userRepository.findById(userId).flatMapMany { user: User? ->
+		return userRepository.findById(userId).flatMapMany { user: User ->
 			customerRepository.findByUser(user)
 		}
 	}
