@@ -43,7 +43,7 @@ bom {
 				.formatted(version.componentInts()))
 		}
 	}
-	library("Angus Mail", "2.0.4") {
+	library("Angus Mail", "2.0.5") {
 		group("org.eclipse.angus") {
 			modules = [
 				"angus-core",
