@@ -222,7 +222,9 @@ class HttpServiceClientAutoConfigurationTests {
 		}
 
 		MockRestServiceServer getMock(String name) {
-			return this.mocks.get(name);
+			MockRestServiceServer mock = this.mocks.get(name);
+			assertThat(mock).isNotNull();
+			return mock;
 		}
 
 	}

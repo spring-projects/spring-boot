@@ -48,6 +48,7 @@ class RootUriTemplateHandlerTests {
 	private URI uri;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	public UriTemplateHandler delegate;
 
 	public UriTemplateHandler handler;
@@ -59,6 +60,7 @@ class RootUriTemplateHandlerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithNullRootUriShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new RootUriTemplateHandler((String) null, mock(UriTemplateHandler.class)))
@@ -66,6 +68,7 @@ class RootUriTemplateHandlerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithNullHandlerShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler("https://example.com", null))
 			.withMessageContaining("'handler' must not be null");

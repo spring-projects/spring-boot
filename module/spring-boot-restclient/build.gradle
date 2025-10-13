@@ -45,3 +45,7 @@ dependencies {
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 	testRuntimeOnly("org.springframework:spring-webflux")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
