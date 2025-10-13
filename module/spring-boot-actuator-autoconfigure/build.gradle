@@ -33,7 +33,6 @@ dependencies {
 
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-web-server"))
-
 	optional("io.micrometer:micrometer-core")
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")
