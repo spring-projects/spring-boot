@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A factory for a reactive {@link MongoClient}.
@@ -35,7 +36,7 @@ public class ReactiveMongoClientFactory extends MongoClientFactorySupport<MongoC
 	 * Construct a factory for creating a {@link MongoClient}.
 	 * @param builderCustomizers a list of configuration settings customizers
 	 */
-	public ReactiveMongoClientFactory(List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
+	public ReactiveMongoClientFactory(@Nullable List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
 		super(builderCustomizers, MongoClients::create);
 	}
 

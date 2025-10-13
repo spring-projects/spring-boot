@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A factory for a blocking {@link MongoClient}.
@@ -41,7 +42,7 @@ public class MongoClientFactory extends MongoClientFactorySupport<MongoClient> {
 	 * Construct a factory for creating a blocking {@link MongoClient}.
 	 * @param builderCustomizers a list of configuration settings customizers
 	 */
-	public MongoClientFactory(List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
+	public MongoClientFactory(@Nullable List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
 		super(builderCustomizers, MongoClients::create);
 	}
 
