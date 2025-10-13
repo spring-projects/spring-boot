@@ -60,7 +60,7 @@ public class OpenTelemetryResourceAttributes {
 	 * @param environment the environment
 	 * @param resourceAttributes user-provided resource attributes to be used
 	 */
-	public OpenTelemetryResourceAttributes(Environment environment, Map<String, String> resourceAttributes) {
+	public OpenTelemetryResourceAttributes(Environment environment, @Nullable Map<String, String> resourceAttributes) {
 		this(environment, resourceAttributes, null);
 	}
 
