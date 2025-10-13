@@ -27,7 +27,9 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -51,10 +53,12 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.jdbc.autoconfigure.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -90,6 +94,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Moritz Halbritter
  * @author Phillip Webb
  * @author Ahmed Ashour
+ * @author Dylan Miska
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LiquibaseAutoConfigurationTests {
@@ -569,30 +574,122 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
+	@WithResource(name = "db/create-custom-schema.sql", content = "CREATE SCHEMA \"CustomSchema\";")
 	@WithDbChangelogMasterYamlResource
-	void whenCustomizerBeanIsDefinedThenItIsConfiguredOnSpringLiquibase() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomizerConfiguration.class)
-			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getCustomizer()).isNotNull()));
+	void customLiquibasePropertyIsAppliedDuringExecution() {
+		this.contextRunner.withUserConfiguration(DataSourceWithSchemaConfiguration.class)
+			.withPropertyValues("spring.liquibase.default-schema=CustomSchema",
+					"spring.liquibase.properties.liquibase.preserveSchemaCase=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringLiquibase.class);
+				SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+
+				// If preserveSchemaCase wasn't applied, this would have failed during
+				// context startup
+				assertThat(liquibase.getDefaultSchema()).isEqualTo("CustomSchema");
+
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(liquibase.getDataSource());
+				Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM \"CustomSchema\".DATABASECHANGELOG",
+						Integer.class);
+				assertThat(count).isGreaterThan(0);
+			});
 	}
 
 	@Test
 	@WithDbChangelogMasterYamlResource
-	void whenAnalyticsEnabledIsFalseThenSpringLiquibaseHasAnalyticsDisabled() {
+	void springLiquibaseTakesPrecedenceOverLiquibaseDefaults() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.liquibase.analytics-enabled=false")
-			.run((context) -> assertThat(context.getBean(SpringLiquibase.class))
-				.extracting(SpringLiquibase::getAnalyticsEnabled)
-				.isEqualTo(Boolean.FALSE));
+			.withPropertyValues("spring.liquibase.properties.liquibase.duplicateFileMode=WARN")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringLiquibase.class);
+
+				liquibase.configuration.LiquibaseConfiguration liquibaseConfig = liquibase.Scope.getCurrentScope()
+					.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+				liquibase.configuration.ConfigurationValueProvider provider = liquibaseConfig.getProviders()
+					.stream()
+					.filter(p -> p.getClass()
+						.getName()
+						.equals("org.springframework.boot.liquibase.autoconfigure.EnvironmentConfigurationValueProvider"))
+					.findFirst()
+					.orElseThrow();
+
+				runInLiquibaseScopeWithContextId(context, () -> {
+					liquibase.configuration.ProvidedValue provided = provider
+						.getProvidedValue("liquibase.duplicateFileMode");
+					assertThat(provided).isNotNull();
+					assertThat(String.valueOf(provided.getValue())).isEqualTo("WARN");
+
+					// Now check the resolved value, which should be different from the
+					// default 'ERROR'
+					liquibase.configuration.ConfiguredValue<?> resolved = liquibaseConfig
+						.getCurrentConfiguredValue(null, null, "liquibase.duplicateFileMode");
+					assertThat(String.valueOf(resolved.getValue())).isEqualTo("WARN");
+				});
+			});
 	}
 
 	@Test
 	@WithDbChangelogMasterYamlResource
-	void whenLicenseKeyIsSetThenSpringLiquibaseHasLicenseKey() {
+	void systemPropertyTakesPrecedenceOverSpringLiquibaseProperties() {
+		this.contextRunner.withSystemProperties("liquibase.duplicateFileMode=ERROR")
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.properties.liquibase.duplicateFileMode=WARN")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringLiquibase.class);
+
+				liquibase.configuration.LiquibaseConfiguration liquibaseConfig = liquibase.Scope.getCurrentScope()
+					.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+				liquibase.configuration.ConfigurationValueProvider provider = liquibaseConfig.getProviders()
+					.stream()
+					.filter(p -> p.getClass()
+						.getName()
+						.equals("org.springframework.boot.liquibase.autoconfigure.EnvironmentConfigurationValueProvider"))
+					.findFirst()
+					.orElseThrow();
+
+				runInLiquibaseScopeWithContextId(context, () -> {
+					// Our provider should return the value set through Spring property
+					liquibase.configuration.ProvidedValue providedBySpring = provider
+						.getProvidedValue("liquibase.duplicateFileMode");
+					assertThat(providedBySpring).isNotNull();
+					assertThat(String.valueOf(providedBySpring.getValue())).isEqualTo("WARN");
+
+					// Now check the resolved value, which should be the system property
+					liquibase.configuration.ConfiguredValue<?> resolved = liquibaseConfig
+						.getCurrentConfiguredValue(null, null, "liquibase.duplicateFileMode");
+					assertThat(String.valueOf(resolved.getValue())).isEqualTo("ERROR");
+				});
+			});
+	}
+
+	@Test
+	@WithDbChangelogMasterYamlResource
+	void arbitraryLiquibaseKeyIsPassedThroughAsIs() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.liquibase.license-key=a1b2c3d4")
-			.run((context) -> assertThat(context.getBean(SpringLiquibase.class))
-				.extracting(SpringLiquibase::getLicenseKey)
-				.isEqualTo("a1b2c3d4"));
+			.withPropertyValues("spring.liquibase.properties.my.extension.custom.option=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringLiquibase.class);
+
+				liquibase.configuration.LiquibaseConfiguration liquibaseConfig = liquibase.Scope.getCurrentScope()
+					.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+				liquibase.configuration.ConfigurationValueProvider provider = liquibaseConfig.getProviders()
+					.stream()
+					.filter(p -> p.getClass()
+						.getName()
+						.equals("org.springframework.boot.liquibase.autoconfigure.EnvironmentConfigurationValueProvider"))
+					.findFirst()
+					.orElseThrow();
+
+				runInLiquibaseScopeWithContextId(context, () -> {
+					liquibase.configuration.ProvidedValue provided = provider
+						.getProvidedValue("my.extension.custom.option");
+					assertThat(provided).isNotNull();
+					assertThat(String.valueOf(provided.getValue())).isEqualTo("true");
+				});
+			});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {
@@ -601,6 +698,15 @@ class LiquibaseAutoConfigurationTests {
 			SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
 			consumer.accept(liquibase);
 		};
+	}
+
+	private void runInLiquibaseScopeWithContextId(AssertableApplicationContext context, Runnable runnable) throws Exception {
+		// During liquibase startup, we are already scoped with the context ID
+		// but we need to do it again to verify the ConfigurationValueProvider behavior
+		// outside of that phase
+		Map<String, Object> scopeValues = new HashMap<>();
+		scopeValues.put(EnvironmentConfigurationValueProvider.SPRING_ENV_ID_KEY, context.getId());
+		liquibase.Scope.child(scopeValues, runnable::run);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -737,6 +843,25 @@ class LiquibaseAutoConfigurationTests {
 		@Bean
 		Customizer<Liquibase> customizer() {
 			return (liquibase) -> liquibase.setChangeLogParameter("some key", "some value");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DataSourceWithSchemaConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			DataSource dataSource = new EmbeddedDatabaseBuilder()
+				.setType(Objects.requireNonNull(EmbeddedDatabaseConnection.get(getClass().getClassLoader()).getType()))
+				.setName(UUID.randomUUID().toString())
+				.build();
+			DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+			settings.setSchemaLocations(java.util.Arrays.asList("classpath:/db/create-custom-schema.sql"));
+			org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer initializer = new org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer(
+					dataSource, settings);
+			initializer.initializeDatabase();
+			return dataSource;
 		}
 
 	}

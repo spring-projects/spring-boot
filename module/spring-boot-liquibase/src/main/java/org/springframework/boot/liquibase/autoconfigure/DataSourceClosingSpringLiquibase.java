@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
 
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -31,9 +30,10 @@ import org.springframework.util.ReflectionUtils;
  * {@link DataSource} once the database has been migrated.
  *
  * @author Andy Wilkinson
+ * @author Dylan Miska
  * @since 4.0.0
  */
-public class DataSourceClosingSpringLiquibase extends SpringLiquibase implements DisposableBean {
+public class DataSourceClosingSpringLiquibase extends EnvironmentAwareSpringLiquibase {
 
 	private volatile boolean closeDataSourceOnceMigrated = true;
 
@@ -58,7 +58,8 @@ public class DataSourceClosingSpringLiquibase extends SpringLiquibase implements
 	}
 
 	@Override
-	public void destroy() throws Exception {
+	public void destroy() {
+		super.destroy();
 		if (!this.closeDataSourceOnceMigrated) {
 			closeDataSource();
 		}

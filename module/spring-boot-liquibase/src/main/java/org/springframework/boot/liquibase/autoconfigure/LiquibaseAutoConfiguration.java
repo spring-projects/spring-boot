@@ -16,6 +16,8 @@
 
 package org.springframework.boot.liquibase.autoconfigure;
 
+import java.util.Objects;
+
 import javax.sql.DataSource;
 
 import liquibase.Liquibase;
@@ -45,6 +47,7 @@ import org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration.LiquibaseDataSourceCondition;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -71,6 +74,7 @@ import org.springframework.util.StringUtils;
  * @author Evgeniy Cheban
  * @author Moritz Halbritter
  * @author Ahmed Ashour
+ * @author Dylan Miska
  * @since 4.0.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
@@ -101,7 +105,9 @@ public final class LiquibaseAutoConfiguration {
 		@Bean
 		SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource, LiquibaseProperties properties,
-				ObjectProvider<SpringLiquibaseCustomizer> customizers, LiquibaseConnectionDetails connectionDetails) {
+				ObjectProvider<SpringLiquibaseCustomizer> customizers, LiquibaseConnectionDetails connectionDetails,
+				ApplicationContext applicationContext) {
+			registerLiquibaseConfigurationValueProvider(applicationContext);
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
 					dataSource.getIfUnique(), connectionDetails);
 			liquibase.setChangeLog(properties.getChangeLog());
@@ -147,10 +153,26 @@ public final class LiquibaseAutoConfiguration {
 				@Nullable DataSource dataSource, LiquibaseConnectionDetails connectionDetails) {
 			DataSource migrationDataSource = getMigrationDataSource(liquibaseDataSource, dataSource, connectionDetails);
 			SpringLiquibase liquibase = (migrationDataSource == liquibaseDataSource
-					|| migrationDataSource == dataSource) ? new SpringLiquibase()
+					|| migrationDataSource == dataSource) ? new EnvironmentAwareSpringLiquibase()
 							: new DataSourceClosingSpringLiquibase();
 			liquibase.setDataSource(migrationDataSource);
 			return liquibase;
+		}
+
+		private void registerLiquibaseConfigurationValueProvider(ApplicationContext applicationContext) {
+			liquibase.configuration.LiquibaseConfiguration liquibaseConfiguration = liquibase.Scope.getCurrentScope()
+				.getSingleton(liquibase.configuration.LiquibaseConfiguration.class);
+
+			boolean providerExists = liquibaseConfiguration.getProviders()
+				.stream()
+				.anyMatch((provider) -> provider.getClass() == EnvironmentConfigurationValueProvider.class);
+
+			if (!providerExists) {
+				liquibaseConfiguration.registerProvider(new EnvironmentConfigurationValueProvider());
+			}
+
+			EnvironmentConfigurationValueProvider.registerEnvironment(
+					Objects.requireNonNull(applicationContext.getId()), applicationContext.getEnvironment());
 		}
 
 		private DataSource getMigrationDataSource(@Nullable DataSource liquibaseDataSource,
