@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -89,7 +90,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 					"management.endpoint.health.group.test2.additional-path=management:/check2")
 			.run((context) -> {
 				assertThat(getAuthenticateHeader(context, "/check1")).isNull();
-				assertThat(getAuthenticateHeader(context, "/check2").get(0)).contains("Basic realm=");
+				assertThat(getRequiredAuthenticateHeader(context, "/check2").get(0)).contains("Basic realm=");
 				assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull();
 			});
 	}
@@ -104,16 +105,16 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 					"management.server.port=0")
 			.run((context) -> {
 				assertThat(getAuthenticateHeader(context, "/check1")).isNull();
-				assertThat(getAuthenticateHeader(context, "/check2").get(0)).contains("Basic realm=");
-				assertThat(getAuthenticateHeader(context, "/actuator/health").get(0)).contains("Basic realm=");
+				assertThat(getRequiredAuthenticateHeader(context, "/check2").get(0)).contains("Basic realm=");
+				assertThat(getRequiredAuthenticateHeader(context, "/actuator/health").get(0)).contains("Basic realm=");
 			});
 	}
 
 	@Test
 	void securesEverythingElse() {
 		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class).run((context) -> {
-			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
-			assertThat(getAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
+			assertThat(getRequiredAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
+			assertThat(getRequiredAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
 		});
 	}
 
@@ -121,8 +122,8 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	void noExistingAuthenticationManagerOrUserDetailsService() {
 		this.contextRunner.run((context) -> {
 			assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull();
-			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
-			assertThat(getAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
+			assertThat(getRequiredAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
+			assertThat(getRequiredAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
 		});
 	}
 
@@ -132,14 +133,14 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 			.withPropertyValues("management.endpoints.web.base-path=/")
 			.run((context) -> {
 				assertThat(getAuthenticateHeader(context, "/health")).isNull();
-				assertThat(getAuthenticateHeader(context, "/foo").get(0)).contains("Basic realm=");
+				assertThat(getRequiredAuthenticateHeader(context, "/foo").get(0)).contains("Basic realm=");
 			});
 	}
 
 	@Test
 	void backsOffIfCustomSecurityIsAdded() {
 		this.contextRunner.withUserConfiguration(CustomSecurityConfiguration.class).run((context) -> {
-			assertThat(getLocationHeader(context, "/actuator/health").toString()).contains("/login");
+			assertThat(getRequiredLocationHeader(context, "/actuator/health").toString()).contains("/login");
 			assertThat(getLocationHeader(context, "/foo")).isNull();
 		});
 	}
@@ -147,14 +148,20 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	@Test
 	void backsOffWhenWebFilterChainProxyBeanPresent() {
 		this.contextRunner.withUserConfiguration(WebFilterChainProxyConfiguration.class).run((context) -> {
-			assertThat(getLocationHeader(context, "/actuator/health").toString()).contains("/login");
-			assertThat(getLocationHeader(context, "/foo").toString()).contains("/login");
+			assertThat(getRequiredLocationHeader(context, "/actuator/health").toString()).contains("/login");
+			assertThat(getRequiredLocationHeader(context, "/foo").toString()).contains("/login");
 		});
 	}
 
-	private List<String> getAuthenticateHeader(AssertableReactiveWebApplicationContext context, String path) {
+	private @Nullable List<String> getAuthenticateHeader(AssertableReactiveWebApplicationContext context, String path) {
 		ServerWebExchange exchange = performFilter(context, path);
 		return exchange.getResponse().getHeaders().get(HttpHeaders.WWW_AUTHENTICATE);
+	}
+
+	private List<String> getRequiredAuthenticateHeader(AssertableReactiveWebApplicationContext context, String path) {
+		List<String> header = getAuthenticateHeader(context, path);
+		assertThat(header).isNotNull();
+		return header;
 	}
 
 	private ServerWebExchange performFilter(AssertableReactiveWebApplicationContext context, String path) {
@@ -165,9 +172,15 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 		return exchange;
 	}
 
-	private URI getLocationHeader(AssertableReactiveWebApplicationContext context, String path) {
+	private @Nullable URI getLocationHeader(AssertableReactiveWebApplicationContext context, String path) {
 		ServerWebExchange exchange = performFilter(context, path);
 		return exchange.getResponse().getHeaders().getLocation();
+	}
+
+	private URI getRequiredLocationHeader(AssertableReactiveWebApplicationContext context, String path) {
+		URI header = getLocationHeader(context, path);
+		assertThat(header).isNotNull();
+		return header;
 	}
 
 	private TestHttpWebHandlerAdapter webHandler(AssertableReactiveWebApplicationContext context) {

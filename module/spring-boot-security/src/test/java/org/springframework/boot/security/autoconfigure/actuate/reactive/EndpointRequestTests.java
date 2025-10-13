@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.assertj.core.api.AssertDelegateTarget;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -41,6 +42,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher.MatchResult;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebHandler;
@@ -319,12 +321,12 @@ class EndpointRequestTests {
 	}
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
-			PathMappedEndpoints pathMappedEndpoints) {
+			@Nullable PathMappedEndpoints pathMappedEndpoints) {
 		return assertMatcher(matcher, pathMappedEndpoints, null);
 	}
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
-			PathMappedEndpoints pathMappedEndpoints, WebServerNamespace namespace) {
+			@Nullable PathMappedEndpoints pathMappedEndpoints, @Nullable WebServerNamespace namespace) {
 		StaticApplicationContext context = new StaticApplicationContext();
 		if (namespace != null && !WebServerNamespace.SERVER.equals(namespace)) {
 			NamedStaticWebApplicationContext parentContext = new NamedStaticWebApplicationContext(namespace);
@@ -371,12 +373,12 @@ class EndpointRequestTests {
 		}
 
 		@Override
-		public WebServer getWebServer() {
+		public @Nullable WebServer getWebServer() {
 			return null;
 		}
 
 		@Override
-		public String getServerNamespace() {
+		public @Nullable String getServerNamespace() {
 			return (this.webServerNamespace != null) ? this.webServerNamespace.getValue() : null;
 		}
 
@@ -406,9 +408,9 @@ class EndpointRequestTests {
 		}
 
 		private void matches(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-				.as("Matches " + getRequestPath(exchange))
-				.isTrue();
+			MatchResult result = this.matcher.matches(exchange).block(Duration.ofSeconds(30));
+			assertThat(result).isNotNull();
+			assertThat(result.isMatch()).as("Matches " + getRequestPath(exchange)).isTrue();
 		}
 
 		void doesNotMatch(String path) {
@@ -424,9 +426,9 @@ class EndpointRequestTests {
 		}
 
 		private void doesNotMatch(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-				.as("Does not match " + getRequestPath(exchange))
-				.isFalse();
+			MatchResult result = this.matcher.matches(exchange).block(Duration.ofSeconds(30));
+			assertThat(result).isNotNull();
+			assertThat(result.isMatch()).as("Does not match " + getRequestPath(exchange)).isFalse();
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {

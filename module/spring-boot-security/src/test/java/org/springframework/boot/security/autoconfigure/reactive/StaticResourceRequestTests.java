@@ -29,6 +29,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher.MatchResult;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebHandler;
@@ -77,12 +78,14 @@ class StaticResourceRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
 			.withMessageContaining("'locations' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
 			.withMessageContaining("'locations' must not be null");
@@ -112,9 +115,9 @@ class StaticResourceRequestTests {
 		}
 
 		private void matches(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-				.as("Matches " + getRequestPath(exchange))
-				.isTrue();
+			MatchResult result = this.matcher.matches(exchange).block(Duration.ofSeconds(30));
+			assertThat(result).isNotNull();
+			assertThat(result.isMatch()).as("Matches " + getRequestPath(exchange)).isTrue();
 		}
 
 		void doesNotMatch(String path) {
@@ -124,9 +127,9 @@ class StaticResourceRequestTests {
 		}
 
 		private void doesNotMatch(ServerWebExchange exchange) {
-			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-				.as("Does not match " + getRequestPath(exchange))
-				.isFalse();
+			MatchResult result = this.matcher.matches(exchange).block(Duration.ofSeconds(30));
+			assertThat(result).isNotNull();
+			assertThat(result.isMatch()).as("Does not match " + getRequestPath(exchange)).isFalse();
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {

@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -62,6 +63,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -239,18 +241,20 @@ class UserDetailsServiceAutoConfigurationTests {
 		ConditionAndOutcomes conditionAndOutcomes = ConditionEvaluationReport.get(context.getBeanFactory())
 			.getConditionAndOutcomesBySource()
 			.get(UserDetailsServiceAutoConfiguration.class.getName());
+		assertThat(conditionAndOutcomes).isNotNull();
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 			if (conditionAndOutcome.getCondition() instanceof MissingAlternativeOrUserPropertiesConfigured) {
 				return conditionAndOutcome.getOutcome();
 			}
 		}
-		return null;
+		fail("No outcome for MissingAlternativeOrUserPropertiesConfigured found");
+		throw new AssertionError("Should not be reached");
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class TestAuthenticationManagerConfiguration {
 
-		private AuthenticationManager authenticationManager;
+		private @Nullable AuthenticationManager authenticationManager;
 
 		@Bean
 		AuthenticationManager myAuthenticationManager() {

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -235,7 +236,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 			implements WebServerApplicationContext {
 
 		@Override
-		public WebServer getWebServer() {
+		public @Nullable WebServer getWebServer() {
 			return null;
 		}
 

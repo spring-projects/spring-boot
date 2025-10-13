@@ -25,6 +25,7 @@ import java.util.EnumSet;
 
 import jakarta.servlet.DispatcherType;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -307,13 +308,13 @@ class SecurityAutoConfigurationTests {
 	@ConfigurationProperties("jwt")
 	static class JwtProperties {
 
-		private RSAPublicKey publicKey;
+		private @Nullable RSAPublicKey publicKey;
 
-		RSAPublicKey getPublicKey() {
+		@Nullable RSAPublicKey getPublicKey() {
 			return this.publicKey;
 		}
 
-		void setPublicKey(RSAPublicKey publicKey) {
+		void setPublicKey(@Nullable RSAPublicKey publicKey) {
 			this.publicKey = publicKey;
 		}
 

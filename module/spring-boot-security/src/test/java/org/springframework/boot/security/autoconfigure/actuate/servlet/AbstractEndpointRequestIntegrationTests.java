@@ -25,6 +25,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -38,6 +39,7 @@ import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +52,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
@@ -125,9 +128,11 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	protected abstract WebApplicationContextRunner createContextRunner();
 
 	protected WebTestClient getWebTestClient(AssertableWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-			.getWebServer()
-			.getPort();
+		WebServer webServer = context
+			.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+			.getWebServer();
+		assertThat(webServer).isNotNull();
+		int port = webServer.getPort();
 		return WebTestClient.bindToServer()
 			.baseUrl("http://localhost:" + port)
 			.responseTimeout(Duration.ofMinutes(5))
@@ -191,7 +196,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	static class TestEndpoint3 {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 

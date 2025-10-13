@@ -22,6 +22,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.AssertDelegateTarget;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -344,12 +345,14 @@ class EndpointRequestTests {
 		return endpoint;
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, PathMappedEndpoints pathMappedEndpoints) {
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
+			@Nullable PathMappedEndpoints pathMappedEndpoints) {
 		return assertMatcher(matcher, pathMappedEndpoints, null, null);
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, PathMappedEndpoints pathMappedEndpoints,
-			RequestMatcherProvider matcherProvider, WebServerNamespace namespace) {
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher,
+			@Nullable PathMappedEndpoints pathMappedEndpoints, @Nullable RequestMatcherProvider matcherProvider,
+			@Nullable WebServerNamespace namespace) {
 		StaticWebApplicationContext context = new StaticWebApplicationContext();
 		if (namespace != null && !WebServerNamespace.SERVER.equals(namespace)) {
 			NamedStaticWebApplicationContext parentContext = new NamedStaticWebApplicationContext(namespace);
@@ -379,12 +382,12 @@ class EndpointRequestTests {
 		}
 
 		@Override
-		public WebServer getWebServer() {
+		public @Nullable WebServer getWebServer() {
 			return null;
 		}
 
 		@Override
-		public String getServerNamespace() {
+		public @Nullable String getServerNamespace() {
 			return (this.webServerNamespace != null) ? this.webServerNamespace.getValue() : null;
 		}
 
@@ -425,7 +428,7 @@ class EndpointRequestTests {
 			assertThat(this.matcher.matches(request)).as("Does not match " + getRequestPath(request)).isFalse();
 		}
 
-		private MockHttpServletRequest mockRequest(HttpMethod httpMethod, String requestUri) {
+		private MockHttpServletRequest mockRequest(@Nullable HttpMethod httpMethod, @Nullable String requestUri) {
 			MockServletContext servletContext = new MockServletContext();
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);

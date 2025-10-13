@@ -16,6 +16,8 @@
 
 package org.springframework.boot.security.autoconfigure.servlet;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
@@ -28,19 +30,19 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
  */
 class TestWebApplicationContext extends StaticWebApplicationContext implements WebServerApplicationContext {
 
-	private final String serverNamespace;
+	private final @Nullable String serverNamespace;
 
-	TestWebApplicationContext(String serverNamespace) {
+	TestWebApplicationContext(@Nullable String serverNamespace) {
 		this.serverNamespace = serverNamespace;
 	}
 
 	@Override
-	public WebServer getWebServer() {
+	public @Nullable WebServer getWebServer() {
 		return null;
 	}
 
 	@Override
-	public String getServerNamespace() {
+	public @Nullable String getServerNamespace() {
 		return this.serverNamespace;
 	}
 

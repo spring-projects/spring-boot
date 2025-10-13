@@ -19,6 +19,7 @@ package org.springframework.boot.security.autoconfigure.servlet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import tools.jackson.core.JsonParser;
@@ -38,6 +39,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
@@ -73,7 +75,9 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);
 			context.refresh();
-			int port = context.getWebServer().getPort();
+			WebServer webServer = context.getWebServer();
+			assertThat(webServer).isNotNull();
+			int port = webServer.getPort();
 			Matcher password = PASSWORD_PATTERN.matcher(output);
 			assertThat(password.find()).isTrue();
 			new TestRestTemplate("user", password.group(1)).getForEntity("http://localhost:" + port, Object.class);
@@ -100,13 +104,13 @@ class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
 	static class SourceType {
 
-		public String foo;
+		public @Nullable String foo;
 
 	}
 
 	static class DestinationType {
 
-		public String bar;
+		public @Nullable String bar;
 
 	}
 

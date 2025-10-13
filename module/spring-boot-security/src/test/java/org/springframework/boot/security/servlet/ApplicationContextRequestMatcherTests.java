@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ApplicationContextRequestMatcherTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
 			.withMessageContaining("'contextClass' must not be null");
@@ -165,7 +167,7 @@ class ApplicationContextRequestMatcherTests {
 
 	static class TestApplicationContextRequestMatcher<C> extends ApplicationContextRequestMatcher<C> {
 
-		private Supplier<C> providedContext;
+		private @Nullable Supplier<C> providedContext;
 
 		TestApplicationContextRequestMatcher(Class<? extends C> context) {
 			super(context);
@@ -177,7 +179,9 @@ class ApplicationContextRequestMatcherTests {
 
 		Supplier<C> callMatchesAndReturnProvidedContext(HttpServletRequest request) {
 			matches(request);
-			return getProvidedContext();
+			Supplier<C> context = getProvidedContext();
+			assertThat(context).isNotNull();
+			return context;
 		}
 
 		@Override
@@ -186,7 +190,7 @@ class ApplicationContextRequestMatcherTests {
 			return false;
 		}
 
-		Supplier<C> getProvidedContext() {
+		@Nullable Supplier<C> getProvidedContext() {
 			return this.providedContext;
 		}
 
@@ -221,7 +225,7 @@ class ApplicationContextRequestMatcherTests {
 
 	private static final class AssertingUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
-		private volatile Throwable ex;
+		private volatile @Nullable Throwable ex;
 
 		@Override
 		public void uncaughtException(Thread thread, Throwable ex) {

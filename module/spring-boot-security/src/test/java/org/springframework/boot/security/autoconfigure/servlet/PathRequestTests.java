@@ -18,6 +18,7 @@ package org.springframework.boot.security.autoconfigure.servlet;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.AssertDelegateTarget;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
@@ -62,7 +63,7 @@ class PathRequestTests {
 		return assertMatcher(matcher, null);
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, String serverNamespace) {
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, @Nullable String serverNamespace) {
 		TestWebApplicationContext context = new TestWebApplicationContext(serverNamespace);
 		context.registerBean(ServerProperties.class);
 		context.registerBean(H2ConsoleProperties.class);

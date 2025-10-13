@@ -19,6 +19,7 @@ package org.springframework.boot.security.autoconfigure.actuate.reactive;
 import java.time.Duration;
 import java.util.Base64;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -37,6 +38,7 @@ import org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDeta
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
@@ -50,6 +52,8 @@ import org.springframework.security.core.userdetails.MapReactiveUserDetailsServi
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link EndpointRequest}.
@@ -120,9 +124,11 @@ class EndpointRequestIntegrationTests {
 	}
 
 	protected WebTestClient getWebTestClient(AssertableReactiveWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(AnnotationConfigReactiveWebServerApplicationContext.class)
-			.getWebServer()
-			.getPort();
+		WebServer webServer = context
+			.getSourceApplicationContext(AnnotationConfigReactiveWebServerApplicationContext.class)
+			.getWebServer();
+		assertThat(webServer).isNotNull();
+		int port = webServer.getPort();
 		return WebTestClient.bindToServer()
 			.baseUrl("http://localhost:" + port)
 			.responseTimeout(Duration.ofMinutes(5))
@@ -181,7 +187,7 @@ class EndpointRequestIntegrationTests {
 	static class TestEndpoint3 {
 
 		@ReadOperation
-		Object getAll() {
+		@Nullable Object getAll() {
 			return null;
 		}
 

@@ -18,6 +18,7 @@ package org.springframework.boot.security.reactive;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.mock;
 class ApplicationContextServerWebExchangeMatcherTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestApplicationContextServerWebExchangeMatcher<>(null))
@@ -66,6 +68,7 @@ class ApplicationContextServerWebExchangeMatcherTests {
 	void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
 		ServerWebExchange exchange = createExchange();
 		StaticApplicationContext context = (StaticApplicationContext) exchange.getApplicationContext();
+		assertThat(context).isNotNull();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextServerWebExchangeMatcher<>(ExistingBean.class)
 			.callMatchesAndReturnProvidedContext(exchange)
@@ -130,7 +133,7 @@ class ApplicationContextServerWebExchangeMatcherTests {
 	static class TestApplicationContextServerWebExchangeMatcher<C>
 			extends ApplicationContextServerWebExchangeMatcher<C> {
 
-		private Supplier<C> providedContext;
+		private @Nullable Supplier<C> providedContext;
 
 		TestApplicationContextServerWebExchangeMatcher(Class<? extends C> context) {
 			super(context);
@@ -138,7 +141,9 @@ class ApplicationContextServerWebExchangeMatcherTests {
 
 		Supplier<C> callMatchesAndReturnProvidedContext(ServerWebExchange exchange) {
 			matches(exchange);
-			return getProvidedContext();
+			Supplier<C> context = getProvidedContext();
+			assertThat(context).isNotNull();
+			return context;
 		}
 
 		@Override
@@ -147,7 +152,7 @@ class ApplicationContextServerWebExchangeMatcherTests {
 			return MatchResult.match();
 		}
 
-		Supplier<C> getProvidedContext() {
+		@Nullable Supplier<C> getProvidedContext() {
 			return this.providedContext;
 		}
 

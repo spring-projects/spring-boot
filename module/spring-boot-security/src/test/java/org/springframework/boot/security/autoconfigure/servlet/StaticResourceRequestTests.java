@@ -18,6 +18,7 @@ package org.springframework.boot.security.autoconfigure.servlet;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.AssertDelegateTarget;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.security.autoconfigure.StaticResourceLocation;
@@ -87,12 +88,14 @@ class StaticResourceRequestTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
 			.withMessageContaining("'locations' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
 			.withMessageContaining("'locations' must not be null");
@@ -106,7 +109,7 @@ class StaticResourceRequestTests {
 		return assertMatcher(matcher, serverNamespace, "");
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, String serverNamespace, String path) {
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, @Nullable String serverNamespace, String path) {
 		DispatcherServletPath dispatcherServletPath = () -> path;
 		TestWebApplicationContext context = new TestWebApplicationContext(serverNamespace);
 		context.registerBean(DispatcherServletPath.class, () -> dispatcherServletPath);
@@ -152,7 +155,7 @@ class StaticResourceRequestTests {
 			return mockRequest(null, path);
 		}
 
-		private MockHttpServletRequest mockRequest(String servletPath, String path) {
+		private MockHttpServletRequest mockRequest(@Nullable String servletPath, String path) {
 			MockServletContext servletContext = new MockServletContext();
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 			MockHttpServletRequest request = new MockHttpServletRequest(servletContext);

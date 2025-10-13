@@ -19,6 +19,7 @@ package org.springframework.boot.security.autoconfigure.reactive;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -132,7 +133,9 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 			.withUserConfiguration(TestSecurityConfiguration.class)
 			.run(((context) -> {
 				MapReactiveUserDetailsService userDetailsService = context.getBean(MapReactiveUserDetailsService.class);
-				String password = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30)).getPassword();
+				UserDetails user = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30));
+				assertThat(user).isNotNull();
+				String password = user.getPassword();
 				assertThat(password).startsWith("{noop}");
 			}));
 	}
@@ -161,7 +164,9 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 			.withPropertyValues("spring.security.user.password=" + providedPassword)
 			.run(((context) -> {
 				MapReactiveUserDetailsService userDetailsService = context.getBean(MapReactiveUserDetailsService.class);
-				String password = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30)).getPassword();
+				UserDetails user = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30));
+				assertThat(user).isNotNull();
+				String password = user.getPassword();
 				assertThat(password).isEqualTo(expectedPassword);
 			}));
 	}
@@ -197,7 +202,7 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 		@Bean
 		ReactiveAuthenticationManager reactiveAuthenticationManager() {
-			return (authentication) -> null;
+			return (authentication) -> Mono.empty();
 		}
 
 	}
