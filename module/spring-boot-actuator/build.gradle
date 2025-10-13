@@ -30,7 +30,6 @@ dependencies {
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-http-converter"))
 	optional(project(":module:spring-boot-jsonb"))
-	optional(project(":module:spring-boot-validation"))
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.google.code.findbugs:jsr305")
 	optional("com.zaxxer:HikariCP")
