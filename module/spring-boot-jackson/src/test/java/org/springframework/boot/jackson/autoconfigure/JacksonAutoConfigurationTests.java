@@ -364,7 +364,7 @@ class JacksonAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ModuleConfig.class, CustomModuleBuilderCustomizerConfig.class)
 			.run((context) -> {
 				JsonMapper jsonMapper = context.getBean(JsonMapper.class);
-				assertThat(jsonMapper.getRegisteredModules()).extracting((module) -> module.getModuleName())
+				assertThat(jsonMapper.registeredModules()).extracting(JacksonModule::getModuleName)
 					.contains("module-A", "module-B", CustomModule.class.getName());
 			});
 	}
