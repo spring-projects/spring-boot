@@ -34,6 +34,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class PersistenceExceptionTranslationAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void close() {
@@ -105,7 +106,10 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 	@WithMetaInfPersistenceXmlResource
 	void persistOfNullThrowsIllegalArgumentExceptionWithoutExceptionTranslation() {
 		this.context = new AnnotationConfigApplicationContext(JpaConfiguration.class, TestConfiguration.class);
-		assertThatIllegalArgumentException().isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
+		assertThatIllegalArgumentException().isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(TestRepository.class).doSomething();
+		});
 	}
 
 	@Test
@@ -113,8 +117,10 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 	void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation() {
 		this.context = new AnnotationConfigApplicationContext(JpaConfiguration.class, TestConfiguration.class,
 				PersistenceExceptionTranslationAutoConfiguration.class);
-		assertThatExceptionOfType(InvalidDataAccessApiUsageException.class)
-			.isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
+		assertThatExceptionOfType(InvalidDataAccessApiUsageException.class).isThrownBy(() -> {
+			assertThat(this.context).isNotNull();
+			this.context.getBean(TestRepository.class).doSomething();
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -195,18 +201,23 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 
 		@Id
 		@GeneratedValue
+		@SuppressWarnings("NullAway.Init")
 		private Long id;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String name;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String state;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String country;
 
 		@Column(nullable = false)
+		@SuppressWarnings("NullAway.Init")
 		private String map;
 
 		protected City() {

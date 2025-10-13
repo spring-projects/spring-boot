@@ -51,6 +51,7 @@ import static org.mockito.Mockito.mock;
 class EntityScannerTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EntityScanner(null))
 			.withMessageContaining("'context' must not be null");

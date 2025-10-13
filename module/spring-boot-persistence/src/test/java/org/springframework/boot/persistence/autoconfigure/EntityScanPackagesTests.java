@@ -19,6 +19,7 @@ package org.springframework.boot.persistence.autoconfigure;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class EntityScanPackagesTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void cleanup() {
@@ -67,6 +68,7 @@ class EntityScanPackagesTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerFromArrayWhenRegistryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EntityScanPackages.register(null))
 			.withMessageContaining("'registry' must not be null");
@@ -74,6 +76,7 @@ class EntityScanPackagesTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerFromArrayWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		assertThatIllegalArgumentException()
@@ -82,6 +85,7 @@ class EntityScanPackagesTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerFromCollectionWhenRegistryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> EntityScanPackages.register(null, Collections.emptyList()))
@@ -89,6 +93,7 @@ class EntityScanPackagesTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void registerFromCollectionWhenPackageNamesIsNullShouldThrowException() {
 		this.context = new AnnotationConfigApplicationContext();
 		assertThatIllegalArgumentException()
