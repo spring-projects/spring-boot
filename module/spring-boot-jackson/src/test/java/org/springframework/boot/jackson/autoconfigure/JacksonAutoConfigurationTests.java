@@ -52,6 +52,7 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.json.JsonMapper.Builder;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.util.StdDateFormat;
+import tools.jackson.module.kotlin.KotlinModule;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -269,11 +270,11 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void disableMapperFeature() {
-		this.contextRunner.withPropertyValues("spring.jackson.mapper.use_annotations:false").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.jackson.mapper.infer-property-mutators:false").run((context) -> {
 			JsonMapper mapper = context.getBean(JsonMapper.class);
-			assertThat(MapperFeature.USE_ANNOTATIONS.enabledByDefault()).isTrue();
-			assertThat(mapper.deserializationConfig().isEnabled(MapperFeature.USE_ANNOTATIONS)).isFalse();
-			assertThat(mapper.serializationConfig().isEnabled(MapperFeature.USE_ANNOTATIONS)).isFalse();
+			assertThat(MapperFeature.INFER_PROPERTY_MUTATORS.enabledByDefault()).isTrue();
+			assertThat(mapper.deserializationConfig().isEnabled(MapperFeature.INFER_PROPERTY_MUTATORS)).isFalse();
+			assertThat(mapper.serializationConfig().isEnabled(MapperFeature.INFER_PROPERTY_MUTATORS)).isFalse();
 		});
 	}
 
@@ -589,6 +590,19 @@ class JacksonAutoConfigurationTests {
 					.isEqualTo(jackson2ConfiguredJsonMapper.isEnabled(feature));
 			}
 		});
+	}
+
+	@Test
+	void shouldFindAndAddModulesByDefault() {
+		this.contextRunner.run((context) -> assertThat(context.getBean(JsonMapper.class).getRegisteredModules())
+			.hasAtLeastOneElementOfType(KotlinModule.class));
+	}
+
+	@Test
+	void shouldNotFindAndAddModulesWhenDisabled() {
+		this.contextRunner.withPropertyValues("spring.jackson.find-and-add-modules=false")
+			.run((context) -> assertThat(context.getBean(JsonMapper.class).getRegisteredModules())
+				.doesNotHaveAnyElementsOfTypes(KotlinModule.class));
 	}
 
 	static class MyDateFormat extends SimpleDateFormat {

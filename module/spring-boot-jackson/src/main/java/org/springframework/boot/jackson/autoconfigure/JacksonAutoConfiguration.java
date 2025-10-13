@@ -170,6 +170,9 @@ public final class JacksonAutoConfiguration {
 						.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS,
 								DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
 				}
+				if (this.jacksonProperties.isFindAndAddModules()) {
+					builder.findAndAddModules(getClass().getClassLoader());
+				}
 				if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
 					builder.changeDefaultPropertyInclusion((handler) -> handler
 						.withValueInclusion(this.jacksonProperties.getDefaultPropertyInclusion()));

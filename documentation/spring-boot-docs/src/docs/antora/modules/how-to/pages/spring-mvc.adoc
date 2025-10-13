@@ -110,7 +110,9 @@ The context's javadoc:tools.jackson.databind.json.JsonMapper.Builder[] can be cu
 Such customizer beans can be ordered (Boot's own customizer has an order of 0), letting additional customization be applied both before and after Boot's customization.
 
 Any beans of type javadoc:tools.jackson.databind.JacksonModule[] are automatically registered with the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[] and are applied to any javadoc:tools.jackson.databind.json.JsonMapper[] instances that it creates.
-This provides a global mechanism for contributing custom modules when you add new features to your application.
+This provides an application-wide mechanism for contributing custom modules when you add new features to your application.
+
+Any modules that participate in the Java `ServiceLoader` mechanism are, by default, found and added to the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[]. To disable this behavior, set configprop:spring.jackson.find-and-add-modules[] to `false`.
 
 If you want to replace the default javadoc:tools.jackson.databind.json.JsonMapper[] completely, either define a javadoc:org.springframework.context.annotation.Bean[format=annotation] of that type or, if you prefer the builder-based approach, define a javadoc:tools.jackson.databind.json.JsonMapper.Builder[] javadoc:org.springframework.context.annotation.Bean[format=annotation].
 When defining an javadoc:tools.jackson.databind.json.JsonMapper[] bean, marking it as javadoc:org.springframework.context.annotation.Primary[format=annotation] is recommended as the auto-configuration's javadoc:tools.jackson.databind.json.JsonMapper[] that it will replace is javadoc:org.springframework.context.annotation.Primary[format=annotation].

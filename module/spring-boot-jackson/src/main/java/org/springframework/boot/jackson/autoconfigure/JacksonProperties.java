@@ -115,6 +115,12 @@ public class JacksonProperties {
 	 */
 	private boolean useJackson2Defaults = false;
 
+	/**
+	 * Whether to find and add modules to the auto-configured JsonMapper.Builder using
+	 * MapperBuilder.findAndAddModules(ClassLoader).
+	 */
+	private boolean findAndAddModules = true;
+
 	private final Datatype datatype = new Datatype();
 
 	private final Json json = new Json();
@@ -197,6 +203,14 @@ public class JacksonProperties {
 
 	public void setUseJackson2Defaults(boolean useJackson2Defaults) {
 		this.useJackson2Defaults = useJackson2Defaults;
+	}
+
+	public boolean isFindAndAddModules() {
+		return this.findAndAddModules;
+	}
+
+	public void setFindAndAddModules(boolean findModules) {
+		this.findAndAddModules = findModules;
 	}
 
 	public Datatype getDatatype() {
