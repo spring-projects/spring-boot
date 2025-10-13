@@ -117,6 +117,7 @@ class ReactiveOAuth2ClientWebSecurityAutoConfigurationTests {
 		SecurityWebFilterChain filterChain = (SecurityWebFilterChain) context
 			.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(filterChain, "filters");
+		assertThat(filters).isNotNull();
 		return filters.stream().anyMatch(filter::isInstance);
 	}
 
