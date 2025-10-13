@@ -211,8 +211,12 @@ class QuartzEndpointTests {
 		assertThat(summary.getGroup()).isEqualTo("DEFAULT");
 		Map<String, QuartzJobSummaryDescriptor> jobSummaries = summary.getJobs();
 		assertThat(jobSummaries).containsOnlyKeys("jobOne", "jobTwo");
-		assertThat(jobSummaries.get("jobOne").getClassName()).isEqualTo(Job.class.getName());
-		assertThat(jobSummaries.get("jobTwo").getClassName()).isEqualTo(DelegatingJob.class.getName());
+		QuartzJobSummaryDescriptor jobOne = jobSummaries.get("jobOne");
+		assertThat(jobOne).isNotNull();
+		assertThat(jobOne.getClassName()).isEqualTo(Job.class.getName());
+		QuartzJobSummaryDescriptor jobTwo = jobSummaries.get("jobTwo");
+		assertThat(jobTwo).isNotNull();
+		assertThat(jobTwo.getClassName()).isEqualTo(DelegatingJob.class.getName());
 	}
 
 	@Test
@@ -246,6 +250,7 @@ class QuartzEndpointTests {
 			.build();
 		mockTriggers(cronTrigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		assertThat(summary.getGroup()).isEqualTo("samples");
 		assertThat(summary.isPaused()).isFalse();
 		assertThat(summary.getTriggers().getCron()).containsOnlyKeys("3am-every-day");
@@ -269,6 +274,7 @@ class QuartzEndpointTests {
 		((OperableTrigger) cronTrigger).setNextFireTime(nextFireTime);
 		mockTriggers(cronTrigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		Map<String, Object> triggers = summary.getTriggers().getCron();
 		assertThat(triggers).containsOnlyKeys("3am-every-day");
 		assertThat(triggers).extractingByKey("3am-every-day", nestedMap())
@@ -284,6 +290,7 @@ class QuartzEndpointTests {
 			.build();
 		mockTriggers(simpleTrigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		assertThat(summary.getGroup()).isEqualTo("samples");
 		assertThat(summary.isPaused()).isFalse();
 		assertThat(summary.getTriggers().getCron()).isEmpty();
@@ -306,6 +313,7 @@ class QuartzEndpointTests {
 		((OperableTrigger) simpleTrigger).setNextFireTime(nextFireTime);
 		mockTriggers(simpleTrigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		Map<String, Object> triggers = summary.getTriggers().getSimple();
 		assertThat(triggers).containsOnlyKeys("every-hour");
 		assertThat(triggers).extractingByKey("every-hour", nestedMap())
@@ -323,6 +331,7 @@ class QuartzEndpointTests {
 			.build();
 		mockTriggers(trigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		assertThat(summary.getGroup()).isEqualTo("samples");
 		assertThat(summary.isPaused()).isFalse();
 		assertThat(summary.getTriggers().getCron()).isEmpty();
@@ -349,6 +358,7 @@ class QuartzEndpointTests {
 		((OperableTrigger) trigger).setNextFireTime(nextFireTime);
 		mockTriggers(trigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		Map<String, Object> triggers = summary.getTriggers().getDailyTimeInterval();
 		assertThat(triggers).containsOnlyKeys("every-hour-tue-thu");
 		assertThat(triggers).extractingByKey("every-hour-tue-thu", nestedMap())
@@ -366,6 +376,7 @@ class QuartzEndpointTests {
 			.build();
 		mockTriggers(trigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		assertThat(summary.getGroup()).isEqualTo("samples");
 		assertThat(summary.isPaused()).isFalse();
 		assertThat(summary.getTriggers().getCron()).isEmpty();
@@ -391,6 +402,7 @@ class QuartzEndpointTests {
 		((OperableTrigger) trigger).setNextFireTime(nextFireTime);
 		mockTriggers(trigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		Map<String, Object> triggers = summary.getTriggers().getCalendarInterval();
 		assertThat(triggers).containsOnlyKeys("once-a-week");
 		assertThat(triggers).extractingByKey("once-a-week", nestedMap())
@@ -404,6 +416,7 @@ class QuartzEndpointTests {
 		given(trigger.getKey()).willReturn(TriggerKey.triggerKey("custom", "samples"));
 		mockTriggers(trigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		assertThat(summary.getGroup()).isEqualTo("samples");
 		assertThat(summary.isPaused()).isFalse();
 		assertThat(summary.getTriggers().getCron()).isEmpty();
@@ -424,6 +437,7 @@ class QuartzEndpointTests {
 		given(trigger.getPriority()).willReturn(9);
 		mockTriggers(trigger);
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
+		assertThat(summary).isNotNull();
 		Map<String, Object> triggers = summary.getTriggers().getCustom();
 		assertThat(triggers).containsOnlyKeys("custom");
 		assertThat(triggers).extractingByKey("custom", nestedMap())
@@ -644,6 +658,7 @@ class QuartzEndpointTests {
 			.build();
 		mockJobs(job);
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", true);
+		assertThat(jobDetails).isNotNull();
 		assertThat(jobDetails.getGroup()).isEqualTo("samples");
 		assertThat(jobDetails.getName()).isEqualTo("hello");
 		assertThat(jobDetails.getDescription()).isEqualTo("A sample job");
@@ -672,6 +687,7 @@ class QuartzEndpointTests {
 		given(this.scheduler.getTriggersOfJob(JobKey.jobKey("hello", "samples")))
 			.willAnswer((invocation) -> Collections.singletonList(trigger));
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", true);
+		assertThat(jobDetails).isNotNull();
 		assertThat(jobDetails.getTriggers()).hasSize(1);
 		Map<String, Object> triggerDetails = jobDetails.getTriggers().get(0);
 		assertThat(triggerDetails).containsOnly(entry("group", "samples"), entry("name", "3am-every-day"),
@@ -700,6 +716,7 @@ class QuartzEndpointTests {
 		given(this.scheduler.getTriggersOfJob(JobKey.jobKey("hello", "samples")))
 			.willAnswer((invocation) -> Arrays.asList(triggerOne, triggerTwo));
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", true);
+		assertThat(jobDetails).isNotNull();
 		assertThat(jobDetails.getTriggers()).hasSize(2);
 		assertThat(jobDetails.getTriggers().get(0)).containsEntry("name", "two");
 		assertThat(jobDetails.getTriggers().get(1)).containsEntry("name", "one");
@@ -726,6 +743,7 @@ class QuartzEndpointTests {
 		given(this.scheduler.getTriggersOfJob(JobKey.jobKey("hello", "samples")))
 			.willAnswer((invocation) -> Arrays.asList(triggerOne, triggerTwo));
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", true);
+		assertThat(jobDetails).isNotNull();
 		assertThat(jobDetails.getTriggers()).hasSize(2);
 		assertThat(jobDetails.getTriggers().get(0)).containsEntry("name", "two");
 		assertThat(jobDetails.getTriggers().get(1)).containsEntry("name", "one");
@@ -741,6 +759,7 @@ class QuartzEndpointTests {
 			.build();
 		mockJobs(job);
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", true);
+		assertThat(jobDetails).isNotNull();
 		assertThat(jobDetails.getData()).containsOnly(entry("user", "user"), entry("password", "secret"),
 				entry("url", "https://user:secret@example.com"));
 	}
@@ -755,6 +774,7 @@ class QuartzEndpointTests {
 			.build();
 		mockJobs(job);
 		QuartzJobDetailsDescriptor jobDetails = this.endpoint.quartzJob("samples", "hello", false);
+		assertThat(jobDetails).isNotNull();
 		assertThat(jobDetails.getData()).containsOnly(entry("user", "******"), entry("password", "******"),
 				entry("url", "******"));
 	}

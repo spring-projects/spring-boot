@@ -47,8 +47,6 @@ import static org.mockito.Mockito.mock;
  */
 class QuartzEndpointWebExtensionTests {
 
-	private QuartzEndpointWebExtension webExtension;
-
 	private QuartzEndpoint delegate;
 
 	@BeforeEach
@@ -58,19 +56,21 @@ class QuartzEndpointWebExtensionTests {
 
 	@Test
 	void whenShowValuesIsNever() throws Exception {
-		this.webExtension = new QuartzEndpointWebExtension(this.delegate, Show.NEVER, Collections.emptySet());
-		this.webExtension.quartzJobOrTrigger(null, "jobs", "a", "b");
-		this.webExtension.quartzJobOrTrigger(null, "triggers", "a", "b");
+		QuartzEndpointWebExtension webExtension = new QuartzEndpointWebExtension(this.delegate, Show.NEVER,
+				Collections.emptySet());
+		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "jobs", "a", "b");
+		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "triggers", "a", "b");
 		then(this.delegate).should().quartzJob("a", "b", false);
 		then(this.delegate).should().quartzTrigger("a", "b", false);
 	}
 
 	@Test
 	void whenShowValuesIsAlways() throws Exception {
-		this.webExtension = new QuartzEndpointWebExtension(this.delegate, Show.ALWAYS, Collections.emptySet());
-		this.webExtension.quartzJobOrTrigger(null, "a", "b", "c");
-		this.webExtension.quartzJobOrTrigger(null, "jobs", "a", "b");
-		this.webExtension.quartzJobOrTrigger(null, "triggers", "a", "b");
+		QuartzEndpointWebExtension webExtension = new QuartzEndpointWebExtension(this.delegate, Show.ALWAYS,
+				Collections.emptySet());
+		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "a", "b", "c");
+		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "jobs", "a", "b");
+		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "triggers", "a", "b");
 		then(this.delegate).should().quartzJob("a", "b", true);
 		then(this.delegate).should().quartzTrigger("a", "b", true);
 	}
@@ -79,9 +79,10 @@ class QuartzEndpointWebExtensionTests {
 	void whenShowValuesIsWhenAuthorizedAndSecurityContextIsAuthorized() throws Exception {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
-		this.webExtension = new QuartzEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED, Collections.emptySet());
-		this.webExtension.quartzJobOrTrigger(securityContext, "jobs", "a", "b");
-		this.webExtension.quartzJobOrTrigger(securityContext, "triggers", "a", "b");
+		QuartzEndpointWebExtension webExtension = new QuartzEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED,
+				Collections.emptySet());
+		webExtension.quartzJobOrTrigger(securityContext, "jobs", "a", "b");
+		webExtension.quartzJobOrTrigger(securityContext, "triggers", "a", "b");
 		then(this.delegate).should().quartzJob("a", "b", true);
 		then(this.delegate).should().quartzTrigger("a", "b", true);
 	}
@@ -89,9 +90,10 @@ class QuartzEndpointWebExtensionTests {
 	@Test
 	void whenShowValuesIsWhenAuthorizedAndSecurityContextIsNotAuthorized() throws Exception {
 		SecurityContext securityContext = mock(SecurityContext.class);
-		this.webExtension = new QuartzEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED, Collections.emptySet());
-		this.webExtension.quartzJobOrTrigger(securityContext, "jobs", "a", "b");
-		this.webExtension.quartzJobOrTrigger(securityContext, "triggers", "a", "b");
+		QuartzEndpointWebExtension webExtension = new QuartzEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED,
+				Collections.emptySet());
+		webExtension.quartzJobOrTrigger(securityContext, "jobs", "a", "b");
+		webExtension.quartzJobOrTrigger(securityContext, "triggers", "a", "b");
 		then(this.delegate).should().quartzJob("a", "b", false);
 		then(this.delegate).should().quartzTrigger("a", "b", false);
 	}
