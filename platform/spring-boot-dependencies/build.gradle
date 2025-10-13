@@ -2301,7 +2301,7 @@ bom {
 			releaseNotes("https://github.com/SeleniumHQ/selenium/releases/tag/selenium-{version}")
 		}
 	}
-	library("Selenium HtmlUnit", "4.35.0") {
+	library("Selenium HtmlUnit", "4.36.1") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit3-driver"
