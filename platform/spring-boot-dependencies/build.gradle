@@ -1763,11 +1763,9 @@ bom {
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
 		}
 	}
-	library("Pulsar", "4.1.0") {
+	library("Pulsar", "4.1.1") {
 		group("org.apache.pulsar") {
-			bom("pulsar-bom") {
-				permit("org.apache.maven.plugin-tools:maven-plugin-annotations")
-			}
+			bom("pulsar-bom")
 		}
 		links {
 			site("https://pulsar.apache.org")
