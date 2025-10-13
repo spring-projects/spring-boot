@@ -197,13 +197,19 @@ class MongoMetricsAutoConfigurationTests {
 	private MongoCommandTagsProvider getMongoCommandTagsProviderUsedToConstructListener(
 			final AssertableApplicationContext context) {
 		MongoMetricsCommandListener listener = context.getBean(MongoMetricsCommandListener.class);
-		return (MongoCommandTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
+		MongoCommandTagsProvider tagsProvider = (MongoCommandTagsProvider) ReflectionTestUtils.getField(listener,
+				"tagsProvider");
+		assertThat(tagsProvider).isNotNull();
+		return tagsProvider;
 	}
 
 	private MongoConnectionPoolTagsProvider getMongoConnectionPoolTagsProviderUsedToConstructListener(
 			final AssertableApplicationContext context) {
 		MongoMetricsConnectionPoolListener listener = context.getBean(MongoMetricsConnectionPoolListener.class);
-		return (MongoConnectionPoolTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
+		MongoConnectionPoolTagsProvider tagsProvider = (MongoConnectionPoolTagsProvider) ReflectionTestUtils
+			.getField(listener, "tagsProvider");
+		assertThat(tagsProvider).isNotNull();
+		return tagsProvider;
 	}
 
 }

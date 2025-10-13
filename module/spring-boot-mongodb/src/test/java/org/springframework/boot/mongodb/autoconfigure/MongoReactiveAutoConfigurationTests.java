@@ -130,6 +130,7 @@ class MongoReactiveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.mongodb.username=user", "spring.mongodb.password=secret")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
+				assertThat(credential).isNotNull();
 				assertThat(credential.getUserName()).isEqualTo("user");
 				assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
 				assertThat(credential.getSource()).isEqualTo("test");
@@ -143,6 +144,7 @@ class MongoReactiveAutoConfigurationTests {
 					"spring.mongodb.database=mydb")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
+				assertThat(credential).isNotNull();
 				assertThat(credential.getUserName()).isEqualTo("user");
 				assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
 				assertThat(credential.getSource()).isEqualTo("mydb");
@@ -156,6 +158,7 @@ class MongoReactiveAutoConfigurationTests {
 					"spring.mongodb.database=mydb", "spring.mongodb.authentication-database=authdb")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
+				assertThat(credential).isNotNull();
 				assertThat(credential.getUserName()).isEqualTo("user");
 				assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
 				assertThat(credential.getSource()).isEqualTo("authdb");
@@ -172,6 +175,7 @@ class MongoReactiveAutoConfigurationTests {
 	void configuresCredentialsFromUriPropertyWithDefaultDatabase() {
 		this.contextRunner.withPropertyValues("spring.mongodb.uri=mongodb://user:secret@localhost/").run((context) -> {
 			MongoCredential credential = getSettings(context).getCredential();
+			assertThat(credential).isNotNull();
 			assertThat(credential.getUserName()).isEqualTo("user");
 			assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
 			assertThat(credential.getSource()).isEqualTo("admin");
@@ -185,6 +189,7 @@ class MongoReactiveAutoConfigurationTests {
 					"spring.mongodb.database=notused", "spring.mongodb.authentication-database=notused")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
+				assertThat(credential).isNotNull();
 				assertThat(credential.getUserName()).isEqualTo("user");
 				assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
 				assertThat(credential.getSource()).isEqualTo("mydb");
@@ -198,6 +203,7 @@ class MongoReactiveAutoConfigurationTests {
 					"spring.mongodb.database=notused", "spring.mongodb.authentication-database=notused")
 			.run((context) -> {
 				MongoCredential credential = getSettings(context).getCredential();
+				assertThat(credential).isNotNull();
 				assertThat(credential.getUserName()).isEqualTo("user");
 				assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
 				assertThat(credential.getSource()).isEqualTo("authdb");
@@ -212,10 +218,13 @@ class MongoReactiveAutoConfigurationTests {
 			TransportSettings transportSettings = getSettings(context).getTransportSettings();
 			assertThat(transportSettings).isInstanceOf(NettyTransportSettings.class);
 			EventLoopGroup eventLoopGroup = ((NettyTransportSettings) transportSettings).getEventLoopGroup();
+			assertThat(eventLoopGroup).isNotNull();
 			assertThat(eventLoopGroup.isShutdown()).isFalse();
 			eventLoopGroupReference.set(eventLoopGroup);
 		});
-		assertThat(eventLoopGroupReference.get().isShutdown()).isTrue();
+		EventLoopGroup eventLoopGroup = eventLoopGroupReference.get();
+		assertThat(eventLoopGroup).isNotNull();
+		assertThat(eventLoopGroup.isShutdown()).isTrue();
 	}
 
 	@Test

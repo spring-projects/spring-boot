@@ -21,6 +21,7 @@ import java.util.List;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.internal.MongoClientImpl;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Tests for {@link ReactiveMongoClientFactory}.
@@ -32,7 +33,7 @@ import com.mongodb.reactivestreams.client.internal.MongoClientImpl;
 class ReactiveMongoClientFactoryTests extends MongoClientFactorySupportTests<MongoClient> {
 
 	@Override
-	protected MongoClient createMongoClient(List<MongoClientSettingsBuilderCustomizer> customizers,
+	protected MongoClient createMongoClient(@Nullable List<MongoClientSettingsBuilderCustomizer> customizers,
 			MongoClientSettings settings) {
 		return new ReactiveMongoClientFactory(customizers).createMongoClient(settings);
 	}

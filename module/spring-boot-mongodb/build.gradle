@@ -53,6 +53,16 @@ dependencies {
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.springframework.data:spring-data-mongodb")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.netty:netty-handler")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
 }

@@ -26,6 +26,7 @@ import com.mongodb.ServerApiVersion;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -64,7 +65,7 @@ class MongoReactiveHealthIndicatorIntegrationTests {
 		return mongoHealth(null);
 	}
 
-	private Health mongoHealth(ServerApi serverApi) {
+	private Health mongoHealth(@Nullable ServerApi serverApi) {
 		Builder settingsBuilder = MongoClientSettings.builder()
 			.applyConnectionString(new ConnectionString(mongo.getConnectionString()));
 		if (serverApi != null) {
@@ -73,7 +74,9 @@ class MongoReactiveHealthIndicatorIntegrationTests {
 		MongoClientSettings settings = settingsBuilder.build();
 		MongoClient mongoClient = MongoClients.create(settings);
 		MongoReactiveHealthIndicator healthIndicator = new MongoReactiveHealthIndicator(mongoClient);
-		return healthIndicator.health(true).block(Duration.ofSeconds(30));
+		Health health = healthIndicator.health(true).block(Duration.ofSeconds(30));
+		assertThat(health).isNotNull();
+		return health;
 	}
 
 	private void assertHealth(Health health) {

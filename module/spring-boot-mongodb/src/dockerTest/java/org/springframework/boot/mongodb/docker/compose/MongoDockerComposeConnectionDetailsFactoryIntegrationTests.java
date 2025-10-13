@@ -17,6 +17,7 @@
 package org.springframework.boot.mongodb.docker.compose;
 
 import com.mongodb.ConnectionString;
+import com.mongodb.MongoCredential;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails;
@@ -41,9 +42,11 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	private void assertConnectionDetailsWithDatabase(MongoConnectionDetails connectionDetails, String database) {
 		ConnectionString connectionString = connectionDetails.getConnectionString();
-		assertThat(connectionString.getCredential().getUserName()).isEqualTo("root");
-		assertThat(connectionString.getCredential().getPassword()).isEqualTo("secret".toCharArray());
-		assertThat(connectionString.getCredential().getSource()).isEqualTo("admin");
+		MongoCredential credential = connectionString.getCredential();
+		assertThat(credential).isNotNull();
+		assertThat(credential.getUserName()).isEqualTo("root");
+		assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
+		assertThat(credential.getSource()).isEqualTo("admin");
 		assertThat(connectionString.getDatabase()).isEqualTo(database);
 	}
 

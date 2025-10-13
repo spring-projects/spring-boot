@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.mongodb.MongoClientSettings;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -97,7 +98,7 @@ abstract class MongoClientFactorySupportTests<T> {
 				MongoClientSettings.builder().build());
 	}
 
-	protected abstract T createMongoClient(List<MongoClientSettingsBuilderCustomizer> customizers,
+	protected abstract T createMongoClient(@Nullable List<MongoClientSettingsBuilderCustomizer> customizers,
 			MongoClientSettings settings);
 
 	protected abstract MongoClientSettings getClientSettings(T client);
