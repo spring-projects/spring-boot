@@ -44,7 +44,7 @@ dependencies {
 	testImplementation("org.springframework:spring-webflux")
 	testImplementation("io.micrometer:micrometer-observation-test")
 
-	testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
+	testCompileOnly("com.google.code.findbugs:jsr305")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
