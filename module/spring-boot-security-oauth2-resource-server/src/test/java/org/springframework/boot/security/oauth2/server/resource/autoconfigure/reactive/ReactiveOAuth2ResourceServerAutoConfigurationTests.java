@@ -39,6 +39,7 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.ThrowingConsumer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -87,6 +88,7 @@ import org.springframework.security.web.server.MatcherSecurityWebFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,7 +114,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
 		.withUserConfiguration(TestConfig.class);
 
-	private MockWebServer server;
+	private @Nullable MockWebServer server;
 
 	private static final Duration TIMEOUT = Duration.ofSeconds(5000000);
 
@@ -236,6 +238,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		SupplierReactiveJwtDecoder supplierReactiveJwtDecoder = context.getBean(SupplierReactiveJwtDecoder.class);
 		Mono<ReactiveJwtDecoder> reactiveJwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 			.getField(supplierReactiveJwtDecoder, "jwtDecoderMono");
+		assertThat(reactiveJwtDecoderSupplier).isNotNull();
 		try {
 			reactiveJwtDecoderSupplier.flatMap((decoder) -> decoder.decode("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9."
 					+ "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0."
@@ -538,7 +541,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				SupplierReactiveJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierReactiveJwtDecoder.class);
 				Mono<ReactiveJwtDecoder> jwtDecoderSupplier = (Mono<ReactiveJwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "jwtDecoderMono");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				ReactiveJwtDecoder jwtDecoder = jwtDecoderSupplier.block();
+				assertThat(jwtDecoder).isNotNull();
 				validate(
 						jwt().claim("iss", URI.create(issuerUri).toURL())
 							.claim("aud", List.of("https://test-audience.com")),
@@ -612,6 +617,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				ReactiveJwtDecoder jwtDecoder = context.getBean(ReactiveJwtDecoder.class);
 				DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 					.getField(jwtDecoder, "jwtValidator");
+				assertThat(jwtValidator).isNotNull();
 				Jwt jwt = jwt().claim("iss", new URL(issuerUri))
 					.claim("aud", Collections.singletonList("https://other-audience.com"))
 					.build();
@@ -638,6 +644,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				ReactiveJwtDecoder jwtDecoder = context.getBean(ReactiveJwtDecoder.class);
 				DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 					.getField(jwtDecoder, "jwtValidator");
+				assertThat(jwtValidator).isNotNull();
 				Jwt jwt = jwt().claim("iss", new URL(issuerUri)).claim("custom_claim", "invalid_value").build();
 				assertThat(jwtValidator.validate(jwt).hasErrors()).isTrue();
 			});
@@ -720,6 +727,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				.doesNotHaveBean(ReactiveManagementWebSecurityAutoConfiguration.class));
 	}
 
+	@SuppressWarnings("unchecked")
 	private void assertFilterConfiguredWithJwtAuthenticationManager(AssertableReactiveWebApplicationContext context) {
 		MatcherSecurityWebFilterChain filterChain = (MatcherSecurityWebFilterChain) context
 			.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
@@ -728,12 +736,16 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.filter((f) -> f instanceof AuthenticationWebFilter)
 			.findFirst()
 			.orElse(null);
-		ReactiveAuthenticationManagerResolver<?> authenticationManagerResolver = (ReactiveAuthenticationManagerResolver<?>) ReflectionTestUtils
+		assertThat(webFilter).isNotNull();
+		ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver = (ReactiveAuthenticationManagerResolver<ServerWebExchange>) ReflectionTestUtils
 			.getField(webFilter, "authenticationManagerResolver");
-		Object authenticationManager = authenticationManagerResolver.resolve(null).block(TIMEOUT);
+		assertThat(authenticationManagerResolver).isNotNull();
+		Object authenticationManager = authenticationManagerResolver.resolve(mock(ServerWebExchange.class))
+			.block(TIMEOUT);
 		assertThat(authenticationManager).isInstanceOf(JwtReactiveAuthenticationManager.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void assertFilterConfiguredWithOpaqueTokenAuthenticationManager(
 			AssertableReactiveWebApplicationContext context) {
 		MatcherSecurityWebFilterChain filterChain = (MatcherSecurityWebFilterChain) context
@@ -743,9 +755,12 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.filter((f) -> f instanceof AuthenticationWebFilter)
 			.findFirst()
 			.orElse(null);
-		ReactiveAuthenticationManagerResolver<?> authenticationManagerResolver = (ReactiveAuthenticationManagerResolver<?>) ReflectionTestUtils
+		assertThat(webFilter).isNotNull();
+		ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver = (ReactiveAuthenticationManagerResolver<ServerWebExchange>) ReflectionTestUtils
 			.getField(webFilter, "authenticationManagerResolver");
-		Object authenticationManager = authenticationManagerResolver.resolve(null).block(TIMEOUT);
+		assertThat(authenticationManagerResolver).isNotNull();
+		Object authenticationManager = authenticationManagerResolver.resolve(mock(ServerWebExchange.class))
+			.block(TIMEOUT);
 		assertThat(authenticationManager).isInstanceOf(OpaqueTokenReactiveAuthenticationManager.class);
 	}
 
@@ -760,12 +775,14 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
 			.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		assertThat(this.server).isNotNull();
 		this.server.enqueue(mockResponse);
 		this.server.enqueue(
 				new MockResponse().setResponseCode(200).setHeader("Content-Type", "application/json").setBody(JWK_SET));
 	}
 
 	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) {
+		assertThat(this.server).isNotNull();
 		for (int i = 0; i < errorResponseCount; i++) {
 			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
 			this.server.enqueue(emptyResponse);
@@ -808,6 +825,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			ThrowingConsumer<List<OAuth2TokenValidator<Jwt>>> validatorsConsumer) {
 		DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 			.getField(jwtDecoder, "jwtValidator");
+		assertThat(jwtValidator).isNotNull();
 		assertThat(jwtValidator.validate(builder.build()).hasErrors()).isFalse();
 		validatorsConsumer.accept(extractValidators(jwtValidator));
 	}
@@ -816,6 +834,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	private List<OAuth2TokenValidator<Jwt>> extractValidators(DelegatingOAuth2TokenValidator<Jwt> delegatingValidator) {
 		Collection<OAuth2TokenValidator<Jwt>> delegates = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
 			.getField(delegatingValidator, "tokenValidators");
+		assertThat(delegates).isNotNull();
 		List<OAuth2TokenValidator<Jwt>> extracted = new ArrayList<>();
 		for (OAuth2TokenValidator<Jwt> delegate : delegates) {
 			if (delegate instanceof DelegatingOAuth2TokenValidator<Jwt> delegatingDelegate) {

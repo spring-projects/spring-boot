@@ -38,6 +38,7 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.ThrowingConsumer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -105,7 +106,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
 		.withUserConfiguration(TestConfig.class);
 
-	private MockWebServer server;
+	private @Nullable MockWebServer server;
 
 	private static final String JWK_SET = "{\"keys\":[{\"kty\":\"RSA\",\"e\":\"AQAB\",\"use\":\"sig\","
 			+ "\"kid\":\"one\",\"n\":\"oXJ8OyOv_eRnce4akdanR4KYRfnC2zLV4uYNQpcFn6oHL0dj7D6kxQmsXoYgJV8ZVDn71KGm"
@@ -228,6 +229,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				jwtDecoderSupplier.get();
 				assertJwkSetUriJwtDecoderBuilderCustomization(context);
 			});
@@ -253,6 +255,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				jwtDecoderSupplier.get();
 				assertJwkSetUriJwtDecoderBuilderCustomization(context);
 			});
@@ -279,6 +282,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				jwtDecoderSupplier.get();
 				assertJwkSetUriJwtDecoderBuilderCustomization(context);
 			});
@@ -558,6 +562,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
 				validate(
 						jwt().claim("iss", URI.create(issuerUri).toURL())
@@ -584,6 +589,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
 					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
 				JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
 				assertThat(context).hasBean("customJwtClaimValidator");
 				OAuth2TokenValidator<Jwt> customValidator = (OAuth2TokenValidator<Jwt>) context
@@ -633,6 +639,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 				DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 					.getField(jwtDecoder, "jwtValidator");
+				assertThat(jwtValidator).isNotNull();
 				Jwt jwt = jwt().claim("iss", new URL(issuerUri))
 					.claim("aud", Collections.singletonList("https://other-audience.com"))
 					.build();
@@ -733,7 +740,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}
 
-	private Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
+	private @Nullable Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
 		List<Filter> filters = filterChains.get(0).getFilters();
@@ -751,12 +758,14 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.OK.value())
 			.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		assertThat(this.server).isNotNull();
 		this.server.enqueue(mockResponse);
 		this.server.enqueue(
 				new MockResponse().setResponseCode(200).setHeader("Content-Type", "application/json").setBody(JWK_SET));
 	}
 
 	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) {
+		assertThat(this.server).isNotNull();
 		for (int i = 0; i < errorResponseCount; i++) {
 			MockResponse emptyResponse = new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
 			this.server.enqueue(emptyResponse);
@@ -799,6 +808,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			ThrowingConsumer<List<OAuth2TokenValidator<Jwt>>> validatorsConsumer) {
 		DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 			.getField(jwtDecoder, "jwtValidator");
+		assertThat(jwtValidator).isNotNull();
 		assertThat(jwtValidator.validate(builder.build()).hasErrors()).isFalse();
 		validatorsConsumer.accept(extractValidators(jwtValidator));
 	}
@@ -807,6 +817,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	private List<OAuth2TokenValidator<Jwt>> extractValidators(DelegatingOAuth2TokenValidator<Jwt> delegatingValidator) {
 		Collection<OAuth2TokenValidator<Jwt>> delegates = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
 			.getField(delegatingValidator, "tokenValidators");
+		assertThat(delegates).isNotNull();
 		List<OAuth2TokenValidator<Jwt>> extracted = new ArrayList<>();
 		for (OAuth2TokenValidator<Jwt> delegate : delegates) {
 			if (delegate instanceof DelegatingOAuth2TokenValidator<Jwt> delegatingDelegate) {

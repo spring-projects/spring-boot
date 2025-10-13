@@ -47,6 +47,12 @@ dependencies {
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 
+	testCompileOnly("com.google.code.findbugs:jsr305")
+
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("org.springframework:spring-webflux")
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
 }
