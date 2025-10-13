@@ -30,6 +30,7 @@ import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
 import org.apache.hc.client5.http.impl.classic.RedirectExec;
 import org.apache.hc.client5.http.protocol.RedirectStrategy;
 import org.assertj.core.extractor.Extractors;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
@@ -203,13 +204,14 @@ class TestRestTemplateTests {
 		return (RequestConfig) Extractors.byName("httpClient.defaultConfig").apply(requestFactory);
 	}
 
-	private RedirectStrategy getRedirectStrategy(RestTemplateBuilder builder, HttpClientOption... httpClientOptions) {
+	private @Nullable RedirectStrategy getRedirectStrategy(@Nullable RestTemplateBuilder builder,
+			HttpClientOption... httpClientOptions) {
 		builder = (builder != null) ? builder : new RestTemplateBuilder();
 		TestRestTemplate template = new TestRestTemplate(builder, null, null, httpClientOptions);
 		return getRedirectStrategy(template);
 	}
 
-	private RedirectStrategy getRedirectStrategy(TestRestTemplate template) {
+	private @Nullable RedirectStrategy getRedirectStrategy(TestRestTemplate template) {
 		ClientHttpRequestFactory requestFactory = template.getRestTemplate().getRequestFactory();
 		Object chain = Extractors.byName("httpClient.execChain").apply(requestFactory);
 		while (chain != null) {
@@ -233,7 +235,9 @@ class TestRestTemplateTests {
 	private HttpClient getJdkHttpClient(TestRestTemplate template) {
 		JdkClientHttpRequestFactory requestFactory = (JdkClientHttpRequestFactory) template.getRestTemplate()
 			.getRequestFactory();
-		return (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		assertThat(httpClient).isNotNull();
+		return httpClient;
 	}
 
 	@Test
@@ -459,10 +463,11 @@ class TestRestTemplateTests {
 		then(requestFactory).should().createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}
 
-	private void assertBasicAuthorizationCredentials(TestRestTemplate testRestTemplate, String username,
-			String password) {
+	private void assertBasicAuthorizationCredentials(TestRestTemplate testRestTemplate, @Nullable String username,
+			@Nullable String password) {
 		ClientHttpRequest request = ReflectionTestUtils.invokeMethod(testRestTemplate.getRestTemplate(),
 				"createRequest", URI.create("http://localhost"), HttpMethod.POST);
+		assertThat(request).isNotNull();
 		if (username == null) {
 			assertThat(request.getHeaders().headerNames()).doesNotContain(HttpHeaders.AUTHORIZATION);
 		}
