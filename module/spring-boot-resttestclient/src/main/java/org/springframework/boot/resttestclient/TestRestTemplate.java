@@ -931,8 +931,8 @@ public class TestRestTemplate {
 	 * org.springframework.web.client.RequestCallback,
 	 * org.springframework.web.client.ResponseExtractor)
 	 */
-	public <T> @Nullable T execute(URI url, HttpMethod method, RequestCallback requestCallback,
-			ResponseExtractor<T> responseExtractor) {
+	public <T> @Nullable T execute(URI url, HttpMethod method, @Nullable RequestCallback requestCallback,
+			@Nullable ResponseExtractor<T> responseExtractor) {
 		return this.restTemplate.execute(applyRootUriIfNecessary(url), method, requestCallback, responseExtractor);
 	}
 
