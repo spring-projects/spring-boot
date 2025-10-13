@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class PropertiesMeterFilterTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPropertiesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new PropertiesMeterFilter(null))
 			.withMessageContaining("'properties' must not be null");

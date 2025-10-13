@@ -131,7 +131,6 @@ class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 					if (bean instanceof Bravo) {
 						MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 						meterRegistry.gauge("test", 1);
-						System.out.println(meterRegistry.find("test").gauge().getId().getTags());
 					}
 					return bean;
 				}

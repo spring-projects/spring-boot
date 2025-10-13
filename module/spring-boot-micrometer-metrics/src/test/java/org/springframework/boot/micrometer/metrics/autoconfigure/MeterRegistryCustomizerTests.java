@@ -21,6 +21,7 @@ import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -43,7 +44,7 @@ class MeterRegistryCustomizerTests {
 		.withBean(AtlasMeterRegistry.class, () -> new AtlasMeterRegistry(new AtlasConfig() {
 
 			@Override
-			public String get(String k) {
+			public @Nullable String get(String k) {
 				return null;
 			}
 
@@ -51,7 +52,7 @@ class MeterRegistryCustomizerTests {
 		.withBean(PrometheusMeterRegistry.class, () -> new PrometheusMeterRegistry(new PrometheusConfig() {
 
 			@Override
-			public String get(String key) {
+			public @Nullable String get(String key) {
 				return null;
 			}
 

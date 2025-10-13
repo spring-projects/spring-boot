@@ -16,7 +16,10 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure;
 
+import java.util.function.Function;
+
 import io.micrometer.common.annotation.ValueExpressionResolver;
+import io.micrometer.common.annotation.ValueResolver;
 import io.micrometer.core.aop.CountedAspect;
 import io.micrometer.core.aop.CountedMeterTagAnnotationHandler;
 import io.micrometer.core.aop.MeterTagAnnotationHandler;
@@ -78,7 +81,7 @@ class MetricsAspectsAutoConfigurationTests {
 	void shouldUseUserDefinedMeterTagAnnotationHandler() {
 		this.contextRunner
 			.withBean("customMeterTagAnnotationHandler", MeterTagAnnotationHandler.class,
-					() -> new MeterTagAnnotationHandler(null, null))
+					() -> new MeterTagAnnotationHandler(getResolverProvider(), getExpressionResolverProvider()))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(TimedAspect.class).hasSingleBean(MeterTagAnnotationHandler.class);
 				assertThat(context.getBean(TimedAspect.class)).extracting("meterTagAnnotationHandler")
@@ -101,7 +104,7 @@ class MetricsAspectsAutoConfigurationTests {
 	void shouldUseUserDefinedCountedMeterTagAnnotationHandler() {
 		this.contextRunner
 			.withBean("customCountedMeterTagAnnotationHandler", CountedMeterTagAnnotationHandler.class,
-					() -> new CountedMeterTagAnnotationHandler(null, null))
+					() -> new CountedMeterTagAnnotationHandler(getResolverProvider(), getExpressionResolverProvider()))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(CountedAspect.class)
 					.hasSingleBean(CountedMeterTagAnnotationHandler.class);
@@ -142,6 +145,14 @@ class MetricsAspectsAutoConfigurationTests {
 			assertThat(context).hasSingleBean(CountedAspect.class).hasBean("customCountedAspect");
 			assertThat(context).hasSingleBean(TimedAspect.class).hasBean("customTimedAspect");
 		});
+	}
+
+	private Function<Class<? extends ValueExpressionResolver>, ValueExpressionResolver> getExpressionResolverProvider() {
+		return (clazz) -> mock(ValueExpressionResolver.class);
+	}
+
+	private Function<Class<? extends ValueResolver>, ValueResolver> getResolverProvider() {
+		return (clazz) -> mock(ValueResolver.class);
 	}
 
 	@Configuration(proxyBeanMethods = false)

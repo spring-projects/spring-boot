@@ -28,6 +28,7 @@ import io.prometheus.metrics.expositionformats.PrometheusTextFormatWriter;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import io.prometheus.metrics.tracer.common.SpanContext;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -266,7 +267,9 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	private PushGateway getPushGateway(AssertableApplicationContext context) {
 		assertThat(context).hasSingleBean(PrometheusPushGatewayManager.class);
 		PrometheusPushGatewayManager gatewayManager = context.getBean(PrometheusPushGatewayManager.class);
-		return (PushGateway) ReflectionTestUtils.getField(gatewayManager, "pushGateway");
+		Object field = ReflectionTestUtils.getField(gatewayManager, "pushGateway");
+		assertThat(field).isNotNull();
+		return (PushGateway) field;
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -335,12 +338,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 			return new SpanContext() {
 
 				@Override
-				public String getCurrentTraceId() {
+				public @Nullable String getCurrentTraceId() {
 					return null;
 				}
 
 				@Override
-				public String getCurrentSpanId() {
+				public @Nullable String getCurrentSpanId() {
 					return null;
 				}
 

@@ -30,6 +30,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
+import org.springframework.boot.micrometer.metrics.actuate.endpoint.MetricsEndpoint.MetricDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -85,10 +86,12 @@ class MetricsEndpointTests {
 		this.registry.counter("cache", "result", "miss", "host", "1").increment(2);
 		this.registry.counter("cache", "result", "hit", "host", "2").increment(2);
 		MetricsEndpoint.MetricDescriptor response = this.endpoint.metric("cache", Collections.emptyList());
+		assertThat(response).isNotNull();
 		assertThat(response.getName()).isEqualTo("cache");
 		assertThat(availableTagKeys(response)).containsExactly("result", "host");
 		assertThat(getCount(response)).hasValue(6.0);
 		response = this.endpoint.metric("cache", Collections.singletonList("result:hit"));
+		assertThat(response).isNotNull();
 		assertThat(availableTagKeys(response)).containsExactly("host");
 		assertThat(getCount(response)).hasValue(4.0);
 	}
@@ -107,10 +110,12 @@ class MetricsEndpointTests {
 		secondLevel.counter("cache", "result", "hit", "host", "2").increment(2);
 		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
 		MetricsEndpoint.MetricDescriptor response = endpoint.metric("cache", Collections.emptyList());
+		assertThat(response).isNotNull();
 		assertThat(response.getName()).isEqualTo("cache");
 		assertThat(availableTagKeys(response)).containsExactly("result", "host");
 		assertThat(getCount(response)).hasValue(6.0);
 		response = endpoint.metric("cache", Collections.singletonList("result:hit"));
+		assertThat(response).isNotNull();
 		assertThat(availableTagKeys(response)).containsExactly("host");
 		assertThat(getCount(response)).hasValue(4.0);
 	}
@@ -132,6 +137,7 @@ class MetricsEndpointTests {
 		this.registry.counter("cache", "host", "1", "region", "east", "result", "hit");
 		this.registry.counter("cache", "host", "1", "region", "east", "result", "miss");
 		MetricsEndpoint.MetricDescriptor response = this.endpoint.metric("cache", Collections.singletonList("host:1"));
+		assertThat(response).isNotNull();
 		assertThat(response.getAvailableTags()
 			.stream()
 			.filter((t) -> t.getTag().equals("region"))
@@ -143,6 +149,7 @@ class MetricsEndpointTests {
 		this.registry.counter("counter", "key", "a space").increment(2);
 		MetricsEndpoint.MetricDescriptor response = this.endpoint.metric("counter",
 				Collections.singletonList("key:a space"));
+		assertThat(response).isNotNull();
 		assertThat(response.getName()).isEqualTo("counter");
 		assertThat(availableTagKeys(response)).isEmpty();
 		assertThat(getCount(response)).hasValue(2.0);
@@ -193,11 +200,10 @@ class MetricsEndpointTests {
 	private void assertMetricHasStatisticEqualTo(MeterRegistry registry, String metricName, Statistic stat,
 			Double value) {
 		MetricsEndpoint endpoint = new MetricsEndpoint(registry);
-		assertThat(endpoint.metric(metricName, Collections.emptyList())
-			.getMeasurements()
-			.stream()
-			.filter((sample) -> sample.getStatistic().equals(stat))
-			.findAny()).hasValueSatisfying((sample) -> assertThat(sample.getValue()).isEqualTo(value));
+		MetricDescriptor metric = endpoint.metric(metricName, Collections.emptyList());
+		assertThat(metric).isNotNull();
+		assertThat(metric.getMeasurements().stream().filter((sample) -> sample.getStatistic().equals(stat)).findAny())
+			.hasValueSatisfying((sample) -> assertThat(sample.getValue()).isEqualTo(value));
 	}
 
 	private Optional<Double> getCount(MetricsEndpoint.MetricDescriptor response) {

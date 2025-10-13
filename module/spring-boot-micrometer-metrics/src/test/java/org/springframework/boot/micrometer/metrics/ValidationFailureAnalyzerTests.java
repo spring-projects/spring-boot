@@ -19,6 +19,7 @@ package org.springframework.boot.micrometer.metrics;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.newrelic.NewRelicConfig;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -51,7 +52,7 @@ class ValidationFailureAnalyzerTests {
 	private Exception createFailure(Class<?> configuration) {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(configuration)) {
 			fail("Expected failure did not occur");
-			return null;
+			throw new AssertionError("Should not be reached");
 		}
 		catch (Exception ex) {
 			return ex;
@@ -66,7 +67,7 @@ class ValidationFailureAnalyzerTests {
 			return new NewRelicMeterRegistry(new NewRelicConfig() {
 
 				@Override
-				public String get(String key) {
+				public @Nullable String get(String key) {
 					return null;
 				}
 

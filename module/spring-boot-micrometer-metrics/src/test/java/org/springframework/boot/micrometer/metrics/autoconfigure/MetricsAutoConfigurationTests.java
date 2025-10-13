@@ -17,7 +17,7 @@
 package org.springframework.boot.micrometer.metrics.autoconfigure;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -71,9 +71,10 @@ class MetricsAutoConfigurationTests {
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			MeterFilter[] filters = (MeterFilter[]) ReflectionTestUtils.getField(meterRegistry, "filters");
 			assertThat(filters).hasSize(3);
-			assertThat(filters[0].accept((Meter.Id) null)).isEqualTo(MeterFilterReply.DENY);
+			Counter counter = meterRegistry.counter("counter");
+			assertThat(filters[0].accept(counter.getId())).isEqualTo(MeterFilterReply.DENY);
 			assertThat(filters[1]).isInstanceOf(PropertiesMeterFilter.class);
-			assertThat(filters[2].accept((Meter.Id) null)).isEqualTo(MeterFilterReply.ACCEPT);
+			assertThat(filters[2].accept(counter.getId())).isEqualTo(MeterFilterReply.ACCEPT);
 			then((MeterBinder) context.getBean("meterBinder")).should().bindTo(meterRegistry);
 			then(context.getBean(MeterRegistryCustomizer.class)).should().customize(meterRegistry);
 		});

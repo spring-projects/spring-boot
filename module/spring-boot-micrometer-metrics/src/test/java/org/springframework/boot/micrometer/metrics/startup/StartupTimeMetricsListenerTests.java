@@ -23,12 +23,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.TimeGauge;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -72,7 +74,8 @@ class StartupTimeMetricsListenerTests {
 	@Test
 	void metricRecordedWithoutMainAppClassTag() {
 		SpringApplication application = mock(SpringApplication.class);
-		this.listener.onApplicationEvent(new ApplicationStartedEvent(application, null, null, Duration.ofSeconds(2)));
+		this.listener.onApplicationEvent(new ApplicationStartedEvent(application, new String[0],
+				mock(ConfigurableApplicationContext.class), Duration.ofSeconds(2)));
 		TimeGauge applicationStartedGauge = this.registry.find("application.started.time").timeGauge();
 		assertThat(applicationStartedGauge).isNotNull();
 		assertThat(applicationStartedGauge.getId().getTags()).isEmpty();
@@ -83,7 +86,8 @@ class StartupTimeMetricsListenerTests {
 		SpringApplication application = mock(SpringApplication.class);
 		Tags tags = Tags.of("foo", "bar");
 		this.listener = new StartupTimeMetricsListener(this.registry, "started", "ready", tags);
-		this.listener.onApplicationEvent(new ApplicationReadyEvent(application, null, null, Duration.ofSeconds(2)));
+		this.listener.onApplicationEvent(new ApplicationReadyEvent(application, new String[0],
+				mock(ConfigurableApplicationContext.class), Duration.ofSeconds(2)));
 		TimeGauge applicationReadyGauge = this.registry.find("ready").timeGauge();
 		assertThat(applicationReadyGauge).isNotNull();
 		assertThat(applicationReadyGauge.getId().getTags()).containsExactlyElementsOf(tags);
@@ -97,17 +101,17 @@ class StartupTimeMetricsListenerTests {
 		assertThat(this.registry.find("application.ready.time").timeGauge()).isNull();
 	}
 
-	private ApplicationStartedEvent applicationStartedEvent(Long startupTimeMs) {
+	private ApplicationStartedEvent applicationStartedEvent(@Nullable Long startupTimeMs) {
 		SpringApplication application = mock(SpringApplication.class);
 		given(application.getMainApplicationClass()).willAnswer((invocation) -> TestMainApplication.class);
-		return new ApplicationStartedEvent(application, null, null,
+		return new ApplicationStartedEvent(application, new String[0], mock(ConfigurableApplicationContext.class),
 				(startupTimeMs != null) ? Duration.ofMillis(startupTimeMs) : null);
 	}
 
-	private ApplicationReadyEvent applicationReadyEvent(Long startupTimeMs) {
+	private ApplicationReadyEvent applicationReadyEvent(@Nullable Long startupTimeMs) {
 		SpringApplication application = mock(SpringApplication.class);
 		given(application.getMainApplicationClass()).willAnswer((invocation) -> TestMainApplication.class);
-		return new ApplicationReadyEvent(application, null, null,
+		return new ApplicationReadyEvent(application, new String[0], mock(ConfigurableApplicationContext.class),
 				(startupTimeMs != null) ? Duration.ofMillis(startupTimeMs) : null);
 	}
 
