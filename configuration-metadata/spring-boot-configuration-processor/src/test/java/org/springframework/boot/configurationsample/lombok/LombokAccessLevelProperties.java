@@ -28,6 +28,7 @@ import org.springframework.boot.configurationsample.TestConfigurationProperties;
  * @author Jonas Keßler
  */
 @TestConfigurationProperties("accesslevel")
+@SuppressWarnings("deprecation")
 public class LombokAccessLevelProperties {
 
 	@Getter(AccessLevel.PUBLIC)
