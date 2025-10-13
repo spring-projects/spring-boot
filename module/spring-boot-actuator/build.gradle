@@ -31,7 +31,6 @@ dependencies {
 	optional(project(":module:spring-boot-http-converter"))
 	optional(project(":module:spring-boot-jsonb"))
 	optional(project(":module:spring-boot-validation"))
-	optional(project(":module:spring-boot-web-server"))
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.google.code.findbugs:jsr305")
 	optional("com.zaxxer:HikariCP")
@@ -57,6 +56,7 @@ dependencies {
 	optional("org.springframework.security:spring-security-web")
 	optional("tools.jackson.core:jackson-databind")
 
+	testFixturesImplementation(project(":module:spring-boot-web-server"))
 	testFixturesImplementation("org.junit.jupiter:junit-jupiter-api")
 	testFixturesImplementation("org.springframework:spring-test")
 	testFixturesImplementation("org.springframework:spring-webflux")
