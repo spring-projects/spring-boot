@@ -594,14 +594,14 @@ class JacksonAutoConfigurationTests {
 
 	@Test
 	void shouldFindAndAddModulesByDefault() {
-		this.contextRunner.run((context) -> assertThat(context.getBean(JsonMapper.class).getRegisteredModules())
+		this.contextRunner.run((context) -> assertThat(context.getBean(JsonMapper.class).registeredModules())
 			.hasAtLeastOneElementOfType(KotlinModule.class));
 	}
 
 	@Test
 	void shouldNotFindAndAddModulesWhenDisabled() {
 		this.contextRunner.withPropertyValues("spring.jackson.find-and-add-modules=false")
-			.run((context) -> assertThat(context.getBean(JsonMapper.class).getRegisteredModules())
+			.run((context) -> assertThat(context.getBean(JsonMapper.class).registeredModules())
 				.doesNotHaveAnyElementsOfTypes(KotlinModule.class));
 	}
 
