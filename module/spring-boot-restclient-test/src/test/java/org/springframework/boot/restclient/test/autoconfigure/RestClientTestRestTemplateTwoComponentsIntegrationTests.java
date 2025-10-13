@@ -58,17 +58,17 @@ class RestClientTestRestTemplateTwoComponentsIntegrationTests {
 
 	@Test
 	void client1RestCallViaCustomizer() {
-		this.customizer.getServer(this.client1.getRestTemplate())
-			.expect(requestTo("/test"))
-			.andRespond(withSuccess("hello", MediaType.TEXT_HTML));
+		MockRestServiceServer server = this.customizer.getServer(this.client1.getRestTemplate());
+		assertThat(server).isNotNull();
+		server.expect(requestTo("/test")).andRespond(withSuccess("hello", MediaType.TEXT_HTML));
 		assertThat(this.client1.test()).isEqualTo("hello");
 	}
 
 	@Test
 	void client2RestCallViaCustomizer() {
-		this.customizer.getServer(this.client2.getRestTemplate())
-			.expect(requestTo("/test"))
-			.andRespond(withSuccess("there", MediaType.TEXT_HTML));
+		MockRestServiceServer server = this.customizer.getServer(this.client2.getRestTemplate());
+		assertThat(server).isNotNull();
+		server.expect(requestTo("/test")).andRespond(withSuccess("there", MediaType.TEXT_HTML));
 		assertThat(this.client2.test()).isEqualTo("there");
 	}
 

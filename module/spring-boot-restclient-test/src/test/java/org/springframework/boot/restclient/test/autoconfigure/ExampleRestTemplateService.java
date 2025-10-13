@@ -16,6 +16,8 @@
 
 package org.springframework.boot.restclient.test.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -39,7 +41,7 @@ public class ExampleRestTemplateService {
 		return this.restTemplate;
 	}
 
-	public String test() {
+	public @Nullable String test() {
 		return this.restTemplate.getForEntity("/test", String.class).getBody();
 	}
 

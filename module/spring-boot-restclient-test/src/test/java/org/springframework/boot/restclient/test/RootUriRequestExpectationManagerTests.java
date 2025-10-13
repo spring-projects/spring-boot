@@ -55,6 +55,7 @@ class RootUriRequestExpectationManagerTests {
 	private final String uri = "https://example.com";
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private RequestExpectationManager delegate;
 
 	private RootUriRequestExpectationManager manager;
@@ -65,12 +66,14 @@ class RootUriRequestExpectationManagerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenRootUriIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriRequestExpectationManager(null, this.delegate))
 			.withMessageContaining("'rootUri' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenExpectationManagerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriRequestExpectationManager(this.uri, null))
 			.withMessageContaining("'expectationManager' must not be null");
