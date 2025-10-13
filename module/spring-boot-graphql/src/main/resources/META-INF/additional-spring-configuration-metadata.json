@@ -38,6 +38,12 @@
       }
     },
     {
+      "name": "spring.graphql.rsocket.preferred-json-mapper",
+      "type": "java.lang.String",
+      "defaultValue": "jackson",
+      "description": "Preferred JSON mapper to use. By default, auto-detected according to the environment. Supported values are 'jackson' and 'jackson2' (deprecated)."
+    },
+    {
       "name": "spring.graphql.schema.file-extensions",
       "defaultValue": ".graphqls,.gqls"
     },
@@ -88,6 +94,22 @@
       "values": [
         {
           "value": "*"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.graphql.rsocket.preferred-json-mapper",
+      "values": [
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jackson2"
         }
       ],
       "providers": [
