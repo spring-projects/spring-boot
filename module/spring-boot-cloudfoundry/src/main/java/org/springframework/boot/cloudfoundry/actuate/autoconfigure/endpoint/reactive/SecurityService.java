@@ -153,7 +153,11 @@ class SecurityService {
 			.uri(this.cloudControllerUrl + "/info")
 			.retrieve()
 			.bodyToMono(Map.class)
-			.map((response) -> (String) response.get("token_endpoint"))
+			.map((response) -> {
+				String tokenEndpoint = (String) response.get("token_endpoint");
+				Assert.state(tokenEndpoint != null, "No 'token_endpoint' found in response");
+				return tokenEndpoint;
+			})
 			.cache()
 			.onErrorMap((ex) -> new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 					"Unable to fetch token keys from UAA."));

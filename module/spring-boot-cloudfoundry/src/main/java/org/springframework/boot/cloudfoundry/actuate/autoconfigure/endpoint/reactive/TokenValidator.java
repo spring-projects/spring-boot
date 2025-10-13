@@ -33,6 +33,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.CloudFoundryAuthorizationException;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.cloudfoundry.actuate.autoconfigure.endpoint.Token;
+import org.springframework.util.Assert;
 
 /**
  * Validator used to ensure that a signed {@link Token} has not been tampered with.
@@ -85,7 +86,11 @@ class TokenValidator {
 		return this.securityService.fetchTokenKeys()
 			.doOnSuccess(this::cacheTokenKeys)
 			.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
-			.map((tokenKeys) -> tokenKeys.get(keyId))
+			.map((tokenKeys) -> {
+				String tokenKey = tokenKeys.get(keyId);
+				Assert.state(tokenKey != null, "No token key found for '%s'".formatted(keyId));
+				return tokenKey;
+			})
 			.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
 					"Key Id present in token header does not match")));
 	}

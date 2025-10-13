@@ -289,7 +289,7 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		 * Whether the client is required to provide a proof key challenge and verifier
 		 * when performing the Authorization Code Grant flow.
 		 */
-		private boolean requireProofKey = false;
+		private boolean requireProofKey = true;
 
 		/**
 		 * Whether authorization consent is required when the client requests access.

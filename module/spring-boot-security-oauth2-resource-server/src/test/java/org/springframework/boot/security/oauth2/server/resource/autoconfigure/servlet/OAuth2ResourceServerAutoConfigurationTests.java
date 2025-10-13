@@ -66,6 +66,7 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.FactorGrantedAuthority;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -674,7 +675,10 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			JwtAuthenticationConverter converter = context.getBean(JwtAuthenticationConverter.class);
 			AbstractAuthenticationToken token = converter.convert(jwt);
 			assertThat(token).isNotNull().extracting(AbstractAuthenticationToken::getName).isEqualTo(expectedPrincipal);
-			assertThat(token.getAuthorities()).extracting(GrantedAuthority::getAuthority)
+			assertThat(token.getAuthorities()
+				.stream()
+				.filter((authority) -> !(authority instanceof FactorGrantedAuthority)))
+				.extracting(GrantedAuthority::getAuthority)
 				.containsExactlyInAnyOrder(expectedAuthorities);
 			assertThat(context).hasSingleBean(JwtDecoder.class);
 			assertThat(getBearerTokenFilter(context)).isNotNull();
