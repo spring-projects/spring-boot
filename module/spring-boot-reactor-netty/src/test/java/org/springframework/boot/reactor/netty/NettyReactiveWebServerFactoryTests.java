@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import io.netty.channel.Channel;
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -246,7 +247,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 
 		@Override
 		NettyWebServer createNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
-				Duration lifecycleTimeout, Shutdown shutdown) {
+				@Nullable Duration lifecycleTimeout, Shutdown shutdown) {
 			return new NoPortNettyWebServer(httpServer, handlerAdapter, lifecycleTimeout, shutdown);
 		}
 
@@ -254,8 +255,8 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 
 	static class NoPortNettyWebServer extends NettyWebServer {
 
-		NoPortNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
-				Shutdown shutdown) {
+		NoPortNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
+				@Nullable Duration lifecycleTimeout, @Nullable Shutdown shutdown) {
 			super(httpServer, handlerAdapter, lifecycleTimeout, shutdown, null);
 		}
 
