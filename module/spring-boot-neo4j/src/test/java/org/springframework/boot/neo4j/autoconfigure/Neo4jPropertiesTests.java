@@ -18,6 +18,7 @@ package org.springframework.boot.neo4j.autoconfigure;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.Config;
 import org.neo4j.driver.internal.retry.RetrySettings;
@@ -64,11 +65,12 @@ class Neo4jPropertiesTests {
 		assertDuration(properties.getMaxTransactionRetryTime(), RetrySettings.DEFAULT.maxRetryTimeMs());
 	}
 
-	private static void assertDuration(Duration duration, long expectedValueInMillis) {
+	private static void assertDuration(@Nullable Duration duration, long expectedValueInMillis) {
 		if (expectedValueInMillis == -1) {
 			assertThat(duration).isNull();
 		}
 		else {
+			assertThat(duration).isNotNull();
 			assertThat(duration.toMillis()).isEqualTo(expectedValueInMillis);
 		}
 	}
