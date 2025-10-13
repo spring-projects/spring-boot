@@ -58,8 +58,10 @@ class OracleXeR2dbcContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Test
 	void connectionCanBeMadeToOracleContainer() {
+		String validationQuery = DatabaseDriver.ORACLE.getValidationQuery();
+		assertThat(validationQuery).isNotNull();
 		Object result = DatabaseClient.create(this.connectionFactory)
-			.sql(DatabaseDriver.ORACLE.getValidationQuery())
+			.sql(validationQuery)
 			.map((row, metadata) -> row.get(0))
 			.first()
 			.block(Duration.ofSeconds(30));

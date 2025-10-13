@@ -46,8 +46,10 @@ class SqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionFactoryOptions.toString()).contains("driver=mssql", "password=REDACTED", "user=SA");
 		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD))
 			.isEqualTo("verYs3cret");
+		String validationQuery = DatabaseDriver.SQLSERVER.getValidationQuery();
+		assertThat(validationQuery).isNotNull();
 		Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
-			.sql(DatabaseDriver.SQLSERVER.getValidationQuery())
+			.sql(validationQuery)
 			.map((row, metadata) -> row.get(0))
 			.first()
 			.block(Duration.ofSeconds(30));

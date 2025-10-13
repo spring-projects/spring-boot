@@ -78,17 +78,20 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	private void checkDatabaseAccess(R2dbcConnectionDetails connectionDetails) {
-		assertThat(executeQuery(connectionDetails, DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class))
-			.isEqualTo(1);
+		String validationQuery = DatabaseDriver.POSTGRESQL.getValidationQuery();
+		assertThat(validationQuery).isNotNull();
+		assertThat(executeQuery(connectionDetails, validationQuery, Integer.class)).isEqualTo(1);
 	}
 
 	private <T> T executeQuery(R2dbcConnectionDetails connectionDetails, String sql, Class<T> resultClass) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
-		return DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
+		T result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
 			.sql(sql)
 			.mapValue(resultClass)
 			.first()
 			.block(Duration.ofSeconds(30));
+		assertThat(result).isNotNull();
+		return result;
 	}
 
 }

@@ -45,8 +45,10 @@ class OracleFreeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD))
 			.isEqualTo("app_user_secret");
 		Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
+			String validationQuery = DatabaseDriver.ORACLE.getValidationQuery();
+			assertThat(validationQuery).isNotNull();
 			Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
-				.sql(DatabaseDriver.ORACLE.getValidationQuery())
+				.sql(validationQuery)
 				.map((row, metadata) -> row.get(0))
 				.first()
 				.block(Duration.ofSeconds(30));

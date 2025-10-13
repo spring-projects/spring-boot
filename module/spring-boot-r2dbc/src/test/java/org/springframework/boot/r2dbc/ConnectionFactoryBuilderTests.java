@@ -58,6 +58,7 @@ import static org.mockito.Mockito.mock;
 class ConnectionFactoryBuilderTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithNullUrlShouldFail() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ConnectionFactoryBuilder.withUrl(null));
 	}
@@ -68,9 +69,12 @@ class ConnectionFactoryBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWithEmbeddedConnectionNoneShouldFail() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> ConnectionFactoryBuilder.withUrl(EmbeddedDatabaseConnection.NONE.getUrl("test")));
+		assertThatIllegalArgumentException().isThrownBy(() -> {
+			String url = EmbeddedDatabaseConnection.NONE.getUrl("test");
+			ConnectionFactoryBuilder.withUrl(url);
+		});
 	}
 
 	@Test
@@ -83,9 +87,9 @@ class ConnectionFactoryBuilderTests {
 
 	@Test
 	void buildOptionsWithEmbeddedConnectionH2ShouldExposeOptions() {
-		ConnectionFactoryOptions options = ConnectionFactoryBuilder
-			.withUrl(EmbeddedDatabaseConnection.H2.getUrl("testdb"))
-			.buildOptions();
+		String url = EmbeddedDatabaseConnection.H2.getUrl("testdb");
+		assertThat(url).isNotNull();
+		ConnectionFactoryOptions options = ConnectionFactoryBuilder.withUrl(url).buildOptions();
 		assertThat(options.getRequiredValue(ConnectionFactoryOptions.DRIVER)).isEqualTo("h2");
 		assertThat(options.getRequiredValue(ConnectionFactoryOptions.PROTOCOL)).isEqualTo("mem");
 		assertThat(options.getRequiredValue(ConnectionFactoryOptions.DATABASE)).isEqualTo("testdb");
@@ -140,9 +144,9 @@ class ConnectionFactoryBuilderTests {
 	@Test
 	void buildShouldExposeConnectionFactory() {
 		String databaseName = UUID.randomUUID().toString();
-		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
-			.withUrl(EmbeddedDatabaseConnection.H2.getUrl(databaseName))
-			.build();
+		String url = EmbeddedDatabaseConnection.H2.getUrl(databaseName);
+		assertThat(url).isNotNull();
+		ConnectionFactory connectionFactory = ConnectionFactoryBuilder.withUrl(url).build();
 		assertThat(connectionFactory).isNotNull();
 		assertThat(connectionFactory.getMetadata().getName()).isEqualTo(H2ConnectionFactoryMetadata.NAME);
 	}
@@ -150,9 +154,9 @@ class ConnectionFactoryBuilderTests {
 	@Test
 	void buildWhenDerivedWithNewDatabaseReturnsNewConnectionFactory() {
 		String initialDatabaseName = UUID.randomUUID().toString();
-		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
-			.withUrl(EmbeddedDatabaseConnection.H2.getUrl(initialDatabaseName))
-			.build();
+		String url = EmbeddedDatabaseConnection.H2.getUrl(initialDatabaseName);
+		assertThat(url).isNotNull();
+		ConnectionFactory connectionFactory = ConnectionFactoryBuilder.withUrl(url).build();
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
 		String derivedDatabaseName = UUID.randomUUID().toString();
 		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(connectionFactory)
@@ -168,9 +172,9 @@ class ConnectionFactoryBuilderTests {
 
 	@Test
 	void buildWhenDerivedWithNewCredentialsReturnsNewConnectionFactory() {
-		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
-			.withUrl(EmbeddedDatabaseConnection.H2.getUrl(UUID.randomUUID().toString()))
-			.build();
+		String url = EmbeddedDatabaseConnection.H2.getUrl(UUID.randomUUID().toString());
+		assertThat(url).isNotNull();
+		ConnectionFactory connectionFactory = ConnectionFactoryBuilder.withUrl(url).build();
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
 		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(connectionFactory)
 			.username("admin")
@@ -186,9 +190,9 @@ class ConnectionFactoryBuilderTests {
 
 	@Test
 	void buildWhenDerivedFromPoolReturnsNewNonPooledConnectionFactory() {
-		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
-			.withUrl(EmbeddedDatabaseConnection.H2.getUrl(UUID.randomUUID().toString()))
-			.build();
+		String url = EmbeddedDatabaseConnection.H2.getUrl(UUID.randomUUID().toString());
+		assertThat(url).isNotNull();
+		ConnectionFactory connectionFactory = ConnectionFactoryBuilder.withUrl(url).build();
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
 		ConnectionPoolConfiguration poolConfiguration = ConnectionPoolConfiguration.builder(connectionFactory).build();
 		ConnectionPool pool = new ConnectionPool(poolConfiguration);
@@ -336,13 +340,14 @@ class ConnectionFactoryBuilderTests {
 	private static final class MyConnectionFactory implements ConnectionFactory {
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public Publisher<? extends Connection> create() {
-			return null;
+			return mock(Publisher.class);
 		}
 
 		@Override
 		public ConnectionFactoryMetadata getMetadata() {
-			return null;
+			return mock(ConnectionFactoryMetadata.class);
 		}
 
 	}
