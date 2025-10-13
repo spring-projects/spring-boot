@@ -86,8 +86,12 @@ class ObservationHandlerGroupsTests {
 	@SuppressWarnings("unchecked")
 	private static List<ObservationHandler<?>> getObservationHandlers(ObservationConfig config) {
 		Method method = ReflectionUtils.findMethod(ObservationConfig.class, "getObservationHandlers");
+		assertThat(method).isNotNull();
 		ReflectionUtils.makeAccessible(method);
-		return (List<ObservationHandler<?>>) ReflectionUtils.invokeMethod(method, config);
+		List<ObservationHandler<?>> observationHandlers = (List<ObservationHandler<?>>) ReflectionUtils
+			.invokeMethod(method, config);
+		assertThat(observationHandlers).isNotNull();
+		return observationHandlers;
 	}
 
 	private static class NamedObservationHandler implements ObservationHandler<Observation.Context> {

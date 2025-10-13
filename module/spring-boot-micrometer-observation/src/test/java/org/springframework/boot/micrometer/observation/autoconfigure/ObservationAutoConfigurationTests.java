@@ -115,7 +115,9 @@ class ObservationAutoConfigurationTests {
 			Observation observation = Observation.start("filtered", observationRegistry);
 			observation.stop();
 			observation.getContext().getLowCardinalityKeyValues().forEach((kv) -> System.out.println(kv.getKey()));
-			assertThat(observation.getContext().getLowCardinalityKeyValue("filter").getValue()).isEqualTo("one");
+			KeyValue filter = observation.getContext().getLowCardinalityKeyValue("filter");
+			assertThat(filter).isNotNull();
+			assertThat(filter.getValue()).isEqualTo("one");
 		});
 	}
 
@@ -131,7 +133,9 @@ class ObservationAutoConfigurationTests {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation observation = Observation.start("keyvalues", observationRegistry);
 			observation.stop();
-			assertThat(observation.getContext().getLowCardinalityKeyValue("a").getValue()).isEqualTo("alpha");
+			KeyValue a = observation.getContext().getLowCardinalityKeyValue("a");
+			assertThat(a).isNotNull();
+			assertThat(a.getValue()).isEqualTo("alpha");
 		});
 	}
 
