@@ -30,6 +30,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-jackson2"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-tomcat"))
@@ -42,4 +43,8 @@ dependencies {
 
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
+}
+
+tasks.named("test") {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }
