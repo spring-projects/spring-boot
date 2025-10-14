@@ -175,8 +175,8 @@ Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution
 
 [source,shell,subs="verbatim,attributes"]
 ----
-$ sdk install java {version-graal}.r17-nik
-$ sdk use java {version-graal}.r17-nik
+$ sdk install java 25.r25-nik
+$ sdk use java 25.r25-nik
 ----
 
 Verify that the correct version has been configured by checking the output of `java -version`:
@@ -184,9 +184,9 @@ Verify that the correct version has been configured by checking the output of `j
 [source,shell,subs="verbatim,attributes"]
 ----
 $ java -version
-openjdk version "17.0.5" 2022-10-18 LTS
-OpenJDK Runtime Environment GraalVM 22.3.0 (build 17.0.5+8-LTS)
-OpenJDK 64-Bit Server VM GraalVM 22.3.0 (build 17.0.5+8-LTS, mixed mode)
+openjdk version "25" 2025-09-16 LTS
+OpenJDK Runtime Environment Liberica-NIK-25.0.0-1 (build 25+37-LTS)
+OpenJDK 64-Bit Server VM Liberica-NIK-25.0.0-1 (build 25+37-LTS, mixed mode, sharing)
 ----
 
 

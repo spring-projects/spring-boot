@@ -297,7 +297,6 @@ publishing.publications.withType(MavenPublication) {
 									delegate.artifactId('native-maven-plugin')
 									configuration {
 										delegate.classesDirectory('${project.build.outputDirectory}')
-										delegate.requiredVersion('22.3')
 										exclusions {
 											exclusion {
 												delegate.groupId('org.springframework.boot')
@@ -347,7 +346,6 @@ publishing.publications.withType(MavenPublication) {
 									delegate.artifactId('native-maven-plugin')
 									configuration {
 										delegate.classesDirectory('${project.build.outputDirectory}')
-										delegate.requiredVersion('22.3')
 										exclusions {
 											exclusion {
 												delegate.groupId('org.springframework.boot')
