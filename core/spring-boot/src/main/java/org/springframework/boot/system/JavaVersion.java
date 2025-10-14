@@ -18,7 +18,6 @@ package org.springframework.boot.system;
 
 import java.io.Console;
 import java.io.Reader;
-import java.net.http.HttpResponse;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.Arrays;
@@ -91,7 +90,7 @@ public enum JavaVersion {
 	 * Java 25.
 	 * @since 3.5.7
 	 */
-	TWENTY_FIVE("25", HttpResponse.class, "connectionLabel");
+	TWENTY_FIVE("25", Reader.class, "readAllLines");
 
 	private final String name;
 
