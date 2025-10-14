@@ -37,7 +37,9 @@ import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.PropertyNamingStrategy;
 import tools.jackson.databind.cfg.ConstructorDetector;
 import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.cfg.MapperBuilder;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.cbor.CBORMapper;
 
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
@@ -47,6 +49,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -67,14 +70,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Auto configuration for Jackson. The following auto-configuration will get applied:
- * <ul>
- * <li>a {@link tools.jackson.databind.json.JsonMapper.Builder} in case none is already
- * configured.</li>
- * <li>a {@link JsonMapper} in case none is already configured.</li>
- * <li>auto-registration for all {@link JacksonModule} beans with all {@link JsonMapper}
- * beans (including the defaulted ones).</li>
- * </ul>
+ * {@link EnableAutoConfiguration Auto-configuration} for Jackson.
  *
  * @author Oliver Gierke
  * @author Andy Wilkinson
@@ -146,170 +142,19 @@ public final class JacksonAutoConfiguration {
 			return new StandardJsonMapperBuilderCustomizer(jacksonProperties, modules.stream().toList());
 		}
 
-		static final class StandardJsonMapperBuilderCustomizer implements JsonMapperBuilderCustomizer, Ordered {
-
-			private final JacksonProperties jacksonProperties;
-
-			private final Collection<JacksonModule> modules;
+		static final class StandardJsonMapperBuilderCustomizer
+				extends AbstractMapperBuilderCustomizer<JsonMapper.Builder> implements JsonMapperBuilderCustomizer {
 
 			StandardJsonMapperBuilderCustomizer(JacksonProperties jacksonProperties,
 					Collection<JacksonModule> modules) {
-				this.jacksonProperties = jacksonProperties;
-				this.modules = modules;
-			}
-
-			@Override
-			public int getOrder() {
-				return 0;
+				super(jacksonProperties, modules);
 			}
 
 			@Override
 			public void customize(JsonMapper.Builder builder) {
-				if (this.jacksonProperties.isUseJackson2Defaults()) {
-					builder.configureForJackson2()
-						.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS,
-								DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
-				}
-				if (this.jacksonProperties.isFindAndAddModules()) {
-					builder.findAndAddModules(getClass().getClassLoader());
-				}
-				if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
-					builder.changeDefaultPropertyInclusion((handler) -> handler
-						.withValueInclusion(this.jacksonProperties.getDefaultPropertyInclusion()));
-				}
-				if (this.jacksonProperties.getTimeZone() != null) {
-					builder.defaultTimeZone(this.jacksonProperties.getTimeZone());
-				}
-				configureVisibility(builder, this.jacksonProperties.getVisibility());
-				configureFeatures(builder, this.jacksonProperties.getDeserialization(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getSerialization(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getMapper(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getJson().getRead(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getJson().getWrite(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getDatatype().getDatetime(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getDatatype().getEnum(), builder::configure);
-				configureFeatures(builder, this.jacksonProperties.getDatatype().getJsonNode(), builder::configure);
-				configureDateFormat(builder);
-				configurePropertyNamingStrategy(builder);
-				configureModules(builder);
-				configureLocale(builder);
-				configureDefaultLeniency(builder);
-				configureConstructorDetector(builder);
-			}
-
-			private <T> void configureFeatures(JsonMapper.Builder builder, Map<T, Boolean> features,
-					BiConsumer<T, Boolean> configure) {
-				features.forEach((feature, value) -> {
-					if (value != null) {
-						configure.accept(feature, value);
-					}
-				});
-			}
-
-			private void configureVisibility(JsonMapper.Builder builder,
-					Map<PropertyAccessor, JsonAutoDetect.Visibility> visibilities) {
-				builder.changeDefaultVisibility((visibilityChecker) -> {
-					for (Map.Entry<PropertyAccessor, JsonAutoDetect.Visibility> entry : visibilities.entrySet()) {
-						visibilityChecker = visibilityChecker.withVisibility(entry.getKey(), entry.getValue());
-					}
-					return visibilityChecker;
-				});
-			}
-
-			private void configureDateFormat(JsonMapper.Builder builder) {
-				// We support a fully qualified class name extending DateFormat or a date
-				// pattern string value
-				String dateFormat = this.jacksonProperties.getDateFormat();
-				if (dateFormat != null) {
-					try {
-						Class<?> dateFormatClass = ClassUtils.forName(dateFormat, null);
-						builder.defaultDateFormat((DateFormat) BeanUtils.instantiateClass(dateFormatClass));
-					}
-					catch (ClassNotFoundException ex) {
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
-						// Since Jackson 2.6.3 we always need to set a TimeZone (see
-						// gh-4170). If none in our properties fallback to Jackson's
-						// default
-						TimeZone timeZone = this.jacksonProperties.getTimeZone();
-						if (timeZone == null) {
-							timeZone = new ObjectMapper().serializationConfig().getTimeZone();
-						}
-						simpleDateFormat.setTimeZone(timeZone);
-						builder.defaultDateFormat(simpleDateFormat);
-					}
-				}
-			}
-
-			private void configurePropertyNamingStrategy(JsonMapper.Builder builder) {
-				// We support a fully qualified class name extending Jackson's
-				// PropertyNamingStrategy or a string value corresponding to the constant
-				// names in PropertyNamingStrategy which hold default provided
-				// implementations
-				String strategy = this.jacksonProperties.getPropertyNamingStrategy();
-				if (strategy != null) {
-					try {
-						configurePropertyNamingStrategyClass(builder, ClassUtils.forName(strategy, null));
-					}
-					catch (ClassNotFoundException ex) {
-						configurePropertyNamingStrategyField(builder, strategy);
-					}
-				}
-			}
-
-			private void configurePropertyNamingStrategyClass(JsonMapper.Builder builder,
-					Class<?> propertyNamingStrategyClass) {
-				builder.propertyNamingStrategy(
-						(PropertyNamingStrategy) BeanUtils.instantiateClass(propertyNamingStrategyClass));
-			}
-
-			private void configurePropertyNamingStrategyField(JsonMapper.Builder builder, String fieldName) {
-				// Find the field (this way we automatically support new constants
-				// that may be added by Jackson in the future)
-				Field field = findPropertyNamingStrategyField(fieldName);
-				try {
-					builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
-				}
-				catch (Exception ex) {
-					throw new IllegalStateException(ex);
-				}
-			}
-
-			private Field findPropertyNamingStrategyField(String fieldName) {
-				Field field = ReflectionUtils.findField(PropertyNamingStrategies.class, fieldName,
-						PropertyNamingStrategy.class);
-				Assert.state(field != null, () -> "Constant named '" + fieldName + "' not found");
-				return field;
-			}
-
-			private void configureModules(JsonMapper.Builder builder) {
-				builder.addModules(this.modules);
-			}
-
-			private void configureLocale(JsonMapper.Builder builder) {
-				Locale locale = this.jacksonProperties.getLocale();
-				if (locale != null) {
-					builder.defaultLocale(locale);
-				}
-			}
-
-			private void configureDefaultLeniency(JsonMapper.Builder builder) {
-				Boolean defaultLeniency = this.jacksonProperties.getDefaultLeniency();
-				if (defaultLeniency != null) {
-					builder.defaultLeniency(defaultLeniency);
-				}
-			}
-
-			private void configureConstructorDetector(JsonMapper.Builder builder) {
-				ConstructorDetectorStrategy strategy = this.jacksonProperties.getConstructorDetector();
-				if (strategy != null) {
-					switch (strategy) {
-						case USE_PROPERTIES_BASED ->
-							builder.constructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
-						case USE_DELEGATING -> builder.constructorDetector(ConstructorDetector.USE_DELEGATING);
-						case EXPLICIT_ONLY -> builder.constructorDetector(ConstructorDetector.EXPLICIT_ONLY);
-						default -> builder.constructorDetector(ConstructorDetector.DEFAULT);
-					}
-				}
+				super.customize(builder);
+				configureFeatures(builder, properties().getJson().getRead(), builder::configure);
+				configureFeatures(builder, properties().getJson().getWrite(), builder::configure);
 			}
 
 		}
@@ -330,6 +175,62 @@ public final class JacksonAutoConfiguration {
 			@Override
 			public void customize(JsonMapper.Builder builder) {
 				builder.addMixIn(ProblemDetail.class, ProblemDetailJacksonMixin.class);
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(CBORMapper.class)
+	@EnableConfigurationProperties(JacksonCborProperties.class)
+	static class CborConfiguration {
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean
+		CBORMapper cborMapper(CBORMapper.Builder builder) {
+			return builder.build();
+		}
+
+		@Bean
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+		@ConditionalOnMissingBean
+		CBORMapper.Builder cborMapperBuilder(List<CborMapperBuilderCustomizer> customizers) {
+			CBORMapper.Builder builder = CBORMapper.builder();
+			customize(builder, customizers);
+			return builder;
+		}
+
+		private void customize(CBORMapper.Builder builder, List<CborMapperBuilderCustomizer> customizers) {
+			for (CborMapperBuilderCustomizer customizer : customizers) {
+				customizer.customize(builder);
+			}
+		}
+
+		@Bean
+		StandardCborMapperBuilderCustomizer standardCborMapperBuilderCustomizer(JacksonProperties jacksonProperties,
+				ObjectProvider<JacksonModule> modules, JacksonCborProperties cborProperties) {
+			return new StandardCborMapperBuilderCustomizer(jacksonProperties, modules.stream().toList(),
+					cborProperties);
+		}
+
+		static class StandardCborMapperBuilderCustomizer extends AbstractMapperBuilderCustomizer<CBORMapper.Builder>
+				implements CborMapperBuilderCustomizer {
+
+			private final JacksonCborProperties cborProperties;
+
+			StandardCborMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules,
+					JacksonCborProperties cborProperties) {
+				super(jacksonProperties, modules);
+				this.cborProperties = cborProperties;
+			}
+
+			@Override
+			public void customize(CBORMapper.Builder builder) {
+				super.customize(builder);
+				configureFeatures(builder, this.cborProperties.getRead(), builder::configure);
+				configureFeatures(builder, this.cborProperties.getWrite(), builder::configure);
 			}
 
 		}
@@ -363,6 +264,171 @@ public final class JacksonAutoConfiguration {
 		private boolean isPropertyNamingStrategyField(Field candidate) {
 			return ReflectionUtils.isPublicStaticFinal(candidate)
 					&& candidate.getType().isAssignableFrom(PropertyNamingStrategy.class);
+		}
+
+	}
+
+	abstract static class AbstractMapperBuilderCustomizer<B extends MapperBuilder<?, ?>> implements Ordered {
+
+		private final JacksonProperties jacksonProperties;
+
+		private final Collection<JacksonModule> modules;
+
+		AbstractMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules) {
+			this.jacksonProperties = jacksonProperties;
+			this.modules = modules;
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
+		}
+
+		protected JacksonProperties properties() {
+			return this.jacksonProperties;
+		}
+
+		protected void customize(B builder) {
+			if (this.jacksonProperties.isUseJackson2Defaults()) {
+				builder.configureForJackson2()
+					.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, DateTimeFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
+			}
+			if (this.jacksonProperties.isFindAndAddModules()) {
+				builder.findAndAddModules(getClass().getClassLoader());
+			}
+			if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
+				builder.changeDefaultPropertyInclusion(
+						(handler) -> handler.withValueInclusion(this.jacksonProperties.getDefaultPropertyInclusion()));
+			}
+			if (this.jacksonProperties.getTimeZone() != null) {
+				builder.defaultTimeZone(this.jacksonProperties.getTimeZone());
+			}
+			configureVisibility(builder, this.jacksonProperties.getVisibility());
+			configureFeatures(builder, this.jacksonProperties.getDeserialization(), builder::configure);
+			configureFeatures(builder, this.jacksonProperties.getSerialization(), builder::configure);
+			configureFeatures(builder, this.jacksonProperties.getMapper(), builder::configure);
+			configureFeatures(builder, this.jacksonProperties.getDatatype().getDatetime(), builder::configure);
+			configureFeatures(builder, this.jacksonProperties.getDatatype().getEnum(), builder::configure);
+			configureFeatures(builder, this.jacksonProperties.getDatatype().getJsonNode(), builder::configure);
+			configureDateFormat(builder);
+			configurePropertyNamingStrategy(builder);
+			configureModules(builder);
+			configureLocale(builder);
+			configureDefaultLeniency(builder);
+			configureConstructorDetector(builder);
+		}
+
+		protected <T> void configureFeatures(B builder, Map<T, Boolean> features, BiConsumer<T, Boolean> configure) {
+			features.forEach((feature, value) -> {
+				if (value != null) {
+					configure.accept(feature, value);
+				}
+			});
+		}
+
+		private void configureVisibility(MapperBuilder<?, ?> builder,
+				Map<PropertyAccessor, JsonAutoDetect.Visibility> visibilities) {
+			builder.changeDefaultVisibility((visibilityChecker) -> {
+				for (Map.Entry<PropertyAccessor, JsonAutoDetect.Visibility> entry : visibilities.entrySet()) {
+					visibilityChecker = visibilityChecker.withVisibility(entry.getKey(), entry.getValue());
+				}
+				return visibilityChecker;
+			});
+		}
+
+		private void configureDateFormat(MapperBuilder<?, ?> builder) {
+			// We support a fully qualified class name extending DateFormat or a date
+			// pattern string value
+			String dateFormat = this.jacksonProperties.getDateFormat();
+			if (dateFormat != null) {
+				try {
+					Class<?> dateFormatClass = ClassUtils.forName(dateFormat, null);
+					builder.defaultDateFormat((DateFormat) BeanUtils.instantiateClass(dateFormatClass));
+				}
+				catch (ClassNotFoundException ex) {
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+					// Since Jackson 2.6.3 we always need to set a TimeZone (see
+					// gh-4170). If none in our properties fallback to Jackson's
+					// default
+					TimeZone timeZone = this.jacksonProperties.getTimeZone();
+					if (timeZone == null) {
+						timeZone = new ObjectMapper().serializationConfig().getTimeZone();
+					}
+					simpleDateFormat.setTimeZone(timeZone);
+					builder.defaultDateFormat(simpleDateFormat);
+				}
+			}
+		}
+
+		private void configurePropertyNamingStrategy(MapperBuilder<?, ?> builder) {
+			// We support a fully qualified class name extending Jackson's
+			// PropertyNamingStrategy or a string value corresponding to the constant
+			// names in PropertyNamingStrategy which hold default provided
+			// implementations
+			String strategy = this.jacksonProperties.getPropertyNamingStrategy();
+			if (strategy != null) {
+				try {
+					configurePropertyNamingStrategyClass(builder, ClassUtils.forName(strategy, null));
+				}
+				catch (ClassNotFoundException ex) {
+					configurePropertyNamingStrategyField(builder, strategy);
+				}
+			}
+		}
+
+		private void configurePropertyNamingStrategyClass(MapperBuilder<?, ?> builder,
+				Class<?> propertyNamingStrategyClass) {
+			builder.propertyNamingStrategy(
+					(PropertyNamingStrategy) BeanUtils.instantiateClass(propertyNamingStrategyClass));
+		}
+
+		private void configurePropertyNamingStrategyField(MapperBuilder<?, ?> builder, String fieldName) {
+			// Find the field (this way we automatically support new constants
+			// that may be added by Jackson in the future)
+			Field field = findPropertyNamingStrategyField(fieldName);
+			try {
+				builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
+		private Field findPropertyNamingStrategyField(String fieldName) {
+			Field field = ReflectionUtils.findField(PropertyNamingStrategies.class, fieldName,
+					PropertyNamingStrategy.class);
+			Assert.state(field != null, () -> "Constant named '" + fieldName + "' not found");
+			return field;
+		}
+
+		private void configureModules(MapperBuilder<?, ?> builder) {
+			builder.addModules(this.modules);
+		}
+
+		private void configureLocale(MapperBuilder<?, ?> builder) {
+			Locale locale = this.jacksonProperties.getLocale();
+			if (locale != null) {
+				builder.defaultLocale(locale);
+			}
+		}
+
+		private void configureDefaultLeniency(MapperBuilder<?, ?> builder) {
+			Boolean defaultLeniency = this.jacksonProperties.getDefaultLeniency();
+			if (defaultLeniency != null) {
+				builder.defaultLeniency(defaultLeniency);
+			}
+		}
+
+		private void configureConstructorDetector(MapperBuilder<?, ?> builder) {
+			ConstructorDetectorStrategy strategy = this.jacksonProperties.getConstructorDetector();
+			if (strategy != null) {
+				switch (strategy) {
+					case USE_PROPERTIES_BASED -> builder.constructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
+					case USE_DELEGATING -> builder.constructorDetector(ConstructorDetector.USE_DELEGATING);
+					case EXPLICIT_ONLY -> builder.constructorDetector(ConstructorDetector.EXPLICIT_ONLY);
+					default -> builder.constructorDetector(ConstructorDetector.DEFAULT);
+				}
+			}
 		}
 
 	}

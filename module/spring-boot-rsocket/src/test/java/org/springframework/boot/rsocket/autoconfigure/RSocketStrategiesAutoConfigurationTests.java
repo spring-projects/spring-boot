@@ -18,6 +18,7 @@ package org.springframework.boot.rsocket.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.cbor.CBORMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer;
@@ -47,8 +48,8 @@ class RSocketStrategiesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(RSocketStrategiesAutoConfiguration.class))
-		.withBean(JsonMapper.Builder.class, () -> JsonMapper.builder())
-		.withBean(JsonMapper.class, () -> JsonMapper.builder().build());
+		.withBean(JsonMapper.class, () -> JsonMapper.builder().build())
+		.withBean(CBORMapper.class, () -> CBORMapper.builder().build());
 
 	@Test
 	void shouldCreateDefaultBeans() {

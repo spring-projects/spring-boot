@@ -22,6 +22,7 @@ import java.time.Duration;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.cbor.CBORMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -130,8 +131,8 @@ class RSocketWebSocketNettyRouteProviderTests {
 		}
 
 		@Bean
-		JsonMapper.Builder jsonMapperBuilder() {
-			return JsonMapper.builder();
+		CBORMapper cborMapper() {
+			return CBORMapper.builder().build();
 		}
 
 	}

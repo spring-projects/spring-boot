@@ -17,9 +17,7 @@
 package org.springframework.boot.rsocket.autoconfigure;
 
 import io.netty.buffer.PooledByteBufAllocator;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
-import tools.jackson.dataformat.cbor.CBORFactory;
 import tools.jackson.dataformat.cbor.CBORMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -65,17 +63,16 @@ public final class RSocketStrategiesAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(JsonMapper.Builder.class)
-	@ConditionalOnClass({ ObjectMapper.class, CBORFactory.class })
+	@ConditionalOnClass(CBORMapper.class)
+	@ConditionalOnBean(CBORMapper.class)
 	protected static class JacksonCborStrategyConfiguration {
 
 		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_CBOR };
 
 		@Bean
 		@Order(0)
-		RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(JsonMapper.Builder builder) {
+		RSocketStrategiesCustomizer jacksonCborRSocketStrategyCustomizer(CBORMapper cborMapper) {
 			return (strategy) -> {
-				CBORMapper cborMapper = CBORMapper.builder().baseSettings(builder.baseSettings()).build();
 				strategy.decoder(new JacksonCborDecoder(cborMapper, SUPPORTED_TYPES));
 				strategy.encoder(new JacksonCborEncoder(cborMapper, SUPPORTED_TYPES));
 			};
@@ -84,7 +81,8 @@ public final class RSocketStrategiesAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnClass(JsonMapper.class)
+	@ConditionalOnBean(JsonMapper.class)
 	protected static class JacksonJsonStrategyConfiguration {
 
 		private static final MediaType[] SUPPORTED_TYPES = { MediaType.APPLICATION_JSON,
@@ -92,7 +90,6 @@ public final class RSocketStrategiesAutoConfiguration {
 
 		@Bean
 		@Order(1)
-		@ConditionalOnBean(JsonMapper.class)
 		RSocketStrategiesCustomizer jacksonJsonRSocketStrategyCustomizer(JsonMapper jsonMapper) {
 			return (strategy) -> {
 				strategy.decoder(new JacksonJsonDecoder(jsonMapper, SUPPORTED_TYPES));
