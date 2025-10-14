@@ -24,7 +24,7 @@ import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
 /**
- * Thin wrapper to adapt Jackson 2 {@link ObjectMapper} to {@link JsonParser}.
+ * Thin wrapper to adapt Jackson 3 {@link ObjectMapper} to {@link JsonParser}.
  *
  * @author Dave Syer
  * @since 1.0.0

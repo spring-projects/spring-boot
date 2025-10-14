@@ -41,7 +41,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
 import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
@@ -197,8 +197,8 @@ public class AntoraConventions {
 
 	private String getUiBundleUrl(Project project) {
 		File packageJson = project.getRootProject().file("antora/package.json");
-		ObjectMapper objectMapper = new ObjectMapper();
-		Map<?, ?> json = objectMapper.readerFor(Map.class).readValue(packageJson);
+		JsonMapper jsonMapper = new JsonMapper();
+		Map<?, ?> json = jsonMapper.readerFor(Map.class).readValue(packageJson);
 		Map<?, ?> config = (json != null) ? (Map<?, ?>) json.get("config") : null;
 		String url = (config != null) ? (String) config.get("ui-bundle-url") : null;
 		Assert.state(StringUtils.hasText(url.toString()), "package.json has not ui-bundle-url config");

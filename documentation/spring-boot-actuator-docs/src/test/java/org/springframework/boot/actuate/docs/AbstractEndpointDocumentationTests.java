@@ -76,8 +76,8 @@ public abstract class AbstractEndpointDocumentationTests {
 	@SuppressWarnings("unchecked")
 	protected <T> OperationPreprocessor limit(Predicate<T> filter, String... keys) {
 		return new ContentModifyingOperationPreprocessor((content, mediaType) -> {
-			JsonMapper objectMapper = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
-			Map<String, Object> payload = objectMapper.readValue(content, Map.class);
+			JsonMapper jsonMapper = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
+			Map<String, Object> payload = jsonMapper.readValue(content, Map.class);
 			Object target = payload;
 			Map<Object, Object> parent = null;
 			for (String key : keys) {
@@ -93,7 +93,7 @@ public abstract class AbstractEndpointDocumentationTests {
 			else {
 				parent.put(keys[keys.length - 1], select((List<Object>) target, filter));
 			}
-			return objectMapper.writeValueAsBytes(payload);
+			return jsonMapper.writeValueAsBytes(payload);
 		});
 	}
 

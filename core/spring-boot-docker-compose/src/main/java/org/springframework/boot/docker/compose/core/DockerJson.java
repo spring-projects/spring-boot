@@ -22,7 +22,6 @@ import java.util.Locale;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.MapperFeature;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -34,7 +33,7 @@ import tools.jackson.databind.json.JsonMapper;
  */
 final class DockerJson {
 
-	private static final ObjectMapper objectMapper = JsonMapper.builder()
+	private static final JsonMapper jsonMapper = JsonMapper.builder()
 		.defaultLocale(Locale.ENGLISH)
 		.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
 		.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -53,7 +52,7 @@ final class DockerJson {
 	 */
 	static <T> List<T> deserializeToList(String json, Class<T> itemType) {
 		if (json.startsWith("[")) {
-			JavaType javaType = objectMapper.getTypeFactory().constructCollectionType(List.class, itemType);
+			JavaType javaType = jsonMapper.getTypeFactory().constructCollectionType(List.class, itemType);
 			return deserialize(json, javaType);
 		}
 		return json.trim().lines().map((line) -> deserialize(line, itemType)).toList();
@@ -67,11 +66,11 @@ final class DockerJson {
 	 * @return the deserialized result
 	 */
 	static <T> T deserialize(String json, Class<T> type) {
-		return deserialize(json, objectMapper.getTypeFactory().constructType(type));
+		return deserialize(json, jsonMapper.getTypeFactory().constructType(type));
 	}
 
 	private static <T> T deserialize(String json, JavaType type) {
-		return objectMapper.readValue(json.trim(), type);
+		return jsonMapper.readValue(json.trim(), type);
 	}
 
 }
