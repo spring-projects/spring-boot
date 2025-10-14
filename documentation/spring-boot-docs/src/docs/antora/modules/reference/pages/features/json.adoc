@@ -1,7 +1,7 @@
 [[features.json]]
 = JSON
 
-Spring Boot provides integration with three JSON mapping libraries:
+Spring Boot provides integration with the following JSON mapping libraries:
 
 - Gson
 - Jackson 3
