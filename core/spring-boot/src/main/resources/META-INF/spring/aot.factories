@@ -10,7 +10,8 @@ org.springframework.boot.logging.log4j2.Log4J2RuntimeHints,\
 org.springframework.boot.logging.logback.LogbackRuntimeHints,\
 org.springframework.boot.logging.structured.ElasticCommonSchemaProperties$ElasticCommonSchemaPropertiesRuntimeHints,\
 org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties$GraylogExtendedLogFormatPropertiesRuntimeHints,\
-org.springframework.boot.logging.structured.StructuredLoggingJsonProperties$StructuredLoggingJsonPropertiesRuntimeHints
+org.springframework.boot.logging.structured.StructuredLoggingJsonProperties$StructuredLoggingJsonPropertiesRuntimeHints,\
+org.springframework.boot.system.JavaVersion$Hints
 
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor,\
