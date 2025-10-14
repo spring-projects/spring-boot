@@ -37,6 +37,8 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
 import org.assertj.core.api.ListAssert;
 
+import org.springframework.lang.CheckReturnValue;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
 
@@ -176,6 +178,7 @@ abstract class AbstractArchiveIntegrationTests {
 			return this;
 		}
 
+		@CheckReturnValue
 		ListAssert<String> entryNamesInPath(String path) {
 			List<String> matches = new ArrayList<>();
 			withJarFile((jarFile) -> withEntries(jarFile,
