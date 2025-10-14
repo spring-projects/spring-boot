@@ -87,11 +87,14 @@ class WebTestClientAutoConfigurationTests {
 	void shouldFailWithNeitherDefaultWebHandlerNorWebApplicationContext() {
 		ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
 		this.contextRunner.withClassLoader(new FilteredClassLoader(parentClassLoader, WebApplicationContext.class))
-			.run((context) -> assertThat(context).getFailure()
-				.rootCause()
-				.isInstanceOf(RuntimeException.class)
-				.hasMessageStartingWith("Mock WebTestClient support requires")
-				.hasMessageContaining("WebApplicationContext"));
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure()
+					.rootCause()
+					.isInstanceOf(RuntimeException.class)
+					.hasMessageStartingWith("Mock WebTestClient support requires")
+					.hasMessageContaining("WebApplicationContext");
+			});
 	}
 
 	@Test
