@@ -1629,10 +1629,7 @@ bom {
 			}
 		}
 		group("org.neo4j.driver") {
-			modules = [
-				"neo4j-java-driver",
-				"neo4j-java-driver-observation-micrometer"
-			]
+			bom("neo4j-java-driver-bom")
 		}
 		links {
 			site("https://github.com/neo4j/neo4j-java-driver")
