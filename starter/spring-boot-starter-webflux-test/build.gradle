@@ -27,4 +27,6 @@ dependencies {
 
 	api(project(":module:spring-boot-webflux-test"))
 	api(project(":module:spring-boot-webtestclient"))
+
+	api("io.projectreactor:reactor-test")
 }
