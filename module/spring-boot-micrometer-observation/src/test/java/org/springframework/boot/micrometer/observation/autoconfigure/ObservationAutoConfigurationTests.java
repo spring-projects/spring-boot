@@ -28,10 +28,12 @@ import io.micrometer.observation.ObservationHandler.AllMatchingCompositeObservat
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.aop.ObservationKeyValueAnnotationHandler;
 import io.micrometer.observation.aop.ObservedAspect;
 import org.aspectj.weaver.Advice;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -61,36 +63,48 @@ class ObservationAutoConfigurationTests {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.observation")).run((context) -> {
 			assertThat(context).doesNotHaveBean(ObservationRegistry.class);
 			assertThat(context).doesNotHaveBean(ObservedAspect.class);
+			assertThat(context).doesNotHaveBean(ObservationKeyValueAnnotationHandler.class);
 		});
 	}
 
 	@Test
-	void supplyObservationRegistry() {
+	void supplyObservationRegistryAndAspect() {
 		this.contextRunner.run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(context).hasSingleBean(ObservedAspect.class);
+			assertThat(context).hasSingleBean(ObservationKeyValueAnnotationHandler.class);
+			assertThat(context.getBean(ObservedAspect.class)).extracting("observationKeyValueAnnotationHandler")
+				.isSameAs(context.getBean(ObservationKeyValueAnnotationHandler.class));
 		});
 	}
 
 	@Test
 	void allowsObservedAspectToBeDisabled() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(Advice.class))
-			.run((context) -> assertThat(context).doesNotHaveBean(ObservedAspect.class));
+		this.contextRunner.withClassLoader(new FilteredClassLoader(Advice.class)).run((context) -> {
+			assertThat(context).doesNotHaveBean(ObservedAspect.class);
+			assertThat(context).doesNotHaveBean(ObservationKeyValueAnnotationHandler.class);
+		});
 	}
 
 	@Test
 	void allowsObservedAspectToBeDisabledWithProperty() {
-		this.contextRunner.withPropertyValues("management.observations.annotations.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(ObservedAspect.class));
+		this.contextRunner.withPropertyValues("management.observations.annotations.enabled=false").run((context) -> {
+			assertThat(context).doesNotHaveBean(ObservedAspect.class);
+			assertThat(context).doesNotHaveBean(ObservationKeyValueAnnotationHandler.class);
+		});
 	}
 
 	@Test
 	void allowsObservedAspectToBeCustomized() {
-		this.contextRunner.withUserConfiguration(CustomObservedAspectConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(ObservedAspect.class)
+		this.contextRunner.withUserConfiguration(CustomObservedAspectConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ObservedAspect.class)
 				.getBean(ObservedAspect.class)
-				.isSameAs(context.getBean("customObservedAspect")));
+				.isSameAs(context.getBean("customObservedAspect"));
+			assertThat(context).hasSingleBean(ObservationKeyValueAnnotationHandler.class)
+				.getBean(ObservationKeyValueAnnotationHandler.class)
+				.isSameAs(context.getBean("customObservationKeyValueAnnotationHandler"));
+		});
 	}
 
 	@Test
@@ -214,6 +228,12 @@ class ObservationAutoConfigurationTests {
 		@Bean
 		ObservedAspect customObservedAspect(ObservationRegistry observationRegistry) {
 			return new ObservedAspect(observationRegistry);
+		}
+
+		@Bean
+		ObservationKeyValueAnnotationHandler customObservationKeyValueAnnotationHandler(BeanFactory beanFactory,
+				ValueExpressionResolver valueExpressionResolver) {
+			return new ObservationKeyValueAnnotationHandler(beanFactory::getBean, (ignored) -> valueExpressionResolver);
 		}
 
 	}
