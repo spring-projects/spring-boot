@@ -282,7 +282,9 @@ class AntoraAsciidocAttributesTests {
 		addMockTestcontainersVersion(versions, "redpanda", version);
 		addMockTestcontainersVersion(versions, "r2dbc", version);
 		addMockJackson2CoreVersion(versions, "jackson-annotations", version);
+		addMockJackson2CoreVersion(versions, "jackson-databind", version);
 		addMockJacksonCoreVersion(versions, "jackson-core", version);
+		addMockJacksonCoreVersion(versions, "jackson-databind", version);
 		addMockJacksonCoreVersion(versions, "jackson-databind", version);
 		versions.put("org.apache.pulsar:pulsar-client-api", version);
 		versions.put("org.apache.pulsar:pulsar-client-reactive-api", version);
