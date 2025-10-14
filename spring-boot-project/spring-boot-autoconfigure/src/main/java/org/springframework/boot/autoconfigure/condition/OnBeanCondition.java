@@ -270,23 +270,24 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private boolean isCandidate(ConfigurableListableBeanFactory beanFactory, String name, BeanDefinition definition,
 			Set<String> ignoredBeans) {
-		return (!ignoredBeans.contains(name)) && (definition == null
-				|| isAutowireCandidate(beanFactory, name, definition) && isDefaultCandidate(definition));
-	}
-
-	private boolean isAutowireCandidate(ConfigurableListableBeanFactory beanFactory, String name,
-			BeanDefinition definition) {
-		return definition.isAutowireCandidate() || isScopeTargetAutowireCandidate(beanFactory, name);
-	}
-
-	private boolean isScopeTargetAutowireCandidate(ConfigurableListableBeanFactory beanFactory, String name) {
-		try {
-			return ScopedProxyUtils.isScopedTarget(name)
-					&& beanFactory.getBeanDefinition(ScopedProxyUtils.getOriginalBeanName(name)).isAutowireCandidate();
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+		if (ignoredBeans.contains(name) || definition == null) {
 			return false;
 		}
+		if (definition.isAutowireCandidate() && isDefaultCandidate(definition)) {
+			return true;
+		}
+		if (ScopedProxyUtils.isScopedTarget(name)) {
+			try {
+				BeanDefinition originalDefinition = beanFactory
+					.getBeanDefinition(ScopedProxyUtils.getOriginalBeanName(name));
+				if (originalDefinition.isAutowireCandidate() && isDefaultCandidate(originalDefinition)) {
+					return true;
+				}
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+			}
+		}
+		return false;
 	}
 
 	private boolean isDefaultCandidate(BeanDefinition definition) {
