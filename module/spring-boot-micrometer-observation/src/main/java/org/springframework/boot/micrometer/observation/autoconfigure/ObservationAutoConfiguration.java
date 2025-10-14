@@ -22,9 +22,11 @@ import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.aop.ObservationKeyValueAnnotationHandler;
 import io.micrometer.observation.aop.ObservedAspect;
 import org.aspectj.weaver.Advice;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -87,8 +89,18 @@ public final class ObservationAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		ObservedAspect observedAspect(ObservationRegistry observationRegistry) {
-			return new ObservedAspect(observationRegistry);
+		ObservedAspect observedAspect(ObservationRegistry observationRegistry,
+				ObjectProvider<ObservationKeyValueAnnotationHandler> observationKeyValueAnnotationHandler) {
+			ObservedAspect observedAspect = new ObservedAspect(observationRegistry);
+			observationKeyValueAnnotationHandler.ifAvailable(observedAspect::setObservationKeyValueAnnotationHandler);
+			return observedAspect;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		ObservationKeyValueAnnotationHandler observationKeyValueAnnotationHandler(BeanFactory beanFactory,
+				ValueExpressionResolver valueExpressionResolver) {
+			return new ObservationKeyValueAnnotationHandler(beanFactory::getBean, (ignored) -> valueExpressionResolver);
 		}
 
 	}
