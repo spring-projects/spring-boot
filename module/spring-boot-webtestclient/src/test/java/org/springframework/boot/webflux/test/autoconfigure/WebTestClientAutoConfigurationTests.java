@@ -72,6 +72,31 @@ class WebTestClientAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldFailWhenDefaultWebHandlerIsNotAvailable() {
+		this.contextRunner.withBean("myWebHandler", WebHandler.class, () -> mock(WebHandler.class)).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(RuntimeException.class)
+				.hasMessageStartingWith("Mock WebTestClient support requires")
+				.hasMessageContaining("WebHandler");
+		});
+	}
+
+	@Test
+	void shouldFailWithNeitherDefaultWebHandlerNorWebApplicationContext() {
+		ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
+		this.contextRunner.withClassLoader(new FilteredClassLoader(parentClassLoader, WebApplicationContext.class))
+			.run((context) -> {
+				assertThat(context).getFailure()
+					.rootCause()
+					.isInstanceOf(RuntimeException.class)
+					.hasMessageStartingWith("Mock WebTestClient support requires")
+					.hasMessageContaining("WebApplicationContext");
+			});
+	}
+
+	@Test
 	@WithResource(name = "META-INF/spring.factories", content = """
 			org.springframework.boot.test.http.server.BaseUrlProvider=\
 			org.springframework.boot.webflux.test.autoconfigure.WebTestClientAutoConfigurationTests$TestBaseUrlProvider

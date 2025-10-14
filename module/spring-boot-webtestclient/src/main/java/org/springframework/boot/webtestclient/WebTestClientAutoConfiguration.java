@@ -18,7 +18,6 @@ package org.springframework.boot.webtestclient;
 
 import java.util.List;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -40,7 +39,7 @@ import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.WebHandler;
+import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 /**
  * Auto-configuration for {@link WebTestClient}.
@@ -79,31 +78,22 @@ public final class WebTestClientAutoConfiguration {
 		if (baseUrl != null) {
 			return WebTestClient.bindToServer().uriBuilderFactory(BaseUrlUriBuilderFactory.get(baseUrl));
 		}
-		if (hasBean(applicationContext, WebHandler.class)) {
+		if (applicationContext.containsBean(WebHttpHandlerBuilder.WEB_HANDLER_BEAN_NAME)) {
 			MockServerSpec<?> spec = WebTestClient.bindToApplicationContext(applicationContext);
 			configurers.forEach(spec::apply);
 			return spec.configureClient();
 		}
 		if (ClassUtils.isPresent(WEB_APPLICATION_CONTEXT_CLASS, applicationContext.getClassLoader())) {
-			if (hasBean(applicationContext, MockMvc.class)) {
-				return MockMvcWebTestClient.bindTo(applicationContext.getBean(MockMvc.class));
+			MockMvc mockMvc = applicationContext.getBeanProvider(MockMvc.class).getIfUnique();
+			if (mockMvc != null) {
+				return MockMvcWebTestClient.bindTo(mockMvc);
 			}
 			if (applicationContext instanceof WebApplicationContext webApplicationContext) {
 				return MockMvcWebTestClient.bindToApplicationContext(webApplicationContext).configureClient();
 			}
 		}
 		throw new IllegalStateException(
-				"Mock WebTestClient support requires a WebHandler or MockMvc bean and neither was present");
-	}
-
-	private boolean hasBean(ApplicationContext applicationContext, Class<?> type) {
-		try {
-			applicationContext.getBean(type);
-			return true;
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return false;
-		}
+				"Mock WebTestClient support requires a WebHandler (named 'webHandler') bean or a WebApplicationContext and neither was present");
 	}
 
 }
