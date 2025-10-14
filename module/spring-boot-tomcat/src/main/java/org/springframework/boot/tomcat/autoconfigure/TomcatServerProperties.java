@@ -750,23 +750,11 @@ public class TomcatServerProperties {
 	public static class Remoteip {
 
 		/**
-		 * Regular expression that matches proxies that are to be trusted.
+		 * Internal proxies that are to be trusted. Can be set as a comma separate list of
+		 * CIDR or as a regular expression.
 		 */
-		private String internalProxies = "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 10/8
-				+ "192\\.168\\.\\d{1,3}\\.\\d{1,3}|" // 192.168/16
-				+ "169\\.254\\.\\d{1,3}\\.\\d{1,3}|" // 169.254/16
-				+ "127\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|" // 127/8
-				+ "100\\.6[4-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.[7-9]{1}\\d{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.1[0-1]{1}\\d{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "100\\.12[0-7]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 100.64.0.0/10
-				+ "172\\.1[6-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.2[0-9]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "172\\.3[0-1]{1}\\.\\d{1,3}\\.\\d{1,3}|" // 172.16/12
-				+ "0:0:0:0:0:0:0:1|" // 0:0:0:0:0:0:0:1
-				+ "::1|" // ::1
-				+ "fe[89ab]\\p{XDigit}:.*|" //
-				+ "f[cd]\\p{XDigit}{2}+:.*";
+		private String internalProxies = "192.168.0.0/16, 172.16.0.0/12, 169.254.0.0/16, fc00::/7, "
+				+ "10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, fe80::/10, ::1/128";
 
 		/**
 		 * Header that holds the incoming protocol, usually named "X-Forwarded-Proto".
