@@ -18,6 +18,7 @@ package org.springframework.boot.system;
 
 import java.io.Console;
 import java.io.Reader;
+import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.Arrays;
@@ -26,6 +27,9 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.Future;
 
+import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -90,8 +94,17 @@ public enum JavaVersion {
 
 	private final boolean available;
 
+	private final Class<?> versionSpecificClass;
+
+	private final String versionSpecificMethod;
+
+	private final Class<?>[] paramTypes;
+
 	JavaVersion(String name, Class<?> versionSpecificClass, String versionSpecificMethod, Class<?>... paramTypes) {
 		this.name = name;
+		this.versionSpecificClass = versionSpecificClass;
+		this.versionSpecificMethod = versionSpecificMethod;
+		this.paramTypes = paramTypes;
 		this.available = ClassUtils.hasMethod(versionSpecificClass, versionSpecificMethod, paramTypes);
 	}
 
@@ -131,6 +144,30 @@ public enum JavaVersion {
 	 */
 	public boolean isOlderThan(JavaVersion version) {
 		return compareTo(version) < 0;
+	}
+
+	static class Hints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			for (JavaVersion javaVersion : JavaVersion.values()) {
+				Method method = findMethod(javaVersion);
+				if (method != null) {
+					hints.reflection().registerMethod(method, ExecutableMode.INTROSPECT);
+				}
+			}
+		}
+
+		private Method findMethod(JavaVersion javaVersion) {
+			try {
+				return ClassUtils.getMethod(javaVersion.versionSpecificClass, javaVersion.versionSpecificMethod,
+						javaVersion.paramTypes);
+			}
+			catch (IllegalStateException ex) {
+				return null;
+			}
+		}
+
 	}
 
 }
