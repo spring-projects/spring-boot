@@ -270,10 +270,10 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	private boolean isCandidate(ConfigurableListableBeanFactory beanFactory, String name, BeanDefinition definition,
 			Set<String> ignoredBeans) {
-		if (ignoredBeans.contains(name) || definition == null) {
+		if (ignoredBeans.contains(name)) {
 			return false;
 		}
-		if (definition.isAutowireCandidate() && isDefaultCandidate(definition)) {
+		if (definition == null || (definition.isAutowireCandidate() && isDefaultCandidate(definition))) {
 			return true;
 		}
 		if (ScopedProxyUtils.isScopedTarget(name)) {
