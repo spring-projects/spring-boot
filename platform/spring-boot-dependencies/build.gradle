@@ -998,7 +998,7 @@ bom {
 			releaseNotes("https://github.com/redis/jedis/releases/tag/v{version}")
 		}
 	}
-	library("Jetty Reactive HTTPClient", "4.0.12") {
+	library("Jetty Reactive HTTPClient", "4.1.0") {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
