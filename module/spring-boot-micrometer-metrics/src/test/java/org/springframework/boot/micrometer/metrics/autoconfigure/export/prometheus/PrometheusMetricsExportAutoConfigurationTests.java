@@ -36,7 +36,6 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementConte
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager;
-import org.springframework.boot.micrometer.metrics.export.prometheus.endpoint.PrometheusScrapeEndpoint;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;

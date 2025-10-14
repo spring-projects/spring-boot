@@ -1,2 +1,2 @@
 org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
-org.springframework.boot.flyway.autoconfigure.endpoint.FlywayEndpointAutoConfiguration
+org.springframework.boot.flyway.autoconfigure.FlywayEndpointAutoConfiguration

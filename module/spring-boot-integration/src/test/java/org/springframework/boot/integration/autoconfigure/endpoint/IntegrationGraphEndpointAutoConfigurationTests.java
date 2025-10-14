@@ -20,8 +20,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.integration.actuate.endpoint.IntegrationGraphEndpoint;
 import org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration;
-import org.springframework.boot.integration.endpoint.IntegrationGraphEndpoint;
+import org.springframework.boot.integration.autoconfigure.IntegrationGraphEndpointAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.integration.graph.IntegrationGraphServer;
 

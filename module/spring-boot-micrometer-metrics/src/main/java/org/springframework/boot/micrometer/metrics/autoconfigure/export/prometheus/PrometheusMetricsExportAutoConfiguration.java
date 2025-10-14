@@ -41,7 +41,6 @@ import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConf
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager;
-import org.springframework.boot.micrometer.metrics.export.prometheus.endpoint.PrometheusScrapeEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;

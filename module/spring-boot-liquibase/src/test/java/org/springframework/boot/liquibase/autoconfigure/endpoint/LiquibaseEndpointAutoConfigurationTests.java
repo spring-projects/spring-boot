@@ -20,8 +20,9 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.liquibase.actuate.endpoint.LiquibaseEndpoint;
 import org.springframework.boot.liquibase.autoconfigure.DataSourceClosingSpringLiquibase;
-import org.springframework.boot.liquibase.endpoint.LiquibaseEndpoint;
+import org.springframework.boot.liquibase.autoconfigure.LiquibaseEndpointAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

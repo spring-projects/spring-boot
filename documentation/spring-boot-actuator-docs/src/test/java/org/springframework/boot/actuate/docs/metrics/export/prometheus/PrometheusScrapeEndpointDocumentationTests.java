@@ -26,7 +26,7 @@ import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.docs.MockMvcEndpointDocumentationTests;
-import org.springframework.boot.micrometer.metrics.export.prometheus.endpoint.PrometheusScrapeEndpoint;
+import org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus.PrometheusScrapeEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.integration.autoconfigure.IntegrationAutoConfiguration;
-import org.springframework.boot.integration.autoconfigure.endpoint.IntegrationGraphEndpointAutoConfiguration;
+import org.springframework.boot.integration.autoconfigure.IntegrationGraphEndpointAutoConfiguration;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 

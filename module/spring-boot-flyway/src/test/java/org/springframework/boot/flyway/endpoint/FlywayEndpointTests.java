@@ -21,10 +21,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.flyway.actuate.endpoint.FlywayEndpoint;
+import org.springframework.boot.flyway.actuate.endpoint.FlywayEndpoint.ContextFlywayBeansDescriptor;
+import org.springframework.boot.flyway.actuate.endpoint.FlywayEndpoint.FlywayDescriptor;
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
-import org.springframework.boot.flyway.endpoint.FlywayEndpoint.ContextFlywayBeansDescriptor;
-import org.springframework.boot.flyway.endpoint.FlywayEndpoint.FlywayDescriptor;
 import org.springframework.boot.jdbc.autoconfigure.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
