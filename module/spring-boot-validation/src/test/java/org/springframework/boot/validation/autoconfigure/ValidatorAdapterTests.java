@@ -21,6 +21,7 @@ import java.util.HashMap;
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.Min;
 import org.hibernate.validator.HibernateValidator;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -173,8 +174,8 @@ class ValidatorAdapterTests {
 
 			@Override
 			@SuppressWarnings("unchecked")
-			public <T> T unwrap(Class<T> type) {
-				if (type.isInstance(this.delegate)) {
+			public <T> @Nullable T unwrap(@Nullable Class<T> type) {
+				if (type != null && type.isInstance(this.delegate)) {
 					return (T) this.delegate;
 				}
 				return this.delegate.unwrap(type);
