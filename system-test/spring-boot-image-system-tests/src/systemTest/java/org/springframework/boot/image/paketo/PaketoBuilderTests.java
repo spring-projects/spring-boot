@@ -312,8 +312,6 @@ class PaketoBuilderTests {
 		// these deprecations are from native image buildpacks
 		this.gradleBuild.expectDeprecationMessages("Using a deprecated option --report-unsupported-elements-at-runtime",
 				"The option is deprecated and will be removed in the future.");
-		// this deprecation is from Framework (spring-projects/spring-framework#35557)
-		this.gradleBuild.expectDeprecationMessages("Using a deprecated option --install-exit-handlers");
 		writeMainClass();
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
