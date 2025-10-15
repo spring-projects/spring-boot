@@ -1047,6 +1047,8 @@ management:
 
 Auto-configuration registers a javadoc:org.neo4j.driver.observation.micrometer.MicrometerObservationProvider[] for the auto-configured javadoc:org.neo4j.driver.Driver[].
 
+To override this behavior, you can register a javadoc:org.springframework.boot.neo4j.autoconfigure.ConfigBuilderCustomizer[] bean with an order higher than zero.
+
 
 
 [[actuator.metrics.supported.jetty]]
