@@ -529,6 +529,10 @@ bom {
 		}
 	}
 	library("Hazelcast", "5.5.0") {
+		prohibit {
+			versionRange "[5.6.0,)"
+			because "https://github.com/hazelcast/hazelcast/issues/26546"
+		}
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast",
