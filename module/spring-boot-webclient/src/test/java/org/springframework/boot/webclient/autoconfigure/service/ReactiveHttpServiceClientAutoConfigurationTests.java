@@ -126,6 +126,7 @@ class ReactiveHttpServiceClientAutoConfigurationTests {
 		then(builder).should().clientConnector(connectorCaptor.capture());
 		ClientHttpConnector client = connectorCaptor.getValue();
 		HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(client, "httpClient");
+		assertThat(httpClient).isNotNull();
 		assertThat(httpClient.connectTimeout()).contains(expectedReadTimeout);
 	}
 
