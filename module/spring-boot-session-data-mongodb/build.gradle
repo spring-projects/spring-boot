@@ -48,3 +48,7 @@ dependencies {
 	dockerTestRuntimeOnly("ch.qos.logback:logback-classic")
 	dockerTestRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 }
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}
