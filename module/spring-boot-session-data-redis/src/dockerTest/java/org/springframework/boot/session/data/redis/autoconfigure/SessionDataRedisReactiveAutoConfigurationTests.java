@@ -118,12 +118,15 @@ class SessionDataRedisReactiveAutoConfigurationTests extends AbstractSessionReac
 			.run(assertExchangeWithSession((exchange) -> {
 				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 				assertThat(cookies).isNotEmpty();
-				assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
-				assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getDomain() != null && cookie.getDomain().equals(".example.com"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getPath() != null && cookie.getPath().equals("/example"));
 				assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
 				assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
 				assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
-				assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getSameSite() != null && cookie.getSameSite().equals("Strict"));
 			}));
 	}
 

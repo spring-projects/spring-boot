@@ -52,3 +52,7 @@ dependencies {
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}
