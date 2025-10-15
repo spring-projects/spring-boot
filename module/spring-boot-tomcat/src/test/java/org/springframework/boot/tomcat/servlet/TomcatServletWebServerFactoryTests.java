@@ -75,6 +75,7 @@ import org.apache.tomcat.JarScanType;
 import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -245,8 +246,10 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 			.setProcessorCache(250);
 		factory.addProtocolHandlerCustomizers(customizer);
 		Tomcat tomcat = getTomcat(factory);
-		Connector connector = TomcatAccess.getServiceConnectors((TomcatWebServer) this.webServer)
-			.get(tomcat.getService())[0];
+		Connector[] connectors = TomcatAccess.getServiceConnectors((TomcatWebServer) this.webServer)
+			.get(tomcat.getService());
+		assertThat(connectors).isNotNull();
+		Connector connector = connectors[0];
 		AbstractHttp11Protocol<?> protocolHandler = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
 		assertThat(protocolHandler.getProcessorCache()).isEqualTo(250);
 	}
@@ -275,6 +278,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullAdditionalConnectorThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.addAdditionalConnectors((Connector[]) null))
@@ -312,6 +316,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setNullTomcatContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setContextCustomizers(null))
@@ -319,6 +324,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
@@ -327,6 +333,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setNullTomcatConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setConnectorCustomizers(null))
@@ -334,6 +341,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
@@ -342,6 +350,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void setNullTomcatProtocolHandlerCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setProtocolHandlerCustomizers(null))
@@ -349,6 +358,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void addNullTomcatProtocolHandlerCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
@@ -361,8 +371,10 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.setUriEncoding(StandardCharsets.US_ASCII);
 		Tomcat tomcat = getTomcat(factory);
-		Connector connector = TomcatAccess.getServiceConnectors((TomcatWebServer) this.webServer)
-			.get(tomcat.getService())[0];
+		Connector[] connectors = TomcatAccess.getServiceConnectors((TomcatWebServer) this.webServer)
+			.get(tomcat.getService());
+		assertThat(connectors).isNotNull();
+		Connector connector = connectors[0];
 		assertThat(connector.getURIEncoding()).isEqualTo("US-ASCII");
 	}
 
@@ -370,8 +382,10 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void defaultUriEncoding() {
 		TomcatServletWebServerFactory factory = getFactory();
 		Tomcat tomcat = getTomcat(factory);
-		Connector connector = TomcatAccess.getServiceConnectors((TomcatWebServer) this.webServer)
-			.get(tomcat.getService())[0];
+		Connector[] connectors = TomcatAccess.getServiceConnectors((TomcatWebServer) this.webServer)
+			.get(tomcat.getService());
+		assertThat(connectors).isNotNull();
+		Connector connector = connectors[0];
 		assertThat(connector.getURIEncoding()).isEqualTo("UTF-8");
 	}
 
@@ -553,7 +567,9 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		});
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
-		File temp = (File) servletContextReference.get().getAttribute(ServletContext.TEMPDIR);
+		ServletContext servletContext = servletContextReference.get();
+		assertThat(servletContext).isNotNull();
+		File temp = (File) servletContext.getAttribute(ServletContext.TEMPDIR);
 		FileSystemUtils.deleteRecursively(temp);
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
@@ -697,7 +713,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Override
-	protected JspServlet getJspServlet() throws ServletException {
+	protected @Nullable JspServlet getJspServlet() throws ServletException {
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
 		Container container = tomcat.getHost().findChildren()[0];
 		StandardWrapper standardWrapper = (StandardWrapper) container.findChild("jsp");
@@ -719,7 +735,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Override
-	protected Charset getCharset(Locale locale) {
+	protected @Nullable Charset getCharset(Locale locale) {
 		Context context = (Context) ((TomcatWebServer) this.webServer).getTomcat().getHost().findChildren()[0];
 		CharsetMapper mapper = ((TomcatEmbeddedContext) context).getCharsetMapper();
 		String charsetName = mapper.getCharset(locale);
@@ -756,7 +772,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 
 	private static final class RememberingHostnameVerifier implements HostnameVerifier {
 
-		private volatile String lastPrincipal;
+		private volatile @Nullable String lastPrincipal;
 
 		@Override
 		public boolean verify(String hostname, SSLSession session) {
@@ -769,7 +785,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 			return true;
 		}
 
-		String getLastPrincipal() {
+		@Nullable String getLastPrincipal() {
 			return this.lastPrincipal;
 		}
 

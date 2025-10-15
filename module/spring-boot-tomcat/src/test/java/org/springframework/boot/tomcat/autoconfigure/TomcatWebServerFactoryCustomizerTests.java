@@ -30,6 +30,7 @@ import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ajp.AbstractAjpProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http2.Http2Protocol;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -655,7 +656,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer(null);
 	}
 
-	private void customizeAndRunServer(Consumer<TomcatWebServer> consumer) {
+	private void customizeAndRunServer(@Nullable Consumer<TomcatWebServer> consumer) {
 		TomcatWebServer server = customizeAndGetServer();
 		server.start();
 		try {

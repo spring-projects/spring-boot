@@ -111,13 +111,14 @@ class TomcatMetricsAutoConfigurationTests {
 	}
 
 	private ApplicationStartedEvent createApplicationStartedEvent(ConfigurableApplicationContext context) {
-		return new ApplicationStartedEvent(new SpringApplication(), null, context, null);
+		return new ApplicationStartedEvent(new SpringApplication(), new String[0], context, null);
 	}
 
 	private void resetTomcatState() {
 		ReflectionTestUtils.setField(Registry.class, "registry", null);
 		AtomicInteger containerCounter = (AtomicInteger) ReflectionTestUtils.getField(TomcatWebServer.class,
 				"containerCounter");
+		assertThat(containerCounter).isNotNull();
 		containerCounter.set(-1);
 	}
 

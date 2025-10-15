@@ -713,21 +713,23 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
-	protected Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore) {
+	protected Ssl getSsl(@Nullable ClientAuth clientAuth, @Nullable String keyPassword, @Nullable String keyStore) {
 		return getSsl(clientAuth, keyPassword, keyStore, null, null, null);
 	}
 
-	protected Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias, String keyStore) {
+	protected Ssl getSsl(@Nullable ClientAuth clientAuth, @Nullable String keyPassword, @Nullable String keyAlias,
+			@Nullable String keyStore) {
 		return getSsl(clientAuth, keyPassword, keyAlias, keyStore, null, null, null);
 	}
 
-	protected Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyStore, String trustStore,
-			String[] supportedProtocols, String[] ciphers) {
+	protected Ssl getSsl(@Nullable ClientAuth clientAuth, @Nullable String keyPassword, @Nullable String keyStore,
+			@Nullable String trustStore, String @Nullable [] supportedProtocols, String @Nullable [] ciphers) {
 		return getSsl(clientAuth, keyPassword, null, keyStore, trustStore, supportedProtocols, ciphers);
 	}
 
-	private Ssl getSsl(ClientAuth clientAuth, String keyPassword, String keyAlias, String keyStore, String trustStore,
-			String[] supportedProtocols, String[] ciphers) {
+	private Ssl getSsl(@Nullable ClientAuth clientAuth, @Nullable String keyPassword, @Nullable String keyAlias,
+			@Nullable String keyStore, @Nullable String trustStore, String @Nullable [] supportedProtocols,
+			String @Nullable [] ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(clientAuth);
 		if (keyPassword != null) {
