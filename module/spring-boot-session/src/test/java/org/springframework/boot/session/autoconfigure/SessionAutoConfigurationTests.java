@@ -19,6 +19,9 @@ package org.springframework.boot.session.autoconfigure;
 import java.util.Collections;
 
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -64,9 +67,11 @@ class SessionAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class).run((context) -> {
 			AbstractFilterRegistrationBean<?> registration = context.getBean(AbstractFilterRegistrationBean.class);
 			DelegatingFilterProxy delegatingFilterProxy = (DelegatingFilterProxy) registration.getFilter();
+			assertThat(delegatingFilterProxy).isNotNull();
 			try {
 				// Trigger actual initialization
-				delegatingFilterProxy.doFilter(null, null, null);
+				delegatingFilterProxy.doFilter(mock(ServletRequest.class), mock(ServletResponse.class),
+						mock(FilterChain.class));
 			}
 			catch (Exception ex) {
 				// Ignore

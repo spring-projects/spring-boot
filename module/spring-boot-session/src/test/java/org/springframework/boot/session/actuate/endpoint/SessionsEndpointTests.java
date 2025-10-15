@@ -55,7 +55,9 @@ class SessionsEndpointTests {
 	void sessionsForUsername() {
 		given(this.indexedSessionRepository.findByPrincipalName("user"))
 			.willReturn(Collections.singletonMap(session.getId(), session));
-		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user").getSessions();
+		SessionsDescriptor sessions = this.endpoint.sessionsForUsername("user");
+		assertThat(sessions).isNotNull();
+		List<SessionDescriptor> result = sessions.getSessions();
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).getId()).isEqualTo(session.getId());
 		assertThat(result.get(0).getAttributeNames()).isEqualTo(session.getAttributeNames());
@@ -76,6 +78,7 @@ class SessionsEndpointTests {
 	void getSession() {
 		given(this.sessionRepository.findById(session.getId())).willReturn(session);
 		SessionDescriptor result = this.endpoint.getSession(session.getId());
+		assertThat(result).isNotNull();
 		assertThat(result.getId()).isEqualTo(session.getId());
 		assertThat(result.getAttributeNames()).isEqualTo(session.getAttributeNames());
 		assertThat(result.getCreationTime()).isEqualTo(session.getCreationTime());
