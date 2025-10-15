@@ -37,6 +37,8 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
@@ -57,6 +59,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.SpringApplication.NativeImageRequirementsNotMetException;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
@@ -744,6 +747,24 @@ class SpringApplicationTests {
 
 	@Test
 	@ForkedClassPath
+	@EnabledForJreRange(max = JRE.JAVA_24)
+	void nativeImageShouldCheckForJava25() {
+		System.setProperty("org.graalvm.nativeimage.imagecode", "true");
+		try {
+			SpringApplication application = new SpringApplication();
+			application.setWebApplicationType(WebApplicationType.NONE);
+			assertThatExceptionOfType(NativeImageRequirementsNotMetException.class).isThrownBy(application::run)
+				.withMessage(
+						"Native Image requirements not met, please upgrade it. Native Image must support at least Java 25");
+		}
+		finally {
+			System.clearProperty("org.graalvm.nativeimage.imagecode");
+		}
+	}
+
+	@Test
+	@ForkedClassPath
+	@EnabledForJreRange(min = JRE.JAVA_25)
 	void failureInANativeImageWritesFailureToSystemOut(CapturedOutput output) {
 		System.setProperty("org.graalvm.nativeimage.imagecode", "true");
 		try {

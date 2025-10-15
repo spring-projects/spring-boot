@@ -1661,13 +1661,13 @@ public class SpringApplication {
 	/**
 	 * Exception which is thrown if GraalVM's native-image requirements aren't met.
 	 */
-	private static final class NativeImageRequirementsNotMetException extends RuntimeException {
+	static final class NativeImageRequirementsNotMetException extends RuntimeException {
 
 		/**
 		 * Creates a new {@link NativeImageRequirementsNotMetException} instance.
 		 * @param message the message
 		 */
-		private NativeImageRequirementsNotMetException(String message) {
+		NativeImageRequirementsNotMetException(String message) {
 			super(message);
 		}
 
