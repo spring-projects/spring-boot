@@ -44,3 +44,7 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly(project(":module:spring-boot-reactor"))
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

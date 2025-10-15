@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -168,7 +169,7 @@ class TransactionAutoConfigurationTests {
 	void excludesAbstractTransactionAspectFromLazyInit() {
 		this.contextRunner.withUserConfiguration(AspectJTransactionManagementConfiguration.class).run((context) -> {
 			LazyInitializationExcludeFilter filter = context.getBean(LazyInitializationExcludeFilter.class);
-			assertThat(filter.isExcluded(null, null, AbstractTransactionAspect.class)).isTrue();
+			assertThat(filter.isExcluded("bean", mock(BeanDefinition.class), AbstractTransactionAspect.class)).isTrue();
 		});
 	}
 
