@@ -176,7 +176,7 @@ class WebFluxTypeExcludeFilterTests {
 
 		@Override
 		public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
-			return null;
+			return Mono.empty();
 		}
 
 	}
