@@ -47,3 +47,7 @@ dependencies {
 	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
 	testRuntimeOnly("org.hsqldb:hsqldb")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
