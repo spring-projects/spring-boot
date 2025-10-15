@@ -59,7 +59,8 @@ public class ArchitecturePlugin implements Plugin<Project> {
 							task.setDescription("Checks the architecture of the classes of the " + sourceSet.getName()
 									+ " source set.");
 							task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-							task.getNullMarked().set(extension.getNullMarked());
+							task.getNullMarkedEnabled().set(extension.getNullMarked().getEnabled());
+							task.getNullMarkedIgnoredPackages().set(extension.getNullMarked().getIgnoredPackages());
 						});
 			packageTangleChecks.add(checkPackageTangles);
 		}

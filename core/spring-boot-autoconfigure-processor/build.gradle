@@ -28,5 +28,7 @@ dependencies {
 }
 
 architectureCheck {
-	nullMarked = false
+	nullMarked {
+		enabled = false
+	}
 }

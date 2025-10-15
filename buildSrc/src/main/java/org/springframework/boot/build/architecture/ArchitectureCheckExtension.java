@@ -16,8 +16,14 @@
 
 package org.springframework.boot.build.architecture;
 
+import java.util.LinkedHashSet;
+
+import javax.inject.Inject;
+
+import org.gradle.api.Action;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
-import org.jspecify.annotations.NullMarked;
+import org.gradle.api.provider.SetProperty;
 
 /**
  * Extension to configure the {@link ArchitecturePlugin}.
@@ -26,14 +32,51 @@ import org.jspecify.annotations.NullMarked;
  */
 public abstract class ArchitectureCheckExtension {
 
-	public ArchitectureCheckExtension() {
-		getNullMarked().convention(true);
+	private final NullMarkedExtension nullMarked;
+
+	@Inject
+	public ArchitectureCheckExtension(ObjectFactory objects) {
+		this.nullMarked = objects.newInstance(NullMarkedExtension.class);
 	}
 
 	/**
-	 * Whether this project uses JSpecify's {@link NullMarked} annotations.
-	 * @return whether this project uses JSpecify's @NullMarked annotations
+	 * Get the {@code NullMarked} extension.
+	 * @return the {@code NullMarked} extension
 	 */
-	public abstract Property<Boolean> getNullMarked();
+	public NullMarkedExtension getNullMarked() {
+		return this.nullMarked;
+	}
+
+	/**
+	 * Configure the {@code NullMarked} extension.
+	 * @param action the action to configure the {@code NullMarked} extension with
+	 */
+	public void nullMarked(Action<? super NullMarkedExtension> action) {
+		action.execute(this.nullMarked);
+	}
+
+	/**
+	 * Extension to configure the {@code NullMarked} extension.
+	 */
+	public abstract static class NullMarkedExtension {
+
+		public NullMarkedExtension() {
+			getEnabled().convention(true);
+			getIgnoredPackages().convention(new LinkedHashSet<>());
+		}
+
+		/**
+		 * Whether this project uses JSpecify's {@code  NullMarked} annotations.
+		 * @return whether this project uses JSpecify's @NullMarked annotations
+		 */
+		public abstract Property<Boolean> getEnabled();
+
+		/**
+		 * Packages that should be ignored by the {@code NullMarked} checker.
+		 * @return the ignored packages
+		 */
+		public abstract SetProperty<String> getIgnoredPackages();
+
+	}
 
 }
