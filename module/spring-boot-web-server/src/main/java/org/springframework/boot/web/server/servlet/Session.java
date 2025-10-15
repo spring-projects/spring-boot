@@ -41,7 +41,7 @@ public class Session {
 	 * Session timeout. If a duration suffix is not specified, seconds will be used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
-	private Duration timeout = Duration.ofMinutes(30);
+	private @Nullable Duration timeout = Duration.ofMinutes(30);
 
 	/**
 	 * Session tracking modes.
@@ -63,11 +63,11 @@ public class Session {
 
 	private final SessionStoreDirectory sessionStoreDirectory = new SessionStoreDirectory();
 
-	public Duration getTimeout() {
+	public @Nullable Duration getTimeout() {
 		return this.timeout;
 	}
 
-	public void setTimeout(Duration timeout) {
+	public void setTimeout(@Nullable Duration timeout) {
 		this.timeout = timeout;
 	}
 

@@ -18,6 +18,7 @@ package org.springframework.boot.session.data.mongodb.autoconfigure;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.MongoDBContainer;
@@ -90,7 +91,7 @@ class SessionDataMongoAutoConfigurationTests extends AbstractSessionAutoConfigur
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(String collectionName,
-			Duration timeout) {
+			@Nullable Duration timeout) {
 		return (context) -> {
 			MongoIndexedSessionRepository repository = validateSessionRepository(context,
 					MongoIndexedSessionRepository.class);

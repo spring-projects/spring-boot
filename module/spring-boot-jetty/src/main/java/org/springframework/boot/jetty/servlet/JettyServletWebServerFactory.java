@@ -89,6 +89,7 @@ import org.springframework.boot.web.server.servlet.ServletWebServerSettings;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -263,6 +264,7 @@ public class JettyServletWebServerFactory extends JettyWebServerFactory
 		}
 	}
 
+	@Contract("null -> true")
 	private boolean isNegative(@Nullable Duration sessionTimeout) {
 		return sessionTimeout == null || sessionTimeout.isNegative();
 	}

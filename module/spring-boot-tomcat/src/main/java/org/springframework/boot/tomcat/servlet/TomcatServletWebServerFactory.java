@@ -85,6 +85,7 @@ import org.springframework.boot.web.server.servlet.ServletWebServerSettings;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.Contract;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -382,6 +383,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 		return Math.max(sessionTimeout.toMinutes(), 1);
 	}
 
+	@Contract("null -> true")
 	private boolean isZeroOrLess(@Nullable Duration sessionTimeout) {
 		return sessionTimeout == null || sessionTimeout.isNegative() || sessionTimeout.isZero();
 	}
