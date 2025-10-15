@@ -51,9 +51,12 @@ class WebTestClientSecurityIntegrationTests {
 			WebTestClient webTestClient = context.getBean(WebTestClient.class);
 			WebTestClient.Builder builder = (WebTestClient.Builder) ReflectionTestUtils.getField(webTestClient,
 					"builder");
+			assertThat(builder).isNotNull();
 			WebHttpHandlerBuilder httpHandlerBuilder = (WebHttpHandlerBuilder) ReflectionTestUtils.getField(builder,
 					"httpHandlerBuilder");
+			assertThat(httpHandlerBuilder).isNotNull();
 			List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(httpHandlerBuilder, "filters");
+			assertThat(filters).isNotNull();
 			assertThat(filters.get(0).getClass().getName()).isEqualTo(
 					"org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers$MutatorFilter");
 		});
