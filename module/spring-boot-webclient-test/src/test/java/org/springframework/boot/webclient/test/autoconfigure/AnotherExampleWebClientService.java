@@ -16,8 +16,13 @@
 
 package org.springframework.boot.webclient.test.autoconfigure;
 
+import org.jspecify.annotations.Nullable;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * A second example web client used with {@link WebClientTest @WebClientTest} tests.
@@ -40,8 +45,10 @@ public class AnotherExampleWebClientService {
 		return this.builder;
 	}
 
-	public String test() {
-		return this.webClient.get().uri("/test").retrieve().toEntity(String.class).block().getBody();
+	public @Nullable String test() {
+		ResponseEntity<String> response = this.webClient.get().uri("/test").retrieve().toEntity(String.class).block();
+		assertThat(response).isNotNull();
+		return response.getBody();
 	}
 
 }
