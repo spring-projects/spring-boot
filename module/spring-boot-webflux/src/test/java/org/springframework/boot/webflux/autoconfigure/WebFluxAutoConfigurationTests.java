@@ -38,11 +38,13 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import reactor.core.publisher.Mono;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -109,6 +111,7 @@ import org.springframework.web.reactive.resource.CachingResourceTransformer;
 import org.springframework.web.reactive.resource.PathResourceResolver;
 import org.springframework.web.reactive.resource.ResourceWebHandler;
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver;
+import org.springframework.web.reactive.result.method.annotation.ArgumentResolverConfigurer;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
@@ -178,8 +181,10 @@ class WebFluxAutoConfigurationTests {
 	void shouldRegisterCustomHandlerMethodArgumentResolver() {
 		this.contextRunner.withUserConfiguration(CustomArgumentResolvers.class).run((context) -> {
 			RequestMappingHandlerAdapter adapter = context.getBean(RequestMappingHandlerAdapter.class);
+			ArgumentResolverConfigurer configurer = adapter.getArgumentResolverConfigurer();
+			assertThat(configurer).isNotNull();
 			List<HandlerMethodArgumentResolver> customResolvers = (List<HandlerMethodArgumentResolver>) ReflectionTestUtils
-				.getField(adapter.getArgumentResolverConfigurer(), "customResolvers");
+				.getField(configurer, "customResolvers");
 			assertThat(customResolvers).contains(context.getBean("firstResolver", HandlerMethodArgumentResolver.class),
 					context.getBean("secondResolver", HandlerMethodArgumentResolver.class));
 		});
@@ -564,9 +569,9 @@ class WebFluxAutoConfigurationTests {
 	void whenFixedLocalContextResolverIsUsedThenAcceptLanguagesHeaderIsIgnored() {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK", "spring.web.locale-resolver=fixed")
 			.run((context) -> {
-				MockServerHttpRequest request = MockServerHttpRequest.get("/")
-					.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL"))
-					.build();
+				Locale locale = StringUtils.parseLocaleString("nl_NL");
+				assertThat(locale).isNotNull();
+				MockServerHttpRequest request = MockServerHttpRequest.get("/").acceptLanguageAsLocales(locale).build();
 				MockServerWebExchange exchange = MockServerWebExchange.from(request);
 				LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
 				assertThat(localeContextResolver).isInstanceOf(FixedLocaleContextResolver.class);
@@ -578,14 +583,14 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void whenAcceptHeaderLocaleContextResolverIsUsedThenAcceptLanguagesHeaderIsHonoured() {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((context) -> {
-			MockServerHttpRequest request = MockServerHttpRequest.get("/")
-				.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL"))
-				.build();
+			Locale locale = StringUtils.parseLocaleString("nl_NL");
+			assertThat(locale).isNotNull();
+			MockServerHttpRequest request = MockServerHttpRequest.get("/").acceptLanguageAsLocales(locale).build();
 			MockServerWebExchange exchange = MockServerWebExchange.from(request);
 			LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
 			assertThat(localeContextResolver).isInstanceOf(AcceptHeaderLocaleContextResolver.class);
 			LocaleContext localeContext = localeContextResolver.resolveLocaleContext(exchange);
-			assertThat(localeContext.getLocale()).isEqualTo(StringUtils.parseLocaleString("nl_NL"));
+			assertThat(localeContext.getLocale()).isEqualTo(locale);
 		});
 	}
 
@@ -674,12 +679,15 @@ class WebFluxAutoConfigurationTests {
 			.run(assertExchangeWithSession((exchange) -> {
 				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 				assertThat(cookies).isNotEmpty();
-				assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
-				assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getDomain() != null && cookie.getDomain().equals(".example.com"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getPath() != null && cookie.getPath().equals("/example"));
 				assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
 				assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
 				assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
-				assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+				assertThat(cookies)
+					.allMatch((cookie) -> cookie.getSameSite() != null && cookie.getSameSite().equals("Strict"));
 				assertThat(cookies).allMatch(ResponseCookie::isPartitioned);
 			}));
 	}
@@ -906,6 +914,7 @@ class WebFluxAutoConfigurationTests {
 			MockServerWebExchange webExchange = MockServerWebExchange.from(request);
 			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
 			WebSession webSession = webSessionManager.getSession(webExchange).block();
+			assertThat(webSession).isNotNull();
 			webSession.start();
 			webExchange.getResponse().setComplete().block();
 			exchange.accept(webExchange);
@@ -1024,7 +1033,7 @@ class WebFluxAutoConfigurationTests {
 
 		@Bean
 		HttpHandler httpHandler() {
-			return (serverHttpRequest, serverHttpResponse) -> null;
+			return (serverHttpRequest, serverHttpResponse) -> Mono.empty();
 		}
 
 	}
@@ -1198,7 +1207,7 @@ class WebFluxAutoConfigurationTests {
 		}
 
 		@Override
-		public void setLocaleContext(ServerWebExchange exchange, LocaleContext localeContext) {
+		public void setLocaleContext(ServerWebExchange exchange, @Nullable LocaleContext localeContext) {
 		}
 
 	}

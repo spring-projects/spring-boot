@@ -16,6 +16,7 @@
 
 package org.springframework.boot.webflux.autoconfigure.actuate.web;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,11 +45,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 @SuppressWarnings("removal")
 class ControllerEndpointWebFluxIntegrationTests {
 
-	private AnnotationConfigReactiveWebApplicationContext context;
+	private @Nullable AnnotationConfigReactiveWebApplicationContext context;
 
 	@AfterEach
 	void close() {
-		this.context.close();
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test

@@ -21,6 +21,7 @@ import jakarta.validation.constraints.NotNull;
 public class DummyBody {
 
 	@NotNull
+	@SuppressWarnings("NullAway.Init")
 	private String content;
 
 	public String getContent() {

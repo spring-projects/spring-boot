@@ -18,6 +18,7 @@ package org.springframework.boot.webflux.autoconfigure;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -104,12 +105,12 @@ class HttpHandlerAutoConfigurationTests {
 
 		@Bean
 		HttpHandler customHttpHandler() {
-			return (serverHttpRequest, serverHttpResponse) -> null;
+			return (serverHttpRequest, serverHttpResponse) -> Mono.empty();
 		}
 
 		@Bean
 		RouterFunction<ServerResponse> routerFunction() {
-			return route(GET("/test"), (serverRequest) -> null);
+			return route(GET("/test"), (serverRequest) -> Mono.empty());
 		}
 
 	}

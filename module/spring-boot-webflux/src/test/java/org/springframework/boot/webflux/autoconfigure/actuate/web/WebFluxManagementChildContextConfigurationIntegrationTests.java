@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import org.apache.catalina.Valve;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -80,6 +81,7 @@ class WebFluxManagementChildContextConfigurationIntegrationTests {
 		.withPropertyValues("server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*");
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	Path temp;
 
 	@Test
@@ -122,7 +124,7 @@ class WebFluxManagementChildContextConfigurationIntegrationTests {
 		});
 	}
 
-	private AccessLogValve findAccessLogValve() {
+	private @Nullable AccessLogValve findAccessLogValve() {
 		assertThat(this.webServers).hasSize(2);
 		Tomcat tomcat = ((TomcatWebServer) this.webServers.get(1)).getTomcat();
 		for (Valve valve : tomcat.getEngine().getPipeline().getValves()) {

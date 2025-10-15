@@ -58,3 +58,7 @@ dependencies {
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import jakarta.validation.Valid;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -568,7 +569,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 	private static final class LogIdFilter implements WebFilter {
 
-		private String logId;
+		private @Nullable String logId;
 
 		@Override
 		public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -576,7 +577,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			return chain.filter(exchange);
 		}
 
-		String getLogId() {
+		@Nullable String getLogId() {
 			return this.logId;
 		}
 
@@ -627,8 +628,9 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		ErrorAttributes errorAttributes() {
 			return new DefaultErrorAttributes() {
 				@Override
-				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-					Map<String, Object> errorAttributes = super.getErrorAttributes(request, options);
+				public Map<String, @Nullable Object> getErrorAttributes(ServerRequest request,
+						ErrorAttributeOptions options) {
+					Map<String, @Nullable Object> errorAttributes = super.getErrorAttributes(request, options);
 					errorAttributes.put("error", "custom error");
 					errorAttributes.put("newAttribute", "value");
 					errorAttributes.remove("path");
@@ -648,8 +650,9 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			return new DefaultErrorAttributes() {
 
 				@Override
-				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-					Map<String, Object> errorAttributes = new HashMap<>();
+				public Map<String, @Nullable Object> getErrorAttributes(ServerRequest request,
+						ErrorAttributeOptions options) {
+					Map<String, @Nullable Object> errorAttributes = new HashMap<>();
 					errorAttributes.put("status", 400);
 					errorAttributes.put("error", "custom error");
 					return errorAttributes;
@@ -693,8 +696,10 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			return new DefaultErrorAttributes() {
 
 				@Override
-				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
-					Map<String, Object> attributes = new LinkedHashMap<>(super.getErrorAttributes(request, options));
+				public Map<String, @Nullable Object> getErrorAttributes(ServerRequest request,
+						ErrorAttributeOptions options) {
+					Map<String, @Nullable Object> attributes = new LinkedHashMap<>(
+							super.getErrorAttributes(request, options));
 					attributes.remove("status");
 					return attributes;
 				}
