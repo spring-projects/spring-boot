@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -67,6 +68,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 	private final ConfigurableEnvironment environment = new MockEnvironment();
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@BeforeEach
@@ -217,7 +219,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class ConstructorInjectionDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static Environment environment;
+		private static @Nullable Environment environment;
 
 		ConstructorInjectionDatabaseInitializerDetector(Environment environment) {
 			ConstructorInjectionDatabaseInitializerDetector.environment = environment;
@@ -233,7 +235,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 	static class ConstructorInjectionDependsOnDatabaseInitializationDetector
 			implements DependsOnDatabaseInitializationDetector {
 
-		private static Environment environment;
+		private static @Nullable Environment environment;
 
 		ConstructorInjectionDependsOnDatabaseInitializationDetector(Environment environment) {
 			ConstructorInjectionDependsOnDatabaseInitializationDetector.environment = environment;
