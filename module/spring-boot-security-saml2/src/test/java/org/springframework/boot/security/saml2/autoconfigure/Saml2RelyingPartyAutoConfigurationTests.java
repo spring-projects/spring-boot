@@ -23,6 +23,7 @@ import jakarta.servlet.Filter;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okio.Buffer;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -344,7 +345,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}
 
-	private void testMultipleProviders(String specifiedEntityId, String expected) throws Exception {
+	private void testMultipleProviders(@Nullable String specifiedEntityId, String expected) throws Exception {
 		try (MockWebServer server = new MockWebServer()) {
 			server.start();
 			String metadataUrl = server.url("").toString();
@@ -413,6 +414,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		}
 		if (filter instanceof CompositeFilter) {
 			List<?> filters = (List<?>) ReflectionTestUtils.getField(filter, "filters");
+			assertThat(filters).isNotNull();
 			return (FilterChainProxy) filters.stream()
 				.filter(FilterChainProxy.class::isInstance)
 				.findFirst()
