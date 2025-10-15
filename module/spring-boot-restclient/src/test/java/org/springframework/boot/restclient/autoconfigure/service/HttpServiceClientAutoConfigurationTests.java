@@ -33,7 +33,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
-import org.springframework.boot.http.client.autoconfigure.blocking.BlockingHttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -70,7 +70,7 @@ class HttpServiceClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(HttpServiceClientAutoConfiguration.class,
-				BlockingHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class));
+				ImperativeHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class));
 
 	@Test
 	void configuresClientFromProperties() {
@@ -146,7 +146,7 @@ class HttpServiceClientAutoConfigurationTests {
 	void whenHasUserDefinedRequestFactorySettings() {
 		this.contextRunner
 			.withPropertyValues("spring.http.serviceclient.one.base-url=https://example.com",
-					"spring.http.clients.blocking.factory=jdk")
+					"spring.http.clients.imperative.factory=jdk")
 			.withUserConfiguration(HttpClientConfiguration.class, RequestFactorySettingsConfiguration.class)
 			.run((context) -> {
 				TestClientOne clientOne = context.getBean(TestClientOne.class);

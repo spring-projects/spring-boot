@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.http.client.autoconfigure.blocking.BlockingHttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientProperties;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
@@ -43,7 +43,7 @@ import org.springframework.web.service.registry.HttpServiceProxyRegistry;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@AutoConfiguration(after = { BlockingHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class })
+@AutoConfiguration(after = { ImperativeHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class })
 @ConditionalOnClass(RestClientAdapter.class)
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
 @Conditional(NotReactiveWebApplicationCondition.class)

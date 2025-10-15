@@ -15,9 +15,9 @@
  */
 
 /**
- * Auto-configuration for client-side blocking HTTP.
+ * Auto-configuration for client-side imperative HTTP.
  */
 @NullMarked
-package org.springframework.boot.http.client.autoconfigure.blocking;
+package org.springframework.boot.http.client.autoconfigure.imperative;
 
 import org.jspecify.annotations.NullMarked;

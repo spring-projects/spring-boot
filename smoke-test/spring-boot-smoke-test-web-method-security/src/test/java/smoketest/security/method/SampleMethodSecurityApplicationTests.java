@@ -44,7 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Scott Frederick
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.http.clients.blocking.factory=simple")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "spring.http.clients.imperative.factory=simple")
 @AutoConfigureTestRestTemplate
 class SampleMethodSecurityApplicationTests {
 

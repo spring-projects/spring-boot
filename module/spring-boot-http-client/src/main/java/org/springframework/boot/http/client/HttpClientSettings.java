@@ -23,7 +23,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.ssl.SslBundle;
 
 /**
- * Settings that can be applied when creating a blocking or reactive HTTP client.
+ * Settings that can be applied when creating a imperative or reactive HTTP client.
  *
  * @param redirects the follow redirect strategy to use or null to redirect whenever the
  * underlying library allows it

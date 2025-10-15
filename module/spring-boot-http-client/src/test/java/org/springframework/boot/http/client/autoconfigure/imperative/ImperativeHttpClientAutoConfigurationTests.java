@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client.autoconfigure.blocking;
+package org.springframework.boot.http.client.autoconfigure.imperative;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -50,14 +50,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link BlockingHttpClientAutoConfiguration}.
+ * Tests for {@link ImperativeHttpClientAutoConfiguration}.
  *
  * @author Phillip Webb
  */
-class BlockingHttpClientAutoConfigurationTests {
+class ImperativeHttpClientAutoConfigurationTests {
 
 	private static final AutoConfigurations autoConfigurations = AutoConfigurations
-		.of(BlockingHttpClientAutoConfiguration.class, HttpClientAutoConfiguration.class, SslAutoConfiguration.class);
+		.of(ImperativeHttpClientAutoConfiguration.class, HttpClientAutoConfiguration.class, SslAutoConfiguration.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(autoConfigurations);
@@ -69,7 +69,7 @@ class BlockingHttpClientAutoConfigurationTests {
 
 	@Test
 	void configuresDefinedClientHttpRequestFactoryBuilder() {
-		this.contextRunner.withPropertyValues("spring.http.clients.blocking.factory=simple")
+		this.contextRunner.withPropertyValues("spring.http.clients.imperative.factory=simple")
 			.run((context) -> assertThat(context.getBean(ClientHttpRequestFactoryBuilder.class))
 				.isInstanceOf(SimpleClientHttpRequestFactoryBuilder.class));
 	}
@@ -146,7 +146,7 @@ class BlockingHttpClientAutoConfigurationTests {
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenVirtualThreadsEnabledAndUsingJdkHttpClientUsesVirtualThreadExecutor() {
 		this.contextRunner
-			.withPropertyValues("spring.http.clients.blocking.factory=jdk", "spring.threads.virtual.enabled=true")
+			.withPropertyValues("spring.http.clients.imperative.factory=jdk", "spring.threads.virtual.enabled=true")
 			.run((context) -> {
 				ClientHttpRequestFactory factory = context.getBean(ClientHttpRequestFactoryBuilder.class).build();
 				HttpClient httpClient = (HttpClient) ReflectionTestUtils.getField(factory, "httpClient");

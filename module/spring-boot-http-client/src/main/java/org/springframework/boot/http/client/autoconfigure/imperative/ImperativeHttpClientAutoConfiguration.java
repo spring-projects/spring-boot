@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client.autoconfigure.blocking;
+package org.springframework.boot.http.client.autoconfigure.imperative;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for blocking HTTP clients.
+ * {@link EnableAutoConfiguration Auto-configuration} for imperative HTTP clients.
  *
  * @author Phillip Webb
  * @author Sangmin Park
@@ -50,19 +50,19 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 @AutoConfiguration(after = HttpClientAutoConfiguration.class)
 @ConditionalOnClass(ClientHttpRequestFactory.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
-@EnableConfigurationProperties(BlockingHttpClientsProperties.class)
-public final class BlockingHttpClientAutoConfiguration {
+@EnableConfigurationProperties(ImperativeHttpClientsProperties.class)
+public final class ImperativeHttpClientAutoConfiguration {
 
 	private final Environment environment;
 
-	BlockingHttpClientAutoConfiguration(Environment environment) {
+	ImperativeHttpClientAutoConfiguration(Environment environment) {
 		this.environment = environment;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder(ResourceLoader resourceLoader,
-			BlockingHttpClientsProperties properties,
+			ImperativeHttpClientsProperties properties,
 			ObjectProvider<ClientHttpRequestFactoryBuilderCustomizer<?>> clientHttpRequestFactoryBuilderCustomizers) {
 		ClientHttpRequestFactoryBuilder<?> builder = (properties.getFactory() != null)
 				? properties.getFactory().builder()

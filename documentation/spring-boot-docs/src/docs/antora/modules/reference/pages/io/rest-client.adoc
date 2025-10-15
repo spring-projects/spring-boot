@@ -3,7 +3,7 @@
 
 Spring Boot provides various convenient ways to call remote REST services.
 If you are developing a non-blocking reactive application and you're using Spring WebFlux, then you can use javadoc:org.springframework.web.reactive.function.client.WebClient[].
-If you prefer blocking APIs then you can use javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.client.RestTemplate[].
+If you prefer imperative APIs then you can use javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.client.RestTemplate[].
 
 
 
@@ -15,7 +15,7 @@ The javadoc:org.springframework.web.reactive.function.client.WebClient[] interfa
 You can learn more about the javadoc:org.springframework.web.reactive.function.client.WebClient[] in the dedicated {url-spring-framework-docs}/web/webflux-webclient.html[section in the Spring Framework docs].
 
 TIP: If you are not writing a reactive Spring WebFlux application you can use the xref:io/rest-client.adoc#io.rest-client.restclient[`RestClient`] instead of a javadoc:org.springframework.web.reactive.function.client.WebClient[].
-This provides a similar functional API, but is blocking rather than reactive.
+This provides a similar functional API, but is imperative rather than reactive.
 
 Spring Boot creates and pre-configures a prototype javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[] bean for you.
 It is strongly advised to inject it in your components and use it to create javadoc:org.springframework.web.reactive.function.client.WebClient[] instances.
@@ -112,7 +112,7 @@ include-code::MyService[]
 
 If you are not using Spring WebFlux or Project Reactor in your application we recommend that you use javadoc:org.springframework.web.client.RestClient[] to call remote REST services.
 
-The javadoc:org.springframework.web.client.RestClient[] interface provides a functional style blocking API.
+The javadoc:org.springframework.web.client.RestClient[] interface provides a functional style imperative API.
 
 Spring Boot creates and pre-configures a prototype javadoc:org.springframework.web.client.RestClient$Builder[] bean for you.
 It is strongly advised to inject it in your components and use it to create javadoc:org.springframework.web.client.RestClient[] instances.
@@ -235,7 +235,7 @@ If multiple clients are available on the classpath, and not global configuration
 [[io.rest-client.clienthttprequestfactory.configuration]]
 === Global HTTP Client Configuration
 
-If the auto-detected HTTP client does not meet your needs, you can use the configprop:spring.http.clients.blocking.factory[] property to pick a specific factory.
+If the auto-detected HTTP client does not meet your needs, you can use the configprop:spring.http.clients.imperative.factory[] property to pick a specific factory.
 For example, if you have Apache HttpClient on your classpath, but you prefer Jetty's javadoc:org.eclipse.jetty.client.HttpClient[] you can add the following:
 
 [configprops,yaml]
@@ -243,7 +243,7 @@ For example, if you have Apache HttpClient on your classpath, but you prefer Jet
 spring:
   http:
     clients:
-      blocking:
+      imperative:
         factory: jetty
 ----
 

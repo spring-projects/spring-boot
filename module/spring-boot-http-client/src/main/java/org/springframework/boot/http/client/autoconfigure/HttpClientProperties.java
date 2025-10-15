@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesSource
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
- * Base class for configuration properties common to both blocking and reactive HTTP
+ * Base class for configuration properties common to both imperative and reactive HTTP
  * clients.
  *
  * @author Olga Maciaszek-Sharma

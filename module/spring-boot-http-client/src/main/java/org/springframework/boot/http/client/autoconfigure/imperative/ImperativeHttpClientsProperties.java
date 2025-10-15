@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.http.client.autoconfigure.blocking;
+package org.springframework.boot.http.client.autoconfigure.imperative;
 
 import java.util.function.Supplier;
 
@@ -26,14 +26,14 @@ import org.springframework.boot.http.client.autoconfigure.HttpClientsProperties;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} to configure the defaults used
- * for blocking HTTP clients.
+ * for imperative HTTP clients.
  *
  * @author Phillip Webb
  * @since 4.0.0
  * @see HttpClientsProperties
  */
-@ConfigurationProperties("spring.http.clients.blocking")
-public class BlockingHttpClientsProperties {
+@ConfigurationProperties("spring.http.clients.imperative")
+public class ImperativeHttpClientsProperties {
 
 	/**
 	 * Default factory used for a client HTTP request.

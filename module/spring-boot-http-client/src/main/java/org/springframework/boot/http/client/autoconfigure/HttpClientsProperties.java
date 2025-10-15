@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} to configure the defaults used
- * for all blocking and non-blocking HTTP clients.
+ * for all imperative and reactive HTTP clients.
  *
  * @author Phillip Webb
  * @since 4.0.0

@@ -16,7 +16,7 @@
       "description": "Default factory used for a client HTTP request.",
       "deprecated": true,
       "deprecation": {
-        "replacement": "spring.http.clients.blocking.factory",
+        "replacement": "spring.http.clients.imperative.factory",
         "since": "4.0.0"
       }
     },

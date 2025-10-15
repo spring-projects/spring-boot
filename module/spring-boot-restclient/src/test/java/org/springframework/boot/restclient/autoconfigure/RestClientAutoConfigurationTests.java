@@ -29,7 +29,7 @@ import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
-import org.springframework.boot.http.client.autoconfigure.blocking.BlockingHttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
@@ -64,7 +64,7 @@ class RestClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(RestClientAutoConfiguration.class, HttpClientAutoConfiguration.class,
-				BlockingHttpClientAutoConfiguration.class, ReactiveHttpClientAutoConfiguration.class));
+				ImperativeHttpClientAutoConfiguration.class, ReactiveHttpClientAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
@@ -191,7 +191,7 @@ class RestClientAutoConfigurationTests {
 	void whenHasFactoryProperty() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 			.withUserConfiguration(RestClientConfig.class)
-			.withPropertyValues("spring.http.clients.blocking.factory=simple")
+			.withPropertyValues("spring.http.clients.imperative.factory=simple")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(RestClient.class);
 				RestClient restClient = context.getBean(RestClient.class);
