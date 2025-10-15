@@ -18,6 +18,7 @@ package org.springframework.boot.web.server.servlet.context;
 
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  */
 class ServletComponentScanRegistrarTests {
 
-	private AnnotationConfigApplicationContext context;
+	private @Nullable AnnotationConfigApplicationContext context;
 
 	@AfterEach
 	void after() {

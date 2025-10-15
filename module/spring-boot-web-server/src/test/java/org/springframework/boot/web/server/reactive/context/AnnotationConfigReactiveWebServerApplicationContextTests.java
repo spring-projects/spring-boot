@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.server.reactive.context;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.reactive.MockReactiveWebServerFactory;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.mock;
  */
 class AnnotationConfigReactiveWebServerApplicationContextTests {
 
-	private AnnotationConfigReactiveWebServerApplicationContext context;
+	private @Nullable AnnotationConfigReactiveWebServerApplicationContext context;
 
 	@Test
 	void createFromScan() {
@@ -90,6 +91,7 @@ class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	private void verifyContext() {
+		assertThat(this.context).isNotNull();
 		MockReactiveWebServerFactory factory = this.context.getBean(MockReactiveWebServerFactory.class);
 		HttpHandler expectedHandler = this.context.getBean(HttpHandler.class);
 		HttpHandler actualHandler = factory.getWebServer().getHttpHandler();

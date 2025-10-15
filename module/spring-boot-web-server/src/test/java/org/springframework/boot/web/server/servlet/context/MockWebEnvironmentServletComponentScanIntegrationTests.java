@@ -28,6 +28,7 @@ import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -56,9 +57,10 @@ import static org.mockito.Mockito.mock;
  */
 class MockWebEnvironmentServletComponentScanIntegrationTests {
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@AfterEach
@@ -72,6 +74,7 @@ class MockWebEnvironmentServletComponentScanIntegrationTests {
 	@ForkedClassPath
 	void componentsAreRegistered() {
 		prepareContext();
+		assertThat(this.context).isNotNull();
 		this.context.refresh();
 		Map<String, RegistrationBean> registrationBeans = this.context.getBeansOfType(RegistrationBean.class);
 		assertThat(registrationBeans).hasSize(3);
@@ -87,6 +90,7 @@ class MockWebEnvironmentServletComponentScanIntegrationTests {
 	void indexedComponentsAreRegistered() throws IOException {
 		writeIndex(this.temp);
 		prepareContext();
+		assertThat(this.context).isNotNull();
 		try (URLClassLoader classLoader = new URLClassLoader(new URL[] { this.temp.toURI().toURL() },
 				getClass().getClassLoader())) {
 			this.context.setClassLoader(classLoader);
@@ -105,6 +109,7 @@ class MockWebEnvironmentServletComponentScanIntegrationTests {
 	@ForkedClassPath
 	void multipartConfigIsHonoured() {
 		prepareContext();
+		assertThat(this.context).isNotNull();
 		this.context.refresh();
 		@SuppressWarnings("rawtypes")
 		Map<String, ServletRegistrationBean> beans = this.context.getBeansOfType(ServletRegistrationBean.class);

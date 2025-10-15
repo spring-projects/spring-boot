@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -157,6 +158,7 @@ class SpringBootTestRandomPortApplicationListenerTests {
 		addTestPropertySource("0", null);
 		MapPropertySource testPropertySource = (MapPropertySource) this.propertySources
 			.get(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
+		assertThat(testPropertySource).isNotNull();
 		testPropertySource.getSource().put("port", "9090");
 		this.propertySources
 			.addLast(new MapPropertySource("other", Collections.singletonMap("management.server.port", "${port}")));
@@ -180,6 +182,7 @@ class SpringBootTestRandomPortApplicationListenerTests {
 		addTestPropertySource("0", null);
 		MapPropertySource testPropertySource = (MapPropertySource) this.propertySources
 			.get(TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME);
+		assertThat(testPropertySource).isNotNull();
 		testPropertySource.getSource().put("port", "8080");
 		Map<String, Object> source = new HashMap<>();
 		source.put("server.port", "${port}");
@@ -202,7 +205,7 @@ class SpringBootTestRandomPortApplicationListenerTests {
 			.withMessage("Could not resolve placeholder 'port' in value \"${port}\"");
 	}
 
-	private void addTestPropertySource(String serverPort, String managementPort) {
+	private void addTestPropertySource(String serverPort, @Nullable String managementPort) {
 		Map<String, Object> source = new HashMap<>();
 		source.put("server.port", serverPort);
 		source.put("management.server.port", managementPort);

@@ -65,7 +65,9 @@ class ServerPropertiesTests {
 	@Test
 	void testPortBinding() {
 		bind("server.port", "9000");
-		assertThat(this.properties.getPort().intValue()).isEqualTo(9000);
+		Integer port = this.properties.getPort();
+		assertThat(port).isNotNull();
+		assertThat(port.intValue()).isEqualTo(9000);
 	}
 
 	@Test

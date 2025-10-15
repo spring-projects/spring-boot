@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.fail;
 class CookieSameSiteSupplierTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void whenHasNameWhenNameIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasName((String) null))
@@ -62,6 +63,7 @@ class CookieSameSiteSupplierTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void whenHasSuppliedNameWhenNameIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasName((Supplier<String>) null))
@@ -81,6 +83,7 @@ class CookieSameSiteSupplierTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void whenHasNameMatchingRegexWhenRegexIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasNameMatching((String) null))
@@ -107,6 +110,7 @@ class CookieSameSiteSupplierTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void whenHasNameMatchingPatternWhenPatternIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.whenHasNameMatching((Pattern) null))
@@ -127,6 +131,7 @@ class CookieSameSiteSupplierTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void whenWhenPredicateIsNullThrowsException() {
 		CookieSameSiteSupplier supplier = (cookie) -> SameSite.LAX;
 		assertThatIllegalArgumentException().isThrownBy(() -> supplier.when(null))
@@ -163,6 +168,7 @@ class CookieSameSiteSupplierTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> CookieSameSiteSupplier.of(null))
 			.withMessage("'sameSite' must not be null");

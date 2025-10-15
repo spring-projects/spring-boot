@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -224,7 +225,7 @@ class ReactiveWebServerApplicationContextTests {
 
 	private void addHttpHandlerBean(String beanName) {
 		this.context.registerBeanDefinition(beanName,
-				new RootBeanDefinition(HttpHandler.class, () -> (request, response) -> null));
+				new RootBeanDefinition(HttpHandler.class, () -> (request, response) -> Mono.empty()));
 	}
 
 	private void addWebServerFactoryBean() {

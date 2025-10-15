@@ -65,7 +65,7 @@ class MissingWebServerFactoryBeanFailureAnalyzerTests {
 		try {
 			context.refresh();
 			context.close();
-			return null;
+			throw new AssertionError("Should not be reached");
 		}
 		catch (ApplicationContextException ex) {
 			return ex;

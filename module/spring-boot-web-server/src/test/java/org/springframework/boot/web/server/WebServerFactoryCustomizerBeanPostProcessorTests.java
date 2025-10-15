@@ -46,6 +46,7 @@ class WebServerFactoryCustomizerBeanPostProcessorTests {
 	private final WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ListableBeanFactory beanFactory;
 
 	@BeforeEach
@@ -160,7 +161,9 @@ class WebServerFactoryCustomizerBeanPostProcessorTests {
 	}
 
 	private boolean wasCalled(Map<String, ?> beans, String name) {
-		return ((MockWebServerFactoryCustomizer<?>) beans.get(name)).wasCalled();
+		Object bean = beans.get(name);
+		assertThat(bean).isNotNull();
+		return ((MockWebServerFactoryCustomizer<?>) bean).wasCalled();
 	}
 
 	interface WebServerFactoryOne extends WebServerFactory {

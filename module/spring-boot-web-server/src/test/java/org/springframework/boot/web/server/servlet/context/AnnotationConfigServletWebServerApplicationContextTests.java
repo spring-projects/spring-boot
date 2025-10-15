@@ -21,6 +21,7 @@ import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +49,7 @@ import static org.mockito.BDDMockito.then;
  */
 class AnnotationConfigServletWebServerApplicationContextTests {
 
-	private AnnotationConfigServletWebServerApplicationContext context;
+	private @Nullable AnnotationConfigServletWebServerApplicationContext context;
 
 	@AfterEach
 	void close() {
@@ -136,6 +137,7 @@ class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	private void verifyContext() {
+		assertThat(this.context).isNotNull();
 		MockServletWebServerFactory factory = this.context.getBean(MockServletWebServerFactory.class);
 		Servlet servlet = this.context.getBean(Servlet.class);
 		then(factory.getServletContext()).should().addServlet("servlet", servlet);
@@ -164,6 +166,7 @@ class AnnotationConfigServletWebServerApplicationContextTests {
 	@EnableWebMvc
 	static class ServletContextAwareEmbeddedConfiguration implements ServletContextAware {
 
+		@SuppressWarnings("NullAway.Init")
 		private ServletContext servletContext;
 
 		@Bean
@@ -201,6 +204,7 @@ class AnnotationConfigServletWebServerApplicationContextTests {
 	@EnableWebMvc
 	static class ServletContextAwareConfiguration implements ServletContextAware {
 
+		@SuppressWarnings("NullAway.Init")
 		private ServletContext servletContext;
 
 		@Bean
