@@ -40,8 +40,8 @@ dependencies {
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.postgresql:postgresql")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:postgresql")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-postgresql")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(project(":module:spring-boot-transaction"))

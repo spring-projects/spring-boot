@@ -41,14 +41,14 @@ dependencies {
 	optional("org.springframework.data:spring-data-elasticsearch") {
 		exclude group: "org.elasticsearch.client", module: "transport"
 	}
-	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:testcontainers-elasticsearch")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":module:spring-boot-jackson"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:elasticsearch")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-elasticsearch")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

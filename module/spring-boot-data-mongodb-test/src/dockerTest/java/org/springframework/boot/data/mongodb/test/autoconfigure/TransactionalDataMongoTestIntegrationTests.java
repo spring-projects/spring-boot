@@ -17,9 +17,9 @@
 package org.springframework.boot.data.mongodb.test.autoconfigure;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.mongodb.MongoDBContainer;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ class TransactionalDataMongoTestIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final MongoDBContainer mongoDb = TestImage.container(MongoDBContainer.class);
+	static final MongoDBContainer mongoDb = TestImage.container(MongoDBContainer.class).withReplicaSet();
 
 	@Autowired
 	private ExampleRepository exampleRepository;

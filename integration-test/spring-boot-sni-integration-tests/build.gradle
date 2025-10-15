@@ -40,7 +40,7 @@ dependencies {
 	intTestImplementation(project(":starter:spring-boot-starter-webmvc"))
 	intTestImplementation(project(":test-support:spring-boot-test-support"))
 	intTestImplementation(project(":starter:spring-boot-starter-test"))
-	intTestImplementation("org.testcontainers:junit-jupiter")
+	intTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	intTestImplementation("org.testcontainers:testcontainers")
 }
 

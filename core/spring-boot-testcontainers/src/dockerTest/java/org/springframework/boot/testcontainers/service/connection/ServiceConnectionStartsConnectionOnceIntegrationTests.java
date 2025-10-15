@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import org.springframework.boot.testsupport.container.TestImage;
@@ -67,7 +67,7 @@ class ServiceConnectionStartsConnectionOnceIntegrationTests {
 
 	}
 
-	static class StartCountingPostgreSQLContainer extends PostgreSQLContainer<StartCountingPostgreSQLContainer> {
+	static class StartCountingPostgreSQLContainer extends PostgreSQLContainer {
 
 		final AtomicInteger startCount = new AtomicInteger();
 

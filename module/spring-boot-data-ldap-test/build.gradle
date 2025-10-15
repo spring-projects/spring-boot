@@ -36,7 +36,7 @@ dependencies {
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))

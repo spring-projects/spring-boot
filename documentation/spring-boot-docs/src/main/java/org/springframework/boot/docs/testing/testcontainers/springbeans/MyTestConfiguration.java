@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.testing.testcontainers.springbeans;
 
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import org.springframework.boot.test.context.TestConfiguration;

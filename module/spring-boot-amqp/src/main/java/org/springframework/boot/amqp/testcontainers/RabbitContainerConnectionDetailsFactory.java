@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
-import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
 
 import org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails;
 import org.springframework.boot.ssl.SslBundle;

@@ -33,9 +33,9 @@ dependencies {
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("io.projectreactor:reactor-test")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:postgresql")
-	dockerTestImplementation("org.testcontainers:r2dbc")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-postgresql")
+	dockerTestImplementation("org.testcontainers:testcontainers-r2dbc")
 }
 
 tasks.named("compileTestJava") {

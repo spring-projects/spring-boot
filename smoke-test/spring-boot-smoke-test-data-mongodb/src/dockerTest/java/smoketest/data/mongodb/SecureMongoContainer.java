@@ -17,7 +17,7 @@
 package smoketest.data.mongodb;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.mongodb.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 

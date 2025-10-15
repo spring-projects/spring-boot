@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.devtools;
 
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.mongodb.MongoDBContainer;
 
 import org.springframework.boot.devtools.restart.RestartScope;
 import org.springframework.boot.test.context.TestConfiguration;

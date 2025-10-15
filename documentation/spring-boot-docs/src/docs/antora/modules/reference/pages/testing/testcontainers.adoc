@@ -49,7 +49,7 @@ NOTE: In most cases, you will additionally need to configure the application to 
 
 A common pattern with Testcontainers is to declare the container instances as static fields in an interface.
 
-For example, the following interface declares two containers, one named `mongo` of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.containers.MongoDBContainer[] and another named `neo4j` of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[]:
+For example, the following interface declares two containers, one named `mongo` of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.mongodb.MongoDBContainer[] and another named `neo4j` of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.neo4j.Neo4jContainer[]:
 
 include-code::MyContainers[]
 
@@ -150,10 +150,10 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
 
 | javadoc:org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails[]
-| Containers of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.containers.MongoDBContainer[] or javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.mongodb.MongoDBAtlasLocalContainer[]
+| Containers of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.mongodb.MongoDBContainer[] or javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.mongodb.MongoDBAtlasLocalContainer[]
 
 | javadoc:org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails[]
-| Containers of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[]
+| Containers of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.neo4j.Neo4jContainer[]
 
 | javadoc:org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib" or of type javadoc:org.testcontainers.grafana.LgtmStackContainer[]
@@ -165,16 +165,16 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers named "otel/opentelemetry-collector-contrib" or of type javadoc:org.testcontainers.grafana.LgtmStackContainer[]
 
 | javadoc:org.springframework.boot.pulsar.autoconfigure.PulsarConnectionDetails[]
-| Containers of type javadoc:{url-testcontainers-pulsar-javadoc}/org.testcontainers.containers.PulsarContainer[]
+| Containers of type javadoc:{url-testcontainers-pulsar-javadoc}/org.testcontainers.pulsar.PulsarContainer[]
 
 | javadoc:org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails[]
 | Containers of type
 javadoc:org.testcontainers.clickhouse.ClickHouseContainer[],
-javadoc:{url-testcontainers-mariadb-javadoc}/org.testcontainers.containers.MariaDBContainer[], javadoc:{url-testcontainers-mssqlserver-javadoc}/org.testcontainers.containers.MSSQLServerContainer[], javadoc:{url-testcontainers-mysql-javadoc}/org.testcontainers.containers.MySQLContainer[],
-javadoc:org.testcontainers.oracle.OracleContainer[OracleContainer (free)], javadoc:{url-testcontainers-oracle-xe-javadoc}/org.testcontainers.containers.OracleContainer[OracleContainer (XE)] or javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.containers.PostgreSQLContainer[]
+javadoc:{url-testcontainers-mariadb-javadoc}/org.testcontainers.mariadb.MariaDBContainer[], javadoc:{url-testcontainers-mssqlserver-javadoc}/org.testcontainers.mssqlserver.MSSQLServerContainer[], javadoc:{url-testcontainers-mysql-javadoc}/org.testcontainers.mysql.MySQLContainer[],
+javadoc:org.testcontainers.oracle.OracleContainer[OracleContainer (free)], javadoc:{url-testcontainers-oracle-xe-javadoc}/org.testcontainers.containers.OracleContainer[OracleContainer (XE)] or javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.postgresql.PostgreSQLContainer[]
 
 | javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
-| Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.containers.RabbitMQContainer[]
+| Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.rabbitmq.RabbitMQContainer[]
 
 | javadoc:org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails[]
 | Containers of type javadoc:com.redis.testcontainers.RedisContainer[] or javadoc:com.redis.testcontainers.RedisStackContainer[], or containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
@@ -186,7 +186,7 @@ javadoc:org.testcontainers.oracle.OracleContainer[OracleContainer (free)], javad
 [TIP]
 ====
 By default all applicable connection details beans will be created for a given javadoc:org.testcontainers.containers.Container[].
-For example, a javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.containers.PostgreSQLContainer[] will create both javadoc:org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails[] and javadoc:org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails[].
+For example, a javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.postgresql.PostgreSQLContainer[] will create both javadoc:org.springframework.boot.jdbc.autoconfigure.JdbcConnectionDetails[] and javadoc:org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails[].
 
 If you want to create only a subset of the applicable types, you can use the `type` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
 ====
@@ -197,7 +197,7 @@ This works as long as Spring Boot is able to get the instance of the javadoc:org
 
 If you're using a javadoc:org.springframework.context.annotation.Bean[format=annotation] method, Spring Boot won't call the bean method to get the Docker image name, because this would cause eager initialization issues.
 Instead, the return type of the bean method is used to find out which connection detail should be used.
-This works as long as you're using typed containers such as javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[] or javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.containers.RabbitMQContainer[].
+This works as long as you're using typed containers such as javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.neo4j.Neo4jContainer[] or javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.rabbitmq.RabbitMQContainer[].
 This stops working if you're using javadoc:org.testcontainers.containers.GenericContainer[], for example with Redis as shown in the following example:
 
 include-code::MyRedisConfiguration[]

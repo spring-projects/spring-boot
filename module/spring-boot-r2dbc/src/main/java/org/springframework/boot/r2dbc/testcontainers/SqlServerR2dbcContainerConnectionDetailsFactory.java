@@ -17,8 +17,8 @@
 package org.springframework.boot.r2dbc.testcontainers;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.testcontainers.containers.MSSQLR2DBCDatabaseContainer;
-import org.testcontainers.containers.MSSQLServerContainer;
+import org.testcontainers.mssqlserver.MSSQLR2DBCDatabaseContainer;
+import org.testcontainers.mssqlserver.MSSQLServerContainer;
 
 import org.springframework.boot.r2dbc.autoconfigure.R2dbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
@@ -34,7 +34,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class SqlServerR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<MSSQLServerContainer<?>, R2dbcConnectionDetails> {
+		extends ContainerConnectionDetailsFactory<MSSQLServerContainer, R2dbcConnectionDetails> {
 
 	SqlServerR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
@@ -42,7 +42,7 @@ class SqlServerR2dbcContainerConnectionDetailsFactory
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<MSSQLServerContainer<?>> source) {
+			ContainerConnectionSource<MSSQLServerContainer> source) {
 		return new MsSqlServerR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
@@ -50,10 +50,10 @@ class SqlServerR2dbcContainerConnectionDetailsFactory
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
 	private static final class MsSqlServerR2dbcDatabaseContainerConnectionDetails
-			extends ContainerConnectionDetails<MSSQLServerContainer<?>> implements R2dbcConnectionDetails {
+			extends ContainerConnectionDetails<MSSQLServerContainer> implements R2dbcConnectionDetails {
 
 		private MsSqlServerR2dbcDatabaseContainerConnectionDetails(
-				ContainerConnectionSource<MSSQLServerContainer<?>> source) {
+				ContainerConnectionSource<MSSQLServerContainer> source) {
 			super(source);
 		}
 

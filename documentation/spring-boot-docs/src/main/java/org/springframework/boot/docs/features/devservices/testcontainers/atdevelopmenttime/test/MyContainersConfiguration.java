@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.test;
 
-import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.neo4j.Neo4jContainer;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -27,8 +27,8 @@ public class MyContainersConfiguration {
 
 	@Bean
 	@ServiceConnection
-	public Neo4jContainer<?> neo4jContainer() {
-		return new Neo4jContainer<>("neo4j:5");
+	public Neo4jContainer neo4jContainer() {
+		return new Neo4jContainer("neo4j:5");
 	}
 
 }
