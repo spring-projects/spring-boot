@@ -206,6 +206,7 @@ class ThymeleafServletAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			ThymeleafView view = (ThymeleafView) context.getBean(ThymeleafViewResolver.class)
 				.resolveViewName("view", Locale.UK);
+			assertThat(view).isNotNull();
 			MockHttpServletResponse response = new MockHttpServletResponse();
 			MockHttpServletRequest request = new MockHttpServletRequest(context.getBean(ServletContext.class));
 			request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
