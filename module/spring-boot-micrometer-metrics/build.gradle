@@ -62,12 +62,12 @@ dependencies {
 	optional("org.apache.kafka:kafka-streams")
 	optional("org.apache.logging.log4j:log4j-core")
 	optional("org.aspectj:aspectjweaver")
-	optional("org.testcontainers:grafana")
+	optional("org.testcontainers:testcontainers-grafana")
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
 	dockerTestImplementation("io.rest-assured:rest-assured")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testFixturesImplementation(project(":test-support:spring-boot-test-support"))
 

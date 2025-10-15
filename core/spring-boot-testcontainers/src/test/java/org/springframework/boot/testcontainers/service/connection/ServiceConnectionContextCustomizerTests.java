@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -51,7 +51,7 @@ class ServiceConnectionContextCustomizerTests {
 
 	private Origin origin;
 
-	private PostgreSQLContainer<?> container;
+	private PostgreSQLContainer container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
@@ -94,8 +94,8 @@ class ServiceConnectionContextCustomizerTests {
 
 	@Test
 	void equalsAndHashCode() {
-		PostgreSQLContainer<?> container1 = mock(PostgreSQLContainer.class);
-		PostgreSQLContainer<?> container2 = mock(PostgreSQLContainer.class);
+		PostgreSQLContainer container1 = mock(PostgreSQLContainer.class);
+		PostgreSQLContainer container2 = mock(PostgreSQLContainer.class);
 		MergedAnnotation<ServiceConnection> annotation1 = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "", "type", new Class<?>[0]));
 		MergedAnnotation<ServiceConnection> annotation2 = MergedAnnotation.of(ServiceConnection.class,

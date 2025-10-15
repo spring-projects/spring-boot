@@ -20,9 +20,9 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.Driver;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -57,7 +57,7 @@ class DataNeo4jTestReactiveIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final Neo4jContainer<?> neo4j = TestImage.container(Neo4jContainer.class).withoutAuthentication();
+	static final Neo4jContainer neo4j = TestImage.container(Neo4jContainer.class).withoutAuthentication();
 
 	@Autowired
 	private ReactiveNeo4jTemplate neo4jTemplate;

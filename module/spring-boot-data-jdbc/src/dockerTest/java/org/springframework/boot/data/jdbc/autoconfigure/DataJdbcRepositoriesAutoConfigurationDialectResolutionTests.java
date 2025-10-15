@@ -18,9 +18,9 @@ package org.springframework.boot.data.jdbc.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.mariadb.MariaDBContainer;
+import org.testcontainers.mysql.MySQLContainer;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;

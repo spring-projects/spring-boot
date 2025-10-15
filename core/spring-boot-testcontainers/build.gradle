@@ -41,8 +41,8 @@ dependencies {
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-core-test")
 	dockerTestImplementation("org.springframework:spring-jdbc")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:postgresql")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-postgresql")
 
 	dockerTestRuntimeOnly("com.zaxxer:HikariCP")
 	dockerTestRuntimeOnly("com.h2database:h2")
@@ -54,8 +54,8 @@ dependencies {
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:postgresql")
+	testImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	testImplementation("org.testcontainers:testcontainers-postgresql")
 }
 
 dockerTest {

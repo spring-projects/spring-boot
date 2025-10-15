@@ -30,19 +30,19 @@ import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.PulsarContainer;
-import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.grafana.LgtmStackContainer;
 import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.ldap.LLdapContainer;
+import org.testcontainers.mariadb.MariaDBContainer;
 import org.testcontainers.mongodb.MongoDBAtlasLocalContainer;
+import org.testcontainers.mongodb.MongoDBContainer;
+import org.testcontainers.mysql.MySQLContainer;
+import org.testcontainers.neo4j.Neo4jContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.pulsar.PulsarContainer;
+import org.testcontainers.rabbitmq.RabbitMQContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -176,7 +176,7 @@ public enum TestImage {
 	 * A container image suitable for testing Neo4j.
 	 */
 	NEO4J("neo4j", "5.26.11", () -> Neo4jContainer.class,
-			(container) -> ((Neo4jContainer<?>) container).withStartupAttempts(5)
+			(container) -> ((Neo4jContainer) container).withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**

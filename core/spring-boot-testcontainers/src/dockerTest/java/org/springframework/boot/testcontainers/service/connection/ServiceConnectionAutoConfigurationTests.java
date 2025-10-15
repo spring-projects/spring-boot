@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -142,7 +142,7 @@ class ServiceConnectionAutoConfigurationTests {
 
 		@Bean
 		@ServiceConnection
-		PostgreSQLContainer<?> postgresContainer() {
+		PostgreSQLContainer postgresContainer() {
 			return TestImage.container(PostgreSQLContainer.class);
 		}
 
@@ -176,7 +176,7 @@ class ServiceConnectionAutoConfigurationTests {
 
 	static class TestcontainersRootBeanDefinition extends RootBeanDefinition implements TestcontainerBeanDefinition {
 
-		private final PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
+		private final PostgreSQLContainer container = TestImage.container(PostgreSQLContainer.class);
 
 		TestcontainersRootBeanDefinition() {
 			setBeanClass(PostgreSQLContainer.class);

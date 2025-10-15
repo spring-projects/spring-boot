@@ -22,7 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.FutureContainer;
 import org.testcontainers.containers.JdbcDatabaseContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.origin.Origin;
@@ -45,7 +45,7 @@ class ContainerConnectionSourceTests {
 
 	private Origin origin;
 
-	private PostgreSQLContainer<?> container;
+	private PostgreSQLContainer container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 

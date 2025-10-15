@@ -16,9 +16,9 @@
 
 package org.springframework.boot.docs.testing.testcontainers.importingconfigurationinterfaces;
 
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.mongodb.MongoDBContainer;
+import org.testcontainers.neo4j.Neo4jContainer;
 
 interface MyContainers {
 
@@ -26,6 +26,6 @@ interface MyContainers {
 	MongoDBContainer mongoContainer = new MongoDBContainer("mongo:5.0");
 
 	@Container
-	Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5");
+	Neo4jContainer neo4jContainer = new Neo4jContainer("neo4j:5");
 
 }

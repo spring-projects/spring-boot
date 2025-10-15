@@ -38,7 +38,7 @@ dependencies {
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 }
 
