@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.stream.Stream;
 
 import jakarta.servlet.MultipartConfigElement;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,6 +34,7 @@ import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -69,7 +71,7 @@ import static org.mockito.Mockito.mock;
 @DirtiesUrlFactories
 class MultipartAutoConfigurationTests {
 
-	private AnnotationConfigServletWebServerApplicationContext context;
+	private @Nullable AnnotationConfigServletWebServerApplicationContext context;
 
 	@AfterEach
 	void close() {
@@ -83,7 +85,7 @@ class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(WebServerWithNothing.class,
 				BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
-		verify404();
+		verify404(this.context);
 		assertThat(servlet.getMultipartResolver()).isNotNull();
 		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(MultipartResolver.class)).hasSize(1);
@@ -96,7 +98,7 @@ class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(configuration, BaseConfiguration.class);
 		assertThat(this.context.getBeansOfType(StandardServletMultipartResolver.class)).hasSize(1);
 		assertThat(this.context.getBeansOfType(MultipartResolver.class)).hasSize(1);
-		verifyServletWorks();
+		verifyServletWorks(this.context);
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
 			.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
 	}
@@ -112,7 +114,7 @@ class MultipartAutoConfigurationTests {
 	void webServerWithAutomatedMultipartConfiguration(String server, Class<?> configuration) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(configuration, BaseConfiguration.class);
 		this.context.getBean(MultipartConfigElement.class);
-		verifyServletWorks();
+		verifyServletWorks(this.context);
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
 			.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
 	}
@@ -200,18 +202,22 @@ class MultipartAutoConfigurationTests {
 		assertThat(multipartConfigElement.getMaxRequestSize()).isEqualTo(2048);
 	}
 
-	private void verify404() throws Exception {
+	private void verify404(AnnotationConfigServletWebServerApplicationContext context) throws Exception {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+		WebServer webServer = context.getWebServer();
+		assertThat(webServer).isNotNull();
 		ClientHttpRequest request = requestFactory
-			.createRequest(new URI("http://localhost:" + this.context.getWebServer().getPort() + "/"), HttpMethod.GET);
+			.createRequest(new URI("http://localhost:" + webServer.getPort() + "/"), HttpMethod.GET);
 		try (ClientHttpResponse response = request.execute()) {
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		}
 	}
 
-	private void verifyServletWorks() {
+	private void verifyServletWorks(AnnotationConfigServletWebServerApplicationContext context) {
 		RestTemplate restTemplate = new RestTemplate();
-		String url = "http://localhost:" + this.context.getWebServer().getPort() + "/";
+		WebServer webServer = context.getWebServer();
+		assertThat(webServer).isNotNull();
+		String url = "http://localhost:" + webServer.getPort() + "/";
 		assertThat(restTemplate.getForObject(url, String.class)).isEqualTo("Hello");
 	}
 
