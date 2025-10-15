@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.neo4j.autoconfigure.ConfigBuilderCustomizer;
 import org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -44,7 +43,7 @@ public final class Neo4jObservationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(ObservationRegistry.class)
-	@Order(Ordered.HIGHEST_PRECEDENCE)
+	@Order(0)
 	ConfigBuilderCustomizer neo4jObservationCustomizer(ObservationRegistry registry) {
 		return (builder) -> builder.withObservationProvider(MicrometerObservationProvider.builder(registry).build());
 	}
