@@ -224,7 +224,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		}
 
 		@Bean
-		SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain securityFilterChain(HttpSecurity http) {
 			http.authorizeHttpRequests((requests) -> {
 				requests.requestMatchers(EndpointRequest.toLinks()).permitAll();
 				requests.requestMatchers(EndpointRequest.to(TestEndpoint1.class).withHttpMethod(HttpMethod.POST))

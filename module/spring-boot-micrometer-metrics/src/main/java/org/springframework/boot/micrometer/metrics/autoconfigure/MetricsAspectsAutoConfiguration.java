@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics
@@ -68,6 +69,7 @@ public final class MetricsAspectsAutoConfiguration {
 		return timedAspect;
 	}
 
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(ValueExpressionResolver.class)
 	static class TagAnnotationHandlersConfiguration {
 

@@ -38,7 +38,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 class Saml2LoginConfiguration {
 
 	@Bean
-	SecurityFilterChain samlSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain samlSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 		http.saml2Login(withDefaults());
 		http.saml2Logout(withDefaults());

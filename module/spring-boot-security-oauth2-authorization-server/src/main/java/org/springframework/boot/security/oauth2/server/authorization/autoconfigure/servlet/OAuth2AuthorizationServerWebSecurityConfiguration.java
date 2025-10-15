@@ -49,7 +49,7 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) {
 		OAuth2AuthorizationServerConfigurer authorizationServer = new OAuth2AuthorizationServerConfigurer();
 		http.securityMatcher(authorizationServer.getEndpointsMatcher());
 		http.with(authorizationServer, withDefaults());
@@ -63,7 +63,7 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 
 	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).formLogin(withDefaults());
 		return http.build();
 	}

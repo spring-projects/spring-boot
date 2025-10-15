@@ -56,7 +56,7 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
-	SecurityFilterChain configure(HttpSecurity http) throws Exception {
+	SecurityFilterChain configure(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/actuator/beans"))
 				.hasRole("BEANS");

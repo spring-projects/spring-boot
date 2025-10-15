@@ -26,7 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class MySecurityConfig {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		// Customize the application security ...
 		http.redirectToHttps(Customizer.withDefaults());
 		return http.build();

@@ -99,7 +99,7 @@ class SampleWebSecureApplicationTests {
 	static class SecurityConfiguration {
 
 		@Bean
-		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		SecurityFilterChain configure(HttpSecurity http) {
 			http.csrf(CsrfConfigurer::disable);
 			http.authorizeHttpRequests((requests) -> {
 				requests.requestMatchers("/public/**").permitAll();

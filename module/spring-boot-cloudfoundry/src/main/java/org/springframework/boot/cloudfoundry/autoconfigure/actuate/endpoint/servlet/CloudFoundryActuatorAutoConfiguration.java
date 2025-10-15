@@ -174,7 +174,7 @@ public final class CloudFoundryActuatorAutoConfiguration {
 		@Bean
 		@Order(FILTER_CHAIN_ORDER)
 		SecurityFilterChain cloudFoundrySecurityFilterChain(HttpSecurity http,
-				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) throws Exception {
+				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
 			RequestMatcher cloudFoundryRequest = getRequestMatcher(handlerMapping);
 			http.csrf((csrf) -> csrf.ignoringRequestMatchers(cloudFoundryRequest));
 			http.securityMatchers((matches) -> matches.requestMatchers(cloudFoundryRequest))

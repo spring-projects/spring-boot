@@ -28,7 +28,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class MySecurityConfiguration {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		http.securityMatcher(EndpointRequest.toAnyEndpoint());
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
 		http.httpBasic(withDefaults());

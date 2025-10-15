@@ -44,7 +44,7 @@ class ErrorPageTests extends AbstractErrorPageTests {
 	static class SecurityConfiguration {
 
 		@Bean
-		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		SecurityFilterChain configure(HttpSecurity http) {
 			http.authorizeHttpRequests((requests) -> {
 				requests.requestMatchers("/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();

@@ -35,7 +35,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 class SecurityConfiguration {
 
 	@Bean
-	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> {
 			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
 			requests.anyRequest().authenticated();

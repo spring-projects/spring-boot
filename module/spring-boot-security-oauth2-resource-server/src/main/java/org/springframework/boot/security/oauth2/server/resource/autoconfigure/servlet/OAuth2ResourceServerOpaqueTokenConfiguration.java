@@ -69,7 +69,7 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 
 		@Bean
 		@ConditionalOnBean(OpaqueTokenIntrospector.class)
-		SecurityFilterChain opaqueTokenSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain opaqueTokenSecurityFilterChain(HttpSecurity http) {
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.oauth2ResourceServer((resourceServer) -> resourceServer.opaqueToken(withDefaults()));
 			return http.build();

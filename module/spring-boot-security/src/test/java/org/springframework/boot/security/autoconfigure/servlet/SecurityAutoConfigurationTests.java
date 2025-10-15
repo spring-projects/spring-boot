@@ -272,7 +272,7 @@ class SecurityAutoConfigurationTests {
 	static class TestSecurityFilterChainConfig {
 
 		@Bean
-		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) {
 			return http.securityMatcher("/**")
 				.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 				.build();

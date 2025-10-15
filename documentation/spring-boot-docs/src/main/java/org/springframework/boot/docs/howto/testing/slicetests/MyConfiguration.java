@@ -29,7 +29,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class MyConfiguration {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 		return http.build();
 	}

@@ -85,6 +85,7 @@ class ElasticsearchClientConfigurations {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ElasticsearchTransport.class)
 	static class ElasticsearchTransportConfiguration {
 

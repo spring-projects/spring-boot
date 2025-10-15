@@ -27,7 +27,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class MySamlRelyingPartyConfiguration {
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 		http.saml2Login(withDefaults());
 		http.saml2Logout((saml2) -> saml2.logoutRequest((request) -> request.logoutUrl("/SLOService.saml2"))

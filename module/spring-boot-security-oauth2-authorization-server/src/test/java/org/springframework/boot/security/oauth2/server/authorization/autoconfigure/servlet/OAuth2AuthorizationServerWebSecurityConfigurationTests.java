@@ -164,7 +164,7 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 
 		@Bean
 		@Order(1)
-		SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) {
 			OAuth2AuthorizationServerConfigurer authorizationServer = new OAuth2AuthorizationServerConfigurer();
 			http.securityMatcher(authorizationServer.getEndpointsMatcher())
 				.with(authorizationServer, Customizer.withDefaults());
@@ -174,7 +174,7 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 
 		@Bean
 		@Order(2)
-		SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain securityFilterChain(HttpSecurity http) {
 			return http.httpBasic(withDefaults()).build();
 		}
 

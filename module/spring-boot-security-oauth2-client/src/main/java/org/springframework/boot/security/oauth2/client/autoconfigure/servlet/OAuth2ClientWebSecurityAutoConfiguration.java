@@ -63,7 +63,7 @@ public final class OAuth2ClientWebSecurityAutoConfiguration {
 	static class OAuth2SecurityFilterChainConfiguration {
 
 		@Bean
-		SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) {
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.oauth2Login(withDefaults());
 			http.oauth2Client(withDefaults());

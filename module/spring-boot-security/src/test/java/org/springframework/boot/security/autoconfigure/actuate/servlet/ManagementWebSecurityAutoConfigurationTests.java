@@ -194,7 +194,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 	static class CustomSecurityConfiguration {
 
 		@Bean
-		SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain securityFilterChain(HttpSecurity http) {
 			http.authorizeHttpRequests((requests) -> {
 				requests.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher("/foo")).permitAll();
 				requests.anyRequest().authenticated();
@@ -210,7 +210,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 	static class TestSecurityFilterChainConfig {
 
 		@Bean
-		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) {
 			return http.securityMatcher("/**")
 				.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 				.build();
@@ -223,7 +223,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 
 		@Bean
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
-		SecurityFilterChain testRemoteDevToolsSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain testRemoteDevToolsSecurityFilterChain(HttpSecurity http) {
 			http.securityMatcher(PathPatternRequestMatcher.withDefaults().matcher("/**"));
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
 			http.csrf((csrf) -> csrf.disable());

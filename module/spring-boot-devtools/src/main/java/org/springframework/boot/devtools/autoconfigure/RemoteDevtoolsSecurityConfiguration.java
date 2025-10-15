@@ -47,7 +47,7 @@ class RemoteDevtoolsSecurityConfiguration {
 
 	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
-	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) {
 		http.securityMatcher(PathPatternRequestMatcher.withDefaults().matcher(this.url));
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
 		http.csrf(CsrfConfigurer::disable);

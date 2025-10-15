@@ -885,7 +885,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	static class TestSecurityFilterChainConfig {
 
 		@Bean
-		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) {
 			http.securityMatcher("/**");
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			return http.build();

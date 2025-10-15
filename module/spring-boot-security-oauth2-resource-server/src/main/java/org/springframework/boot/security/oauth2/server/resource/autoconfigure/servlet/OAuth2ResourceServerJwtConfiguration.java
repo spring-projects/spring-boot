@@ -181,7 +181,7 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		@Bean
 		@ConditionalOnBean(JwtDecoder.class)
-		SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
+		SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) {
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.oauth2ResourceServer((resourceServer) -> resourceServer.jwt(withDefaults()));
 			return http.build();

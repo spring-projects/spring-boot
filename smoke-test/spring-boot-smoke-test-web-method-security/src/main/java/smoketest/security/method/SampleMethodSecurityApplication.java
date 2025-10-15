@@ -75,7 +75,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 	protected static class ApplicationSecurity {
 
 		@Bean
-		SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		SecurityFilterChain configure(HttpSecurity http) {
 			http.csrf(CsrfConfigurer::disable);
 			http.authorizeHttpRequests((requests) -> {
 				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
@@ -94,7 +94,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 	protected static class ActuatorSecurity {
 
 		@Bean
-		SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
+		SecurityFilterChain actuatorSecurity(HttpSecurity http) {
 			http.csrf(CsrfConfigurer::disable);
 			http.securityMatcher(EndpointRequest.toAnyEndpoint());
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
