@@ -62,3 +62,11 @@ dependencies {
 toolchain {
 	maximumCompatibleJavaVersion = JavaLanguageVersion.of(23)
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileSystemTestJava") {
+	options.nullability.checking = "tests"
+}
