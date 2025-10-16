@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  * A base URL that can be used to connect to the running server.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 4.0.0
  */
 public interface BaseUrl {
@@ -68,6 +69,13 @@ public interface BaseUrl {
 	String resolve();
 
 	/**
+	 * Return a new instance that applies the given {@code path}.
+	 * @param path a path to append
+	 * @return a new instance with the path added
+	 */
+	BaseUrl withPath(String path);
+
+	/**
 	 * Factory method to create a new {@link BaseUrl}.
 	 * @param url the URL to use
 	 * @return a new {@link BaseUrl} instance
@@ -84,20 +92,37 @@ public interface BaseUrl {
 	 * @return a new {@link BaseUrl} instance
 	 */
 	static BaseUrl of(boolean https, Supplier<String> resolver) {
-		Assert.notNull(resolver, "'resolver' must not be null");
-		return new BaseUrl() {
+		return new DefaultBaseUrl(https, resolver);
+	}
 
-			@Override
-			public boolean isHttps() {
-				return https;
-			}
+	final class DefaultBaseUrl implements BaseUrl {
 
-			@Override
-			public String resolve() {
-				return resolver.get();
-			}
+		private final boolean https;
 
-		};
+		private final Supplier<String> resolver;
+
+		private DefaultBaseUrl(boolean https, Supplier<String> resolver) {
+			Assert.notNull(resolver, "'resolver' must not be null");
+			this.https = https;
+			this.resolver = resolver;
+		}
+
+		@Override
+		public boolean isHttps() {
+			return this.https;
+		}
+
+		@Override
+		public String resolve() {
+			return this.resolver.get();
+		}
+
+		@Override
+		public BaseUrl withPath(String path) {
+			Supplier<String> updatedResolver = () -> this.resolver.get() + path;
+			return new DefaultBaseUrl(this.https, updatedResolver);
+		}
+
 	}
 
 }

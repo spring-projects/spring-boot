@@ -84,4 +84,22 @@ class BaseUrlTests {
 			.withMessage("'resolver' must not be null");
 	}
 
+	@Test
+	void withPath() {
+		BaseUrl baseUrl = BaseUrl.of("http://localhost");
+		assertThat(baseUrl.withPath("/context").resolve("")).isEqualTo("http://localhost/context");
+		assertThat(baseUrl.withPath("/context").withPath("/test").resolve("path"))
+			.isEqualTo("http://localhost/context/test/path");
+	}
+
+	@Test
+	void withPathInvokesParentResolver() {
+		AtomicInteger atomicInteger = new AtomicInteger();
+		BaseUrl baseUrl = BaseUrl.of(true,
+				() -> "https://example.com/" + atomicInteger.incrementAndGet());
+		assertThat(baseUrl.withPath("/context").resolve("")).isEqualTo("https://example.com/1/context");
+		assertThat(baseUrl.withPath("/context").withPath("/test").resolve("path"))
+				.isEqualTo("https://example.com/2/context/test/path");
+	}
+
 }
