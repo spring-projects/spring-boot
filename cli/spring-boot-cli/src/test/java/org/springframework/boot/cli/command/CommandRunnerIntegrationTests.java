@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cli.command;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +59,7 @@ class CommandRunnerIntegrationTests {
 
 	static class ArgHandlingCommand extends AbstractCommand {
 
-		private String[] args;
+		private String @Nullable [] args;
 
 		ArgHandlingCommand() {
 			super("args", "");

@@ -26,6 +26,7 @@ import java.util.zip.ZipOutputStream;
 
 import joptsimple.OptionSet;
 import org.apache.hc.core5.http.HttpHost;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -255,6 +256,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		this.command.run("-g=org.demo", "-a=acme", "-v=1.2.3-SNAPSHOT", "-n=acme-sample",
 				"--description=Acme sample project", "--package-name=demo.foo", "-t=ant-project", "--build=grunt",
 				"--format=web", "-p=war", "-j=1.9", "-l=groovy", "-b=1.2.0.RELEASE", "-d=web,data-jpa");
+		assertThat(this.handler.lastRequest).isNotNull();
 		assertThat(this.handler.lastRequest.getGroupId()).isEqualTo("org.demo");
 		assertThat(this.handler.lastRequest.getArtifactId()).isEqualTo("acme");
 		assertThat(this.handler.lastRequest.getVersion()).isEqualTo("1.2.3-SNAPSHOT");
@@ -281,6 +283,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 				"--description=Acme sample project", "--packageName=demo.foo", "--type=ant-project", "--build=grunt",
 				"--format=web", "--packaging=war", "--javaVersion=1.9", "--language=groovy",
 				"--bootVersion=1.2.0.RELEASE", "--dependencies=web,data-jpa");
+		assertThat(this.handler.lastRequest).isNotNull();
 		assertThat(this.handler.lastRequest.getGroupId()).isEqualTo("org.demo");
 		assertThat(this.handler.lastRequest.getArtifactId()).isEqualTo("acme");
 		assertThat(this.handler.lastRequest.getVersion()).isEqualTo("1.2.3-SNAPSHOT");
@@ -307,6 +310,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 				"--description=Acme sample project", "--package-name=demo.foo", "--type=ant-project", "--build=grunt",
 				"--format=web", "--packaging=war", "--java-version=1.9", "--language=groovy",
 				"--boot-version=1.2.0.RELEASE", "--dependencies=web,data-jpa");
+		assertThat(this.handler.lastRequest).isNotNull();
 		assertThat(this.handler.lastRequest.getGroupId()).isEqualTo("org.demo");
 		assertThat(this.handler.lastRequest.getArtifactId()).isEqualTo("acme");
 		assertThat(this.handler.lastRequest.getVersion()).isEqualTo("1.2.3-SNAPSHOT");
@@ -344,6 +348,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void parseTypeOnly() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("-t=ant-project");
+		assertThat(this.handler.lastRequest).isNotNull();
 		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("gradle");
 		assertThat(this.handler.lastRequest.getFormat()).isEqualTo("project");
 		assertThat(this.handler.lastRequest.isDetectType()).isFalse();
@@ -354,6 +359,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void parseBuildOnly() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("--build=ant");
+		assertThat(this.handler.lastRequest).isNotNull();
 		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("ant");
 		assertThat(this.handler.lastRequest.getFormat()).isEqualTo("project");
 		assertThat(this.handler.lastRequest.isDetectType()).isTrue();
@@ -364,6 +370,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void parseFormatOnly() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("--format=web");
+		assertThat(this.handler.lastRequest).isNotNull();
 		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("gradle");
 		assertThat(this.handler.lastRequest.getFormat()).isEqualTo("web");
 		assertThat(this.handler.lastRequest.isDetectType()).isTrue();
@@ -374,6 +381,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void parseLocation() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("foobar.zip");
+		assertThat(this.handler.lastRequest).isNotNull();
 		assertThat(this.handler.lastRequest.getOutput()).isEqualTo("foobar.zip");
 	}
 
@@ -381,6 +389,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void parseLocationWithSlash() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("foobar/");
+		assertThat(this.handler.lastRequest).isNotNull();
 		assertThat(this.handler.lastRequest.getOutput()).isEqualTo("foobar");
 		assertThat(this.handler.lastRequest.isExtract()).isTrue();
 	}
@@ -415,7 +424,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 
 		private boolean disableProjectGeneration;
 
-		private ProjectGenerationRequest lastRequest;
+		private @Nullable ProjectGenerationRequest lastRequest;
 
 		TestableInitCommandOptionHandler(InitializrService initializrService) {
 			super(initializrService);

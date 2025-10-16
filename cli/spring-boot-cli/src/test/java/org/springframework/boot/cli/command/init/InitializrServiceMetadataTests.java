@@ -60,12 +60,22 @@ class InitializrServiceMetadataTests {
 		assertThat(metadata.getDependencies()).hasSize(5);
 
 		// Security description
-		assertThat(metadata.getDependency("aop").getName()).isEqualTo("AOP");
-		assertThat(metadata.getDependency("security").getName()).isEqualTo("Security");
-		assertThat(metadata.getDependency("security").getDescription()).isEqualTo("Security description");
-		assertThat(metadata.getDependency("jdbc").getName()).isEqualTo("JDBC");
-		assertThat(metadata.getDependency("data-jpa").getName()).isEqualTo("JPA");
-		assertThat(metadata.getDependency("data-mongodb").getName()).isEqualTo("MongoDB");
+		Dependency aop = metadata.getDependency("aop");
+		assertThat(aop).isNotNull();
+		assertThat(aop.getName()).isEqualTo("AOP");
+		Dependency security = metadata.getDependency("security");
+		assertThat(security).isNotNull();
+		assertThat(security.getName()).isEqualTo("Security");
+		assertThat(security.getDescription()).isEqualTo("Security description");
+		Dependency jdbc = metadata.getDependency("jdbc");
+		assertThat(jdbc).isNotNull();
+		assertThat(jdbc.getName()).isEqualTo("JDBC");
+		Dependency dataJpa = metadata.getDependency("data-jpa");
+		assertThat(dataJpa).isNotNull();
+		assertThat(dataJpa.getName()).isEqualTo("JPA");
+		Dependency dataMongodb = metadata.getDependency("data-mongodb");
+		assertThat(dataMongodb).isNotNull();
+		assertThat(dataMongodb.getName()).isEqualTo("MongoDB");
 	}
 
 	@Test

@@ -162,3 +162,11 @@ publishing {
 eclipse.classpath { // https://github.com/eclipse/buildship/issues/939
 	plusConfigurations += [ configurations.compileOnlyProject ]
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileIntTestJava") {
+	options.nullability.checking = "tests"
+}

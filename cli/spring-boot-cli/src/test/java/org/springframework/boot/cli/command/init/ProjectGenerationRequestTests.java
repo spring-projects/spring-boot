@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cli.json.JSONException;
@@ -219,7 +220,7 @@ class ProjectGenerationRequestTests {
 		return createUrl("/starter.zip" + param);
 	}
 
-	void setBuildAndFormat(String build, String format) {
+	void setBuildAndFormat(@Nullable String build, @Nullable String format) {
 		this.request.setBuild((build != null) ? build : "maven");
 		this.request.setFormat((format != null) ? format : "project");
 		this.request.setDetectType(true);
