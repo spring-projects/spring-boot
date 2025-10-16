@@ -38,3 +38,7 @@ dependencies {
 		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

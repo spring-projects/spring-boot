@@ -52,6 +52,7 @@ class RemoteVehicleDetailsServiceTests {
 	private MockRestServiceServer server;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getVehicleDetailsWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.service.getVehicleDetails(null))
 			.withMessage("'vin' must not be null");

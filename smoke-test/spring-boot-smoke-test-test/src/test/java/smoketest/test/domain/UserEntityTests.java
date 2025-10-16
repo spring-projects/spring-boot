@@ -39,6 +39,7 @@ class UserEntityTests {
 	private TestEntityManager entityManager;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenUsernameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new User(null, VIN))
 			.withMessage("'username' must not be empty");
@@ -51,6 +52,7 @@ class UserEntityTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new User("sboot", null))
 			.withMessage("'vin' must not be null");

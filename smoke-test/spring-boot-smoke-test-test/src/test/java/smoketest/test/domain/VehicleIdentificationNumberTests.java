@@ -34,6 +34,7 @@ class VehicleIdentificationNumberTests {
 	private static final String SAMPLE_VIN = "41549485710496749";
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new VehicleIdentificationNumber(null))
 			.withMessage("'vin' must not be null");

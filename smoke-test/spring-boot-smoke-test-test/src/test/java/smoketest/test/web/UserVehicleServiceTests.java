@@ -44,9 +44,11 @@ class UserVehicleServiceTests {
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private VehicleDetailsService vehicleDetailsService;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private UserRepository userRepository;
 
 	private UserVehicleService service;
@@ -57,6 +59,7 @@ class UserVehicleServiceTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void getVehicleDetailsWhenUsernameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.service.getVehicleDetails(null))
 			.withMessage("'username' must not be null");

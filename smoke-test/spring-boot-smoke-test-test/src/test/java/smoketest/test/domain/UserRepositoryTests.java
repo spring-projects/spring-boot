@@ -44,6 +44,7 @@ class UserRepositoryTests {
 	void findByUsernameShouldReturnUser() {
 		this.entityManager.persist(new User("sboot", VIN));
 		User user = this.repository.findByUsername("sboot");
+		assertThat(user).isNotNull();
 		assertThat(user.getUsername()).isEqualTo("sboot");
 		assertThat(user.getVin()).isEqualTo(VIN);
 	}
