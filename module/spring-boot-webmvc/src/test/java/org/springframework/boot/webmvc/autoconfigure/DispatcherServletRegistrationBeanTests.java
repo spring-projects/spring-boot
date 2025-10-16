@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class DispatcherServletRegistrationBeanTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPathIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DispatcherServletRegistrationBean(new DispatcherServlet(), null))

@@ -27,6 +27,7 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -57,7 +58,9 @@ class WelcomePageIntegrationTests {
 	@Test
 	void contentStrategyWithWelcomePage() {
 		this.contextRunner.run((context) -> {
-			int port = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer().getPort();
+			WebServer webServer = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer();
+			assertThat(webServer).isNotNull();
+			int port = webServer.getPort();
 			RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + port + "/"))
 				.header("Accept", MediaType.ALL.toString())
 				.build();
@@ -70,7 +73,9 @@ class WelcomePageIntegrationTests {
 	@Test
 	void notAcceptableWelcomePage() {
 		this.contextRunner.run((context) -> {
-			int port = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer().getPort();
+			WebServer webServer = ((WebServerApplicationContext) context.getSourceApplicationContext()).getWebServer();
+			assertThat(webServer).isNotNull();
+			int port = webServer.getPort();
 			RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + port + "/"))
 				.header("Accept", "spring/boot")
 				.build();

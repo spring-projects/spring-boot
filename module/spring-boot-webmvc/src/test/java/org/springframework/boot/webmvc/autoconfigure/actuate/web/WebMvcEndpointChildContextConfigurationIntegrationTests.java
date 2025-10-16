@@ -83,6 +83,7 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 				"server.error.include-binding-errors=always");
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	Path temp;
 
 	@Test // gh-17938
@@ -188,8 +189,12 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	}
 
 	private ExchangeFunction<Map<String, ?>> toResponseBody() {
-		return ((request, response) -> response.bodyTo(new ParameterizedTypeReference<Map<String, ?>>() {
-		}));
+		return (request, response) -> {
+			Map<String, ?> body = response.bodyTo(new ParameterizedTypeReference<>() {
+			});
+			assertThat(body).isNotNull();
+			return body;
+		};
 	}
 
 	@Endpoint(id = "fail")
@@ -232,6 +237,7 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	public static class TestBody {
 
 		@NotEmpty
+		@SuppressWarnings("NullAway.Init")
 		private String content;
 
 		public String getContent() {

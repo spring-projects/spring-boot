@@ -40,6 +40,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.support.AopUtils;
@@ -101,6 +102,7 @@ import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.accept.StandardApiVersionDeprecationHandler;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.FormContentFilter;
@@ -343,14 +345,16 @@ class WebMvcAutoConfigurationTests {
 			.run((loader) -> {
 				// mock request and set user preferred locale
 				MockHttpServletRequest request = new MockHttpServletRequest();
-				request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
+				Locale locale = StringUtils.parseLocaleString("nl_NL");
+				assertThat(locale).isNotNull();
+				request.addPreferredLocale(locale);
 				request.addHeader(HttpHeaders.ACCEPT_LANGUAGE, "nl_NL");
 				LocaleResolver localeResolver = loader.getBean(LocaleResolver.class);
 				assertThat(localeResolver).isInstanceOf(FixedLocaleResolver.class);
-				Locale locale = localeResolver.resolveLocale(request);
+				Locale resolvedLocale = localeResolver.resolveLocale(request);
 				// test locale resolver uses fixed locale and not user preferred
 				// locale
-				assertThat(locale).hasToString("en_UK");
+				assertThat(resolvedLocale).hasToString("en_UK");
 			});
 	}
 
@@ -359,13 +363,15 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((loader) -> {
 			// mock request and set user preferred locale
 			MockHttpServletRequest request = new MockHttpServletRequest();
-			request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
+			Locale locale = StringUtils.parseLocaleString("nl_NL");
+			assertThat(locale).isNotNull();
+			request.addPreferredLocale(locale);
 			request.addHeader(HttpHeaders.ACCEPT_LANGUAGE, "nl_NL");
 			LocaleResolver localeResolver = loader.getBean(LocaleResolver.class);
 			assertThat(localeResolver).isInstanceOf(AcceptHeaderLocaleResolver.class);
-			Locale locale = localeResolver.resolveLocale(request);
+			Locale resolvedLocale = localeResolver.resolveLocale(request);
 			// test locale resolver uses user preferred locale
-			assertThat(locale).hasToString("nl_NL");
+			assertThat(resolvedLocale).hasToString("nl_NL");
 		});
 	}
 
@@ -595,9 +601,13 @@ class WebMvcAutoConfigurationTests {
 			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
 				.extracting("contentNegotiationManager",
 						InstanceOfAssertFactories.type(ContentNegotiationManager.class))
-				.satisfies((contentNegotiationManager) -> assertThat(
-						contentNegotiationManager.getStrategy(FixedContentNegotiationStrategy.class).getContentTypes())
-					.containsExactly(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)));
+				.satisfies((contentNegotiationManager) -> {
+					FixedContentNegotiationStrategy strategy = contentNegotiationManager
+						.getStrategy(FixedContentNegotiationStrategy.class);
+					assertThat(strategy).isNotNull();
+					assertThat(strategy.getContentTypes()).containsExactly(MediaType.APPLICATION_JSON,
+							MediaType.APPLICATION_XML);
+				}));
 	}
 
 	@Test
@@ -720,6 +730,7 @@ class WebMvcAutoConfigurationTests {
 				WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
 				UrlBasedCorsConfigurationSource source = (UrlBasedCorsConfigurationSource) bean
 					.getCorsConfigurationSource();
+				assertThat(source).isNotNull();
 				assertThat(source.getCorsConfigurations()).containsKey("/**");
 			});
 	}
@@ -969,7 +980,9 @@ class WebMvcAutoConfigurationTests {
 					SimpleUrlHandlerMapping.class);
 			DispatcherServlet extraDispatcherServlet = context.getBean("extraDispatcherServlet",
 					DispatcherServlet.class);
-			SimpleUrlHandlerMapping extraResourceHandlerMapping = extraDispatcherServlet.getWebApplicationContext()
+			WebApplicationContext webApplicationContext = extraDispatcherServlet.getWebApplicationContext();
+			assertThat(webApplicationContext).isNotNull();
+			SimpleUrlHandlerMapping extraResourceHandlerMapping = webApplicationContext
 				.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(resourceHandlerMapping).isNotSameAs(extraResourceHandlerMapping);
 			assertThat(resourceHandlerMapping.getUrlMap()).containsKey("/**");
@@ -1127,12 +1140,14 @@ class WebMvcAutoConfigurationTests {
 			.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class)
 			.getHandlerMap()
 			.get(mapping);
+		assertThat(resourceHandler).isNotNull();
 		return resourceHandler.getResourceResolvers();
 	}
 
 	protected List<ResourceTransformer> getResourceTransformers(ApplicationContext context, String mapping) {
 		SimpleUrlHandlerMapping handler = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 		ResourceHttpRequestHandler resourceHandler = (ResourceHttpRequestHandler) handler.getHandlerMap().get(mapping);
+		assertThat(resourceHandler).isNotNull();
 		return resourceHandler.getResourceTransformers();
 	}
 
@@ -1141,8 +1156,10 @@ class WebMvcAutoConfigurationTests {
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<>();
 		getHandlerMap(mapping).forEach((key, value) -> {
 			List<String> locationValues = (List<String>) ReflectionTestUtils.getField(value, "locationValues");
+			assertThat(locationValues).isNotNull();
 			List<Resource> locationResources = (List<Resource>) ReflectionTestUtils.getField(value,
 					"locationResources");
+			assertThat(locationResources).isNotNull();
 			List<Resource> resources = new ArrayList<>();
 			for (String locationValue : locationValues) {
 				resources.add(context.getResource(locationValue));
@@ -1236,7 +1253,7 @@ class WebMvcAutoConfigurationTests {
 	static class MyViewResolver implements ViewResolver {
 
 		@Override
-		public View resolveViewName(String viewName, Locale locale) {
+		public @Nullable View resolveViewName(String viewName, Locale locale) {
 			return null;
 		}
 
@@ -1540,7 +1557,8 @@ class WebMvcAutoConfigurationTests {
 		}
 
 		@Override
-		public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+		public void setLocale(HttpServletRequest request, @Nullable HttpServletResponse response,
+				@Nullable Locale locale) {
 		}
 
 	}
@@ -1548,7 +1566,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomFlashMapManager extends AbstractFlashMapManager {
 
 		@Override
-		protected List<FlashMap> retrieveFlashMaps(HttpServletRequest request) {
+		protected @Nullable List<FlashMap> retrieveFlashMaps(HttpServletRequest request) {
 			return null;
 		}
 
@@ -1563,7 +1581,7 @@ class WebMvcAutoConfigurationTests {
 	static class CustomViewNameTranslator implements RequestToViewNameTranslator {
 
 		@Override
-		public String getViewName(HttpServletRequest requestAttributes) {
+		public @Nullable String getViewName(HttpServletRequest requestAttributes) {
 			return null;
 		}
 

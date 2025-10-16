@@ -19,6 +19,7 @@ package org.springframework.boot.webmvc.autoconfigure.actuate.web;
 import java.util.function.Supplier;
 
 import jakarta.servlet.http.HttpServlet;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
@@ -59,7 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WebMvcEndpointIntegrationTests {
 
-	private AnnotationConfigServletWebApplicationContext context;
+	private @Nullable AnnotationConfigServletWebApplicationContext context;
 
 	@Test
 	void webMvcEndpointHandlerMappingIsConfiguredWithPathPatternParser() {
@@ -103,6 +104,7 @@ class WebMvcEndpointIntegrationTests {
 	}
 
 	private MockMvcTester doCreateMockMvcTester() {
+		assertThat(this.context).isNotNull();
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		return MockMvcTester.from(this.context);

@@ -37,6 +37,7 @@ import org.springframework.boot.servlet.autoconfigure.actuate.web.ServletManagem
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
@@ -157,9 +158,10 @@ class WebMvcEndpointAccessIntegrationTests {
 	}
 
 	private RestClient createClient(AssertableWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
-			.getWebServer()
-			.getPort();
+		WebServer webServer = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
+			.getWebServer();
+		assertThat(webServer).isNotNull();
+		int port = webServer.getPort();
 		return RestClient.builder().defaultStatusHandler((status) -> true, (request, response) -> {
 		}).baseUrl("http://localhost:" + port).build();
 	}

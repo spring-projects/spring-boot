@@ -40,6 +40,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -61,6 +62,7 @@ class DefaultErrorViewResolverTests {
 	private DefaultErrorViewResolver resolver;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private TemplateAvailabilityProvider templateAvailabilityProvider;
 
 	private Resources resourcesProperties;
@@ -81,12 +83,14 @@ class DefaultErrorViewResolverTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DefaultErrorViewResolver(null, new Resources()))
 			.withMessageContaining("'applicationContext' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenResourcePropertiesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), (Resources) null))
@@ -123,6 +127,7 @@ class DefaultErrorViewResolverTests {
 			.willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.SERVICE_UNAVAILABLE,
 				this.model);
+		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("error/5xx");
 	}
 
@@ -135,6 +140,7 @@ class DefaultErrorViewResolverTests {
 				any(ClassLoader.class), any(ResourceLoader.class)))
 			.willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
+		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("error/4xx");
 	}
 
@@ -142,6 +148,7 @@ class DefaultErrorViewResolverTests {
 	void resolveWhenExactResourceMatchShouldReturnResource() throws Exception {
 		setResourceLocation("/exact");
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
+		assertThat(resolved).isNotNull();
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
@@ -151,6 +158,7 @@ class DefaultErrorViewResolverTests {
 	void resolveWhenSeries4xxResourceMatchShouldReturnResource() throws Exception {
 		setResourceLocation("/4xx");
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
+		assertThat(resolved).isNotNull();
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("4xx/4xx");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
@@ -161,6 +169,7 @@ class DefaultErrorViewResolverTests {
 		setResourceLocation("/5xx");
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.INTERNAL_SERVER_ERROR,
 				this.model);
+		assertThat(resolved).isNotNull();
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("5xx/5xx");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
@@ -173,6 +182,7 @@ class DefaultErrorViewResolverTests {
 				any(ClassLoader.class), any(ResourceLoader.class)))
 			.willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
+		assertThat(resolved).isNotNull();
 		assertThat(resolved.getViewName()).isEqualTo("error/404");
 	}
 
@@ -183,6 +193,7 @@ class DefaultErrorViewResolverTests {
 				any(ClassLoader.class), any(ResourceLoader.class)))
 			.willReturn(false);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
+		assertThat(resolved).isNotNull();
 		then(this.templateAvailabilityProvider).shouldHaveNoMoreInteractions();
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
@@ -208,7 +219,9 @@ class DefaultErrorViewResolverTests {
 
 	private MockHttpServletResponse render(ModelAndView modelAndView) throws Exception {
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		modelAndView.getView().render(this.model, this.request, response);
+		View view = modelAndView.getView();
+		assertThat(view).isNotNull();
+		view.render(this.model, this.request, response);
 		return response;
 	}
 

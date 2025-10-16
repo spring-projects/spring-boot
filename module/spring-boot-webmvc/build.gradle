@@ -66,3 +66,7 @@ dependencies {
 	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-jasper")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}

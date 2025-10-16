@@ -57,8 +57,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class BasicErrorControllerDirectMockMvcTests {
 
+	@SuppressWarnings("NullAway.Init")
 	private ConfigurableWebApplicationContext wac;
 
+	@SuppressWarnings("NullAway.Init")
 	private MockMvcTester mvc;
 
 	@AfterEach

@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Map;
 
@@ -170,8 +171,9 @@ class BasicErrorControllerMockMvcTests {
 			String bind(@RequestAttribute(required = false) String foo) throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
-				Parameter fooParameter = ReflectionUtils.findMethod(Errors.class, "bind", String.class)
-					.getParameters()[0];
+				Method method = ReflectionUtils.findMethod(Errors.class, "bind", String.class);
+				assertThat(method).isNotNull();
+				Parameter fooParameter = method.getParameters()[0];
 				throw new MethodArgumentNotValidException(MethodParameter.forParameter(fooParameter), error);
 			}
 

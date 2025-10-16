@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.net.URI;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -81,7 +83,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class BasicErrorControllerIntegrationTests {
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@AfterEach
 	void closeContext() {
@@ -348,8 +350,9 @@ class BasicErrorControllerIntegrationTests {
 		assertThat(entity.getBody()).doesNotContainKey("status");
 	}
 
-	private void assertErrorAttributes(Map<?, ?> content, String status, String error, Class<?> exception,
-			String message, String path) {
+	private void assertErrorAttributes(@Nullable Map<?, ?> content, String status, String error,
+			@Nullable Class<?> exception, @Nullable String message, String path) {
+		assertThat(content).isNotNull();
 		assertThat(content.get("status")).as("Wrong status").hasToString(status);
 		assertThat(content.get("error")).as("Wrong error").isEqualTo(error);
 		if (exception != null) {
@@ -363,7 +366,9 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	private String createUrl(String path) {
-		int port = this.context.getEnvironment().getProperty("local.server.port", int.class);
+		assertThat(this.context).isNotNull();
+		Integer port = this.context.getEnvironment().getProperty("local.server.port", Integer.class);
+		assertThat(port).isNotNull();
 		return "http://localhost:" + port + path;
 	}
 
@@ -449,8 +454,9 @@ class BasicErrorControllerIntegrationTests {
 			String bind(@RequestAttribute(required = false) String foo) throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
-				Parameter fooParameter = ReflectionUtils.findMethod(Errors.class, "bind", String.class)
-					.getParameters()[0];
+				Method method = ReflectionUtils.findMethod(Errors.class, "bind", String.class);
+				assertThat(method).isNotNull();
+				Parameter fooParameter = method.getParameters()[0];
 				throw new MethodArgumentNotValidException(MethodParameter.forParameter(fooParameter), error);
 			}
 
@@ -483,6 +489,7 @@ class BasicErrorControllerIntegrationTests {
 			static class DummyBody {
 
 				@NotNull
+				@SuppressWarnings("NullAway.Init")
 				private String content;
 
 				String getContent() {
