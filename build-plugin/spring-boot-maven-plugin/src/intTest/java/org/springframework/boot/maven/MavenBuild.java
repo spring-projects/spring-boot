@@ -43,7 +43,9 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.jspecify.annotations.Nullable;
 
+import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,9 +69,9 @@ class MavenBuild {
 
 	private final Properties properties = new Properties();
 
-	private ProjectCallback preparation;
+	private @Nullable ProjectCallback preparation;
 
-	private File projectDir;
+	private @Nullable File projectDir;
 
 	MavenBuild(File home) {
 		this.home = home;
@@ -133,6 +135,7 @@ class MavenBuild {
 		InvocationRequest request = new DefaultInvocationRequest();
 		try {
 			Path destination = this.temp.toPath();
+			Assert.notNull(this.projectDir, "'projectDir' must not be null");
 			Path source = this.projectDir.toPath();
 			Files.walkFileTree(source, new SimpleFileVisitor<>() {
 

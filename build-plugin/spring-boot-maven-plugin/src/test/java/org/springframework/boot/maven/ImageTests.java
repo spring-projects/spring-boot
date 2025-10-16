@@ -41,6 +41,7 @@ import org.springframework.boot.maven.CacheInfo.VolumeCacheInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Image}.
@@ -305,7 +306,7 @@ class ImageTests {
 	}
 
 	private Function<Owner, TarArchive> mockApplicationContent() {
-		return (owner) -> null;
+		return (owner) -> mock(TarArchive.class);
 	}
 
 }

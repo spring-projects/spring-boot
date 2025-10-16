@@ -33,6 +33,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.mock;
 class DependencyFilterMojoTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	static Path temp;
 
 	@Test
@@ -121,11 +123,12 @@ class DependencyFilterMojoTests {
 		return createArtifact(groupId, artifactId, null);
 	}
 
-	private static Artifact createArtifact(String groupId, String artifactId, String scope) {
+	private static Artifact createArtifact(String groupId, String artifactId, @Nullable String scope) {
 		return createArtifact(groupId, artifactId, scope, null);
 	}
 
-	private static Artifact createArtifact(String groupId, String artifactId, String scope, String jarType) {
+	private static Artifact createArtifact(String groupId, String artifactId, @Nullable String scope,
+			@Nullable String jarType) {
 		Artifact a = mock(Artifact.class);
 		given(a.getGroupId()).willReturn(groupId);
 		given(a.getArtifactId()).willReturn(artifactId);
@@ -136,7 +139,7 @@ class DependencyFilterMojoTests {
 		return a;
 	}
 
-	private static File createArtifactFile(String jarType) {
+	private static File createArtifactFile(@Nullable String jarType) {
 		Path jarPath = temp.resolve(UUID.randomUUID() + ".jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");

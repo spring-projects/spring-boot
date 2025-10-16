@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +36,7 @@ class RunArgumentsTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Maven can't handle nullable arrays
 	void parseNullArray() {
 		String[] args = new RunArguments((String[]) null).asArray();
 		assertThat(args).isNotNull();
@@ -92,7 +94,7 @@ class RunArgumentsTests {
 		assertThat(args[0]).isEqualTo("-Dvalue=My Value");
 	}
 
-	private String[] parseArgs(String args) {
+	private String[] parseArgs(@Nullable String args) {
 		return new RunArguments(args).asArray();
 	}
 

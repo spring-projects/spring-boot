@@ -194,3 +194,15 @@ tasks.named("generateAntoraPlaybook") {
 tasks.named("dockerTest").configure {
 	dependsOn tasks.named("prepareMavenBinaries")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileIntTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}

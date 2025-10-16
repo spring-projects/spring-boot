@@ -36,6 +36,7 @@ import java.util.zip.ZipEntry;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AssertProvider;
 import org.assertj.core.api.ListAssert;
+import org.jspecify.annotations.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
@@ -95,7 +96,7 @@ abstract class AbstractArchiveIntegrationTests {
 		}
 	}
 
-	protected String getLayersIndexLocation() {
+	protected @Nullable String getLayersIndexLocation() {
 		return null;
 	}
 

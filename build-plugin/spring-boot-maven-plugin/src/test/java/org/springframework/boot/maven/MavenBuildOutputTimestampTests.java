@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -88,11 +89,11 @@ class MavenBuildOutputTimestampTests {
 		assertThat(parseFileTime("2019-10-05T14:37:42Z")).isEqualTo(FileTime.fromMillis(1570286262000L));
 	}
 
-	private static Instant parse(String timestamp) {
+	private static @Nullable Instant parse(@Nullable String timestamp) {
 		return new MavenBuildOutputTimestamp(timestamp).toInstant();
 	}
 
-	private static FileTime parseFileTime(String timestamp) {
+	private static @Nullable FileTime parseFileTime(@Nullable String timestamp) {
 		return new MavenBuildOutputTimestamp(timestamp).toFileTime();
 	}
 

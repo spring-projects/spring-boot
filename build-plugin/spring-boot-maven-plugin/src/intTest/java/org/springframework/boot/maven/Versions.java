@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Provides access to various versions.
  *
@@ -49,7 +51,7 @@ class Versions {
 		}
 	}
 
-	String get(String name) {
+	@Nullable String get(String name) {
 		return this.versions.get(name);
 	}
 

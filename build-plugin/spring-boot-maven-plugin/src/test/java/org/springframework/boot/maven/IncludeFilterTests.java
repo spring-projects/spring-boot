@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,7 +105,7 @@ class IncludeFilterTests {
 		return createInclude(groupId, artifactId, null);
 	}
 
-	private Include createInclude(String groupId, String artifactId, String classifier) {
+	private Include createInclude(String groupId, String artifactId, @Nullable String classifier) {
 		Include include = new Include();
 		include.setGroupId(groupId);
 		include.setArtifactId(artifactId);
@@ -114,7 +115,7 @@ class IncludeFilterTests {
 		return include;
 	}
 
-	private Artifact createArtifact(String groupId, String artifactId, String classifier) {
+	private Artifact createArtifact(String groupId, String artifactId, @Nullable String classifier) {
 		Artifact a = mock(Artifact.class);
 		given(a.getGroupId()).willReturn(groupId);
 		given(a.getArtifactId()).willReturn(artifactId);

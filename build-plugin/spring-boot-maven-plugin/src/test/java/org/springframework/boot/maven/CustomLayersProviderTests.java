@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -69,7 +70,7 @@ class CustomLayersProviderTests {
 		assertThat(layers.getLayer("test")).hasToString("application");
 	}
 
-	private Library mockLibrary(String name, String groupId, String version) {
+	private Library mockLibrary(String name, String groupId, @Nullable String version) {
 		Library library = mock(Library.class);
 		given(library.getName()).willReturn(name);
 		given(library.getCoordinates()).willReturn(LibraryCoordinates.of(groupId, null, version));

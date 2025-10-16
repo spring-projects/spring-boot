@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.loader.tools.LibraryCoordinates;
 import org.springframework.boot.testsupport.FileUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -389,10 +390,12 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void repackagedJarContainsTheLayersIndexByDefault(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-layered").execute((project) -> {
 			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
+			LibraryCoordinates coordinates = JarModeLibrary.TOOLS.getCoordinates();
+			assertThat(coordinates).isNotNull();
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-snapshot")
-				.hasEntryWithNameStartingWith("BOOT-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/" + coordinates.getArtifactId());
 			try (JarFile jarFile = new JarFile(repackaged)) {
 				Map<String, List<String>> layerIndex = readLayerIndex(jarFile);
 				assertThat(layerIndex.keySet()).containsExactly("dependencies", "spring-boot-loader",
@@ -412,10 +415,12 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void whenJarIsRepackagedWithTheLayersDisabledDoesNotContainLayersIndex(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-layered-disabled").execute((project) -> {
 			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
+			LibraryCoordinates coordinates = JarModeLibrary.TOOLS.getCoordinates();
+			assertThat(coordinates).isNotNull();
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-snapshot")
-				.hasEntryWithNameStartingWith("BOOT-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId())
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/" + coordinates.getArtifactId())
 				.doesNotHaveEntryWithName("BOOT-INF/layers.idx");
 		});
 	}
@@ -424,11 +429,12 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void whenJarIsRepackagedWithToolsExclude(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-no-tools").execute((project) -> {
 			File repackaged = new File(project, "jar/target/jar-no-tools-0.0.1.BUILD-SNAPSHOT.jar");
+			LibraryCoordinates coordinates = JarModeLibrary.TOOLS.getCoordinates();
+			assertThat(coordinates).isNotNull();
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-release")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-snapshot")
-				.doesNotHaveEntryWithNameStartingWith(
-						"BOOT-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/" + coordinates.getArtifactId());
 		});
 	}
 
@@ -496,18 +502,22 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 				throw new RuntimeException(ex);
 			}
 		});
-		return jarHash.get();
+		String hash = jarHash.get();
+		assertThat(hash).isNotNull();
+		return hash;
 	}
 
 	@TestTemplate
 	void whenJarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-output-timestamp").execute((project) -> {
 			File repackaged = new File(project, "target/jar-output-timestamp-0.0.1.BUILD-SNAPSHOT.jar");
+			LibraryCoordinates coordinates = JarModeLibrary.TOOLS.getCoordinates();
+			assertThat(coordinates).isNotNull();
 			List<String> sortedLibs = Arrays.asList("BOOT-INF/lib/commons-logging", "BOOT-INF/lib/jakarta.servlet-api",
 					"BOOT-INF/lib/jspecify", "BOOT-INF/lib/micrometer-commons", "BOOT-INF/lib/micrometer-observation",
 					"BOOT-INF/lib/spring-aop", "BOOT-INF/lib/spring-beans",
-					"BOOT-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId(),
-					"BOOT-INF/lib/spring-context", "BOOT-INF/lib/spring-core", "BOOT-INF/lib/spring-expression");
+					"BOOT-INF/lib/" + coordinates.getArtifactId(), "BOOT-INF/lib/spring-context",
+					"BOOT-INF/lib/spring-core", "BOOT-INF/lib/spring-expression");
 			assertThat(jar(repackaged)).entryNamesInPath("BOOT-INF/lib/")
 				.zipSatisfy(sortedLibs,
 						(String jarLib, String expectedLib) -> assertThat(jarLib).startsWith(expectedLib));
