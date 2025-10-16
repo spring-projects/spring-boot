@@ -116,7 +116,9 @@ def dependenciesOf(String version) {
 			"spring-boot-sendgrid",
 			"spring-boot-servlet",
 			"spring-boot-session",
+			"spring-boot-session-data-mongodb",
 			"spring-boot-session-data-redis",
+			"spring-boot-session-hazelcast",
 			"spring-boot-session-jdbc",
 			"spring-boot-sql",
 			"spring-boot-test-autoconfigure",
@@ -153,6 +155,8 @@ def dependenciesOf(String version) {
 		}
 		if (version.equals("4.0.0-RC1")) {
 			modules -= [
+				"spring-boot-session-data-mongodb",
+				"spring-boot-session-hazelcast",
 				"spring-boot-tx"
 			]
 			modules += [
