@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.tomcat.websocket.WsWebSocketContainer;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.tomcat.autoconfigure.WebSocketTomcatWebServerFactoryCustomizer;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration;
@@ -198,7 +200,7 @@ class WebSocketMessagingAutoConfigurationTests {
 		return compositeDefaultConverter.getConverters();
 	}
 
-	private Object performStompSubscription(String topic) throws Throwable {
+	private @Nullable Object performStompSubscription(String topic) throws Throwable {
 		TestPropertyValues.of("server.port:0", "spring.jackson.serialization.indent-output:true").applyTo(this.context);
 		this.context.register(WebSocketMessagingConfiguration.class);
 		this.context.refresh();
@@ -213,7 +215,7 @@ class WebSocketMessagingAutoConfigurationTests {
 				session.subscribe(topic, new StompFrameHandler() {
 
 					@Override
-					public void handleFrame(StompHeaders headers, Object payload) {
+					public void handleFrame(StompHeaders headers, @Nullable Object payload) {
 						result.set(payload);
 						latch.countDown();
 					}
@@ -227,12 +229,12 @@ class WebSocketMessagingAutoConfigurationTests {
 			}
 
 			@Override
-			public void handleFrame(StompHeaders headers, Object payload) {
+			public void handleFrame(StompHeaders headers, @Nullable Object payload) {
 				latch.countDown();
 			}
 
 			@Override
-			public void handleException(StompSession session, StompCommand command, StompHeaders headers,
+			public void handleException(StompSession session, @Nullable StompCommand command, StompHeaders headers,
 					byte[] payload, Throwable exception) {
 				failure.set(exception);
 				latch.countDown();
@@ -247,7 +249,9 @@ class WebSocketMessagingAutoConfigurationTests {
 		};
 
 		stompClient.setMessageConverter(new SimpleMessageConverter());
-		stompClient.connectAsync("ws://localhost:{port}/messaging", handler, this.context.getWebServer().getPort());
+		WebServer webServer = this.context.getWebServer();
+		assertThat(webServer).isNotNull();
+		stompClient.connectAsync("ws://localhost:{port}/messaging", handler, webServer.getPort());
 
 		if (!latch.await(30, TimeUnit.SECONDS)) {
 			if (failure.get() != null) {
