@@ -46,3 +46,11 @@ dependencies {
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}
