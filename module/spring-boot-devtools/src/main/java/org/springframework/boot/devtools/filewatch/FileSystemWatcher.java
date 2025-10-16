@@ -28,6 +28,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jspecify.annotations.Nullable;
@@ -39,6 +44,7 @@ import org.springframework.util.Assert;
  *
  * @author Andy Clement
  * @author Phillip Webb
+ * @author Kamill Krzywanski
  * @since 1.3.0
  * @see FileChangeListener
  */
@@ -62,11 +68,11 @@ public class FileSystemWatcher {
 
 	private final Map<File, @Nullable DirectorySnapshot> directories = new HashMap<>();
 
-	private @Nullable Thread watchThread;
-
 	private @Nullable FileFilter triggerFilter;
 
 	private final Object monitor = new Object();
+
+	private @Nullable ScheduledFuture<?> scheduledTask;
 
 	/**
 	 * Create a new {@link FileSystemWatcher} instance.
@@ -160,7 +166,7 @@ public class FileSystemWatcher {
 	}
 
 	private void checkNotStarted() {
-		Assert.state(this.watchThread == null, "FileSystemWatcher already started");
+		Assert.state(this.scheduledTask == null, "FileSystemWatcher already started");
 	}
 
 	/**
@@ -169,14 +175,12 @@ public class FileSystemWatcher {
 	public void start() {
 		synchronized (this.monitor) {
 			createOrRestoreInitialSnapshots();
-			if (this.watchThread == null) {
+			if (this.scheduledTask == null) {
 				Map<File, DirectorySnapshot> localDirectories = new HashMap<>(this.directories);
-				Watcher watcher = new Watcher(this.remainingScans, new ArrayList<>(this.listeners), this.triggerFilter,
-						this.pollInterval, this.quietPeriod, localDirectories, this.snapshotStateRepository);
-				this.watchThread = new Thread(watcher);
-				this.watchThread.setName("File Watcher");
-				this.watchThread.setDaemon(this.daemon);
-				this.watchThread.start();
+				var watchThread = new Watcher(this.remainingScans, new ArrayList<>(this.listeners), this.triggerFilter,
+						this.pollInterval, this.quietPeriod, localDirectories, this.snapshotStateRepository,
+						this.daemon);
+				this.scheduledTask = watchThread.getScheduledTask();
 			}
 		}
 	}
@@ -202,28 +206,30 @@ public class FileSystemWatcher {
 	 * @param remainingScans the number of remaining scans
 	 */
 	void stopAfter(int remainingScans) {
-		Thread thread;
+		ScheduledFuture<?> scheduledFuture;
 		synchronized (this.monitor) {
-			thread = this.watchThread;
-			if (thread != null) {
+			scheduledFuture = this.scheduledTask;
+			if (scheduledFuture != null) {
 				this.remainingScans.set(remainingScans);
 				if (remainingScans <= 0) {
-					thread.interrupt();
+					scheduledFuture.cancel(true);
 				}
 			}
-			this.watchThread = null;
 		}
-		if (thread != null && Thread.currentThread() != thread) {
+
+		if (scheduledFuture != null) {
 			try {
-				thread.join();
+				scheduledFuture.get();
 			}
-			catch (InterruptedException ex) {
+			catch (CancellationException ignored) {
+			}
+			catch (InterruptedException | ExecutionException ex) {
 				Thread.currentThread().interrupt();
 			}
 		}
 	}
 
-	private static final class Watcher implements Runnable {
+	private static final class Watcher extends ScheduledThreadPoolExecutor {
 
 		private final AtomicInteger remainingScans;
 
@@ -237,11 +243,19 @@ public class FileSystemWatcher {
 
 		private Map<File, DirectorySnapshot> directories;
 
+		private final ScheduledFuture<?> scheduledTask;
+
 		private final SnapshotStateRepository snapshotStateRepository;
 
 		private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners,
 				@Nullable FileFilter triggerFilter, long pollInterval, long quietPeriod,
-				Map<File, DirectorySnapshot> directories, SnapshotStateRepository snapshotStateRepository) {
+				Map<File, DirectorySnapshot> directories, SnapshotStateRepository snapshotStateRepository,
+				boolean daemon) {
+			super(1, (r) -> {
+				Thread t = new Thread(r, "FileSystemWatcher");
+				t.setDaemon(daemon);
+				return t;
+			});
 			this.remainingScans = remainingScans;
 			this.listeners = listeners;
 			this.triggerFilter = triggerFilter;
@@ -249,38 +263,29 @@ public class FileSystemWatcher {
 			this.quietPeriod = quietPeriod;
 			this.directories = directories;
 			this.snapshotStateRepository = snapshotStateRepository;
-
+			this.scheduledTask = startInitialScan();
 		}
 
-		@Override
-		public void run() {
-			int remainingScans = this.remainingScans.get();
-			while (remainingScans > 0 || remainingScans == -1) {
-				try {
-					if (remainingScans > 0) {
-						this.remainingScans.decrementAndGet();
-					}
-					scan();
+		private ScheduledFuture<?> startInitialScan() {
+			return this.scheduleWithFixedDelay(() -> {
+				if (this.remainingScans.get() == 0) {
+					shutdown();
+					return;
 				}
-				catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
+				if (this.remainingScans.get() > 0) {
+					this.remainingScans.decrementAndGet();
 				}
-				remainingScans = this.remainingScans.get();
-			}
+				scheduleScan(this.directories);
+			}, 0, this.pollInterval, TimeUnit.MILLISECONDS);
 		}
 
-		private void scan() throws InterruptedException {
-			Thread.sleep(this.pollInterval - this.quietPeriod);
-			Map<File, DirectorySnapshot> previous;
-			Map<File, DirectorySnapshot> current = this.directories;
-			do {
-				previous = current;
-				current = getCurrentSnapshots();
-				Thread.sleep(this.quietPeriod);
+		private void scheduleScan(Map<File, DirectorySnapshot> previousSnapshots) {
+			Map<File, DirectorySnapshot> currentSnapshots = getCurrentSnapshots();
+			if (isDifferent(previousSnapshots, currentSnapshots)) {
+				this.schedule(() -> scheduleScan(currentSnapshots), this.quietPeriod, TimeUnit.MILLISECONDS);
 			}
-			while (isDifferent(previous, current));
-			if (isDifferent(this.directories, current)) {
-				updateSnapshots(current.values());
+			else if (isDifferent(this.directories, currentSnapshots)) {
+				updateSnapshots(currentSnapshots.values());
 			}
 		}
 
@@ -330,6 +335,10 @@ public class FileSystemWatcher {
 			for (FileChangeListener listener : this.listeners) {
 				listener.onChange(changeSet);
 			}
+		}
+
+		private ScheduledFuture<?> getScheduledTask() {
+			return this.scheduledTask;
 		}
 
 	}
