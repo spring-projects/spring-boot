@@ -43,7 +43,6 @@ import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.dao.DefaultExecutionContextSerializer;
-import org.springframework.batch.core.repository.dao.Jackson2ExecutionContextStringSerializer;
 import org.springframework.batch.core.step.Step;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -481,13 +480,17 @@ class BatchJdbcAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void customExecutionContextSerializerIsUsed() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withBean(ExecutionContextSerializer.class, Jackson2ExecutionContextStringSerializer::new)
+			.withBean(ExecutionContextSerializer.class,
+					org.springframework.batch.core.repository.dao.Jackson2ExecutionContextStringSerializer::new)
 			.run((context) -> {
-				assertThat(context).hasSingleBean(Jackson2ExecutionContextStringSerializer.class);
+				assertThat(context).hasSingleBean(
+						org.springframework.batch.core.repository.dao.Jackson2ExecutionContextStringSerializer.class);
 				assertThat(context.getBean(SpringBootBatchJdbcConfiguration.class).getExecutionContextSerializer())
-					.isInstanceOf(Jackson2ExecutionContextStringSerializer.class);
+					.isInstanceOf(
+							org.springframework.batch.core.repository.dao.Jackson2ExecutionContextStringSerializer.class);
 			});
 	}
 
