@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -26,11 +28,11 @@ import org.springframework.util.StringUtils;
  */
 public class BuilderException extends RuntimeException {
 
-	private final String operation;
+	private final @Nullable String operation;
 
 	private final int statusCode;
 
-	BuilderException(String operation, int statusCode) {
+	BuilderException(@Nullable String operation, int statusCode) {
 		super(buildMessage(operation, statusCode));
 		this.operation = operation;
 		this.statusCode = statusCode;
@@ -40,7 +42,7 @@ public class BuilderException extends RuntimeException {
 	 * Return the Builder operation that failed.
 	 * @return the operation description
 	 */
-	public String getOperation() {
+	public @Nullable String getOperation() {
 		return this.operation;
 	}
 
@@ -52,7 +54,7 @@ public class BuilderException extends RuntimeException {
 		return this.statusCode;
 	}
 
-	private static String buildMessage(String operation, int statusCode) {
+	private static String buildMessage(@Nullable String operation, int statusCode) {
 		StringBuilder message = new StringBuilder("Builder");
 		if (StringUtils.hasLength(operation)) {
 			message.append(" lifecycle '").append(operation).append("'");

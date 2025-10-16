@@ -34,14 +34,14 @@ public class DockerEngineException extends RuntimeException {
 
 	private final int statusCode;
 
-	private final String reasonPhrase;
+	private final @Nullable String reasonPhrase;
 
 	private final @Nullable Errors errors;
 
 	private final @Nullable Message responseMessage;
 
-	public DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, @Nullable Errors errors,
-			@Nullable Message responseMessage) {
+	public DockerEngineException(String host, URI uri, int statusCode, @Nullable String reasonPhrase,
+			@Nullable Errors errors, @Nullable Message responseMessage) {
 		super(buildMessage(host, uri, statusCode, reasonPhrase, errors, responseMessage));
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
@@ -61,7 +61,7 @@ public class DockerEngineException extends RuntimeException {
 	 * Return the reason phrase returned by the Docker API.
 	 * @return the reasonPhrase
 	 */
-	public String getReasonPhrase() {
+	public @Nullable String getReasonPhrase() {
 		return this.reasonPhrase;
 	}
 
@@ -83,7 +83,7 @@ public class DockerEngineException extends RuntimeException {
 		return this.responseMessage;
 	}
 
-	private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase,
+	private static String buildMessage(String host, URI uri, int statusCode, @Nullable String reasonPhrase,
 			@Nullable Errors errors, @Nullable Message responseMessage) {
 		Assert.notNull(host, "'host' must not be null");
 		Assert.notNull(uri, "'uri' must not be null");

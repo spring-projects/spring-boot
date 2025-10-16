@@ -134,7 +134,7 @@ final class BuildpackCoordinates {
 	 * @param version the buildpack version
 	 * @return a new {@link BuildpackCoordinates} instance
 	 */
-	static BuildpackCoordinates of(String id, String version) {
+	static BuildpackCoordinates of(String id, @Nullable String version) {
 		return new BuildpackCoordinates(id, version);
 	}
 

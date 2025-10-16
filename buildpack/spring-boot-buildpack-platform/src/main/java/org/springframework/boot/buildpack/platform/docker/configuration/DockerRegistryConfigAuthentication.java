@@ -49,7 +49,7 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 
 	private final BiConsumer<String, Exception> credentialHelperExceptionHandler;
 
-	private final Function<String, CredentialHelper> credentialHelperFactory;
+	private final Function<String, @Nullable CredentialHelper> credentialHelperFactory;
 
 	private final DockerConfig dockerConfig;
 
@@ -61,7 +61,7 @@ class DockerRegistryConfigAuthentication implements DockerRegistryAuthentication
 
 	DockerRegistryConfigAuthentication(@Nullable DockerRegistryAuthentication fallback,
 			BiConsumer<String, Exception> credentialHelperExceptionHandler, Environment environment,
-			Function<String, CredentialHelper> credentialHelperFactory) {
+			Function<String, @Nullable CredentialHelper> credentialHelperFactory) {
 		this.fallback = fallback;
 		this.credentialHelperExceptionHandler = credentialHelperExceptionHandler;
 		this.dockerConfig = DockerConfigurationMetadata.from(environment).getConfiguration();

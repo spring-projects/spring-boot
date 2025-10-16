@@ -207,7 +207,7 @@ public class DockerApi {
 		 * @return the {@link ImageApi pulled image} instance
 		 * @throws IOException on IO error
 		 */
-		public Image pull(ImageReference reference, ImagePlatform platform,
+		public Image pull(ImageReference reference, @Nullable ImagePlatform platform,
 				UpdateListener<PullImageUpdateEvent> listener) throws IOException {
 			return pull(reference, platform, listener, null);
 		}

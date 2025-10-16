@@ -50,7 +50,7 @@ final class KeyStoreFactory {
 	 * @param alias the alias to use for KeyStore entries
 	 * @return the {@code KeyStore}
 	 */
-	static KeyStore create(Path certPath, Path keyPath, String alias) {
+	static KeyStore create(Path certPath, @Nullable Path keyPath, String alias) {
 		try {
 			KeyStore keyStore = getKeyStore();
 			String certificateText = Files.readString(certPath);
