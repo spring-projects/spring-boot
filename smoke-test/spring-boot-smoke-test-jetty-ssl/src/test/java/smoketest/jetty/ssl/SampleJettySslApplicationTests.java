@@ -24,6 +24,7 @@ import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRe
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -46,7 +47,9 @@ class SampleJettySslApplicationTests {
 
 	@Test
 	void testSsl() {
-		assertThat(this.webServerFactory.getSsl().isEnabled()).isTrue();
+		Ssl ssl = this.webServerFactory.getSsl();
+		assertThat(ssl).isNotNull();
+		assertThat(ssl.isEnabled()).isTrue();
 	}
 
 	@Test
