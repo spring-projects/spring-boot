@@ -63,6 +63,7 @@ class SampleDataCouchbaseApplicationReactiveSslTests {
 		SampleDocument document = new SampleDocument();
 		document.setText("Look, new @DataCouchbaseTest!");
 		document = this.repository.save(document).block(Duration.ofSeconds(30));
+		assertThat(document).isNotNull();
 		assertThat(document.getId()).isNotNull();
 		assertThat(this.couchbaseTemplate.getBucketName()).isEqualTo(BUCKET_NAME);
 		this.repository.deleteAll();
