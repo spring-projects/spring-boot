@@ -17,7 +17,9 @@
 package smoketest.webflux;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -61,6 +63,8 @@ class SampleWebFluxApplicationTests {
 
 	@Test
 	void testBadRequest() {
+		Consumer<@Nullable Map<String, Object>> test = (content) -> assertThat(content).containsEntry("path",
+				"/bad-request");
 		this.webClient.get()
 			.uri("/bad-request")
 			.accept(MediaType.APPLICATION_JSON)
@@ -68,11 +72,13 @@ class SampleWebFluxApplicationTests {
 			.expectStatus()
 			.isBadRequest()
 			.expectBody(MAP_TYPE)
-			.value((content) -> assertThat(content).containsEntry("path", "/bad-request"));
+			.value(test);
 	}
 
 	@Test
 	void testServerError() {
+		Consumer<@Nullable Map<String, Object>> test = (content) -> assertThat(content).containsEntry("path",
+				"/five-hundred");
 		this.webClient.get()
 			.uri("/five-hundred")
 			.accept(MediaType.APPLICATION_JSON)
@@ -80,7 +86,7 @@ class SampleWebFluxApplicationTests {
 			.expectStatus()
 			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expectBody(MAP_TYPE)
-			.value((content) -> assertThat(content).containsEntry("path", "/five-hundred"));
+			.value(test);
 	}
 
 }

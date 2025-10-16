@@ -16,6 +16,9 @@
 
 package smoketest.webflux;
 
+import java.util.function.Consumer;
+
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -77,6 +80,7 @@ class SampleWebFluxApplicationIntegrationTests {
 
 	@Test
 	void templated404ErrorPage() {
+		Consumer<@Nullable String> test = (body) -> assertThat(body).isEqualToNormalizingNewlines("404 page\n");
 		this.webClient.get()
 			.uri("/404")
 			.accept(MediaType.TEXT_HTML)
@@ -84,11 +88,12 @@ class SampleWebFluxApplicationIntegrationTests {
 			.expectStatus()
 			.isNotFound()
 			.expectBody(String.class)
-			.value((body) -> assertThat(body).isEqualToNormalizingNewlines("404 page\n"));
+			.value(test);
 	}
 
 	@Test
 	void templated4xxErrorPage() {
+		Consumer<@Nullable String> test = (body) -> assertThat(body).isEqualToNormalizingNewlines("4xx page\n");
 		this.webClient.get()
 			.uri("/bad-request")
 			.accept(MediaType.TEXT_HTML)
@@ -96,11 +101,13 @@ class SampleWebFluxApplicationIntegrationTests {
 			.expectStatus()
 			.isBadRequest()
 			.expectBody(String.class)
-			.value((body) -> assertThat(body).isEqualToNormalizingNewlines("4xx page\n"));
+			.value(test);
 	}
 
 	@Test
 	void htmlErrorPage() {
+		Consumer<@Nullable String> test = (body) -> assertThat(body).contains("status: 500")
+			.contains("message: Expected!");
 		this.webClient.get()
 			.uri("/five-hundred")
 			.accept(MediaType.TEXT_HTML)
@@ -108,7 +115,7 @@ class SampleWebFluxApplicationIntegrationTests {
 			.expectStatus()
 			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
 			.expectBody(String.class)
-			.value((body) -> assertThat(body).contains("status: 500").contains("message: Expected!"));
+			.value(test);
 	}
 
 }
