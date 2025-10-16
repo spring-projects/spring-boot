@@ -17,7 +17,7 @@
 package org.springframework.boot.security.saml2.autoconfigure;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
+import org.springframework.boot.security.autoconfigure.web.servlet.ConditionalOnDefaultWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

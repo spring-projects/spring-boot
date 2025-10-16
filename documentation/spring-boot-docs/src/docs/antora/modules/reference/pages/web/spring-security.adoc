@@ -35,8 +35,8 @@ You can provide a different javadoc:org.springframework.security.authentication.
 [[web.security.spring-mvc]]
 == MVC Security
 
-The default security configuration is implemented in javadoc:org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration[] and javadoc:org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration[].
-javadoc:org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration[] imports `SpringBootWebSecurityConfiguration` for web security and javadoc:org.springframework.boot.security.autoconfigure.servlet.UserDetailsServiceAutoConfiguration[] for authentication.
+The default security configuration is implemented in javadoc:org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration[] and javadoc:org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration[].
+javadoc:org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration[] imports `SpringBootWebSecurityConfiguration` for web security and javadoc:org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration[] for authentication.
 
 To completely switch off the default web application security configuration, including Actuator security, or to combine multiple Spring Security components such as OAuth2 Client and Resource Server, add a bean of type javadoc:org.springframework.security.web.SecurityFilterChain[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration).
 To also switch off the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration, add a bean of type javadoc:org.springframework.security.core.userdetails.UserDetailsService[], javadoc:org.springframework.security.authentication.AuthenticationProvider[], or javadoc:org.springframework.security.authentication.AuthenticationManager[].
@@ -52,7 +52,7 @@ To use javadoc:org.springframework.security.core.userdetails.UserDetailsService[
 Access rules can be overridden by adding a custom javadoc:org.springframework.security.web.SecurityFilterChain[] bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
 javadoc:org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest[] can be used to create a javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] that is based on the configprop:management.endpoints.web.base-path[] property.
-javadoc:org.springframework.boot.security.autoconfigure.servlet.PathRequest[] can be used to create a javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] for resources in commonly used locations.
+javadoc:org.springframework.boot.security.autoconfigure.web.servlet.PathRequest[] can be used to create a javadoc:org.springframework.security.web.util.matcher.RequestMatcher[] for resources in commonly used locations.
 
 
 
@@ -60,8 +60,8 @@ javadoc:org.springframework.boot.security.autoconfigure.servlet.PathRequest[] ca
 == WebFlux Security
 
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
-The default security configuration is implemented in javadoc:org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration[] and javadoc:org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDetailsServiceAutoConfiguration[].
-javadoc:org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration[] imports `WebFluxSecurityConfiguration` for web security and javadoc:org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDetailsServiceAutoConfiguration[] for authentication.
+The default security configuration is implemented in javadoc:org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration[] and javadoc:org.springframework.boot.security.autoconfigure.ReactiveUserDetailsServiceAutoConfiguration[].
+javadoc:org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration[] imports `WebFluxSecurityConfiguration` for web security and javadoc:org.springframework.boot.security.autoconfigure.ReactiveUserDetailsServiceAutoConfiguration[] for authentication.
 In addition to reactive web applications, the latter is also auto-configured when RSocket is in use.
 
 To completely switch off the default web application security configuration, including Actuator security, add a bean of type javadoc:org.springframework.security.web.server.WebFilterChainProxy[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] configuration).

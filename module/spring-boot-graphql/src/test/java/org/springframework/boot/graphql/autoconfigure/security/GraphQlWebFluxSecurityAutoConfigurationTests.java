@@ -30,7 +30,7 @@ import org.springframework.boot.graphql.autoconfigure.GraphQlTestDataFetchers;
 import org.springframework.boot.graphql.autoconfigure.reactive.GraphQlWebFluxAutoConfiguration;
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
@@ -87,7 +87,7 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
 				CodecsAutoConfiguration.class, JacksonAutoConfiguration.class, GraphQlAutoConfiguration.class,
 				GraphQlWebFluxAutoConfiguration.class, GraphQlWebFluxSecurityAutoConfiguration.class,
-				ReactiveSecurityAutoConfiguration.class))
+				ReactiveWebSecurityAutoConfiguration.class))
 		.withUserConfiguration(DataFetchersConfiguration.class, SecurityConfig.class)
 		.withPropertyValues("spring.main.web-application-type=reactive");
 

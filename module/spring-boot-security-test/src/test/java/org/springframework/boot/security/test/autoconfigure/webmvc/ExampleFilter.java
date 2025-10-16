@@ -26,7 +26,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.boot.security.autoconfigure.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
@@ -56,7 +56,7 @@ public class ExampleFilter implements Filter, Ordered {
 
 	@Override
 	public int getOrder() {
-		return SecurityProperties.DEFAULT_FILTER_ORDER - 1;
+		return SecurityFilterProperties.DEFAULT_FILTER_ORDER - 1;
 	}
 
 }

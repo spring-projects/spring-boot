@@ -32,7 +32,8 @@ import org.springframework.boot.devtools.remote.server.DispatcherFilter;
 import org.springframework.boot.devtools.restart.MockRestarter;
 import org.springframework.boot.devtools.restart.server.HttpRestartServer;
 import org.springframework.boot.devtools.restart.server.SourceDirectoryUrlFilter;
-import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -236,8 +237,8 @@ class RemoteDevToolsAutoConfigurationTests {
 	private AnnotationConfigServletWebApplicationContext loadContext(String... properties) {
 		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		context.setServletContext(new MockServletContext());
-		context.register(Config.class, SecurityAutoConfiguration.class, RemoteDevToolsAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		context.register(Config.class, SecurityAutoConfiguration.class, ServletWebSecurityAutoConfiguration.class,
+				RemoteDevToolsAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		TestPropertyValues.of(properties).applyTo(context);
 		context.refresh();
 		return context;

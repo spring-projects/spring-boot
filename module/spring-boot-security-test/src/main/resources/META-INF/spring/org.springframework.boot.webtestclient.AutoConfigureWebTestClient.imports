@@ -1,3 +1,4 @@
-org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration
-org.springframework.boot.security.autoconfigure.reactive.ReactiveUserDetailsServiceAutoConfiguration
+org.springframework.boot.security.autoconfigure.ReactiveUserDetailsServiceAutoConfiguration
+org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration
+org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration
 org.springframework.boot.security.test.autoconfigure.webflux.SecurityWebTestClientAutoConfiguration

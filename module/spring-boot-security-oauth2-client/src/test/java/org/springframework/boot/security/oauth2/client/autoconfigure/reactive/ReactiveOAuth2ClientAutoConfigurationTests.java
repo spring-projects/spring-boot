@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -46,7 +46,7 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class,
-				ReactiveSecurityAutoConfiguration.class));
+				ReactiveWebSecurityAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationShouldBackOffForServletEnvironments() {
