@@ -17,15 +17,10 @@
 package org.springframework.boot.security.autoconfigure;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.servlet.filter.OrderedFilter;
-import org.springframework.boot.web.servlet.DispatcherType;
-import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 
 /**
@@ -39,61 +34,10 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties("spring.security")
 public class SecurityProperties {
 
-	/**
-	 * Order applied to the {@code SecurityFilterChain} that is used to configure basic
-	 * authentication for application endpoints. Create your own
-	 * {@code SecurityFilterChain} if you want to add your own authentication for all or
-	 * some of those endpoints.
-	 */
-	public static final int BASIC_AUTH_ORDER = Ordered.LOWEST_PRECEDENCE - 5;
-
-	/**
-	 * Default order of Spring Security's Filter in the servlet container (i.e. amongst
-	 * other filters registered with the container). There is no connection between this
-	 * and the {@code @Order} on a {@code SecurityFilterChain}.
-	 */
-	public static final int DEFAULT_FILTER_ORDER = OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100;
-
-	private final Filter filter = new Filter();
-
 	private final User user = new User();
 
 	public User getUser() {
 		return this.user;
-	}
-
-	public Filter getFilter() {
-		return this.filter;
-	}
-
-	public static class Filter {
-
-		/**
-		 * Security filter chain order for Servlet-based web applications.
-		 */
-		private int order = DEFAULT_FILTER_ORDER;
-
-		/**
-		 * Security filter chain dispatcher types for Servlet-based web applications.
-		 */
-		private Set<DispatcherType> dispatcherTypes = EnumSet.allOf(DispatcherType.class);
-
-		public int getOrder() {
-			return this.order;
-		}
-
-		public void setOrder(int order) {
-			this.order = order;
-		}
-
-		public Set<DispatcherType> getDispatcherTypes() {
-			return this.dispatcherTypes;
-		}
-
-		public void setDispatcherTypes(Set<DispatcherType> dispatcherTypes) {
-			this.dispatcherTypes = dispatcherTypes;
-		}
-
 	}
 
 	public static class User {

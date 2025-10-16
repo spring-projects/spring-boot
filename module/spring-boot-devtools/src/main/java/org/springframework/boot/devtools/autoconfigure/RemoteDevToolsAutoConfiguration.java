@@ -59,7 +59,8 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @since 1.3.0
  */
-@AutoConfiguration(afterName = "org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration")
+@AutoConfiguration(
+		afterName = "org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration")
 @ConditionalOnEnabledDevTools
 @ConditionalOnProperty("spring.devtools.remote.secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class, ServerProperties.class })

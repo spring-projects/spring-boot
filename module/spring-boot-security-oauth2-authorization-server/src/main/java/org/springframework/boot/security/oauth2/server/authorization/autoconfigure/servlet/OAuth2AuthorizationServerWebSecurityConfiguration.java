@@ -19,8 +19,8 @@ package org.springframework.boot.security.oauth2.server.authorization.autoconfig
 import java.util.Set;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.security.autoconfigure.ConditionalOnDefaultWebSecurity;
-import org.springframework.boot.security.autoconfigure.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.web.servlet.ConditionalOnDefaultWebSecurity;
+import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -62,7 +62,7 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 	}
 
 	@Bean
-	@Order(SecurityProperties.BASIC_AUTH_ORDER)
+	@Order(SecurityFilterProperties.BASIC_AUTH_ORDER)
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).formLogin(withDefaults());
 		return http.build();

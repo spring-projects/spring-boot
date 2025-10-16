@@ -38,7 +38,7 @@ import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthIndicator;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
@@ -58,7 +58,7 @@ class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withPropertyValues("VCAP_APPLICATION={}")
-		.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(ReactiveWebSecurityAutoConfiguration.class,
 				WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				CloudFoundryReactiveActuatorAutoConfigurationTests.WebClientCustomizerConfig.class,

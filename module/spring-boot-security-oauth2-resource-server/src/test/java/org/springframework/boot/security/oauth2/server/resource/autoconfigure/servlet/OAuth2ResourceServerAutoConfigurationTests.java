@@ -47,8 +47,9 @@ import org.mockito.InOrder;
 import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.security.autoconfigure.actuate.servlet.ManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.actuate.web.servlet.ManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwtConverterCustomizationsArgumentsProvider;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -737,7 +738,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ManagementWebSecurityAutoConfiguration.class,
 					OAuth2ResourceServerAutoConfiguration.class, SecurityAutoConfiguration.class,
-					WebMvcAutoConfiguration.class));
+					ServletWebSecurityAutoConfiguration.class, WebMvcAutoConfiguration.class));
 		contextRunner.run((context) -> assertThat(context).hasSingleBean(ManagementWebSecurityAutoConfiguration.class));
 		contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
 			.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)

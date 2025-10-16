@@ -49,8 +49,8 @@ import reactor.core.publisher.Mono;
 import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.security.autoconfigure.actuate.reactive.ReactiveManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.actuate.web.reactive.ReactiveManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.security.oauth2.server.resource.autoconfigure.JwtConverterCustomizationsArgumentsProvider;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
@@ -718,7 +718,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	void causesReactiveManagementWebSecurityAutoConfigurationToBackOff() {
 		ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveManagementWebSecurityAutoConfiguration.class,
-					ReactiveOAuth2ResourceServerAutoConfiguration.class, ReactiveSecurityAutoConfiguration.class,
+					ReactiveOAuth2ResourceServerAutoConfiguration.class, ReactiveWebSecurityAutoConfiguration.class,
 					WebFluxAutoConfiguration.class));
 		contextRunner
 			.run((context) -> assertThat(context).hasSingleBean(ReactiveManagementWebSecurityAutoConfiguration.class));

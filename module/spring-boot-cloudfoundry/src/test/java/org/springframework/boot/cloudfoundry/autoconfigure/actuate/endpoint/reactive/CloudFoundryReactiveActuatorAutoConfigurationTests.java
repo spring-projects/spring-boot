@@ -54,7 +54,7 @@ import org.springframework.boot.health.autoconfigure.contributor.HealthContribut
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.security.autoconfigure.web.reactive.ReactiveWebSecurityAutoConfiguration;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
@@ -97,7 +97,7 @@ class CloudFoundryReactiveActuatorAutoConfigurationTests {
 	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(ReactiveWebSecurityAutoConfiguration.class,
 				WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				WebClientCustomizerConfig.class, WebClientAutoConfiguration.class,
