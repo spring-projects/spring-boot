@@ -26,6 +26,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.internal.MongoClientImpl;
 import com.mongodb.connection.ClusterConnectionMode;
 import com.mongodb.connection.SslSettings;
+import org.bson.UuidRepresentation;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -229,6 +230,13 @@ class MongoAutoConfigurationTests {
 				assertThat(credential.getPassword()).isEqualTo("secret".toCharArray());
 				assertThat(credential.getSource()).isEqualTo("authdb");
 			});
+	}
+
+	@Test
+	void configureUUidRepresentation() {
+		this.contextRunner.withPropertyValues("spring.mongodb.representation.uuid=standard")
+			.run((context) -> assertThat(getSettings(context).getUuidRepresentation())
+				.isEqualTo(UuidRepresentation.STANDARD));
 	}
 
 	@Test
