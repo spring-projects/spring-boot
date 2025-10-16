@@ -59,6 +59,7 @@ class SampleDataMongoApplicationReactiveSslTests {
 		SampleDocument exampleDocument = new SampleDocument();
 		exampleDocument.setText("Look, new @DataMongoTest!");
 		exampleDocument = this.exampleRepository.save(exampleDocument).block(Duration.ofSeconds(30));
+		assertThat(exampleDocument).isNotNull();
 		assertThat(exampleDocument.getId()).isNotNull();
 		assertThat(this.mongoTemplate.collectionExists("exampleDocuments").block(Duration.ofSeconds(30))).isTrue();
 	}
