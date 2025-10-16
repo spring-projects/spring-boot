@@ -58,7 +58,7 @@ public class DefaultLaunchScript implements LaunchScript {
 	 * @param properties an optional set of script properties used for variable expansion
 	 * @throws IOException if the script cannot be loaded
 	 */
-	public DefaultLaunchScript(@Nullable File file, Map<?, ?> properties) throws IOException {
+	public DefaultLaunchScript(@Nullable File file, @Nullable Map<?, ?> properties) throws IOException {
 		String content = loadContent(file);
 		this.content = expandPlaceholders(content, properties);
 	}

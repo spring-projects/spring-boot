@@ -173,7 +173,7 @@ public abstract class MainClassFinder {
 	 * @return the main class or {@code null}
 	 * @throws IOException if the jar file cannot be read
 	 */
-	public static @Nullable String findMainClass(JarFile jarFile, String classesLocation) throws IOException {
+	public static @Nullable String findMainClass(JarFile jarFile, @Nullable String classesLocation) throws IOException {
 		return doWithMainClasses(jarFile, classesLocation, MainClass::getName);
 	}
 
@@ -184,7 +184,8 @@ public abstract class MainClassFinder {
 	 * @return the main class or {@code null}
 	 * @throws IOException if the jar file cannot be read
 	 */
-	public static @Nullable String findSingleMainClass(JarFile jarFile, String classesLocation) throws IOException {
+	public static @Nullable String findSingleMainClass(JarFile jarFile, @Nullable String classesLocation)
+			throws IOException {
 		return findSingleMainClass(jarFile, classesLocation, null);
 	}
 
@@ -199,7 +200,7 @@ public abstract class MainClassFinder {
 	 * @return the main class or {@code null}
 	 * @throws IOException if the jar file cannot be read
 	 */
-	public static @Nullable String findSingleMainClass(JarFile jarFile, String classesLocation,
+	public static @Nullable String findSingleMainClass(JarFile jarFile, @Nullable String classesLocation,
 			@Nullable String annotationName) throws IOException {
 		SingleMainClassCallback callback = new SingleMainClassCallback(annotationName);
 		MainClassFinder.doWithMainClasses(jarFile, classesLocation, callback);
@@ -215,8 +216,8 @@ public abstract class MainClassFinder {
 	 * @return the first callback result or {@code null}
 	 * @throws IOException in case of I/O errors
 	 */
-	static <T> @Nullable T doWithMainClasses(JarFile jarFile, String classesLocation, MainClassCallback<T> callback)
-			throws IOException {
+	static <T> @Nullable T doWithMainClasses(JarFile jarFile, @Nullable String classesLocation,
+			MainClassCallback<T> callback) throws IOException {
 		List<JarEntry> classEntries = getClassEntries(jarFile, classesLocation);
 		classEntries.sort(new ClassEntryComparator());
 		for (JarEntry entry : classEntries) {

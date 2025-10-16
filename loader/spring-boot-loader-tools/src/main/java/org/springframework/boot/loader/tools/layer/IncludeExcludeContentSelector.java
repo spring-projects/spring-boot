@@ -42,8 +42,8 @@ public class IncludeExcludeContentSelector<T> implements ContentSelector<T> {
 
 	private final List<ContentFilter<T>> excludes;
 
-	public IncludeExcludeContentSelector(Layer layer, List<ContentFilter<T>> includes,
-			List<ContentFilter<T>> excludes) {
+	public IncludeExcludeContentSelector(Layer layer, @Nullable List<ContentFilter<T>> includes,
+			@Nullable List<ContentFilter<T>> excludes) {
 		this(layer, includes, excludes, Function.identity());
 	}
 

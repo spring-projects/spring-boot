@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader.tools;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Encapsulates information about the artifact coordinates of a library.
  *
@@ -23,11 +25,11 @@ package org.springframework.boot.loader.tools;
  */
 class DefaultLibraryCoordinates implements LibraryCoordinates {
 
-	private final String groupId;
+	private final @Nullable String groupId;
 
-	private final String artifactId;
+	private final @Nullable String artifactId;
 
-	private final String version;
+	private final @Nullable String version;
 
 	/**
 	 * Create a new instance from discrete elements.
@@ -35,7 +37,7 @@ class DefaultLibraryCoordinates implements LibraryCoordinates {
 	 * @param artifactId the artifact ID
 	 * @param version the version
 	 */
-	DefaultLibraryCoordinates(String groupId, String artifactId, String version) {
+	DefaultLibraryCoordinates(@Nullable String groupId, @Nullable String artifactId, @Nullable String version) {
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
@@ -46,7 +48,7 @@ class DefaultLibraryCoordinates implements LibraryCoordinates {
 	 * @return the group ID
 	 */
 	@Override
-	public String getGroupId() {
+	public @Nullable String getGroupId() {
 		return this.groupId;
 	}
 
@@ -55,7 +57,7 @@ class DefaultLibraryCoordinates implements LibraryCoordinates {
 	 * @return the artifact ID
 	 */
 	@Override
-	public String getArtifactId() {
+	public @Nullable String getArtifactId() {
 		return this.artifactId;
 	}
 
@@ -64,7 +66,7 @@ class DefaultLibraryCoordinates implements LibraryCoordinates {
 	 * @return the version
 	 */
 	@Override
-	public String getVersion() {
+	public @Nullable String getVersion() {
 		return this.version;
 	}
 
