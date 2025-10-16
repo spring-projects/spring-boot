@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +52,9 @@ class SampleCacheApplicationRedisTests {
 		countries.clear(); // Simple test assuming the cache is empty
 		assertThat(countries.get("BE")).isNull();
 		Country be = this.countryRepository.findByCode("BE");
-		assertThat((Country) countries.get("BE").get()).isEqualTo(be);
+		ValueWrapper belgium = countries.get("BE");
+		assertThat(belgium).isNotNull();
+		assertThat((Country) belgium.get()).isEqualTo(be);
 	}
 
 }

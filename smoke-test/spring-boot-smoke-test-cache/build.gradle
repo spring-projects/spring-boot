@@ -107,3 +107,11 @@ def testInfinispan = tasks.register("testInfinispan", Test) {
 tasks.named("check").configure {
 	dependsOn testCaffeine, testCouchbase, testEhcache, testHazelcast, testInfinispan
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}
