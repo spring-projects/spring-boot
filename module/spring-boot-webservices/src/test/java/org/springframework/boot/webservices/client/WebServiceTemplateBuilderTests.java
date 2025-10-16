@@ -62,9 +62,11 @@ class WebServiceTemplateBuilderTests {
 	private final WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private WebServiceMessageSender messageSender;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClientInterceptor interceptor;
 
 	@Test
@@ -100,6 +102,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void messageSendersWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.messageSenders((WebServiceMessageSender[]) null))
@@ -107,6 +110,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void messageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.messageSenders((Collection<? extends WebServiceMessageSender>) null))
@@ -128,6 +132,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalMessageSendersWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalMessageSenders((WebServiceMessageSender[]) null))
@@ -135,6 +140,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalMessageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -159,12 +165,14 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void interceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.interceptors((ClientInterceptor[]) null))
 			.withMessageContaining("'interceptors' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.interceptors((Collection<? extends ClientInterceptor>) null))
@@ -186,6 +194,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalInterceptors((ClientInterceptor[]) null))
@@ -193,6 +202,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalInterceptors((Set<ClientInterceptor>) null))
@@ -219,6 +229,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((WebServiceTemplateCustomizer[]) null))
@@ -226,6 +237,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Collection<? extends WebServiceTemplateCustomizer>) null))
@@ -259,6 +271,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((WebServiceTemplateCustomizer[]) null))
@@ -266,6 +279,7 @@ class WebServiceTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -336,7 +350,9 @@ class WebServiceTemplateBuilderTests {
 	void setDefaultUri() {
 		URI uri = URI.create("http://localhost:8080");
 		WebServiceTemplate webServiceTemplate = this.builder.setDefaultUri(uri.toString()).build();
-		assertThat(webServiceTemplate.getDestinationProvider().getDestination()).isEqualTo(uri);
+		DestinationProvider destinationProvider = webServiceTemplate.getDestinationProvider();
+		assertThat(destinationProvider).isNotNull();
+		assertThat(destinationProvider.getDestination()).isEqualTo(uri);
 	}
 
 	@Test

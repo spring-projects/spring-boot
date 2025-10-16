@@ -94,6 +94,7 @@ class WebServiceMessageSenderFactoryTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void httpWithFactoryAndSettingsWhenFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> WebServiceMessageSenderFactory.http(null, null))
 			.withMessage("'requestFactoryBuilder' must not be null");
@@ -113,8 +114,7 @@ class WebServiceMessageSenderFactoryTests {
 
 	private ClientHttpRequestFactory getRequestFactory(WebServiceMessageSender sender) {
 		assertThat(sender).isInstanceOf(ClientHttpRequestMessageSender.class);
-		ClientHttpRequestFactory requestFactory = ((ClientHttpRequestMessageSender) sender).getRequestFactory();
-		return requestFactory;
+		return ((ClientHttpRequestMessageSender) sender).getRequestFactory();
 	}
 
 }

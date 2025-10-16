@@ -41,3 +41,7 @@ dependencies {
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
 	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
