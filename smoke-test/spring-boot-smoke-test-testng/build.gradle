@@ -37,3 +37,7 @@ dependencies {
 test {
 	useTestNG()
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
