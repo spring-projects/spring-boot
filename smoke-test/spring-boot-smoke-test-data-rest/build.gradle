@@ -34,3 +34,7 @@ dependencies {
 
 	testRuntimeOnly("com.jayway.jsonpath:json-path")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
