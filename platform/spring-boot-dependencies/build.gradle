@@ -2074,6 +2074,7 @@ bom {
 				"spring-boot-reactor-netty",
 				"spring-boot-restclient",
 				"spring-boot-restclient-test",
+				"spring-boot-restdocs",
 				"spring-boot-resttestclient",
 				"spring-boot-rsocket",
 				"spring-boot-rsocket-test",
