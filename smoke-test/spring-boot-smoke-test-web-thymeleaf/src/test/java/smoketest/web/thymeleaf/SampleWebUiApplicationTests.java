@@ -62,6 +62,7 @@ class SampleWebUiApplicationTests {
 		map.set("text", "FOO text");
 		map.set("summary", "FOO");
 		URI location = this.restTemplate.postForLocation("/", map);
+		assertThat(location).isNotNull();
 		assertThat(location.toString()).contains("localhost:" + this.port);
 	}
 
