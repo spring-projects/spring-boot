@@ -33,6 +33,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.TestTemplate;
@@ -50,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility
 class ApplicationPluginActionIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
@@ -84,8 +86,9 @@ class ApplicationPluginActionIntegrationTests {
 
 	@TestTemplate
 	void zipDistributionForJarCanBeBuilt() throws IOException {
-		assertThat(this.gradleBuild.build("bootDistZip").task(":bootDistZip").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("bootDistZip").task(":bootDistZip");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
 		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.zip");
 		assertThat(distribution).isFile();
@@ -96,8 +99,9 @@ class ApplicationPluginActionIntegrationTests {
 
 	@TestTemplate
 	void tarDistributionForJarCanBeBuilt() throws IOException {
-		assertThat(this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("bootDistTar").task(":bootDistTar");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
 		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.tar");
 		assertThat(distribution).isFile();
@@ -108,8 +112,9 @@ class ApplicationPluginActionIntegrationTests {
 
 	@TestTemplate
 	void zipDistributionForWarCanBeBuilt() throws IOException {
-		assertThat(this.gradleBuild.build("bootDistZip").task(":bootDistZip").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("bootDistZip").task(":bootDistZip");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
 		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.zip");
 		assertThat(distribution).isFile();
@@ -120,8 +125,9 @@ class ApplicationPluginActionIntegrationTests {
 
 	@TestTemplate
 	void tarDistributionForWarCanBeBuilt() throws IOException {
-		assertThat(this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("bootDistTar").task(":bootDistTar");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
 		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.tar");
 		assertThat(distribution).isFile();
@@ -132,8 +138,9 @@ class ApplicationPluginActionIntegrationTests {
 
 	@TestTemplate
 	void applicationNameCanBeUsedToCustomizeDistributionName() throws IOException {
-		assertThat(this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("bootDistTar").task(":bootDistTar");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/custom-boot.tar");
 		assertThat(distribution).isFile();
 		String name = this.gradleBuild.getProjectDir().getName();
@@ -144,8 +151,9 @@ class ApplicationPluginActionIntegrationTests {
 
 	@TestTemplate
 	void scriptsHaveCorrectPermissions() throws IOException {
-		assertThat(this.gradleBuild.build("bootDistTar").task(":bootDistTar").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("bootDistTar").task(":bootDistTar");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String name = this.gradleBuild.getProjectDir().getName();
 		File distribution = new File(this.gradleBuild.getProjectDir(), "build/distributions/" + name + "-boot.tar");
 		assertThat(distribution).isFile();

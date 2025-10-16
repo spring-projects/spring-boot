@@ -201,7 +201,9 @@ class BootBuildImageTests {
 	@Test
 	void whenRunImageIsConfiguredThenRequestUsesSpecifiedRunImage() {
 		this.buildImage.getRunImage().set("example.com/test/run:1.0");
-		assertThat(this.buildImage.createRequest().getRunImage().getName()).isEqualTo("test/run");
+		ImageReference runImage = this.buildImage.createRequest().getRunImage();
+		assertThat(runImage).isNotNull();
+		assertThat(runImage.getName()).isEqualTo("test/run");
 	}
 
 	@Test

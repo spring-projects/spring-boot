@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatException;
 class BuildInfoTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test
@@ -163,6 +164,7 @@ class BuildInfoTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void nullAdditionalPropertyProducesInformativeFailure() {
 		BuildInfo task = createTask(createProject("test"));
 		assertThatException().isThrownBy(() -> task.getProperties().getAdditional().put("a", null))

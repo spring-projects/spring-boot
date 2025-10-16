@@ -26,6 +26,7 @@ import java.util.jar.Manifest;
 
 import org.assertj.core.api.Assumptions;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.TestTemplate;
@@ -44,13 +45,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility(configurationCache = true)
 class BootTestRunIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
 	void basicExecution() throws IOException {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootTestRun");
-		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":bootTestRun");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("1. " + canonicalPathOf("build/classes/java/test"))
 			.contains("2. " + canonicalPathOf("build/resources/test"))
 			.contains("3. " + canonicalPathOf("build/classes/java/main"))
@@ -61,7 +65,9 @@ class BootTestRunIntegrationTests {
 	void defaultJvmArgs() throws IOException {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootTestRun");
-		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":bootTestRun");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("-XX:TieredStopAtLevel=1");
 	}
 
@@ -69,7 +75,9 @@ class BootTestRunIntegrationTests {
 	void optimizedLaunchDisabledJvmArgs() throws IOException {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootTestRun");
-		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":bootTestRun");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).doesNotContain("-Xverify:none").doesNotContain("-XX:TieredStopAtLevel=1");
 	}
 
@@ -84,7 +92,9 @@ class BootTestRunIntegrationTests {
 		}
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootTestRun");
-		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":bootTestRun");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("-Dcom.bar=baz")
 			.contains("-Dcom.foo=bar")
 			.contains("-XX:TieredStopAtLevel=1");
@@ -97,7 +107,9 @@ class BootTestRunIntegrationTests {
 		createDependenciesStarterJar(new File(flatDirRepository, "starter.jar"));
 		createStandardJar(new File(flatDirRepository, "standard.jar"));
 		BuildResult result = this.gradleBuild.build("bootTestRun");
-		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":bootTestRun");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("standard.jar").doesNotContain("starter.jar");
 	}
 
@@ -105,7 +117,9 @@ class BootTestRunIntegrationTests {
 	void failsGracefullyWhenNoTestMainMethodIsFound() throws IOException {
 		copyApplication("nomain");
 		BuildResult result = this.gradleBuild.buildAndFail("bootTestRun");
-		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		BuildTask task = result.task(":bootTestRun");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		if (this.gradleBuild.isConfigurationCache() && this.gradleBuild.gradleVersionIsAtLeast("8.0")) {
 			assertThat(result.getOutput())
 				.contains("Main class name has not been configured and it could not be resolved from classpath");
@@ -121,7 +135,9 @@ class BootTestRunIntegrationTests {
 	void developmentOnlyDependenciesAreNotOnTheClasspath() throws IOException {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootTestRun");
-		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":bootTestRun");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
 	}
 
@@ -129,7 +145,9 @@ class BootTestRunIntegrationTests {
 	void testAndDevelopmentOnlyDependenciesAreOnTheClasspath() throws IOException {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootTestRun");
-		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":bootTestRun");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
 	}
 

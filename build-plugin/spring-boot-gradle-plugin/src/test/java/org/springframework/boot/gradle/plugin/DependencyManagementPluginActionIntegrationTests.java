@@ -16,6 +16,7 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
@@ -33,20 +34,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility
 class DependencyManagementPluginActionIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
 	void noDependencyManagementIsAppliedByDefault() {
-		assertThat(this.gradleBuild.build("doesNotHaveDependencyManagement")
-			.task(":doesNotHaveDependencyManagement")
-			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("doesNotHaveDependencyManagement")
+			.task(":doesNotHaveDependencyManagement");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void bomIsImportedWhenDependencyManagementPluginIsApplied() {
-		assertThat(this.gradleBuild.build("hasDependencyManagement", "-PapplyDependencyManagementPlugin")
-			.task(":hasDependencyManagement")
-			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("hasDependencyManagement", "-PapplyDependencyManagementPlugin")
+			.task(":hasDependencyManagement");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 }

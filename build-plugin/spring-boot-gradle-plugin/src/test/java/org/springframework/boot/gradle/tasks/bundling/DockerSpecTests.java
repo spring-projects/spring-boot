@@ -20,12 +20,14 @@ import java.io.File;
 import java.util.Base64;
 
 import org.gradle.api.GradleException;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,9 +56,14 @@ class DockerSpecTests {
 	void asDockerConfigurationWithDefaults() {
 		BuilderDockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		assertThat(dockerConfiguration.connection()).isNull();
-		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
-		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
+		DockerRegistryAuthentication builderRegistryAuthentication = dockerConfiguration
+			.builderRegistryAuthentication();
+		assertThat(builderRegistryAuthentication).isNotNull();
+		assertThat(builderRegistryAuthentication.getAuthHeader()).isNull();
+		DockerRegistryAuthentication publishRegistryAuthentication = dockerConfiguration
+			.publishRegistryAuthentication();
+		assertThat(publishRegistryAuthentication).isNotNull();
+		assertThat(decoded(publishRegistryAuthentication.getAuthHeader())).contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
 			.contains("\"email\" : \"\"")
 			.contains("\"serveraddress\" : \"\"");
@@ -69,13 +76,19 @@ class DockerSpecTests {
 		this.dockerSpec.getCertPath().set("/tmp/ca-cert");
 		BuilderDockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		DockerConnectionConfiguration.Host host = (DockerConnectionConfiguration.Host) dockerConfiguration.connection();
+		assertThat(host).isNotNull();
 		assertThat(host.address()).isEqualTo("docker.example.com");
 		assertThat(host.secure()).isTrue();
 		assertThat(host.certificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.bindHostToBuilder()).isFalse();
-		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
-		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
+		DockerRegistryAuthentication builderRegistryAuthentication = dockerConfiguration
+			.builderRegistryAuthentication();
+		assertThat(builderRegistryAuthentication).isNotNull();
+		assertThat(builderRegistryAuthentication.getAuthHeader()).isNull();
+		DockerRegistryAuthentication publishRegistryAuthentication = dockerConfiguration
+			.publishRegistryAuthentication();
+		assertThat(publishRegistryAuthentication).isNotNull();
+		assertThat(decoded(publishRegistryAuthentication.getAuthHeader())).contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
 			.contains("\"email\" : \"\"")
 			.contains("\"serveraddress\" : \"\"");
@@ -86,13 +99,19 @@ class DockerSpecTests {
 		this.dockerSpec.getHost().set("docker.example.com");
 		BuilderDockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		DockerConnectionConfiguration.Host host = (DockerConnectionConfiguration.Host) dockerConfiguration.connection();
+		assertThat(host).isNotNull();
 		assertThat(host.address()).isEqualTo("docker.example.com");
 		assertThat(host.secure()).isFalse();
 		assertThat(host.certificatePath()).isNull();
 		assertThat(dockerConfiguration.bindHostToBuilder()).isFalse();
-		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
-		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
+		DockerRegistryAuthentication builderRegistryAuthentication = dockerConfiguration
+			.builderRegistryAuthentication();
+		assertThat(builderRegistryAuthentication).isNotNull();
+		assertThat(builderRegistryAuthentication.getAuthHeader()).isNull();
+		DockerRegistryAuthentication publishRegistryAuthentication = dockerConfiguration
+			.publishRegistryAuthentication();
+		assertThat(publishRegistryAuthentication).isNotNull();
+		assertThat(decoded(publishRegistryAuthentication.getAuthHeader())).contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
 			.contains("\"email\" : \"\"")
 			.contains("\"serveraddress\" : \"\"");
@@ -104,11 +123,17 @@ class DockerSpecTests {
 		BuilderDockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		DockerConnectionConfiguration.Context host = (DockerConnectionConfiguration.Context) dockerConfiguration
 			.connection();
+		assertThat(host).isNotNull();
 		assertThat(host.context()).isEqualTo("test-context");
 		assertThat(dockerConfiguration.bindHostToBuilder()).isFalse();
-		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
-		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
+		DockerRegistryAuthentication builderRegistryAuthentication = dockerConfiguration
+			.builderRegistryAuthentication();
+		assertThat(builderRegistryAuthentication).isNotNull();
+		assertThat(builderRegistryAuthentication.getAuthHeader()).isNull();
+		DockerRegistryAuthentication publishRegistryAuthentication = dockerConfiguration
+			.publishRegistryAuthentication();
+		assertThat(publishRegistryAuthentication).isNotNull();
+		assertThat(decoded(publishRegistryAuthentication.getAuthHeader())).contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
 			.contains("\"email\" : \"\"")
 			.contains("\"serveraddress\" : \"\"");
@@ -128,13 +153,19 @@ class DockerSpecTests {
 		this.dockerSpec.getBindHostToBuilder().set(true);
 		BuilderDockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		DockerConnectionConfiguration.Host host = (DockerConnectionConfiguration.Host) dockerConfiguration.connection();
+		assertThat(host).isNotNull();
 		assertThat(host.address()).isEqualTo("docker.example.com");
 		assertThat(host.secure()).isFalse();
 		assertThat(host.certificatePath()).isNull();
 		assertThat(dockerConfiguration.bindHostToBuilder()).isTrue();
-		assertThat(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()).isNull();
-		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"\"")
+		DockerRegistryAuthentication builderRegistryAuthentication = dockerConfiguration
+			.builderRegistryAuthentication();
+		assertThat(builderRegistryAuthentication).isNotNull();
+		assertThat(builderRegistryAuthentication.getAuthHeader()).isNull();
+		DockerRegistryAuthentication publishRegistryAuthentication = dockerConfiguration
+			.publishRegistryAuthentication();
+		assertThat(publishRegistryAuthentication).isNotNull();
+		assertThat(decoded(publishRegistryAuthentication.getAuthHeader())).contains("\"username\" : \"\"")
 			.contains("\"password\" : \"\"")
 			.contains("\"email\" : \"\"")
 			.contains("\"serveraddress\" : \"\"");
@@ -155,13 +186,17 @@ class DockerSpecTests {
 			registry.getEmail().set("docker2@example.com");
 		});
 		BuilderDockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
-		assertThat(decoded(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"user1\"")
+		DockerRegistryAuthentication builderRegistryAuthentication = dockerConfiguration
+			.builderRegistryAuthentication();
+		assertThat(builderRegistryAuthentication).isNotNull();
+		assertThat(decoded(builderRegistryAuthentication.getAuthHeader())).contains("\"username\" : \"user1\"")
 			.contains("\"password\" : \"secret1\"")
 			.contains("\"email\" : \"docker1@example.com\"")
 			.contains("\"serveraddress\" : \"https://docker1.example.com\"");
-		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
-			.contains("\"username\" : \"user2\"")
+		DockerRegistryAuthentication publishRegistryAuthentication = dockerConfiguration
+			.publishRegistryAuthentication();
+		assertThat(publishRegistryAuthentication).isNotNull();
+		assertThat(decoded(publishRegistryAuthentication.getAuthHeader())).contains("\"username\" : \"user2\"")
 			.contains("\"password\" : \"secret2\"")
 			.contains("\"email\" : \"docker2@example.com\"")
 			.contains("\"serveraddress\" : \"https://docker2.example.com\"");
@@ -195,10 +230,14 @@ class DockerSpecTests {
 		this.dockerSpec.builderRegistry((registry) -> registry.getToken().set("token1"));
 		this.dockerSpec.publishRegistry((registry) -> registry.getToken().set("token2"));
 		BuilderDockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
-		assertThat(decoded(dockerConfiguration.builderRegistryAuthentication().getAuthHeader()))
-			.contains("\"identitytoken\" : \"token1\"");
-		assertThat(decoded(dockerConfiguration.publishRegistryAuthentication().getAuthHeader()))
-			.contains("\"identitytoken\" : \"token2\"");
+		DockerRegistryAuthentication builderRegistryAuthentication = dockerConfiguration
+			.builderRegistryAuthentication();
+		assertThat(builderRegistryAuthentication).isNotNull();
+		assertThat(decoded(builderRegistryAuthentication.getAuthHeader())).contains("\"identitytoken\" : \"token1\"");
+		DockerRegistryAuthentication publishRegistryAuthentication = dockerConfiguration
+			.publishRegistryAuthentication();
+		assertThat(publishRegistryAuthentication).isNotNull();
+		assertThat(decoded(publishRegistryAuthentication.getAuthHeader())).contains("\"identitytoken\" : \"token2\"");
 	}
 
 	@Test
@@ -212,7 +251,7 @@ class DockerSpecTests {
 			.withMessageContaining("Invalid Docker builder registry configuration");
 	}
 
-	String decoded(String value) {
+	@Nullable String decoded(@Nullable String value) {
 		return (value != null) ? new String(Base64.getDecoder().decode(value)) : value;
 	}
 

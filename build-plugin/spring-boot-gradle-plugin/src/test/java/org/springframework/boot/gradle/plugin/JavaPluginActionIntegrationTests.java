@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.TestTemplate;
@@ -45,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility(configurationCache = true)
 class JavaPluginActionIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
@@ -105,8 +107,12 @@ class JavaPluginActionIntegrationTests {
 	@TestTemplate
 	void assembleRunsBootJarAndJar() {
 		BuildResult result = this.gradleBuild.build("assemble");
-		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.task(":jar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask bootJar = result.task(":bootJar");
+		assertThat(bootJar).isNotNull();
+		assertThat(bootJar.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask jar = result.task(":jar");
+		assertThat(jar).isNotNull();
+		assertThat(jar.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
 				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"),
@@ -116,7 +122,9 @@ class JavaPluginActionIntegrationTests {
 	@TestTemplate
 	void errorMessageIsHelpfulWhenMainClassCannotBeResolved() {
 		BuildResult result = this.gradleBuild.buildAndFail("build", "-PapplyJavaPlugin");
-		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		BuildTask task = result.task(":bootJar");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).contains("Main class name has not been configured and it could not be resolved");
 	}
 
@@ -128,7 +136,9 @@ class JavaPluginActionIntegrationTests {
 		new JarOutputStream(new FileOutputStream(new File(libs, "spring-boot-configuration-processor-1.2.3.jar")))
 			.close();
 		BuildResult result = this.gradleBuild.build("compileJava");
-		assertThat(result.task(":compileJava").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":compileJava");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("compileJava compiler args: [-parameters, -Aorg.springframework.boot."
 				+ "configurationprocessor.additionalMetadataLocations="
 				+ new File(this.gradleBuild.getProjectDir(), "src/main/resources").getCanonicalPath());
@@ -138,7 +148,9 @@ class JavaPluginActionIntegrationTests {
 	void additionalMetadataLocationsNotConfiguredWhenProcessorIsAbsent() throws IOException {
 		createMinimalMainSource();
 		BuildResult result = this.gradleBuild.build("compileJava");
-		assertThat(result.task(":compileJava").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":compileJava");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("compileJava compiler args: [-parameters]");
 	}
 

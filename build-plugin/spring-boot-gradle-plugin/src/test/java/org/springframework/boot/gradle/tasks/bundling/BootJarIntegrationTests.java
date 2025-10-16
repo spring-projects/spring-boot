@@ -24,6 +24,7 @@ import java.util.TreeSet;
 import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestTemplate;
@@ -48,7 +49,9 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	@TestTemplate
 	void signed() throws Exception {
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = this.gradleBuild.build("bootJar").task(":bootJar");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
 		try (JarFile jarFile = new JarFile(jar)) {
 			assertThat(jarFile.getEntry("META-INF/BOOT.SF")).isNotNull();

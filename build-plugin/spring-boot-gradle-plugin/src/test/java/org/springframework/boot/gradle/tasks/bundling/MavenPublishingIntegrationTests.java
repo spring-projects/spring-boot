@@ -19,6 +19,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
@@ -36,12 +37,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility
 class MavenPublishingIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
 	void bootJarCanBePublished() {
 		BuildResult result = this.gradleBuild.build("publish");
-		assertThat(result.task(":publish").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":publish");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("jar")).isFile();
 		assertThat(artifactWithSuffix("pom")).is(pomWith().groupId("com.example")
 			.artifactId(this.gradleBuild.getProjectDir().getName())
@@ -53,7 +57,9 @@ class MavenPublishingIntegrationTests {
 	@TestTemplate
 	void bootWarCanBePublished() {
 		BuildResult result = this.gradleBuild.build("publish");
-		assertThat(result.task(":publish").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":publish");
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("war")).isFile();
 		assertThat(artifactWithSuffix("pom")).is(pomWith().groupId("com.example")
 			.artifactId(this.gradleBuild.getProjectDir().getName())
