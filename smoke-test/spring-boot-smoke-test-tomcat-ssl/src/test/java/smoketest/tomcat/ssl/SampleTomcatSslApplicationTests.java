@@ -24,6 +24,7 @@ import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRe
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.json.JsonContent;
@@ -42,7 +43,9 @@ class SampleTomcatSslApplicationTests {
 
 	@Test
 	void testSsl() {
-		assertThat(this.webServerFactory.getSsl().isEnabled()).isTrue();
+		Ssl ssl = this.webServerFactory.getSsl();
+		assertThat(ssl).isNotNull();
+		assertThat(ssl.isEnabled()).isTrue();
 	}
 
 	@Test
@@ -56,17 +59,19 @@ class SampleTomcatSslApplicationTests {
 	void testSslInfo() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/info", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		JsonContent body = new JsonContent(entity.getBody());
-		assertThat(body).extractingPath("ssl.bundles[0].name").isEqualTo("ssldemo");
-		assertThat(body).extractingPath("ssl.bundles[0].certificateChains[0].alias")
+		String body = entity.getBody();
+		assertThat(body).isNotNull();
+		JsonContent json = new JsonContent(body);
+		assertThat(json).extractingPath("ssl.bundles[0].name").isEqualTo("ssldemo");
+		assertThat(json).extractingPath("ssl.bundles[0].certificateChains[0].alias")
 			.isEqualTo("spring-boot-ssl-sample");
-		assertThat(body).extractingPath("ssl.bundles[0].certificateChains[0].certificates[0].issuer")
+		assertThat(json).extractingPath("ssl.bundles[0].certificateChains[0].certificates[0].issuer")
 			.isEqualTo("CN=localhost,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown");
-		assertThat(body).extractingPath("ssl.bundles[0].certificateChains[0].certificates[0].subject")
+		assertThat(json).extractingPath("ssl.bundles[0].certificateChains[0].certificates[0].subject")
 			.isEqualTo("CN=localhost,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown");
-		assertThat(body).extractingPath("ssl.bundles[0].certificateChains[0].certificates[0].validity.status")
+		assertThat(json).extractingPath("ssl.bundles[0].certificateChains[0].certificates[0].validity.status")
 			.isEqualTo("EXPIRED");
-		assertThat(body).extractingPath("ssl.bundles[0].certificateChains[0].certificates[0].validity.message")
+		assertThat(json).extractingPath("ssl.bundles[0].certificateChains[0].certificates[0].validity.message")
 			.asString()
 			.startsWith("Not valid after ");
 	}
@@ -75,18 +80,20 @@ class SampleTomcatSslApplicationTests {
 	void testSslHealth() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
-		JsonContent body = new JsonContent(entity.getBody());
-		assertThat(body).extractingPath("status").isEqualTo("OUT_OF_SERVICE");
-		assertThat(body).extractingPath("components.ssl.status").isEqualTo("OUT_OF_SERVICE");
-		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].alias")
+		String body = entity.getBody();
+		assertThat(body).isNotNull();
+		JsonContent json = new JsonContent(body);
+		assertThat(json).extractingPath("status").isEqualTo("OUT_OF_SERVICE");
+		assertThat(json).extractingPath("components.ssl.status").isEqualTo("OUT_OF_SERVICE");
+		assertThat(json).extractingPath("components.ssl.details.invalidChains[0].alias")
 			.isEqualTo("spring-boot-ssl-sample");
-		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].certificates[0].issuer")
+		assertThat(json).extractingPath("components.ssl.details.invalidChains[0].certificates[0].issuer")
 			.isEqualTo("CN=localhost,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown");
-		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].certificates[0].subject")
+		assertThat(json).extractingPath("components.ssl.details.invalidChains[0].certificates[0].subject")
 			.isEqualTo("CN=localhost,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown");
-		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].certificates[0].validity.status")
+		assertThat(json).extractingPath("components.ssl.details.invalidChains[0].certificates[0].validity.status")
 			.isEqualTo("EXPIRED");
-		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].certificates[0].validity.message")
+		assertThat(json).extractingPath("components.ssl.details.invalidChains[0].certificates[0].validity.message")
 			.asString()
 			.startsWith("Not valid after ");
 	}
