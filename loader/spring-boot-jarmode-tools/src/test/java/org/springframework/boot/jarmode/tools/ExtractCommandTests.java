@@ -297,7 +297,7 @@ class ExtractCommandTests extends AbstractJarModeTests {
 
 		@Test
 		void runWithJarFileThatWouldWriteEntriesOutsideDestinationFails() throws Exception {
-			File file = createArchive("e/../../e.jar", null);
+			File file = createArchive("e/../../e.jar", "");
 			assertThatIllegalStateException().isThrownBy(() -> run(file, "--launcher"))
 				.withMessageContaining("Entry 'e/../../e.jar' would be written");
 		}

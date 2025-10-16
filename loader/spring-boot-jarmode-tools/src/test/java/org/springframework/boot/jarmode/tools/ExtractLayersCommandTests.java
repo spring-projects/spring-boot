@@ -69,9 +69,11 @@ class ExtractLayersCommandTests {
 	private static final FileTime LAST_ACCESS_TIME = FileTime.from(NOW.minus(1, ChronoUnit.DAYS));
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private Context context;
 
 	private File jarFile;

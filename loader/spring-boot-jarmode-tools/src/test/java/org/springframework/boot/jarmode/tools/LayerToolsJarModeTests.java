@@ -53,6 +53,7 @@ class LayerToolsJarModeTests {
 	private PrintStream systemOut;
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@BeforeEach

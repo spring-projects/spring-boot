@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.jarmode.tools.Command.Option;
@@ -165,9 +166,9 @@ class CommandTests {
 
 	static class TestCommand extends Command {
 
-		private Map<Option, String> runOptions;
+		private @Nullable Map<Option, @Nullable String> runOptions;
 
-		private List<String> runParameters;
+		private @Nullable List<String> runParameters;
 
 		TestCommand(String name, Option... options) {
 			this(name, "test", Options.of(options), Parameters.none());
@@ -178,16 +179,16 @@ class CommandTests {
 		}
 
 		@Override
-		protected void run(PrintStream out, Map<Option, String> options, List<String> parameters) {
+		protected void run(PrintStream out, Map<Option, @Nullable String> options, List<String> parameters) {
 			this.runOptions = options;
 			this.runParameters = parameters;
 		}
 
-		Map<Option, String> getRunOptions() {
+		@Nullable Map<Option, @Nullable String> getRunOptions() {
 			return this.runOptions;
 		}
 
-		List<String> getRunParameters() {
+		@Nullable List<String> getRunParameters() {
 			return this.runParameters;
 		}
 

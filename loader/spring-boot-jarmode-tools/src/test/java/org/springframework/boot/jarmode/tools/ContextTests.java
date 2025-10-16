@@ -34,9 +34,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class ContextTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new Context(null, this.temp))
 			.withMessage("Unable to find source archive");

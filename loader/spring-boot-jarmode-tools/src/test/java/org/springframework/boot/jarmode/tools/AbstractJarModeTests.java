@@ -35,6 +35,7 @@ import java.util.jar.Manifest;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.Assert;
@@ -51,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 abstract class AbstractJarModeTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	Manifest createManifest(String... entries) {
@@ -74,8 +76,8 @@ abstract class AbstractJarModeTests {
 		return createArchive(manifest, null, null, null, entries);
 	}
 
-	File createArchive(Manifest manifest, Instant creationTime, Instant lastModifiedTime, Instant lastAccessTime,
-			String... entries) throws IOException {
+	File createArchive(Manifest manifest, @Nullable Instant creationTime, @Nullable Instant lastModifiedTime,
+			@Nullable Instant lastAccessTime, String... entries) throws IOException {
 		Assert.state(entries.length % 2 == 0, "Entries must be key value pairs");
 		File file = new File(this.tempDir, "test.jar");
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file), manifest)) {

@@ -42,6 +42,7 @@ import static org.mockito.Mockito.mock;
 class IndexedLayersTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	@Test
@@ -94,6 +95,7 @@ class IndexedLayersTests {
 		Context context = mock(Context.class);
 		given(context.getArchiveFile()).willReturn(createWarFile("test.war"));
 		IndexedLayers layers = IndexedLayers.get(context);
+		assertThat(layers).isNotNull();
 		assertThat(layers.getLayer(mockEntry("WEB-INF/lib/a.jar"))).isEqualTo("test");
 	}
 
