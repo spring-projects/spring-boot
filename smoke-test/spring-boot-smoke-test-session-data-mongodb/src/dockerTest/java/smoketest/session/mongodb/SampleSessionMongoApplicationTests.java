@@ -76,20 +76,20 @@ class SampleSessionMongoApplicationTests {
 		ResponseEntity<Map<String, Object>> response = getSessions();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
+		Map<String, Object> body = response.getBody();
+		assertThat(body).isNotNull();
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) body.get("sessions");
 		assertThat(sessions).hasSize(1);
 	}
 
-	private String performLogin() {
+	private void performLogin() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.set("username", "user");
 		form.set("password", "password");
-		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
-				new HttpEntity<>(form, headers), String.class);
-		return entity.getHeaders().getFirst("Set-Cookie");
+		this.restTemplate.exchange("/login", HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 	}
 
 	private RequestEntity<Object> getRequestEntity(URI uri) {
