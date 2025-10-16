@@ -112,8 +112,6 @@ class BootZipCopyAction implements CopyAction {
 
 	private final ResolvedDependencies resolvedDependencies;
 
-	private final boolean supportsSignatureFile;
-
 	private final @Nullable LayerResolver layerResolver;
 
 	BootZipCopyAction(File output, Manifest manifest, boolean preserveFileTimestamps, @Nullable Integer dirMode,
@@ -121,8 +119,7 @@ class BootZipCopyAction implements CopyAction {
 			Spec<FileTreeElement> requiresUnpack, Spec<FileTreeElement> exclusions,
 			@Nullable LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver, @Nullable String encoding,
-			ResolvedDependencies resolvedDependencies, boolean supportsSignatureFile,
-			@Nullable LayerResolver layerResolver) {
+			ResolvedDependencies resolvedDependencies, @Nullable LayerResolver layerResolver) {
 		this.output = output;
 		this.manifest = manifest;
 		this.preserveFileTimestamps = preserveFileTimestamps;
@@ -137,7 +134,6 @@ class BootZipCopyAction implements CopyAction {
 		this.compressionResolver = compressionResolver;
 		this.encoding = encoding;
 		this.resolvedDependencies = resolvedDependencies;
-		this.supportsSignatureFile = supportsSignatureFile;
 		this.layerResolver = layerResolver;
 	}
 
@@ -362,7 +358,7 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void writeSignatureFileIfNecessary() throws IOException {
-			if (BootZipCopyAction.this.supportsSignatureFile && hasSignedLibrary()) {
+			if (hasSignedLibrary()) {
 				writeEntry("META-INF/BOOT.SF", (out) -> {
 				}, false);
 			}

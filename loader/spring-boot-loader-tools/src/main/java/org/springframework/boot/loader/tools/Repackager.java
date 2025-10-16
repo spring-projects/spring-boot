@@ -53,7 +53,8 @@ public class Repackager extends Packager {
 	@Override
 	protected void writeSignatureFileIfNecessary(Map<String, Library> writtenLibraries, AbstractJarWriter writer)
 			throws IOException {
-		if (getSource().getName().toLowerCase(Locale.ROOT).endsWith(".jar") && hasSignedLibrary(writtenLibraries)) {
+		String sourceName = getSource().getName().toLowerCase(Locale.ROOT);
+		if ((sourceName.endsWith(".jar") || sourceName.endsWith(".war")) && hasSignedLibrary(writtenLibraries)) {
 			writer.writeEntry("META-INF/BOOT.SF", (entryWriter) -> {
 			});
 		}
