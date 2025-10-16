@@ -70,6 +70,7 @@ class SpringBootMockMvcBuilderCustomizerTests {
 		FilterRegistrationBean<?> registrationBean = (FilterRegistrationBean<?>) context.getBean("otherTestFilter");
 		TestFilter testFilter = context.getBean("testFilter", TestFilter.class);
 		OtherTestFilter otherTestFilter = (OtherTestFilter) registrationBean.getFilter();
+		assertThat(otherTestFilter).isNotNull();
 		assertThat(builder).extracting("filters", as(InstanceOfAssertFactories.LIST))
 			.extracting("delegate", "dispatcherTypes")
 			.containsExactlyInAnyOrder(tuple(testFilter, EnumSet.of(DispatcherType.REQUEST)),
@@ -96,6 +97,7 @@ class SpringBootMockMvcBuilderCustomizerTests {
 			Thread thread = new Thread(() -> {
 				for (int j = 0; j < 1000; j++) {
 					DeferredLinesWriter writer = DeferredLinesWriter.get(context);
+					assertThat(writer).isNotNull();
 					writer.write(Arrays.asList("1", "2", "3", "4", "5"));
 					writer.writeDeferredResult();
 					writer.clear();
@@ -162,9 +164,10 @@ class SpringBootMockMvcBuilderCustomizerTests {
 
 	static class TestFilter implements Filter {
 
+		@SuppressWarnings("NullAway.Init")
 		private String filterName;
 
-		private Map<String, String> initParams = new HashMap<>();
+		private final Map<String, String> initParams = new HashMap<>();
 
 		@Override
 		public void init(FilterConfig filterConfig) {
@@ -187,9 +190,10 @@ class SpringBootMockMvcBuilderCustomizerTests {
 
 	static class OtherTestFilter implements Filter {
 
+		@SuppressWarnings("NullAway.Init")
 		private String filterName;
 
-		private Map<String, String> initParams = new HashMap<>();
+		private final Map<String, String> initParams = new HashMap<>();
 
 		@Override
 		public void init(FilterConfig filterConfig) {
