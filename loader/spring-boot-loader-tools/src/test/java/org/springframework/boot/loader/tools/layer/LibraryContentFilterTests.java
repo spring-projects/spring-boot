@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.tools.layer;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.tools.Library;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.mock;
 class LibraryContentFilterTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenCoordinatesPatternIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LibraryContentFilter(null))
 			.withMessage("'coordinatesPattern' must not be empty");
@@ -95,7 +97,7 @@ class LibraryContentFilterTests {
 		assertThat(filter.matches(mockLibrary("org.acme", "test", "1.0.0-SNAPSHOT"))).isTrue();
 	}
 
-	private Library mockLibrary(String groupId, String artifactId, String version) {
+	private Library mockLibrary(@Nullable String groupId, @Nullable String artifactId, @Nullable String version) {
 		return mockLibrary(LibraryCoordinates.of(groupId, artifactId, version));
 	}
 

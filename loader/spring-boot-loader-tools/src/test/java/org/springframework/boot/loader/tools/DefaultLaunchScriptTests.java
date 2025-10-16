@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DefaultLaunchScriptTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test

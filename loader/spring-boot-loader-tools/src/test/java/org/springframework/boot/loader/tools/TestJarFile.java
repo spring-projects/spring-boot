@@ -28,6 +28,7 @@ import java.util.UUID;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
+import org.jspecify.annotations.Nullable;
 import org.zeroturnaround.zip.FileSource;
 import org.zeroturnaround.zip.ZipEntrySource;
 import org.zeroturnaround.zip.ZipUtil;
@@ -55,7 +56,7 @@ public class TestJarFile {
 		addClass(filename, classToCopy, null);
 	}
 
-	public void addClass(String filename, Class<?> classToCopy, Long time) throws IOException {
+	public void addClass(String filename, Class<?> classToCopy, @Nullable Long time) throws IOException {
 		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
 		InputStream inputStream = getClass()

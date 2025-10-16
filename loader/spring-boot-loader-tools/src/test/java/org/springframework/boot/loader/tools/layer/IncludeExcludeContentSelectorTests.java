@@ -38,6 +38,7 @@ class IncludeExcludeContentSelectorTests {
 	private static final Layer LAYER = new Layer("test");
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenLayerIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
@@ -46,6 +47,7 @@ class IncludeExcludeContentSelectorTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new IncludeExcludeContentSelector<>(LAYER, null, null, null))

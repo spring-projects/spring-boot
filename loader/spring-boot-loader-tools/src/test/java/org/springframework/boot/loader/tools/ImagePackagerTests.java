@@ -28,6 +28,9 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.jspecify.annotations.Nullable;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ImagePackager}
@@ -36,7 +39,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
  */
 class ImagePackagerTests extends AbstractPackagerTests<ImagePackager> {
 
-	private Map<ZipArchiveEntry, byte[]> entries;
+	private @Nullable Map<ZipArchiveEntry, byte[]> entries;
 
 	@Override
 	protected ImagePackager createPackager(File source) {
@@ -51,6 +54,7 @@ class ImagePackagerTests extends AbstractPackagerTests<ImagePackager> {
 
 	private void save(ZipEntry entry, EntryWriter writer) {
 		try {
+			assertThat(this.entries).isNotNull();
 			this.entries.put((ZipArchiveEntry) entry, getContent(writer));
 		}
 		catch (IOException ex) {
@@ -58,7 +62,7 @@ class ImagePackagerTests extends AbstractPackagerTests<ImagePackager> {
 		}
 	}
 
-	private byte[] getContent(EntryWriter writer) throws IOException {
+	private byte @Nullable [] getContent(@Nullable EntryWriter writer) throws IOException {
 		if (writer == null) {
 			return null;
 		}
@@ -69,24 +73,29 @@ class ImagePackagerTests extends AbstractPackagerTests<ImagePackager> {
 
 	@Override
 	protected Collection<ZipArchiveEntry> getAllPackagedEntries() throws IOException {
+		assertThat(this.entries).isNotNull();
 		return this.entries.keySet();
 	}
 
 	@Override
-	protected Manifest getPackagedManifest() throws IOException {
+	protected @Nullable Manifest getPackagedManifest() throws IOException {
 		byte[] bytes = getEntryBytes("META-INF/MANIFEST.MF");
 		return (bytes != null) ? new Manifest(new ByteArrayInputStream(bytes)) : null;
 	}
 
 	@Override
-	protected String getPackagedEntryContent(String name) throws IOException {
+	protected @Nullable String getPackagedEntryContent(String name) throws IOException {
 		byte[] bytes = getEntryBytes(name);
 		return (bytes != null) ? new String(bytes, StandardCharsets.UTF_8) : null;
 	}
 
-	private byte[] getEntryBytes(String name) throws IOException {
+	private byte @Nullable [] getEntryBytes(String name) throws IOException {
 		ZipEntry entry = getPackagedEntry(name);
-		return (entry != null) ? this.entries.get(entry) : null;
+		if (entry == null) {
+			return null;
+		}
+		assertThat(this.entries).isNotNull();
+		return this.entries.get(entry);
 	}
 
 }

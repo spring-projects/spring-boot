@@ -37,6 +37,7 @@ class SizeCalculatingEntryWriterTests {
 	void getWhenWithinThreshold() throws Exception {
 		TestEntryWriter original = new TestEntryWriter(SizeCalculatingEntryWriter.THRESHOLD - 1);
 		EntryWriter writer = SizeCalculatingEntryWriter.get(original);
+		assertThat(writer).isNotNull();
 		assertThat(writer.size()).isEqualTo(original.getBytes().length);
 		assertThat(writeBytes(writer)).isEqualTo(original.getBytes());
 		assertThat(writer).extracting("content").isNotInstanceOf(File.class);
@@ -46,6 +47,7 @@ class SizeCalculatingEntryWriterTests {
 	void getWhenExceedingThreshold() throws Exception {
 		TestEntryWriter original = new TestEntryWriter(SizeCalculatingEntryWriter.THRESHOLD + 1);
 		EntryWriter writer = SizeCalculatingEntryWriter.get(original);
+		assertThat(writer).isNotNull();
 		assertThat(writer.size()).isEqualTo(original.getBytes().length);
 		assertThat(writeBytes(writer)).isEqualTo(original.getBytes());
 		assertThat(writer).extracting("content").isInstanceOf(File.class);

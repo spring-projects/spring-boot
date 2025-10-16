@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ApplicationContentFilterTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenPatternIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ApplicationContentFilter(null))
 			.withMessage("'pattern' must not be empty");

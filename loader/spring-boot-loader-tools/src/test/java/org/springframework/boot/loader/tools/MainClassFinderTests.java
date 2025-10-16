@@ -31,6 +31,7 @@ import net.bytebuddy.implementation.Implementation;
 import net.bytebuddy.implementation.bytecode.ByteCodeAppender;
 import net.bytebuddy.jar.asm.MethodVisitor;
 import net.bytebuddy.jar.asm.Opcodes;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -276,7 +277,7 @@ class MainClassFinderTests {
 		private final List<String> classNames = new ArrayList<>();
 
 		@Override
-		public Object doWith(MainClass mainClass) {
+		public @Nullable Object doWith(MainClass mainClass) {
 			this.classNames.add(mainClass.getName());
 			return null;
 		}
