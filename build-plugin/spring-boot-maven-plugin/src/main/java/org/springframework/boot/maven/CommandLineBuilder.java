@@ -51,7 +51,8 @@ final class CommandLineBuilder {
 		return new CommandLineBuilder(mainClass);
 	}
 
-	CommandLineBuilder withJvmArguments(String... jvmArguments) {
+	// Do not use String @Nullable ... jvmArguments, Maven can't deal with that
+	CommandLineBuilder withJvmArguments(@Nullable String... jvmArguments) {
 		if (jvmArguments != null) {
 			this.options.addAll(Arrays.stream(jvmArguments).filter(Objects::nonNull).toList());
 		}
@@ -75,7 +76,8 @@ final class CommandLineBuilder {
 		return this;
 	}
 
-	CommandLineBuilder withArguments(String... arguments) {
+	// Do not use String @Nullable ... arguments, Maven can't deal with that
+	CommandLineBuilder withArguments(@Nullable String... arguments) {
 		if (arguments != null) {
 			this.arguments.addAll(Arrays.stream(arguments).filter(Objects::nonNull).toList());
 		}

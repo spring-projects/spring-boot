@@ -79,7 +79,7 @@ public class ArtifactsLibraries implements Libraries {
 	 * @since 2.4.0
 	 */
 	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<MavenProject> localProjects,
-			Collection<Dependency> unpacks, Log log) {
+			@Nullable Collection<Dependency> unpacks, Log log) {
 		this(artifacts, artifacts, localProjects, unpacks, log);
 	}
 

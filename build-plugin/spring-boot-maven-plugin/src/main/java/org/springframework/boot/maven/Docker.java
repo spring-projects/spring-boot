@@ -230,7 +230,8 @@ public class Docker {
 		public DockerRegistry() {
 		}
 
-		public DockerRegistry(String username, String password, String url, String email) {
+		public DockerRegistry(@Nullable String username, @Nullable String password, @Nullable String url,
+				@Nullable String email) {
 			this.username = username;
 			this.password = password;
 			this.url = url;
