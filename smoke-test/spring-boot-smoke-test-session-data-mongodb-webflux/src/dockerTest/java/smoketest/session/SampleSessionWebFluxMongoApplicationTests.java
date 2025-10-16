@@ -31,6 +31,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,8 +64,11 @@ class SampleSessionWebFluxMongoApplicationTests {
 		WebClient client = this.webClientBuilder.baseUrl("http://localhost:" + this.port + "/").build();
 		client.get().header("Authorization", getBasicAuth()).exchangeToMono((response) -> {
 			assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
-			return response.bodyToMono(String.class)
-				.map((sessionId) -> Tuples.of(response.cookies().getFirst("SESSION").getValue(), sessionId));
+			return response.bodyToMono(String.class).map((sessionId) -> {
+				ResponseCookie session = response.cookies().getFirst("SESSION");
+				assertThat(session).isNotNull();
+				return Tuples.of(session.getValue(), sessionId);
+			});
 		}).flatMap((tuple) -> {
 			String sessionCookie = tuple.getT1();
 			return client.get().cookie("SESSION", sessionCookie).exchangeToMono((response) -> {
