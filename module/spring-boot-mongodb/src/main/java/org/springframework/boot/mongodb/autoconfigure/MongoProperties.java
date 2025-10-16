@@ -218,8 +218,8 @@ public class MongoProperties {
 			return this.uuid;
 		}
 
-		public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
-			this.uuid = uuidRepresentation;
+		public void setUuid(UuidRepresentation uuid) {
+			this.uuid = uuid;
 		}
 
 	}
