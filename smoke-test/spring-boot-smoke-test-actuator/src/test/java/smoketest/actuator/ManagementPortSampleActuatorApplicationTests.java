@@ -18,6 +18,7 @@ package smoketest.actuator;
 
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import smoketest.actuator.ManagementPortSampleActuatorApplicationTests.CustomErrorAttributes;
 
@@ -96,6 +97,7 @@ class ManagementPortSampleActuatorApplicationTests {
 		this.errorAttributes.securityContext = null;
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
 			.getForEntity("http://localhost:" + this.managementPort + "/404", Map.class));
+		assertThat(this.errorAttributes.securityContext).isNotNull();
 		assertThat(this.errorAttributes.securityContext.getAuthentication()).isNotNull();
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).containsEntry("status", 404);
@@ -108,10 +110,10 @@ class ManagementPortSampleActuatorApplicationTests {
 
 	static class CustomErrorAttributes extends DefaultErrorAttributes {
 
-		private volatile SecurityContext securityContext;
+		private volatile @Nullable SecurityContext securityContext;
 
 		@Override
-		public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+		public Map<String, @Nullable Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 			this.securityContext = SecurityContextHolder.getContext();
 			return super.getErrorAttributes(webRequest, options);
 		}

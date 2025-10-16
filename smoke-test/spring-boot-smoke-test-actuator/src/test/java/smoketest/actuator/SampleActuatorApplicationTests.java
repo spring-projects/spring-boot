@@ -90,8 +90,10 @@ class SampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/metrics", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).containsKey("names");
-		List<String> names = (List<String>) entity.getBody().get("names");
+		Map<String, Object> body = entity.getBody();
+		assertThat(body).isNotNull();
+		assertThat(body).containsKey("names");
+		List<String> names = (List<String>) body.get("names");
 		assertThat(names).contains("jvm.buffer.count");
 	}
 
@@ -157,8 +159,11 @@ class SampleActuatorApplicationTests {
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/configprops", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> body = entity.getBody();
+		assertThat(body).isNotNull();
 		Map<String, Object> contexts = (Map<String, Object>) body.get("contexts");
+		assertThat(contexts).isNotNull();
 		Map<String, Object> context = (Map<String, Object>) contexts.get(this.applicationContext.getId());
+		assertThat(context).isNotNull();
 		Map<String, Object> beans = (Map<String, Object>) context.get("beans");
 		assertThat(beans).containsKey("spring.datasource-" + DataSourceProperties.class.getName());
 	}
@@ -187,6 +192,7 @@ class SampleActuatorApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).containsKey("build");
 		Map<String, Object> body = entity.getBody();
+		assertThat(body).isNotNull();
 		Map<String, Object> example = (Map<String, Object>) body.get("example");
 		assertThat(example).containsEntry("someKey", "someValue");
 	}
