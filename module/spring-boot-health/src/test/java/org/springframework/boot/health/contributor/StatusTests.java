@@ -59,7 +59,7 @@ class StatusTests {
 	void equalsAndHashCode() {
 		Status one = new Status("spring", "boot");
 		Status two = new Status("spring", "framework");
-		Status three = new Status("spock", "framework");
+		Status three = new Status("another", "framework");
 		assertThat(one).isEqualTo(one).isEqualTo(two).isNotEqualTo(three);
 		assertThat(one).hasSameHashCodeAs(two);
 	}

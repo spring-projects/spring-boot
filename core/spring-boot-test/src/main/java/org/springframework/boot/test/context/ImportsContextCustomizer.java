@@ -228,7 +228,6 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			annotationFilters.add(AnnotationFilter.PLAIN);
 			annotationFilters.add("kotlin.Metadata"::equals);
 			annotationFilters.add(AnnotationFilter.packages("kotlin.annotation"));
-			annotationFilters.add(AnnotationFilter.packages("org.spockframework", "spock"));
 			annotationFilters.add(AnnotationFilter.packages("org.junit"));
 			ANNOTATION_FILTERS = Collections.unmodifiableSet(annotationFilters);
 		}
