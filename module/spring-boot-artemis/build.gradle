@@ -32,7 +32,7 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-tx"))
+	optional(project(":module:spring-boot-transaction"))
 	optional("org.apache.activemq:artemis-jakarta-server")
 	optional("org.messaginghub:pooled-jms") {
 		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"

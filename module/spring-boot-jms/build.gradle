@@ -26,7 +26,7 @@ description = "Spring Boot JMS"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api(project(":module:spring-boot-tx"))
+	api(project(":module:spring-boot-transaction"))
 	api("jakarta.jms:jakarta.jms-api")
 	api("org.springframework:spring-jms")
 

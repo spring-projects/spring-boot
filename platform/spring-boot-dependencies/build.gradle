@@ -2262,7 +2262,7 @@ bom {
 				"spring-boot-testcontainers",
 				"spring-boot-thymeleaf",
 				"spring-boot-tomcat",
-				"spring-boot-tx",
+				"spring-boot-transaction",
 				"spring-boot-validation",
 				"spring-boot-web-server",
 				"spring-boot-webclient",

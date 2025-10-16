@@ -32,7 +32,7 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-tx"))
+	optional(project(":module:spring-boot-transaction"))
 	optional("jakarta.transaction:jakarta.transaction-api")
 	optional("org.apache.activemq:activemq-broker")
 	optional("org.messaginghub:pooled-jms") {

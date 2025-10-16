@@ -44,7 +44,7 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:postgresql")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation(project(":module:spring-boot-tx"))
+	testImplementation(project(":module:spring-boot-transaction"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")

@@ -32,7 +32,7 @@ dependencies {
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
-	implementation(project(":module:spring-boot-tx"))
+	implementation(project(":module:spring-boot-transaction"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
