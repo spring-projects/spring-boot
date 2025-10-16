@@ -25,6 +25,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.InstanceOfAssertFactory;
 import org.assertj.core.api.MapAssert;
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -119,7 +120,7 @@ class SampleQuartzApplicationWebTests {
 			.untilAsserted(() -> assertThat(output).contains("Hello On Demand Job"));
 	}
 
-	private Map<String, Object> getContent(String path) {
+	private @Nullable Map<String, Object> getContent(String path) {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity(path, Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		return entity.getBody();
