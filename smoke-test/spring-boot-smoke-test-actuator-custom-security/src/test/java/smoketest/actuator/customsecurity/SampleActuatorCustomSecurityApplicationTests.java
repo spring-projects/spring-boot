@@ -52,6 +52,7 @@ class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuato
 		ResponseEntity<Map> entity = restTemplate().getForEntity(getPath() + "/foo", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		Map<String, Object> body = entity.getBody();
+		assertThat(body).isNotNull();
 		assertThat((String) body.get("message")).contains("Expected exception in controller");
 	}
 
