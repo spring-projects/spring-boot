@@ -50,6 +50,7 @@ import static org.mockito.Mockito.mock;
 class DirectoryBuildpackTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private File buildpackDir;

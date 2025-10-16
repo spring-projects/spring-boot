@@ -63,6 +63,7 @@ class MappedObjectTests extends AbstractJsonTests {
 	@Test
 	void valueAtWhenInterfaceReturnsProxy() {
 		Person person = this.mapped.valueAt("/person", Person.class);
+		assertThat(person).isNotNull();
 		assertThat(person.getName().getFirst()).isEqualTo("spring");
 		assertThat(person.getName().getLast()).isEqualTo("boot");
 	}
@@ -70,6 +71,7 @@ class MappedObjectTests extends AbstractJsonTests {
 	@Test
 	void valueAtWhenInterfaceAndMissingReturnsProxy() {
 		Person person = this.mapped.valueAt("/missing", Person.class);
+		assertThat(person).isNotNull();
 		assertThat(person.getName().getFirst()).isNull();
 		assertThat(person.getName().getLast()).isNull();
 	}
@@ -82,6 +84,7 @@ class MappedObjectTests extends AbstractJsonTests {
 	@Test
 	void valueAtWhenDefaultMethodReturnsValue() {
 		Person person = this.mapped.valueAt("/person", Person.class);
+		assertThat(person).isNotNull();
 		assertThat(person.getName().getFullName()).isEqualTo("dr spring boot");
 	}
 

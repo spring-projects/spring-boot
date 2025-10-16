@@ -29,6 +29,7 @@ import java.util.Map;
 import com.sun.jna.Platform;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -500,7 +501,9 @@ class LifecycleTests {
 		then(this.docker.container()).should().start(containerReference);
 		then(this.docker.container()).should().logs(eq(containerReference), any());
 		then(this.docker.container()).should().remove(containerReference, true);
-		configConsumer.accept(this.configs.get(containerReference.toString()));
+		ContainerConfig containerConfig = this.configs.get(containerReference.toString());
+		assertThat(containerConfig).isNotNull();
+		configConsumer.accept(containerConfig);
 	}
 
 	private IOConsumer<ContainerConfig> withExpectedConfig(String name) {
@@ -527,7 +530,7 @@ class LifecycleTests {
 
 	static class TestLifecycle extends Lifecycle {
 
-		TestLifecycle(BuildLog log, DockerApi docker, ResolvedDockerHost dockerHost, BuildRequest request,
+		TestLifecycle(BuildLog log, DockerApi docker, @Nullable ResolvedDockerHost dockerHost, BuildRequest request,
 				EphemeralBuilder builder) {
 			super(log, docker, dockerHost, request, builder);
 		}

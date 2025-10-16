@@ -50,6 +50,7 @@ class LayerIdTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenValueIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LayerId.of((String) null))
 			.withMessage("'value' must not be empty");
@@ -78,6 +79,7 @@ class LayerIdTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofSha256DigestWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LayerId.ofSha256Digest((byte[]) null))
 			.withMessage("'digest' must not be null");

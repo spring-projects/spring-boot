@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
@@ -37,7 +38,7 @@ class ImageTests extends AbstractJsonTests {
 	@Test
 	void getConfigEnvContainsParsedValues() throws Exception {
 		Image image = getImage();
-		Map<String, String> env = image.getConfig().getEnv();
+		Map<String, @Nullable String> env = image.getConfig().getEnv();
 		assertThat(env).contains(entry("PATH", "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"),
 				entry("CNB_USER_ID", "2000"), entry("CNB_GROUP_ID", "2000"),
 				entry("CNB_STACK_ID", "org.cloudfoundry.stacks.cflinuxfs3"));

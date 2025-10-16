@@ -53,6 +53,7 @@ class BuildpackLayersMetadataTests extends AbstractJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackLayersMetadata.fromImage(null))
 			.withMessage("'image' must not be null");

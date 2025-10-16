@@ -33,12 +33,14 @@ class DockerConnectionExceptionTests {
 	private static final String HOST = "docker://localhost/";
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenHostIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DockerConnectionException(null, null))
 			.withMessage("'host' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenCauseIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DockerConnectionException(HOST, null))
 			.withMessage("'cause' must not be null");

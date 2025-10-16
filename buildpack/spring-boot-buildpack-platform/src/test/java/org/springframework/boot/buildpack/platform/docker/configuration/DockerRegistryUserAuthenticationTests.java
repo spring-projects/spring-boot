@@ -27,6 +27,8 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 import org.springframework.util.StreamUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests for {@link DockerRegistryUserAuthentication}.
  *
@@ -38,13 +40,17 @@ class DockerRegistryUserAuthenticationTests extends AbstractJsonTests {
 	void createMinimalAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryUserAuthentication auth = new DockerRegistryUserAuthentication("user", "secret",
 				"https://docker.example.com", "docker@example.com");
-		JSONAssert.assertEquals(jsonContent("auth-user-full.json"), decoded(auth.getAuthHeader()), true);
+		String authHeader = auth.getAuthHeader();
+		assertThat(authHeader).isNotNull();
+		JSONAssert.assertEquals(jsonContent("auth-user-full.json"), decoded(authHeader), true);
 	}
 
 	@Test
 	void createFullAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryUserAuthentication auth = new DockerRegistryUserAuthentication("user", "secret", null, null);
-		JSONAssert.assertEquals(jsonContent("auth-user-minimal.json"), decoded(auth.getAuthHeader()), false);
+		String authHeader = auth.getAuthHeader();
+		assertThat(authHeader).isNotNull();
+		JSONAssert.assertEquals(jsonContent("auth-user-minimal.json"), decoded(authHeader), false);
 	}
 
 	private String jsonContent(String s) throws IOException {

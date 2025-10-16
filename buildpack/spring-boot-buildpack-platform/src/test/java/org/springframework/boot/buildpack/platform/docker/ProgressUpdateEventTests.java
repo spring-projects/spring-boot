@@ -41,13 +41,17 @@ abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 	@Test
 	void getProgressDetailReturnsProgressDetails() {
 		ProgressUpdateEvent event = createEvent();
-		assertThat(event.getProgressDetail().asPercentage()).isEqualTo(50);
+		ProgressDetail progressDetail = event.getProgressDetail();
+		assertThat(progressDetail).isNotNull();
+		assertThat(progressDetail.asPercentage()).isEqualTo(50);
 	}
 
 	@Test
 	void getProgressDetailReturnsProgressDetailsForLongNumbers() {
 		ProgressUpdateEvent event = createEvent("status", new ProgressDetail(4000000000L, 8000000000L), "progress");
-		assertThat(event.getProgressDetail().asPercentage()).isEqualTo(50);
+		ProgressDetail progressDetail = event.getProgressDetail();
+		assertThat(progressDetail).isNotNull();
+		assertThat(progressDetail.asPercentage()).isEqualTo(50);
 	}
 
 	@Test

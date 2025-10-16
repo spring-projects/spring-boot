@@ -19,6 +19,7 @@ package org.springframework.boot.buildpack.platform.docker;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.ProgressUpdateEvent.ProgressDetail;
+import org.springframework.boot.buildpack.platform.docker.PushImageUpdateEvent.ErrorDetail;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,9 +38,11 @@ class PushImageUpdateEventTests extends ProgressUpdateEventTests<PushImageUpdate
 
 	@Test
 	void getErrorReturnsErrorDetail() {
-		PushImageUpdateEvent event = new PushImageUpdateEvent(null, null, null, null,
-				new PushImageUpdateEvent.ErrorDetail("test message"));
-		assertThat(event.getErrorDetail().getMessage()).isEqualTo("test message");
+		PushImageUpdateEvent event = new PushImageUpdateEvent("id", "status", new ProgressDetail(null, null),
+				"progress", new PushImageUpdateEvent.ErrorDetail("test message"));
+		ErrorDetail errorDetail = event.getErrorDetail();
+		assertThat(errorDetail).isNotNull();
+		assertThat(errorDetail.getMessage()).isEqualTo("test message");
 	}
 
 	@Override

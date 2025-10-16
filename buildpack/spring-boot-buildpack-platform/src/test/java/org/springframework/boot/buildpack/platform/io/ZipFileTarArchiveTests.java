@@ -41,15 +41,18 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ZipFileTarArchiveTests {
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenZipIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ZipFileTarArchive(null, Owner.ROOT))
 			.withMessage("'zip' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenOwnerIsNullThrowsException() throws Exception {
 		File file = new File(this.tempDir, "test.zip");
 		writeTestZip(file);

@@ -37,3 +37,11 @@ dependencies {
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}

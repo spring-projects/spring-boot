@@ -54,6 +54,7 @@ class DockerEngineExceptionTests {
 	private static final Message MESSAGE = new Message("response message");
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenHostIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DockerEngineException(null, null, 404, null, NO_ERRORS, NO_MESSAGE))
@@ -61,6 +62,7 @@ class DockerEngineExceptionTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void createWhenUriIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DockerEngineException(HOST, null, 404, null, NO_ERRORS, NO_MESSAGE))

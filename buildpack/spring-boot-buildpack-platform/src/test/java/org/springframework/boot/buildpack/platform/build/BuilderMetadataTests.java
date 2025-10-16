@@ -88,6 +88,7 @@ class BuilderMetadataTests extends AbstractJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderMetadata.fromImage(null))
 			.withMessage("'image' must not be null");
@@ -150,6 +151,7 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		BuilderMetadata metadata = BuilderMetadata.fromImage(image);
 		ImageConfig imageConfigCopy = imageConfig.copy(metadata::attachTo);
 		String label = imageConfigCopy.getLabels().get("io.buildpacks.builder.metadata");
+		assertThat(label).isNotNull();
 		BuilderMetadata metadataCopy = BuilderMetadata.fromJson(label);
 		assertThat(metadataCopy.getStack().getRunImage().getImage())
 			.isEqualTo(metadata.getStack().getRunImage().getImage());

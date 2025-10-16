@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
@@ -97,6 +98,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromBuildpackMetadataWhenMetadataIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromBuildpackMetadata(null))
 			.withMessage("'buildpackMetadata' must not be null");
@@ -111,6 +113,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenIdIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.of(null, null))
 			.withMessage("'id' must not be empty");
@@ -155,7 +158,8 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 		assertThat(c1a).hasSameHashCodeAs(c1b);
 	}
 
-	private InputStream createTomlStream(String id, String version, boolean includeStacks, boolean includeOrder) {
+	private InputStream createTomlStream(@Nullable String id, @Nullable String version, boolean includeStacks,
+			boolean includeOrder) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("[buildpack]\n");
 		if (id != null) {

@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ContentTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenSupplierIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Content.of(1, (IOSupplier<InputStream>) null))
 			.withMessage("'supplier' must not be null");
@@ -49,6 +50,7 @@ class ContentTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenStringIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Content.of((String) null))
 			.withMessage("'string' must not be null");
@@ -61,6 +63,7 @@ class ContentTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenBytesIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Content.of((byte[]) null))
 			.withMessage("'bytes' must not be null");

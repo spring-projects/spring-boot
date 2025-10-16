@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class LifecycleVersionTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void parseWhenValueIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse(null))
 			.withMessage("'value' must not be empty");

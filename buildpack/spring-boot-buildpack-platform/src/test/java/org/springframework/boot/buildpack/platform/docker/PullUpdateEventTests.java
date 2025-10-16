@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.docker;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.buildpack.platform.docker.ProgressUpdateEvent.ProgressDetail;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,9 @@ class PullUpdateEventTests extends AbstractJsonTests {
 				PullImageUpdateEvent.class);
 		assertThat(event.getId()).isEqualTo("4f4fb700ef54");
 		assertThat(event.getStatus()).isEqualTo("Extracting");
-		assertThat(event.getProgressDetail().asPercentage()).isEqualTo(50);
+		ProgressDetail progressDetail = event.getProgressDetail();
+		assertThat(progressDetail).isNotNull();
+		assertThat(progressDetail.asPercentage()).isEqualTo(50);
 		assertThat(event.getProgress()).isEqualTo("[==================================================>]      32B/32B");
 	}
 

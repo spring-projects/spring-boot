@@ -67,15 +67,19 @@ class HttpClientTransportTests {
 	private static final String APPLICATION_X_TAR = "application/x-tar";
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private HttpClient client;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private ClassicHttpResponse response;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private HttpEntity entity;
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private InputStream content;
 
 	private HttpClientTransport http;
@@ -294,7 +298,9 @@ class HttpClientTransportTests {
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
 			.satisfies((ex) -> {
 				assertThat(ex.getErrors()).isNull();
-				assertThat(ex.getResponseMessage().getMessage()).contains("test message");
+				Message responseMessage = ex.getResponseMessage();
+				assertThat(responseMessage).isNotNull();
+				assertThat(responseMessage.getMessage()).contains("test message");
 			});
 	}
 
@@ -318,7 +324,9 @@ class HttpClientTransportTests {
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
 			.satisfies((ex) -> {
 				assertThat(ex.getErrors()).hasSize(2);
-				assertThat(ex.getResponseMessage().getMessage()).contains("test message");
+				Message responseMessage = ex.getResponseMessage();
+				assertThat(responseMessage).isNotNull();
+				assertThat(responseMessage.getMessage()).contains("test message");
 			});
 	}
 

@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class VolumeNameTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void randomWhenPrefixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.random(null))
 			.withMessage("'prefix' must not be null");
@@ -55,24 +56,28 @@ class VolumeNameTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void basedOnWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn(null, "prefix", "suffix", 6))
 			.withMessage("'source' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void basedOnWhenNameExtractorIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn("test", null, "prefix", "suffix", 6))
 			.withMessage("'nameExtractor' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void basedOnWhenPrefixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn("test", null, "suffix", 6))
 			.withMessage("'prefix' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void basedOnWhenSuffixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.basedOn("test", "prefix", null, 6))
 			.withMessage("'suffix' must not be null");
@@ -91,6 +96,7 @@ class VolumeNameTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenValueIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> VolumeName.of(null))
 			.withMessage("'value' must not be null");

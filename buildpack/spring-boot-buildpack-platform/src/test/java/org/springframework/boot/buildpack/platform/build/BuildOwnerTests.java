@@ -19,6 +19,7 @@ package org.springframework.boot.buildpack.platform.build;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +36,7 @@ class BuildOwnerTests {
 
 	@Test
 	void fromEnvReturnsOwner() {
-		Map<String, String> env = new LinkedHashMap<>();
+		Map<String, @Nullable String> env = new LinkedHashMap<>();
 		env.put("CNB_USER_ID", "123");
 		env.put("CNB_GROUP_ID", "456");
 		BuildOwner owner = BuildOwner.fromEnv(env);
@@ -45,6 +46,7 @@ class BuildOwnerTests {
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void fromEnvWhenEnvIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildOwner.fromEnv(null))
 			.withMessage("'env' must not be null");
@@ -52,7 +54,7 @@ class BuildOwnerTests {
 
 	@Test
 	void fromEnvWhenUserPropertyIsMissingThrowsException() {
-		Map<String, String> env = new LinkedHashMap<>();
+		Map<String, @Nullable String> env = new LinkedHashMap<>();
 		env.put("CNB_GROUP_ID", "456");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
 			.withMessage("Missing 'CNB_USER_ID' value from the builder environment '" + env + "'");
@@ -60,7 +62,7 @@ class BuildOwnerTests {
 
 	@Test
 	void fromEnvWhenGroupPropertyIsMissingThrowsException() {
-		Map<String, String> env = new LinkedHashMap<>();
+		Map<String, @Nullable String> env = new LinkedHashMap<>();
 		env.put("CNB_USER_ID", "123");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
 			.withMessage("Missing 'CNB_GROUP_ID' value from the builder environment '" + env + "'");
@@ -68,7 +70,7 @@ class BuildOwnerTests {
 
 	@Test
 	void fromEnvWhenUserPropertyIsMalformedThrowsException() {
-		Map<String, String> env = new LinkedHashMap<>();
+		Map<String, @Nullable String> env = new LinkedHashMap<>();
 		env.put("CNB_USER_ID", "nope");
 		env.put("CNB_GROUP_ID", "456");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
@@ -77,7 +79,7 @@ class BuildOwnerTests {
 
 	@Test
 	void fromEnvWhenGroupPropertyIsMalformedThrowsException() {
-		Map<String, String> env = new LinkedHashMap<>();
+		Map<String, @Nullable String> env = new LinkedHashMap<>();
 		env.put("CNB_USER_ID", "123");
 		env.put("CNB_GROUP_ID", "nope");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))

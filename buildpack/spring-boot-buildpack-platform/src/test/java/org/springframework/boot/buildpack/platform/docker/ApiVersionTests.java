@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ApiVersionTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void parseWhenVersionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse(null))
 			.withMessage("'value' must not be empty");

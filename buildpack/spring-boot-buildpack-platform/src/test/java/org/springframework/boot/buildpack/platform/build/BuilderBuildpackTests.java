@@ -51,6 +51,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 	void resolveWhenFullyQualifiedBuildpackWithVersionResolves() throws Exception {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:paketo-buildpacks/spring-boot@3.5.0");
 		Buildpack buildpack = BuilderBuildpack.resolve(this.resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates())
 			.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
 		assertThatNoLayersAreAdded(buildpack);
@@ -60,6 +61,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 	void resolveWhenFullyQualifiedBuildpackWithoutVersionResolves() throws Exception {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:paketo-buildpacks/spring-boot");
 		Buildpack buildpack = BuilderBuildpack.resolve(this.resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates())
 			.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
 		assertThatNoLayersAreAdded(buildpack);
@@ -69,6 +71,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 	void resolveWhenUnqualifiedBuildpackWithVersionResolves() throws Exception {
 		BuildpackReference reference = BuildpackReference.of("paketo-buildpacks/spring-boot@3.5.0");
 		Buildpack buildpack = BuilderBuildpack.resolve(this.resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates())
 			.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
 		assertThatNoLayersAreAdded(buildpack);
@@ -78,6 +81,7 @@ class BuilderBuildpackTests extends AbstractJsonTests {
 	void resolveWhenUnqualifiedBuildpackWithoutVersionResolves() throws Exception {
 		BuildpackReference reference = BuildpackReference.of("paketo-buildpacks/spring-boot");
 		Buildpack buildpack = BuilderBuildpack.resolve(this.resolverContext, reference);
+		assertThat(buildpack).isNotNull();
 		assertThat(buildpack.getCoordinates())
 			.isEqualTo(BuildpackCoordinates.of("paketo-buildpacks/spring-boot", "3.5.0"));
 		assertThatNoLayersAreAdded(buildpack);

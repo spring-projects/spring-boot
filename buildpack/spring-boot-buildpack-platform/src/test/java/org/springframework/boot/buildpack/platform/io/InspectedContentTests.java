@@ -37,18 +37,21 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class InspectedContentTests {
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenInputStreamThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((InputStream) null))
 			.withMessage("'inputStream' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenContentIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((Content) null))
 			.withMessage("'content' must not be null");
 	}
 
 	@Test
+	@SuppressWarnings("NullAway") // Test null check
 	void ofWhenConsumerIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((IOConsumer<OutputStream>) null))
 			.withMessage("'writer' must not be null");

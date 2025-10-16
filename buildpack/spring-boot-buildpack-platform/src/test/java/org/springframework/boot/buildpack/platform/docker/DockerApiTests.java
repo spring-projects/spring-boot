@@ -29,6 +29,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.message.BasicHeader;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -102,6 +103,7 @@ class DockerApiTests {
 	private static final String VOLUMES_URL = API_URL + "/volumes";
 
 	@Mock
+	@SuppressWarnings("NullAway.Init")
 	private HttpTransport http;
 
 	private DockerApi dockerApi;
@@ -119,7 +121,7 @@ class DockerApiTests {
 		return responseOf(null);
 	}
 
-	private Response responseOf(String name) {
+	private Response responseOf(@Nullable String name) {
 		return new Response() {
 
 			@Override
@@ -129,7 +131,7 @@ class DockerApiTests {
 			@Override
 			public InputStream getContent() {
 				if (name == null) {
-					return null;
+					return new ByteArrayInputStream(new byte[0]);
 				}
 				return getClass().getResourceAsStream(name);
 			}
@@ -142,11 +144,11 @@ class DockerApiTests {
 
 			@Override
 			public InputStream getContent() {
-				return null;
+				return new ByteArrayInputStream(new byte[0]);
 			}
 
 			@Override
-			public Header getHeader(String name) {
+			public @Nullable Header getHeader(String name) {
 				return Arrays.stream(headers)
 					.filter((header) -> header.getName().equals(name))
 					.findFirst()
@@ -172,15 +174,19 @@ class DockerApiTests {
 		private ImageApi api;
 
 		@Mock
+		@SuppressWarnings("NullAway.Init")
 		private UpdateListener<PullImageUpdateEvent> pullListener;
 
 		@Mock
+		@SuppressWarnings("NullAway.Init")
 		private UpdateListener<PushImageUpdateEvent> pushListener;
 
 		@Mock
+		@SuppressWarnings("NullAway.Init")
 		private UpdateListener<LoadImageUpdateEvent> loadListener;
 
 		@Captor
+		@SuppressWarnings("NullAway.Init")
 		private ArgumentCaptor<IOConsumer<OutputStream>> writer;
 
 		@BeforeEach
@@ -189,12 +195,14 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void pullWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.pull(null, null, this.pullListener))
 				.withMessage("'reference' must not be null");
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void pullWhenListenerIsNullThrowsException() {
 			assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.api.pull(ImageReference.of("ubuntu"), null, null))
@@ -262,12 +270,14 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void pushWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.push(null, this.pushListener, null))
 				.withMessage("'reference' must not be null");
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void pushWhenListenerIsNullThrowsException() {
 			assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.api.push(ImageReference.of("ubuntu"), null, null))
@@ -297,12 +307,14 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void loadWhenArchiveIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.load(null, UpdateListener.none()))
 				.withMessage("'archive' must not be null");
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void loadWhenListenerIsNullThrowsException() {
 			ImageArchive archive = mock(ImageArchive.class);
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.load(archive, null))
@@ -347,6 +359,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void removeWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.remove(null, true))
 				.withMessage("'reference' must not be null");
@@ -375,6 +388,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void inspectWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.inspect(null))
 				.withMessage("'reference' must not be null");
@@ -446,6 +460,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void tagWhenReferenceIsNullThrowsException() {
 			ImageReference tag = ImageReference.of("localhost:5000/ubuntu");
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.tag(null, tag))
@@ -453,6 +468,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void tagWhenTargetIsNullThrowsException() {
 			ImageReference reference = ImageReference.of("localhost:5000/ubuntu");
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.tag(reference, null))
@@ -487,9 +503,11 @@ class DockerApiTests {
 		private ContainerApi api;
 
 		@Captor
+		@SuppressWarnings("NullAway.Init")
 		private ArgumentCaptor<IOConsumer<OutputStream>> writer;
 
 		@Mock
+		@SuppressWarnings("NullAway.Init")
 		private UpdateListener<LogUpdateEvent> logListener;
 
 		@BeforeEach
@@ -498,6 +516,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void createWhenConfigIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.create(null, null))
 				.withMessage("'config' must not be null");
@@ -553,7 +572,7 @@ class DockerApiTests {
 			createWithPlatform(null);
 		}
 
-		private void createWithPlatform(String apiVersion) throws IOException, URISyntaxException {
+		private void createWithPlatform(@Nullable String apiVersion) throws IOException, URISyntaxException {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
@@ -585,6 +604,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void startWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.start(null))
 				.withMessage("'reference' must not be null");
@@ -600,12 +620,14 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void logsWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.logs(null, UpdateListener.none()))
 				.withMessage("'reference' must not be null");
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void logsWhenListenerIsNullThrowsException() {
 			assertThatIllegalArgumentException()
 				.isThrownBy(() -> this.api.logs(ContainerReference.of("e90e34656806"), null))
@@ -625,6 +647,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void waitWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.wait(null))
 				.withMessage("'reference' must not be null");
@@ -640,6 +663,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void removeWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.remove(null, true))
 				.withMessage("'reference' must not be null");
@@ -676,6 +700,7 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("NullAway") // Test null check
 		void deleteWhenNameIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.delete(null, false))
 				.withMessage("'name' must not be null");

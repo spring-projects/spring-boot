@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -61,6 +62,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	private static final int EXISTING_IMAGE_LAYER_COUNT = 43;
 
 	@TempDir
+	@SuppressWarnings("NullAway.Init")
 	File temp;
 
 	private final BuildOwner owner = BuildOwner.of(123, 456);
@@ -73,7 +75,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	private Map<String, String> env;
 
-	private Buildpacks buildpacks;
+	private @Nullable Buildpacks buildpacks;
 
 	private final Creator creator = Creator.withVersion("dev");
 
@@ -112,6 +114,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.targetImage, this.metadata,
 				this.creator, this.env, this.buildpacks);
 		ImageReference tag = builder.getArchive(null).getTag();
+		assertThat(tag).isNotNull();
 		assertThat(tag.toString()).startsWith("pack.local/builder/").endsWith(":latest");
 	}
 
