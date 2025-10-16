@@ -116,7 +116,6 @@ def dependenciesOf(String version) {
 			"spring-boot-sendgrid",
 			"spring-boot-servlet",
 			"spring-boot-session",
-			"spring-boot-session-data-mongodb",
 			"spring-boot-session-data-redis",
 			"spring-boot-session-hazelcast",
 			"spring-boot-session-jdbc",
