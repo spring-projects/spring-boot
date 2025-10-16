@@ -16,6 +16,8 @@
 
 package org.springframework.boot.webservices.test.autoconfigure.client;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -34,7 +36,7 @@ public class ExampleWebServiceClient {
 		this.webServiceTemplate = builder.build();
 	}
 
-	public Response test() {
+	public @Nullable Response test() {
 		return (Response) this.webServiceTemplate.marshalSendAndReceive("https://example.com", new Request());
 	}
 

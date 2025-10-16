@@ -18,6 +18,7 @@ package org.springframework.boot.webservices.test.autoconfigure.server;
 
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Test request.
@@ -28,6 +29,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 class Request {
 
 	@XmlElement(required = true)
-	private String message;
+	private @Nullable String message;
 
 }
