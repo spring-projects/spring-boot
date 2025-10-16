@@ -52,6 +52,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 			.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
+		assertThat(jsonResponse).isNotNull();
 		assertThat(jsonResponse.get("error").asString()).isEqualTo("Unauthorized");
 	}
 
@@ -61,6 +62,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 				HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
+		assertThat(jsonResponse).isNotNull();
 		assertThat(jsonResponse.get("error").asString()).isEqualTo("Unauthorized");
 	}
 
@@ -70,6 +72,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 				HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		JsonNode jsonResponse = response.getBody();
+		assertThat(jsonResponse).isNotNull();
 		assertThat(jsonResponse.get("error").asString()).isEqualTo("Not Found");
 	}
 
@@ -79,6 +82,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 			.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		JsonNode jsonResponse = response.getBody();
+		assertThat(jsonResponse).isNotNull();
 		assertThat(jsonResponse.get("error").asString()).isEqualTo("Not Found");
 	}
 
@@ -88,6 +92,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 			.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
+		assertThat(jsonResponse).isNotNull();
 		assertThat(jsonResponse.get("error").asString()).isEqualTo("Unauthorized");
 	}
 
@@ -97,6 +102,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 			.exchange(this.pathPrefix + "/fail", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		JsonNode jsonResponse = response.getBody();
+		assertThat(jsonResponse).isNotNull();
 		assertThat(jsonResponse.get("error").asString()).isEqualTo("Internal Server Error");
 	}
 

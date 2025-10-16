@@ -16,6 +16,7 @@
 
 package smoketest.web.secure;
 
+import java.net.URI;
 import java.util.Collections;
 
 import jakarta.servlet.DispatcherType;
@@ -68,7 +69,9 @@ class SampleWebSecureApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
 			.exchange("/home", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/login");
+		URI location = entity.getHeaders().getLocation();
+		assertThat(location).isNotNull();
+		assertThat(location.toString()).endsWith(this.port + "/login");
 	}
 
 	@Test
@@ -92,7 +95,9 @@ class SampleWebSecureApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
 			.exchange("/login", HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/");
+		URI location = entity.getHeaders().getLocation();
+		assertThat(location).isNotNull();
+		assertThat(location.toString()).endsWith(this.port + "/");
 	}
 
 	@org.springframework.boot.test.context.TestConfiguration(proxyBeanMethods = false)
