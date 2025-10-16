@@ -64,10 +64,10 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.jackson.JsonComponent;
-import org.springframework.boot.jackson.JsonMixin;
-import org.springframework.boot.jackson.JsonMixinModule;
-import org.springframework.boot.jackson.JsonMixinModuleEntries;
+import org.springframework.boot.jackson.JacksonComponent;
+import org.springframework.boot.jackson.JacksonMixin;
+import org.springframework.boot.jackson.JacksonMixinModule;
+import org.springframework.boot.jackson.JacksonMixinModuleEntries;
 import org.springframework.boot.jackson.ObjectValueSerializer;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.CborConfiguration.StandardCborMapperBuilderCustomizer;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.JacksonAutoConfigurationRuntimeHints;
@@ -164,8 +164,8 @@ class JacksonAutoConfigurationTests {
 	@Test
 	void jsonMixinModuleShouldBeAutoConfiguredWithBasePackages() {
 		this.contextRunner.withUserConfiguration(MixinConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(JsonMixinModule.class).hasSingleBean(JsonMixinModuleEntries.class);
-			JsonMixinModuleEntries moduleEntries = context.getBean(JsonMixinModuleEntries.class);
+			assertThat(context).hasSingleBean(JacksonMixinModule.class).hasSingleBean(JacksonMixinModuleEntries.class);
+			JacksonMixinModuleEntries moduleEntries = context.getBean(JacksonMixinModuleEntries.class);
 			assertThat(moduleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
 				.contains(entry(Person.class, EmptyMixin.class));
 		});
@@ -903,7 +903,7 @@ class JacksonAutoConfigurationTests {
 
 	}
 
-	@JsonComponent
+	@JacksonComponent
 	static class BazSerializer extends ObjectValueSerializer<Baz> {
 
 		@Override
@@ -959,7 +959,7 @@ class JacksonAutoConfigurationTests {
 
 	}
 
-	@JsonMixin(type = Person.class)
+	@JacksonMixin(type = Person.class)
 	static class EmptyMixin {
 
 	}
@@ -969,7 +969,7 @@ class JacksonAutoConfigurationTests {
 
 	}
 
-	@JsonComponent
+	@JacksonComponent
 	static class CircularDependencySerializer extends ValueSerializer<String> {
 
 		CircularDependencySerializer(JsonMapper jsonMapper) {

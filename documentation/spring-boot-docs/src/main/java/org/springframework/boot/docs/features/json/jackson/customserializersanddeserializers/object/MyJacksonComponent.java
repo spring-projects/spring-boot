@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jackson;
+package org.springframework.boot.docs.features.json.jackson.customserializersanddeserializers.object;
 
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.core.JsonParser;
@@ -22,36 +22,30 @@ import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.SerializationContext;
 
-import org.springframework.boot.jackson.types.NameAndAge;
+import org.springframework.boot.jackson.JacksonComponent;
+import org.springframework.boot.jackson.ObjectValueDeserializer;
+import org.springframework.boot.jackson.ObjectValueSerializer;
 
-import static org.assertj.core.api.Assertions.assertThat;
+@JacksonComponent
+public class MyJacksonComponent {
 
-/**
- * Sample {@link JsonComponent @JsonComponent} used for tests.
- *
- * @author Phillip Webb
- */
-@JsonComponent
-public class NameAndAgeJsonComponent {
-
-	static class Serializer extends ObjectValueSerializer<NameAndAge> {
+	public static class Serializer extends ObjectValueSerializer<MyObject> {
 
 		@Override
-		protected void serializeObject(NameAndAge value, JsonGenerator jgen, SerializationContext context) {
-			jgen.writeStringProperty("theName", value.getName());
-			jgen.writeNumberProperty("theAge", value.getAge());
+		protected void serializeObject(MyObject value, JsonGenerator jgen, SerializationContext context) {
+			jgen.writeStringProperty("name", value.getName());
+			jgen.writeNumberProperty("age", value.getAge());
 		}
 
 	}
 
-	static class Deserializer extends ObjectValueDeserializer<NameAndAge> {
+	public static class Deserializer extends ObjectValueDeserializer<MyObject> {
 
 		@Override
-		protected NameAndAge deserializeObject(JsonParser jsonParser, DeserializationContext context, JsonNode tree) {
+		protected MyObject deserializeObject(JsonParser jsonParser, DeserializationContext context, JsonNode tree) {
 			String name = nullSafeValue(tree.get("name"), String.class);
-			Integer age = nullSafeValue(tree.get("age"), Integer.class);
-			assertThat(age).isNotNull();
-			return NameAndAge.create(name, age);
+			int age = nullSafeValue(tree.get("age"), Integer.class);
+			return new MyObject(name, age);
 		}
 
 	}

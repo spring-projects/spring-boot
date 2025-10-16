@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.KeyDeserializer;
 import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.ValueSerializer;
@@ -43,7 +44,7 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContrib
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.jackson.JsonComponent.Scope;
+import org.springframework.boot.jackson.JacksonComponent.Scope;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -52,15 +53,15 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Spring Bean and Jackson {@link Module} to register {@link JsonComponent @JsonComponent}
- * annotated beans.
+ * {@link JacksonModule} to register {@link JacksonComponent @JacksonComponent} annotated
+ * beans.
  *
  * @author Phillip Webb
  * @author Paul Aly
  * @since 4.0.0
- * @see JsonComponent
+ * @see JacksonComponent
  */
-public class JsonComponentModule extends SimpleModule implements BeanFactoryAware, InitializingBean {
+public class JacksonComponentModule extends SimpleModule implements BeanFactoryAware, InitializingBean {
 
 	@SuppressWarnings("NullAway.Init")
 	private BeanFactory beanFactory;
@@ -72,37 +73,37 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	@Override
 	public void afterPropertiesSet() {
-		registerJsonComponents();
+		registerJacksonComponents();
 	}
 
-	public void registerJsonComponents() {
+	public void registerJacksonComponents() {
 		BeanFactory beanFactory = this.beanFactory;
 		while (beanFactory != null) {
 			if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
-				addJsonBeans(listableBeanFactory);
+				addJackonComponentBeans(listableBeanFactory);
 			}
 			beanFactory = (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory)
 					? hierarchicalBeanFactory.getParentBeanFactory() : null;
 		}
 	}
 
-	private void addJsonBeans(ListableBeanFactory beanFactory) {
-		Map<String, Object> beans = beanFactory.getBeansWithAnnotation(JsonComponent.class);
+	private void addJackonComponentBeans(ListableBeanFactory beanFactory) {
+		Map<String, Object> beans = beanFactory.getBeansWithAnnotation(JacksonComponent.class);
 		for (Object bean : beans.values()) {
-			addJsonBean(bean);
+			addJacksonComponentBean(bean);
 		}
 	}
 
-	private void addJsonBean(Object bean) {
-		MergedAnnotation<JsonComponent> annotation = MergedAnnotations
+	private void addJacksonComponentBean(Object bean) {
+		MergedAnnotation<JacksonComponent> annotation = MergedAnnotations
 			.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY)
-			.get(JsonComponent.class);
+			.get(JacksonComponent.class);
 		Class<?>[] types = annotation.getClassArray("type");
-		Scope scope = annotation.getEnum("scope", JsonComponent.Scope.class);
-		addJsonBean(bean, types, scope);
+		Scope scope = annotation.getEnum("scope", JacksonComponent.Scope.class);
+		addJacksonComponentBean(bean, types, scope);
 	}
 
-	private void addJsonBean(Object bean, Class<?>[] types, Scope scope) {
+	private void addJacksonComponentBean(Object bean, Class<?>[] types, Scope scope) {
 		if (bean instanceof ValueSerializer<?> jsonSerializer) {
 			addValueSerializerBean(jsonSerializer, scope, types);
 		}
@@ -115,7 +116,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
 			if (isSuitableInnerClass(innerClass)) {
 				Object innerInstance = BeanUtils.instantiateClass(innerClass);
-				addJsonBean(innerInstance, types, scope);
+				addJacksonComponentBean(innerInstance, types, scope);
 			}
 		}
 	}
@@ -127,7 +128,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> void addValueSerializerBean(ValueSerializer<T> serializer, JsonComponent.Scope scope,
+	private <T> void addValueSerializerBean(ValueSerializer<T> serializer, JacksonComponent.Scope scope,
 			Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(ValueSerializer.class, serializer.getClass())
 			.resolveGeneric();
@@ -163,15 +164,16 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		}
 	}
 
-	static class JsonComponentBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
+	static class JacksonComponentBeanFactoryInitializationAotProcessor
+			implements BeanFactoryInitializationAotProcessor {
 
 		@Override
 		public @Nullable BeanFactoryInitializationAotContribution processAheadOfTime(
 				ConfigurableListableBeanFactory beanFactory) {
-			String[] jsonComponents = beanFactory.getBeanNamesForAnnotation(JsonComponent.class);
+			String[] jacksonComponents = beanFactory.getBeanNamesForAnnotation(JacksonComponent.class);
 			Map<Class<?>, List<Class<?>>> innerComponents = new HashMap<>();
-			for (String jsonComponent : jsonComponents) {
-				Class<?> type = beanFactory.getType(jsonComponent, true);
+			for (String jacksonComponent : jacksonComponents) {
+				Class<?> type = beanFactory.getType(jacksonComponent, true);
 				Assert.state(type != null, "'type' must not be null");
 				for (Class<?> declaredClass : type.getDeclaredClasses()) {
 					if (isSuitableInnerClass(declaredClass)) {
@@ -179,16 +181,16 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 					}
 				}
 			}
-			return innerComponents.isEmpty() ? null : new JsonComponentAotContribution(innerComponents);
+			return innerComponents.isEmpty() ? null : new JacksonComponentAotContribution(innerComponents);
 		}
 
 	}
 
-	private static final class JsonComponentAotContribution implements BeanFactoryInitializationAotContribution {
+	private static final class JacksonComponentAotContribution implements BeanFactoryInitializationAotContribution {
 
 		private final Map<Class<?>, List<Class<?>>> innerComponents;
 
-		private JsonComponentAotContribution(Map<Class<?>, List<Class<?>>> innerComponents) {
+		private JacksonComponentAotContribution(Map<Class<?>, List<Class<?>>> innerComponents) {
 			this.innerComponents = innerComponents;
 		}
 

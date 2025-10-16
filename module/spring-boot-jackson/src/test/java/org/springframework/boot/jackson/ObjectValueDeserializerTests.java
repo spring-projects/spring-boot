@@ -32,7 +32,7 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.node.NullNode;
 
-import org.springframework.boot.jackson.NameAndAgeJsonComponent.Deserializer;
+import org.springframework.boot.jackson.NameAndAgeJacksonComponent.Deserializer;
 import org.springframework.boot.jackson.types.NameAndAge;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +52,7 @@ class ObjectValueDeserializerTests {
 
 	@Test
 	void deserializeObjectShouldReadJson() throws Exception {
-		Deserializer deserializer = new NameAndAgeJsonComponent.Deserializer();
+		Deserializer deserializer = new NameAndAgeJacksonComponent.Deserializer();
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(NameAndAge.class, deserializer);
 		ObjectMapper mapper = JsonMapper.builder().addModule(module).build();

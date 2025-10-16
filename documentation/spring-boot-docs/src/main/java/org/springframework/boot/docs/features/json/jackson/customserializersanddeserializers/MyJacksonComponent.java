@@ -24,10 +24,10 @@ import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.ValueSerializer;
 
-import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JacksonComponent;
 
-@JsonComponent
-public class MyJsonComponent {
+@JacksonComponent
+public class MyJacksonComponent {
 
 	public static class Serializer extends ValueSerializer<MyObject> {
 

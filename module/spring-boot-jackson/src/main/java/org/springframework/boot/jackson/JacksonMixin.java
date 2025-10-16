@@ -26,32 +26,30 @@ import org.springframework.core.annotation.AliasFor;
 
 /**
  * Provides a mixin class implementation that registers with Jackson when using
- * {@link JsonMixinModule}.
+ * {@link JacksonMixinModule}.
  *
  * @author Guirong Hu
- * @see JsonMixinModule
+ * @see JacksonMixinModule
  * @since 4.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface JsonMixin {
+public @interface JacksonMixin {
 
 	/**
 	 * Alias for the {@link #type()} attribute. Allows for more concise annotation
-	 * declarations e.g.: {@code @JsonMixin(MyType.class)} instead of
-	 * {@code @JsonMixin(type=MyType.class)}.
+	 * declarations e.g.: {@code @JacksonMixin(MyType.class)} instead of
+	 * {@code @JacksonMixin(type=MyType.class)}.
 	 * @return the mixed-in classes
-	 * @since 2.7.0
 	 */
 	@AliasFor("type")
 	Class<?>[] value() default {};
 
 	/**
-	 * The types that are handled by the provided mix-in class. {@link #value()} is an
+	 * The types that are handled by the provided mixin class. {@link #value()} is an
 	 * alias for (and mutually exclusive with) this attribute.
 	 * @return the mixed-in classes
-	 * @since 2.7.0
 	 */
 	@AliasFor("value")
 	Class<?>[] type() default {};

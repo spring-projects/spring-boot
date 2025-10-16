@@ -32,11 +32,11 @@ import org.springframework.stereotype.Component;
 /**
  * {@link Component @Component} that provides {@link ValueSerializer},
  * {@link ValueDeserializer} or {@link KeyDeserializer} implementations to be registered
- * with Jackson when {@link JsonComponentModule} is in use. Can be used to annotate
+ * with Jackson when {@link JacksonComponentModule} is in use. Can be used to annotate
  * implementations directly or a class that contains them as inner-classes. For example:
  * <pre class="code">
- * &#064;JsonComponent
- * public class CustomerJsonComponent {
+ * &#064;JacksonComponent
+ * public class CustomerJacksonComponent {
  *
  *     public static class Serializer extends ValueSerializer&lt;Customer&gt; {
  *
@@ -54,7 +54,7 @@ import org.springframework.stereotype.Component;
  *
  * </pre>
  *
- * @see JsonComponentModule
+ * @see JacksonComponentModule
  * @since 4.0.0
  * @author Phillip Webb
  * @author Paul Aly
@@ -63,11 +63,11 @@ import org.springframework.stereotype.Component;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface JsonComponent {
+public @interface JacksonComponent {
 
 	/**
 	 * The value may indicate a suggestion for a logical component name, to be turned into
-	 * a Spring bean in case of an autodetected component.
+	 * a Spring bean in case of an auto-detected component.
 	 * @return the component name
 	 */
 	@AliasFor(annotation = Component.class)

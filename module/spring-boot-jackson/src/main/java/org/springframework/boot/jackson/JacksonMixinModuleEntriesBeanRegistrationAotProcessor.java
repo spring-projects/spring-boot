@@ -38,16 +38,17 @@ import org.springframework.javapoet.ClassName;
 import org.springframework.javapoet.CodeBlock;
 
 /**
- * {@link BeanRegistrationAotProcessor} that replaces any {@link JsonMixinModuleEntries}
- * by an hard-coded equivalent. This has the effect of disabling scanning at runtime.
+ * {@link BeanRegistrationAotProcessor} that replaces any
+ * {@link JacksonMixinModuleEntries} with a hard-coded equivalent. This has the effect of
+ * disabling scanning at runtime.
  *
  * @author Stephane Nicoll
  */
-class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistrationAotProcessor {
+class JacksonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistrationAotProcessor {
 
 	@Override
 	public @Nullable BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
-		if (registeredBean.getBeanClass().equals(JsonMixinModuleEntries.class)) {
+		if (registeredBean.getBeanClass().equals(JacksonMixinModuleEntries.class)) {
 			return BeanRegistrationAotContribution
 				.withCustomCodeFragments((codeFragments) -> new AotContribution(codeFragments, registeredBean));
 		}
@@ -56,7 +57,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 
 	static class AotContribution extends BeanRegistrationCodeFragmentsDecorator {
 
-		private static final Class<?> BEAN_TYPE = JsonMixinModuleEntries.class;
+		private static final Class<?> BEAN_TYPE = JacksonMixinModuleEntries.class;
 
 		private final RegisteredBean registeredBean;
 
@@ -76,15 +77,15 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 		@Override
 		public CodeBlock generateInstanceSupplierCode(GenerationContext generationContext,
 				BeanRegistrationCode beanRegistrationCode, boolean allowDirectSupplierShortcut) {
-			JsonMixinModuleEntries entries = this.registeredBean.getBeanFactory()
-				.getBean(this.registeredBean.getBeanName(), JsonMixinModuleEntries.class);
+			JacksonMixinModuleEntries entries = this.registeredBean.getBeanFactory()
+				.getBean(this.registeredBean.getBeanName(), JacksonMixinModuleEntries.class);
 			contributeHints(generationContext.getRuntimeHints(), entries);
 			GeneratedMethod generatedMethod = beanRegistrationCode.getMethods().add("getInstance", (method) -> {
 				method.addJavadoc("Get the bean instance for '$L'.", this.registeredBean.getBeanName());
 				method.addModifiers(Modifier.PRIVATE, Modifier.STATIC);
 				method.returns(BEAN_TYPE);
 				CodeBlock.Builder code = CodeBlock.builder();
-				code.add("return $T.create(", JsonMixinModuleEntries.class).beginControlFlow("(mixins) ->");
+				code.add("return $T.create(", JacksonMixinModuleEntries.class).beginControlFlow("(mixins) ->");
 				entries.doWithEntry(this.classLoader, (type, mixin) -> addEntryCode(code, type, mixin));
 				code.endControlFlow(")");
 				method.addCode(code.build());
@@ -103,7 +104,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 			}
 		}
 
-		private void contributeHints(RuntimeHints runtimeHints, JsonMixinModuleEntries entries) {
+		private void contributeHints(RuntimeHints runtimeHints, JacksonMixinModuleEntries entries) {
 			Set<Class<?>> mixins = new LinkedHashSet<>();
 			entries.doWithEntry(this.classLoader, (type, mixin) -> mixins.add(mixin));
 			new BindingReflectionHintsRegistrar().registerReflectionHints(runtimeHints.reflection(),

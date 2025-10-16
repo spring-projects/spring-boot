@@ -49,12 +49,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
- * Tests for {@link JsonMixinModuleEntriesBeanRegistrationAotProcessor}.
+ * Tests for {@link JacksonMixinModuleEntriesBeanRegistrationAotProcessor}.
  *
  * @author Stephane Nicoll
  */
 @CompileWithForkedClassLoader
-class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
+class JacksonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 
 	private final TestGenerationContext generationContext = new TestGenerationContext();
 
@@ -75,8 +75,8 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		registerEntries(RenameMixInClass.class);
 		compile((freshContext, compiled) -> {
 			assertThat(freshContext.getBean(TestConfiguration.class).scanningInvoked).isFalse();
-			JsonMixinModuleEntries jsonMixinModuleEntries = freshContext.getBean(JsonMixinModuleEntries.class);
-			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
+			JacksonMixinModuleEntries jacksonMixinModuleEntries = freshContext.getBean(JacksonMixinModuleEntries.class);
+			assertThat(jacksonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
 				.containsExactly(entry(Name.class, RenameMixInClass.class),
 						entry(NameAndAge.class, RenameMixInClass.class));
 		});
@@ -89,8 +89,8 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		registerEntries(privateMixinClass);
 		compile((freshContext, compiled) -> {
 			assertThat(freshContext.getBean(TestConfiguration.class).scanningInvoked).isFalse();
-			JsonMixinModuleEntries jsonMixinModuleEntries = freshContext.getBean(JsonMixinModuleEntries.class);
-			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
+			JacksonMixinModuleEntries jacksonMixinModuleEntries = freshContext.getBean(JacksonMixinModuleEntries.class);
+			assertThat(jacksonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
 				.containsExactly(entry(Name.class.getName(), privateMixinClass.getName()),
 						entry(NameAndAge.class.getName(), privateMixinClass.getName()));
 		});
@@ -136,9 +136,9 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		}
 
 		@Bean
-		JsonMixinModuleEntries jsonMixinModuleEntries(ApplicationContext applicationContext) {
+		JacksonMixinModuleEntries jacksonMixinModuleEntries(ApplicationContext applicationContext) {
 			this.scanningInvoked = true;
-			return JsonMixinModuleEntries.scan(applicationContext, this.packageNames);
+			return JacksonMixinModuleEntries.scan(applicationContext, this.packageNames);
 		}
 
 	}

@@ -40,11 +40,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link JsonMixinModule}.
+ * Tests for {@link JacksonMixinModule}.
  *
  * @author Guirong Hu
  */
-class JsonMixinModuleTests {
+class JacksonMixinModuleTests {
 
 	private @Nullable AnnotationConfigApplicationContext context;
 
@@ -56,40 +56,40 @@ class JsonMixinModuleTests {
 	}
 
 	@Test
-	void jsonWithModuleEmptyMixInWithEmptyTypesShouldFail() {
+	void emptyMixInWithEmptyTypesShouldFail() {
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> load(EmptyMixIn.class))
-			.withMessageContaining("Error creating bean with name 'jsonMixinModule'")
-			.withStackTraceContaining("@JsonMixin annotation on class "
+			.withMessageContaining("Error creating bean with name 'jacksonMixinModule'")
+			.withStackTraceContaining("@JacksonMixin annotation on class "
 					+ "'org.springframework.boot.jackson.scan.f.EmptyMixIn' does not specify any types");
 	}
 
 	@Test
-	void jsonWithModuleWithRenameMixInClassShouldBeMixedIn() throws Exception {
+	void moduleWithRenameMixInClassShouldBeMixedIn() throws Exception {
 		load(RenameMixInClass.class);
-		JsonMixinModule module = getContext().getBean(JsonMixinModule.class);
+		JacksonMixinModule module = getContext().getBean(JacksonMixinModule.class);
 		assertMixIn(module, new Name("spring"), "{\"username\":\"spring\"}");
 		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
 	}
 
 	@Test
-	void jsonWithModuleWithEmptyMixInClassShouldNotBeMixedIn() throws Exception {
+	void moduleWithEmptyMixInClassShouldNotBeMixedIn() throws Exception {
 		load(EmptyMixInClass.class);
-		JsonMixinModule module = getContext().getBean(JsonMixinModule.class);
+		JacksonMixinModule module = getContext().getBean(JacksonMixinModule.class);
 		assertMixIn(module, new Name("spring"), "{\"name\":\"spring\"}");
 		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"name\":\"spring\"}");
 	}
 
 	@Test
-	void jsonWithModuleWithRenameMixInAbstractClassShouldBeMixedIn() throws Exception {
+	void moduleWithRenameMixInAbstractClassShouldBeMixedIn() throws Exception {
 		load(RenameMixInAbstractClass.class);
-		JsonMixinModule module = getContext().getBean(JsonMixinModule.class);
+		JacksonMixinModule module = getContext().getBean(JacksonMixinModule.class);
 		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
 	}
 
 	@Test
-	void jsonWithModuleWithRenameMixInInterfaceShouldBeMixedIn() throws Exception {
+	void moduleWithRenameMixInInterfaceShouldBeMixedIn() throws Exception {
 		load(RenameMixInInterface.class);
-		JsonMixinModule module = getContext().getBean(JsonMixinModule.class);
+		JacksonMixinModule module = getContext().getBean(JacksonMixinModule.class);
 		assertMixIn(module, NameAndAge.create("spring", 100), "{\"age\":100,\"username\":\"spring\"}");
 	}
 
@@ -101,18 +101,18 @@ class JsonMixinModuleTests {
 
 	private void load(Class<?>... basePackageClasses) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.registerBean(JsonMixinModule.class, () -> createJsonMixinModule(context, basePackageClasses));
+		context.registerBean(JacksonMixinModule.class, () -> createJacksonMixinModule(context, basePackageClasses));
 		context.refresh();
 		this.context = context;
 	}
 
-	private JsonMixinModule createJsonMixinModule(AnnotationConfigApplicationContext context,
+	private JacksonMixinModule createJacksonMixinModule(AnnotationConfigApplicationContext context,
 			Class<?>... basePackageClasses) {
 		List<String> basePackages = Arrays.stream(basePackageClasses).map(ClassUtils::getPackageName).toList();
-		JsonMixinModuleEntries entries = JsonMixinModuleEntries.scan(context, basePackages);
-		JsonMixinModule jsonMixinModule = new JsonMixinModule();
-		jsonMixinModule.registerEntries(entries, context.getClassLoader());
-		return jsonMixinModule;
+		JacksonMixinModuleEntries entries = JacksonMixinModuleEntries.scan(context, basePackages);
+		JacksonMixinModule jacksonMixinModule = new JacksonMixinModule();
+		jacksonMixinModule.registerEntries(entries, context.getClassLoader());
+		return jacksonMixinModule;
 	}
 
 	private void assertMixIn(JacksonModule module, Name value, String expectedJson) throws Exception {

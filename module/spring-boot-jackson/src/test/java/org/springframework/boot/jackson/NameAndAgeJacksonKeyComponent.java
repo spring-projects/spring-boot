@@ -25,12 +25,12 @@ import tools.jackson.databind.ValueSerializer;
 import org.springframework.boot.jackson.types.NameAndAge;
 
 /**
- * Sample {@link JsonComponent @JsonComponent} used for tests.
+ * Sample {@link JacksonComponent @JacksonComponent} used for tests.
  *
  * @author Paul Aly
  */
-@JsonComponent(type = NameAndAge.class, scope = JsonComponent.Scope.KEYS)
-public class NameAndAgeJsonKeyComponent {
+@JacksonComponent(type = NameAndAge.class, scope = JacksonComponent.Scope.KEYS)
+public class NameAndAgeJacksonKeyComponent {
 
 	static class Serializer extends ValueSerializer<NameAndAge> {
 

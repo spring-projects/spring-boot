@@ -2,7 +2,7 @@ org.springframework.aot.hint.RuntimeHintsRegistrar=\
 org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration$JacksonAutoConfigurationRuntimeHints
 
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
-org.springframework.boot.jackson.JsonComponentModule$JsonComponentBeanFactoryInitializationAotProcessor
+org.springframework.boot.jackson.JacksonComponentModule$JacksonComponentBeanFactoryInitializationAotProcessor
 
 org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
-org.springframework.boot.jackson.JsonMixinModuleEntriesBeanRegistrationAotProcessor
+org.springframework.boot.jackson.JacksonMixinModuleEntriesBeanRegistrationAotProcessor

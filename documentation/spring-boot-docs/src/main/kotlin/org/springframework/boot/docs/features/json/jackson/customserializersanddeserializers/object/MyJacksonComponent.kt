@@ -22,12 +22,12 @@ import tools.jackson.databind.DeserializationContext
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.SerializationContext
 
-import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JacksonComponent;
 import org.springframework.boot.jackson.ObjectValueDeserializer
 import org.springframework.boot.jackson.ObjectValueSerializer
 
-@JsonComponent
-class MyJsonComponent {
+@JacksonComponent
+class MyJacksonComponent {
 
 	class Serializer : ObjectValueSerializer<MyObject>() {
 		override fun serializeObject(value: MyObject, jgen: JsonGenerator, context: SerializationContext) {

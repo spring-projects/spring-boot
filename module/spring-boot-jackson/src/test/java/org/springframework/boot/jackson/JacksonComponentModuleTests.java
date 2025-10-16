@@ -34,10 +34,10 @@ import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.jackson.JsonComponentModule.JsonComponentBeanFactoryInitializationAotProcessor;
-import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.AbstractSerializer;
-import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.ConcreteSerializer;
-import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.NotSuitable;
+import org.springframework.boot.jackson.JacksonComponentModule.JacksonComponentBeanFactoryInitializationAotProcessor;
+import org.springframework.boot.jackson.JacksonComponentModuleTests.ComponentWithInnerAbstractClass.AbstractSerializer;
+import org.springframework.boot.jackson.JacksonComponentModuleTests.ComponentWithInnerAbstractClass.ConcreteSerializer;
+import org.springframework.boot.jackson.JacksonComponentModuleTests.ComponentWithInnerAbstractClass.NotSuitable;
 import org.springframework.boot.jackson.types.Name;
 import org.springframework.boot.jackson.types.NameAndAge;
 import org.springframework.boot.jackson.types.NameAndCareer;
@@ -48,13 +48,13 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link JsonComponentModule}.
+ * Tests for {@link JacksonComponentModule}.
  *
  * @author Phillip Webb
  * @author Vladimir Tsanev
  * @author Paul Aly
  */
-class JsonComponentModuleTests {
+class JacksonComponentModuleTests {
 
 	private @Nullable AnnotationConfigApplicationContext context;
 
@@ -68,30 +68,30 @@ class JsonComponentModuleTests {
 	@Test
 	void moduleShouldRegisterSerializers() throws Exception {
 		load(OnlySerializer.class);
-		JsonComponentModule module = getContext().getBean(JsonComponentModule.class);
+		JacksonComponentModule module = getContext().getBean(JacksonComponentModule.class);
 		assertSerialize(module);
 	}
 
 	@Test
 	void moduleShouldRegisterDeserializers() throws Exception {
 		load(OnlyDeserializer.class);
-		JsonComponentModule module = getContext().getBean(JsonComponentModule.class);
+		JacksonComponentModule module = getContext().getBean(JacksonComponentModule.class);
 		assertDeserialize(module);
 	}
 
 	@Test
 	void moduleShouldRegisterInnerClasses() throws Exception {
-		load(NameAndAgeJsonComponent.class);
-		JsonComponentModule module = getContext().getBean(JsonComponentModule.class);
+		load(NameAndAgeJacksonComponent.class);
+		JacksonComponentModule module = getContext().getBean(JacksonComponentModule.class);
 		assertSerialize(module);
 		assertDeserialize(module);
 	}
 
 	@Test
 	void moduleShouldAllowInnerAbstractClasses() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(JsonComponentModule.class,
-				ComponentWithInnerAbstractClass.class);
-		JsonComponentModule module = context.getBean(JsonComponentModule.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				JacksonComponentModule.class, ComponentWithInnerAbstractClass.class);
+		JacksonComponentModule module = context.getBean(JacksonComponentModule.class);
 		assertSerialize(module);
 		context.close();
 	}
@@ -99,29 +99,29 @@ class JsonComponentModuleTests {
 	@Test
 	void moduleShouldRegisterKeySerializers() throws Exception {
 		load(OnlyKeySerializer.class);
-		JsonComponentModule module = getContext().getBean(JsonComponentModule.class);
+		JacksonComponentModule module = getContext().getBean(JacksonComponentModule.class);
 		assertKeySerialize(module);
 	}
 
 	@Test
 	void moduleShouldRegisterKeyDeserializers() throws Exception {
 		load(OnlyKeyDeserializer.class);
-		JsonComponentModule module = getContext().getBean(JsonComponentModule.class);
+		JacksonComponentModule module = getContext().getBean(JacksonComponentModule.class);
 		assertKeyDeserialize(module);
 	}
 
 	@Test
 	void moduleShouldRegisterInnerClassesForKeyHandlers() throws Exception {
-		load(NameAndAgeJsonKeyComponent.class);
-		JsonComponentModule module = getContext().getBean(JsonComponentModule.class);
+		load(NameAndAgeJacksonKeyComponent.class);
+		JacksonComponentModule module = getContext().getBean(JacksonComponentModule.class);
 		assertKeySerialize(module);
 		assertKeyDeserialize(module);
 	}
 
 	@Test
 	void moduleShouldRegisterOnlyForSpecifiedClasses() throws Exception {
-		load(NameAndCareerJsonComponent.class);
-		JsonComponentModule module = getContext().getBean(JsonComponentModule.class);
+		load(NameAndCareerJacksonComponent.class);
+		JacksonComponentModule module = getContext().getBean(JacksonComponentModule.class);
 		assertSerialize(module, new NameAndCareer("spring", "developer"), "{\"name\":\"spring\"}");
 		assertSerialize(module, NameAndAge.create("spring", 100), "{\"age\":100,\"name\":\"spring\"}");
 		assertDeserializeForSpecifiedClasses(module);
@@ -131,7 +131,7 @@ class JsonComponentModuleTests {
 	void aotContributionRegistersReflectionHintsForSuitableInnerClasses() {
 		load(ComponentWithInnerAbstractClass.class);
 		ConfigurableListableBeanFactory beanFactory = getContext().getBeanFactory();
-		BeanFactoryInitializationAotContribution contribution = new JsonComponentBeanFactoryInitializationAotProcessor()
+		BeanFactoryInitializationAotContribution contribution = new JacksonComponentBeanFactoryInitializationAotProcessor()
 			.processAheadOfTime(beanFactory);
 		TestGenerationContext generationContext = new TestGenerationContext();
 		assertThat(contribution).isNotNull();
@@ -155,7 +155,7 @@ class JsonComponentModuleTests {
 	private void load(Class<?>... configs) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(configs);
-		context.register(JsonComponentModule.class);
+		context.register(JacksonComponentModule.class);
 		context.refresh();
 		this.context = context;
 	}
@@ -177,7 +177,7 @@ class JsonComponentModuleTests {
 		assertThat(nameAndAge.getAge()).isEqualTo(100);
 	}
 
-	private void assertDeserializeForSpecifiedClasses(JsonComponentModule module) {
+	private void assertDeserializeForSpecifiedClasses(JacksonComponentModule module) {
 		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
 		assertThatExceptionOfType(JacksonException.class)
 			.isThrownBy(() -> mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class));
@@ -209,20 +209,20 @@ class JsonComponentModuleTests {
 		return context;
 	}
 
-	@JsonComponent
-	static class OnlySerializer extends NameAndAgeJsonComponent.Serializer {
+	@JacksonComponent
+	static class OnlySerializer extends NameAndAgeJacksonComponent.Serializer {
 
 	}
 
-	@JsonComponent
-	static class OnlyDeserializer extends NameAndAgeJsonComponent.Deserializer {
+	@JacksonComponent
+	static class OnlyDeserializer extends NameAndAgeJacksonComponent.Deserializer {
 
 	}
 
-	@JsonComponent
+	@JacksonComponent
 	static class ComponentWithInnerAbstractClass {
 
-		abstract static class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
+		abstract static class AbstractSerializer extends NameAndAgeJacksonComponent.Serializer {
 
 		}
 
@@ -236,13 +236,13 @@ class JsonComponentModuleTests {
 
 	}
 
-	@JsonComponent(scope = JsonComponent.Scope.KEYS)
-	static class OnlyKeySerializer extends NameAndAgeJsonKeyComponent.Serializer {
+	@JacksonComponent(scope = JacksonComponent.Scope.KEYS)
+	static class OnlyKeySerializer extends NameAndAgeJacksonKeyComponent.Serializer {
 
 	}
 
-	@JsonComponent(scope = JsonComponent.Scope.KEYS, type = NameAndAge.class)
-	static class OnlyKeyDeserializer extends NameAndAgeJsonKeyComponent.Deserializer {
+	@JacksonComponent(scope = JacksonComponent.Scope.KEYS, type = NameAndAge.class)
+	static class OnlyKeyDeserializer extends NameAndAgeJacksonKeyComponent.Deserializer {
 
 	}
 

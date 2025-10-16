@@ -25,18 +25,18 @@ import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.SerializationContext;
 
-import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JacksonComponent;
 import org.springframework.boot.jackson.ObjectValueDeserializer;
 import org.springframework.boot.jackson.ObjectValueSerializer;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 
 /**
- * Example {@link JsonComponent @JsonComponent} for use with {@link JsonTest @JsonTest}
+ * Example {@link JacksonComponent @JsonComponent} for use with {@link JsonTest @JsonTest}
  * tests.
  *
  * @author Phillip Webb
  */
-@JsonComponent
+@JacksonComponent
 public class ExampleJsonComponent {
 
 	static class Serializer extends ObjectValueSerializer<ExampleCustomObject> {

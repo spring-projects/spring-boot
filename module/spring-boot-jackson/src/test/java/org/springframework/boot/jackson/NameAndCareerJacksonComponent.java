@@ -26,12 +26,12 @@ import org.springframework.boot.jackson.types.Name;
 import org.springframework.boot.jackson.types.NameAndCareer;
 
 /**
- * Sample {@link JsonComponent @JsonComponent} used for tests.
+ * Sample {@link JacksonComponent @JacksonComponent} used for tests.
  *
  * @author Paul Aly
  */
-@JsonComponent(type = NameAndCareer.class)
-public class NameAndCareerJsonComponent {
+@JacksonComponent(type = NameAndCareer.class)
+public class NameAndCareerJacksonComponent {
 
 	static class Serializer extends ObjectValueSerializer<Name> {
 

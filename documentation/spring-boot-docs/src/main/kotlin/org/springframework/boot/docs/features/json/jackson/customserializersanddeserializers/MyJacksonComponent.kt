@@ -24,10 +24,10 @@ import tools.jackson.databind.SerializationContext
 import tools.jackson.databind.ValueDeserializer
 import tools.jackson.databind.ValueSerializer
 
-import org.springframework.boot.jackson.JsonComponent
+import org.springframework.boot.jackson.JacksonComponent
 
-@JsonComponent
-class MyJsonComponent {
+@JacksonComponent
+class MyJacksonComponent {
 
 	class Serializer : ValueSerializer<MyObject>() {
 		override fun serialize(value: MyObject, jgen: JsonGenerator, serializers: SerializationContext) {

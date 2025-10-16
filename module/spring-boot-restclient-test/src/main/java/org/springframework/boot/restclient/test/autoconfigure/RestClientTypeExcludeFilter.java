@@ -22,7 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JacksonComponent;
 import org.springframework.boot.test.context.filter.annotation.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.util.ClassUtils;
 
@@ -49,7 +49,7 @@ class RestClientTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcl
 			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException("Failed to load " + DATABIND_MODULE_CLASS_NAME, ex);
 			}
-			includes.add(JsonComponent.class);
+			includes.add(JacksonComponent.class);
 		}
 		KNOWN_INCLUDES = Collections.unmodifiableSet(includes);
 	}

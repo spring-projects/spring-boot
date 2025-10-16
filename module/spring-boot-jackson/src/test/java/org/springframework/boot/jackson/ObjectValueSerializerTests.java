@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 
-import org.springframework.boot.jackson.NameAndAgeJsonComponent.Serializer;
+import org.springframework.boot.jackson.NameAndAgeJacksonComponent.Serializer;
 import org.springframework.boot.jackson.types.NameAndAge;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,7 @@ class ObjectValueSerializerTests {
 
 	@Test
 	void serializeObjectShouldWriteJson() throws Exception {
-		Serializer serializer = new NameAndAgeJsonComponent.Serializer();
+		Serializer serializer = new NameAndAgeJacksonComponent.Serializer();
 		SimpleModule module = new SimpleModule();
 		module.addSerializer(NameAndAge.class, serializer);
 		JsonMapper mapper = JsonMapper.builder().addModule(module).build();
