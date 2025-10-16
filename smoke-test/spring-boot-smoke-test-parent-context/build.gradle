@@ -28,3 +28,7 @@ dependencies {
 	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.awaitility:awaitility")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
