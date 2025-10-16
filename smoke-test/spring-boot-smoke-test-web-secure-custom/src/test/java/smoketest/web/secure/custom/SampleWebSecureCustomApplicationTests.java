@@ -16,6 +16,7 @@
 
 package smoketest.web.secure.custom;
 
+import java.net.URI;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,9 @@ class SampleWebSecureCustomApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
 			.exchange("/", HttpMethod.GET, new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/login");
+		URI location = entity.getHeaders().getLocation();
+		assertThat(location).isNotNull();
+		assertThat(location.toString()).endsWith(this.port + "/login");
 	}
 
 	@Test
@@ -85,7 +88,9 @@ class SampleWebSecureCustomApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.withRedirects(HttpRedirects.DONT_FOLLOW)
 			.exchange("/login", HttpMethod.POST, new HttpEntity<>(form, headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
-		assertThat(entity.getHeaders().getLocation().toString()).endsWith(this.port + "/");
+		URI location = entity.getHeaders().getLocation();
+		assertThat(location).isNotNull();
+		assertThat(location.toString()).endsWith(this.port + "/");
 	}
 
 }
