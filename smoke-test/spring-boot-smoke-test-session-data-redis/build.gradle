@@ -34,3 +34,11 @@ dependencies {
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 }
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
+
+tasks.named("compileDockerTestJava") {
+	options.nullability.checking = "tests"
+}
