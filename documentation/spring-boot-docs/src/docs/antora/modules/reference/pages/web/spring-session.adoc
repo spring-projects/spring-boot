@@ -6,7 +6,6 @@ When building a servlet web application, the following stores can be auto-config
 
 * Redis
 * JDBC
-* Hazelcast
 
 Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-session[auto-configuration for using Apache Geode as a session store].
 
@@ -17,8 +16,7 @@ If you have more than one implementation, Spring Boot uses the following order f
 
 . Redis
 . JDBC
-. Hazelcast
-. If none of Redis, JDBC, and Hazelcast are available, we do not configure a javadoc:org.springframework.session.SessionRepository[].
+. If neither Redis or JDBC are available, we do not configure a javadoc:org.springframework.session.SessionRepository[].
 
 
 When building a reactive web application, the Redis store can be auto-configured.
