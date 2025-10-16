@@ -98,6 +98,7 @@ class SampleTomcatApplicationTests {
 	void testTimeout() {
 		ServletWebServerApplicationContext context = (ServletWebServerApplicationContext) this.applicationContext;
 		TomcatWebServer embeddedServletContainer = (TomcatWebServer) context.getWebServer();
+		assertThat(embeddedServletContainer).isNotNull();
 		ProtocolHandler protocolHandler = embeddedServletContainer.getTomcat().getConnector().getProtocolHandler();
 		int timeout = ((AbstractProtocol<?>) protocolHandler).getConnectionTimeout();
 		assertThat(timeout).isEqualTo(5000);
