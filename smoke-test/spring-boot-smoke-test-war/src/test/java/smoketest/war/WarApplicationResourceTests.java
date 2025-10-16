@@ -16,6 +16,7 @@
 
 package smoketest.war;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +30,7 @@ class WarApplicationResourceTests {
 	// gh-6371
 
 	@Value("${demo.string.value}")
-	private String demoStringValue;
+	private @Nullable String demoStringValue;
 
 	@Test
 	void contextLoads() {
