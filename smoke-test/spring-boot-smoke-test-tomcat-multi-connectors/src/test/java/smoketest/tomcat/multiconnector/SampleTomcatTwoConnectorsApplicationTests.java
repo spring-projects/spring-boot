@@ -30,6 +30,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.tomcat.TomcatWebServer;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Import;
@@ -63,7 +64,9 @@ class SampleTomcatTwoConnectorsApplicationTests {
 
 	@Test
 	void testSsl() {
-		assertThat(this.webServerFactory.getSsl().isEnabled()).isTrue();
+		Ssl ssl = this.webServerFactory.getSsl();
+		assertThat(ssl).isNotNull();
+		assertThat(ssl.isEnabled()).isTrue();
 	}
 
 	@Test
