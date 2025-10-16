@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,7 @@ class SampleSessionJdbcApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@LocalServerPort
+	@SuppressWarnings("NullAway.Init")
 	private String port;
 
 	private static final URI ROOT_URI = URI.create("/");
@@ -83,7 +85,7 @@ class SampleSessionJdbcApplicationTests {
 		assertThat(loginPage).containsIgnoringCase("login");
 	}
 
-	private String performLogin() {
+	private @Nullable String performLogin() {
 		RestTemplate restTemplate = this.restTemplateBuilder.clientSettings(DONT_FOLLOW_REDIRECTS).build();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
@@ -103,17 +105,19 @@ class SampleSessionJdbcApplicationTests {
 		ResponseEntity<Map<String, Object>> response = getSessions();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
+		Map<String, Object> body = response.getBody();
+		assertThat(body).isNotNull();
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) body.get("sessions");
 		assertThat(sessions).hasSize(1);
 	}
 
-	private ResponseEntity<String> performRequest(URI uri, String cookie) {
+	private ResponseEntity<String> performRequest(URI uri, @Nullable String cookie) {
 		HttpHeaders headers = getHeaders(cookie);
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
 		return this.restTemplate.exchange(request, String.class);
 	}
 
-	private HttpHeaders getHeaders(String cookie) {
+	private HttpHeaders getHeaders(@Nullable String cookie) {
 		HttpHeaders headers = new HttpHeaders();
 		if (cookie != null) {
 			headers.set("Cookie", cookie);
