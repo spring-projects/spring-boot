@@ -235,9 +235,6 @@ dependencies {
 	api(project(":module:spring-boot-session")) {
 		transitive = false
 	}
-	api(project(":module:spring-boot-session-data-mongodb")) {
-		transitive = false
-	}
 	api(project(":module:spring-boot-session-data-redis")) {
 		transitive = false
 	}
