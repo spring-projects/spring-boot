@@ -32,33 +32,29 @@ class BaseUrlTests {
 
 	@Test
 	void resolveWithString() {
-		assertThat(BaseUrl.of("http://localhost").resolve(null)).isEqualTo("http://localhost");
-		assertThat(BaseUrl.of("http://localhost").resolve("")).isEqualTo("http://localhost");
-		assertThat(BaseUrl.of("http://localhost").resolve("path")).isEqualTo("http://localhost/path");
-		assertThat(BaseUrl.of("http://localhost").resolve("/path")).isEqualTo("http://localhost/path");
-		assertThat(BaseUrl.of("http://localhost/").resolve("path")).isEqualTo("http://localhost/path");
-		assertThat(BaseUrl.of("http://localhost/").resolve("/path")).isEqualTo("http://localhost/path");
+		assertThat(resolve(BaseUrl.of("http://localhost"), "")).isEqualTo("http://localhost");
+		assertThat(resolve(BaseUrl.of("http://localhost"), "/path")).isEqualTo("http://localhost/path");
+		assertThat(resolve(BaseUrl.of("http://localhost/"), "/path")).isEqualTo("http://localhost/path");
 	}
 
 	@Test
 	void ofWhenHttp() {
 		BaseUrl baseUrl = BaseUrl.of("http://localhost:8080/context");
 		assertThat(baseUrl.isHttps()).isFalse();
-		assertThat(baseUrl.resolve()).isEqualTo("http://localhost:8080/context");
+		assertThat(resolve(baseUrl, "")).isEqualTo("http://localhost:8080/context");
 	}
 
 	@Test
 	void ofWhenHttps() {
 		BaseUrl baseUrl = BaseUrl.of("https://localhost:8080/context");
 		assertThat(baseUrl.isHttps()).isTrue();
-		assertThat(baseUrl.resolve()).isEqualTo("https://localhost:8080/context");
+		assertThat(resolve(baseUrl, "")).isEqualTo("https://localhost:8080/context");
 	}
 
 	@Test
 	void ofWhenUppercaseHttps() {
 		BaseUrl baseUrl = BaseUrl.of("HTTPS://localhost:8080/context");
 		assertThat(baseUrl.isHttps()).isTrue();
-		assertThat(baseUrl.resolve()).isEqualTo("HTTPS://localhost:8080/context");
 	}
 
 	@Test
@@ -73,8 +69,8 @@ class BaseUrlTests {
 		BaseUrl baseUrl = BaseUrl.of(true, () -> String.valueOf(atomicInteger.incrementAndGet()));
 		assertThat(atomicInteger.get()).isZero();
 		assertThat(baseUrl.isHttps()).isTrue();
-		assertThat(baseUrl.resolve()).isEqualTo("1");
-		assertThat(baseUrl.resolve()).isEqualTo("2");
+		assertThat(resolve(baseUrl, "")).isEqualTo("1");
+		assertThat(resolve(baseUrl, "")).isEqualTo("2");
 	}
 
 	@Test
@@ -87,19 +83,22 @@ class BaseUrlTests {
 	@Test
 	void withPath() {
 		BaseUrl baseUrl = BaseUrl.of("http://localhost");
-		assertThat(baseUrl.withPath("/context").resolve("")).isEqualTo("http://localhost/context");
-		assertThat(baseUrl.withPath("/context").withPath("/test").resolve("path"))
+		assertThat(resolve(baseUrl.withPath("/context"), "")).isEqualTo("http://localhost/context");
+		assertThat(resolve(baseUrl.withPath("/context").withPath("/test"), "/path"))
 			.isEqualTo("http://localhost/context/test/path");
 	}
 
 	@Test
 	void withPathInvokesParentResolver() {
 		AtomicInteger atomicInteger = new AtomicInteger();
-		BaseUrl baseUrl = BaseUrl.of(true,
-				() -> "https://example.com/" + atomicInteger.incrementAndGet());
-		assertThat(baseUrl.withPath("/context").resolve("")).isEqualTo("https://example.com/1/context");
-		assertThat(baseUrl.withPath("/context").withPath("/test").resolve("path"))
-				.isEqualTo("https://example.com/2/context/test/path");
+		BaseUrl baseUrl = BaseUrl.of(true, () -> "https://example.com/" + atomicInteger.incrementAndGet());
+		assertThat(resolve(baseUrl.withPath("/context"), "")).isEqualTo("https://example.com/1/context");
+		assertThat(resolve(baseUrl.withPath("/context").withPath("/test"), "/path"))
+			.isEqualTo("https://example.com/2/context/test/path");
+	}
+
+	private String resolve(BaseUrl baseUrl, String path) {
+		return baseUrl.getUriBuilderFactory().uriString(path).toUriString();
 	}
 
 }

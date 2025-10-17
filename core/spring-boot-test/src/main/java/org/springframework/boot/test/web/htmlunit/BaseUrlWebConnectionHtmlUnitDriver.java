@@ -56,8 +56,8 @@ public class BaseUrlWebConnectionHtmlUnitDriver extends WebConnectionHtmlUnitDri
 
 	@Override
 	public void get(String url) {
-		if (this.baseUrl != null && url.startsWith("/")) {
-			url = this.baseUrl.resolve(url);
+		if (this.baseUrl != null) {
+			url = this.baseUrl.getUriBuilderFactory().uriString(url).toUriString();
 		}
 		super.get(url);
 	}

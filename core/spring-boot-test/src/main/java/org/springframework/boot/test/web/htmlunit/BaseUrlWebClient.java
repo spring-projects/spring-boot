@@ -43,8 +43,8 @@ public class BaseUrlWebClient extends WebClient {
 
 	@Override
 	public <P extends Page> P getPage(String url) throws IOException, FailingHttpStatusCodeException {
-		if (this.baseUrl != null && url.startsWith("/")) {
-			url = this.baseUrl.resolve(url);
+		if (this.baseUrl != null) {
+			url = this.baseUrl.getUriBuilderFactory().uriString(url).toUriString();
 		}
 		return super.getPage(url);
 	}

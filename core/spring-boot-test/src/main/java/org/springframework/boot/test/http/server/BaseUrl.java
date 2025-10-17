@@ -18,10 +18,10 @@ package org.springframework.boot.test.http.server;
 
 import java.util.function.Supplier;
 
-import org.jspecify.annotations.Nullable;
-
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriBuilderFactory;
 
 /**
  * A base URL that can be used to connect to the running server.
@@ -44,29 +44,10 @@ public interface BaseUrl {
 	boolean isHttps();
 
 	/**
-	 * Resolve the URL to a string. This method is called as late as possible to ensure
-	 * that an local port information is available.
-	 * @param path the path to append
-	 * @return the resolved base URL
+	 * Get a {@link UriBuilderFactory} that applies the base URL.
+	 * @return a {@link UriBuilderFactory}
 	 */
-	default String resolve(@Nullable String path) {
-		String resolved = resolve();
-		if (StringUtils.hasLength(path)) {
-			if (resolved.endsWith("/") && path.startsWith("/")) {
-				path = path.substring(1);
-			}
-			resolved += (resolved.endsWith("/") || path.startsWith("/")) ? "" : "/";
-			resolved += path;
-		}
-		return resolved;
-	}
-
-	/**
-	 * Resolve the URL to a string. This method is called as late as possible to ensure
-	 * that an local port information is available.
-	 * @return the resolved base URL
-	 */
-	String resolve();
+	UriBuilderFactory getUriBuilderFactory();
 
 	/**
 	 * Return a new instance that applies the given {@code path}.
@@ -113,7 +94,11 @@ public interface BaseUrl {
 		}
 
 		@Override
-		public String resolve() {
+		public UriBuilderFactory getUriBuilderFactory() {
+			return new DefaultUriBuilderFactory(resolve());
+		}
+
+		String resolve() {
 			return this.resolver.get();
 		}
 

@@ -32,29 +32,34 @@ import org.springframework.web.util.UriComponentsBuilder;
  * {@link UriBuilderFactory} to support {@link BaseUrl}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 4.0.0
  */
-public class BaseUrlUriBuilderFactory implements UriBuilderFactory {
-
-	private final UriBuilderFactory delegate;
+public final class BaseUrlUriBuilderFactory implements UriBuilderFactory {
 
 	private final BaseUrl baseUrl;
 
 	/**
 	 * Create a new {@link BaseUrlUriBuilderFactory} instance.
-	 * @param delegate the delegate {@link UriBuilderFactory}
 	 * @param baseUrl the base URL to use
 	 */
-	public BaseUrlUriBuilderFactory(UriBuilderFactory delegate, BaseUrl baseUrl) {
-		Assert.notNull(delegate, "'delegate' must not be null");
+	BaseUrlUriBuilderFactory(BaseUrl baseUrl) {
 		Assert.notNull(baseUrl, "'baseUrl' must not be null");
-		this.delegate = delegate;
 		this.baseUrl = baseUrl;
+	}
+
+	/**
+	 * Get a {@link UriBuilderFactory} instance applying the given {@code baseUrl}.
+	 * @param baseUrl the base URL to apply or {@code null}
+	 * @return a factory for the given base URL
+	 */
+	public static UriBuilderFactory get(@Nullable BaseUrl baseUrl) {
+		return (baseUrl != null) ? new BaseUrlUriBuilderFactory(baseUrl) : new DefaultUriBuilderFactory();
 	}
 
 	@Override
 	public UriBuilder uriString(String uriTemplate) {
-		return UriComponentsBuilder.fromUriString(apply(uriTemplate));
+		return createDelegate().uriString(uriTemplate);
 	}
 
 	@Override
@@ -64,21 +69,16 @@ public class BaseUrlUriBuilderFactory implements UriBuilderFactory {
 
 	@Override
 	public URI expand(String uriTemplate, Map<String, ?> uriVariables) {
-		return this.delegate.expand(apply(uriTemplate), uriVariables);
+		return createDelegate().expand(uriTemplate, uriVariables);
 	}
 
 	@Override
 	public URI expand(String uriTemplate, @Nullable Object... uriVariables) {
-		return this.delegate.expand(apply(uriTemplate), uriVariables);
+		return createDelegate().expand(uriTemplate, uriVariables);
 	}
 
-	String apply(String uriTemplate) {
-		return (uriTemplate.startsWith("/")) ? this.baseUrl.resolve(uriTemplate) : uriTemplate;
-	}
-
-	public static UriBuilderFactory get(@Nullable BaseUrl baseUrl) {
-		DefaultUriBuilderFactory delegate = new DefaultUriBuilderFactory();
-		return (baseUrl != null) ? new BaseUrlUriBuilderFactory(delegate, baseUrl) : delegate;
+	private UriBuilderFactory createDelegate() {
+		return this.baseUrl.getUriBuilderFactory();
 	}
 
 }
