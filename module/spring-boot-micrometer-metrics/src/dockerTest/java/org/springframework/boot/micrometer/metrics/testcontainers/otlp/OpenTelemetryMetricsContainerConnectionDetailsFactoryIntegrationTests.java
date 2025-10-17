@@ -17,6 +17,7 @@
 package org.springframework.boot.micrometer.metrics.testcontainers.otlp;
 
 import java.time.Duration;
+import java.util.function.Consumer;
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Counter;
@@ -24,9 +25,8 @@ import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -40,12 +40,13 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.test.web.servlet.client.RestTestClient.ResponseSpec;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.matchesPattern;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link OpenTelemetryMetricsContainerConnectionDetailsFactory}.
@@ -59,7 +60,8 @@ import static org.hamcrest.Matchers.matchesPattern;
 @Testcontainers(disabledWithoutDocker = true)
 class OpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
 
-	private static final String OPENMETRICS_001 = "application/openmetrics-text; version=0.0.1; charset=utf-8";
+	private static final MediaType OPENMETRICS_001 = MediaType
+		.parseMediaType("application/openmetrics-text; version=0.0.1; charset=utf-8");
 
 	private static final String CONFIG_FILE_NAME = "collector-config.yml";
 
@@ -81,23 +83,33 @@ class OpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
 		DistributionSummary.builder("test.distributionsummary").register(this.meterRegistry).record(24);
 		Awaitility.await()
 			.atMost(Duration.ofSeconds(30))
-			.untilAsserted(() -> whenPrometheusScraped().then()
-				.statusCode(200)
+			.untilAsserted(() -> whenPrometheusScraped().expectStatus()
+				.isOk()
+				.expectHeader()
 				.contentType(OPENMETRICS_001)
-				.body(endsWith("# EOF\n"), containsString(
-						"{job=\"test\",service_name=\"test\",telemetry_sdk_language=\"java\",telemetry_sdk_name=\"io.micrometer\""),
-						matchesPattern("(?s)^.*test_counter\\{.+} 42\\.0\\n.*$"),
-						matchesPattern("(?s)^.*test_gauge\\{.+} 12\\.0\\n.*$"),
-						matchesPattern("(?s)^.*test_timer_count\\{.+} 1\\n.*$"),
-						matchesPattern("(?s)^.*test_timer_sum\\{.+} 123\\.0\\n.*$"),
-						matchesPattern("(?s)^.*test_timer_bucket\\{.+,le=\"\\+Inf\"} 1\\n.*$"),
-						matchesPattern("(?s)^.*test_distributionsummary_count\\{.+} 1\\n.*$"),
-						matchesPattern("(?s)^.*test_distributionsummary_sum\\{.+} 24\\.0\\n.*$"),
-						matchesPattern("(?s)^.*test_distributionsummary_bucket\\{.+,le=\"\\+Inf\"} 1\\n.*$")));
+				.expectBody(String.class)
+				.value((Consumer<@Nullable String>) (body) -> assertThat(body).endsWith("# EOF\n")
+					.contains(
+							"{job=\"test\",service_name=\"test\",telemetry_sdk_language=\"java\",telemetry_sdk_name=\"io.micrometer\"")
+					.matches("(?s)^.*test_counter\\{.+} 42\\.0\\n.*$")
+					.matches("(?s)^.*test_gauge\\{.+} 12\\.0\\n.*$")
+					.matches("(?s)^.*test_timer_count\\{.+} 1\\n.*$")
+					.matches("(?s)^.*test_timer_sum\\{.+} 123\\.0\\n.*$")
+					.matches("(?s)^.*test_timer_bucket\\{.+,le=\"\\+Inf\"} 1\\n.*$")
+					.matches("(?s)^.*test_distributionsummary_count\\{.+} 1\\n.*$")
+					.matches("(?s)^.*test_distributionsummary_sum\\{.+} 24\\.0\\n.*$")
+					.matches("(?s)^.*test_distributionsummary_bucket\\{.+,le=\"\\+Inf\"} 1\\n.*$")));
+
 	}
 
-	private Response whenPrometheusScraped() {
-		return RestAssured.given().port(container.getMappedPort(9090)).accept(OPENMETRICS_001).when().get("/metrics");
+	private ResponseSpec whenPrometheusScraped() {
+		return RestTestClient.bindToServer()
+			.baseUrl("http://" + container.getHost() + ":" + container.getMappedPort(9090))
+			.build()
+			.get()
+			.uri("/metrics")
+			.accept(OPENMETRICS_001)
+			.exchange();
 	}
 
 	@Configuration(proxyBeanMethods = false)

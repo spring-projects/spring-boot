@@ -16,6 +16,7 @@
 
 package org.springframework.boot.micrometer.metrics.testcontainers.otlp;
 
+import java.net.URI;
 import java.time.Duration;
 
 import io.micrometer.core.instrument.Clock;
@@ -24,8 +25,6 @@ import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.grafana.LgtmStackContainer;
@@ -41,8 +40,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 /**
  * Tests for {@link GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory}.
@@ -68,51 +66,37 @@ class GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTes
 		Gauge.builder("test.gauge", () -> 12).register(this.meterRegistry);
 		Timer.builder("test.timer").register(this.meterRegistry).record(Duration.ofMillis(123));
 		DistributionSummary.builder("test.distributionsummary").register(this.meterRegistry).record(24);
-
 		Awaitility.given()
 			.pollInterval(Duration.ofSeconds(2))
 			.atMost(Duration.ofSeconds(10))
 			.ignoreExceptions()
 			.untilAsserted(() -> {
-				Response response = RestAssured.given()
-					.queryParam("query", "{job=\"test\"}")
-					.get("%s/api/v1/query".formatted(container.getPrometheusHttpUrl()))
-					.prettyPeek()
-					.thenReturn();
-				assertThat(response.getStatusCode()).isEqualTo(200);
-				assertThat(response.body()
-					.jsonPath()
-					.getList("data.result.find { it.metric.__name__ == 'test_counter_total' }.value")).contains("42");
-				assertThat(response.body()
-					.jsonPath()
-					.getList("data.result.find { it.metric.__name__ == 'test_gauge' }.value")).contains("12");
-				assertThat(response.body()
-					.jsonPath()
-					.getList("data.result.find { it.metric.__name__ == 'test_timer_milliseconds_count' }.value"))
-					.contains("1");
-				assertThat(response.body()
-					.jsonPath()
-					.getList("data.result.find { it.metric.__name__ == 'test_timer_milliseconds_sum' }.value"))
-					.contains("123");
-				assertThat(response.body()
-					.jsonPath()
-					.getList(
-							"data.result.find { it.metric.__name__ == 'test_timer_milliseconds_bucket' & it.metric.le == '+Inf' }.value"))
-					.contains("1");
-				assertThat(response.body()
-					.jsonPath()
-					.getList("data.result.find { it.metric.__name__ == 'test_distributionsummary_count' }.value"))
-					.contains("1");
-				assertThat(response.body()
-					.jsonPath()
-					.getList("data.result.find { it.metric.__name__ == 'test_distributionsummary_sum' }.value"))
-					.contains("24");
-				assertThat(response.body()
-					.jsonPath()
-					.getList(
-							"data.result.find { it.metric.__name__ == 'test_distributionsummary_bucket' & it.metric.le == '+Inf' }.value"))
-					.contains("1");
+				RestTestClient restClient = RestTestClient.bindToServer().build();
+				restClient.get()
+					.uri(URI.create(container.getPrometheusHttpUrl() + "/api/v1/query?query=%7Bjob=%22test%22%7D"))
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath(metricWithValue("test_counter_total", "42"))
+					.exists()
+					.jsonPath(metricWithValue("test_timer_milliseconds_count", "1"))
+					.exists()
+					.jsonPath(metricWithValue("test_timer_milliseconds_sum", "123"))
+					.exists()
+					.jsonPath(metricWithValue("test_timer_milliseconds_bucket", "1"))
+					.exists()
+					.jsonPath(metricWithValue("test_distributionsummary_count", "1"))
+					.exists()
+					.jsonPath(metricWithValue("test_distributionsummary_sum", "24"))
+					.exists()
+					.jsonPath(metricWithValue("test_distributionsummary_bucket", "1"))
+					.exists();
 			});
+	}
+
+	private String metricWithValue(String metric, String value) {
+		return "$.data.result[?(@.metric.__name__==\"%s\" && \"%s\" in @.value)]".formatted(metric, value);
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -66,7 +66,8 @@ dependencies {
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("io.rest-assured:rest-assured")
+	dockerTestImplementation("org.apache.httpcomponents.client5:httpclient5")
+	dockerTestImplementation("org.springframework:spring-web")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testFixturesImplementation(project(":test-support:spring-boot-test-support"))
