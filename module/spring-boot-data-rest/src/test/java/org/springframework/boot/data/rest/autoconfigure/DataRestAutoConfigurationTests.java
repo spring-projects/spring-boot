@@ -105,9 +105,6 @@ class DataRestAutoConfigurationTests {
 		assertThat(bean.isEnableEnumTranslation()).isTrue();
 	}
 
-	// https://github.com/spring-projects/spring-data-rest/issues/2515
-	// https://github.com/spring-projects/spring-data-rest/issues/2516
-	@SuppressWarnings("NullAway")
 	private void assertReturnBody(RepositoryRestConfiguration bean) {
 		assertThat(bean.returnBodyOnCreate(null)).isFalse();
 		assertThat(bean.returnBodyOnUpdate(null)).isFalse();
