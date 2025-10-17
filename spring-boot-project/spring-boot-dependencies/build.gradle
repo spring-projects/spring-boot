@@ -353,7 +353,7 @@ bom {
 			releaseNotes("https://github.com/ehcache/ehcache3/releases/tag/v{version}")
 		}
 	}
-	library("Elasticsearch Client", "8.18.6") {
+	library("Elasticsearch Client", "8.18.8") {
 		prohibit {
 			contains "-alpha"
 			contains "-beta"
