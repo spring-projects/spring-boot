@@ -19,17 +19,18 @@ package org.springframework.boot.batch.jdbc.autoconfigure;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.boot.jdbc.init.DatabaseInitializationProperties;
 import org.springframework.transaction.annotation.Isolation;
 
 /**
  * Configuration properties for Spring Batch using a JDBC store.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.batch.jdbc")
-public class BatchJdbcProperties {
+public class BatchJdbcProperties extends DatabaseInitializationProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 			+ "batch/core/schema-@@platform@@.sql";
@@ -45,25 +46,9 @@ public class BatchJdbcProperties {
 	private @Nullable Isolation isolationLevelForCreate;
 
 	/**
-	 * Path to the SQL file to use to initialize the database schema.
-	 */
-	private String schema = DEFAULT_SCHEMA_LOCATION;
-
-	/**
-	 * Platform to use in initialization scripts if the @@platform@@ placeholder is used.
-	 * Auto-detected by default.
-	 */
-	private @Nullable String platform;
-
-	/**
 	 * Table prefix for all the batch meta-data tables.
 	 */
 	private @Nullable String tablePrefix;
-
-	/**
-	 * Database schema initialization mode.
-	 */
-	private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
 	public boolean isValidateTransactionState() {
 		return this.validateTransactionState;
@@ -81,22 +66,6 @@ public class BatchJdbcProperties {
 		this.isolationLevelForCreate = isolationLevelForCreate;
 	}
 
-	public String getSchema() {
-		return this.schema;
-	}
-
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
-
-	public @Nullable String getPlatform() {
-		return this.platform;
-	}
-
-	public void setPlatform(@Nullable String platform) {
-		this.platform = platform;
-	}
-
 	public @Nullable String getTablePrefix() {
 		return this.tablePrefix;
 	}
@@ -105,12 +74,9 @@ public class BatchJdbcProperties {
 		this.tablePrefix = tablePrefix;
 	}
 
-	public DatabaseInitializationMode getInitializeSchema() {
-		return this.initializeSchema;
-	}
-
-	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
-		this.initializeSchema = initializeSchema;
+	@Override
+	public String getDefaultSchemaLocation() {
+		return DEFAULT_SCHEMA_LOCATION;
 	}
 
 }
