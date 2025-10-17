@@ -42,6 +42,10 @@ class CompoundRow extends Row {
 		this.propertyNames.add(property.getDisplayName());
 	}
 
+	boolean isEmpty() {
+		return this.propertyNames.isEmpty();
+	}
+
 	@Override
 	void write(Asciidoc asciidoc) {
 		asciidoc.append("|");
