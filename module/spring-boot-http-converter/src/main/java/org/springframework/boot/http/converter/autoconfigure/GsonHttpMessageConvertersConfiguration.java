@@ -85,6 +85,12 @@ class GsonHttpMessageConvertersConfiguration {
 
 		}
 
+		@SuppressWarnings("removal")
+		@ConditionalOnBean(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class)
+		static class Jackson2Available {
+
+		}
+
 		@ConditionalOnProperty(name = HttpMessageConvertersAutoConfiguration.PREFERRED_MAPPER_PROPERTY,
 				havingValue = "jsonb")
 		static class JsonbPreferred {

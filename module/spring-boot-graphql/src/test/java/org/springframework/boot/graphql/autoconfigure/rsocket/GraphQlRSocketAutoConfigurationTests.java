@@ -22,18 +22,22 @@ import java.util.function.Consumer;
 
 import graphql.schema.idl.TypeRuntimeWiring;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration;
 import org.springframework.boot.graphql.autoconfigure.GraphQlTestDataFetchers;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.reactor.netty.NettyRouteProvider;
 import org.springframework.boot.rsocket.autoconfigure.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.rsocket.autoconfigure.RSocketServerAutoConfiguration;
 import org.springframework.boot.rsocket.autoconfigure.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.server.context.ServerPortInfoApplicationContextInitializer;
@@ -97,6 +101,33 @@ class GraphQlRSocketAutoConfigurationTests {
 	@Test
 	void simpleQueryShouldWorkWithWebSocketServer() {
 		testWithRSocketWebSocket(this::assertThatSimpleQueryWorks);
+	}
+
+	@Test
+	void usesJacksonByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasBean("jacksonJsonEncoderSupplier"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void usesJackson2WhenItIsPreferred() {
+		this.contextRunner.withPropertyValues("spring.graphql.rsocket.preferred-json-mapper=jackson2")
+			.withConfiguration(AutoConfigurations
+				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
+			.run((context) -> assertThat(context).hasBean("jackson2JsonEncoderSupplier"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void usesJackson2WhenJacksonIsAbsent() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(Thread.currentThread().getContextClassLoader(), JsonMapper.class))
+			.withConfiguration(AutoConfigurations
+				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+			.run((context) -> assertThat(context).hasBean("jackson2JsonEncoderSupplier"));
 	}
 
 	private void assertThatSimpleQueryWorks(RSocketGraphQlClient client) {

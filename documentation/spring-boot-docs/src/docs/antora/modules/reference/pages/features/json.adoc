@@ -3,19 +3,23 @@
 
 Spring Boot provides integration with the following JSON mapping libraries:
 
-- Gson
 - Jackson 3
+- Jackson 2
+- Gson
 - JSON-B
 - Kotlin Serialization
 
-Jackson is the preferred and default library.
+Jackson 3 is the preferred and default library.
+
+Support for Jackson 2 is deprecated and will be removed in a future Spring Boot 4.x release.
+It is provided purely to ease the migration from Jackson 2 to Jackson 3 and should not be relied up in the longer term.
 
 
 
 [[features.json.jackson]]
-== Jackson
+== Jackson 3
 
-Auto-configuration for Jackson is provided and Jackson is part of `spring-boot-starter-json`.
+Auto-configuration for Jackson 3 is provided and Jackson is part of `spring-boot-starter-json`.
 When Jackson is on the classpath a javadoc:tools.jackson.databind.json.JsonMapper[] bean is automatically configured.
 Several configuration properties are provided for xref:how-to:spring-mvc.adoc#howto.spring-mvc.customize-jackson-jsonmapper[customizing the configuration of the javadoc:tools.jackson.databind.json.JsonMapper[]].
 
@@ -50,6 +54,26 @@ include-code::object/MyJacksonComponent[]
 Jackson has support for mixins that can be used to mix additional annotations into those already declared on a target class.
 Spring Boot's Jackson auto-configuration will scan your application's packages for classes annotated with javadoc:org.springframework.boot.jackson.JacksonMixin[format=annotation] and register them with the auto-configured javadoc:tools.jackson.databind.json.JsonMapper[].
 The registration is performed by Spring Boot's javadoc:org.springframework.boot.jackson.JacksonMixinModule[].
+
+
+
+[[features.json.jackson2]]
+== Jackson 2
+
+Deprecated auto-configuration for Jackson 2 is provided by the `spring-boot-jackson2` module.
+When this module is on the classpath a javadoc:com.fasterxml.jackson.databind.ObjectMapper[] bean is automatically configured.
+Several `+spring.jackson2.*+` configuration properties are provided for customizing the configuration.
+To take more control, define one or more javadoc:org.springframework.boot.jackson2.autoconfigure.Jackson2ObjectMapperBuilderCustomizer[] beans.
+
+When both Jackson 3 and Jackson 2 are present, various configuration properties can be used to indicate that Jackson 2 is preferred:
+
+- configprop:spring.graphql.rsocket.preferred-json-mapper[]
+- configprop:spring.http.codecs.preferred-json-mapper[] (used by Spring WebFlux and reactive HTTP clients)
+- configprop:spring.http.converters.preferred-json-mapper[] (used by Spring MVC and imperative HTTP clients)
+- configprop:spring.rsocket.preferred-mapper[]
+- configprop:spring.websocket.messaging.preferred-json-mapper[]
+
+In each case, set the relevant property to `jackson2` to indicate that Jackson 2 is preferred.
 
 
 

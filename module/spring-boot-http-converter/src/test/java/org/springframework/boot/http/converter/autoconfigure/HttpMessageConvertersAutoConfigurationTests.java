@@ -19,18 +19,20 @@ package org.springframework.boot.http.converter.autoconfigure;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import kotlinx.serialization.json.Json;
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.xml.XmlMapper;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.http.converter.autoconfigure.JacksonHttpMessageConvertersConfiguration.JacksonJsonHttpMessageConverterConfiguration;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -77,7 +79,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	void jacksonNotAvailable() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).doesNotHaveBean(ObjectMapper.class);
+			assertThat(context).doesNotHaveBean(JsonMapper.class);
 			assertThat(context).doesNotHaveBean(JacksonJsonHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(JacksonXmlHttpMessageConverter.class);
 		});
@@ -105,6 +107,34 @@ class HttpMessageConvertersAutoConfigurationTests {
 	void jacksonCustomConverter() {
 		this.contextRunner.withUserConfiguration(JacksonJsonMapperConfig.class, JacksonConverterConfig.class)
 			.run(assertConverter(JacksonJsonHttpMessageConverter.class, "customJacksonMessageConverter"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void jackson2DefaultConverter() {
+		this.contextRunner.withUserConfiguration(Jackson2ObjectMapperConfig.class)
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+			.run(assertConverter(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class,
+					"mappingJackson2HttpMessageConverter"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void jackson2ConverterWithBuilder() {
+		this.contextRunner.withUserConfiguration(Jackson2ObjectMapperBuilderConfig.class)
+			.run(assertConverter(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class,
+					"mappingJackson2HttpMessageConverter"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void jackson2CustomConverter() {
+		this.contextRunner.withUserConfiguration(Jackson2ObjectMapperConfig.class, Jackson2ConverterConfig.class)
+			.run(assertConverter(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class,
+					"customJacksonMessageConverter"));
 	}
 
 	@Test
@@ -244,8 +274,26 @@ class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
-	void gsonIsPreferredIfJacksonIsNotAvailable() {
-		allOptionsRunner().withClassLoader(new FilteredClassLoader(ObjectMapper.class.getPackage().getName()))
+	@SuppressWarnings("removal")
+	void jackson2IsPreferredIfJacksonIsNotAvailable() {
+		allOptionsRunner().withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName()))
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+			.run((context) -> {
+				assertConverterBeanExists(context,
+						org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class,
+						"mappingJackson2HttpMessageConverter");
+				assertConverterBeanRegisteredWithHttpMessageConverters(context,
+						org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+			});
+	}
+
+	@Test
+	void gsonIsPreferredIfJacksonAndJackson2AreNotAvailable() {
+		allOptionsRunner()
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName()))
 			.run((context) -> {
 				assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
 				assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
@@ -256,8 +304,8 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	void jsonbIsPreferredIfJacksonAndGsonAreNotAvailable() {
 		allOptionsRunner()
-			.withClassLoader(new FilteredClassLoader(ObjectMapper.class.getPackage().getName(),
-					Gson.class.getPackage().getName()))
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+					ObjectMapper.class.getPackage().getName(), Gson.class.getPackage().getName()))
 			.run(assertConverter(JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter"));
 	}
 
@@ -303,6 +351,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 	private ApplicationContextRunner allOptionsRunner() {
 		return this.contextRunner.withBean(Gson.class)
 			.withBean(JsonMapper.class)
+			.withBean(ObjectMapper.class, ObjectMapper::new)
 			.withBean(Jsonb.class, JsonbBuilder::create)
 			.withBean(Json.class, () -> Json.Default);
 	}
@@ -398,6 +447,48 @@ class HttpMessageConvertersAutoConfigurationTests {
 		@Bean
 		JacksonJsonHttpMessageConverter customJacksonMessageConverter(JsonMapper jsonMapperMapper) {
 			JacksonJsonHttpMessageConverter converter = new JacksonJsonHttpMessageConverter(jsonMapperMapper);
+			return converter;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class Jackson2ObjectMapperConfig {
+
+		@Bean
+		ObjectMapper objectMapper() {
+			return new ObjectMapper();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	static class Jackson2ObjectMapperBuilderConfig {
+
+		@Bean
+		ObjectMapper objectMapper() {
+			return new ObjectMapper();
+		}
+
+		@Bean
+		org.springframework.http.converter.json.Jackson2ObjectMapperBuilder builder() {
+			return new org.springframework.http.converter.json.Jackson2ObjectMapperBuilder();
+		}
+
+	}
+
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("removal")
+	static class Jackson2ConverterConfig {
+
+		@Bean
+		org.springframework.http.converter.json.MappingJackson2HttpMessageConverter customJacksonMessageConverter(
+				ObjectMapper objectMapper) {
+			org.springframework.http.converter.json.MappingJackson2HttpMessageConverter converter = new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter();
+			converter.setObjectMapper(objectMapper);
 			return converter;
 		}
 

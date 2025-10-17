@@ -5,6 +5,7 @@ org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpoin
 org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationPropertiesReportEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.endpoint.jackson.Jackson2EndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.jackson.JacksonEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration

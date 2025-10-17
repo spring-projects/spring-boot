@@ -39,6 +39,7 @@ dependencies {
 	optional(project(":module:spring-boot-micrometer-observation"))
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-validation"))
+	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("org.springframework.security:spring-security-core")
 
 	testFixturesApi(testFixtures(project(":module:spring-boot-actuator")))

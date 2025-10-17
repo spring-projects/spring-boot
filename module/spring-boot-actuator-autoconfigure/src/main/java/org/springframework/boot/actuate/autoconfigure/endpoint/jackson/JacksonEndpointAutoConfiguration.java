@@ -34,11 +34,11 @@ import org.springframework.context.annotation.Bean;
  * @since 3.0.0
  */
 @AutoConfiguration
+@ConditionalOnClass(ObjectMapper.class)
 public final class JacksonEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
-	@ConditionalOnClass(ObjectMapper.class)
 	EndpointJsonMapper endpointJsonMapper() {
 		JsonMapper jsonMapper = JsonMapper.builder()
 			.changeDefaultPropertyInclusion(

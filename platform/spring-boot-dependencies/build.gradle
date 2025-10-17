@@ -2053,6 +2053,7 @@ bom {
 				"spring-boot-http-converter",
 				"spring-boot-integration",
 				"spring-boot-jackson",
+				"spring-boot-jackson2",
 				"spring-boot-jarmode-tools",
 				"spring-boot-jdbc",
 				"spring-boot-jdbc-test",

@@ -18,11 +18,13 @@ package org.springframework.boot.http.codec.autoconfigure;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.codec.CodecCustomizer;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -72,7 +74,7 @@ class CodecsAutoConfigurationTests {
 	}
 
 	@Test
-	void jacksonCodecCustomizerBacksOffWhenThereIsNoObjectMapper() {
+	void jacksonCodecCustomizerBacksOffWhenThereIsNoJsonMapper() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("jacksonCodecCustomizer"));
 	}
 
@@ -80,6 +82,37 @@ class CodecsAutoConfigurationTests {
 	void jacksonCodecCustomizerIsAutoConfiguredWhenJsonMapperIsPresent() {
 		this.contextRunner.withUserConfiguration(JsonMapperConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	void jacksonCodecCustomizerBacksOffWhenJackson2IsPreferred() {
+		this.contextRunner.withUserConfiguration(JsonMapperConfiguration.class)
+			.withPropertyValues("spring.http.codecs.preferred-json-mapper=jackson2")
+			.run((context) -> assertThat(context).doesNotHaveBean("jacksonCodecCustomizer"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	void jackson2CodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresentAndJackson2IsPreferred() {
+		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class)
+			.withPropertyValues("spring.http.codecs.preferred-json-mapper=jackson2")
+			.run((context) -> assertThat(context).hasBean("jackson2CodecCustomizer"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	void jackson2CodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresentAndJacksonIsMissing() {
+		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(JsonMapper.class.getPackage().getName()))
+			.run((context) -> assertThat(context).hasBean("jackson2CodecCustomizer"));
+	}
+
+	@Test
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	void jackson2CodecCustomizerBacksOffWhenJackson2IsPreferredButThereIsNoObjectMapper() {
+		this.contextRunner.withPropertyValues("spring.http.codecs.preferred-json-mapper=jackson2")
+			.run((context) -> assertThat(context).doesNotHaveBean("jackson2CodecCustomizer"));
 	}
 
 	@Test
@@ -112,6 +145,16 @@ class CodecsAutoConfigurationTests {
 		@Bean
 		JsonMapper jsonMapper() {
 			return new JsonMapper();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ObjectMapperConfiguration {
+
+		@Bean
+		ObjectMapper objectMapper() {
+			return new ObjectMapper();
 		}
 
 	}

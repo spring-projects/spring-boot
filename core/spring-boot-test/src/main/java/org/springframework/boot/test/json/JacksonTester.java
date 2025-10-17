@@ -103,6 +103,14 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 		this(resourceLoadClass, type, jsonMapper, null);
 	}
 
+	/**
+	 * Create a new {@link JacksonTester} instance.
+	 * @param resourceLoadClass the source class used to load resources
+	 * @param type the type under test
+	 * @param jsonMapper the Jackson JSON mapper
+	 * @param view the JSON view
+	 * @since 4.0.0
+	 */
 	public JacksonTester(Class<?> resourceLoadClass, ResolvableType type, JsonMapper jsonMapper,
 			@Nullable Class<?> view) {
 		super(resourceLoadClass, type);

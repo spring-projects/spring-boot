@@ -1,0 +1,2 @@
+org.springframework.boot.jackson2.JsonComponent
+com.fasterxml.jackson.databind.Module
