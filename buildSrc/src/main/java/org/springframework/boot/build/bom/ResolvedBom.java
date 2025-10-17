@@ -91,6 +91,7 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 			builder.append(":");
 			builder.append(this.version);
 			if (this.classifier != null) {
+				builder.append(":");
 				builder.append(this.classifier);
 			}
 			return builder.toString();

@@ -433,20 +433,34 @@ bom {
 		}
 	}
 	library("Glassfish JAXB", "4.0.6") {
-		group("org.glassfish.jaxb") {
-			bom("jaxb-bom") {
-				permit("com.sun.istack:istack-commons-runtime")
-				permit("com.sun.xml.bind:jaxb-core")
-				permit("com.sun.xml.bind:jaxb-impl")
-				permit("com.sun.xml.bind:jaxb-jxc")
-				permit("com.sun.xml.bind:jaxb-osgi")
-				permit("com.sun.xml.bind:jaxb-xjc")
-				permit("com.sun.xml.fastinfoset:FastInfoset")
-				permit("jakarta.activation:jakarta.activation-api")
-				permit("jakarta.xml.bind:jakarta.xml.bind-api")
-				permit("org.eclipse.angus:angus-activation")
-				permit("org.jvnet.staxex:stax-ex")
+		alignWith {
+			dependencyManagementDeclaredIn("org.glassfish.jaxb:jaxb-bom") {
+				excluding { candidate -> candidate.classifier().equals("sources") }
+				excluding { candidate ->
+					def permittedGroups = Set.of("org.glassfix.jaxb", "com.sun.xml.bind")
+					return !permittedGroups.contains(candidate.groupId())
+				}
 			}
+		}
+		group("org.glassfish.jaxb") {
+			modules = [
+				"codemodel",
+				"jaxb-core",
+				"jaxb-jxc",
+				"jaxb-runtime",
+				"jaxb-xjc",
+				"txw2",
+				"xsom"
+			]
+		}
+		group("com.sun.xml.bind") {
+			modules = [
+				"jaxb-core",
+				"jaxb-impl",
+				"jaxb-jxc",
+				"jaxb-osgi",
+				"jaxb-xjc"
+			]
 		}
 		links {
 			releaseNotes("https://github.com/eclipse-ee4j/jaxb-ri/releases/tag/{version}-RI")
