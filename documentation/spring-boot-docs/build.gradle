@@ -364,7 +364,14 @@ def configurationPropertiesMetadataAggregate = aggregates.create("configurationP
 
 tasks.register("documentConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
+	deprecated = false
 	outputDir = layout.buildDirectory.dir("generated/docs/application-properties")
+}
+
+tasks.register("documentDeprecatedConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
+	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
+	deprecated = true
+	outputDir = layout.buildDirectory.dir("generated/docs/deprecated-application-properties")
 }
 
 tasks.register("documentDevtoolsPropertyDefaults", org.springframework.boot.build.devtools.DocumentDevtoolsPropertyDefaults) {
@@ -486,6 +493,9 @@ antoraContributions {
 			}
 			from(documentConfigurationProperties) {
 				into "modules/appendix/partials/configuration-properties"
+			}
+			from(documentDeprecatedConfigurationProperties) {
+				into "modules/appendix/partials/deprecated-configuration-properties"
 			}
 			from(tasks.getByName("generateAntoraYml")) {
 				into "modules"

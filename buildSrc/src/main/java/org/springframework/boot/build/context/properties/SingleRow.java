@@ -19,6 +19,8 @@ package org.springframework.boot.build.context.properties;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.build.context.properties.ConfigurationProperty.Deprecation;
+
 /**
  * Table row containing a single configuration property.
  *
@@ -28,17 +30,21 @@ import java.util.stream.Collectors;
  */
 class SingleRow extends Row {
 
-	private final String displayName;
-
-	private final String description;
+	private final Snippets snippets;
 
 	private final String defaultValue;
 
+	private final ConfigurationProperty property;
+
 	SingleRow(Snippet snippet, ConfigurationProperty property) {
+		this(null, snippet, property);
+	}
+
+	SingleRow(Snippets snippets, Snippet snippet, ConfigurationProperty property) {
 		super(snippet, property.getName());
-		this.displayName = property.getDisplayName();
-		this.description = property.getDescription();
+		this.snippets = snippets;
 		this.defaultValue = getDefaultValue(property.getDefaultValue());
+		this.property = property;
 	}
 
 	private String getDefaultValue(Object defaultValue) {
@@ -57,19 +63,41 @@ class SingleRow extends Row {
 	void write(Asciidoc asciidoc) {
 		asciidoc.append("|");
 		asciidoc.append("[[" + getAnchor() + "]]");
-		asciidoc.appendln("xref:#" + getAnchor() + "[`+", this.displayName, "+`]");
+		asciidoc.appendln("xref:#" + getAnchor() + "[`+", this.property.getDisplayName(), "+`]");
 		writeDescription(asciidoc);
 		writeDefaultValue(asciidoc);
 	}
 
 	private void writeDescription(Asciidoc builder) {
-		if (this.description == null || this.description.isEmpty()) {
-			builder.appendln("|");
+		builder.append("|");
+		if (this.property.isDeprecated()) {
+			Deprecation deprecation = this.property.getDeprecation();
+			String replacement = (deprecation != null) ? deprecation.replacement() : null;
+			String reason = (deprecation != null) ? deprecation.reason() : null;
+			if (replacement != null && !replacement.isEmpty()) {
+				String xref = (this.snippets != null) ? this.snippets.findXref(deprecation.replacement()) : null;
+				if (xref != null) {
+					builder.append("Replaced by xref:" + xref + "[`+" + deprecation.replacement() + "+`]");
+				}
+				else {
+					builder.append("Replaced by `+" + deprecation.replacement() + "+`");
+				}
+			}
+			else if (reason != null && !reason.isEmpty()) {
+				builder.append("+++", clean(reason), "+++");
+			}
 		}
 		else {
-			String cleanedDescription = this.description.replace("|", "\\|").replace("<", "&lt;").replace(">", "&gt;");
-			builder.appendln("|+++", cleanedDescription, "+++");
+			String description = this.property.getDescription();
+			if (description != null && !description.isEmpty()) {
+				builder.append("+++", clean(description), "+++");
+			}
 		}
+		builder.appendln();
+	}
+
+	private String clean(String text) {
+		return text.replace("|", "\\|").replace("<", "&lt;").replace(">", "&gt;");
 	}
 
 	private void writeDefaultValue(Asciidoc builder) {

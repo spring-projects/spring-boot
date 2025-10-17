@@ -35,7 +35,7 @@ class SingleRowTests {
 	@Test
 	void simpleProperty() {
 		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String", "something",
-				"This is a description.", false);
+				"This is a description.", false, null);
 		SingleRow row = new SingleRow(SNIPPET, property);
 		Asciidoc asciidoc = new Asciidoc();
 		row.write(asciidoc);
@@ -46,7 +46,7 @@ class SingleRowTests {
 	@Test
 	void noDefaultValue() {
 		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String", null,
-				"This is a description.", false);
+				"This is a description.", false, null);
 		SingleRow row = new SingleRow(SNIPPET, property);
 		Asciidoc asciidoc = new Asciidoc();
 		row.write(asciidoc);
@@ -57,7 +57,7 @@ class SingleRowTests {
 	@Test
 	void defaultValueWithPipes() {
 		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String",
-				"first|second", "This is a description.", false);
+				"first|second", "This is a description.", false, null);
 		SingleRow row = new SingleRow(SNIPPET, property);
 		Asciidoc asciidoc = new Asciidoc();
 		row.write(asciidoc);
@@ -68,7 +68,7 @@ class SingleRowTests {
 	@Test
 	void defaultValueWithBackslash() {
 		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String",
-				"first\\second", "This is a description.", false);
+				"first\\second", "This is a description.", false, null);
 		SingleRow row = new SingleRow(SNIPPET, property);
 		Asciidoc asciidoc = new Asciidoc();
 		row.write(asciidoc);
@@ -79,7 +79,7 @@ class SingleRowTests {
 	@Test
 	void descriptionWithPipe() {
 		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop", "java.lang.String", null,
-				"This is a description with a | pipe.", false);
+				"This is a description with a | pipe.", false, null);
 		SingleRow row = new SingleRow(SNIPPET, property);
 		Asciidoc asciidoc = new Asciidoc();
 		row.write(asciidoc);
@@ -90,7 +90,7 @@ class SingleRowTests {
 	@Test
 	void mapProperty() {
 		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop",
-				"java.util.Map<java.lang.String,java.lang.String>", null, "This is a description.", false);
+				"java.util.Map<java.lang.String,java.lang.String>", null, "This is a description.", false, null);
 		SingleRow row = new SingleRow(SNIPPET, property);
 		Asciidoc asciidoc = new Asciidoc();
 		row.write(asciidoc);
@@ -102,7 +102,7 @@ class SingleRowTests {
 	void listProperty() {
 		String[] defaultValue = new String[] { "first", "second", "third" };
 		ConfigurationProperty property = new ConfigurationProperty("spring.test.prop",
-				"java.util.List<java.lang.String>", defaultValue, "This is a description.", false);
+				"java.util.List<java.lang.String>", defaultValue, "This is a description.", false, null);
 		SingleRow row = new SingleRow(SNIPPET, property);
 		Asciidoc asciidoc = new Asciidoc();
 		row.write(asciidoc);
