@@ -19,9 +19,9 @@ package org.springframework.boot.neo4.health;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -50,7 +50,7 @@ class Neo4jReactiveHealthIndicatorIntegrationTests {
 	// gh-33428
 
 	@Container
-	private static final Neo4jContainer<?> neo4jServer = TestImage.container(Neo4jContainer.class);
+	private static final Neo4jContainer neo4jServer = TestImage.container(Neo4jContainer.class);
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {

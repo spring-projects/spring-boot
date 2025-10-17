@@ -38,8 +38,7 @@ dependencies {
 	dockerTestImplementation("io.projectreactor:reactor-test")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
 	dockerTestRuntimeOnly("org.springframework.data:spring-data-redis")

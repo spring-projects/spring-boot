@@ -47,11 +47,11 @@ dependencies {
 	optional("io.zipkin.reporter2:zipkin-reporter-brave")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.junit.platform:junit-platform-launcher")
-	optional("org.testcontainers:grafana")
+	optional("org.testcontainers:testcontainers-grafana")
 
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-opentelemetry"))

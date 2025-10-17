@@ -19,8 +19,8 @@ package org.springframework.boot.jdbc.test.autoconfigure;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AutoConfigureTestDatabaseNonTestDatabaseIntegrationTests {
 
 	@Container
-	static PostgreSQLContainer<?> postgres = TestImage.container(PostgreSQLContainer.class);
+	static PostgreSQLContainer postgres = TestImage.container(PostgreSQLContainer.class);
 
 	@Autowired
 	private DataSource dataSource;

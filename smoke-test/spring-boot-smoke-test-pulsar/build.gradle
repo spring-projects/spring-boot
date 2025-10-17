@@ -29,8 +29,8 @@ dependencies {
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
 	dockerTestImplementation("org.awaitility:awaitility")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:pulsar")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-pulsar")
 }
 
 tasks.named("compileTestJava") {

@@ -35,9 +35,8 @@ dependencies {
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:couchbase")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-couchbase")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	dockerTestCompileOnly("com.google.code.findbugs:jsr305")
 

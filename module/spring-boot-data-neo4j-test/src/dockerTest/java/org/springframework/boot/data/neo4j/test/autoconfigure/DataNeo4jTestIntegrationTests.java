@@ -17,9 +17,9 @@
 package org.springframework.boot.data.neo4j.test.autoconfigure;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.neo4j.Neo4jContainer;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ class DataNeo4jTestIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final Neo4jContainer<?> neo4j = TestImage.container(Neo4jContainer.class);
+	static final Neo4jContainer neo4j = TestImage.container(Neo4jContainer.class);
 
 	@Autowired
 	private Neo4jTemplate neo4jTemplate;

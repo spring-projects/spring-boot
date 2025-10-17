@@ -36,9 +36,8 @@ dependencies {
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-engine")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
-	dockerTestImplementation("org.testcontainers:couchbase")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-couchbase")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 }
 
 tasks.named("compileTestJava") {

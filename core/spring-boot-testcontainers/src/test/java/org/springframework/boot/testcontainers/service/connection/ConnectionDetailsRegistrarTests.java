@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -45,7 +45,7 @@ class ConnectionDetailsRegistrarTests {
 
 	private Origin origin;
 
-	private PostgreSQLContainer<?> container;
+	private PostgreSQLContainer container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 

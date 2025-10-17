@@ -39,12 +39,12 @@ dependencies {
 	optional("io.netty:netty-transport")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
-	optional("org.testcontainers:mongodb")
+	optional("org.testcontainers:testcontainers-mongodb")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	dockerTestImplementation("org.mongodb:mongodb-driver-sync")
 
 	testImplementation(project(":core:spring-boot-test"))

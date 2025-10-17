@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.dynamicproperties;
 
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.mongodb.MongoDBContainer;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

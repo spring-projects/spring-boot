@@ -40,9 +40,8 @@ dependencies {
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.mongodb:mongodb-driver-reactivestreams")
 	dockerTestImplementation("org.mongodb:mongodb-driver-sync")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:mongodb")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-mongodb")
 
 	dockerTestCompileOnly("com.google.code.findbugs:jsr305")
 

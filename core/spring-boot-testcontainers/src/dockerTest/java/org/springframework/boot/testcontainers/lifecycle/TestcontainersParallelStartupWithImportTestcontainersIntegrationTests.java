@@ -18,8 +18,8 @@ package org.springframework.boot.testcontainers.lifecycle;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -52,13 +52,13 @@ class TestcontainersParallelStartupWithImportTestcontainersIntegrationTests {
 	static class Containers {
 
 		@Container
-		static PostgreSQLContainer<?> container1 = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container1 = TestImage.container(PostgreSQLContainer.class);
 
 		@Container
-		static PostgreSQLContainer<?> container2 = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container2 = TestImage.container(PostgreSQLContainer.class);
 
 		@Container
-		static PostgreSQLContainer<?> container3 = TestImage.container(PostgreSQLContainer.class);
+		static PostgreSQLContainer container3 = TestImage.container(PostgreSQLContainer.class);
 
 	}
 

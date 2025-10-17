@@ -33,9 +33,8 @@ dependencies {
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.junit.platform:junit-platform-engine")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
-	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	dockerTestImplementation("org.testcontainers:elasticsearch")
-	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers-elasticsearch")
 }
 
 tasks.named("compileTestJava") {

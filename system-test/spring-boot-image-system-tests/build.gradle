@@ -55,8 +55,7 @@ dependencies {
 	systemTestImplementation(project(":test-support:spring-boot-gradle-test-support"))
 	systemTestImplementation(gradleTestKit())
 	systemTestImplementation("org.assertj:assertj-core")
-	systemTestImplementation("org.testcontainers:junit-jupiter")
-	systemTestImplementation("org.testcontainers:testcontainers")
+	systemTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 }
 
 toolchain {
