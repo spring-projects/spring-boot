@@ -19,6 +19,7 @@ package org.springframework.boot.http.client;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.time.Duration;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
@@ -87,7 +88,9 @@ class ClientHttpRequestFactoryRuntimeHints implements RuntimeHintsRegistrar {
 	private void registerReflectionHints(ReflectionHints hints,
 			Class<? extends ClientHttpRequestFactory> requestFactoryType, Class<?> readTimeoutType) {
 		registerMethod(hints, requestFactoryType, "setConnectTimeout", int.class);
+		registerMethod(hints, requestFactoryType, "setConnectTimeout", Duration.class);
 		registerMethod(hints, requestFactoryType, "setReadTimeout", readTimeoutType);
+		registerMethod(hints, requestFactoryType, "setReadTimeout", Duration.class);
 	}
 
 	private void registerMethod(ReflectionHints hints, Class<? extends ClientHttpRequestFactory> requestFactoryType,
