@@ -58,7 +58,6 @@ dependencies {
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

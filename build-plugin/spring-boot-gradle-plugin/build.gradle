@@ -42,7 +42,6 @@ dependencies {
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	implementation(project(":buildpack:spring-boot-buildpack-platform"))
 	implementation(project(":loader:spring-boot-loader-tools"))

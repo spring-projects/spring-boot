@@ -212,10 +212,10 @@ dependencies {
 	implementation("org.springframework.security:spring-security-web")
 	implementation("org.springframework.ws:spring-ws-core")
 	implementation("org.springframework.ws:spring-ws-test")
-	implementation("org.testcontainers:testcontainers-junit-jupiter")
-	implementation("org.testcontainers:testcontainers-neo4j")
-	implementation("org.testcontainers:testcontainers-mongodb")
 	implementation("org.testcontainers:testcontainers-elasticsearch")
+	implementation("org.testcontainers:testcontainers-junit-jupiter")
+	implementation("org.testcontainers:testcontainers-mongodb")
+	implementation("org.testcontainers:testcontainers-neo4j")
 	implementation("org.junit.jupiter:junit-jupiter")
 	implementation("org.yaml:snakeyaml")
 

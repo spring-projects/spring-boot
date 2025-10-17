@@ -40,7 +40,6 @@ dependencies {
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers-elasticsearch")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))
 

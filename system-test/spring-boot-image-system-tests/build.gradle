@@ -56,7 +56,6 @@ dependencies {
 	systemTestImplementation(gradleTestKit())
 	systemTestImplementation("org.assertj:assertj-core")
 	systemTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	systemTestImplementation("org.testcontainers:testcontainers")
 }
 
 toolchain {

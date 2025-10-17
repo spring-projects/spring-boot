@@ -41,7 +41,6 @@ dependencies {
 	intTestImplementation(project(":test-support:spring-boot-test-support"))
 	intTestImplementation(project(":starter:spring-boot-starter-test"))
 	intTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	intTestImplementation("org.testcontainers:testcontainers")
 }
 
 tasks.register("syncMavenRepository", Sync) {

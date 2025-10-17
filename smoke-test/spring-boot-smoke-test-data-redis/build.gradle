@@ -36,7 +36,6 @@ dependencies {
 	dockerTestImplementation("org.junit.platform:junit-platform-engine")
 	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	dockerTestImplementation("org.testcontainers:testcontainers")
 	dockerTestImplementation("redis.clients:jedis")
 }
 

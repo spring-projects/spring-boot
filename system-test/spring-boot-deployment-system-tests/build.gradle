@@ -48,7 +48,6 @@ dependencies {
 	systemTestImplementation("org.slf4j:slf4j-simple")
 	systemTestImplementation("org.springframework:spring-web")
 	systemTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
-	systemTestImplementation("org.testcontainers:testcontainers")
 }
 
 systemTest {
