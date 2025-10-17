@@ -36,9 +36,9 @@ class TableTests {
 	void simpleTable() {
 		Table table = new Table();
 		table.addRow(new SingleRow(SNIPPET, new ConfigurationProperty("spring.test.prop", "java.lang.String",
-				"something", "This is a description.", false)));
+				"something", "This is a description.", false, null)));
 		table.addRow(new SingleRow(SNIPPET, new ConfigurationProperty("spring.test.other", "java.lang.String",
-				"other value", "This is another description.", false)));
+				"other value", "This is another description.", false, null)));
 		Asciidoc asciidoc = new Asciidoc();
 		table.write(asciidoc);
 		// @formatter:off
