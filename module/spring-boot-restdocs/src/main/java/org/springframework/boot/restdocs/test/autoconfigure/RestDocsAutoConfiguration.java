@@ -16,9 +16,6 @@
 
 package org.springframework.boot.restdocs.test.autoconfigure;
 
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.specification.RequestSpecification;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,8 +31,6 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.restdocs.restassured.RestAssuredRestDocumentation;
-import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 
@@ -74,31 +69,6 @@ public final class RestDocsAutoConfiguration {
 				MockMvcRestDocumentationConfigurer configurer,
 				ObjectProvider<RestDocumentationResultHandler> resultHandler) {
 			return new RestDocsMockMvcBuilderCustomizer(properties, configurer, resultHandler.getIfAvailable());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ RequestSpecification.class, RestAssuredRestDocumentation.class })
-	@EnableConfigurationProperties(RestDocsProperties.class)
-	static class RestDocsRestAssuredConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		RequestSpecification restDocsRestAssuredConfigurer(
-				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizers,
-				RestDocumentationContextProvider contextProvider) {
-			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
-				.documentationConfiguration(contextProvider);
-			configurationCustomizers.orderedStream()
-				.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
-			return new RequestSpecBuilder().addFilter(configurer).build();
-		}
-
-		@Bean
-		RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(RestDocsProperties properties,
-				RequestSpecification configurer) {
-			return new RestDocsRestAssuredBuilderCustomizer(properties, configurer);
 		}
 
 	}

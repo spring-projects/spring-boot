@@ -32,7 +32,6 @@ dependencies {
 	optional(project(":module:spring-boot-webflux-test"))
 	optional(project(":module:spring-boot-webmvc-test"))
 	optional("org.springframework.restdocs:spring-restdocs-mockmvc")
-	optional("org.springframework.restdocs:spring-restdocs-restassured")
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 
 	testImplementation(project(":test-support:spring-boot-test-support"))

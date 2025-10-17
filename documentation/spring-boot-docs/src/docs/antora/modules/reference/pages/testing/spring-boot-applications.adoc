@@ -746,7 +746,7 @@ The specific beans that you want to test should be specified by using the `value
 [[testing.spring-boot-applications.autoconfigured-spring-restdocs]]
 == Auto-configured Spring REST Docs Tests
 
-You can use the javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation] annotation from the `spring-boot-restdocs- module to use {url-spring-restdocs-site}[Spring REST Docs] in your tests with Mock MVC, REST Assured, or WebTestClient.
+You can use the javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation] annotation from the `spring-boot-restdocs- module to use {url-spring-restdocs-site}[Spring REST Docs] in your tests with Mock MVC or WebTestClient.
 It removes the need for the JUnit extension in Spring REST Docs.
 
 javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation] can be used to override the default output directory (`target/generated-snippets` if you are using Maven or `build/generated-snippets` if you are using Gradle).
@@ -796,20 +796,6 @@ If you want to make use of Spring REST Docs support for a parameterized output d
 The following example shows such a javadoc:org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer[] being defined:
 
 include-code::MyWebTestClientBuilderCustomizerConfiguration[]
-
-
-
-[[testing.spring-boot-applications.autoconfigured-spring-restdocs.with-rest-assured]]
-=== Auto-configured Spring REST Docs Tests With REST Assured
-
-javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation] makes a javadoc:io.restassured.specification.RequestSpecification[] bean, preconfigured to use Spring REST Docs, available to your tests.
-You can inject it by using javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation] and use it in your tests as you normally would when using REST Assured and Spring REST Docs, as shown in the following example:
-
-include-code::MyUserDocumentationTests[]
-
-If you require more control over Spring REST Docs configuration than offered by the attributes of javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation], a javadoc:org.springframework.boot.restdocs.test.autoconfigure.RestDocsRestAssuredConfigurationCustomizer[] bean can be used, as shown in the following example:
-
-include-code::MyRestDocsConfiguration[]
 
 
 
