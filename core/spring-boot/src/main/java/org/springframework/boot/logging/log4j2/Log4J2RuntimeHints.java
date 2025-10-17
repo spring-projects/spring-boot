@@ -44,13 +44,6 @@ class Log4J2RuntimeHints implements RuntimeHintsRegistrar {
 		hints.resources().registerPattern("org/springframework/boot/logging/log4j2/log4j2-file.xml");
 		hints.resources().registerPattern("log4j2.springboot");
 		// Declares the types that Log4j2LoggingSystem checks for existence reflectively.
-		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.JSON_TREE_PARSER_V2);
-		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.JSON_TREE_PARSER_V3);
-		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.PROPS_CONFIGURATION_FACTORY_V2);
-		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.PROPS_CONFIGURATION_FACTORY_V3);
-		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.YAML_TREE_PARSER_V2);
-		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.YAML_CONFIGURATION_FACTORY_V2);
-		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.YAML_CONFIGURATION_FACTORY_V3);
 		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.LOG4J_BRIDGE_HANDLER);
 		hints.reflection().registerTypeIfPresent(classLoader, Log4J2LoggingSystem.LOG4J_LOG_MANAGER);
 	}
