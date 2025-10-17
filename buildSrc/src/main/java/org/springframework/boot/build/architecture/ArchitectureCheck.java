@@ -70,15 +70,19 @@ import org.gradle.api.tasks.VerificationException;
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
+	private static final String CONDITIONAL_ON_CLASS_ANNOTATION = "org.springframework.boot.autoconfigure.condition.ConditionalOnClass";
+
 	private FileCollection classes;
 
 	public ArchitectureCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
+		getConditionalOnClassAnnotation().convention(CONDITIONAL_ON_CLASS_ANNOTATION);
 		getRules().addAll(getProhibitObjectsRequireNonNull().convention(true)
 			.map(whenTrue(ArchitectureRules::noClassesShouldCallObjectsRequireNonNull)));
 		getRules().addAll(ArchitectureRules.standard());
-		getRules().addAll(whenMainSources(
-				() -> Collections.singletonList(ArchitectureRules.allBeanMethodsShouldReturnNonPrivateType())));
+		getRules().addAll(whenMainSources(() -> List
+			.of(ArchitectureRules.allBeanMethodsShouldReturnNonPrivateType(), ArchitectureRules
+				.allBeanMethodsShouldNotHaveConditionalOnClassAnnotation(getConditionalOnClassAnnotation().get()))));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
 	}
 
@@ -185,5 +189,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	@Input // Use descriptions as input since rules aren't serializable
 	abstract ListProperty<String> getRuleDescriptions();
+
+	@Internal
+	abstract Property<String> getConditionalOnClassAnnotation();
 
 }

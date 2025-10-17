@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.testkit.runner.BuildResult;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import org.springframework.boot.build.architecture.annotations.TestConditionalOnClass;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
@@ -180,7 +182,7 @@ class ArchitectureCheckTests {
 	void whenClassCallsObjectsRequireNonNullWithMessageAndProhibitObjectsRequireNonNullIsFalseShouldSucceedAndWriteEmptyReport(
 			Task task) throws IOException {
 		prepareTask(task, "objects/requireNonNullWithString");
-		build(this.gradleBuild.withProhibitObjectsRequireNonNull(task, false), task);
+		build(this.gradleBuild.withProhibitObjectsRequireNonNull(false), task);
 	}
 
 	@ParameterizedTest(name = "{0}")
@@ -195,7 +197,7 @@ class ArchitectureCheckTests {
 	void whenClassCallsObjectsRequireNonNullWithSupplierAndProhibitObjectsRequireNonNullIsFalseShouldSucceedAndWriteEmptyReport(
 			Task task) throws IOException {
 		prepareTask(task, "objects/requireNonNullWithSupplier");
-		build(this.gradleBuild.withProhibitObjectsRequireNonNull(task, false), task);
+		build(this.gradleBuild.withProhibitObjectsRequireNonNull(false), task);
 	}
 
 	@ParameterizedTest(name = "{0}")
@@ -295,6 +297,25 @@ class ArchitectureCheckTests {
 				"should not have a value that is the same as the type of the method's first parameter");
 	}
 
+	@Test
+	void whenConditionalOnClassUsedOnBeanMethodsWithMainSourcesShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "conditionalonclass", "annotations");
+		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT)
+			.withConditionalOnClassAnnotation(TestConditionalOnClass.class.getName());
+		buildAndFail(gradleBuild, Task.CHECK_ARCHITECTURE_MAIN,
+				"because @ConditionalOnClass on @Bean methods is ineffective - it doesn't prevent"
+						+ " the method signature from being loaded. Such condition need to be placed"
+						+ " on a @Configuration class, allowing the condition to back off before the type is loaded");
+	}
+
+	@Test
+	void whenConditionalOnClassUsedOnBeanMethodsWithTestSourcesShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_TEST, "conditionalonclass", "annotations");
+		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT)
+			.withConditionalOnClassAnnotation(TestConditionalOnClass.class.getName());
+		build(gradleBuild, Task.CHECK_ARCHITECTURE_TEST);
+	}
+
 	private void prepareTask(Task task, String... sourceDirectories) throws IOException {
 		for (String sourceDirectory : sourceDirectories) {
 			FileSystemUtils.copyRecursively(
@@ -310,7 +331,7 @@ class ArchitectureCheckTests {
 	private void build(GradleBuild gradleBuild, Task task) throws IOException {
 		try {
 			BuildResult buildResult = gradleBuild.build(task.toString());
-			assertThat(buildResult.taskPaths(TaskOutcome.SUCCESS)).contains(":" + task);
+			assertThat(buildResult.taskPaths(TaskOutcome.SUCCESS)).as(buildResult.getOutput()).contains(":" + task);
 			assertThat(task.getFailureReport(gradleBuild.getProjectDir())).isEmpty();
 		}
 		catch (UnexpectedBuildFailure ex) {
@@ -326,7 +347,7 @@ class ArchitectureCheckTests {
 	private void buildAndFail(GradleBuild gradleBuild, Task task, String... messages) throws IOException {
 		try {
 			BuildResult buildResult = gradleBuild.buildAndFail(task.toString());
-			assertThat(buildResult.taskPaths(TaskOutcome.FAILED)).contains(":" + task);
+			assertThat(buildResult.taskPaths(TaskOutcome.FAILED)).as(buildResult.getOutput()).contains(":" + task);
 			assertThat(task.getFailureReport(gradleBuild.getProjectDir())).contains(messages);
 		}
 		catch (UnexpectedBuildSuccess ex) {
@@ -371,7 +392,7 @@ class ArchitectureCheckTests {
 
 		private final Set<String> dependencies = new LinkedHashSet<>();
 
-		private final Map<Task, Boolean> prohibitObjectsRequireNonNull = new LinkedHashMap<>();
+		private final Map<Task, TaskConfiguration> taskConfigurations = new LinkedHashMap<>();
 
 		private GradleBuild(Path projectDir) {
 			this.projectDir = projectDir;
@@ -381,12 +402,28 @@ class ArchitectureCheckTests {
 			return this.projectDir;
 		}
 
-		GradleBuild withProhibitObjectsRequireNonNull(Task task, boolean prohibitObjectsRequireNonNull) {
-			this.prohibitObjectsRequireNonNull.put(task, prohibitObjectsRequireNonNull);
+		GradleBuild withProhibitObjectsRequireNonNull(Boolean prohibitObjectsRequireNonNull) {
+			for (Task task : Task.values()) {
+				configureTask(task, (configuration) -> configuration
+					.withProhibitObjectsRequireNonNull(prohibitObjectsRequireNonNull));
+			}
 			return this;
 		}
 
+		GradleBuild withConditionalOnClassAnnotation(String annotationName) {
+			for (Task task : Task.values()) {
+				configureTask(task, (configuration) -> configuration.withConditionalOnClassAnnotation(annotationName));
+			}
+			return this;
+		}
+
+		private void configureTask(Task task, UnaryOperator<TaskConfiguration> configurer) {
+			this.taskConfigurations.computeIfAbsent(task, (key) -> new TaskConfiguration(null, null));
+			this.taskConfigurations.compute(task, (key, value) -> configurer.apply(value));
+		}
+
 		GradleBuild withDependencies(String... dependencies) {
+			this.dependencies.clear();
 			this.dependencies.addAll(Arrays.asList(dependencies));
 			return this;
 		}
@@ -415,20 +452,38 @@ class ArchitectureCheckTests {
 			if (!this.dependencies.isEmpty()) {
 				buildFile.append("dependencies {\n");
 				for (String dependency : this.dependencies) {
-					buildFile.append("    implementation '%s'\n".formatted(dependency));
+					buildFile.append("\n    implementation ").append(StringUtils.quote(dependency));
 				}
 				buildFile.append("}\n");
 			}
-			this.prohibitObjectsRequireNonNull.forEach((task, prohibitObjectsRequireNonNull) -> buildFile.append(task)
-				.append(" {\n")
-				.append("    prohibitObjectsRequireNonNull = ")
-				.append(prohibitObjectsRequireNonNull)
-				.append("\n}\n\n"));
+			this.taskConfigurations.forEach((task, configuration) -> {
+				buildFile.append(task).append(" {");
+				if (configuration.conditionalOnClassAnnotation() != null) {
+					buildFile.append("\n    conditionalOnClassAnnotation = ")
+						.append(StringUtils.quote(configuration.conditionalOnClassAnnotation()));
+				}
+				if (configuration.prohibitObjectsRequireNonNull() != null) {
+					buildFile.append("\n    prohibitObjectsRequireNonNull = ")
+						.append(configuration.prohibitObjectsRequireNonNull());
+				}
+				buildFile.append("\n}\n");
+			});
 			Files.writeString(this.projectDir.resolve("build.gradle"), buildFile, StandardCharsets.UTF_8);
 			return GradleRunner.create()
 				.withProjectDir(this.projectDir.toFile())
 				.withArguments(arguments)
 				.withPluginClasspath();
+		}
+
+		private record TaskConfiguration(Boolean prohibitObjectsRequireNonNull, String conditionalOnClassAnnotation) {
+
+			private TaskConfiguration withConditionalOnClassAnnotation(String annotationName) {
+				return new TaskConfiguration(this.prohibitObjectsRequireNonNull, annotationName);
+			}
+
+			private TaskConfiguration withProhibitObjectsRequireNonNull(Boolean prohibitObjectsRequireNonNull) {
+				return new TaskConfiguration(prohibitObjectsRequireNonNull, this.conditionalOnClassAnnotation);
+			}
 		}
 
 	}
