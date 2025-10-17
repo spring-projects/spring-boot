@@ -37,8 +37,7 @@ dependencies {
 	testImplementation("io.micrometer:micrometer-observation-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
-	testRuntimeOnly("com.fasterxml.jackson.core:jackson-databind")
-	testRuntimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	testRuntimeOnly("tools.jackson.core:jackson-databind")
 }
 
 tasks.named("compileTestJava") {
