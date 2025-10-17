@@ -236,7 +236,7 @@ bom {
 			releaseNotes("https://commons.apache.org/proper/commons-dbcp/changes-report.html#a{version}")
 		}
 	}
-	library("Commons Lang3", "3.17.0") {
+	library("Commons Lang3", "3.19.0") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-lang3"
