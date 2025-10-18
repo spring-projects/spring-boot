@@ -60,10 +60,9 @@ public final class HttpGraphQlTesterAutoConfiguration {
 	private WebTestClient configureGraphQlWebTestClient(WebTestClient webTestClient, @Nullable BaseUrl baseUrl,
 			String graphQlPath) {
 		WebTestClient.Builder builder = webTestClient.mutate();
-		if (baseUrl != null) {
-			return builder.uriBuilderFactory(BaseUrlUriBuilderFactory.get(baseUrl.withPath(graphQlPath))).build();
-		}
-		return builder.baseUrl(graphQlPath).build();
+		return (baseUrl != null)
+				? builder.uriBuilderFactory(BaseUrlUriBuilderFactory.get(baseUrl.withPath(graphQlPath))).build()
+				: builder.baseUrl(graphQlPath).build();
 	}
 
 }

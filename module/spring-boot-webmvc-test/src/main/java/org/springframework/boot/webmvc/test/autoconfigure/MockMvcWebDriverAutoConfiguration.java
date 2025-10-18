@@ -49,7 +49,7 @@ public final class MockMvcWebDriverAutoConfiguration {
 	@ConditionalOnMissingBean({ WebDriver.class, MockMvcHtmlUnitDriverBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
 	MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc, ApplicationContext applicationContext) {
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrlOrDefault();
+		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl(BaseUrl.LOCALHOST);
 		MockMvcHtmlUnitDriverBuilder builder = MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
 			.withDelegate(new BaseUrlWebConnectionHtmlUnitDriver(baseUrl, BrowserVersion.CHROME));
 		return builder;

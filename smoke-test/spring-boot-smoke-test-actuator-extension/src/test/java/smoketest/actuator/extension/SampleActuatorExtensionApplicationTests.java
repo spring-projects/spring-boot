@@ -67,7 +67,7 @@ class SampleActuatorExtensionApplicationTests {
 	void healthExtensionWithAuthHeader() {
 		TestRestTemplate restTemplate = new TestRestTemplate(
 				this.restTemplateBuilder.defaultHeader("Authorization", "Bearer secret"));
-		BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrlOrDefault();
+		BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrl();
 		restTemplate.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
 		ResponseEntity<Map> entity = restTemplate.getForEntity("/myextension/health", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

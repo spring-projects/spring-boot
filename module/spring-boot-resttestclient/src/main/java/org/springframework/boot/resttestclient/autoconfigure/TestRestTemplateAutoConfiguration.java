@@ -46,10 +46,9 @@ public final class TestRestTemplateAutoConfiguration {
 	TestRestTemplate testRestTemplate(ObjectProvider<RestTemplateBuilder> builderProvider,
 			ApplicationContext applicationContext) {
 		RestTemplateBuilder builder = builderProvider.getIfAvailable(RestTemplateBuilder::new);
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrlOrDefault();
-		boolean sslEnabled = baseUrl != null && baseUrl.isHttps();
+		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl(BaseUrl.LOCALHOST);
 		TestRestTemplate template = new TestRestTemplate(builder, null, null,
-				sslEnabled ? SSL_OPTIONS : DEFAULT_OPTIONS);
+				baseUrl.isHttps() ? SSL_OPTIONS : DEFAULT_OPTIONS);
 		template.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
 		return template;
 	}

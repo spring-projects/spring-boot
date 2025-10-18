@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilderFactory;
 
@@ -30,38 +31,53 @@ import org.springframework.web.util.UriBuilderFactory;
  * @author Stephane Nicoll
  * @since 4.0.0
  */
-public interface BaseUrl {
+public final class BaseUrl {
 
 	/**
-	 * Default base URL suitable for mock environments.
+	 * {@link BaseUrl} that resolves to {@code http://localhost}.
 	 */
-	BaseUrl DEFAULT = BaseUrl.of("http://localhost");
+	public static final BaseUrl LOCALHOST = BaseUrl.of("http://localhost");
+
+	private final boolean https;
+
+	private final Supplier<String> resolver;
+
+	private BaseUrl(boolean https, Supplier<String> resolver) {
+		this.https = https;
+		this.resolver = SingletonSupplier.of(resolver);
+	}
 
 	/**
 	 * Return if the URL will ultimately resolve to an HTTPS address.
 	 * @return if the URL is HTTPS
 	 */
-	boolean isHttps();
+	public boolean isHttps() {
+		return this.https;
+	}
 
 	/**
 	 * Get a {@link UriBuilderFactory} that applies the base URL.
 	 * @return a {@link UriBuilderFactory}
 	 */
-	UriBuilderFactory getUriBuilderFactory();
+	public UriBuilderFactory getUriBuilderFactory() {
+		return new DefaultUriBuilderFactory(this.resolver.get());
+	}
 
 	/**
 	 * Return a new instance that applies the given {@code path}.
 	 * @param path a path to append
 	 * @return a new instance with the path added
 	 */
-	BaseUrl withPath(String path);
+	public BaseUrl withPath(String path) {
+		return new BaseUrl(this.https, () -> this.resolver.get() + path);
+	}
 
 	/**
 	 * Factory method to create a new {@link BaseUrl}.
 	 * @param url the URL to use
 	 * @return a new {@link BaseUrl} instance
 	 */
-	static BaseUrl of(String url) {
+	public static BaseUrl of(String url) {
 		Assert.notNull(url, "'url' must not be null");
 		return of(StringUtils.startsWithIgnoreCase(url, "https"), () -> url);
 	}
@@ -72,42 +88,9 @@ public interface BaseUrl {
 	 * @param resolver the resolver used to supply the actual URL
 	 * @return a new {@link BaseUrl} instance
 	 */
-	static BaseUrl of(boolean https, Supplier<String> resolver) {
-		return new DefaultBaseUrl(https, resolver);
-	}
-
-	final class DefaultBaseUrl implements BaseUrl {
-
-		private final boolean https;
-
-		private final Supplier<String> resolver;
-
-		private DefaultBaseUrl(boolean https, Supplier<String> resolver) {
-			Assert.notNull(resolver, "'resolver' must not be null");
-			this.https = https;
-			this.resolver = resolver;
-		}
-
-		@Override
-		public boolean isHttps() {
-			return this.https;
-		}
-
-		@Override
-		public UriBuilderFactory getUriBuilderFactory() {
-			return new DefaultUriBuilderFactory(resolve());
-		}
-
-		String resolve() {
-			return this.resolver.get();
-		}
-
-		@Override
-		public BaseUrl withPath(String path) {
-			Supplier<String> updatedResolver = () -> this.resolver.get() + path;
-			return new DefaultBaseUrl(this.https, updatedResolver);
-		}
-
+	public static BaseUrl of(boolean https, Supplier<String> resolver) {
+		Assert.notNull(resolver, "'resolver' must not be null");
+		return new BaseUrl(https, resolver);
 	}
 
 }

@@ -48,14 +48,6 @@ public class BaseUrlProviders {
 	}
 
 	/**
-	 * Return the provided {@link BaseUrl} or {@link BaseUrl#DEFAULT}.
-	 * @return the base URL
-	 */
-	public BaseUrl getBaseUrlOrDefault() {
-		return getBaseUrl(BaseUrl.DEFAULT);
-	}
-
-	/**
 	 * Return the provided {@link BaseUrl} or {@code null}.
 	 * @return the base URL or {@code null}
 	 */
@@ -75,7 +67,6 @@ public class BaseUrlProviders {
 			.filter(Objects::nonNull)
 			.findFirst()
 			.orElse(fallback);
-
 	}
 
 }

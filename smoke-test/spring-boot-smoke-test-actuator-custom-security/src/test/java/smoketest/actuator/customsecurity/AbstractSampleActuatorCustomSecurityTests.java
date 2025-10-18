@@ -202,7 +202,7 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 	}
 
 	private TestRestTemplate configure(TestRestTemplate restTemplate) {
-		BaseUrl baseUrl = new BaseUrlProviders(getApplicationContext()).getBaseUrlOrDefault();
+		BaseUrl baseUrl = new BaseUrlProviders(getApplicationContext()).getBaseUrl();
 		restTemplate.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
 		return restTemplate;
 	}

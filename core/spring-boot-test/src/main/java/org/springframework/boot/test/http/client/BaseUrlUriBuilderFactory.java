@@ -59,7 +59,7 @@ public final class BaseUrlUriBuilderFactory implements UriBuilderFactory {
 
 	@Override
 	public UriBuilder uriString(String uriTemplate) {
-		return createDelegate().uriString(uriTemplate);
+		return this.baseUrl.getUriBuilderFactory().uriString(uriTemplate);
 	}
 
 	@Override
@@ -69,16 +69,12 @@ public final class BaseUrlUriBuilderFactory implements UriBuilderFactory {
 
 	@Override
 	public URI expand(String uriTemplate, Map<String, ?> uriVariables) {
-		return createDelegate().expand(uriTemplate, uriVariables);
+		return this.baseUrl.getUriBuilderFactory().expand(uriTemplate, uriVariables);
 	}
 
 	@Override
 	public URI expand(String uriTemplate, @Nullable Object... uriVariables) {
-		return createDelegate().expand(uriTemplate, uriVariables);
-	}
-
-	private UriBuilderFactory createDelegate() {
-		return this.baseUrl.getUriBuilderFactory();
+		return this.baseUrl.getUriBuilderFactory().expand(uriTemplate, uriVariables);
 	}
 
 }

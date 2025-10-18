@@ -34,11 +34,6 @@ import static org.mockito.Mockito.mock;
 class BaseUrlProvidersTests {
 
 	@Test
-	void getBaseUrlOrDefaultWhenNoProvidedBaseUrlReturnsDefault() {
-		assertThat(new BaseUrlProviders(Collections.emptyList()).getBaseUrlOrDefault()).isSameAs(BaseUrl.DEFAULT);
-	}
-
-	@Test
 	void getBaseUrlWhenNoProvidedBaseUrlReturnsNull() {
 		assertThat(new BaseUrlProviders(Collections.emptyList()).getBaseUrl()).isNull();
 	}

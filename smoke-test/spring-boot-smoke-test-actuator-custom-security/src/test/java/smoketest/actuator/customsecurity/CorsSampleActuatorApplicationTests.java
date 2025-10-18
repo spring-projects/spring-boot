@@ -56,7 +56,7 @@ class CorsSampleActuatorApplicationTests {
 	@BeforeEach
 	void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
-		BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrlOrDefault();
+		BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrl();
 		builder = builder.uriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
 		this.testRestTemplate = new TestRestTemplate(builder);
 	}

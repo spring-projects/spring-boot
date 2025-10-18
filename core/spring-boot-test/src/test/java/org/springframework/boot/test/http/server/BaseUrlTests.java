@@ -70,7 +70,7 @@ class BaseUrlTests {
 		assertThat(atomicInteger.get()).isZero();
 		assertThat(baseUrl.isHttps()).isTrue();
 		assertThat(resolve(baseUrl, "")).isEqualTo("1");
-		assertThat(resolve(baseUrl, "")).isEqualTo("2");
+		assertThat(resolve(baseUrl, "")).isEqualTo("1");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ class BaseUrlTests {
 		BaseUrl baseUrl = BaseUrl.of(true, () -> "https://example.com/" + atomicInteger.incrementAndGet());
 		assertThat(resolve(baseUrl.withPath("/context"), "")).isEqualTo("https://example.com/1/context");
 		assertThat(resolve(baseUrl.withPath("/context").withPath("/test"), "/path"))
-			.isEqualTo("https://example.com/2/context/test/path");
+			.isEqualTo("https://example.com/1/context/test/path");
 	}
 
 	private String resolve(BaseUrl baseUrl, String path) {

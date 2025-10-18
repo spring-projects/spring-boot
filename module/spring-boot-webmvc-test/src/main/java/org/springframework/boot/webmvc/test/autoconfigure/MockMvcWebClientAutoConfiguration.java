@@ -46,7 +46,7 @@ public final class MockMvcWebClientAutoConfiguration {
 	@ConditionalOnMissingBean({ WebClient.class, MockMvcWebClientBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
 	MockMvcWebClientBuilder mockMvcWebClientBuilder(MockMvc mockMvc, ApplicationContext applicationContext) {
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrlOrDefault();
+		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl(BaseUrl.LOCALHOST);
 		return MockMvcWebClientBuilder.mockMvcSetup(mockMvc).withDelegate(new BaseUrlWebClient(baseUrl));
 	}
 
