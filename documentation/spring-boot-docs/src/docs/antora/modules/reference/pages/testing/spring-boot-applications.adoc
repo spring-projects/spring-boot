@@ -807,7 +807,7 @@ You can inject it by using javadoc:org.springframework.beans.factory.annotation.
 
 include-code::MyUserDocumentationTests[]
 
-If you require more control over Spring REST Docs configuration than offered by the attributes of javadoc:org.springframework.boot.restdocs.test.autoconfigure.AutoConfigureRestDocs[format=annotation], a javadoc:org.springframework.boot.restdocs.test.autoconfigure.RestDocsRestAssuredConfigurationCustomizer[] bean can be used, as shown in the following example:
+
 
 include-code::MyRestDocsConfiguration[]
 

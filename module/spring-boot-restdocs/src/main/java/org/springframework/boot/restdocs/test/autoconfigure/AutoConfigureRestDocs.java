@@ -23,8 +23,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.restassured.RestAssured;
-
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.PropertyMapping;
 import org.springframework.context.annotation.Import;
@@ -40,17 +38,18 @@ import org.springframework.test.web.servlet.MockMvc;
  * application over HTTP.
  * <p>
  * Allows configuration of the output directory and the host, scheme, and port of
- * generated URIs. When further configuration is required a
- * {@link RestDocsMockMvcConfigurationCustomizer},
- * {@link RestDocsWebTestClientConfigurationCustomizer}, or
- * {@link RestDocsRestAssuredConfigurationCustomizer} bean can be used.
+ * generated URIs. When further configuration is required a /**
+ * {@link RestDocsMockMvcConfigurationCustomizer} or
+ * {@link RestDocsWebTestClientConfigurationCustomizer} bean can be used.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
  * @see RestDocsAutoConfiguration
  * @see RestDocsMockMvcConfigurationCustomizer
  * @see RestDocsWebTestClientConfigurationCustomizer
- * @see RestDocsRestAssuredConfigurationCustomizer
+ *
+ * // Removed REST Docs' REST Assured references temporarily // until REST Assured
+ * supports Groovy 5 (see gh-47685)
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -77,31 +77,8 @@ public final class RestDocsAutoConfiguration {
 		}
 
 	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ RequestSpecification.class, RestAssuredRestDocumentation.class })
-	@EnableConfigurationProperties(RestDocsProperties.class)
-	static class RestDocsRestAssuredConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		RequestSpecification restDocsRestAssuredConfigurer(
-				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizers,
-				RestDocumentationContextProvider contextProvider) {
-			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
-				.documentationConfiguration(contextProvider);
-			configurationCustomizers.orderedStream()
-				.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
-			return new RequestSpecBuilder().addFilter(configurer).build();
-		}
-
-		@Bean
-		RestDocsRestAssuredBuilderCustomizer restAssuredBuilderCustomizer(RestDocsProperties properties,
-				RequestSpecification configurer) {
-			return new RestDocsRestAssuredBuilderCustomizer(properties, configurer);
-		}
-
-	}
+	// Removed REST Docs' REST Assured integration temporarily
+	// until REST Assured supports Groovy 5 (see gh-47685)
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ WebTestClientRestDocumentation.class, WebTestClientBuilderCustomizer.class })
