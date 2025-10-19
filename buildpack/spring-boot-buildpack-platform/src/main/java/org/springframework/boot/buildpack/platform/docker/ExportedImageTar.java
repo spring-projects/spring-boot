@@ -134,7 +134,7 @@ class ExportedImageTar implements Closeable {
 					return new IndexLayerArchiveFactory(tarFile, index);
 				}
 				Assert.state(manifest != null, "'manifest' must not be null");
-				return new ManifestLayerArchiveFactory(tarFile, manifest);
+				return new ManifestLayerArchiveFactory(manifest);
 			}
 		}
 
@@ -270,7 +270,7 @@ class ExportedImageTar implements Closeable {
 
 		private final Set<String> layers;
 
-		ManifestLayerArchiveFactory(Path tarFile, ImageArchiveManifest manifest) {
+		ManifestLayerArchiveFactory(ImageArchiveManifest manifest) {
 			this.layers = manifest.getEntries()
 				.stream()
 				.flatMap((entry) -> entry.getLayers().stream())
