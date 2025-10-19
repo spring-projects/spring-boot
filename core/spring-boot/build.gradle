@@ -15,7 +15,7 @@
  */
 
 plugins {
-	id "dev.adamko.dokkatoo-html"
+	id "org.jetbrains.dokka"
 	id "java-library"
 	id "java-test-fixtures"
 	id "org.jetbrains.kotlin.jvm"

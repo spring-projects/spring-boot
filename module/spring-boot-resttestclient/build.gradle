@@ -15,7 +15,7 @@
  */
 
 plugins {
-	id "dev.adamko.dokkatoo-html"
+	id "org.jetbrains.dokka"
 	id "java-library"
 	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.auto-configuration"
