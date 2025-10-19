@@ -130,7 +130,7 @@ class ExportedImageTar implements Closeable {
 						() -> "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
 							.formatted(reference));
 				return (index != null) ? new IndexLayerArchiveFactory(tarFile, index)
-						: new ManifestLayerArchiveFactory(tarFile, manifest);
+						: new ManifestLayerArchiveFactory(manifest);
 			}
 		}
 
@@ -266,7 +266,7 @@ class ExportedImageTar implements Closeable {
 
 		private Set<String> layers;
 
-		ManifestLayerArchiveFactory(Path tarFile, ImageArchiveManifest manifest) {
+		ManifestLayerArchiveFactory(ImageArchiveManifest manifest) {
 			this.layers = manifest.getEntries()
 				.stream()
 				.flatMap((entry) -> entry.getLayers().stream())
