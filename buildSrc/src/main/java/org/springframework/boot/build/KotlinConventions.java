@@ -18,14 +18,14 @@ package org.springframework.boot.build;
 
 import java.net.URI;
 
-import dev.adamko.dokkatoo.DokkatooExtension;
-import dev.adamko.dokkatoo.formats.DokkatooHtmlPlugin;
 import dev.detekt.gradle.Detekt;
 import dev.detekt.gradle.extensions.DetektExtension;
 import dev.detekt.gradle.plugin.DetektPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.jetbrains.dokka.gradle.DokkaExtension;
+import org.jetbrains.dokka.gradle.formats.DokkaHtmlPlugin;
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget;
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions;
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion;
@@ -59,7 +59,7 @@ class KotlinConventions {
 	void apply(Project project) {
 		project.getPlugins().withId("org.jetbrains.kotlin.jvm", (plugin) -> {
 			project.getTasks().withType(KotlinCompile.class, this::configure);
-			project.getPlugins().withType(DokkatooHtmlPlugin.class, (dokkatooPlugin) -> configureDokkatoo(project));
+			project.getPlugins().withType(DokkaHtmlPlugin.class, (dokkaPlugin) -> configureDokka(project));
 			configureDetekt(project);
 		});
 	}
@@ -74,10 +74,9 @@ class KotlinConventions {
 			.addAll("-Xsuppress-version-warnings", "-Xannotation-default-target=param-property");
 	}
 
-	private void configureDokkatoo(Project project) {
-		DokkatooExtension dokkatoo = project.getExtensions().getByType(DokkatooExtension.class);
-		dokkatoo.getVersions().getJetbrainsDokka().set("2.1.0-Beta");
-		dokkatoo.getDokkatooSourceSets().configureEach((sourceSet) -> {
+	private void configureDokka(Project project) {
+		DokkaExtension dokka = project.getExtensions().getByType(DokkaExtension.class);
+		dokka.getDokkaSourceSets().configureEach((sourceSet) -> {
 			if (SourceSet.MAIN_SOURCE_SET_NAME.equals(sourceSet.getName())) {
 				sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
 				sourceSet.getClasspath()

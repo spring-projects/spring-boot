@@ -19,6 +19,7 @@ plugins {
 	id "io.spring.javaformat" version "${javaFormatVersion}"
 	id "checkstyle"
 	id "eclipse"
+	id "org.jetbrains.dokka" version "2.1.0"
 }
 
 repositories {
@@ -51,7 +52,7 @@ dependencies {
 	implementation("com.tngtech.archunit:archunit:1.4.1")
 	implementation("commons-codec:commons-codec:${commonsCodecVersion}")
 	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
-	implementation("dev.adamko.dokkatoo:dokkatoo-plugin:2.3.1")
+	implementation("org.jetbrains.dokka:dokka-gradle-plugin:2.1.0")
 	implementation("dev.detekt:detekt-gradle-plugin:2.0.0-alpha.0")
 	implementation("io.spring.gradle.antora:spring-antora-plugin:0.0.1")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
