@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server.servlet.context;
+package org.springframework.boot.web.server.reactive.context;
 
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProvider;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
+import org.springframework.boot.test.http.server.LocalTestWebServer.Connection;
+import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
- * {@link BaseUrlProvider} for a {@link ServletWebServerApplicationContext}.
+ * {@link LocalTestWebServer} provider for a {@link ReactiveWebServerApplicationContext}.
  *
  * @author Phillip Webb
  */
-class ServletWebServerApplicationContextBaseUrlProvider implements BaseUrlProvider {
+class ReactiveWebServerApplicationContextLocalTestWebServerProvider implements LocalTestWebServer.Provider {
 
-	private final @Nullable ServletWebServerApplicationContext context;
+	private final @Nullable ReactiveWebServerApplicationContext context;
 
-	ServletWebServerApplicationContextBaseUrlProvider(ApplicationContext context) {
+	ReactiveWebServerApplicationContextLocalTestWebServerProvider(ApplicationContext context) {
 		this.context = getWebServerApplicationContextIfPossible(context);
 	}
 
-	static @Nullable ServletWebServerApplicationContext getWebServerApplicationContextIfPossible(
+	static @Nullable ReactiveWebServerApplicationContext getWebServerApplicationContextIfPossible(
 			ApplicationContext context) {
 		try {
-			return (ServletWebServerApplicationContext) context;
+			return (ReactiveWebServerApplicationContext) context;
 		}
 		catch (NoClassDefFoundError | ClassCastException ex) {
 			return null;
@@ -48,20 +49,18 @@ class ServletWebServerApplicationContextBaseUrlProvider implements BaseUrlProvid
 	}
 
 	@Override
-	public @Nullable BaseUrl getBaseUrl() {
+	public @Nullable LocalTestWebServer getLocalTestWebServer() {
 		if (this.context == null) {
 			return null;
 		}
-		boolean sslEnabled = isSslEnabled(this.context);
-		return BaseUrl.of(sslEnabled, () -> {
-			String scheme = (sslEnabled) ? "https" : "http";
-			String port = this.context.getEnvironment().getProperty("local.server.port", "8080");
-			String path = this.context.getEnvironment().getProperty("server.servlet.context-path", "");
-			return scheme + "://localhost:" + port + path;
+		return LocalTestWebServer.of((isSslEnabled(this.context)) ? Scheme.HTTPS : Scheme.HTTP, () -> {
+			int port = this.context.getEnvironment().getProperty("local.server.port", Integer.class, 8080);
+			String path = this.context.getEnvironment().getProperty("spring.webflux.base-path", "");
+			return new Connection(port, path);
 		});
 	}
 
-	private boolean isSslEnabled(ServletWebServerApplicationContext context) {
+	private boolean isSslEnabled(ReactiveWebServerApplicationContext context) {
 		try {
 			AbstractConfigurableWebServerFactory webServerFactory = context
 				.getBean(AbstractConfigurableWebServerFactory.class);

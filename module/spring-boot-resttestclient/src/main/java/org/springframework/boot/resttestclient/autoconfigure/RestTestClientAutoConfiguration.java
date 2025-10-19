@@ -24,9 +24,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
-import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -62,9 +60,9 @@ public final class RestTestClientAutoConfiguration {
 	}
 
 	private RestTestClient.Builder<?> getBuilder(WebApplicationContext applicationContext) {
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl();
-		if (baseUrl != null) {
-			return RestTestClient.bindToServer().uriBuilderFactory(BaseUrlUriBuilderFactory.get(baseUrl));
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.get(applicationContext);
+		if (localTestWebServer != null) {
+			return RestTestClient.bindToServer().uriBuilderFactory(localTestWebServer.uriBuilderFactory());
 		}
 		if (hasBean(applicationContext, MockMvc.class)) {
 			return RestTestClient.bindTo(applicationContext.getBean(MockMvc.class));

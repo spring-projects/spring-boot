@@ -17,7 +17,6 @@
 package org.springframework.boot.test.web.htmlunit;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.htmlunit.StringWebResponse;
@@ -26,10 +25,9 @@ import org.htmlunit.WebConnection;
 import org.htmlunit.WebResponse;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
@@ -37,33 +35,25 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link BaseUrlWebClient}.
+ * Tests for {@link UriBuilderFactoryWebClient}.
  *
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")
-class BaseUrlWebClientTests {
+class UriBuilderFactoryWebClientTests {
 
 	@Test
-	void createWhenBaseUrlIsNull() throws Exception {
-		BaseUrlWebClient client = new BaseUrlWebClient(null);
-		WebConnection connection = mockConnection();
-		client.setWebConnection(connection);
-		assertThatExceptionOfType(MalformedURLException.class).isThrownBy(() -> client.getPage("/test"));
-	}
-
-	@Test
-	void getPageWhenUrlIsRelativeUsesBaseUrl() throws Exception {
-		WebClient client = new BaseUrlWebClient(BaseUrl.of("https://example.com:8080"));
+	void getPageWhenUriIsRelativeUsesBuilder() throws Exception {
+		WebClient client = new UriBuilderFactoryWebClient(new DefaultUriBuilderFactory("https://localhost:8080"));
 		WebConnection connection = mockConnection();
 		client.setWebConnection(connection);
 		client.getPage("/test");
-		thenConnectionRequests(connection, new URL("https://example.com:8080/test"));
+		thenConnectionRequests(connection, new URL("https://localhost:8080/test"));
 	}
 
 	@Test
-	void getPageWhenUrlIsNotRelativeUsesUrl() throws Exception {
-		WebClient client = new BaseUrlWebClient(BaseUrl.of("https://example.com:8080"));
+	void getPageWhenUriIsNotRelativeUsesUri() throws Exception {
+		WebClient client = new UriBuilderFactoryWebClient(new DefaultUriBuilderFactory("https://localhost"));
 		WebConnection connection = mockConnection();
 		client.setWebConnection(connection);
 		client.getPage("https://example.com:9000/test");

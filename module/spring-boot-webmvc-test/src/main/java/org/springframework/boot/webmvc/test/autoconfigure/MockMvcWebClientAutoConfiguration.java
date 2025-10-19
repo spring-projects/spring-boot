@@ -23,13 +23,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProviders;
-import org.springframework.boot.test.web.htmlunit.BaseUrlWebClient;
+import org.springframework.boot.test.web.htmlunit.UriBuilderFactoryWebClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 /**
  * Auto-configuration for HtmlUnit {@link WebClient} MockMVC integration.
@@ -46,8 +45,8 @@ public final class MockMvcWebClientAutoConfiguration {
 	@ConditionalOnMissingBean({ WebClient.class, MockMvcWebClientBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
 	MockMvcWebClientBuilder mockMvcWebClientBuilder(MockMvc mockMvc, ApplicationContext applicationContext) {
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl(BaseUrl.LOCALHOST);
-		return MockMvcWebClientBuilder.mockMvcSetup(mockMvc).withDelegate(new BaseUrlWebClient(baseUrl));
+		return MockMvcWebClientBuilder.mockMvcSetup(mockMvc)
+			.withDelegate(new UriBuilderFactoryWebClient(new DefaultUriBuilderFactory("http://localhost")));
 	}
 
 	@Bean

@@ -21,32 +21,30 @@ import java.io.IOException;
 import org.htmlunit.FailingHttpStatusCodeException;
 import org.htmlunit.Page;
 import org.htmlunit.WebClient;
-import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProvider;
+import org.springframework.util.Assert;
+import org.springframework.web.util.UriBuilderFactory;
 
 /**
- * HTML Unit {@link WebClient} that will automatically prefix relative URLs with a
- * {@link BaseUrlProvider provided} {@link BaseUrl}.
+ * HTML Unit {@link WebClient} supported by a {@link UriBuilderFactory}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 4.0.0
  */
-public class BaseUrlWebClient extends WebClient {
+public class UriBuilderFactoryWebClient extends WebClient {
 
-	private @Nullable BaseUrl baseUrl;
+	private UriBuilderFactory uriBuilderFactory;
 
-	public BaseUrlWebClient(@Nullable BaseUrl baseUrl) {
-		this.baseUrl = baseUrl;
+	public UriBuilderFactoryWebClient(UriBuilderFactory uriBuilderFactory) {
+		Assert.notNull(uriBuilderFactory, "'uriBuilderFactory' must not be null");
+		this.uriBuilderFactory = uriBuilderFactory;
 	}
 
 	@Override
 	public <P extends Page> P getPage(String url) throws IOException, FailingHttpStatusCodeException {
-		if (this.baseUrl != null) {
-			url = this.baseUrl.getUriBuilderFactory().uriString(url).toUriString();
-		}
-		return super.getPage(url);
+		return super.getPage(
+				(this.uriBuilderFactory != null) ? this.uriBuilderFactory.uriString(url).toUriString() : url);
 	}
 
 }

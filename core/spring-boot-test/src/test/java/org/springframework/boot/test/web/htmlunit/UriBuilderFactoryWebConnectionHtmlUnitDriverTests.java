@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.web.htmlunit;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.htmlunit.TopLevelWindow;
@@ -25,14 +24,13 @@ import org.htmlunit.WebClientOptions;
 import org.htmlunit.WebConsole;
 import org.htmlunit.WebRequest;
 import org.htmlunit.WebWindow;
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
-import org.openqa.selenium.WebDriverException;
 
-import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.test.web.servlet.htmlunit.webdriver.WebConnectionHtmlUnitDriver;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriBuilderFactory;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
@@ -40,15 +38,15 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link BaseUrlWebConnectionHtmlUnitDriver}.
+ * Tests for {@link UriBuilderFactoryWebConnectionHtmlUnitDriver}.
  *
  * @author Phillip Webb
  */
-class BaseUrlWebConnectionHtmlUnitDriverTests {
+class UriBuilderFactoryWebConnectionHtmlUnitDriverTests {
 
 	private final WebClient webClient;
 
-	BaseUrlWebConnectionHtmlUnitDriverTests() {
+	UriBuilderFactoryWebConnectionHtmlUnitDriverTests() {
 		this.webClient = mock();
 		given(this.webClient.getOptions()).willReturn(new WebClientOptions());
 		given(this.webClient.getWebConsole()).willReturn(new WebConsole());
@@ -58,34 +56,27 @@ class BaseUrlWebConnectionHtmlUnitDriverTests {
 	}
 
 	@Test
-	void createWhenBaseUrlIsNull() {
-		BaseUrlWebConnectionHtmlUnitDriver driver = new TestBaseUrlWebConnectionHtmlUnitDriver(null);
-		assertThatExceptionOfType(WebDriverException.class).isThrownBy(() -> driver.get("/test"))
-			.withCauseInstanceOf(MalformedURLException.class);
-	}
-
-	@Test
 	void getWhenUrlIsRelativeUsesBaseUrl() throws Exception {
-		BaseUrl baseUrl = BaseUrl.of("https://example.com");
-		BaseUrlWebConnectionHtmlUnitDriver driver = new TestBaseUrlWebConnectionHtmlUnitDriver(baseUrl);
+		WebConnectionHtmlUnitDriver driver = new TestUriBuilderFactoryWebConnectionHtmlUnitDriver(
+				new DefaultUriBuilderFactory("https://localhost:8080"));
 		driver.get("/test");
 		then(this.webClient).should()
-			.getPage(any(TopLevelWindow.class), requestToUrl(new URL("https://example.com/test")));
+			.getPage(any(TopLevelWindow.class), requestToUrl(new URL("https://localhost:8080/test")));
 	}
 
 	private WebRequest requestToUrl(URL url) {
 		return argThat(new WebRequestUrlArgumentMatcher(url));
 	}
 
-	public class TestBaseUrlWebConnectionHtmlUnitDriver extends BaseUrlWebConnectionHtmlUnitDriver {
+	class TestUriBuilderFactoryWebConnectionHtmlUnitDriver extends UriBuilderFactoryWebConnectionHtmlUnitDriver {
 
-		TestBaseUrlWebConnectionHtmlUnitDriver(@Nullable BaseUrl baseUrl) {
-			super(baseUrl);
+		TestUriBuilderFactoryWebConnectionHtmlUnitDriver(UriBuilderFactory uriBuilderFactory) {
+			super(uriBuilderFactory);
 		}
 
 		@Override
 		public WebClient getWebClient() {
-			return BaseUrlWebConnectionHtmlUnitDriverTests.this.webClient;
+			return UriBuilderFactoryWebConnectionHtmlUnitDriverTests.this.webClient;
 		}
 
 	}

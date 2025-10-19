@@ -26,9 +26,7 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,8 +65,8 @@ class SampleActuatorExtensionApplicationTests {
 	void healthExtensionWithAuthHeader() {
 		TestRestTemplate restTemplate = new TestRestTemplate(
 				this.restTemplateBuilder.defaultHeader("Authorization", "Bearer secret"));
-		BaseUrl baseUrl = new BaseUrlProviders(this.applicationContext).getBaseUrl();
-		restTemplate.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.getRequired(this.applicationContext);
+		restTemplate.setUriTemplateHandler(localTestWebServer.uriBuilderFactory());
 		ResponseEntity<Map> entity = restTemplate.getForEntity("/myextension/health", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}

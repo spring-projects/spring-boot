@@ -16,20 +16,21 @@
 
 package org.springframework.boot.resttestclient.autoconfigure;
 
+import org.assertj.core.extractor.Extractors;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProvider;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
+import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriBuilderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,18 +72,18 @@ class RestTestClientAutoConfigurationTests {
 	@Test
 	@WithResource(name = "META-INF/spring.factories",
 			content = """
-					org.springframework.boot.test.http.server.BaseUrlProvider=\
-					org.springframework.boot.resttestclient.autoconfigure.RestTestClientAutoConfigurationTests.TestBaseUrlProvider
+					org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
+					org.springframework.boot.resttestclient.autoconfigure.RestTestClientAutoConfigurationTests$TestLocalTestWebServerProvider
 					""")
 	void shouldDefineWebTestClientBoundToWebServer() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(RestTestClient.class);
 			assertThat(context).hasBean("restTestClient");
 			RestTestClient client = context.getBean(RestTestClient.class);
-			assertThat(client).extracting("restTestClientBuilder")
-				.extracting("restClientBuilder")
-				.extracting("uriBuilderFactory")
-				.isInstanceOf(BaseUrlUriBuilderFactory.class);
+			UriBuilderFactory uiBuilderFactory = (UriBuilderFactory) Extractors
+				.byName("restTestClientBuilder.restClientBuilder.uriBuilderFactory")
+				.apply(client);
+			assertThat(uiBuilderFactory.uriString("").toUriString()).isEqualTo("https://localhost:8182");
 		});
 	}
 
@@ -96,11 +97,11 @@ class RestTestClientAutoConfigurationTests {
 
 	}
 
-	static class TestBaseUrlProvider implements BaseUrlProvider {
+	static class TestLocalTestWebServerProvider implements LocalTestWebServer.Provider {
 
 		@Override
-		public @Nullable BaseUrl getBaseUrl() {
-			return BaseUrl.of("https://localhost:8080");
+		public @Nullable LocalTestWebServer getLocalTestWebServer() {
+			return LocalTestWebServer.of(Scheme.HTTPS, 8182);
 		}
 
 	}

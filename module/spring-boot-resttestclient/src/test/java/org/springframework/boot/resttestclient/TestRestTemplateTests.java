@@ -38,8 +38,8 @@ import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.resttestclient.TestRestTemplate.HttpClientOption;
-import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
-import org.springframework.boot.test.http.server.BaseUrl;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
+import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -343,7 +343,7 @@ class TestRestTemplateTests {
 		URI absoluteUri = URI.create("http://localhost:8080/a/b/c.txt");
 		given(requestFactory.createRequest(eq(absoluteUri), eq(HttpMethod.GET))).willReturn(request);
 		template.getRestTemplate().setRequestFactory(requestFactory);
-		template.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(BaseUrl.of("http://localhost:8080")));
+		template.setUriTemplateHandler(LocalTestWebServer.of(Scheme.HTTP, 8080).uriBuilderFactory());
 		template.exchange(entity, String.class);
 		then(requestFactory).should().createRequest(eq(absoluteUri), eq(HttpMethod.GET));
 	}
@@ -458,7 +458,7 @@ class TestRestTemplateTests {
 		given(requestFactory.createRequest(eq(absoluteUri), any(HttpMethod.class))).willReturn(request);
 		TestRestTemplate template = new TestRestTemplate();
 		template.getRestTemplate().setRequestFactory(requestFactory);
-		template.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(BaseUrl.of("http://localhost:8080")));
+		template.setUriTemplateHandler(LocalTestWebServer.of(Scheme.HTTP, 8080).uriBuilderFactory());
 		callback.doWithTestRestTemplate(template, URI.create("/a/b/c.txt?param=%7Bsomething%7D"));
 		then(requestFactory).should().createRequest(eq(absoluteUri), any(HttpMethod.class));
 	}

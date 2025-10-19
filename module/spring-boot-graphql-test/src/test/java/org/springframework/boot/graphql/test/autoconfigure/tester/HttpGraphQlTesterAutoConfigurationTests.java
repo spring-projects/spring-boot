@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProvider;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
+import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.webtestclient.WebTestClientAutoConfiguration;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
@@ -66,8 +66,8 @@ class HttpGraphQlTesterAutoConfigurationTests {
 	@Test
 	@WithResource(name = "META-INF/spring.factories",
 			content = """
-					org.springframework.boot.test.http.server.BaseUrlProvider=\
-					org.springframework.boot.graphql.test.autoconfigure.tester.HttpGraphQlTesterAutoConfigurationTests$TestBaseUrlProvider
+					org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
+					org.springframework.boot.graphql.test.autoconfigure.tester.HttpGraphQlTesterAutoConfigurationTests$TestLocalTestWebServerProvider
 					""")
 	void shouldContributeTesterBoundToHttpServer() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebTestClientAutoConfiguration.class))
@@ -85,8 +85,8 @@ class HttpGraphQlTesterAutoConfigurationTests {
 	@Test
 	@WithResource(name = "META-INF/spring.factories",
 			content = """
-					org.springframework.boot.test.http.server.BaseUrlProvider=\
-					org.springframework.boot.graphql.test.autoconfigure.tester.HttpGraphQlTesterAutoConfigurationTests$TestBaseUrlProvider
+					org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
+					org.springframework.boot.graphql.test.autoconfigure.tester.HttpGraphQlTesterAutoConfigurationTests$TestLocalTestWebServerProvider
 					""")
 	void shouldContributeTesterBoundToHttpServerUsingCustomGraphQlHttpPath() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebTestClientAutoConfiguration.class))
@@ -102,12 +102,11 @@ class HttpGraphQlTesterAutoConfigurationTests {
 			});
 	}
 
-	@SuppressWarnings("unused")
-	static class TestBaseUrlProvider implements BaseUrlProvider {
+	static class TestLocalTestWebServerProvider implements LocalTestWebServer.Provider {
 
 		@Override
-		public @Nullable BaseUrl getBaseUrl() {
-			return BaseUrl.of("https://localhost:4242");
+		public @Nullable LocalTestWebServer getLocalTestWebServer() {
+			return LocalTestWebServer.of(Scheme.HTTPS, 4242);
 		}
 
 	}

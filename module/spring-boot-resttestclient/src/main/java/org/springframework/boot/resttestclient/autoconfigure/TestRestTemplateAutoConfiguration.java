@@ -22,9 +22,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.resttestclient.TestRestTemplate.HttpClientOption;
-import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
+import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -37,20 +36,23 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 public final class TestRestTemplateAutoConfiguration {
 
-	private static final HttpClientOption[] DEFAULT_OPTIONS = {};
-
-	private static final HttpClientOption[] SSL_OPTIONS = { HttpClientOption.SSL };
-
 	@Bean(name = "org.springframework.boot.resttestclient.TestRestTemplate")
 	@ConditionalOnMissingBean
 	TestRestTemplate testRestTemplate(ObjectProvider<RestTemplateBuilder> builderProvider,
 			ApplicationContext applicationContext) {
 		RestTemplateBuilder builder = builderProvider.getIfAvailable(RestTemplateBuilder::new);
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl(BaseUrl.LOCALHOST);
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.getRequired(applicationContext);
 		TestRestTemplate template = new TestRestTemplate(builder, null, null,
-				baseUrl.isHttps() ? SSL_OPTIONS : DEFAULT_OPTIONS);
-		template.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
+				httpClientOptions(localTestWebServer.scheme()));
+		template.setUriTemplateHandler(localTestWebServer.uriBuilderFactory());
 		return template;
+	}
+
+	private HttpClientOption[] httpClientOptions(Scheme scheme) {
+		return switch (scheme) {
+			case HTTP -> new HttpClientOption[] {};
+			case HTTPS -> new HttpClientOption[] { HttpClientOption.SSL };
+		};
 	}
 
 }

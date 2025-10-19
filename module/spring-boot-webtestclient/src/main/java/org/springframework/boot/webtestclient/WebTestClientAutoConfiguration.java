@@ -26,9 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration;
-import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.reactive.server.MockServerConfigurer;
@@ -74,9 +72,9 @@ public final class WebTestClientAutoConfiguration {
 
 	private WebTestClient.Builder getBuilder(ApplicationContext applicationContext,
 			List<MockServerConfigurer> configurers) {
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl();
-		if (baseUrl != null) {
-			return WebTestClient.bindToServer().uriBuilderFactory(BaseUrlUriBuilderFactory.get(baseUrl));
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.get(applicationContext);
+		if (localTestWebServer != null) {
+			return WebTestClient.bindToServer().uriBuilderFactory(localTestWebServer.uriBuilderFactory());
 		}
 		if (applicationContext.containsBean(WebHttpHandlerBuilder.WEB_HANDLER_BEAN_NAME)) {
 			MockServerSpec<?> spec = WebTestClient.bindToApplicationContext(applicationContext);

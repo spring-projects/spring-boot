@@ -26,13 +26,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProviders;
-import org.springframework.boot.test.web.htmlunit.BaseUrlWebConnectionHtmlUnitDriver;
+import org.springframework.boot.test.web.htmlunit.UriBuilderFactoryWebConnectionHtmlUnitDriver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDriverBuilder;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 /**
  * Auto-configuration for Selenium {@link WebDriver} MockMVC integration.
@@ -49,10 +48,9 @@ public final class MockMvcWebDriverAutoConfiguration {
 	@ConditionalOnMissingBean({ WebDriver.class, MockMvcHtmlUnitDriverBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
 	MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc, ApplicationContext applicationContext) {
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl(BaseUrl.LOCALHOST);
-		MockMvcHtmlUnitDriverBuilder builder = MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
-			.withDelegate(new BaseUrlWebConnectionHtmlUnitDriver(baseUrl, BrowserVersion.CHROME));
-		return builder;
+		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
+			.withDelegate(new UriBuilderFactoryWebConnectionHtmlUnitDriver(
+					new DefaultUriBuilderFactory("http://localhost"), BrowserVersion.CHROME));
 	}
 
 	@Bean

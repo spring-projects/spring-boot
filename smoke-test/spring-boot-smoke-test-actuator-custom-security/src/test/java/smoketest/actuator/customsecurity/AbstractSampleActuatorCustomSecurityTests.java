@@ -21,9 +21,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -202,8 +200,8 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 	}
 
 	private TestRestTemplate configure(TestRestTemplate restTemplate) {
-		BaseUrl baseUrl = new BaseUrlProviders(getApplicationContext()).getBaseUrl();
-		restTemplate.setUriTemplateHandler(BaseUrlUriBuilderFactory.get(baseUrl));
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.getRequired(getApplicationContext());
+		restTemplate.setUriTemplateHandler(localTestWebServer.uriBuilderFactory());
 		return restTemplate;
 	}
 

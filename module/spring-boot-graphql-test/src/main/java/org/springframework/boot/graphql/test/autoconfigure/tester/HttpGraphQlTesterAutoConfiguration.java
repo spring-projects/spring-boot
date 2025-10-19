@@ -24,9 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.graphql.autoconfigure.GraphQlProperties;
-import org.springframework.boot.test.http.client.BaseUrlUriBuilderFactory;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProviders;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
@@ -52,16 +50,14 @@ public final class HttpGraphQlTesterAutoConfiguration {
 	HttpGraphQlTester webTestClientGraphQlTester(ApplicationContext applicationContext, WebTestClient webTestClient,
 			GraphQlProperties properties) {
 		String graphQlPath = properties.getHttp().getPath();
-		BaseUrl baseUrl = new BaseUrlProviders(applicationContext).getBaseUrl();
-		WebTestClient graphQlWebTestClient = configureGraphQlWebTestClient(webTestClient, baseUrl, graphQlPath);
-		return HttpGraphQlTester.create(graphQlWebTestClient);
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.get(applicationContext);
+		return HttpGraphQlTester.create(createWebTestClient(webTestClient.mutate(), localTestWebServer, graphQlPath));
 	}
 
-	private WebTestClient configureGraphQlWebTestClient(WebTestClient webTestClient, @Nullable BaseUrl baseUrl,
-			String graphQlPath) {
-		WebTestClient.Builder builder = webTestClient.mutate();
-		return (baseUrl != null)
-				? builder.uriBuilderFactory(BaseUrlUriBuilderFactory.get(baseUrl.withPath(graphQlPath))).build()
+	private WebTestClient createWebTestClient(WebTestClient.Builder builder,
+			@Nullable LocalTestWebServer localTestWebServer, String graphQlPath) {
+		return (localTestWebServer != null)
+				? builder.uriBuilderFactory(localTestWebServer.withPath(graphQlPath).uriBuilderFactory()).build()
 				: builder.baseUrl(graphQlPath).build();
 	}
 

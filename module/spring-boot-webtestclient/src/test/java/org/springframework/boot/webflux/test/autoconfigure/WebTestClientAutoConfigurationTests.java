@@ -25,8 +25,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.codec.CodecCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.http.server.BaseUrl;
-import org.springframework.boot.test.http.server.BaseUrlProvider;
+import org.springframework.boot.test.http.server.LocalTestWebServer;
+import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.webtestclient.WebTestClientAutoConfiguration;
 import org.springframework.boot.webtestclient.WebTestClientBuilderCustomizer;
@@ -98,10 +98,11 @@ class WebTestClientAutoConfigurationTests {
 	}
 
 	@Test
-	@WithResource(name = "META-INF/spring.factories", content = """
-			org.springframework.boot.test.http.server.BaseUrlProvider=\
-			org.springframework.boot.webflux.test.autoconfigure.WebTestClientAutoConfigurationTests$TestBaseUrlProvider
-			""")
+	@WithResource(name = "META-INF/spring.factories",
+			content = """
+					org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
+					org.springframework.boot.webflux.test.autoconfigure.WebTestClientAutoConfigurationTests$TestLocalTestWebServerProvider
+					""")
 	void shouldDefineWebTestClientBoundToWebServer() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(WebTestClient.class);
@@ -176,10 +177,11 @@ class WebTestClientAutoConfigurationTests {
 	}
 
 	@Test
-	@WithResource(name = "META-INF/spring.factories", content = """
-			org.springframework.boot.test.http.server.BaseUrlProvider=\
-			org.springframework.boot.webflux.test.autoconfigure.WebTestClientAutoConfigurationTests$TestBaseUrlProvider
-			""")
+	@WithResource(name = "META-INF/spring.factories",
+			content = """
+					org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
+					org.springframework.boot.webflux.test.autoconfigure.WebTestClientAutoConfigurationTests$TestLocalTestWebServerProvider
+					""")
 	void shouldWorkWithoutServletStack() {
 		ClassLoader parentClassLoader = Thread.currentThread().getContextClassLoader();
 		this.contextRunner.withClassLoader(new FilteredClassLoader(parentClassLoader, WebApplicationContext.class))
@@ -223,11 +225,11 @@ class WebTestClientAutoConfigurationTests {
 
 	}
 
-	static class TestBaseUrlProvider implements BaseUrlProvider {
+	static class TestLocalTestWebServerProvider implements LocalTestWebServer.Provider {
 
 		@Override
-		public @Nullable BaseUrl getBaseUrl() {
-			return BaseUrl.of("https://localhost:8080");
+		public @Nullable LocalTestWebServer getLocalTestWebServer() {
+			return LocalTestWebServer.of(Scheme.HTTPS, 8080);
 		}
 
 	}
