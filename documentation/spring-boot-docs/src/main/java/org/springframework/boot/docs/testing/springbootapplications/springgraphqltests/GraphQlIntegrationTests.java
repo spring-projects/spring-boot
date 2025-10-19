@@ -21,10 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.graphql.test.autoconfigure.tester.AutoConfigureHttpGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureHttpGraphQlTester
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class GraphQlIntegrationTests {
 
 	@Test

@@ -24,7 +24,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webtestclient.AutoConfigureWebTestClient;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 
@@ -39,7 +38,6 @@ import org.springframework.graphql.test.tester.HttpGraphQlTester;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@AutoConfigureMockMvc
 @AutoConfigureWebTestClient
 @ImportAutoConfiguration
 public @interface AutoConfigureHttpGraphQlTester {

@@ -451,10 +451,13 @@ Often, javadoc:org.springframework.boot.graphql.test.autoconfigure.GraphQlTest[f
 include-code::GreetingControllerTests[]
 
 javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] tests are full integration tests and involve the entire application.
-When using a random or defined port, a live server is configured and an javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] bean is contributed automatically so you can use it to test your server.
-When a MOCK environment is configured, you can also request an javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] bean by annotating your test class with javadoc:org.springframework.boot.graphql.test.autoconfigure.tester.AutoConfigureHttpGraphQlTester[format=annotation] from the `spring-boot-graphql-test` module:
+A javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] bean can be added by annotating your test class with javadoc:org.springframework.boot.graphql.test.autoconfigure.tester.AutoConfigureHttpGraphQlTester[format=annotation] from the `spring-boot-graphql-test` module:
 
 include-code::GraphQlIntegrationTests[]
+
+The javadoc:org.springframework.graphql.test.tester.HttpGraphQlTester[] bean uses the relevant transport of the integration test.
+When using a random or defined port, the tester is configured against the live server.
+To bind the tester to `MockMvc`, make sure to annotate your test class with javadoc:org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc[format=annotation].
 
 
 
