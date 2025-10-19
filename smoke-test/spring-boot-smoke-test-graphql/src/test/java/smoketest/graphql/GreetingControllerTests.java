@@ -26,7 +26,7 @@ import org.springframework.graphql.test.tester.HttpGraphQlTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = "debug=true")
+@SpringBootTest
 @AutoConfigureHttpGraphQlTester
 class GreetingControllerTests {
 
