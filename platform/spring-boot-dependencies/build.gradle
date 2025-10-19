@@ -571,12 +571,12 @@ bom {
 				"hibernate-graalvm",
 				"hibernate-hikaricp",
 				"hibernate-jcache",
-				"hibernate-jpamodelgen",
 				"hibernate-micrometer",
-				"hibernate-proxool",
+				"hibernate-processor",
+				"hibernate-scan-jandex",
 				"hibernate-spatial",
 				"hibernate-testing",
-				"hibernate-vibur"
+				"hibernate-vector",
 			]
 		}
 		links {
