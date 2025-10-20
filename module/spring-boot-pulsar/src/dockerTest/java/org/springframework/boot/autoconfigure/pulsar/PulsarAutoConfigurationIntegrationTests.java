@@ -75,7 +75,7 @@ class PulsarAutoConfigurationIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ PulsarAutoConfiguration.class })
+	@ImportAutoConfiguration(PulsarAutoConfiguration.class)
 	@Import(TestService.class)
 	static class TestConfiguration {
 

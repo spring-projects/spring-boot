@@ -38,13 +38,13 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Defaults.SchemaInfo;
 import org.springframework.boot.pulsar.autoconfigure.PulsarProperties.Defaults.TypeMapping;
 import org.springframework.boot.thread.Threading;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.core.task.VirtualThreadTaskExecutor;
@@ -96,6 +96,7 @@ import org.springframework.util.Assert;
  */
 @AutoConfiguration
 @ConditionalOnClass({ PulsarClient.class, PulsarTemplate.class })
+@EnableConfigurationProperties(PulsarProperties.class)
 public final class PulsarAutoConfiguration {
 
 	private final PulsarProperties properties;
