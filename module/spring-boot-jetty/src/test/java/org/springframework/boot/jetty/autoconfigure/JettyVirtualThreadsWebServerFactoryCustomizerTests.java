@@ -16,13 +16,7 @@
 
 package org.springframework.boot.jetty.autoconfigure;
 
-import java.time.Duration;
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.awaitility.Awaitility;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.hamcrest.Matchers;
+import org.eclipse.jetty.util.thread.VirtualThreadPool;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -50,14 +44,9 @@ class JettyVirtualThreadsWebServerFactoryCustomizerTests {
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		customizer.customize(factory);
 		then(factory).should().setThreadPool(assertArg((threadPool) -> {
-			assertThat(threadPool).isInstanceOf(QueuedThreadPool.class);
-			QueuedThreadPool queuedThreadPool = (QueuedThreadPool) threadPool;
-			Executor executor = queuedThreadPool.getVirtualThreadsExecutor();
-			assertThat(executor).isNotNull();
-			AtomicReference<String> threadName = new AtomicReference<>();
-			executor.execute(() -> threadName.set(Thread.currentThread().getName()));
-			Awaitility.await().atMost(Duration.ofSeconds(1)).untilAtomic(threadName, Matchers.notNullValue());
-			assertThat(threadName.get()).startsWith("jetty-");
+			assertThat(threadPool).isInstanceOf(VirtualThreadPool.class);
+			VirtualThreadPool virtualThreadPool = (VirtualThreadPool) threadPool;
+			assertThat(virtualThreadPool.getName()).isEqualTo("jetty-");
 		}));
 	}
 
