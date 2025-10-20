@@ -40,7 +40,7 @@ public class JettyWebServerConfiguration {
 
 	private final JettyServerProperties jettyProperties;
 
-	public JettyWebServerConfiguration(JettyServerProperties jettyProperties) {
+	JettyWebServerConfiguration(JettyServerProperties jettyProperties) {
 		this.jettyProperties = jettyProperties;
 	}
 

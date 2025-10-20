@@ -52,7 +52,7 @@ import org.springframework.web.server.adapter.ForwardedHeaderTransformer;
 public class ReactiveWebServerConfiguration {
 
 	@Bean
-	public ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
+	ReactiveWebServerFactoryCustomizer reactiveWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<SslBundles> sslBundles) {
 		return new ReactiveWebServerFactoryCustomizer(serverProperties, sslBundles.getIfAvailable());
 	}
@@ -60,7 +60,7 @@ public class ReactiveWebServerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
-	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
+	ForwardedHeaderTransformer forwardedHeaderTransformer() {
 		return new ForwardedHeaderTransformer();
 	}
 
@@ -68,7 +68,7 @@ public class ReactiveWebServerConfiguration {
 	 * Registers a {@link WebServerFactoryCustomizerBeanPostProcessor}. Registered via
 	 * {@link ImportBeanDefinitionRegistrar} for early registration.
 	 */
-	public static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+	static class BeanPostProcessorsRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 		private @Nullable ConfigurableListableBeanFactory beanFactory;
 

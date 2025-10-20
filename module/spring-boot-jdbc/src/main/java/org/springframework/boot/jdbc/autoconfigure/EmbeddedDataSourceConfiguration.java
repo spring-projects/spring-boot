@@ -47,7 +47,7 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 	}
 
 	@Bean(destroyMethod = "shutdown")
-	public EmbeddedDatabase dataSource(DataSourceProperties properties) {
+	EmbeddedDatabase dataSource(DataSourceProperties properties) {
 		EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(this.classLoader).getType();
 		String databaseName = properties.determineDatabaseName();
 		Assert.state(type != null, "'type' must not be null");
