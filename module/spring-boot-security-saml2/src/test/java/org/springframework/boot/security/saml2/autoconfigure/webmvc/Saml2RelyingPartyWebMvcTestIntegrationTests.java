@@ -23,7 +23,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -45,7 +45,7 @@ class Saml2RelyingPartyWebMvcTestIntegrationTests {
 	void shouldRedirectToLogin() throws Exception {
 		this.mockMvc.perform(get("/one"))
 			.andExpect(status().isFound())
-			.andExpect(redirectedUrlPattern("**/saml2/authenticate?registrationId=test"));
+			.andExpect(redirectedUrl("/saml2/authenticate?registrationId=test"));
 	}
 
 }

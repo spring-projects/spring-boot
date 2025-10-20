@@ -84,7 +84,6 @@ public @interface AutoConfigureTestDatabase {
 		 * <li>Any connection configured using a {@code spring.datasource.url} with the
 		 * Testcontainers JDBC syntax</li>
 		 * </ul>
-		 * @since 3.4.0
 		 */
 		NON_TEST,
 
