@@ -204,7 +204,7 @@ public class MappedObject {
 
 		/**
 		 * Read JSON content as a {@link JsonNode}.
-		 * @param jsonMapper the source json mapper
+		 * @param jsonMapper the source JSON mapper
 		 * @param content the content to read
 		 * @return a {@link JsonNode}
 		 * @throws IOException on IO error

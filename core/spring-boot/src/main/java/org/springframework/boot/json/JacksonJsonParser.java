@@ -40,7 +40,7 @@ public class JacksonJsonParser extends AbstractJsonParser {
 
 	/**
 	 * Creates an instance with the specified {@link JsonMapper}.
-	 * @param jsonMapper the json mapper to use
+	 * @param jsonMapper the JSON mapper to use
 	 */
 	public JacksonJsonParser(JsonMapper jsonMapper) {
 		this.jsonMapper = jsonMapper;
