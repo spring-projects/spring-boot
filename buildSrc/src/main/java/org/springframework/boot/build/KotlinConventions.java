@@ -76,7 +76,7 @@ class KotlinConventions {
 
 	private void configureDokkatoo(Project project) {
 		DokkatooExtension dokkatoo = project.getExtensions().getByType(DokkatooExtension.class);
-		dokkatoo.getVersions().getJetbrainsDokka().set("2.1.0-Beta");
+		dokkatoo.getVersions().getJetbrainsDokka().set("2.1.0");
 		dokkatoo.getDokkatooSourceSets().configureEach((sourceSet) -> {
 			if (SourceSet.MAIN_SOURCE_SET_NAME.equals(sourceSet.getName())) {
 				sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
