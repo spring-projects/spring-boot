@@ -110,8 +110,11 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	void checkArchitecture() throws Exception {
 		withCompileClasspath(() -> {
 			JavaClasses javaClasses = new ClassFileImporter().importPaths(classFilesPaths());
-			List<EvaluationResult> violations = evaluate(javaClasses).filter(EvaluationResult::hasViolation).toList();
+			List<EvaluationResult> results = new ArrayList<>();
+			evaluate(javaClasses).forEach(results::add);
+			results.add(new AutoConfigurationChecker().check(javaClasses));
 			File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
+			List<EvaluationResult> violations = results.stream().filter(EvaluationResult::hasViolation).toList();
 			writeViolationReport(violations, outputFile);
 			if (!violations.isEmpty()) {
 				throw new VerificationException("Architecture check failed. See '" + outputFile + "' for details.");

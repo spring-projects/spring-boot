@@ -389,6 +389,16 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
+	static ArchRule shouldHaveNoPublicMembers() {
+		return ArchRuleDefinition.members()
+			.that(areNotDefaultConstructors())
+			.and(areNotConstants())
+			.and(dontOverridePublicMethods())
+			.should()
+			.notBePublic()
+			.allowEmptyShould(true);
+	}
+
 	private static ArchRule testAutoConfigurationClassesShouldBePackagePrivateAndFinal() {
 		return ArchRuleDefinition.classes()
 			.that()
@@ -400,7 +410,7 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
-	private static DescribedPredicate<JavaClass> areRegularAutoConfiguration() {
+	static DescribedPredicate<JavaClass> areRegularAutoConfiguration() {
 		return DescribedPredicate.describe("Regular @AutoConfiguration",
 				(javaClass) -> javaClass.isMetaAnnotatedWith(AUTOCONFIGURATION_ANNOTATION)
 						&& !javaClass.isMetaAnnotatedWith(TEST_AUTOCONFIGURATION_ANNOTATION)
