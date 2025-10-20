@@ -25,7 +25,6 @@ import java.net.URI;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -37,17 +36,17 @@ import tools.jackson.databind.json.JsonMapper;
  */
 public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 
-	private static final ObjectMapper objectMapper;
+	private static final JsonMapper jsonMapper;
 
 	static {
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.changeDefaultPropertyInclusion((value) -> value.withContentInclusion(Include.NON_EMPTY))
 			.build();
 	}
 
 	public static ResolvedBom readFrom(File file) {
 		try (FileReader reader = new FileReader(file)) {
-			return objectMapper.readValue(reader, ResolvedBom.class);
+			return jsonMapper.readValue(reader, ResolvedBom.class);
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
@@ -55,7 +54,7 @@ public record ResolvedBom(Id id, List<ResolvedLibrary> libraries) {
 	}
 
 	public void writeTo(Writer writer) {
-		objectMapper.writeValue(writer, this);
+		jsonMapper.writeValue(writer, this);
 	}
 
 	public record ResolvedLibrary(String name, String version, String versionProperty, List<Id> managedDependencies,

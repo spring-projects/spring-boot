@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
 import javax.management.MBeanServer;
 
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.LazyInitializationExcludeFilter;
@@ -100,11 +100,10 @@ public final class JmxEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnSingleCandidate(MBeanServer.class)
-	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnClass(JsonMapper.class)
 	JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer, EndpointObjectNameFactory endpointObjectNameFactory,
-			ObjectProvider<ObjectMapper> objectMapper, JmxEndpointsSupplier jmxEndpointsSupplier) {
-		JmxOperationResponseMapper responseMapper = new JacksonJmxOperationResponseMapper(
-				objectMapper.getIfAvailable());
+			ObjectProvider<JsonMapper> jsonMapper, JmxEndpointsSupplier jmxEndpointsSupplier) {
+		JmxOperationResponseMapper responseMapper = new JacksonJmxOperationResponseMapper(jsonMapper.getIfAvailable());
 		return new JmxEndpointExporter(mBeanServer, endpointObjectNameFactory, responseMapper,
 				jmxEndpointsSupplier.getEndpoints());
 	}

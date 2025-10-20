@@ -33,7 +33,6 @@ import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.util.Assert;
@@ -162,7 +161,7 @@ public class MappedObject {
 	 * @throws IOException on IO error
 	 */
 	protected static <T extends MappedObject> T of(String content, Function<JsonNode, T> factory) throws IOException {
-		return of(content, ObjectMapper::readTree, factory);
+		return of(content, JsonMapper::readTree, factory);
 	}
 
 	/**
@@ -175,7 +174,7 @@ public class MappedObject {
 	 */
 	protected static <T extends MappedObject> T of(InputStream content, Function<JsonNode, T> factory)
 			throws IOException {
-		return of(StreamUtils.nonClosing(content), ObjectMapper::readTree, factory);
+		return of(StreamUtils.nonClosing(content), JsonMapper::readTree, factory);
 	}
 
 	/**
@@ -205,12 +204,12 @@ public class MappedObject {
 
 		/**
 		 * Read JSON content as a {@link JsonNode}.
-		 * @param objectMapper the source object mapper
+		 * @param jsonMapper the source JSON mapper
 		 * @param content the content to read
 		 * @return a {@link JsonNode}
 		 * @throws IOException on IO error
 		 */
-		JsonNode read(ObjectMapper objectMapper, C content) throws IOException;
+		JsonNode read(JsonMapper jsonMapper, C content) throws IOException;
 
 	}
 

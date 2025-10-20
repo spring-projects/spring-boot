@@ -26,7 +26,7 @@ import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JavaType;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.test.json.BasicJsonTester;
 
@@ -56,11 +56,11 @@ class JacksonJmxOperationResponseMapperTests {
 
 	@Test
 	void createWhenObjectMapperIsSpecifiedShouldUseObjectMapper() {
-		ObjectMapper objectMapper = spy(ObjectMapper.class);
-		JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(objectMapper);
+		JsonMapper jsonMapper = spy(JsonMapper.class);
+		JacksonJmxOperationResponseMapper mapper = new JacksonJmxOperationResponseMapper(jsonMapper);
 		Set<String> response = Collections.singleton("test");
 		mapper.mapResponse(response);
-		then(objectMapper).should().convertValue(eq(response), any(JavaType.class));
+		then(jsonMapper).should().convertValue(eq(response), any(JavaType.class));
 	}
 
 	@Test

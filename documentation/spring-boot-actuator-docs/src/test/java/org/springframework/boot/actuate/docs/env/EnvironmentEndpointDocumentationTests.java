@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -116,8 +115,8 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 
 	@SuppressWarnings("unchecked")
 	private byte[] filterProperties(byte[] content, MediaType mediaType) {
-		ObjectMapper objectMapper = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
-		Map<String, Object> payload = objectMapper.readValue(content, Map.class);
+		JsonMapper jsonMapper = JsonMapper.builder().enable(SerializationFeature.INDENT_OUTPUT).build();
+		Map<String, Object> payload = jsonMapper.readValue(content, Map.class);
 		List<Map<String, Object>> propertySources = (List<Map<String, Object>>) payload.get("propertySources");
 		for (Map<String, Object> propertySource : propertySources) {
 			Map<String, String> properties = (Map<String, String>) propertySource.get("properties");
@@ -128,7 +127,7 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 				.collect(Collectors.toSet());
 			properties.keySet().retainAll(filteredKeys);
 		}
-		return objectMapper.writeValueAsBytes(payload);
+		return jsonMapper.writeValueAsBytes(payload);
 	}
 
 	private boolean retainKey(String key) {

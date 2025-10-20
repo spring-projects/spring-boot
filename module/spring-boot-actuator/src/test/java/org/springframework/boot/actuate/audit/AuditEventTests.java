@@ -20,7 +20,7 @@ import java.util.Collections;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -75,7 +75,7 @@ class AuditEventTests {
 	void jsonFormat() throws Exception {
 		AuditEvent event = new AuditEvent("johannes", "UNKNOWN",
 				Collections.singletonMap("type", (Object) "BadCredentials"));
-		String json = new ObjectMapper().writeValueAsString(event);
+		String json = new JsonMapper().writeValueAsString(event);
 		JSONObject jsonObject = new JSONObject(json);
 		assertThat(jsonObject.getString("type")).isEqualTo("UNKNOWN");
 		assertThat(jsonObject.getJSONObject("data").getString("type")).isEqualTo("BadCredentials");
