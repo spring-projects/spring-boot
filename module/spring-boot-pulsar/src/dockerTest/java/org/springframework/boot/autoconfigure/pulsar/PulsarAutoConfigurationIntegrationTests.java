@@ -27,7 +27,6 @@ import org.testcontainers.pulsar.PulsarContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.pulsar.autoconfigure.PulsarAutoConfiguration;
-import org.springframework.boot.pulsar.autoconfigure.PulsarReactiveAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
@@ -76,7 +75,7 @@ class PulsarAutoConfigurationIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration({ PulsarAutoConfiguration.class, PulsarReactiveAutoConfiguration.class })
+	@ImportAutoConfiguration(PulsarAutoConfiguration.class)
 	@Import(TestService.class)
 	static class TestConfiguration {
 

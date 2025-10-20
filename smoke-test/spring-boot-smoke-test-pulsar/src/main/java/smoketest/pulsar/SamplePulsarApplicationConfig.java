@@ -18,26 +18,21 @@ package smoketest.pulsar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pulsar.reactive.client.api.MessageSpec;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.pulsar.annotation.PulsarListener;
+import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.core.PulsarTopic;
 import org.springframework.pulsar.core.PulsarTopicBuilder;
-import org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener;
-import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
 
 @Configuration(proxyBeanMethods = false)
-@Profile("smoketest-pulsar-reactive")
-class ReactiveAppConfig {
+class SamplePulsarApplicationConfig {
 
-	private static final Log logger = LogFactory.getLog(ReactiveAppConfig.class);
+	private static final Log logger = LogFactory.getLog(SamplePulsarApplicationConfig.class);
 
-	private static final String TOPIC = "pulsar-reactive-smoke-test-topic";
+	private static final String TOPIC = "pulsar-smoke-test-topic";
 
 	@Bean
 	PulsarTopic pulsarTestTopic() {
@@ -45,20 +40,18 @@ class ReactiveAppConfig {
 	}
 
 	@Bean
-	ApplicationRunner sendMessagesToPulsarTopic(ReactivePulsarTemplate<SampleMessage> template) {
-		return (args) -> Flux.range(0, 10)
-			.map((i) -> new SampleMessage(i, "message:" + i))
-			.map(MessageSpec::of)
-			.as((msgs) -> template.send(TOPIC, msgs))
-			.doOnNext((sendResult) -> logger
-				.info("++++++PRODUCE REACTIVE:(" + sendResult.getMessageSpec().getValue().id() + ")------"))
-			.subscribe();
+	ApplicationRunner sendMessagesToPulsarTopic(PulsarTemplate<SampleMessage> template) {
+		return (args) -> {
+			for (int i = 0; i < 10; i++) {
+				template.send(TOPIC, new SampleMessage(i, "message:" + i));
+				logger.info("++++++PRODUCE:(" + i + ")------");
+			}
+		};
 	}
 
-	@ReactivePulsarListener(topics = TOPIC)
-	Mono<Void> consumeMessagesFromPulsarTopic(SampleMessage msg) {
-		logger.info("++++++CONSUME REACTIVE:(" + msg.id() + ")------");
-		return Mono.empty();
+	@PulsarListener(topics = TOPIC)
+	void consumeMessagesFromPulsarTopic(SampleMessage msg) {
+		logger.info("++++++CONSUME:(" + msg.id() + ")------");
 	}
 
 }
