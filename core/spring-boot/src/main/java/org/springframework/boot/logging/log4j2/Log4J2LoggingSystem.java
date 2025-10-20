@@ -65,8 +65,10 @@ import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.core.Conventions;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -153,6 +155,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	public Log4J2LoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
+	}
+
+	@Override
+	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
+		return new Log4j2LoggingSystemProperties(environment, getDefaultValueResolver(environment), null);
 	}
 
 	@Override
@@ -324,13 +331,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		List<String> overrides = getOverrides(initializationContext);
 		Environment environment = initializationContext.getEnvironment();
 		Assert.state(environment != null, "'environment' must not be null");
-		applyLog4j2SystemProperties(environment, logFile);
+		applySystemProperties(environment, logFile);
 		loadConfiguration(location, logFile, overrides);
-	}
-
-
-	private void applyLog4j2SystemProperties(Environment environment, @Nullable LogFile logFile) {
-		new Log4j2LoggingSystemProperties(environment, getDefaultValueResolver(environment), null).apply(logFile);
 	}
 
 	private List<String> getOverrides(LoggingInitializationContext initializationContext) {
