@@ -56,9 +56,7 @@ import org.springframework.pulsar.function.PulsarSource;
 import org.springframework.util.Assert;
 
 /**
- * Common configuration used by both {@link PulsarAutoConfiguration} and
- * {@link PulsarReactiveAutoConfiguration}. A separate configuration class is used so that
- * {@link PulsarAutoConfiguration} can be excluded for reactive only application.
+ * Common configuration used by {@link PulsarAutoConfiguration}.
  *
  * @author Chris Bono
  * @author Phillip Webb

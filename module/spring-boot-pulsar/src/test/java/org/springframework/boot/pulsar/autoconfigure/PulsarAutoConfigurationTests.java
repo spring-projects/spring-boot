@@ -72,7 +72,6 @@ import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.listener.PulsarContainerProperties.TransactionSettings;
-import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
 import org.springframework.pulsar.transaction.PulsarAwareTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -598,14 +597,6 @@ class PulsarAutoConfigurationTests {
 		static class ListenerContainerFactoryCustomizersConfig {
 
 			@Bean
-			@Order(50)
-			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerIgnored() {
-				return (containerFactory) -> {
-					throw new IllegalStateException("should-not-have-matched");
-				};
-			}
-
-			@Bean
 			@Order(200)
 			PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>> customizerFoo() {
 				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":foo");
@@ -722,14 +713,6 @@ class PulsarAutoConfigurationTests {
 
 		@TestConfiguration(proxyBeanMethods = false)
 		static class ReaderContainerFactoryCustomizersConfig {
-
-			@Bean
-			@Order(50)
-			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerIgnored() {
-				return (containerFactory) -> {
-					throw new IllegalStateException("should-not-have-matched");
-				};
-			}
 
 			@Bean
 			@Order(200)

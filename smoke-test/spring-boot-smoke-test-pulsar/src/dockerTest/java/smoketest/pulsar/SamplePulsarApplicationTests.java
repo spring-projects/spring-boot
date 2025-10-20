@@ -78,15 +78,4 @@ class SamplePulsarApplicationTests {
 
 	}
 
-	@Nested
-	@SpringBootTest
-	@ActiveProfiles("smoketest-pulsar-reactive")
-	class ReactivePulsarApplication extends PulsarApplication {
-
-		ReactivePulsarApplication() {
-			super("REACTIVE");
-		}
-
-	}
-
 }

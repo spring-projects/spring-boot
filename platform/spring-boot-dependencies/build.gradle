@@ -1796,15 +1796,6 @@ bom {
 			releaseNotes("https://pulsar.apache.org/release-notes/versioned/pulsar-{version}")
 		}
 	}
-	library("Pulsar Reactive", "0.7.0") {
-		group("org.apache.pulsar") {
-			bom("pulsar-client-reactive-bom")
-		}
-		links {
-			site("https://github.com/apache/pulsar-client-reactive")
-			releaseNotes("https://github.com/apache/pulsar-client-reactive/releases/tag/v{version}")
-		}
-	}
 	library("Quartz", "2.5.0") {
 		group("org.quartz-scheduler") {
 			modules = [
@@ -2207,8 +2198,6 @@ bom {
 				"spring-boot-starter-opentelemetry-test",
 				"spring-boot-starter-pulsar",
 				"spring-boot-starter-pulsar-test",
-				"spring-boot-starter-pulsar-reactive",
-				"spring-boot-starter-pulsar-reactive-test",
 				"spring-boot-starter-quartz",
 				"spring-boot-starter-quartz-test",
 				"spring-boot-starter-r2dbc",
