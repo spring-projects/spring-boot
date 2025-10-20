@@ -367,7 +367,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 					configurations.add(overrideConfiguration);
 				}
 			}
-			context.start(mergeConfigurations(configurations));
+			context.reconfigure(mergeConfigurations(configurations));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Log4J2 logging from " + location, ex);
