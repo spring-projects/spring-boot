@@ -178,7 +178,6 @@ public class AntoraAsciidocAttributes {
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-redis");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-rest", "spring-data-rest-core");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-ldap");
-		addDependencyVersion(attributes, "pulsar-client-reactive-api", "org.apache.pulsar:pulsar-client-reactive-api");
 		addDependencyVersion(attributes, "pulsar-client-api", "org.apache.pulsar:pulsar-client-api");
 	}
 
