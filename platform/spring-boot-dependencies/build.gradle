@@ -1287,7 +1287,7 @@ bom {
 			releaseNotes("https://github.com/apache/logging-log4j2/releases/tag/rel%2F{version}")
 		}
 	}
-	library("Logback", "1.5.19") {
+	library("Logback", "1.5.20") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-classic",
