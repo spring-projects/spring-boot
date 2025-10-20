@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -36,13 +35,10 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProjectHelper;
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.loader.tools.DefaultLaunchScript;
-import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.lang.Contract;
-import org.springframework.util.StringUtils;
 
 /**
  * Repackage existing JAR and WAR archives so that they can be executed from the command
@@ -123,35 +119,6 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private @Nullable List<Dependency> requiresUnpack;
 
 	/**
-	 * Make a fully executable jar for *nix machines by prepending a launch script to the
-	 * jar.
-	 * <p>
-	 * Currently, some tools do not accept this format so you may not always be able to
-	 * use this technique. For example, {@code jar -xf} may silently fail to extract a jar
-	 * or war that has been made fully-executable. It is recommended that you only enable
-	 * this option if you intend to execute it directly, rather than running it with
-	 * {@code java -jar} or deploying it to a servlet container.
-	 * @since 1.3.0
-	 */
-	@Parameter(defaultValue = "false")
-	private boolean executable;
-
-	/**
-	 * The embedded launch script to prepend to the front of the jar if it is fully
-	 * executable. If not specified the 'Spring Boot' default script will be used.
-	 * @since 1.3.0
-	 */
-	@Parameter
-	private @Nullable File embeddedLaunchScript;
-
-	/**
-	 * Properties that should be expanded in the embedded launch script.
-	 * @since 1.3.0
-	 */
-	@Parameter
-	private @Nullable Properties embeddedLaunchScriptProperties;
-
-	/**
 	 * Timestamp for reproducible output archive entries, either formatted as ISO 8601
 	 * (<code>yyyy-MM-dd'T'HH:mm:ssXXX</code>) or an {@code int} representing seconds
 	 * since the epoch.
@@ -227,8 +194,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		Repackager repackager = getRepackager(source.getFile());
 		Libraries libraries = getLibraries(this.requiresUnpack);
 		try {
-			LaunchScript launchScript = getLaunchScript();
-			repackager.repackage(target, libraries, launchScript, parseOutputTimestamp());
+			repackager.repackage(target, libraries, parseOutputTimestamp());
 		}
 		catch (IOException ex) {
 			throw new MojoExecutionException(ex.getMessage(), ex);
@@ -249,39 +215,9 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		return getConfiguredPackager(() -> new Repackager(source));
 	}
 
-	private @Nullable LaunchScript getLaunchScript() throws IOException {
-		if (this.executable || this.embeddedLaunchScript != null) {
-			return new DefaultLaunchScript(this.embeddedLaunchScript, buildLaunchScriptProperties());
-		}
-		return null;
-	}
-
-	private Properties buildLaunchScriptProperties() {
-		Properties properties = new Properties();
-		if (this.embeddedLaunchScriptProperties != null) {
-			properties.putAll(this.embeddedLaunchScriptProperties);
-		}
-		putIfMissing(properties, "initInfoProvides", this.project.getArtifactId());
-		putIfMissing(properties, "initInfoShortDescription", this.project.getName(), this.project.getArtifactId());
-		putIfMissing(properties, "initInfoDescription", removeLineBreaks(this.project.getDescription()),
-				this.project.getName(), this.project.getArtifactId());
-		return properties;
-	}
-
 	@Contract("!null -> !null")
 	private @Nullable String removeLineBreaks(@Nullable String description) {
 		return (description != null) ? WHITE_SPACE_PATTERN.matcher(description).replaceAll(" ") : null;
-	}
-
-	private void putIfMissing(Properties properties, String key, String... valueCandidates) {
-		if (!properties.containsKey(key)) {
-			for (String candidate : valueCandidates) {
-				if (StringUtils.hasLength(candidate)) {
-					properties.put(key, candidate);
-					return;
-				}
-			}
-		}
 	}
 
 	private void updateArtifact(Artifact source, File target, File original) {

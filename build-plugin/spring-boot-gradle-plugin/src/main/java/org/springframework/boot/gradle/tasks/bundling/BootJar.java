@@ -166,21 +166,6 @@ public abstract class BootJar extends Jar implements BootArchive {
 		this.support.requiresUnpack(spec);
 	}
 
-	@Override
-	public @Nullable LaunchScriptConfiguration getLaunchScript() {
-		return this.support.getLaunchScript();
-	}
-
-	@Override
-	public void launchScript() {
-		enableLaunchScriptIfNecessary();
-	}
-
-	@Override
-	public void launchScript(Action<LaunchScriptConfiguration> action) {
-		action.execute(enableLaunchScriptIfNecessary());
-	}
-
 	/**
 	 * Returns the spec that describes the layers in a layered jar.
 	 * @return the spec for the layers
@@ -271,15 +256,6 @@ public abstract class BootJar extends Jar implements BootArchive {
 	protected boolean isLibrary(FileCopyDetails details) {
 		String path = details.getRelativePath().getPathString();
 		return path.startsWith(LIB_DIRECTORY);
-	}
-
-	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
-		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
-		if (launchScript == null) {
-			launchScript = new LaunchScriptConfiguration(this);
-			this.support.setLaunchScript(launchScript);
-		}
-		return launchScript;
 	}
 
 	/**

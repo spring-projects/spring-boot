@@ -18,7 +18,6 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.util.Set;
 
-import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -30,7 +29,6 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.jspecify.annotations.Nullable;
 
@@ -64,28 +62,6 @@ public interface BootArchive extends Task {
 	 * @param spec the spec
 	 */
 	void requiresUnpack(Spec<FileTreeElement> spec);
-
-	/**
-	 * Returns the {@link LaunchScriptConfiguration} that will control the script that is
-	 * prepended to the archive.
-	 * @return the launch script configuration, or {@code null} if the launch script has
-	 * not been configured.
-	 */
-	@Nested
-	@Optional
-	@Nullable LaunchScriptConfiguration getLaunchScript();
-
-	/**
-	 * Configures the archive to have a prepended launch script.
-	 */
-	void launchScript();
-
-	/**
-	 * Configures the archive to have a prepended launch script, customizing its
-	 * configuration using the given {@code action}.
-	 * @param action the action to apply
-	 */
-	void launchScript(Action<LaunchScriptConfiguration> action);
 
 	/**
 	 * Returns the classpath that will be included in the archive.

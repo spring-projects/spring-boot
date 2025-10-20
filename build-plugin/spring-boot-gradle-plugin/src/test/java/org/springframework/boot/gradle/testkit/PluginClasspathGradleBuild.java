@@ -41,7 +41,7 @@ import tools.jackson.databind.JacksonModule;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
-import org.springframework.boot.loader.tools.LaunchScript;
+import org.springframework.boot.loader.tools.Layers;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.gradle.testkit.Dsl;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
@@ -80,7 +80,7 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 		classpath.add(new File("bin/main"));
 		classpath.add(new File("build/classes/java/main"));
 		classpath.add(new File("build/resources/main"));
-		classpath.add(new File(pathOfJarContaining(LaunchScript.class)));
+		classpath.add(new File(pathOfJarContaining(Layers.class)));
 		classpath.add(new File(pathOfJarContaining(ClassVisitor.class)));
 		classpath.add(new File(pathOfJarContaining(DependencyManagementPlugin.class)));
 		if (this.kotlin) {

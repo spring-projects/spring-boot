@@ -23,18 +23,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.PosixFilePermission;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -66,7 +60,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
-import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.util.FileCopyUtils;
 
@@ -308,57 +301,6 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			assertThat(jarFile.getEntry(this.libPath + "two.jar").getComment()).isEqualTo("UNPACK");
 			assertThat(jarFile.getEntry(this.libPath + "one.jar").getComment()).isNull();
 		}
-	}
-
-	@Test
-	void launchScriptCanBePrepended() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		this.task.launchScript();
-		executeTask();
-		Map<String, String> properties = new HashMap<>();
-		properties.put("initInfoProvides", this.task.getArchiveBaseName().get());
-		properties.put("initInfoShortDescription", this.project.getDescription());
-		properties.put("initInfoDescription", this.project.getDescription());
-		File archiveFile = this.task.getArchiveFile().get().getAsFile();
-		assertThat(Files.readAllBytes(archiveFile.toPath()))
-			.startsWith(new DefaultLaunchScript(null, properties).toByteArray());
-		try (ZipFile zipFile = ZipFile.builder().setFile(archiveFile).get()) {
-			assertThat(zipFile.getEntries().hasMoreElements()).isTrue();
-		}
-		try {
-			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(archiveFile.toPath());
-			assertThat(permissions).contains(PosixFilePermission.OWNER_EXECUTE);
-		}
-		catch (UnsupportedOperationException ex) {
-			// Windows, presumably. Continue
-		}
-	}
-
-	@Test
-	void customLaunchScriptCanBePrepended() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		File customScript = new File(this.temp, "custom.script");
-		Files.writeString(customScript.toPath(), "custom script", StandardOpenOption.CREATE);
-		this.task.launchScript((configuration) -> configuration.setScript(customScript));
-		executeTask();
-		Path path = this.task.getArchiveFile().get().getAsFile().toPath();
-		assertThat(Files.readString(path, StandardCharsets.ISO_8859_1)).startsWith("custom script");
-	}
-
-	@Test
-	void launchScriptInitInfoPropertiesCanBeCustomized() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		this.task.launchScript((configuration) -> {
-			configuration.getProperties().put("initInfoProvides", "provides");
-			configuration.getProperties().put("initInfoShortDescription", "short description");
-			configuration.getProperties().put("initInfoDescription", "description");
-		});
-		executeTask();
-		Path path = this.task.getArchiveFile().get().getAsFile().toPath();
-		String content = Files.readString(path, StandardCharsets.ISO_8859_1);
-		assertThat(content).containsSequence("Provides:          provides");
-		assertThat(content).containsSequence("Short-Description: short description");
-		assertThat(content).containsSequence("Description:       description");
 	}
 
 	@Test

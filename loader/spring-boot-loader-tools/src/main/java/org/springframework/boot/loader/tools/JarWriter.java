@@ -57,31 +57,14 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 	/**
 	 * Create a new {@link JarWriter} instance.
 	 * @param file the file to write
-	 * @param launchScript an optional launch script to prepend to the front of the jar
-	 * @throws IOException if the file cannot be opened
-	 * @throws FileNotFoundException if the file cannot be found
-	 */
-	public JarWriter(File file, @Nullable LaunchScript launchScript) throws FileNotFoundException, IOException {
-		this(file, launchScript, null);
-	}
-
-	/**
-	 * Create a new {@link JarWriter} instance.
-	 * @param file the file to write
-	 * @param launchScript an optional launch script to prepend to the front of the jar
 	 * @param lastModifiedTime an optional last modified time to apply to the written
 	 * entries
 	 * @throws IOException if the file cannot be opened
 	 * @throws FileNotFoundException if the file cannot be found
-	 * @since 2.3.0
+	 * @since 4.0.0
 	 */
-	public JarWriter(File file, @Nullable LaunchScript launchScript, @Nullable FileTime lastModifiedTime)
-			throws FileNotFoundException, IOException {
+	public JarWriter(File file, @Nullable FileTime lastModifiedTime) throws FileNotFoundException, IOException {
 		this.jarOutputStream = new JarArchiveOutputStream(new FileOutputStream(file));
-		if (launchScript != null) {
-			this.jarOutputStream.writePreamble(launchScript.toByteArray());
-			file.setExecutable(true);
-		}
 		this.jarOutputStream.setEncoding("UTF-8");
 		this.lastModifiedTime = lastModifiedTime;
 	}

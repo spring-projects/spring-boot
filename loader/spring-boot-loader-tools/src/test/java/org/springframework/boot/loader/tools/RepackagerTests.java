@@ -19,9 +19,7 @@ package org.springframework.boot.loader.tools;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
-import java.nio.file.attribute.PosixFilePermission;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -157,30 +155,6 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 	}
 
 	@Test
-	void addLauncherScript() throws Exception {
-		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
-		File source = this.testJarFile.getFile();
-		Repackager repackager = createRepackager(source, true);
-		LaunchScript script = new MockLauncherScript("ABC");
-		assertThat(this.destination).isNotNull();
-		repackager.repackage(this.destination, NO_LIBRARIES, script);
-		byte[] bytes = FileCopyUtils.copyToByteArray(this.destination);
-		assertThat(new String(bytes)).startsWith("ABC");
-		assertThat(hasLauncherClasses(source)).isFalse();
-		assertThat(hasLauncherClasses(this.destination)).isTrue();
-		try (ZipFile zipFile = ZipFile.builder().setFile(this.destination).get()) {
-			assertThat(zipFile.getEntries().hasMoreElements()).isTrue();
-		}
-		try {
-			assertThat(Files.getPosixFilePermissions(this.destination.toPath()))
-				.contains(PosixFilePermission.OWNER_EXECUTE);
-		}
-		catch (UnsupportedOperationException ex) {
-			// Probably running the test on Windows
-		}
-	}
-
-	@Test
 	void allLoaderDirectoriesAndFilesUseSameTimestamp() throws IOException {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
@@ -208,7 +182,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		long timestamp = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli();
 		assertThat(this.destination).isNotNull();
-		repackager.repackage(this.destination, NO_LIBRARIES, null, FileTime.fromMillis(timestamp));
+		repackager.repackage(this.destination, NO_LIBRARIES, FileTime.fromMillis(timestamp));
 		long offsetTimestamp = DefaultTimeZoneOffset.INSTANCE.removeFrom(timestamp);
 		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
 			assertThat(entry.getTime()).isEqualTo(offsetTimestamp);
@@ -223,7 +197,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 				ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		assertThat(this.destination).isNotNull();
-		repackager.repackage(this.destination, NO_LIBRARIES, null, null);
+		repackager.repackage(this.destination, NO_LIBRARIES, null);
 		stopWatch.stop();
 		assertThat(stopWatch.getTotalTimeMillis()).isLessThan(5000);
 	}
@@ -304,21 +278,6 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 			byte[] bytes = FileCopyUtils.copyToByteArray(zip.getInputStream(entry));
 			return new String(bytes, StandardCharsets.UTF_8);
 		}
-	}
-
-	static class MockLauncherScript implements LaunchScript {
-
-		private final byte[] bytes;
-
-		MockLauncherScript(String script) {
-			this.bytes = script.getBytes();
-		}
-
-		@Override
-		public byte[] toByteArray() {
-			return this.bytes;
-		}
-
 	}
 
 	static class TestLayoutFactory implements LayoutFactory {

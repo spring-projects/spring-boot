@@ -140,21 +140,6 @@ public abstract class BootWar extends War implements BootArchive {
 		this.support.requiresUnpack(spec);
 	}
 
-	@Override
-	public @Nullable LaunchScriptConfiguration getLaunchScript() {
-		return this.support.getLaunchScript();
-	}
-
-	@Override
-	public void launchScript() {
-		enableLaunchScriptIfNecessary();
-	}
-
-	@Override
-	public void launchScript(Action<LaunchScriptConfiguration> action) {
-		action.execute(enableLaunchScriptIfNecessary());
-	}
-
 	/**
 	 * Returns the provided classpath, the contents of which will be included in the
 	 * {@code WEB-INF/lib-provided} directory of the war.
@@ -239,15 +224,6 @@ public abstract class BootWar extends War implements BootArchive {
 	protected boolean isLibrary(FileCopyDetails details) {
 		String path = details.getRelativePath().getPathString();
 		return path.startsWith(LIB_DIRECTORY) || path.startsWith(LIB_PROVIDED_DIRECTORY);
-	}
-
-	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
-		LaunchScriptConfiguration launchScript = this.support.getLaunchScript();
-		if (launchScript == null) {
-			launchScript = new LaunchScriptConfiguration(this);
-			this.support.setLaunchScript(launchScript);
-		}
-		return launchScript;
 	}
 
 	/**

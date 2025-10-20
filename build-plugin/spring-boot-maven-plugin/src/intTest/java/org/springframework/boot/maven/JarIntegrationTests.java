@@ -161,15 +161,6 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenACustomLaunchScriptIsConfiguredItAppearsInTheRepackagedJar(MavenBuild mavenBuild) {
-		mavenBuild.project("jar-custom-launcher").goals("install").execute((project) -> {
-			File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
-			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/");
-			assertThat(launchScript(repackaged)).contains("Hello world");
-		});
-	}
-
-	@TestTemplate
 	void whenAnEntryIsExcludedItDoesNotAppearInTheRepackagedJar(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-exclude-entry").goals("install").execute((project) -> {
 			File repackaged = new File(project, "target/jar-exclude-entry-0.0.1.BUILD-SNAPSHOT.jar");
@@ -264,17 +255,6 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
 				.hasEntryWithNameStartingWith("BOOT-INF/lib/commons-logging")
 				.doesNotHaveEntryWithName("BOOT-INF/lib/log4j-api-");
-		});
-	}
-
-	@TestTemplate
-	void whenAJarIsExecutableItBeginsWithTheDefaultLaunchScript(MavenBuild mavenBuild) {
-		mavenBuild.project("jar-executable").execute((project) -> {
-			File repackaged = new File(project, "target/jar-executable-0.0.1.BUILD-SNAPSHOT.jar");
-			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/");
-			assertThat(launchScript(repackaged)).contains("Spring Boot Startup Script")
-				.contains("MyFullyExecutableJarName")
-				.contains("MyFullyExecutableJarDesc");
 		});
 	}
 

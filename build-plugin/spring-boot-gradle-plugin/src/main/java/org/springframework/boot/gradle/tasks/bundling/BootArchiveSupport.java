@@ -75,8 +75,6 @@ class BootArchiveSupport {
 
 	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
 
-	private @Nullable LaunchScriptConfiguration launchScript;
-
 	BootArchiveSupport(String loaderMainClass, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver) {
 		this.loaderMainClass = loaderMainClass;
@@ -129,13 +127,12 @@ class BootArchiveSupport {
 		boolean includeDefaultLoader = isUsingDefaultLoader(jar);
 		Spec<FileTreeElement> requiresUnpack = this.requiresUnpack.getAsSpec();
 		Spec<FileTreeElement> exclusions = this.exclusions.getAsExcludeSpec();
-		LaunchScriptConfiguration launchScript = this.launchScript;
 		Spec<FileCopyDetails> librarySpec = this.librarySpec;
 		Function<FileCopyDetails, ZipCompression> compressionResolver = this.compressionResolver;
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirPermissions,
-				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript,
-				librarySpec, compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver);
+				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, librarySpec,
+				compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver);
 		return action;
 	}
 
@@ -173,14 +170,6 @@ class BootArchiveSupport {
 
 	private boolean isUsingDefaultLoader(Jar jar) {
 		return DEFAULT_LAUNCHER_CLASSES.contains(jar.getManifest().getAttributes().get("Main-Class"));
-	}
-
-	@Nullable LaunchScriptConfiguration getLaunchScript() {
-		return this.launchScript;
-	}
-
-	void setLaunchScript(LaunchScriptConfiguration launchScript) {
-		this.launchScript = launchScript;
 	}
 
 	void requiresUnpack(String... patterns) {
