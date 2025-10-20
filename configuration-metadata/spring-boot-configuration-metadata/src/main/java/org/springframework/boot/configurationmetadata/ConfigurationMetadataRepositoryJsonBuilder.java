@@ -45,7 +45,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 
 	/**
 	 * Add the content of a {@link ConfigurationMetadataRepository} defined by the
-	 * specified {@link InputStream} json document using the default charset. If this
+	 * specified {@link InputStream} JSON document using the default charset. If this
 	 * metadata repository holds items that were loaded previously, these are ignored.
 	 * <p>
 	 * Leaves the stream open when done.
@@ -59,7 +59,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 
 	/**
 	 * Add the content of a {@link ConfigurationMetadataRepository} defined by the
-	 * specified {@link InputStream} json document using the specified {@link Charset}. If
+	 * specified {@link InputStream} JSON document using the specified {@link Charset}. If
 	 * this metadata repository holds items that were loaded previously, these are
 	 * ignored.
 	 * <p>
@@ -142,7 +142,7 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 
 	/**
 	 * Create a new builder instance using {@link StandardCharsets#UTF_8} as the default
-	 * charset and the specified json resource.
+	 * charset and the specified JSON resource.
 	 * @param inputStreams the source input streams
 	 * @return a new {@link ConfigurationMetadataRepositoryJsonBuilder} instance.
 	 * @throws IOException on error

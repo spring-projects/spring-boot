@@ -29,7 +29,7 @@ import org.springframework.boot.configurationmetadata.json.JSONArray;
 import org.springframework.boot.configurationmetadata.json.JSONObject;
 
 /**
- * Read standard json metadata format as {@link ConfigurationMetadataRepository}.
+ * Read standard JSON metadata format as {@link ConfigurationMetadataRepository}.
  *
  * @author Stephane Nicoll
  */

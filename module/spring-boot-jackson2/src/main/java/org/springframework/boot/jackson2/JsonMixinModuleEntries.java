@@ -37,7 +37,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Provide the mapping of json mixin class to consider.
+ * Provide the mapping of JSON mixin class to consider.
  *
  * @author Stephane Nicoll
  * @since 4.0.0
