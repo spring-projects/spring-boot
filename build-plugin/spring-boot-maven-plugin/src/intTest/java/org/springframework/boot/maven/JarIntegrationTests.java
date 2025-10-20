@@ -57,7 +57,6 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			File original = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar.original");
 			assertThat(original).isFile();
 			File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
-			assertThat(launchScript(repackaged)).isEmpty();
 			assertThat(jar(repackaged)).manifest((manifest) -> {
 				manifest.hasMainClass("org.springframework.boot.loader.launch.JarLauncher");
 				manifest.hasStartClass("some.random.Main");

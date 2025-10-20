@@ -53,11 +53,6 @@ abstract class AbstractArchiveIntegrationTests {
 		return contentOf(new File(project, "target/build.log"));
 	}
 
-	protected String launchScript(File jar) {
-		String content = contentOf(jar);
-		return content.substring(0, content.indexOf(new String(new byte[] { 0x50, 0x4b, 0x03, 0x04 })));
-	}
-
 	protected AssertProvider<JarAssert> jar(File file) {
 		return new AssertProvider<>() {
 

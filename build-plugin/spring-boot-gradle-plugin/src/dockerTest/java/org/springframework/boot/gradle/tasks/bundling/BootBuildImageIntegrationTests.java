@@ -307,21 +307,6 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void buildsImageWithLaunchScript() throws IOException {
-		writeMainClass();
-		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage");
-		String projectName = this.gradleBuild.getProjectDir().getName();
-		BuildTask task = result.task(":bootBuildImage");
-		assertThat(task).isNotNull();
-		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
-		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
-		removeImages(projectName);
-	}
-
-	@TestTemplate
 	void buildsImageWithNetworkModeNone() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
