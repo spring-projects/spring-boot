@@ -17,13 +17,12 @@ class SpringBoot < Formula
     end
 
     libexec.install Dir["#{root}/*"]
-    
-	(bin/"spring").write_env_script libexec/"bin/spring", {}
+    (bin/"spring").write_env_script libexec/"bin/spring", {}
 
-	bash_comp = libexec/"shell-completion/bash/spring"
-	zsh_comp  = libexec/"shell-completion/zsh/_spring"
+    bash_comp = libexec/"shell-completion/bash/spring"
+    zsh_comp  = libexec/"shell-completion/zsh/_spring"
 
-	bash_completion.install bash_comp if bash_comp.exist?
-	zsh_completion.install  zsh_comp  if zsh_comp.exist?
+    bash_completion.install bash_comp if bash_comp.exist?
+    zsh_completion.install  zsh_comp  if zsh_comp.exist?
   end
 end
