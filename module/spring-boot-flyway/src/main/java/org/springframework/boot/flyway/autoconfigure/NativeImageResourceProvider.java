@@ -107,7 +107,7 @@ class NativeImageResourceProvider implements ResourceProvider {
 
 	private ClassPathResource asClassPathResource(LocatedResource locatedResource) {
 		Location location = locatedResource.location();
-		String fileNameWithAbsolutePath = location.getPath() + "/" + locatedResource.resource().getFilename();
+		String fileNameWithAbsolutePath = location.getRootPath() + "/" + locatedResource.resource().getFilename();
 		return new ClassPathResource(location, fileNameWithAbsolutePath, this.classLoader, this.encoding);
 	}
 
@@ -124,6 +124,7 @@ class NativeImageResourceProvider implements ResourceProvider {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void initialize() {
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		for (Location location : this.locations) {

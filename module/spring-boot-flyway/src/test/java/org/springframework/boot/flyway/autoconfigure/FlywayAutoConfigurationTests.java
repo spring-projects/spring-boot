@@ -344,7 +344,7 @@ class FlywayAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Flyway.class);
 			Flyway flyway = context.getBean(Flyway.class);
 			assertThat(flyway.getConfiguration().getLocations())
-				.containsExactly(new Location("classpath:db/migration"));
+				.containsExactly(createLocation("classpath:db/migration"));
 		});
 	}
 
@@ -355,8 +355,8 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
-				assertThat(flyway.getConfiguration().getLocations())
-					.containsExactly(new Location("classpath:db/changelog"), new Location("classpath:db/migration"));
+				assertThat(flyway.getConfiguration().getLocations()).containsExactly(
+						createLocation("classpath:db/changelog"), createLocation("classpath:db/migration"));
 			});
 	}
 
@@ -368,8 +368,8 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
-				assertThat(flyway.getConfiguration().getLocations())
-					.containsExactly(new Location("classpath:db/changelog"), new Location("classpath:db/migration"));
+				assertThat(flyway.getConfiguration().getLocations()).containsExactly(
+						createLocation("classpath:db/changelog"), createLocation("classpath:db/migration"));
 			});
 	}
 
@@ -546,7 +546,7 @@ class FlywayAutoConfigurationTests {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
 				assertThat(flyway.getConfiguration().getLocations()).containsExactlyInAnyOrder(
-						new Location("classpath:db/vendors/h2"), new Location("classpath:db/changelog"));
+						createLocation("classpath:db/vendors/h2"), createLocation("classpath:db/changelog"));
 			});
 	}
 
@@ -559,7 +559,7 @@ class FlywayAutoConfigurationTests {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
 				assertThat(flyway.getConfiguration().getLocations())
-					.containsExactly(new Location("classpath:db/vendors/h2"));
+					.containsExactly(createLocation("classpath:db/vendors/h2"));
 			});
 	}
 
@@ -572,7 +572,7 @@ class FlywayAutoConfigurationTests {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
 				assertThat(flyway.getConfiguration().getCallbackLocations())
-					.containsExactly(new Location("classpath:com.example.h2"));
+					.containsExactly(createLocation("classpath:com.example.h2"));
 			});
 	}
 
@@ -936,6 +936,11 @@ class FlywayAutoConfigurationTests {
 			assertThat(failure).hasRootCauseInstanceOf(FlywayEditionUpgradeRequiredException.class);
 			assertThat(failure).hasMessageContaining(String.format(" %s ", propertyName));
 		};
+	}
+
+	@SuppressWarnings("deprecation")
+	private static Location createLocation(String location) {
+		return new Location(location);
 	}
 
 	private static Map<String, ?> configureJpaProperties() {
