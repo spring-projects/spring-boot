@@ -16,9 +16,9 @@
 
 plugins {
 	id "java-library"
-	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.test-auto-configuration"
 }
 
 description = "Spring Boot WebTestClient"
@@ -32,6 +32,7 @@ dependencies {
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
+	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")
