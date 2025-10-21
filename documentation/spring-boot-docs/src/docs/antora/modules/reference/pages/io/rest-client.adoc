@@ -269,6 +269,9 @@ You can configure API versioning using methods on `WebClient.Builder` or `RestCl
 TIP: API versioning is also supported on the server-side.
 See the xref:web/servlet.adoc#web.servlet.spring-mvc.api-versioning[Spring MVC] and xref:web/reactive.adoc#web.reactive.webflux.api-versioning[Spring WebFlux] sections for details.
 
+NOTE: The server-side API versioning configuration is not taken into account to auto-configure the client.
+Clients that should use an API versioning strategy, typically for testing, need to configure it explicitly.
+
 
 
 [[io.rest-client.httpservice]]
