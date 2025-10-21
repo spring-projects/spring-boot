@@ -1,5 +1,6 @@
 [[packaging.aot-cache]]
 = AOT Cache
+:page-aliases: class-data-sharing.adoc
 
 AOT cache is a https://openjdk.org/jeps/483[JVM feature] that can help reduce the startup time and memory footprint of Java applications.
 

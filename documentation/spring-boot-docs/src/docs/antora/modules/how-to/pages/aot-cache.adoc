@@ -1,5 +1,6 @@
 [[howto.aot-cache]]
 = AOT Cache
+:page-aliases: class-data-sharing.adoc
 
 This section includes information about using AOT cache with Spring Boot applications.
 For an overview of Spring Boot support for AOT cache, see xref:reference:packaging/aot-cache.adoc[].
