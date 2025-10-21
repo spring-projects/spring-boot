@@ -115,6 +115,15 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
+	static ArchRule allBeanMethodsShouldNotHaveConditionalOnClassAnnotation(String annotationName) {
+		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean").should()
+			.notBeAnnotatedWith(annotationName)
+			.because("@ConditionalOnClass on @Bean methods is ineffective - it doesn't prevent "
+					+ "the method signature from being loaded. Such condition need to be placed"
+					+ " on a @Configuration class, allowing the condition to back off before the type is loaded.")
+			.allowEmptyShould(true);
+	}
+
 	private static ArchRule allPackagesShouldBeFreeOfTangles() {
 		return SlicesRuleDefinition.slices().matching("(**)").should().beFreeOfCycles();
 	}

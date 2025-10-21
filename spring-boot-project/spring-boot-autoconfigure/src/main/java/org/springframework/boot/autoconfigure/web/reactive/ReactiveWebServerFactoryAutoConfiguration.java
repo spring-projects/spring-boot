@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
@@ -70,17 +71,22 @@ public class ReactiveWebServerFactoryAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
-	public TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
-			ServerProperties serverProperties) {
-		return new TomcatReactiveWebServerFactoryCustomizer(serverProperties);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
 	public ForwardedHeaderTransformer forwardedHeaderTransformer() {
 		return new ForwardedHeaderTransformer();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
+	static class TomcatConfiguration {
+
+		@Bean
+		TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
+				ServerProperties serverProperties) {
+			return new TomcatReactiveWebServerFactoryCustomizer(serverProperties);
+		}
+
 	}
 
 	/**

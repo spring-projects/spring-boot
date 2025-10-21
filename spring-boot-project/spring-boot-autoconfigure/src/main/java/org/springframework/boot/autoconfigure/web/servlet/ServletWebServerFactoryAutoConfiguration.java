@@ -81,23 +81,22 @@ public class ServletWebServerFactoryAutoConfiguration {
 				cookieSameSiteSuppliers.orderedStream().toList(), sslBundles.getIfAvailable());
 	}
 
-	@Bean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
-	public TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
-			ServerProperties serverProperties) {
-		return new TomcatServletWebServerFactoryCustomizer(serverProperties);
+	static class TomcatConfiguration {
+
+		@Bean
+		TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
+				ServerProperties serverProperties) {
+			return new TomcatServletWebServerFactoryCustomizer(serverProperties);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
 	@ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
 	static class ForwardedHeaderFilterConfiguration {
-
-		@Bean
-		@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
-		ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
-			return (filter) -> filter.setRelativeRedirects(serverProperties.getTomcat().isUseRelativeRedirects());
-		}
 
 		@Bean
 		FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter(
@@ -108,6 +107,17 @@ public class ServletWebServerFactoryAutoConfiguration {
 			registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC, DispatcherType.ERROR);
 			registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return registration;
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
+		static class TomcatConfiguration {
+
+			@Bean
+			ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
+				return (filter) -> filter.setRelativeRedirects(serverProperties.getTomcat().isUseRelativeRedirects());
+			}
+
 		}
 
 	}

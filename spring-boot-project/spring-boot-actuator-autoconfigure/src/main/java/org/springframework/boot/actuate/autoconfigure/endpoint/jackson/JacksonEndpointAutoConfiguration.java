@@ -36,11 +36,11 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  * @since 3.0.0
  */
 @AutoConfiguration(after = JacksonAutoConfiguration.class)
+@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 public class JacksonEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
-	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	public EndpointObjectMapper endpointObjectMapper() {
 		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
 			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,

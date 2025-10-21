@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,16 +86,6 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnMissingBean
 	ReactivePulsarClient reactivePulsarClient(PulsarClient pulsarClient) {
 		return AdaptedReactivePulsarClientFactory.create(pulsarClient);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(ProducerCacheProvider.class)
-	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
-	@ConditionalOnBooleanProperty(name = "spring.pulsar.producer.cache.enabled", matchIfMissing = true)
-	CaffeineShadedProducerCacheProvider reactivePulsarProducerCacheProvider() {
-		PulsarProperties.Producer.Cache properties = this.properties.getProducer().getCache();
-		return new CaffeineShadedProducerCacheProvider(properties.getExpireAfterAccess(), Duration.ofMinutes(10),
-				properties.getMaximumSize(), properties.getInitialCapacity());
 	}
 
 	@Bean
@@ -203,6 +194,21 @@ public class PulsarReactiveAutoConfiguration {
 	ReactivePulsarTemplate<?> pulsarReactiveTemplate(ReactivePulsarSenderFactory<?> reactivePulsarSenderFactory,
 			SchemaResolver schemaResolver, TopicResolver topicResolver) {
 		return new ReactivePulsarTemplate<>(reactivePulsarSenderFactory, schemaResolver, topicResolver);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(CaffeineShadedProducerCacheProvider.class)
+	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
+	static class PulsarCacheConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(ProducerCacheProvider.class)
+		CaffeineShadedProducerCacheProvider reactivePulsarProducerCacheProvider(PulsarProperties pulsarProperties) {
+			PulsarProperties.Producer.Cache properties = pulsarProperties.getProducer().getCache();
+			return new CaffeineShadedProducerCacheProvider(properties.getExpireAfterAccess(), Duration.ofMinutes(10),
+					properties.getMaximumSize(), properties.getInitialCapacity());
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

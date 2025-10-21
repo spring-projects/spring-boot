@@ -74,22 +74,37 @@ class ServletManagementChildContextConfiguration {
 		return new ServletManagementWebServerFactoryCustomizer(beanFactory);
 	}
 
-	@Bean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "io.undertow.Undertow")
-	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer(ManagementServerProperties properties) {
-		return new UndertowAccessLogCustomizer(properties);
+	static class UndertowConfiguration {
+
+		@Bean
+		UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer(ManagementServerProperties properties) {
+			return new UndertowAccessLogCustomizer(properties);
+		}
+
 	}
 
-	@Bean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
-	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(ManagementServerProperties properties) {
-		return new TomcatAccessLogCustomizer(properties);
+	static class TomcatConfiguration {
+
+		@Bean
+		TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(ManagementServerProperties properties) {
+			return new TomcatAccessLogCustomizer(properties);
+		}
+
 	}
 
-	@Bean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.eclipse.jetty.server.Server")
-	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties properties) {
-		return new JettyAccessLogCustomizer(properties);
+	static class JettyConfiguration {
+
+		@Bean
+		JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties properties) {
+			return new JettyAccessLogCustomizer(properties);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
