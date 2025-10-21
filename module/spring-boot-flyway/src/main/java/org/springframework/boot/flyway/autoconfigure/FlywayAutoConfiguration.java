@@ -145,24 +145,6 @@ public final class FlywayAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnClass(name = "org.flywaydb.database.sqlserver.SQLServerConfigurationExtension")
-		SqlServerFlywayConfigurationCustomizer sqlServerFlywayConfigurationCustomizer() {
-			return new SqlServerFlywayConfigurationCustomizer(this.properties);
-		}
-
-		@Bean
-		@ConditionalOnClass(name = "org.flywaydb.database.oracle.OracleConfigurationExtension")
-		OracleFlywayConfigurationCustomizer oracleFlywayConfigurationCustomizer() {
-			return new OracleFlywayConfigurationCustomizer(this.properties);
-		}
-
-		@Bean
-		@ConditionalOnClass(name = "org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension")
-		PostgresqlFlywayConfigurationCustomizer postgresqlFlywayConfigurationCustomizer() {
-			return new PostgresqlFlywayConfigurationCustomizer(this.properties);
-		}
-
-		@Bean
 		Flyway flyway(FlywayConnectionDetails connectionDetails, ResourceLoader resourceLoader,
 				ObjectProvider<DataSource> dataSource, @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
@@ -358,6 +340,40 @@ public final class FlywayAutoConfiguration {
 		FlywayMigrationInitializer flywayInitializer(Flyway flyway,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
 			return new FlywayMigrationInitializer(flyway, migrationStrategy.getIfAvailable());
+		}
+
+		@ConditionalOnClass(name = "org.flywaydb.database.sqlserver.SQLServerConfigurationExtension")
+		@Configuration(proxyBeanMethods = false)
+		static class SqlServerConfiguration {
+
+			@Bean
+			SqlServerFlywayConfigurationCustomizer sqlServerFlywayConfigurationCustomizer(FlywayProperties properties) {
+				return new SqlServerFlywayConfigurationCustomizer(properties);
+			}
+
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(name = "org.flywaydb.database.oracle.OracleConfigurationExtension")
+		static class OracleConfiguration {
+
+			@Bean
+			OracleFlywayConfigurationCustomizer oracleFlywayConfigurationCustomizer(FlywayProperties properties) {
+				return new OracleFlywayConfigurationCustomizer(properties);
+			}
+
+		}
+
+		@ConditionalOnClass(name = "org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension")
+		@Configuration(proxyBeanMethods = false)
+		static class PostgresqlConfiguration {
+
+			@Bean
+			PostgresqlFlywayConfigurationCustomizer postgresqlFlywayConfigurationCustomizer(
+					FlywayProperties properties) {
+				return new PostgresqlFlywayConfigurationCustomizer(properties);
+			}
+
 		}
 
 	}

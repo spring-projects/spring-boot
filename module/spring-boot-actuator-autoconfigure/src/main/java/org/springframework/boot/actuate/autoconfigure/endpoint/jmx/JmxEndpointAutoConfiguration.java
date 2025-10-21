@@ -51,6 +51,7 @@ import org.springframework.boot.autoconfigure.jmx.JmxProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -99,18 +100,6 @@ public final class JmxEndpointAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnSingleCandidate(MBeanServer.class)
-	@ConditionalOnClass(JsonMapper.class)
-	JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer, EndpointObjectNameFactory endpointObjectNameFactory,
-			ObjectProvider<JsonMapper> jsonMapper, JmxEndpointsSupplier jmxEndpointsSupplier) {
-		JmxOperationResponseMapper responseMapper = new JacksonJmxOperationResponseMapper(jsonMapper.getIfAvailable());
-		return new JmxEndpointExporter(mBeanServer, endpointObjectNameFactory, responseMapper,
-				jmxEndpointsSupplier.getEndpoints());
-	}
-
-	// FIXME
-
-	@Bean
 	IncludeExcludeEndpointFilter<ExposableJmxEndpoint> jmxIncludeExcludePropertyEndpointFilter() {
 		JmxEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(ExposableJmxEndpoint.class, exposure.getInclude(),
@@ -125,6 +114,23 @@ public final class JmxEndpointAutoConfiguration {
 	@Bean
 	OperationFilter<JmxOperation> jmxAccessPropertiesOperationFilter(EndpointAccessResolver endpointAccessResolver) {
 		return OperationFilter.byAccess(endpointAccessResolver);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(JsonMapper.class)
+	static class JmxJacksonEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnSingleCandidate(MBeanServer.class)
+		JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer,
+				EndpointObjectNameFactory endpointObjectNameFactory, ObjectProvider<JsonMapper> jsonMapper,
+				JmxEndpointsSupplier jmxEndpointsSupplier) {
+			JmxOperationResponseMapper responseMapper = new JacksonJmxOperationResponseMapper(
+					jsonMapper.getIfAvailable());
+			return new JmxEndpointExporter(mBeanServer, endpointObjectNameFactory, responseMapper,
+					jmxEndpointsSupplier.getEndpoints());
+		}
+
 	}
 
 }

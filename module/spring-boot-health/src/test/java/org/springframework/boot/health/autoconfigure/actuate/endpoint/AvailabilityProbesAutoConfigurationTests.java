@@ -54,7 +54,7 @@ class AvailabilityProbesAutoConfigurationTests {
 	}
 
 	@Test
-	void probesWhenNoActautorDependencyDoesNotAddBeans() {
+	void probesWhenNoActuatorDependencyDoesNotAddBeans() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(Endpoint.class.getName()))
 			.run(this::doesNotHaveProbeBeans);
 	}
