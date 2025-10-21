@@ -1,13 +1,16 @@
-[[howto.class-data-sharing]]
-= Class Data Sharing
+[[howto.aot-cache]]
+= AOT Cache
 
-This section includes information about using Class Data Sharing (CDS) with Spring Boot applications.
-For an overview of Spring Boot support for CDS, see xref:reference:packaging/class-data-sharing.adoc[].
+This section includes information about using AOT cache with Spring Boot applications.
+For an overview of Spring Boot support for AOT cache, see xref:reference:packaging/aot-cache.adoc[].
 
 
 
-[[howto.class-data-sharing.buildpacks]]
-== Packaging an Application Using CDS and Buildpacks
+[[howto.aot-cache.buildpacks]]
+== Packaging an Application Using AOT Cache and Buildpacks
+
+NOTE: Buildpacks don't support AOT cache yet.
+However, you can leverage CDS (the predecessor of AOT cache) with Buildpacks.
 
 Spring Boot's xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[support for Cloud Native Buildpacks] along with the https://paketo.io/docs/reference/java-reference[Paketo Java buildpack] and its https://paketo.io/docs/reference/java-reference/#spring-boot-applications[Spring Boot support] can be used to generate a Docker image containing a CDS-optimized application.
 
@@ -18,15 +21,15 @@ The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring
 
 
 
-[[howto.class-data-sharing.dockerfiles]]
-== Packaging an Application Using CDS and Dockerfiles
+[[howto.aot-cache.dockerfiles]]
+== Packaging an Application Using AOT Cache and Dockerfiles
 
-If you don't want to use Cloud Native Buildpacks, it is also possible to use CDS with a `Dockerfile`.
-For more information about that, please see the xref:reference:packaging/container-images/dockerfiles.adoc#packaging.container-images.dockerfiles.cds[Dockerfiles reference documentation].
+If you don't want to use Cloud Native Buildpacks, it is possible to use AOT cache (or CDS) with a `Dockerfile`.
+For more information about that, please see the xref:reference:packaging/container-images/dockerfiles.adoc#packaging.container-images.dockerfiles.aot-cache[Dockerfiles reference documentation].
 
 
 
-[[howto.class-data-sharing.training-run-configuration]]
+[[howto.aot-cache.training-run-configuration]]
 == Preventing Remote Services Interaction During the Training Run
 
 When performing the training run, it may be needed to customize the Spring Boot application configuration to prevent connections to remote services that may happen before the Spring lifecycle is started.

@@ -67,7 +67,7 @@
 
 ** xref:reference:packaging/index.adoc[]
 *** xref:reference:packaging/efficient.adoc[]
-*** xref:reference:packaging/class-data-sharing.adoc[]
+*** xref:reference:packaging/aot-cache.adoc[]
 *** xref:reference:packaging/aot.adoc[]
 *** xref:reference:packaging/native-image/index.adoc[]
 **** xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[]
