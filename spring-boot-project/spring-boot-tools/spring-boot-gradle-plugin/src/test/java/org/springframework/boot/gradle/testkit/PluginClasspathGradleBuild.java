@@ -32,6 +32,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http2.HttpVersionPolicy;
+import org.cyclonedx.gradle.CycloneDxPlugin;
 import org.gradle.testkit.runner.GradleRunner;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
@@ -94,7 +95,19 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)),
 				new File(pathOfJarContaining("org.graalvm.buildtools.gradle.NativeImagePlugin")),
 				new File(pathOfJarContaining("org.graalvm.reachability.GraalVMReachabilityMetadataRepository")),
-				new File(pathOfJarContaining("org.graalvm.buildtools.utils.SharedConstants")));
+				new File(pathOfJarContaining("org.graalvm.buildtools.utils.SharedConstants")),
+				// CycloneDx dependencies
+				new File(pathOfJarContaining(CycloneDxPlugin.class)),
+				new File(pathOfJarContaining("com.github.packageurl.MalformedPackageURLException")),
+				new File(pathOfJarContaining("org.cyclonedx.parsers.Parser")),
+				new File(pathOfJarContaining("org.apache.maven.project.MavenProject")),
+				new File(pathOfJarContaining("org.apache.maven.model.building.ModelBuildingException")),
+				new File(pathOfJarContaining("org.codehaus.plexus.util.xml.pull.XmlPullParserException")),
+				new File(pathOfJarContaining("org.apache.commons.lang3.StringUtils")),
+				new File(pathOfJarContaining("com.networknt.schema.resource.SchemaMapper")),
+				new File(pathOfJarContaining("com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator")),
+				new File(pathOfJarContaining("org.apache.commons.collections4.CollectionUtils")),
+				new File(pathOfJarContaining("org.apache.commons.io.FileUtils")));
 	}
 
 	private String pathOfJarContaining(String className) {
