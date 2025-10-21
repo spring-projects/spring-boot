@@ -43,7 +43,7 @@ class VirtualZipPerformanceTests {
 	Path temp;
 
 	@Test
-	void sequentialReadPerformace() throws IOException {
+	void sequentialReadPerformance() throws IOException {
 		File file = createZipWithLargeEntries();
 		long start = System.nanoTime();
 		try (ZipContent zipContent = ZipContent.open(file.toPath(), "test/")) {

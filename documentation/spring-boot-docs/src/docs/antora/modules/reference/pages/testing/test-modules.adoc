@@ -8,7 +8,7 @@ Spring Boot offers several focused, feature-specific `-test` modules:
 |Module | Purpose
 
 |`spring-boot-cache-test`
-|Testing applications that use Spring Framework's cache abstration.
+|Testing applications that use Spring Framework's cache abstraction.
 
 |`spring-boot-data-cassandra-test`
 |Testing applications that use Spring Data Cassandra. Provides the `@DataCassandraTest` test slice.
