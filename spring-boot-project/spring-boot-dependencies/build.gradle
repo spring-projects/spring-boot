@@ -2424,7 +2424,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-retry/releases/tag/v{version}")
 		}
 	}
-	library("Spring Security", "6.5.6-SNAPSHOT") {
+	library("Spring Security", "6.5.6") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			bom("spring-security-bom")
