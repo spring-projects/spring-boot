@@ -45,8 +45,8 @@ The following Gradle example configures the necessary dependencies and a {url-gr
 [source,gradle]
 ----
 dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-tomcat"
-	implementation "org.springframework.boot:spring-boot-starter-webflux"
+	implementation("org.springframework.boot:spring-boot-starter-tomcat")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	modules {
 		module("org.springframework.boot:spring-boot-starter-reactor-netty") {
 			replacedBy("org.springframework.boot:spring-boot-starter-tomcat", "Use Tomcat instead of Reactor Netty")

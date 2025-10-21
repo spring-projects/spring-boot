@@ -38,10 +38,10 @@ The following example shows how to accomplish this in Gradle:
 [source,gradle]
 ----
 dependencies {
-	implementation('org.springframework.boot:spring-boot-starter-data-redis') {
+	implementation("org.springframework.boot:spring-boot-starter-data-redis") {
 	    exclude group: 'io.lettuce', module: 'lettuce-core'
 	}
-	implementation 'redis.clients:jedis'
+	implementation("redis.clients:jedis")
 	// ...
 }
 ----

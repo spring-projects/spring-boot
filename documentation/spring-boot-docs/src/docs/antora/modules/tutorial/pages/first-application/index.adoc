@@ -261,7 +261,7 @@ To add the necessary dependencies, edit your `build.gradle` and add the `spring-
 [source,gradle]
 ----
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation("org.springframework.boot:spring-boot-starter-web")
 }
 ----
 

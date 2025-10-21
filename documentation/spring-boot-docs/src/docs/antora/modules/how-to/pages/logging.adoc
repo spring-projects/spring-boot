@@ -159,7 +159,7 @@ To do so, declare a dependency on the Log4j 2 starter and tell Gradle that any o
 [source,gradle]
 ----
 dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-log4j2"
+	implementation("org.springframework.boot:spring-boot-starter-log4j2")
 	modules {
 		module("org.springframework.boot:spring-boot-starter-logging") {
 			replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
