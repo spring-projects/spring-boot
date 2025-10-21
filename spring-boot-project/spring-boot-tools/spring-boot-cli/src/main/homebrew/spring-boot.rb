@@ -16,9 +16,13 @@ class SpringBoot < Formula
       root = '.'
     end
 
-    bin.install Dir["#{root}/bin/spring"]
-    lib.install Dir["#{root}/lib/spring-boot-cli-*.jar"]
-    bash_completion.install Dir["#{root}/shell-completion/bash/spring"]
-    zsh_completion.install Dir["#{root}/shell-completion/zsh/_spring"]
+    libexec.install Dir["#{root}/*"]
+    (bin/"spring").write_env_script libexec/"bin/spring", {}
+
+    bash_comp = libexec/"shell-completion/bash/spring"
+    zsh_comp  = libexec/"shell-completion/zsh/_spring"
+
+    bash_completion.install bash_comp if bash_comp.exist?
+    zsh_completion.install  zsh_comp  if zsh_comp.exist?
   end
 end
