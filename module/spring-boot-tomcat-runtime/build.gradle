@@ -15,29 +15,18 @@
  */
 
 plugins {
-	id "war"
+	id "java-library"
+	id "org.springframework.boot.deployed"
 }
 
-description = "Spring Boot web static smoke test"
-
-configurations {
-	providedRuntime {
-		extendsFrom dependencyManagement
-	}
-}
+description = "Spring Boot Tomcat Runtime"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-webmvc"))
-
-	providedRuntime(project(":module:spring-boot-tomcat-runtime"))
-
-	runtimeOnly("org.webjars:bootstrap:3.0.3")
-	runtimeOnly("org.webjars:jquery:2.0.3-1")
-
-	testImplementation(project(":starter:spring-boot-starter-test"))
-	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
-}
-
-tasks.named("compileTestJava") {
-	options.nullability.checking = "tests"
+	api("org.apache.tomcat.embed:tomcat-embed-core") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
+	api("org.apache.tomcat.embed:tomcat-embed-el")
+	api("org.apache.tomcat.embed:tomcat-embed-websocket") {
+		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+	}
 }

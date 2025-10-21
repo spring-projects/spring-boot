@@ -44,7 +44,7 @@ systemTest {
 
 dependencies {
 	app project(path: ":build-plugin:spring-boot-gradle-plugin", configuration: "mavenRepository")
-	app project(path: ":starter:spring-boot-starter-web", configuration: "mavenRepository")
+	app project(path: ":starter:spring-boot-starter-webmvc", configuration: "mavenRepository")
 
 	implementation(project(":starter:spring-boot-starter-webmvc")) {
 		exclude group: "org.hibernate.validator"

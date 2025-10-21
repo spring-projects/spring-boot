@@ -37,8 +37,8 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-web:{bootVersion}")
-	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:{bootVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-webmvc:{bootVersion}")
+	providedRuntime("org.springframework.boot:spring-boot-tomcat-runtime:{bootVersion}")
 }
 
 bootWar {

@@ -8,6 +8,6 @@ apply(plugin = "io.spring.dependency-management")
 // tag::dependencies[]
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+	providedRuntime("org.springframework.boot:spring-boot-tomcat-runtime")
 }
 // end::dependencies[]

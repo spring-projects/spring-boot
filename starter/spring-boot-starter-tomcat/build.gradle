@@ -22,12 +22,6 @@ description = "Starter for using Tomcat"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
-
 	api(project(":module:spring-boot-tomcat"))
-
 	api("jakarta.annotation:jakarta.annotation-api")
-	api("org.apache.tomcat.embed:tomcat-embed-el")
-	api("org.apache.tomcat.embed:tomcat-embed-websocket") {
-		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
-	}
 }
