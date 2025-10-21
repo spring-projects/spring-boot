@@ -95,19 +95,21 @@ final class CycloneDxPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootJarTask(BootJar task, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
-		configureJarTask(task, cycloneDxTaskProvider);
+		configureJarTask(task, cycloneDxTaskProvider, "");
 	}
 
 	private void configureBootWarTask(BootWar task, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
-		configureJarTask(task, cycloneDxTaskProvider);
+		configureJarTask(task, cycloneDxTaskProvider, "WEB-INF/classes/");
 	}
 
-	private void configureJarTask(Jar task, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
+	private void configureJarTask(Jar task, TaskProvider<CycloneDxTask> cycloneDxTaskProvider,
+			String sbomLocationPrefix) {
 		Provider<String> sbomFileName = cycloneDxTaskProvider.map((cycloneDxTask) -> "META-INF/sbom/"
 				+ cycloneDxTask.getOutputName().get() + getSbomExtension(cycloneDxTask));
 		task.manifest((manifest) -> {
 			manifest.getAttributes().put("Sbom-Format", "CycloneDX");
-			manifest.getAttributes().put("Sbom-Location", sbomFileName);
+			manifest.getAttributes()
+				.put("Sbom-Location", sbomFileName.map((fileName) -> sbomLocationPrefix + fileName));
 		});
 	}
 
