@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.util.ClassUtils;
 
@@ -95,14 +96,19 @@ public class JvmMetricsAutoConfiguration {
 		return new JvmCompilationMetrics();
 	}
 
-	@Bean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = VIRTUAL_THREAD_METRICS_CLASS)
-	@ConditionalOnMissingBean(type = VIRTUAL_THREAD_METRICS_CLASS)
-	@ImportRuntimeHints(VirtualThreadMetricsRuntimeHintsRegistrar.class)
-	MeterBinder virtualThreadMetrics() throws ClassNotFoundException {
-		Class<?> virtualThreadMetricsClass = ClassUtils.forName(VIRTUAL_THREAD_METRICS_CLASS,
-				getClass().getClassLoader());
-		return (MeterBinder) BeanUtils.instantiateClass(virtualThreadMetricsClass);
+	static class VirtualThreadMetricsConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(type = VIRTUAL_THREAD_METRICS_CLASS)
+		@ImportRuntimeHints(VirtualThreadMetricsRuntimeHintsRegistrar.class)
+		MeterBinder virtualThreadMetrics() throws ClassNotFoundException {
+			Class<?> virtualThreadMetricsClass = ClassUtils.forName(VIRTUAL_THREAD_METRICS_CLASS,
+					getClass().getClassLoader());
+			return (MeterBinder) BeanUtils.instantiateClass(virtualThreadMetricsClass);
+		}
+
 	}
 
 	static final class VirtualThreadMetricsRuntimeHintsRegistrar implements RuntimeHintsRegistrar {

@@ -42,6 +42,7 @@ import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -80,22 +81,37 @@ public class ReactiveManagementChildContextConfiguration {
 		return httpHandler;
 	}
 
-	@Bean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "io.undertow.Undertow")
-	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer(ManagementServerProperties properties) {
-		return new UndertowAccessLogCustomizer(properties);
+	static class UndertowAccessLogCustomizerConfiguration {
+
+		@Bean
+		UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer(ManagementServerProperties properties) {
+			return new UndertowAccessLogCustomizer(properties);
+		}
+
 	}
 
-	@Bean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
-	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(ManagementServerProperties properties) {
-		return new TomcatAccessLogCustomizer(properties);
+	static class TomcatAccessLogCustomizerConfiguration {
+
+		@Bean
+		TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(ManagementServerProperties properties) {
+			return new TomcatAccessLogCustomizer(properties);
+		}
+
 	}
 
-	@Bean
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(name = "org.eclipse.jetty.server.Server")
-	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties properties) {
-		return new JettyAccessLogCustomizer(properties);
+	static class JettyAccessLogCustomizerConfiguration {
+
+		@Bean
+		JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties properties) {
+			return new JettyAccessLogCustomizer(properties);
+		}
+
 	}
 
 	abstract static class AccessLogCustomizer implements Ordered {
