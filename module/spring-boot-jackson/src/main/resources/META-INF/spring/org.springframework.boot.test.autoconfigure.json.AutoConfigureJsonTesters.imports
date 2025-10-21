@@ -1,1 +1,1 @@
-org.springframework.boot.jackson.autoconfigure.JacksonTesterAutoConfiguration
+org.springframework.boot.jackson.autoconfigure.JacksonTesterTestAutoConfiguration

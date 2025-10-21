@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.test.autoconfigure.TestAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.json.ConditionalOnJsonTesters;
 import org.springframework.boot.test.autoconfigure.json.JsonMarshalTesterRuntimeHints;
 import org.springframework.boot.test.autoconfigure.json.JsonTesterFactoryBean;
@@ -39,10 +39,10 @@ import org.springframework.context.annotation.Scope;
  * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
  */
 @Deprecated(since = "4.0.0", forRemoval = true)
-@TestAutoConfiguration(after = Jackson2AutoConfiguration.class)
+@AutoConfiguration(after = Jackson2AutoConfiguration.class)
 @ConditionalOnJsonTesters
 @SuppressWarnings("removal")
-final class Jackson2TesterAutoConfiguration {
+final class Jackson2TesterTestAutoConfiguration {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)

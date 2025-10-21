@@ -20,9 +20,9 @@ import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.test.autoconfigure.TestAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.json.ConditionalOnJsonTesters;
 import org.springframework.boot.test.autoconfigure.json.JsonMarshalTesterRuntimeHints;
 import org.springframework.boot.test.autoconfigure.json.JsonTesterFactoryBean;
@@ -37,9 +37,9 @@ import org.springframework.context.annotation.Scope;
  *
  * @author Phjllip Webb
  */
-@TestAutoConfiguration(after = JacksonAutoConfiguration.class)
+@AutoConfiguration(after = JacksonAutoConfiguration.class)
 @ConditionalOnJsonTesters
-final class JacksonTesterAutoConfiguration {
+final class JacksonTesterTestAutoConfiguration {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)

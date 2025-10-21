@@ -31,14 +31,14 @@ import org.springframework.context.support.GenericApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link GsonTesterAutoConfiguration}.
+ * Tests for {@link GsonTesterTestAutoConfiguration}.
  *
  * @author Andy Wilkinson
  */
 class GsonTesterAutoConfigurationTests {
 
 	private final ApplicationContextRunner runner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-		.of(JsonTestersAutoConfiguration.class, GsonAutoConfiguration.class, GsonTesterAutoConfiguration.class));
+		.of(JsonTestersAutoConfiguration.class, GsonAutoConfiguration.class, GsonTesterTestAutoConfiguration.class));
 
 	@Test
 	void hintsAreContributed() {

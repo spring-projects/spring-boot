@@ -37,8 +37,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JacksonTesterAutoConfigurationTests {
 
-	private final ApplicationContextRunner runner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-		.of(JsonTestersAutoConfiguration.class, JacksonAutoConfiguration.class, JacksonTesterAutoConfiguration.class));
+	private final ApplicationContextRunner runner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(JsonTestersAutoConfiguration.class, JacksonAutoConfiguration.class,
+				JacksonTesterTestAutoConfiguration.class));
 
 	@Test
 	void hintsAreContributed() {
