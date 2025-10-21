@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility
 class CycloneDxPluginActionIntegrationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate
@@ -51,7 +53,8 @@ class CycloneDxPluginActionIntegrationTests {
 
 	private void sbomIsIncludedInUberArchive(String taskName, String sbomLocationPrefix) throws IOException {
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("7.6.6").build(taskName);
-		assertThat(result.task(":cyclonedxBom").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		BuildTask task = result.task(":cyclonedxBom");
+		assertThat(task).isNotNull().extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		File[] libs = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles();
 		assertThat(libs).hasSize(1);
 		try (JarFile jar = new JarFile(libs[0])) {
