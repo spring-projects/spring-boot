@@ -1879,7 +1879,7 @@ bom {
 				.formatted(version.toString("_")))
 		}
 	}
-	library("R2DBC H2", "1.0.0.RELEASE") {
+	library("R2DBC H2", "1.0.1.RELEASE") {
 		considerSnapshots()
 		group("io.r2dbc") {
 			modules = [
