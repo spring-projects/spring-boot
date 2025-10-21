@@ -10,7 +10,7 @@ The annotation works by xref:testing/spring-boot-applications.adoc#testing.sprin
 In addition to javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] a number of other annotations are also provided for xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[testing more specific slices] of an application.
 
 TIP: If you are using JUnit 4, do not forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
-If you are using JUnit 5, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the other `@...Test` annotations are already annotated with it.
+If you are using JUnit 6, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the other `@...Test` annotations are already annotated with it.
 
 By default, javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] will not start a server.
 You can use the `webEnvironment` attribute of javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] to further refine how your tests run:
@@ -18,7 +18,7 @@ You can use the `webEnvironment` attribute of javadoc:org.springframework.boot.t
 * `MOCK`(Default) : Loads a web javadoc:org.springframework.context.ApplicationContext[] and provides a mock web environment.
 Embedded servers are not started when using this annotation.
 If a web environment is not available on your classpath, this mode transparently falls back to creating a regular non-web javadoc:org.springframework.context.ApplicationContext[].
-It can be used in conjunction with xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[`@AutoConfigureMockMvc` or javadoc:org.springframework.boot.webflux.test.autoconfigure.AutoConfigureWebTestClient[format=annotation]] for mock-based testing of your web application.
+It can be used in conjunction with xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[`@AutoConfigureMockMvc`, javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient[format=annotation]], or javadoc:org.springframework.boot.webflux.test.autoconfigure.AutoConfigureWebTestClient[format=annotation]] for mock-based testing of your web application.
 * `RANDOM_PORT`: Loads a javadoc:org.springframework.boot.web.context.WebServerApplicationContext[] and provides a real web environment.
 Embedded servers are started and listen on a random port.
 * `DEFINED_PORT`: Loads a javadoc:org.springframework.boot.web.context.WebServerApplicationContext[] and provides a real web environment.

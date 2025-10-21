@@ -137,8 +137,8 @@ Note that some features (such as detecting the default value or deprecated items
 [[features.kotlin.testing]]
 == Testing
 
-While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
-JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
+While it is possible to use JUnit 4 to test Kotlin code, JUnit 6 is provided by default and is recommended.
+JUnit 6 enables a test class to be instantiated once and reused for all of the class's tests.
 This makes it possible to use javadoc:org.junit.jupiter.api.BeforeAll[format=annotation] and javadoc:org.junit.jupiter.api.AfterAll[format=annotation] annotations on non-static methods, which is a good fit for Kotlin.
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
