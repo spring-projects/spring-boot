@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@GradleCompatibility
+@GradleCompatibility(versionsAtLeast = "8.0")
 class CycloneDxPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
@@ -50,7 +50,7 @@ class CycloneDxPluginActionIntegrationTests {
 	}
 
 	private void sbomIsIncludedInUberArchive(String taskName, String sbomLocationPrefix) throws IOException {
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("7.6.6").build(taskName);
+		BuildResult result = this.gradleBuild.expectDeprecationMessages("Unknown keyword deprecated").build(taskName);
 		assertThat(result.task(":cyclonedxBom").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File[] libs = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles();
 		assertThat(libs).hasSize(1);

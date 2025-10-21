@@ -64,6 +64,11 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 			gradleVersions = gradleVersions
 				.filter((version) -> GradleVersion.version(version).compareTo(upperExclusive) < 0);
 		}
+		if (StringUtils.hasText(gradleCompatibility.versionsAtLeast())) {
+			GradleVersion lowerInclusive = GradleVersion.version(gradleCompatibility.versionsAtLeast());
+			gradleVersions = gradleVersions
+				.filter((version) -> GradleVersion.version(version).compareTo(lowerInclusive) >= 0);
+		}
 		return gradleVersions.flatMap((version) -> {
 			List<TestTemplateInvocationContext> invocationContexts = new ArrayList<>();
 			BuildOutput buildOutput = new BuildOutput(testClass);

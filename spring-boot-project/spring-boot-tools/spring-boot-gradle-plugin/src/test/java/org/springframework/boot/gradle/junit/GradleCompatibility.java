@@ -50,4 +50,6 @@ public @interface GradleCompatibility {
 
 	String versionsLessThan() default "";
 
+	String versionsAtLeast() default "";
+
 }
