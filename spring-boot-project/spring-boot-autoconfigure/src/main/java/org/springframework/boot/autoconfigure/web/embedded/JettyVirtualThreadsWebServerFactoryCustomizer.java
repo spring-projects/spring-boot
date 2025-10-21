@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import org.eclipse.jetty.util.VirtualThreads;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.VirtualThreadPool;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
  * Activates virtual threads on the {@link ConfigurableJettyWebServerFactory}.
  *
  * @author Moritz Halbritter
+ * @author Brian Clozel
  * @since 3.2.0
  */
 public class JettyVirtualThreadsWebServerFactoryCustomizer
@@ -43,9 +44,9 @@ public class JettyVirtualThreadsWebServerFactoryCustomizer
 	@Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
 		Assert.state(VirtualThreads.areSupported(), "Virtual threads are not supported");
-		QueuedThreadPool threadPool = JettyThreadPool.create(this.serverProperties.getJetty().getThreads());
-		threadPool.setVirtualThreadsExecutor(VirtualThreads.getNamedVirtualThreadsExecutor("jetty-"));
-		factory.setThreadPool(threadPool);
+		VirtualThreadPool virtualThreadPool = new VirtualThreadPool();
+		virtualThreadPool.setName("jetty-");
+		factory.setThreadPool(virtualThreadPool);
 	}
 
 	@Override
