@@ -381,7 +381,7 @@ tasks.register("documentDevtoolsPropertyDefaults", org.springframework.boot.buil
 tasks.register("runRemoteSpringApplicationExample", org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.remoteSpringApplicationExample
 	mainClass = "org.springframework.boot.devtools.RemoteSpringApplication"
-	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.port=0"]
+	args = ["https://myapp.example.com", "--spring.devtools.remote.secret=secret", "--spring.devtools.livereload.enabled=true", "--spring.devtools.livereload.port=0"]
 	output = layout.buildDirectory.file("example-output/remote-spring-application.txt")
 	expectedLogging = "Started RemoteSpringApplication in "
 	applicationJar = "/Users/myuser/.m2/repository/org/springframework/boot/spring-boot-devtools/${project.version}/spring-boot-devtools-${project.version}.jar"

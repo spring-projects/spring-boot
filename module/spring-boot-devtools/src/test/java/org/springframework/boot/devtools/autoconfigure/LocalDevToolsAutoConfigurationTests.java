@@ -113,15 +113,10 @@ class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	void liveReloadServer() throws Exception {
-		this.context = getContext(() -> initializeAndRun(Config.class));
-		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
-		assertThat(server.isStarted()).isTrue();
-	}
-
-	@Test
 	void liveReloadTriggeredOnContextRefresh() throws Exception {
-		this.context = getContext(() -> initializeAndRun(ConfigWithMockLiveReload.class));
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("spring.devtools.livereload.enabled", true);
+		this.context = getContext(() -> initializeAndRun(ConfigWithMockLiveReload.class, properties));
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		this.context.publishEvent(new ContextRefreshedEvent(this.context));
@@ -130,7 +125,9 @@ class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	void liveReloadTriggeredOnClassPathChangeWithoutRestart() throws Exception {
-		this.context = getContext(() -> initializeAndRun(ConfigWithMockLiveReload.class));
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("spring.devtools.livereload.enabled", true);
+		this.context = getContext(() -> initializeAndRun(ConfigWithMockLiveReload.class, properties));
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), false);
@@ -140,7 +137,9 @@ class LocalDevToolsAutoConfigurationTests {
 
 	@Test
 	void liveReloadNotTriggeredOnClassPathChangeWithRestart() throws Exception {
-		this.context = getContext(() -> initializeAndRun(ConfigWithMockLiveReload.class));
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("spring.devtools.livereload.enabled", true);
+		this.context = getContext(() -> initializeAndRun(ConfigWithMockLiveReload.class, properties));
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
 		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), true);
@@ -149,10 +148,8 @@ class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
-	void liveReloadDisabled() throws Exception {
-		Map<String, Object> properties = new HashMap<>();
-		properties.put("spring.devtools.livereload.enabled", false);
-		this.context = getContext(() -> initializeAndRun(Config.class, properties));
+	void liveReloadDisabledByDefault() throws Exception {
+		this.context = getContext(() -> initializeAndRun(Config.class));
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(() -> {
 			assertThat(this.context).isNotNull();
 			this.context.getBean(OptionalLiveReloadServer.class);
