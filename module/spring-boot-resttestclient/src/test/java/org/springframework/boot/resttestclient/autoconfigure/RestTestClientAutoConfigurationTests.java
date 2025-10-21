@@ -75,10 +75,9 @@ class RestTestClientAutoConfigurationTests {
 					org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
 					org.springframework.boot.resttestclient.autoconfigure.RestTestClientAutoConfigurationTests$TestLocalTestWebServerProvider
 					""")
-	void shouldDefineWebTestClientBoundToWebServer() {
+	void shouldDefineRestTestClientBoundToWebServer() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(RestTestClient.class);
-			assertThat(context).hasBean("restTestClient");
+			assertThat(context).hasSingleBean(RestTestClient.class).hasBean("restTestClient");
 			RestTestClient client = context.getBean(RestTestClient.class);
 			UriBuilderFactory uiBuilderFactory = (UriBuilderFactory) Extractors
 				.byName("restTestClientBuilder.restClientBuilder.uriBuilderFactory")
@@ -97,6 +96,7 @@ class RestTestClientAutoConfigurationTests {
 
 	}
 
+	@SuppressWarnings("unused")
 	static class TestLocalTestWebServerProvider implements LocalTestWebServer.Provider {
 
 		@Override

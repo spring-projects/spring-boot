@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
-import org.springframework.boot.test.http.server.LocalTestWebServer.Connection;
+import org.springframework.boot.test.http.server.LocalTestWebServer.BaseUriDetails;
 import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.context.ApplicationContext;
@@ -56,7 +56,7 @@ class ServletWebServerApplicationContextLocalTestWebServerProvider implements Lo
 		return LocalTestWebServer.of((isSslEnabled(this.context)) ? Scheme.HTTPS : Scheme.HTTP, () -> {
 			int port = this.context.getEnvironment().getProperty("local.server.port", Integer.class, 8080);
 			String path = this.context.getEnvironment().getProperty("server.servlet.context-path", "");
-			return new Connection(port, path);
+			return new BaseUriDetails(port, path);
 		});
 	}
 

@@ -225,6 +225,7 @@ class WebTestClientAutoConfigurationTests {
 
 	}
 
+	@SuppressWarnings("unused")
 	static class TestLocalTestWebServerProvider implements LocalTestWebServer.Provider {
 
 		@Override

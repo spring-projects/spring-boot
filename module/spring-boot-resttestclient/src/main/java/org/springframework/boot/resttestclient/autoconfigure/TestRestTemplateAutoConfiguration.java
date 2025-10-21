@@ -41,7 +41,7 @@ public final class TestRestTemplateAutoConfiguration {
 	TestRestTemplate testRestTemplate(ObjectProvider<RestTemplateBuilder> builderProvider,
 			ApplicationContext applicationContext) {
 		RestTemplateBuilder builder = builderProvider.getIfAvailable(RestTemplateBuilder::new);
-		LocalTestWebServer localTestWebServer = LocalTestWebServer.getRequired(applicationContext);
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.obtain(applicationContext);
 		TestRestTemplate template = new TestRestTemplate(builder, null, null,
 				httpClientOptions(localTestWebServer.scheme()));
 		template.setUriTemplateHandler(localTestWebServer.uriBuilderFactory());

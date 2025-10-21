@@ -34,7 +34,7 @@ import org.springframework.web.util.UriBuilderFactory;
  */
 public class UriBuilderFactoryWebClient extends WebClient {
 
-	private UriBuilderFactory uriBuilderFactory;
+	private final UriBuilderFactory uriBuilderFactory;
 
 	public UriBuilderFactoryWebClient(UriBuilderFactory uriBuilderFactory) {
 		Assert.notNull(uriBuilderFactory, "'uriBuilderFactory' must not be null");
@@ -43,8 +43,7 @@ public class UriBuilderFactoryWebClient extends WebClient {
 
 	@Override
 	public <P extends Page> P getPage(String url) throws IOException, FailingHttpStatusCodeException {
-		return super.getPage(
-				(this.uriBuilderFactory != null) ? this.uriBuilderFactory.uriString(url).toUriString() : url);
+		return super.getPage(this.uriBuilderFactory.uriString(url).toUriString());
 	}
 
 }

@@ -32,7 +32,7 @@ import org.springframework.web.util.UriBuilderFactory;
  */
 public class UriBuilderFactoryWebConnectionHtmlUnitDriver extends WebConnectionHtmlUnitDriver {
 
-	private UriBuilderFactory uriBuilderFactory;
+	private final UriBuilderFactory uriBuilderFactory;
 
 	public UriBuilderFactoryWebConnectionHtmlUnitDriver(UriBuilderFactory uriBuilderFactory) {
 		Assert.notNull(uriBuilderFactory, "'uriBuilderFactory' must not be null");
@@ -60,6 +60,7 @@ public class UriBuilderFactoryWebConnectionHtmlUnitDriver extends WebConnectionH
 	}
 
 	@Override
+	@SuppressWarnings("ConstantValue") // default constructor calls this method
 	public void get(String url) {
 		super.get((this.uriBuilderFactory != null) ? this.uriBuilderFactory.uriString(url).toUriString() : url);
 	}

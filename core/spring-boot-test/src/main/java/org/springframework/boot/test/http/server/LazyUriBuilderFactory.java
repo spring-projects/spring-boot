@@ -30,13 +30,14 @@ import org.springframework.web.util.UriBuilderFactory;
  * Lazy {@link UriBuilderFactory} that only obtains the delegate on first call.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 class LazyUriBuilderFactory implements UriBuilderFactory {
 
-	private final Supplier<UriBuilderFactory> suppler;
+	private final Supplier<UriBuilderFactory> supplier;
 
 	LazyUriBuilderFactory(Supplier<UriBuilderFactory> supplier) {
-		this.suppler = SingletonSupplier.of(supplier);
+		this.supplier = SingletonSupplier.of(supplier);
 	}
 
 	@Override
@@ -60,7 +61,7 @@ class LazyUriBuilderFactory implements UriBuilderFactory {
 	}
 
 	private UriBuilderFactory delegate() {
-		return this.suppler.get();
+		return this.supplier.get();
 	}
 
 }

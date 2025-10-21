@@ -102,6 +102,7 @@ class HttpGraphQlTesterAutoConfigurationTests {
 			});
 	}
 
+	@SuppressWarnings("unused")
 	static class TestLocalTestWebServerProvider implements LocalTestWebServer.Provider {
 
 		@Override

@@ -43,18 +43,22 @@ public final class LocalTestWebServer {
 
 	private final Scheme scheme;
 
-	private final SingletonSupplier<Connection> connection;
+	private final SingletonSupplier<BaseUriDetails> baseUriDetails;
 
-	private LocalTestWebServer(Scheme scheme, Supplier<Connection> connectionSupplier) {
+	private final UriBuilderFactory uriBuilderFactory;
+
+	private LocalTestWebServer(Scheme scheme, Supplier<BaseUriDetails> baseUriDetailsSupplier) {
 		Assert.notNull(scheme, "'scheme' must not be null");
-		Assert.notNull(connectionSupplier, "'connectionSupplier' must not be null");
+		Assert.notNull(baseUriDetailsSupplier, "'baseUriDetailsSupplier' must not be null");
 		this.scheme = scheme;
-		this.connection = SingletonSupplier.of(connectionSupplier);
+		this.baseUriDetails = SingletonSupplier.of(baseUriDetailsSupplier);
+		this.uriBuilderFactory = new LazyUriBuilderFactory(
+				() -> new DefaultUriBuilderFactory(this.baseUriDetails.obtain().uri(scheme())));
 	}
 
 	/**
-	 * Return if URI scheme used for the connection. This method can be safely called
-	 * before the local test server is fully running.
+	 * Return if URI scheme used for the request. This method can be safely called before
+	 * the local test server is fully running.
 	 * @return if the web server uses an HTTPS address
 	 */
 	public Scheme scheme() {
@@ -100,7 +104,7 @@ public final class LocalTestWebServer {
 	 * @return a new {@link UriBuilderFactory}
 	 */
 	public UriBuilderFactory uriBuilderFactory() {
-		return new LazyUriBuilderFactory(() -> new DefaultUriBuilderFactory(getConnection().uri(scheme())));
+		return this.uriBuilderFactory;
 	}
 
 	/**
@@ -110,13 +114,7 @@ public final class LocalTestWebServer {
 	 * @return a new instance with the path added
 	 */
 	public LocalTestWebServer withPath(String path) {
-		return of(this.scheme, () -> getConnection().withPath(path));
-	}
-
-	private Connection getConnection() {
-		Connection connection = this.connection.get();
-		Assert.state(connection != null, "No local test web server connection supplied");
-		return connection;
+		return of(this.scheme, () -> this.baseUriDetails.obtain().withPath(path));
 	}
 
 	/**
@@ -137,33 +135,33 @@ public final class LocalTestWebServer {
 	 * @return a new {@link LocalTestWebServer} instance
 	 */
 	public static LocalTestWebServer of(Scheme scheme, int port, @Nullable String contextPath) {
-		return of(scheme, () -> new Connection(port, (contextPath != null) ? contextPath : ""));
+		return of(scheme, () -> new BaseUriDetails(port, (contextPath != null) ? contextPath : ""));
 	}
 
 	/**
 	 * Factory method to create a new {@link LocalTestWebServer} instance.
 	 * @param scheme the URL scheme
-	 * @param connectionSupplier a supplier to provide the server connection
+	 * @param baseUriDetailsSupplier a supplier to provide the details of the base URI
 	 * @return a new {@link LocalTestWebServer} instance
 	 */
-	public static LocalTestWebServer of(Scheme scheme, Supplier<Connection> connectionSupplier) {
-		return new LocalTestWebServer(scheme, connectionSupplier);
+	public static LocalTestWebServer of(Scheme scheme, Supplier<BaseUriDetails> baseUriDetailsSupplier) {
+		return new LocalTestWebServer(scheme, baseUriDetailsSupplier);
 	}
 
 	/**
-	 * Return a {@link LocalTestWebServer} instance provided from the
+	 * Obtain the {@link LocalTestWebServer} instance provided from the
 	 * {@link ApplicationContext}.
 	 * @param applicationContext the application context
-	 * @return the local test web server or {@code null}
+	 * @return the local test web server (never {@code null})
 	 */
-	public static LocalTestWebServer getRequired(ApplicationContext applicationContext) {
+	public static LocalTestWebServer obtain(ApplicationContext applicationContext) {
 		LocalTestWebServer localTestWebServer = get(applicationContext);
 		Assert.state(localTestWebServer != null, "No local test web server available");
 		return localTestWebServer;
 	}
 
 	/**
-	 * Return a {@link LocalTestWebServer} instance provided from the
+	 * Return the {@link LocalTestWebServer} instance provided from the
 	 * {@link ApplicationContext} or {@code null} of no local server is started or could
 	 * be provided.
 	 * @param applicationContext the application context
@@ -182,23 +180,19 @@ public final class LocalTestWebServer {
 	}
 
 	/**
-	 * Details of a connection to the local test web server.
+	 * Details of the base URI to the local test web server.
 	 *
 	 * @param port the port of the running server
-	 * @param path the path of the running server
+	 * @param path the path to use
 	 */
-	public record Connection(int port, String path) {
+	public record BaseUriDetails(int port, String path) {
 
 		String uri(Scheme scheme) {
-			StringBuilder uri = new StringBuilder(scheme.name().toLowerCase(Locale.getDefault()));
-			uri.append("://localhost:");
-			uri.append(port());
-			uri.append(path());
-			return uri.toString();
+			return scheme.name().toLowerCase(Locale.ROOT) + "://localhost:" + port() + path();
 		}
 
-		Connection withPath(String path) {
-			return new Connection(port(), path() + path);
+		BaseUriDetails withPath(String path) {
+			return new BaseUriDetails(port(), path() + path);
 		}
 
 	}
@@ -221,10 +215,9 @@ public final class LocalTestWebServer {
 	}
 
 	/**
-	 * Strategy used to provide the running {@link LocalTestWebServer}. Implementations
-	 * can be registered in {@code spring.factories} and may accept an
+	 * Internal strategy used to provide the running {@link LocalTestWebServer}.
+	 * Implementations can be registered in {@code spring.factories} and may accept an
 	 * {@link ApplicationContext} constructor argument.
-	 *
 	 */
 	@FunctionalInterface
 	public interface Provider {

@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.test.http.server.LocalTestWebServer.Connection;
+import org.springframework.boot.test.http.server.LocalTestWebServer.BaseUriDetails;
 import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.ApplicationContext;
@@ -129,12 +129,19 @@ class LocalTestWebServerTests {
 	}
 
 	@Test
-	void uriUsesSingletonConnection() {
+	void uriUsesSingletonBaseUriDetails() {
 		AtomicInteger counter = new AtomicInteger();
 		LocalTestWebServer server = LocalTestWebServer.of(Scheme.HTTPS,
-				() -> new Connection(8080, "/" + counter.incrementAndGet()));
+				() -> new BaseUriDetails(8080, "/" + counter.incrementAndGet()));
 		assertThat(server.uri()).isEqualTo("https://localhost:8080/1");
 		assertThat(server.uri()).isEqualTo("https://localhost:8080/1");
+	}
+
+	@Test
+	void uriBuilderFactoryUsesSingletonUriBuilderFactory() {
+		LocalTestWebServer server = LocalTestWebServer.of(Scheme.HTTPS, () -> new BaseUriDetails(8080, "/"));
+		UriBuilderFactory uriBuilderFactory = server.uriBuilderFactory();
+		assertThat(server.uriBuilderFactory()).isSameAs(uriBuilderFactory);
 	}
 
 	@Test
@@ -145,9 +152,9 @@ class LocalTestWebServerTests {
 
 	@Test
 	@SuppressWarnings("NullAway") // Test null check
-	void ofWhenConnectionSupplierIsNull() {
+	void ofWhenBaseUriDetailsSupplierIsNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LocalTestWebServer.of(Scheme.HTTPS, null))
-			.withMessage("'connectionSupplier' must not be null");
+			.withMessage("'baseUriDetailsSupplier' must not be null");
 	}
 
 	@Test
@@ -180,12 +187,13 @@ class LocalTestWebServerTests {
 			org.springframework.boot.test.http.server.LocalTestWebServer$Provider=\
 			org.springframework.boot.test.http.server.LocalTestWebServerTests$Provider1
 			""")
-	void getRequiredWhenNoneProvidedThrowsException() {
+	void obtainWhenNoneProvidedThrowsException() {
 		ApplicationContext applicationContext = new GenericApplicationContext();
-		assertThatIllegalStateException().isThrownBy(() -> LocalTestWebServer.getRequired(applicationContext))
+		assertThatIllegalStateException().isThrownBy(() -> LocalTestWebServer.obtain(applicationContext))
 			.withMessage("No local test web server available");
 	}
 
+	@SuppressWarnings("unused")
 	static class Provider1 implements LocalTestWebServer.Provider {
 
 		@Override
@@ -195,6 +203,7 @@ class LocalTestWebServerTests {
 
 	}
 
+	@SuppressWarnings("unused")
 	static class Provider2 implements LocalTestWebServer.Provider {
 
 		@Override
@@ -204,6 +213,7 @@ class LocalTestWebServerTests {
 
 	}
 
+	@SuppressWarnings("unused")
 	static class Provider3 implements LocalTestWebServer.Provider {
 
 		@Override

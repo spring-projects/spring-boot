@@ -200,7 +200,7 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 	}
 
 	private TestRestTemplate configure(TestRestTemplate restTemplate) {
-		LocalTestWebServer localTestWebServer = LocalTestWebServer.getRequired(getApplicationContext());
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.obtain(getApplicationContext());
 		restTemplate.setUriTemplateHandler(localTestWebServer.uriBuilderFactory());
 		return restTemplate;
 	}

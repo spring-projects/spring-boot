@@ -54,7 +54,7 @@ class CorsSampleActuatorApplicationTests {
 	@BeforeEach
 	void setUp() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
-		LocalTestWebServer localTestWebServer = LocalTestWebServer.getRequired(this.applicationContext);
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.obtain(this.applicationContext);
 		builder = builder.uriTemplateHandler(localTestWebServer.uriBuilderFactory());
 		this.testRestTemplate = new TestRestTemplate(builder);
 	}
