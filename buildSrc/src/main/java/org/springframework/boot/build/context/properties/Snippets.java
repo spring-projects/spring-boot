@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.file.FileCollection;
 
+import org.springframework.boot.build.context.properties.ConfigurationProperty.Deprecation;
+
 /**
  * Configuration properties snippets.
  *
@@ -118,7 +120,12 @@ class Snippets {
 	}
 
 	private boolean shouldAdd(ConfigurationProperty property) {
-		return (property == null || property.isDeprecated() == this.deprecated);
+		return (property == null || (property.isDeprecated() == this.deprecated && !deprecatedAtErrorLevel(property)));
+	}
+
+	private boolean deprecatedAtErrorLevel(ConfigurationProperty property) {
+		Deprecation deprecation = property.getDeprecation();
+		return deprecation != null && "error".equals(deprecation.level());
 	}
 
 	private Asciidoc getAsciidoc(Snippet snippet, Table table) {
