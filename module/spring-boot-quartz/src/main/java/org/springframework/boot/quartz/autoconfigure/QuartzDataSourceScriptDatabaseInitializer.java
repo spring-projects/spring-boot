@@ -17,6 +17,7 @@
 package org.springframework.boot.quartz.autoconfigure;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -24,11 +25,10 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
-import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
+import org.springframework.boot.jdbc.init.PropertiesBasedDataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Quartz Scheduler database. May be
@@ -37,9 +37,11 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @since 4.0.0
  */
-public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
+public class QuartzDataSourceScriptDatabaseInitializer
+		extends PropertiesBasedDataSourceScriptDatabaseInitializer<QuartzJdbcProperties> {
 
 	private final @Nullable List<String> commentPrefixes;
 
@@ -50,23 +52,15 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @see #getSettings
 	 */
 	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, QuartzJdbcProperties properties) {
-		this(dataSource, getSettings(dataSource, properties), properties.getCommentPrefix());
+		super(dataSource, properties,
+				Map.of(DatabaseDriver.DB2, "db2_v95", DatabaseDriver.MYSQL, "mysql_innodb", DatabaseDriver.MARIADB,
+						"mysql_innodb", DatabaseDriver.POSTGRESQL, "postgres", DatabaseDriver.SQLSERVER, "sqlServer"));
+		this.commentPrefixes = properties.getCommentPrefix();
 	}
 
-	/**
-	 * Create a new {@link QuartzDataSourceScriptDatabaseInitializer} instance.
-	 * @param dataSource the Quartz Scheduler data source
-	 * @param settings the database initialization settings
-	 * @see #getSettings
-	 */
-	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
-		this(dataSource, settings, null);
-	}
-
-	private QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings,
-			@Nullable List<String> commentPrefixes) {
-		super(dataSource, settings);
-		this.commentPrefixes = commentPrefixes;
+	@Override
+	protected DatabaseInitializationSettings getSettings() {
+		return super.getSettings();
 	}
 
 	@Override
@@ -74,37 +68,6 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 		if (!ObjectUtils.isEmpty(this.commentPrefixes)) {
 			populator.setCommentPrefixes(this.commentPrefixes.toArray(new String[0]));
 		}
-	}
-
-	/**
-	 * Adapts {@link QuartzProperties Quartz properties} to
-	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
-	 * placeholders.
-	 * @param dataSource the Quartz Scheduler data source
-	 * @param properties the Quartz properties
-	 * @return a new {@link DatabaseInitializationSettings} instance
-	 * @see #QuartzDataSourceScriptDatabaseInitializer(DataSource,
-	 * DatabaseInitializationSettings)
-	 */
-	public static DatabaseInitializationSettings getSettings(DataSource dataSource, QuartzJdbcProperties properties) {
-		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties));
-		settings.setMode(properties.getInitializeSchema());
-		settings.setContinueOnError(true);
-		return settings;
-	}
-
-	private static List<String> resolveSchemaLocations(DataSource dataSource, QuartzJdbcProperties properties) {
-		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.DB2, "db2_v95");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MYSQL, "mysql_innodb");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql_innodb");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.POSTGRESQL, "postgres");
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.SQLSERVER, "sqlServer");
-		if (StringUtils.hasText(properties.getPlatform())) {
-			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());
-		}
-		return platformResolver.resolveAll(dataSource, properties.getSchema());
 	}
 
 }

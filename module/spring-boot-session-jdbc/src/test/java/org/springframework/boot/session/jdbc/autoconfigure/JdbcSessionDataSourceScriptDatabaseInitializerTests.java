@@ -38,8 +38,9 @@ class JdbcSessionDataSourceScriptDatabaseInitializerTests {
 		DataSource dataSource = mock(DataSource.class);
 		JdbcSessionProperties properties = new JdbcSessionProperties();
 		properties.setPlatform("test");
-		DatabaseInitializationSettings settings = JdbcSessionDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties);
+		DatabaseInitializationSettings settings = new JdbcSessionDataSourceScriptDatabaseInitializer(dataSource,
+				properties)
+			.getSettings();
 		assertThat(settings.getSchemaLocations())
 			.containsOnly("classpath:org/springframework/session/jdbc/schema-test.sql");
 		then(dataSource).shouldHaveNoInteractions();
