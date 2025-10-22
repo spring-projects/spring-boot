@@ -104,7 +104,10 @@ class ChangelogWriter implements AutoCloseable {
 	}
 
 	private void writeAdded(Difference difference) {
-		writeRegularPropertyRow(difference.newProperty());
+		ConfigurationMetadataProperty property = difference.newProperty();
+		writeCell(monospace(property.getId()) + (property.isDeprecated() ? " (deprecated)" : ""));
+		writeCell(monospace(asString(property.getDefaultValue())));
+		writeCell(property.getShortDescription());
 	}
 
 	private void writeRemoved(List<Difference> deleted, List<Difference> deprecated) {
@@ -155,12 +158,6 @@ class ChangelogWriter implements AutoCloseable {
 
 	private void writeTableBreak() {
 		write("|======================%n");
-	}
-
-	private void writeRegularPropertyRow(ConfigurationMetadataProperty property) {
-		writeCell(monospace(property.getId()));
-		writeCell(monospace(asString(property.getDefaultValue())));
-		writeCell(property.getShortDescription());
 	}
 
 	private void writeDeprecatedPropertyRow(ConfigurationMetadataProperty property) {

@@ -39,13 +39,14 @@ class ChangelogTests {
 		assertThat(differences).isNotNull();
 		assertThat(differences.oldVersionNumber()).isEqualTo("1.0");
 		assertThat(differences.newVersionNumber()).isEqualTo("2.0");
-		assertThat(differences.differences()).hasSize(5);
+		assertThat(differences.differences()).hasSize(6);
 		List<Difference> added = differences.differences()
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.ADDED)
 			.toList();
-		assertThat(added).hasSize(1);
-		assertProperty(added.get(0).newProperty(), "test.add", String.class, "new");
+		assertThat(added).hasSize(2)
+			.anySatisfy((entry) -> assertProperty(entry.newProperty(), "test.add", String.class, "new"))
+			.anySatisfy((entry) -> assertProperty(entry.newProperty(), "test.add.deprecated", String.class, "test2"));
 		List<Difference> deleted = differences.differences()
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.DELETED)

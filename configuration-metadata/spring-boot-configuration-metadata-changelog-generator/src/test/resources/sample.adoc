@@ -16,6 +16,10 @@ _None_.
 | `test.add`
 | `new`
 | Test add.
+
+| `test.add.deprecated` (deprecated)
+| `test2`
+| Test add deprecated.
 |======================
 
 
