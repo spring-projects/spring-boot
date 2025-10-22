@@ -65,25 +65,11 @@ public class PropertiesBasedDataSourceScriptDatabaseInitializer<T extends Databa
 	 * placeholders.
 	 * @param dataSource the data source
 	 * @param properties the configuration properties
-	 * @param <T> the {@link DatabaseInitializationProperties} type being used
-	 * @return a new {@link DatabaseInitializationSettings} instance
-	 */
-	public static <T extends DatabaseInitializationProperties> DatabaseInitializationSettings getSettings(
-			DataSource dataSource, T properties) {
-		return getSettings(dataSource, properties, Collections.emptyMap());
-	}
-
-	/**
-	 * Adapts {@link DatabaseInitializationProperties configuration properties} to
-	 * {@link DatabaseInitializationSettings} replacing any {@literal @@platform@@}
-	 * placeholders.
-	 * @param dataSource the data source
-	 * @param properties the configuration properties
 	 * @param driverMappings the driver mappings
 	 * @param <T> the {@link DatabaseInitializationProperties} type being used
 	 * @return a new {@link DatabaseInitializationSettings} instance
 	 */
-	public static <T extends DatabaseInitializationProperties> DatabaseInitializationSettings getSettings(
+	private static <T extends DatabaseInitializationProperties> DatabaseInitializationSettings getSettings(
 			DataSource dataSource, T properties, Map<DatabaseDriver, String> driverMappings) {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(resolveSchemaLocations(dataSource, properties, driverMappings));

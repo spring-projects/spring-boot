@@ -26,6 +26,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PropertiesBasedDataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.ObjectUtils;
 
@@ -55,6 +56,11 @@ public class QuartzDataSourceScriptDatabaseInitializer
 				Map.of(DatabaseDriver.DB2, "db2_v95", DatabaseDriver.MYSQL, "mysql_innodb", DatabaseDriver.MARIADB,
 						"mysql_innodb", DatabaseDriver.POSTGRESQL, "postgres", DatabaseDriver.SQLSERVER, "sqlServer"));
 		this.commentPrefixes = properties.getCommentPrefix();
+	}
+
+	@Override
+	protected DatabaseInitializationSettings getSettings() {
+		return super.getSettings();
 	}
 
 	@Override

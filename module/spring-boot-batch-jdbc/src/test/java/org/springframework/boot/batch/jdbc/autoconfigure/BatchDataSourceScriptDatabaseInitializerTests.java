@@ -54,8 +54,8 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 		DataSource dataSource = mock(DataSource.class);
 		BatchJdbcProperties properties = new BatchJdbcProperties();
 		properties.setPlatform("test");
-		DatabaseInitializationSettings settings = BatchDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties);
+		DatabaseInitializationSettings settings = new BatchDataSourceScriptDatabaseInitializer(dataSource, properties)
+			.getSettings();
 		assertThat(settings.getSchemaLocations())
 			.containsOnly("classpath:org/springframework/batch/core/schema-test.sql");
 		then(dataSource).shouldHaveNoInteractions();
@@ -74,8 +74,8 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 		given(connection.getMetaData()).willReturn(metadata);
 		String productName = (String) ReflectionTestUtils.getField(driver, "productName");
 		given(metadata.getDatabaseProductName()).willReturn(productName);
-		DatabaseInitializationSettings settings = BatchDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties);
+		DatabaseInitializationSettings settings = new BatchDataSourceScriptDatabaseInitializer(dataSource, properties)
+			.getSettings();
 		List<String> schemaLocations = settings.getSchemaLocations();
 		assertThat(schemaLocations).isNotEmpty()
 			.allSatisfy((location) -> assertThat(resourceLoader.getResource(location).exists()).isTrue());

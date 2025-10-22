@@ -41,8 +41,8 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 		DataSource dataSource = mock(DataSource.class);
 		QuartzJdbcProperties properties = new QuartzJdbcProperties();
 		properties.setPlatform("test");
-		DatabaseInitializationSettings settings = QuartzDataSourceScriptDatabaseInitializer.getSettings(dataSource,
-				properties);
+		DatabaseInitializationSettings settings = new QuartzDataSourceScriptDatabaseInitializer(dataSource, properties)
+			.getSettings();
 		assertThat(settings.getSchemaLocations())
 			.containsOnly("classpath:org/quartz/impl/jdbcjobstore/tables_test.sql");
 		then(dataSource).shouldHaveNoInteractions();

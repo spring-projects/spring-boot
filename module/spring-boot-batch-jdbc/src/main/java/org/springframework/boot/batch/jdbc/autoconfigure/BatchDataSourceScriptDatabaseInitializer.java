@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PropertiesBasedDataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Spring Batch database. May be
@@ -42,6 +43,11 @@ public class BatchDataSourceScriptDatabaseInitializer
 	 */
 	public BatchDataSourceScriptDatabaseInitializer(DataSource dataSource, BatchJdbcProperties properties) {
 		super(dataSource, properties);
+	}
+
+	@Override
+	protected DatabaseInitializationSettings getSettings() {
+		return super.getSettings();
 	}
 
 }

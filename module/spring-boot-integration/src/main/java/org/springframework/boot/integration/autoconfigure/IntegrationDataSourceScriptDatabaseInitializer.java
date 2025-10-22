@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PropertiesBasedDataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 /**
  * {@link DataSourceScriptDatabaseInitializer} for the Spring Integration database. May be
@@ -44,6 +45,11 @@ public class IntegrationDataSourceScriptDatabaseInitializer
 	 */
 	public IntegrationDataSourceScriptDatabaseInitializer(DataSource dataSource, IntegrationJdbcProperties properties) {
 		super(dataSource, properties, Map.of(DatabaseDriver.MARIADB, "mysql"));
+	}
+
+	@Override
+	protected DatabaseInitializationSettings getSettings() {
+		return super.getSettings();
 	}
 
 }
