@@ -97,7 +97,7 @@ class ConfigurationProperty {
 				Deprecation.fromJsonProperties(deprecation));
 	}
 
-	record Deprecation(String reason, String replacement, String since) {
+	record Deprecation(String reason, String replacement, String since, String level) {
 
 		static Deprecation fromJsonProperties(Map<String, Object> property) {
 			if (property == null) {
@@ -106,7 +106,8 @@ class ConfigurationProperty {
 			String reason = (String) property.get("reason");
 			String replacement = (String) property.get("replacement");
 			String since = (String) property.get("since");
-			return new Deprecation(reason, replacement, since);
+			String level = (String) property.get("level");
+			return new Deprecation(reason, replacement, since, level);
 		}
 
 	}
