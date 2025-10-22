@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
 import javax.management.MBeanServer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -44,6 +45,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -127,6 +129,26 @@ public final class JmxEndpointAutoConfiguration {
 				JmxEndpointsSupplier jmxEndpointsSupplier) {
 			JmxOperationResponseMapper responseMapper = new JacksonJmxOperationResponseMapper(
 					jsonMapper.getIfAvailable());
+			return new JmxEndpointExporter(mBeanServer, endpointObjectNameFactory, responseMapper,
+					jmxEndpointsSupplier.getEndpoints());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ObjectMapper.class)
+	@ConditionalOnMissingClass("tools.jackson.databind.json.JsonMapper")
+	@Deprecated(since = "4.2.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	static class JmxJackson2EndpointConfiguration {
+
+		@Bean
+		@ConditionalOnSingleCandidate(MBeanServer.class)
+		JmxEndpointExporter jmxMBeanExporter(MBeanServer mBeanServer,
+				EndpointObjectNameFactory endpointObjectNameFactory, ObjectProvider<ObjectMapper> objectMapper,
+				JmxEndpointsSupplier jmxEndpointsSupplier) {
+			JmxOperationResponseMapper responseMapper = new org.springframework.boot.actuate.endpoint.jmx.Jackson2JmxOperationResponseMapper(
+					objectMapper.getIfAvailable());
 			return new JmxEndpointExporter(mBeanServer, endpointObjectNameFactory, responseMapper,
 					jmxEndpointsSupplier.getEndpoints());
 		}
