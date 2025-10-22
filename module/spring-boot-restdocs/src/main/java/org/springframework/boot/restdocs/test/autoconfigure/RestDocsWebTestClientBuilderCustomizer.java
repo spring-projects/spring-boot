@@ -18,7 +18,6 @@ package org.springframework.boot.restdocs.test.autoconfigure;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.restdocs.test.autoconfigure.RestDocsProperties.Uri;
 import org.springframework.boot.webtestclient.WebTestClientBuilderCustomizer;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -49,12 +48,11 @@ class RestDocsWebTestClientBuilderCustomizer implements WebTestClientBuilderCust
 	}
 
 	private void customizeBaseUrl(WebTestClient.Builder builder) {
-		Uri uri = this.properties.getUri();
-		String scheme = uri.getScheme();
-		String host = uri.getHost();
+		String scheme = this.properties.getUriScheme();
+		String host = this.properties.getUriHost();
 		String baseUrl = (StringUtils.hasText(scheme) ? scheme : "http") + "://"
 				+ (StringUtils.hasText(host) ? host : "localhost");
-		Integer port = uri.getPort();
+		Integer port = this.properties.getUriPort();
 		if (!isStandardPort(scheme, port)) {
 			baseUrl += ":" + port;
 		}

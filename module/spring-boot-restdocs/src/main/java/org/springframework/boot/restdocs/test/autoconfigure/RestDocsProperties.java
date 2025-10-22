@@ -28,56 +28,46 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Phillip Webb
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.restdocs")
+@ConfigurationProperties("spring.test.restdocs")
 public class RestDocsProperties {
 
-	private final Uri uri = new Uri();
+	/**
+	 * The URI scheme for to use (for example http).
+	 */
+	private @Nullable String uriScheme;
 
-	public Uri getUri() {
-		return this.uri;
+	/**
+	 * The URI host to use.
+	 */
+	private @Nullable String uriHost;
+
+	/**
+	 * The URI port to use.
+	 */
+	private @Nullable Integer uriPort;
+
+	public @Nullable String getUriScheme() {
+		return this.uriScheme;
 	}
 
-	public static class Uri {
+	public void setUriScheme(@Nullable String uriScheme) {
+		this.uriScheme = uriScheme;
+	}
 
-		/**
-		 * The URI scheme to use (for example http).
-		 */
-		private @Nullable String scheme;
+	public @Nullable String getUriHost() {
+		return this.uriHost;
+	}
 
-		/**
-		 * The URI host to use.
-		 */
-		private @Nullable String host;
+	public void setUriHost(@Nullable String uriHost) {
+		this.uriHost = uriHost;
+	}
 
-		/**
-		 * The URI port to use.
-		 */
-		private @Nullable Integer port;
+	public @Nullable Integer getUriPort() {
+		return this.uriPort;
+	}
 
-		public @Nullable String getScheme() {
-			return this.scheme;
-		}
-
-		public void setScheme(@Nullable String scheme) {
-			this.scheme = scheme;
-		}
-
-		public @Nullable String getHost() {
-			return this.host;
-		}
-
-		public void setHost(@Nullable String host) {
-			this.host = host;
-		}
-
-		public @Nullable Integer getPort() {
-			return this.port;
-		}
-
-		public void setPort(@Nullable Integer port) {
-			this.port = port;
-		}
-
+	public void setUriPort(@Nullable Integer uriPort) {
+		this.uriPort = uriPort;
 	}
 
 }

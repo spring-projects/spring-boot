@@ -20,7 +20,6 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.restdocs.test.autoconfigure.RestDocsProperties.Uri;
 import org.springframework.boot.webmvc.test.autoconfigure.MockMvcBuilderCustomizer;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
@@ -52,11 +51,10 @@ public class RestDocsMockMvcBuilderCustomizer implements InitializingBean, MockM
 	public void afterPropertiesSet() throws Exception {
 		PropertyMapper map = PropertyMapper.get();
 		RestDocsProperties properties = this.properties;
-		UriConfigurer uriConfigurer = this.delegate.uris();
-		Uri uri = properties.getUri();
-		map.from(uri::getScheme).whenHasText().to(uriConfigurer::withScheme);
-		map.from(uri::getHost).whenHasText().to(uriConfigurer::withHost);
-		map.from(uri::getPort).to(uriConfigurer::withPort);
+		UriConfigurer uri = this.delegate.uris();
+		map.from(properties::getUriScheme).whenHasText().to(uri::withScheme);
+		map.from(properties::getUriHost).whenHasText().to(uri::withHost);
+		map.from(properties::getUriPort).to(uri::withPort);
 	}
 
 	@Override

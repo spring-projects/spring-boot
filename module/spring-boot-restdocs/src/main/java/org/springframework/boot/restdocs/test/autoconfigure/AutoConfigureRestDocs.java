@@ -53,7 +53,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @Inherited
 @ImportAutoConfiguration
 @Import(RestDocumentationContextProviderRegistrar.class)
-@PropertyMapping("spring.restdocs")
+@PropertyMapping("spring.test.restdocs")
 public @interface AutoConfigureRestDocs {
 
 	/**
@@ -77,21 +77,18 @@ public @interface AutoConfigureRestDocs {
 	 * Defaults to {@code http}.
 	 * @return the scheme
 	 */
-	@PropertyMapping("uri.scheme")
 	String uriScheme() default "http";
 
 	/**
 	 * The host to be used in documented URIs. Defaults to {@code localhost}.
 	 * @return the host
 	 */
-	@PropertyMapping("uri.host")
 	String uriHost() default "localhost";
 
 	/**
 	 * The port to be used in documented URIs. Defaults to {@code 8080}.
 	 * @return the port
 	 */
-	@PropertyMapping("uri.port")
 	int uriPort() default 8080;
 
 }
