@@ -21,7 +21,7 @@ import org.springframework.boot.build.docs.ConfigureJavadocLinks
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin
 
 plugins {
-	id "dev.adamko.dokkatoo-html"
+	id "org.jetbrains.dokka"
 	id "java"
 	id "org.antora"
 	id "org.jetbrains.kotlin.jvm"
@@ -85,8 +85,8 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	compileOnly("org.hamcrest:hamcrest-core")
 
-	dokkatoo(project(path: ":core:spring-boot"))
-	dokkatoo(project(path: ":module:spring-boot-resttestclient"))
+	dokka(project(path: ":core:spring-boot"))
+	dokka(project(path: ":module:spring-boot-resttestclient"))
 
 	implementation(project(path: ":cli:spring-boot-cli"))
 	implementation(project(path: ":core:spring-boot-docker-compose"))
@@ -242,7 +242,7 @@ dependencies {
 	testSlices(project(path: ":core:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
 }
 
-dokkatoo {
+dokka {
 	moduleName.set("Spring Boot Kotlin API")
 }
 
@@ -440,7 +440,7 @@ antoraContributions {
 			from(aggregatedJavadoc) {
 				into "java"
 			}
-			from(tasks.named("dokkatooGeneratePublicationHtml")) {
+			from(tasks.named("dokkaGeneratePublicationHtml")) {
 				into "kotlin"
 			}
 		}
@@ -507,8 +507,8 @@ antoraContributions {
 	}
 }
 
-dokkatoo {
-	dokkatooPublications.configureEach {
-		includes.from("src/docs/dokkatoo/dokka-overview.md")
+dokka {
+	dokkaPublications.configureEach {
+		includes.from("src/docs/dokka/dokka-overview.md")
 	}
 }

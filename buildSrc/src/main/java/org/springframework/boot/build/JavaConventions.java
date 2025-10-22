@@ -278,7 +278,7 @@ class JavaConventions {
 		configurations
 			.matching((configuration) -> (configuration.getName().endsWith("Classpath")
 					|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
-					&& (!configuration.getName().contains("dokkatoo")))
+					&& (!configuration.getName().contains("dokka")))
 			.all((configuration) -> configuration.extendsFrom(dependencyManagement));
 		Dependency springBootParent = project.getDependencies()
 			.enforcedPlatform(project.getDependencies()
