@@ -40,7 +40,10 @@ record Difference(DifferenceType type, ConfigurationMetadataProperty oldProperty
 			return null;
 		}
 		if (newProperty.isDeprecated() && !oldProperty.isDeprecated()) {
-			return new Difference(DifferenceType.DEPRECATED, oldProperty, newProperty);
+			Level level = newProperty.getDeprecation().getLevel();
+			DifferenceType differenceType = (level == Level.WARNING) ? DifferenceType.DEPRECATED
+					: DifferenceType.DELETED;
+			return new Difference(differenceType, oldProperty, newProperty);
 		}
 		if (oldProperty.isDeprecated() && oldProperty.getDeprecation().getLevel() == Level.WARNING
 				&& newProperty.isDeprecated() && newProperty.getDeprecation().getLevel() == Level.ERROR) {
