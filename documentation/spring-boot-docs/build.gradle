@@ -85,6 +85,9 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	compileOnly("org.hamcrest:hamcrest-core")
 
+	dokkatoo(project(path: ":core:spring-boot"))
+	dokkatoo(project(path: ":module:spring-boot-resttestclient"))
+
 	implementation(project(path: ":cli:spring-boot-cli"))
 	implementation(project(path: ":core:spring-boot-docker-compose"))
 	implementation(project(path: ":core:spring-boot-test"))
