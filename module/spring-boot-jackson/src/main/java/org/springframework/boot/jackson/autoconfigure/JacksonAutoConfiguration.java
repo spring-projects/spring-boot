@@ -187,7 +187,6 @@ public final class JacksonAutoConfiguration {
 	static class CborConfiguration {
 
 		@Bean
-		@Primary
 		@ConditionalOnMissingBean
 		CBORMapper cborMapper(CBORMapper.Builder builder) {
 			return builder.build();
