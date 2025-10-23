@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,8 +80,6 @@ import org.springframework.util.StringUtils;
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
-	private static final org.apache.logging.log4j.Logger STATUS_LOGGER = StatusLogger.getLogger();
-
 	private static final String OPTIONAL_PREFIX = "optional:";
 
 	/**
@@ -92,8 +91,6 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	 * JUL LogManager that routes messages to the Log4j API as the backend.
 	 */
 	static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
-
-	private static final SpringEnvironmentPropertySource propertySource = new SpringEnvironmentPropertySource();
 
 	static final String ENVIRONMENT_KEY = Conventions.getQualifiedAttributeName(Log4J2LoggingSystem.class,
 			"environment");
@@ -115,6 +112,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final Filter FILTER = DenyAllFilter.newBuilder().build();
 
+	private static final SpringEnvironmentPropertySource propertySource = new SpringEnvironmentPropertySource();
+
+	private static final org.apache.logging.log4j.Logger statusLogger = StatusLogger.getLogger();
+
 	private final LoggerContext loggerContext;
 
 	/**
@@ -127,34 +128,15 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		this.loggerContext = loggerContext;
 	}
 
-	/**
-	 * Create a new {@link Log4J2LoggingSystem} instance.
-	 * @param classLoader the class loader to use
-	 * @return a new {@link Log4J2LoggingSystem} instance
-	 * @throws IllegalStateException if Log4j Core is not the active Log4j API provider.
-	 */
-	private static Log4J2LoggingSystem createLoggingSystem(ClassLoader classLoader) {
-		org.apache.logging.log4j.spi.LoggerContext loggerContext = LogManager.getContext(classLoader, false);
-		if (loggerContext instanceof LoggerContext) {
-			return new Log4J2LoggingSystem(classLoader, (LoggerContext) loggerContext);
-		}
-		throw new IllegalStateException("Log4j Core is not the active Log4j API provider");
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @deprecated Since 4.0.0, in favor of the {@link ConfigurationFactory} SPI.
-	 */
 	@Override
-	@Deprecated(since = "4.0.0", forRemoval = true)
 	protected String[] getStandardConfigLocations() {
-		return new String[] { "log4j2.xml" };
+		// With Log4J2 we use the ConfigurationFactory
+		throw new IllegalStateException("Standard config locations cannot be used with Log4J2");
 	}
 
 	@Override
 	protected @Nullable String getSelfInitializationConfig() {
-		Configuration currentConfiguration = getLoggerContext().getConfiguration();
-		return getConfigLocation(currentConfiguration);
+		return getConfigLocation(getLoggerContext().getConfiguration());
 	}
 
 	@Override
@@ -167,22 +149,23 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			return (configLocation != null && configLocation.contains("-spring")) ? configLocation : null;
 		}
 		catch (ConfigurationException ex) {
-			STATUS_LOGGER.warn("Could not load Spring-specific Log4j Core configuration", ex);
+			statusLogger.warn("Could not load Spring-specific Log4j Core configuration", ex);
 			return null;
 		}
 	}
 
+	/**
+	 * Return the configuration location. The result may be:
+	 * <ul>
+	 * <li>{@code null}: if DefaultConfiguration is used (no explicit config loaded)</li>
+	 * <li>A file path: if provided explicitly by the user</li>
+	 * <li>A URI: if loaded from the classpath default or a custom location</li>
+	 * </ul>
+	 * @param configuration the source configuration
+	 * @return the config location or {@code null}
+	 */
 	private @Nullable String getConfigLocation(Configuration configuration) {
-		// The location may be:
-		// - null: if DefaultConfiguration is used (no explicit config loaded)
-		// - a file path: if provided explicitly by the user
-		// - a URI: if loaded from the classpath default or a custom location
 		return configuration.getConfigurationSource().getLocation();
-	}
-
-	@Deprecated(since = "4.0.0", forRemoval = true)
-	protected boolean isClassAvailable(String className) {
-		return ClassUtils.isPresent(className, getClassLoader());
 	}
 
 	@Override
@@ -315,22 +298,18 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			this.loggerContext.reconfigure(mergeConfigurations(configurations));
 		}
 		catch (Exception ex) {
-			String message = "Could not initialize Log4J2 logging from " + location;
-			if (!overrides.isEmpty()) {
-				message += " with overrides " + overrides;
-			}
-			throw new IllegalStateException(message, ex);
+			throw new IllegalStateException("Could not initialize Log4J2 logging from %s%s".formatted(location,
+					(overrides.isEmpty() ? "" : " with overrides " + overrides)), ex);
 		}
 	}
 
 	private Configuration load(ResourceLoader resourceLoader, String location) throws IOException {
-		ConfigurationFactory factory = ConfigurationFactory.getInstance();
+		ConfigurationFactory configurationFactory = ConfigurationFactory.getInstance();
 		Resource resource = resourceLoader.getResource(location);
-		Configuration configuration = factory.getConfiguration(getLoggerContext(), null, resource.getURI(),
+		Configuration configuration = configurationFactory.getConfiguration(getLoggerContext(), null, resource.getURI(),
 				getClassLoader());
-		// The error handling in Log4j Core 2.25.x is not consistent:
-		// some loading and parsing errors result in a null configuration,
-		// others in an exception.
+		// The error handling in Log4j Core 2.25.x is not consistent, some loading and
+		// parsing errors result in a null configuration, others in an exception.
 		if (configuration == null) {
 			throw new ConfigurationException("Could not load Log4j Core configuration from " + location);
 		}
@@ -344,8 +323,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			try {
 				return (resource.exists()) ? load(resourceLoader, actualLocation) : null;
 			}
-			catch (ConfigurationException | IOException ex) {
-				STATUS_LOGGER.debug("Could not load optional Log4j2 override from {}", actualLocation, ex);
+			catch (FileNotFoundException ex) {
 				return null;
 			}
 		}
@@ -362,8 +340,6 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	@Override
 	protected void reinitialize(LoggingInitializationContext initializationContext) {
 		String currentLocation = getSelfInitializationConfig();
-		// `reinitialize` is only triggered when `getSelfInitializationConfig` returns a
-		// non-null value
 		Assert.notNull(currentLocation, "'currentLocation' must not be null");
 		load(initializationContext, currentLocation, null);
 	}
@@ -544,7 +520,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	@Order(0)
 	public static class Factory implements LoggingSystemFactory {
 
-		private static final String LOG4J_CORE_CONTEXT_FACTORY = "org.apache.logging.log4j.core.impl.Log4jContextFactory";
+		static final String LOG4J_CORE_CONTEXT_FACTORY = "org.apache.logging.log4j.core.impl.Log4jContextFactory";
 
 		private static final boolean PRESENT = ClassUtils.isPresent(LOG4J_CORE_CONTEXT_FACTORY,
 				Factory.class.getClassLoader());
@@ -552,11 +528,10 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		@Override
 		public @Nullable LoggingSystem getLoggingSystem(ClassLoader classLoader) {
 			if (PRESENT) {
-				try {
-					return createLoggingSystem(classLoader);
-				}
-				catch (IllegalStateException ex) {
-					// Log4j Core is not the active Log4j API provider
+				org.apache.logging.log4j.spi.LoggerContext spiLoggerContext = LogManager.getContext(classLoader, false);
+				Assert.state(spiLoggerContext instanceof LoggerContext, "");
+				if (spiLoggerContext instanceof LoggerContext coreLoggerContext) {
+					return new Log4J2LoggingSystem(classLoader, coreLoggerContext);
 				}
 			}
 			return null;
