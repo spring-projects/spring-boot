@@ -22,7 +22,8 @@
     },
     {
       "name": "spring.session.redis.flush-mode",
-      "description": "Sessions flush mode. Determines when session changes are written to the session store. Not supported with a reactive session repository.","deprecation": {
+      "description": "Sessions flush mode. Determines when session changes are written to the session store. Not supported with a reactive session repository.",
+      "deprecation": {
         "level": "error",
         "replacement": "spring.session.data.redis.flush-mode"
       }

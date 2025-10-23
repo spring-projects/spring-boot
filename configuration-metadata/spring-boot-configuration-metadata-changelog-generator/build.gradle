@@ -161,8 +161,11 @@ def dependenciesOf(String version) {
 			]
 			modules += [
 				"spring-boot-batch-jdbc",
+				"spring-boot-jackson2",
 				"spring-boot-transaction",
-				"spring-boot-restdocs"
+				"spring-boot-restdocs",
+				"spring-boot-webmvc-test",
+				"spring-boot-webservices-test"
 			]
 		}
 		return modules
