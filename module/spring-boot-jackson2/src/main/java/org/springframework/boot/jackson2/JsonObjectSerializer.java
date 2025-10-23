@@ -30,7 +30,7 @@ import org.springframework.boot.jackson.ObjectValueSerializer;
  *
  * @param <T> the supported object type
  * @author Phillip Webb
- * @since 1.4.0
+ * @since 4.0.0
  * @see JsonObjectDeserializer
  * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3 and
  * {@link ObjectValueSerializer}

@@ -134,7 +134,6 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	/**
 	 * Set if x-forward-* headers should be processed.
 	 * @param useForwardHeaders if x-forward headers should be used
-	 * @since 4.0.0
 	 */
 	public void setUseForwardHeaders(boolean useForwardHeaders) {
 		this.useForwardHeaders = useForwardHeaders;
@@ -143,7 +142,6 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	/**
 	 * Set the {@link ReactorResourceFactory} to get the shared resources from.
 	 * @param resourceFactory the server resources
-	 * @since 4.0.0
 	 */
 	public void setResourceFactory(@Nullable ReactorResourceFactory resourceFactory) {
 		this.resourceFactory = resourceFactory;

@@ -197,7 +197,6 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 	 * description based on the request {@code servletPath} and {@code pathInfo}.
 	 * @param request the source request
 	 * @return the description
-	 * @since 1.5.0
 	 */
 	protected String getDescription(HttpServletRequest request) {
 		String pathInfo = (request.getPathInfo() != null) ? request.getPathInfo() : "";
@@ -356,7 +355,8 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 			}
 		}
 
-		@Nullable String getMessage() {
+		@Nullable
+		String getMessage() {
 			return this.message;
 		}
 

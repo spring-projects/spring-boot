@@ -41,7 +41,6 @@ public final class ConnectionFactoryUnwrapper {
 	 * @param connectionFactory a connection factory
 	 * @return the native connection factory that a {@link CachingConnectionFactory}
 	 * wraps, if any
-	 * @since 3.4.1
 	 */
 	public static ConnectionFactory unwrapCaching(ConnectionFactory connectionFactory) {
 		if (connectionFactory instanceof CachingConnectionFactory cachingConnectionFactory) {

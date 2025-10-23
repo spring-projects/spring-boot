@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @author David Liu
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @since 2.0.0
+ * @since 4.0.0
  */
 public class WebServerPortFileWriter implements ApplicationListener<WebServerInitializedEvent> {
 

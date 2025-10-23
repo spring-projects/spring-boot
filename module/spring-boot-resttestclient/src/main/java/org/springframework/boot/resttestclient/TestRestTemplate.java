@@ -981,7 +981,6 @@ public class TestRestTemplate {
 	 * type (when possible).
 	 * @param clientSettings the new client settings
 	 * @return the new template
-	 * @since 4.0.0
 	 */
 	public TestRestTemplate withClientSettings(HttpClientSettings clientSettings) {
 		return new TestRestTemplate(this.builder.clientSettings(clientSettings),
@@ -995,7 +994,6 @@ public class TestRestTemplate {
 	 * type (when possible).
 	 * @param clientSettingsCustomizer a {@link UnaryOperator} to update the settings
 	 * @return the new template
-	 * @since 4.0.0
 	 */
 	public TestRestTemplate withClientSettings(UnaryOperator<HttpClientSettings> clientSettingsCustomizer) {
 		return new TestRestTemplate(this.builder.clientSettings(clientSettingsCustomizer),

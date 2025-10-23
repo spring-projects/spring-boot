@@ -185,7 +185,6 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	 * {@link AllEncompassingFormHttpMessageConverter}.
 	 * @param converters a mutable list of the converters that will be used.
 	 * @return the final converts list to use
-	 * @since 1.3.0
 	 */
 	protected List<HttpMessageConverter<?>> postProcessPartConverters(List<HttpMessageConverter<?>> converters) {
 		return converters;

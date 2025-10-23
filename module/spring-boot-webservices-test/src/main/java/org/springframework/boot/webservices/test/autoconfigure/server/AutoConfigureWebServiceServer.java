@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
  * auto-configuration of web service servers endpoints.
  *
  * @author Daniil Razorenov
- * @since 2.6.0
+ * @since 4.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

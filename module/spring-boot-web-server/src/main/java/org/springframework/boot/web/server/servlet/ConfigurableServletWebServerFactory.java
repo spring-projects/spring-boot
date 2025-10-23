@@ -69,7 +69,6 @@ public interface ConfigurableServletWebServerFactory
 	/**
 	 * Sets the display name of the application deployed in the web server.
 	 * @param displayName the displayName to set
-	 * @since 4.0.0
 	 */
 	default void setDisplayName(String displayName) {
 		getSettings().setDisplayName(displayName);
@@ -105,7 +104,6 @@ public interface ConfigurableServletWebServerFactory
 	/**
 	 * Adds mime-type mappings.
 	 * @param mimeMappings the mime type mappings to add
-	 * @since 4.0.0
 	 */
 	default void addMimeMappings(MimeMappings mimeMappings) {
 		getSettings().addMimeMappings(mimeMappings);

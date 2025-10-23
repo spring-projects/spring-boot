@@ -245,7 +245,6 @@ public class RestTemplateBuilder {
 	 * previously defined interceptors.
 	 * @param interceptors the interceptors to set
 	 * @return a new builder instance
-	 * @since 1.4.1
 	 * @see #additionalInterceptors(ClientHttpRequestInterceptor...)
 	 */
 	public RestTemplateBuilder interceptors(ClientHttpRequestInterceptor... interceptors) {
@@ -259,7 +258,6 @@ public class RestTemplateBuilder {
 	 * previously defined interceptors.
 	 * @param interceptors the interceptors to set
 	 * @return a new builder instance
-	 * @since 1.4.1
 	 * @see #additionalInterceptors(ClientHttpRequestInterceptor...)
 	 */
 	public RestTemplateBuilder interceptors(Collection<ClientHttpRequestInterceptor> interceptors) {
@@ -275,7 +273,6 @@ public class RestTemplateBuilder {
 	 * that should be used with the {@link RestTemplate}.
 	 * @param interceptors the interceptors to add
 	 * @return a new builder instance
-	 * @since 1.4.1
 	 * @see #interceptors(ClientHttpRequestInterceptor...)
 	 */
 	public RestTemplateBuilder additionalInterceptors(ClientHttpRequestInterceptor... interceptors) {
@@ -288,7 +285,6 @@ public class RestTemplateBuilder {
 	 * that should be used with the {@link RestTemplate}.
 	 * @param interceptors the interceptors to add
 	 * @return a new builder instance
-	 * @since 1.4.1
 	 * @see #interceptors(ClientHttpRequestInterceptor...)
 	 */
 	public RestTemplateBuilder additionalInterceptors(Collection<? extends ClientHttpRequestInterceptor> interceptors) {
@@ -317,7 +313,6 @@ public class RestTemplateBuilder {
 	 * each time we {@link #build()} a new {@link RestTemplate} instance.
 	 * @param requestFactorySupplier the supplier for the request factory
 	 * @return a new builder instance
-	 * @since 2.0.0
 	 * @see ClientHttpRequestFactoryBuilder#of(Supplier)
 	 * @see #requestFactoryBuilder(ClientHttpRequestFactoryBuilder)
 	 */
@@ -331,7 +326,6 @@ public class RestTemplateBuilder {
 	 * {@link #build()} a new {@link RestTemplate} instance.
 	 * @param requestFactoryBuilder the {@link ClientHttpRequestFactoryBuilder} to use
 	 * @return a new builder instance
-	 * @since 3.4.0
 	 * @see ClientHttpRequestFactoryBuilder
 	 */
 	public RestTemplateBuilder requestFactoryBuilder(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
@@ -375,7 +369,6 @@ public class RestTemplateBuilder {
 	 * @param username the user name
 	 * @param password the password
 	 * @return a new builder instance
-	 * @since 2.1.0
 	 * @see #basicAuthentication(String, String, Charset)
 	 */
 	public RestTemplateBuilder basicAuthentication(String username, String password) {
@@ -389,7 +382,6 @@ public class RestTemplateBuilder {
 	 * @param password the password
 	 * @param charset the charset to use
 	 * @return a new builder instance
-	 * @since 2.2.0
 	 */
 	public RestTemplateBuilder basicAuthentication(String username, String password, @Nullable Charset charset) {
 		return new RestTemplateBuilder(this.clientSettings, this.detectRequestFactory, this.rootUri,
@@ -404,7 +396,6 @@ public class RestTemplateBuilder {
 	 * @param name the name of the header
 	 * @param values the header values
 	 * @return a new builder instance
-	 * @since 2.2.0
 	 */
 	public RestTemplateBuilder defaultHeader(String name, String... values) {
 		Assert.notNull(name, "'name' must not be null");
@@ -421,7 +412,6 @@ public class RestTemplateBuilder {
 	 * readTimeout} and {@link #sslBundle(SslBundle) sslBundle} values.
 	 * @param clientSettings the client settings
 	 * @return a new builder instance
-	 * @since 4.0.0
 	 */
 	public RestTemplateBuilder clientSettings(HttpClientSettings clientSettings) {
 		Assert.notNull(clientSettings, "'clientSettings' must not be null");
@@ -435,7 +425,6 @@ public class RestTemplateBuilder {
 	 * @param clientSettingsCustomizer a {@link UnaryOperator} to update client factory
 	 * settings
 	 * @return a new builder instance
-	 * @since 4.0.0
 	 */
 	public RestTemplateBuilder clientSettings(UnaryOperator<HttpClientSettings> clientSettingsCustomizer) {
 		Assert.notNull(clientSettingsCustomizer, "'clientSettingsCustomizer' must not be null");
@@ -449,7 +438,6 @@ public class RestTemplateBuilder {
 	 * Sets the connection timeout on the underlying {@link ClientHttpRequestFactory}.
 	 * @param connectTimeout the connection timeout
 	 * @return a new builder instance.
-	 * @since 3.4.0
 	 */
 	public RestTemplateBuilder connectTimeout(Duration connectTimeout) {
 		return new RestTemplateBuilder(this.clientSettings.withConnectTimeout(connectTimeout),
@@ -462,7 +450,6 @@ public class RestTemplateBuilder {
 	 * Sets the read timeout on the underlying {@link ClientHttpRequestFactory}.
 	 * @param readTimeout the read timeout
 	 * @return a new builder instance.
-	 * @since 3.4.0
 	 */
 	public RestTemplateBuilder readTimeout(Duration readTimeout) {
 		return new RestTemplateBuilder(this.clientSettings.withReadTimeout(readTimeout), this.detectRequestFactory,
@@ -475,7 +462,6 @@ public class RestTemplateBuilder {
 	 * Sets the redirect strategy on the underlying {@link ClientHttpRequestFactory}.
 	 * @param redirects the redirect strategy
 	 * @return a new builder instance.
-	 * @since 4.0.0
 	 */
 	public RestTemplateBuilder redirects(HttpRedirects redirects) {
 		return new RestTemplateBuilder(this.clientSettings.withRedirects(redirects), this.detectRequestFactory,
@@ -488,7 +474,6 @@ public class RestTemplateBuilder {
 	 * Sets the SSL bundle on the underlying {@link ClientHttpRequestFactory}.
 	 * @param sslBundle the SSL bundle
 	 * @return a new builder instance
-	 * @since 3.4.0
 	 */
 	public RestTemplateBuilder sslBundle(SslBundle sslBundle) {
 		return new RestTemplateBuilder(this.clientSettings.withSslBundle(sslBundle), this.detectRequestFactory,
@@ -564,7 +549,6 @@ public class RestTemplateBuilder {
 	 * configured request customizers.
 	 * @param requestCustomizers the request customizers to set
 	 * @return a new builder instance
-	 * @since 2.2.0
 	 * @see #additionalRequestCustomizers(RestTemplateRequestCustomizer...)
 	 */
 	public RestTemplateBuilder requestCustomizers(RestTemplateRequestCustomizer<?>... requestCustomizers) {
@@ -579,7 +563,6 @@ public class RestTemplateBuilder {
 	 * configured request customizers.
 	 * @param requestCustomizers the request customizers to set
 	 * @return a new builder instance
-	 * @since 2.2.0
 	 * @see #additionalRequestCustomizers(RestTemplateRequestCustomizer...)
 	 */
 	public RestTemplateBuilder requestCustomizers(
@@ -597,7 +580,6 @@ public class RestTemplateBuilder {
 	 * order that they were added.
 	 * @param requestCustomizers the request customizers to add
 	 * @return a new builder instance
-	 * @since 2.2.0
 	 * @see #requestCustomizers(RestTemplateRequestCustomizer...)
 	 */
 	public RestTemplateBuilder additionalRequestCustomizers(RestTemplateRequestCustomizer<?>... requestCustomizers) {
@@ -611,7 +593,6 @@ public class RestTemplateBuilder {
 	 * order that they were added.
 	 * @param requestCustomizers the request customizers to add
 	 * @return a new builder instance
-	 * @since 2.2.0
 	 * @see #requestCustomizers(Collection)
 	 */
 	public RestTemplateBuilder additionalRequestCustomizers(
@@ -685,7 +666,6 @@ public class RestTemplateBuilder {
 	 * Build a new {@link ClientHttpRequestFactory} instance using the settings of this
 	 * builder.
 	 * @return a {@link ClientHttpRequestFactory} or {@code null}
-	 * @since 2.2.0
 	 */
 	public @Nullable ClientHttpRequestFactory buildRequestFactory() {
 		ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder = requestFactoryBuilder();
@@ -696,7 +676,6 @@ public class RestTemplateBuilder {
 	 * Return a {@link ClientHttpRequestFactoryBuilder} instance using the settings of
 	 * this builder.
 	 * @return a {@link ClientHttpRequestFactoryBuilder} or {@code null}
-	 * @since 3.5.0
 	 */
 	public @Nullable ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder() {
 		if (this.requestFactoryBuilder != null) {

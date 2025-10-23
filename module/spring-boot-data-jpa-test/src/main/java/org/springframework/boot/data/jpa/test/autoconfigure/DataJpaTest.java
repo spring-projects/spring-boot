@@ -95,7 +95,6 @@ public @interface DataJpaTest {
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
 	 * @return the properties to add
-	 * @since 2.1.0
 	 */
 	String[] properties() default {};
 

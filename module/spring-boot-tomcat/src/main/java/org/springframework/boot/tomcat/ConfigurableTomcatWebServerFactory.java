@@ -75,7 +75,6 @@ public interface ConfigurableTomcatWebServerFactory extends ConfigurableWebServe
 	 * Add {@link TomcatProtocolHandlerCustomizer}s that should be added to the Tomcat
 	 * {@link Connector}.
 	 * @param tomcatProtocolHandlerCustomizers the customizers to add
-	 * @since 4.0.0
 	 */
 	void addProtocolHandlerCustomizers(TomcatProtocolHandlerCustomizer<?>... tomcatProtocolHandlerCustomizers);
 

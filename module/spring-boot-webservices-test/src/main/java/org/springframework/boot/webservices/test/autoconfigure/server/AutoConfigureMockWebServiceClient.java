@@ -31,7 +31,7 @@ import org.springframework.ws.test.server.MockWebServiceClient;
  * {@link MockWebServiceClient}.
  *
  * @author Daniil Razorenov
- * @since 2.6.0
+ * @since 4.0.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

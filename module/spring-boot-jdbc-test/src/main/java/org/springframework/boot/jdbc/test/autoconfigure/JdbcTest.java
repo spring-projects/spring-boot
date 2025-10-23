@@ -60,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
- * @since 1.5.0
+ * @since 4.0.0
  * @see AutoConfigureJdbc
  * @see AutoConfigureTestDatabase
  */
@@ -82,7 +82,6 @@ public @interface JdbcTest {
 	 * Properties in form {@literal key=value} that should be added to the Spring
 	 * {@link Environment} before the test runs.
 	 * @return the properties to add
-	 * @since 2.1.0
 	 */
 	String[] properties() default {};
 

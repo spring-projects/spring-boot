@@ -108,7 +108,6 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	 * Create an {@link AbstractProtocolSslContextSpec} for a given {@link SslBundle}.
 	 * @param sslBundle the {@link SslBundle} to use
 	 * @return an {@link AbstractProtocolSslContextSpec} instance
-	 * @since 4.0.0
 	 */
 	protected final AbstractProtocolSslContextSpec<?> createSslContextSpec(SslBundle sslBundle) {
 		AbstractProtocolSslContextSpec<?> sslContextSpec = (this.http2 != null && this.http2.isEnabled())

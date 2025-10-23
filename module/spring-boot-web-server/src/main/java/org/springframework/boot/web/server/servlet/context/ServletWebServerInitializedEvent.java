@@ -28,7 +28,7 @@ import org.springframework.boot.web.server.context.WebServerInitializedEvent;
  * stop and start it if they want to.
  *
  * @author Dave Syer
- * @since 2.0.0
+ * @since 4.0.0
  */
 @SuppressWarnings("serial")
 public class ServletWebServerInitializedEvent extends WebServerInitializedEvent {

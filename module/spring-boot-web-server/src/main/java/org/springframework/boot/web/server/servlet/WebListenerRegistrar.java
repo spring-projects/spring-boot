@@ -22,7 +22,7 @@ import jakarta.servlet.annotation.WebListener;
  * Interface to be implemented by types that register {@link WebListener @WebListeners}.
  *
  * @author Andy Wilkinson
- * @since 2.4.0
+ * @since 4.0.0
  */
 public interface WebListenerRegistrar {
 

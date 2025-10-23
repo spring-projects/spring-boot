@@ -26,7 +26,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
- * @since 3.5.0
+ * @since 4.0.0
  */
 @ConfigurationProperties("spring.http.codecs")
 public class HttpCodecsProperties {

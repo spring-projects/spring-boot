@@ -52,7 +52,7 @@ import org.springframework.util.ObjectUtils;
  * to deliberately override certain bean definitions through an extra Configuration class.
  *
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 4.0.0
  * @see #register(Class...)
  * @see #scan(String...)
  * @see ReactiveWebServerApplicationContext

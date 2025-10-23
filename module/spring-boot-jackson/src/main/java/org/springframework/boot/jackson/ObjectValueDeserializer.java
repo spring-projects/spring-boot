@@ -74,7 +74,6 @@ public abstract class ObjectValueDeserializer<T> extends ValueDeserializer<T> {
 	 * @param <R> the result type
 	 * @param mapper a mapper to convert the value when it is not {@code null}
 	 * @return the node value or {@code null}
-	 * @since 3.4.0
 	 */
 	protected final <D, R> @Nullable R nullSafeValue(@Nullable JsonNode jsonNode, Class<D> type,
 			Function<D, R> mapper) {

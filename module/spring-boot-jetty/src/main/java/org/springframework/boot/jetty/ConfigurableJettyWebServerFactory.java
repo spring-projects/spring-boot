@@ -66,7 +66,6 @@ public interface ConfigurableJettyWebServerFactory extends ConfigurableWebServer
 	/**
 	 * Sets the maximum number of concurrent connections.
 	 * @param maxConnections the maximum number of concurrent connections
-	 * @since 4.0.0
 	 */
 	void setMaxConnections(int maxConnections);
 

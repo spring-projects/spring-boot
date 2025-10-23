@@ -87,7 +87,6 @@ public class EntityScanner {
 	 * @param context the {@link ApplicationContext} to use
 	 * @return a {@link ClassPathScanningCandidateComponentProvider} suitable to scan
 	 * entities
-	 * @since 2.4.0
 	 */
 	protected ClassPathScanningCandidateComponentProvider createClassPathScanningCandidateComponentProvider(
 			ApplicationContext context) {

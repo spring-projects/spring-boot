@@ -31,7 +31,7 @@ import org.springframework.web.context.support.ServletContextAwareProcessor;
  * initialized.
  *
  * @author Phillip Webb
- * @since 1.0.0
+ * @since 4.0.0
  */
 public class WebApplicationContextServletContextAwareProcessor extends ServletContextAwareProcessor {
 

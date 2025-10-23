@@ -166,7 +166,6 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * @param location the location of the index file
 	 * @param lines the lines to write
 	 * @throws IOException if the write fails
-	 * @since 2.3.0
 	 */
 	public void writeIndexFile(@Nullable String location, Collection<String> lines) throws IOException {
 		if (location != null) {
@@ -363,7 +362,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		 */
 		EntryTransformer NONE = (jarEntry) -> jarEntry;
 
-		@Nullable JarArchiveEntry transform(JarArchiveEntry jarEntry);
+		@Nullable
+		JarArchiveEntry transform(JarArchiveEntry jarEntry);
 
 	}
 

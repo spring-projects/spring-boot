@@ -105,12 +105,12 @@ public interface BootstrapRegistry {
 		 * bootstrap instances.
 		 * @return the instance or {@code null}
 		 */
-		@Nullable T get(BootstrapContext context);
+		@Nullable
+		T get(BootstrapContext context);
 
 		/**
 		 * Return the scope of the supplied instance.
 		 * @return the scope
-		 * @since 2.4.2
 		 */
 		default Scope getScope() {
 			return Scope.SINGLETON;
@@ -120,7 +120,6 @@ public interface BootstrapRegistry {
 		 * Return a new {@link InstanceSupplier} with an updated {@link Scope}.
 		 * @param scope the new scope
 		 * @return a new {@link InstanceSupplier} instance with the new scope
-		 * @since 2.4.2
 		 */
 		default InstanceSupplier<T> withScope(Scope scope) {
 			Assert.notNull(scope, "'scope' must not be null");
@@ -166,8 +165,6 @@ public interface BootstrapRegistry {
 
 	/**
 	 * The scope of an instance.
-	 *
-	 * @since 2.4.2
 	 */
 	enum Scope {
 

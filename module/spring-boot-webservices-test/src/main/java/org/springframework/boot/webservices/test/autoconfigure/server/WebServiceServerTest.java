@@ -62,7 +62,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * rather than this annotation.
  *
  * @author Daniil Razorenov
- * @since 2.6.0
+ * @since 4.0.0
  * @see AutoConfigureMockWebServiceClient
  * @see AutoConfigureWebServiceServer
  */

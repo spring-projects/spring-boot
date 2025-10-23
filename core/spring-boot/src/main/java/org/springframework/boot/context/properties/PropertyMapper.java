@@ -383,7 +383,8 @@ public final class PropertyMapper {
 			 * @param value the value to adapt
 			 * @return an adapted value or {@code null}
 			 */
-			@Nullable R adapt(T value);
+			@Nullable
+			R adapt(T value);
 
 		}
 
@@ -502,7 +503,6 @@ public final class PropertyMapper {
 			 *
 			 * @param <T> the source type
 			 * @param <R> the result type
-			 * @since 4.0.0
 			 */
 			@FunctionalInterface
 			public interface Adapter<T, R> {
@@ -512,7 +512,8 @@ public final class PropertyMapper {
 				 * @param value the value to adapt
 				 * @return an adapted value or {@code null}
 				 */
-				@Nullable R adapt(@Nullable T value);
+				@Nullable
+				R adapt(@Nullable T value);
 
 			}
 
@@ -521,7 +522,6 @@ public final class PropertyMapper {
 			 *
 			 * @param <T> the source type
 			 * @param <R> the result type
-			 * @since 4.0.0
 			 */
 			@FunctionalInterface
 			public interface Factory<T, R extends @Nullable Object> {
@@ -541,7 +541,6 @@ public final class PropertyMapper {
 			 *
 			 * @param <T> the source type
 			 * @param <R> the result type
-			 * @since 4.0.0
 			 */
 			@FunctionalInterface
 			public interface Mapper<R extends @Nullable Object, T> {

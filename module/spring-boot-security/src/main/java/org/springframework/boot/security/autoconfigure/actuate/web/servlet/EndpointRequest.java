@@ -58,7 +58,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Chris Bono
- * @since 2.0.0
+ * @since 4.0.0
  */
 public final class EndpointRequest {
 
@@ -130,7 +130,6 @@ public final class EndpointRequest {
 	 * @param webServerNamespace the web server namespace
 	 * @param endpoints the endpoints to include
 	 * @return the configured {@link RequestMatcher}
-	 * @since 3.4.0
 	 */
 	public static AdditionalPathsEndpointRequestMatcher toAdditionalPaths(WebServerNamespace webServerNamespace,
 			Class<?>... endpoints) {
@@ -146,7 +145,6 @@ public final class EndpointRequest {
 	 * @param webServerNamespace the web server namespace
 	 * @param endpoints the endpoints to include
 	 * @return the configured {@link RequestMatcher}
-	 * @since 3.4.0
 	 */
 	public static AdditionalPathsEndpointRequestMatcher toAdditionalPaths(WebServerNamespace webServerNamespace,
 			String... endpoints) {
@@ -326,7 +324,6 @@ public final class EndpointRequest {
 		 * @param httpMethod the HTTP method to include
 		 * @return a copy of the matcher further restricted to only match requests with
 		 * the specified HTTP method
-		 * @since 3.5.0
 		 */
 		public EndpointRequestMatcher withHttpMethod(HttpMethod httpMethod) {
 			return new EndpointRequestMatcher(this.includes, this.excludes, this.includeLinks, httpMethod);
@@ -430,7 +427,6 @@ public final class EndpointRequest {
 		 * @param httpMethod the HTTP method to include
 		 * @return a copy of the matcher further restricted to only match requests with
 		 * the specified HTTP method
-		 * @since 3.5.0
 		 */
 		public AdditionalPathsEndpointRequestMatcher withHttpMethod(HttpMethod httpMethod) {
 			return new AdditionalPathsEndpointRequestMatcher(this.webServerNamespace, this.endpoints, httpMethod);
