@@ -250,4 +250,12 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 		});
 	}
 
+	@TestTemplate
+	void whenSigned(MavenBuild mavenBuild) {
+		mavenBuild.project("war-signed").execute((project) -> {
+			File repackaged = new File(project, "target/war-signed-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(jar(repackaged)).hasEntryWithName("META-INF/BOOT.SF");
+		});
+	}
+
 }
