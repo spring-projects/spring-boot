@@ -15,17 +15,6 @@ jobs:
     steps:
       - name: Check Out Code
         uses: actions/checkout@v5
-      - name: Build and Publish
-        id: build-and-publish
-        uses: ./.github/actions/build
-        with:
-          commercial-release-repository-url: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
-          commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
-          commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
-          commercial-snapshot-repository-url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
-          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-          gradle-cache-read-only: false
-          publish: true
       - name: Stage Release
         uses: spring-io/artifactory-deploy-action@dc1913008c0599f0c4b1fdafb6ff3c502b3565ea # v0.0.2
         with:
