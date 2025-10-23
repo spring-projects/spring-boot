@@ -23,16 +23,12 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.net.ProtocolException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,14 +37,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
-import org.apache.logging.log4j.core.config.json.JsonConfigurationFactory;
 import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
-import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationBuilder;
-import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
-import org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.status.StatusListener;
@@ -58,10 +49,8 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.MDC;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
@@ -113,29 +102,18 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private Logger logger;
 
-	private Configuration configuration;
-
-	private String contextName;
-
 	@BeforeEach
-	void setup() {
+	void setup(TestInfo testInfo) {
 		PluginRegistry.getInstance().clear();
-		this.loggingSystem = new TestLog4J2LoggingSystem();
+		this.loggingSystem = new TestLog4J2LoggingSystem(testInfo.getDisplayName());
 		this.environment = new MockEnvironment();
 		this.initializationContext = new LoggingInitializationContext(this.environment);
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
-		this.configuration = loggerContext.getConfiguration();
-		this.loggingSystem.cleanUp();
-		this.logger = LogManager.getLogger(getClass());
-		this.contextName = loggerContext.getName();
+		this.logger = this.loggingSystem.getLoggerContext().getLogger(getClass().getName());
 	}
 
 	@AfterEach
 	void cleanUp() {
 		this.loggingSystem.cleanUp();
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
-		loggerContext.stop();
-		loggerContext.start(((Reconfigurable) this.configuration).reconfigure());
 		PluginRegistry.getInstance().clear();
 	}
 
@@ -186,6 +164,17 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	@WithSpringXmlResource
+	void testSpringBootConfigLocation() {
+		this.loggingSystem.disableSelfInitialization();
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		Configuration configuration = this.loggingSystem.getConfiguration();
+		assertThat(configuration.getName()).isEqualTo("SpringBoot");
+		assertThat(configuration.getConfigurationSource().getLocation()).endsWith("log4j2-test-spring.xml");
+	}
+
+	@Test
 	void getSupportedLevels() {
 		assertThat(this.loggingSystem.getSupportedLogLevels()).isEqualTo(EnumSet.allOf(LogLevel.class));
 	}
@@ -224,7 +213,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void getLoggerConfigurationsShouldReturnAllLoggers() {
-		LogManager.getLogger("org.springframework.boot.logging.log4j2.Log4J2LoggingSystemTests$Nested");
+		this.loggingSystem.getLoggerContext()
+			.getLogger("org.springframework.boot.logging.log4j2.Log4J2LoggingSystemTests$Nested");
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
@@ -243,7 +233,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void getLoggerConfigurationWhenHasCustomLevel() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		LoggerContext loggerContext = this.loggingSystem.getLoggerContext();
 		String loggerName = getClass().getName();
 		org.apache.logging.log4j.Level level = org.apache.logging.log4j.Level.forName("CUSTOM_LEVEL", 1000);
 		loggerContext.getConfiguration().addLogger(loggerName, new LoggerConfig(loggerName, level, true));
@@ -307,82 +297,6 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).contains("Hello world");
 	}
 
-	static Stream<String> configLocationsWithConfigurationFileSystemProperty() {
-		return Stream.of("log4j2.configurationFile", "log4j.configuration.location");
-	}
-
-	@ParameterizedTest
-	@MethodSource
-	void configLocationsWithConfigurationFileSystemProperty(String propertyName) {
-		System.setProperty(propertyName, "custom-log4j2.properties");
-		try {
-			assertThat(this.loggingSystem.getStandardConfigLocations()).containsExactly("custom-log4j2.properties",
-					"log4j2-test" + this.contextName + ".xml", "log4j2-test.xml", "log4j2" + this.contextName + ".xml",
-					"log4j2.xml");
-		}
-		finally {
-			System.clearProperty(propertyName);
-		}
-	}
-
-	static Stream<Arguments> standardConfigLocations() {
-		// For each configuration file format we make "available" to the
-		// Log4j2LoggingSystem:
-		// - The Log4j Core `ConfigurationFactory` class
-		// - The tree parser used internally by that configuration factory
-		return Stream.of(
-				// No classes, only XML
-				Arguments.of(Collections.emptyList(), List.of(".xml")),
-				// Log4j Core 2
-				Arguments.of(List.of(JsonConfigurationFactory.class.getName(),
-						"com.fasterxml.jackson.databind.ObjectMapper"), List.of(".json", ".jsn", ".xml")),
-				Arguments.of(List.of(PropertiesConfigurationFactory.class.getName(),
-						PropertiesConfigurationBuilder.class.getName()), List.of(".properties", ".xml")),
-				Arguments.of(List.of(YamlConfigurationFactory.class.getName(),
-						"com.fasterxml.jackson.dataformat.yaml.YAMLMapper"), List.of(".yaml", ".yml", ".xml")),
-				Arguments.of(List.of(JsonConfigurationFactory.class.getName(),
-						"com.fasterxml.jackson.databind.ObjectMapper", PropertiesConfigurationFactory.class.getName(),
-						PropertiesConfigurationBuilder.class.getName(), YamlConfigurationFactory.class.getName(),
-						"com.fasterxml.jackson.dataformat.yaml.YAMLMapper"),
-						List.of(".properties", ".yaml", ".yml", ".json", ".jsn", ".xml")),
-				// Log4j Core 3
-				Arguments.of(List.of(JsonConfigurationFactory.class.getName(),
-						"org.apache.logging.log4j.kit.json.JsonReader"), List.of(".json", ".jsn", ".xml")),
-				Arguments.of(List.of("org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory",
-						"tools.jackson.dataformat.javaprop.JavaPropsMapper"), List.of(".properties", ".xml")),
-				Arguments.of(List.of("org.apache.logging.log4j.config.yaml.YamlConfigurationFactory",
-						"tools.jackson.dataformat.yaml.YAMLMapper"), List.of(".yaml", ".yml", ".xml")),
-				Arguments.of(
-						List.of(JsonConfigurationFactory.class.getName(),
-								"org.apache.logging.log4j.kit.json.JsonReader",
-								"org.apache.logging.log4j.config.properties.JavaPropsConfigurationFactory",
-								"tools.jackson.dataformat.javaprop.JavaPropsMapper",
-								"org.apache.logging.log4j.config.yaml.YamlConfigurationFactory",
-								"tools.jackson.dataformat.yaml.YAMLMapper"),
-						List.of(".properties", ".yaml", ".yml", ".json", ".jsn", ".xml")));
-	}
-
-	@ParameterizedTest
-	@MethodSource
-	void standardConfigLocations(List<String> availableClasses, List<String> expectedSuffixes) {
-		this.loggingSystem.availableClasses(availableClasses.toArray(new String[0]));
-		String[] locations = this.loggingSystem.getStandardConfigLocations();
-		assertThat(locations).hasSize(4 * expectedSuffixes.size());
-		List<String> expected = new ArrayList<>();
-		expectedSuffixes.forEach((s) -> expected.add("log4j2-test" + this.contextName + s));
-		expectedSuffixes.forEach((s) -> expected.add("log4j2-test" + s));
-		expectedSuffixes.forEach((s) -> expected.add("log4j2" + this.contextName + s));
-		expectedSuffixes.forEach((s) -> expected.add("log4j2" + s));
-		assertThat(locations).containsExactlyElementsOf(expected);
-	}
-
-	@Test
-	void springConfigLocations() {
-		String[] locations = getSpringConfigLocations(this.loggingSystem);
-		assertThat(locations).containsExactly("log4j2-test" + this.contextName + "-spring.xml",
-				"log4j2-test-spring.xml", "log4j2" + this.contextName + "-spring.xml", "log4j2-spring.xml");
-	}
-
 	@Test
 	void exceptionsIncludeClassPackaging(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
@@ -421,7 +335,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void initializationIsOnlyPerformedOnceUntilCleanedUp() {
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		LoggerContext loggerContext = this.loggingSystem.getLoggerContext();
 		PropertyChangeListener listener = mock(PropertyChangeListener.class);
 		loggerContext.addPropertyChangeListener(listener);
 		this.loggingSystem.beforeInitialize();
@@ -453,7 +367,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void getLoggerConfigurationWithResetLevelWhenAlreadyConfiguredReturnsParentConfiguredLevel() {
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		LoggerContext loggerContext = this.loggingSystem.getLoggerContext();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		loggerContext.getConfiguration()
@@ -472,18 +386,21 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void log4jLevelsArePropagatedToJul() {
-		this.loggingSystem.beforeInitialize();
+		// In this test we need to use the global logging system, since JUL is a global
+		// singleton.
+		LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
+		loggingSystem.beforeInitialize();
 		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
 		// check if Log4jBridgeHandler is used
 		Handler[] handlers = rootLogger.getHandlers();
 		assertThat(handlers).hasSize(1);
 		assertThat(handlers[0]).isInstanceOf(Log4jBridgeHandler.class);
 
-		this.loggingSystem.initialize(this.initializationContext, null, null);
+		loggingSystem.initialize(this.initializationContext, null, null);
 		java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Log4J2LoggingSystemTests.class.getName());
 		logger.info("Log to trigger level propagation");
 		assertThat(logger.getLevel()).isNull();
-		this.loggingSystem.setLogLevel(Log4J2LoggingSystemTests.class.getName(), LogLevel.DEBUG);
+		loggingSystem.setLogLevel(Log4J2LoggingSystemTests.class.getName(), LogLevel.DEBUG);
 		assertThat(logger.getLevel()).isEqualTo(Level.FINE);
 	}
 
@@ -557,7 +474,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void initializeAttachesEnvironmentToLoggerContext() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		LoggerContext loggerContext = this.loggingSystem.getLoggerContext();
 		Environment environment = Log4J2LoggingSystem.getEnvironment(loggerContext);
 		assertThat(environment).isSameAs(this.environment);
 	}
@@ -566,7 +483,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void initializeRegisterStatusListenerAndAttachToLoggerContext() {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		LoggerContext loggerContext = this.loggingSystem.getLoggerContext();
 		StatusListener statusListener = (StatusListener) loggerContext
 			.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY);
 		assertThat(statusListener).isNotNull();
@@ -578,7 +495,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		// listener should be registered
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		LoggerContext loggerContext = this.loggingSystem.getLoggerContext();
 		StatusListener statusListener = (StatusListener) loggerContext
 			.getObject(Log4J2LoggingSystem.STATUS_LISTENER_KEY);
 		assertThat(statusListener).isNotNull();
@@ -622,23 +539,12 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void nonFileUrlsAreResolvedUsingLog4J2UrlConnectionFactory() {
-		this.loggingSystem.beforeInitialize();
-		assertThatIllegalStateException()
-			.isThrownBy(() -> this.loggingSystem.initialize(this.initializationContext,
-					"http://localhost:8080/shouldnotwork", null))
-			.havingCause()
-			.isInstanceOf(ProtocolException.class)
-			.withMessageContaining("http has not been enabled");
-	}
-
-	@Test
 	void correlationLoggingToFileWhenExpectCorrelationIdTrueAndMdcContent() {
 		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
@@ -650,7 +556,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void correlationLoggingToConsoleWhenExpectCorrelationIdTrueAndMdcContent(CapturedOutput output) {
 		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
@@ -662,7 +568,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void correlationLoggingToConsoleWhenExpectCorrelationIdFalseAndMdcContent(CapturedOutput output) {
 		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "false");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
@@ -673,7 +579,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void correlationLoggingToConsoleWhenExpectCorrelationIdTrueAndNoMdcContent(CapturedOutput output) {
 		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
@@ -684,7 +590,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void correlationLoggingToConsoleWhenHasCorrelationPattern(CapturedOutput output) {
 		this.environment.setProperty("logging.pattern.correlation", "%correlationId{spanId(0),traceId(0)}");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
@@ -696,7 +602,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void applicationNameLoggingToConsoleWhenHasApplicationName(CapturedOutput output) {
 		this.environment.setProperty("spring.application.name", "myapp");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
@@ -706,7 +612,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void applicationNameLoggingToConsoleWhenHasApplicationNameWithParenthesis(CapturedOutput output) {
 		this.environment.setProperty("spring.application.name", "myapp (dev)");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
@@ -717,7 +623,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void applicationNameLoggingToConsoleWhenDisabled(CapturedOutput output) {
 		this.environment.setProperty("spring.application.name", "myapp");
 		this.environment.setProperty("logging.include-application-name", "false");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
@@ -732,7 +638,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
@@ -745,7 +651,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
@@ -759,7 +665,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
@@ -771,7 +677,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void applicationGroupLoggingToConsoleWhenHasApplicationGroup(CapturedOutput output) {
 		this.environment.setProperty("spring.application.group", "mygroup");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
@@ -781,7 +687,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void applicationGroupLoggingToConsoleWhenHasApplicationGroupWithParenthesis(CapturedOutput output) {
 		this.environment.setProperty("spring.application.group", "mygroup (dev)");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
@@ -792,7 +698,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void applicationGroupLoggingToConsoleWhenDisabled(CapturedOutput output) {
 		this.environment.setProperty("spring.application.group", "mygroup");
 		this.environment.setProperty("logging.include-application-group", "false");
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
@@ -806,7 +712,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
@@ -819,7 +725,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
@@ -833,7 +739,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.disableSelfInitialization();
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
@@ -906,6 +812,29 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 			</Configuration>
 			""")
 	private @interface WithOverrideXmlResource {
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "log4j2-test-spring.xml",
+			content = """
+					<?xml version="1.0" encoding="UTF-8"?>
+					<Configuration xmlns="https://logging.apache.org/xml/ns"
+					               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					               xsi:schemaLocation="https://logging.apache.org/xml/ns https://logging.apache.org/xml/ns/log4j-config-2.xsd"
+					               name="SpringBoot">
+						<Appenders>
+							<Console name="CONSOLE"/>
+						</Appenders>
+						<Loggers>
+							<Root level="INFO">
+								<AppenderRef ref="CONSOLE"/>
+							</Root>
+						</Loggers>
+					</Configuration>
+					""")
+	private @interface WithSpringXmlResource {
 
 	}
 
