@@ -114,8 +114,6 @@ class BootZipCopyAction implements CopyAction {
 
 	private final ResolvedDependencies resolvedDependencies;
 
-	private final boolean supportsSignatureFile;
-
 	private final LayerResolver layerResolver;
 
 	private final LoaderImplementation loaderImplementation;
@@ -124,7 +122,7 @@ class BootZipCopyAction implements CopyAction {
 			boolean includeDefaultLoader, String jarmodeToolsLocation, Spec<FileTreeElement> requiresUnpack,
 			Spec<FileTreeElement> exclusions, LaunchScriptConfiguration launchScript, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver, String encoding,
-			ResolvedDependencies resolvedDependencies, boolean supportsSignatureFile, LayerResolver layerResolver,
+			ResolvedDependencies resolvedDependencies, LayerResolver layerResolver,
 			LoaderImplementation loaderImplementation) {
 		this.output = output;
 		this.manifest = manifest;
@@ -140,7 +138,6 @@ class BootZipCopyAction implements CopyAction {
 		this.compressionResolver = compressionResolver;
 		this.encoding = encoding;
 		this.resolvedDependencies = resolvedDependencies;
-		this.supportsSignatureFile = supportsSignatureFile;
 		this.layerResolver = layerResolver;
 		this.loaderImplementation = loaderImplementation;
 	}
@@ -363,7 +360,7 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void writeSignatureFileIfNecessary() throws IOException {
-			if (BootZipCopyAction.this.supportsSignatureFile && hasSignedLibrary()) {
+			if (hasSignedLibrary()) {
 				writeEntry("META-INF/BOOT.SF", (out) -> {
 				}, false);
 			}
