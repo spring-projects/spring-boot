@@ -24,7 +24,7 @@ runs:
       shell: bash
       run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=${{ format('spring-boot-{0}', inputs.spring-boot-version) }};buildNumber=${{ github.run_number }}'
     - name: Sync
-      uses: spring-io/central-publish-action@0cdd90d12e6876341e82860d951e1bcddc1e51b6 # v0.2.0
+      uses: spring-io/central-publish-action@0c03960e9b16fdfe70e2443e1d5393cbc3a35622 # v0.3.0
       with:
         token: ${{ inputs.central-token-password }}
         token-name: ${{ inputs.central-token-username }}
