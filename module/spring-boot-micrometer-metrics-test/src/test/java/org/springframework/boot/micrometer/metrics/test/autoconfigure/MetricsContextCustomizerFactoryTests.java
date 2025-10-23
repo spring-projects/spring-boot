@@ -94,18 +94,18 @@ class MetricsContextCustomizerFactoryTests {
 		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.test.metrics.auto-configure", "true");
+		environment.setProperty("spring.test.metrics.export", "true");
 		context.setEnvironment(environment);
 		applyCustomizerToContext(customizer, context);
 		assertThatMetricsAreEnabled(context);
 	}
 
 	@Test
-	void metricsCanBeDisabledViaProperty() {
+	void metricsExportCanBeDisabledViaProperty() {
 		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.test.metrics.auto-configure", "false");
+		environment.setProperty("spring.test.metrics.export", "false");
 		context.setEnvironment(environment);
 		applyCustomizerToContext(customizer, context);
 		assertThatMetricsAreDisabled(context);
@@ -116,7 +116,7 @@ class MetricsContextCustomizerFactoryTests {
 		ContextCustomizer customizer = createContextCustomizer(MetricsExportEnabled.class);
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.test.metrics.auto-configure", "false");
+		environment.setProperty("spring.test.metrics.export", "false");
 		context.setEnvironment(environment);
 		applyCustomizerToContext(customizer, context);
 		assertThatMetricsAreEnabled(context);
@@ -127,7 +127,7 @@ class MetricsContextCustomizerFactoryTests {
 		ContextCustomizer customizer = createContextCustomizer(MetricsExportDisabled.class);
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.test.metrics.auto-configure", "true");
+		environment.setProperty("spring.test.metrics.export", "true");
 		context.setEnvironment(environment);
 		applyCustomizerToContext(customizer, context);
 		assertThatMetricsAreDisabled(context);

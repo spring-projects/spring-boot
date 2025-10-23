@@ -93,7 +93,7 @@ class TracingContextCustomizerFactoryTests {
 		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.test.tracing.auto-configure", "true");
+		environment.setProperty("spring.test.tracing.export", "true");
 		context.setEnvironment(environment);
 		applyCustomizerToContext(customizer, context);
 		assertThatTracingExportIsEnabled(context);
@@ -104,7 +104,7 @@ class TracingContextCustomizerFactoryTests {
 		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.test.tracing.auto-configure", "false");
+		environment.setProperty("spring.test.tracing.export", "false");
 		context.setEnvironment(environment);
 		applyCustomizerToContext(customizer, context);
 		assertThatTracingExportIsDisabled(context);
@@ -115,7 +115,7 @@ class TracingContextCustomizerFactoryTests {
 		ContextCustomizer customizer = createContextCustomizer(TracingExportEnabled.class);
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.test.tracing.auto-configure", "false");
+		environment.setProperty("spring.test.tracing.export", "false");
 		context.setEnvironment(environment);
 		applyCustomizerToContext(customizer, context);
 		assertThatTracingExportIsEnabled(context);
@@ -126,7 +126,7 @@ class TracingContextCustomizerFactoryTests {
 		ContextCustomizer customizer = createContextCustomizer(TracingExportDisabled.class);
 		ConfigurableApplicationContext context = new GenericApplicationContext();
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.test.tracing.auto-configure", "true");
+		environment.setProperty("spring.test.tracing.export", "true");
 		context.setEnvironment(environment);
 		applyCustomizerToContext(customizer, context);
 		assertThatTracingExportIsDisabled(context);

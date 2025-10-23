@@ -1,9 +1,9 @@
 {
   "properties": [
     {
-      "name": "spring.test.metrics.auto-configure",
+      "name": "spring.test.metrics.export",
       "type": "java.lang.Boolean",
-      "description": "Whether metrics should be auto-configured in tests.",
+      "description": "Whether metrics export should be auto-configured in tests.",
       "defaultValue": false
     }
   ]

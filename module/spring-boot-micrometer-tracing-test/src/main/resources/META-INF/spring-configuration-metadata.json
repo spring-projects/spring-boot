@@ -1,9 +1,9 @@
 {
   "properties": [
     {
-      "name": "spring.test.tracing.auto-configure",
+      "name": "spring.test.tracing.export",
       "type": "java.lang.Boolean",
-      "description": "Whether tracing should be auto-configured in tests.",
+      "description": "Whether tracing export should be auto-configured in tests.",
       "defaultValue": false
     }
   ]

@@ -41,8 +41,7 @@ import org.springframework.test.context.TestContextAnnotationUtils;
  */
 class TracingContextCustomizerFactory implements ContextCustomizerFactory {
 
-	// TODO spring.test.tracing.export?
-	static final String AUTO_CONFIGURE_PROPERTY = "spring.test.tracing.auto-configure";
+	static final String AUTO_CONFIGURE_PROPERTY = "spring.test.tracing.export";
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,

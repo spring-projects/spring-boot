@@ -7,6 +7,13 @@
       "defaultValue": "true"
     },
     {
+      "name": "spring.test.observability.auto-configure",
+      "deprecation": {
+        "reason": "Superseded by 'spring.test.metrics.export' and 'spring.test.tracing.export'.",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.test.print-condition-evaluation-report",
       "type": "java.lang.Boolean",
       "description": "Whether the condition evaluation report should be printed when the ApplicationContext fails to start.",

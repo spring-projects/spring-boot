@@ -41,8 +41,7 @@ import org.springframework.test.context.TestContextAnnotationUtils;
  */
 class MetricsContextCustomizerFactory implements ContextCustomizerFactory {
 
-	// TODO spring.test.metrics.export?
-	static final String AUTO_CONFIGURE_PROPERTY = "spring.test.metrics.auto-configure";
+	static final String AUTO_CONFIGURE_PROPERTY = "spring.test.metrics.export";
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
