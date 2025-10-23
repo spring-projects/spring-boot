@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter testing using Spring Batch"
+description = "Starter for testing using Spring Batch"
 
 dependencies {
 	api(project(":starter:spring-boot-starter-batch"))

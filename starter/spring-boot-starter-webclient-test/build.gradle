@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter testing Spring's reactive HTTP clients (WebClient and HTTP Service Clients)"
+description = "Starter for testing Spring's reactive HTTP clients (WebClient and HTTP Service Clients)"
 
 dependencies {
 	api(project(":starter:spring-boot-starter-jackson-test"))

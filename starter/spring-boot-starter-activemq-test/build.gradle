@@ -18,7 +18,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = ""
+description = "Starter for testing using Apache ActiveMQ and JMS"
 
 dependencies {
 	api(project(":starter:spring-boot-starter-activemq"))
