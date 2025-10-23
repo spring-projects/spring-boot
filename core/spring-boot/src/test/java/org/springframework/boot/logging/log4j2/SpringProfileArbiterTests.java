@@ -32,6 +32,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
@@ -75,6 +76,9 @@ class SpringProfileArbiterTests {
 	void cleanUp() {
 		this.loggingSystem.cleanUp();
 		cleanUpPropertySources();
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			System.getProperties().remove(property.getEnvironmentVariableName());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
