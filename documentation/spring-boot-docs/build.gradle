@@ -230,7 +230,7 @@ dependencies {
 	resolvedBom(project(path: ":platform:spring-boot-dependencies", configuration: "resolvedBom"))
 
 	springApplicationExample(platform(project(":platform:spring-boot-dependencies")))
-	springApplicationExample(project(path: ":starter:spring-boot-starter-web"))
+	springApplicationExample(project(path: ":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":module:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":test-support:spring-boot-test-support"))

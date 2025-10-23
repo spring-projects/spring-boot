@@ -31,7 +31,7 @@ dependencies {
 	app project(path: ":starter:spring-boot-starter", configuration: "mavenRepository")
 	app project(path: ":starter:spring-boot-starter-actuator", configuration: "mavenRepository")
 	app project(path: ":starter:spring-boot-starter-tomcat", configuration: "mavenRepository")
-	app project(path: ":starter:spring-boot-starter-web", configuration: "mavenRepository")
+	app project(path: ":starter:spring-boot-starter-webmvc", configuration: "mavenRepository")
 	app project(path: ":starter:spring-boot-starter-webflux", configuration: "mavenRepository")
 	app project(path: ":build-plugin:spring-boot-gradle-plugin", configuration: "mavenRepository")
 	app project(path: ":module:spring-boot-webflux", configuration: "mavenRepository")
