@@ -122,13 +122,12 @@ class BootArchiveSupport {
 	}
 
 	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
-			LoaderImplementation loaderImplementation, boolean supportsSignatureFile) {
-		return createCopyAction(jar, resolvedDependencies, loaderImplementation, supportsSignatureFile, null, null);
+			LoaderImplementation loaderImplementation) {
+		return createCopyAction(jar, resolvedDependencies, loaderImplementation, null, null);
 	}
 
 	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
-			LoaderImplementation loaderImplementation, boolean supportsSignatureFile, LayerResolver layerResolver,
-			String jarmodeToolsLocation) {
+			LoaderImplementation loaderImplementation, LayerResolver layerResolver, String jarmodeToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
@@ -143,8 +142,7 @@ class BootArchiveSupport {
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirPermissions,
 				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript,
-				librarySpec, compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver,
-				loaderImplementation);
+				librarySpec, compressionResolver, encoding, resolvedDependencies, layerResolver, loaderImplementation);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 

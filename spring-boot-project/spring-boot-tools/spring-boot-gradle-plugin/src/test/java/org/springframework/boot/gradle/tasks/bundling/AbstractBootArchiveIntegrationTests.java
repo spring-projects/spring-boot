@@ -49,6 +49,7 @@ import org.apache.commons.compress.archivers.zip.UnixStat;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.TestTemplate;
@@ -644,6 +645,17 @@ abstract class AbstractBootArchiveIntegrationTests {
 					assertEntryMode(entry, 0400);
 				}
 			}
+		}
+	}
+
+	@TestTemplate
+	void signed() throws IOException {
+		BuildTask task = this.gradleBuild.build(this.taskName).task(":" + this.taskName);
+		assertThat(task).isNotNull();
+		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
+		try (JarFile jarFile = new JarFile(jar)) {
+			assertThat(jarFile.getEntry("META-INF/BOOT.SF")).isNotNull();
 		}
 	}
 
