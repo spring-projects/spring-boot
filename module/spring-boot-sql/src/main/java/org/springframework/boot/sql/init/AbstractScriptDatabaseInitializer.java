@@ -62,9 +62,8 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	/**
 	 * Return the {@link DatabaseInitializationSettings} being used by the initializer.
 	 * @return the settings being used
-	 * @since 4.0.0
 	 */
-	protected DatabaseInitializationSettings getSettings() {
+	DatabaseInitializationSettings getSettings() {
 		return this.settings;
 	}
 

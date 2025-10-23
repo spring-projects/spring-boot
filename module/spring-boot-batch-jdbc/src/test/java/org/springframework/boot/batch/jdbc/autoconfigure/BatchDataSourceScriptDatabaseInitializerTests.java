@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.EnumSource.Mode;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.boot.sql.init.ScriptDatabaseInitializerSettings;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -54,8 +55,8 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 		DataSource dataSource = mock(DataSource.class);
 		BatchJdbcProperties properties = new BatchJdbcProperties();
 		properties.setPlatform("test");
-		DatabaseInitializationSettings settings = new BatchDataSourceScriptDatabaseInitializer(dataSource, properties)
-			.getSettings();
+		DatabaseInitializationSettings settings = ScriptDatabaseInitializerSettings
+			.get(new BatchDataSourceScriptDatabaseInitializer(dataSource, properties));
 		assertThat(settings.getSchemaLocations())
 			.containsOnly("classpath:org/springframework/batch/core/schema-test.sql");
 		then(dataSource).shouldHaveNoInteractions();
@@ -74,8 +75,8 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 		given(connection.getMetaData()).willReturn(metadata);
 		String productName = (String) ReflectionTestUtils.getField(driver, "productName");
 		given(metadata.getDatabaseProductName()).willReturn(productName);
-		DatabaseInitializationSettings settings = new BatchDataSourceScriptDatabaseInitializer(dataSource, properties)
-			.getSettings();
+		DatabaseInitializationSettings settings = ScriptDatabaseInitializerSettings
+			.get(new BatchDataSourceScriptDatabaseInitializer(dataSource, properties));
 		List<String> schemaLocations = settings.getSchemaLocations();
 		assertThat(schemaLocations).isNotEmpty()
 			.allSatisfy((location) -> assertThat(resourceLoader.getResource(location).exists()).isTrue());

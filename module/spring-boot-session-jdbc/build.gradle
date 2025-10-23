@@ -39,6 +39,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-flyway"))
 	testImplementation(project(":module:spring-boot-liquibase"))
 	testImplementation(testFixtures(project(":module:spring-boot-session")))
+	testImplementation(testFixtures(project(":module:spring-boot-sql")))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
 	testImplementation("org.apache.commons:commons-dbcp2")
 	testImplementation("org.springframework:spring-web")
