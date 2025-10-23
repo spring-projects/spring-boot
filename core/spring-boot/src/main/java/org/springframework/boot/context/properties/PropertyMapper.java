@@ -383,8 +383,7 @@ public final class PropertyMapper {
 			 * @param value the value to adapt
 			 * @return an adapted value or {@code null}
 			 */
-			@Nullable
-			R adapt(T value);
+			@Nullable R adapt(T value);
 
 		}
 
@@ -512,8 +511,7 @@ public final class PropertyMapper {
 				 * @param value the value to adapt
 				 * @return an adapted value or {@code null}
 				 */
-				@Nullable
-				R adapt(@Nullable T value);
+				@Nullable R adapt(@Nullable T value);
 
 			}
 

@@ -105,8 +105,7 @@ public interface BootstrapRegistry {
 		 * bootstrap instances.
 		 * @return the instance or {@code null}
 		 */
-		@Nullable
-		T get(BootstrapContext context);
+		@Nullable T get(BootstrapContext context);
 
 		/**
 		 * Return the scope of the supplied instance.

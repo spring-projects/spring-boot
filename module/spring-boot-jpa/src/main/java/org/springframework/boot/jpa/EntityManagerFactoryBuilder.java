@@ -169,7 +169,7 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 * @see #managedTypes(PersistenceManagedTypes)
 		 */
-		public Builder packages(String @Nullable... packagesToScan) {
+		public Builder packages(String @Nullable ... packagesToScan) {
 			this.packagesToScan = packagesToScan;
 			return this;
 		}
@@ -222,7 +222,7 @@ public class EntityManagerFactoryBuilder {
 		 * @param mappingResources the mapping resources to use
 		 * @return the builder for fluent usage
 		 */
-		public Builder mappingResources(String @Nullable... mappingResources) {
+		public Builder mappingResources(String @Nullable ... mappingResources) {
 			this.mappingResources = mappingResources;
 			return this;
 		}

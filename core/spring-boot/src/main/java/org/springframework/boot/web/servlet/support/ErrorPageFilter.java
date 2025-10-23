@@ -355,8 +355,7 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 			}
 		}
 
-		@Nullable
-		String getMessage() {
+		@Nullable String getMessage() {
 			return this.message;
 		}
 

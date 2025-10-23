@@ -362,8 +362,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		 */
 		EntryTransformer NONE = (jarEntry) -> jarEntry;
 
-		@Nullable
-		JarArchiveEntry transform(JarArchiveEntry jarEntry);
+		@Nullable JarArchiveEntry transform(JarArchiveEntry jarEntry);
 
 	}
 

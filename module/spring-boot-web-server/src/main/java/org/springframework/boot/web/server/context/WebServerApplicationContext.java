@@ -50,8 +50,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * the server has not yet been created.
 	 * @return the web server
 	 */
-	@Nullable
-	WebServer getWebServer();
+	@Nullable WebServer getWebServer();
 
 	/**
 	 * Returns the namespace of the web server application context or {@code null} if no
@@ -60,8 +59,7 @@ public interface WebServerApplicationContext extends ApplicationContext {
 	 * different port).
 	 * @return the server namespace
 	 */
-	@Nullable
-	String getServerNamespace();
+	@Nullable String getServerNamespace();
 
 	/**
 	 * Returns {@code true} if the specified context is a
