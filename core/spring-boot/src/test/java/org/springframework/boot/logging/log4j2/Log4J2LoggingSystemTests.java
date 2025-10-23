@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
 import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
 import org.apache.logging.log4j.core.config.xml.XmlConfiguration;
@@ -114,16 +113,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@AfterEach
 	void cleanUp() {
+		this.loggingSystem.getConfiguration().stop();
 		this.loggingSystem.cleanUp();
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
-		Configuration configuration = loggerContext.getConfiguration();
-		loggerContext.stop();
-		if (configuration instanceof Reconfigurable reconfigurable) {
-			loggerContext.start(reconfigurable.reconfigure());
-		}
-		else {
-			loggerContext.start(configuration);
-		}
 		PluginRegistry.getInstance().clear();
 	}
 
