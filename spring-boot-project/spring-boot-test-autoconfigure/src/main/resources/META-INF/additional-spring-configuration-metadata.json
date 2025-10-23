@@ -7,9 +7,51 @@
       "defaultValue": "any"
     },
     {
+      "name": "spring.test.jsontesters.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of JSON testers is enabled.",
+      "defaultValue": "true"
+    },
+    {
+      "name": "spring.test.mockmvc.webclient.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether HTMLUnit's WebClient should be auto-configured when it's on the classpath.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.test.mockmvc.webdriver.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether Selenium's WebDriver should be auto-configured when it's on the classpath.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.test.observability.auto-configure",
       "type": "java.lang.Boolean",
       "description": "Whether observability should be auto-configured in tests.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.test.webclient.mockrestserviceserver.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether a MockRestServiceServer should be auto-configured.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.test.webclient.register-rest-template",
+      "type": "java.lang.Boolean",
+      "description": "Whether a RestTemplate bean should be registered.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.test.webservice.client.mockserver.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether a MockWebServiceServer should be auto-configured.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.test.webservice.client.register-web-service-template",
+      "type": "java.lang.Boolean",
+      "description": "Whether a WebServiceTemplate bean should be registered.",
       "defaultValue": false
     },
     {
