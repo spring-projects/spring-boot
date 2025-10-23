@@ -101,6 +101,7 @@ def dependenciesOf(String version) {
 			"spring-boot-neo4j",
 			"spring-boot-netty",
 			"spring-boot-opentelemetry",
+			"spring-boot-persistence",
 			"spring-boot-pulsar",
 			"spring-boot-quartz",
 			"spring-boot-r2dbc",
@@ -161,9 +162,15 @@ def dependenciesOf(String version) {
 			]
 			modules += [
 				"spring-boot-batch-jdbc",
+				"spring-boot-health",
 				"spring-boot-jackson2",
+				"spring-boot-jdbc-test",
+				"spring-boot-micrometer-metrics-test",
+				"spring-boot-micrometer-tracing-test",
 				"spring-boot-transaction",
+				"spring-boot-restclient-test",
 				"spring-boot-restdocs",
+				"spring-boot-webflux-test",
 				"spring-boot-webmvc-test",
 				"spring-boot-webservices-test"
 			]
@@ -176,7 +183,9 @@ def dependenciesOf(String version) {
 		"spring-boot-actuator-autoconfigure",
 		"spring-boot-autoconfigure",
 		"spring-boot-devtools",
-		"spring-boot-test-autoconfigure"
+		"spring-boot-docker-compose",
+		"spring-boot-test-autoconfigure",
+		"spring-boot-testcontainers"
 	]
 }
 
