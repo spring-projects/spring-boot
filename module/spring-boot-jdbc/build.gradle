@@ -28,11 +28,10 @@ description = "Spring Boot JDBC"
 dependencies {
 	api(project(":core:spring-boot"))
 	api(project(":module:spring-boot-sql"))
+	api(project(":module:spring-boot-transaction"))
 	api("org.springframework:spring-jdbc")
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
-
-	implementation(project(":module:spring-boot-transaction"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
