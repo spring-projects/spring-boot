@@ -51,7 +51,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 
 	app(files(sourceSets.main.output))
-	app('org.springframework.boot:spring-boot-starter-web') {
+	app('org.springframework.boot:spring-boot-starter-webmvc') {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
 	}
 	tomcat("org.springframework.boot:spring-boot-starter-tomcat")
