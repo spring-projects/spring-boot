@@ -28,7 +28,6 @@ runs:
       with:
         token: ${{ inputs.central-token-password }}
         token-name: ${{ inputs.central-token-username }}
-        ignore-already-exists-error: true
     - name: Await
       uses: ./.github/actions/await-http-resource
       with:
