@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.neo4.health;
+package org.springframework.boot.neo4j.health;
 
 import java.time.Duration;
 
@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.Status;
 import org.springframework.boot.neo4j.autoconfigure.Neo4jAutoConfiguration;
-import org.springframework.boot.neo4j.health.Neo4jReactiveHealthIndicator;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +64,7 @@ class Neo4jReactiveHealthIndicatorIntegrationTests {
 	@Test
 	void health() {
 		Health health = this.healthIndicator.health(true).block(Duration.ofSeconds(20));
+		assertThat(health).isNotNull();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("edition", "community");
 	}
