@@ -52,7 +52,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 * The name of the {@link Configuration} that contains Spring Boot archives.
 	 * @since 2.0.0
 	 */
-	public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";
+	@Deprecated(forRemoval = true)
+    public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";
 
 	/**
 	 * The name of the default {@link BootJar} task.
