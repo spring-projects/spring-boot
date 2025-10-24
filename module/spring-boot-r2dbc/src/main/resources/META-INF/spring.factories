@@ -8,6 +8,10 @@ org.springframework.boot.r2dbc.docker.compose.OracleXeR2dbcDockerComposeConnecti
 org.springframework.boot.r2dbc.docker.compose.PostgresR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.docker.compose.SqlServerR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.ClickHouseR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.DeprecatedMariaDbR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.DeprecatedMySqlR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.DeprecatedPostgresR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.r2dbc.testcontainers.DeprecatedSqlServerR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.MariaDbR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.MySqlR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.r2dbc.testcontainers.OracleFreeR2dbcContainerConnectionDetailsFactory,\

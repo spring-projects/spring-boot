@@ -161,6 +161,16 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(5))),
 
 	/**
+	 * A container image suitable for testing MongoDB using the deprecated
+	 * {@link org.testcontainers.containers.MongoDBContainer}.
+	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of {@link #MONGODB}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	MONGODB_DEPRECATED("mongo", "5.0.17", () -> org.testcontainers.containers.MongoDBContainer.class,
+			(container) -> ((org.testcontainers.containers.MongoDBContainer) container).withStartupAttempts(5)
+				.withStartupTimeout(Duration.ofMinutes(5))),
+
+	/**
 	 * A container image suitable for testing MongoDB Atlas.
 	 */
 	MONGODB_ATLAS("mongodb/mongodb-atlas-local", "8.0.4", () -> MongoDBAtlasLocalContainer.class,
@@ -177,6 +187,16 @@ public enum TestImage {
 	 */
 	NEO4J("neo4j", "5.26.11", () -> Neo4jContainer.class,
 			(container) -> ((Neo4jContainer) container).withStartupAttempts(5)
+				.withStartupTimeout(Duration.ofMinutes(10))),
+
+	/**
+	 * A container image suitable for testing Neo4j using the deprecated
+	 * {@link org.testcontainers.containers.Neo4jContainer}.
+	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of {@link #NEO4J}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	NEO4J_DEPRECATED("neo4j", "5.26.11", () -> org.testcontainers.containers.Neo4jContainer.class,
+			(container) -> ((org.testcontainers.containers.Neo4jContainer) container).withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
@@ -211,10 +231,30 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(3))),
 
 	/**
+	 * A container image suitable for testing Pulsar using the deprecated
+	 * {@link org.testcontainers.containers.PulsarContainer}.
+	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of {@link #PULSAR}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	PULSAR_DEPRECATED("apachepulsar/pulsar", "3.3.3", () -> org.testcontainers.containers.PulsarContainer.class,
+			(container) -> ((org.testcontainers.containers.PulsarContainer) container).withStartupAttempts(2)
+				.withStartupTimeout(Duration.ofMinutes(3))),
+
+	/**
 	 * A container image suitable for testing RabbitMQ.
 	 */
 	RABBITMQ("rabbitmq", "3.11-alpine", () -> RabbitMQContainer.class,
 			(container) -> ((RabbitMQContainer) container).withStartupTimeout(Duration.ofMinutes(4))),
+
+	/**
+	 * A container image suitable for testing RabbitMQ using the deprecated
+	 * {@link org.testcontainers.containers.RabbitMQContainer}.
+	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of {@link #RABBITMQ}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	RABBITMQ_DEPRECATED("rabbitmq", "3.11-alpine", () -> org.testcontainers.containers.RabbitMQContainer.class,
+			(container) -> ((org.testcontainers.containers.RabbitMQContainer) container)
+				.withStartupTimeout(Duration.ofMinutes(4))),
 
 	/**
 	 * A container image suitable for testing Redis.
