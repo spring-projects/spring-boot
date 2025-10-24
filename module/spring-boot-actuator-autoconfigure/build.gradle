@@ -48,6 +48,7 @@ dependencies {
 	testCompileOnly("com.google.code.findbugs:jsr305")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 }
 
 tasks.named("compileTestJava") {
