@@ -46,6 +46,9 @@ See xref:features/external-config.adoc#features.external-config.typesafe-configu
 
 NOTE: If your application runs in a servlet container or application server, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
 
+NOTE: javadoc:org.springframework.test.context.TestPropertySource[format=annotation] `locations` attribute does not support multi-document files.
+
+
 To provide a concrete example, suppose you develop a javadoc:org.springframework.stereotype.Component[format=annotation] that uses a `name` property, as shown in the following example:
 
 include-code::MyBean[]
