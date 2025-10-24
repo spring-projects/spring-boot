@@ -303,6 +303,11 @@
       "description": "Mapping between member paths and an alternative name that should be used in structured logging JSON"
     },
     {
+      "name": "logging.structured.json.stacktrace.excluded-frames",
+      "type": "java.util.List<java.lang.String>",
+      "description": "List of patterns excluded from stacktrace, f.e. java.lang.reflect.Method."
+    },
+    {
       "name": "logging.structured.json.stacktrace.include-common-frames",
       "type": "java.lang.Boolean",
       "description": "Whether common frames should be included."
