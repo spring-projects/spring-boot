@@ -26,14 +26,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.test.autoconfigure.json.ConditionalOnJsonTesters;
 import org.springframework.boot.test.autoconfigure.json.JsonMarshalTesterRuntimeHints;
 import org.springframework.boot.test.autoconfigure.json.JsonTesterFactoryBean;
-import org.springframework.boot.test.json.GsonTester;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.annotation.Scope;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link GsonTester}.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link JacksonTester}.
  *
  * @author Phjllip Webb
  */
