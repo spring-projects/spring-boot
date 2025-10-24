@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Scope;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link JacksonTester}.
  *
- * @author Phjllip Webb
+ * @author Phillip Webb
  */
 @AutoConfiguration(after = JacksonAutoConfiguration.class)
 @ConditionalOnJsonTesters
