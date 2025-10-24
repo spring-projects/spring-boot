@@ -58,10 +58,25 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 	@Override
 	protected GenericApplicationContext prepareApplicationContext(Class<?> application) {
 		return new AotProcessorHook(application).run(() -> {
-			Method mainMethod = application.getMethod("main", String[].class);
-			ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { this.applicationArgs });
+			Method mainMethod = getMainMethod(application);
+			mainMethod.setAccessible(true);
+			if (mainMethod.getParameterCount() == 0) {
+				ReflectionUtils.invokeMethod(mainMethod, null);
+			}
+			else {
+				ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { this.applicationArgs });
+			}
 			return Void.class;
 		});
+	}
+
+	private static Method getMainMethod(Class<?> application) throws Exception {
+		try {
+			return application.getDeclaredMethod("main", String[].class);
+		}
+		catch (NoSuchMethodException ex) {
+			return application.getDeclaredMethod("main");
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
