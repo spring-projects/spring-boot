@@ -154,18 +154,8 @@ abstract class HttpClientTransport implements HttpTransport {
 				response.close();
 
 				if (statusCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED) {
-					String detail = null;
-
-					// Some Docker endpoints may still send a JSON body; prefer it if
-					// present,
-					// otherwise fall back to plain text.
-					Message json = deserializeMessage(content);
-					if (json != null && StringUtils.hasText(json.getMessage())) {
-						detail = json.getMessage();
-					}
-					else if (content != null && content.length > 0) {
-						detail = new String(content, StandardCharsets.UTF_8);
-					}
+					String detail = (content != null && content.length > 0)
+							? new String(content, StandardCharsets.UTF_8) : null;
 
 					String msg = "Proxy authentication required for host: " + this.host.toHostString() + ", uri: "
 							+ request.getUri() + (StringUtils.hasText(detail) ? " - " + detail : "");
