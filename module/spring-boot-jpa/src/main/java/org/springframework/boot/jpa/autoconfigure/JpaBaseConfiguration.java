@@ -52,6 +52,7 @@ import org.springframework.orm.jpa.persistenceunit.ManagedClassNameFilter;
 import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes;
 import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypesScanner;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
@@ -120,9 +121,13 @@ public abstract class JpaBaseConfiguration {
 	@ConditionalOnMissingBean
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
-			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers) {
+			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers,
+			ObjectProvider<PersistenceUnitPostProcessor[]> persistenceUnitPostProcessors) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
 				this::buildJpaProperties, persistenceUnitManager.getIfAvailable());
+
+		persistenceUnitPostProcessors.ifAvailable(builder::setPersistenceUnitPostProcessors);
+
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
