@@ -18,7 +18,7 @@ Our primary goals are:
 
 
 
-== Installation and Getting Started
+== Installation and Getting Started(testing github)
 
 The {docs}[reference documentation] includes detailed {docs}/installing.html[installation instructions] as well as a comprehensive {docs}/tutorial/first-application/index.html[``getting started``] guide.
 
