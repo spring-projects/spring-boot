@@ -402,7 +402,7 @@ If you need to customize HTTP Service clients beyond basic properties, you can u
 For `RestClient` backed HTTP Service clients, you can declare a bean that implements javadoc:org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer[].
 For `WebClient` backed HTTP Service clients you can declare a bean that implements javadoc:org.springframework.web.reactive.function.client.support.WebClientHttpServiceGroupConfigurer[].
 
-Both work in the same way and will be automatically applied by Spring Boot's auto-configuraiton.
+Both work in the same way and will be automatically applied by Spring Boot's auto-configuration.
 
 For example, the following configuration would add a group customizer that adds an HTTP header to each outgoing request containing the group name:
 

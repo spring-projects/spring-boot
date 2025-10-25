@@ -84,10 +84,10 @@ class HealthEndpointConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	HealthEndpoint healthEndpoint(HealthContributorRegistry halthContributorRegistry,
+	HealthEndpoint healthEndpoint(HealthContributorRegistry healthContributorRegistry,
 			ObjectProvider<ReactiveHealthContributorRegistry> reactiveHealthContributorRegistry,
 			HealthEndpointGroups groups, HealthEndpointProperties properties) {
-		return new HealthEndpoint(halthContributorRegistry, reactiveHealthContributorRegistry.getIfAvailable(), groups,
+		return new HealthEndpoint(healthContributorRegistry, reactiveHealthContributorRegistry.getIfAvailable(), groups,
 				properties.getLogging().getSlowIndicatorThreshold());
 	}
 
