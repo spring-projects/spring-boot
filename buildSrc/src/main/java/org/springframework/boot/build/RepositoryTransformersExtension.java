@@ -115,7 +115,7 @@ public class RepositoryTransformersExtension {
 		List<MavenArtifactRepository> springRepositories = new ArrayList<>(this.project.getRepositories()
 			.withType(MavenArtifactRepository.class)
 			.stream()
-			.filter(this::isSpringReposirory)
+			.filter(this::isSpringRepository)
 			.toList());
 		Function<MavenArtifactRepository, Boolean> bySnapshots = (repository) -> repository.getName()
 			.contains("snapshot");
@@ -124,7 +124,7 @@ public class RepositoryTransformersExtension {
 		return springRepositories;
 	}
 
-	private boolean isSpringReposirory(MavenArtifactRepository repository) {
+	private boolean isSpringRepository(MavenArtifactRepository repository) {
 		return (repository.getName().startsWith("spring-"));
 	}
 

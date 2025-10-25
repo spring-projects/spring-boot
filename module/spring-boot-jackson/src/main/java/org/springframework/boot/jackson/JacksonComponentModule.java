@@ -80,14 +80,14 @@ public class JacksonComponentModule extends SimpleModule implements BeanFactoryA
 		BeanFactory beanFactory = this.beanFactory;
 		while (beanFactory != null) {
 			if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
-				addJackonComponentBeans(listableBeanFactory);
+				addJacksonComponentBeans(listableBeanFactory);
 			}
 			beanFactory = (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory)
 					? hierarchicalBeanFactory.getParentBeanFactory() : null;
 		}
 	}
 
-	private void addJackonComponentBeans(ListableBeanFactory beanFactory) {
+	private void addJacksonComponentBeans(ListableBeanFactory beanFactory) {
 		Map<String, Object> beans = beanFactory.getBeansWithAnnotation(JacksonComponent.class);
 		for (Object bean : beans.values()) {
 			addJacksonComponentBean(bean);
