@@ -117,7 +117,7 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 	}
 
 	/**
-	 * Retrives the configured credentials of the given {@code repository}. We cannot use
+	 * Retrieves the configured credentials of the given {@code repository}. We cannot use
 	 * {@link MavenArtifactRepository#getCredentials()} as, if the repository has no
 	 * credentials, it has the unwanted side-effect of assigning an empty set of username
 	 * and password credentials to the repository which may cause subsequent "Username
