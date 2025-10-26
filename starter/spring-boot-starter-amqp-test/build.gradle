@@ -23,4 +23,6 @@ description = "Starter for testing Spring AMQP and Rabbit MQ"
 dependencies {
 	api(project(":starter:spring-boot-starter-amqp"))
 	api(project(":starter:spring-boot-starter-test"))
+
+	api("org.springframework.amqp:spring-rabbit-test")
 }
