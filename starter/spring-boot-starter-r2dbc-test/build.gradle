@@ -23,4 +23,6 @@ description = "Starter for testing R2DBC"
 dependencies {
 	api(project(":starter:spring-boot-starter-r2dbc"))
 	api(project(":starter:spring-boot-starter-test"))
+
+	api("io.projectreactor:reactor-test")
 }

@@ -25,4 +25,5 @@ dependencies {
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-data-r2dbc-test"))
+	api("io.projectreactor:reactor-test")
 }
