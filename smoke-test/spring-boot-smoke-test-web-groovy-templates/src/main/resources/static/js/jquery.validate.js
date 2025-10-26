@@ -105,7 +105,7 @@ $.extend($.fn, {
       return valid;
     }
   },
-  // attributes: space seperated list of attributes to retrieve and remove
+  // attributes: space separated list of attributes to retrieve and remove
   removeAttrs: function(attributes) {
     var result = {},
       $element = this;
@@ -550,7 +550,7 @@ $.extend($.validator, {
           }
         } catch(e) {
           if ( this.settings.debug && window.console ) {
-            console.log("exception occured when checking element " + element.id + ", check the '" + rule.method + "' method", e);
+            console.log("exception occurred when checking element " + element.id + ", check the '" + rule.method + "' method", e);
           }
           throw e;
         }
@@ -1204,7 +1204,7 @@ $.format = $.validator.format;
 }(jQuery));
 
 // provides cross-browser focusin and focusout events
-// IE has native support, in other browsers, use event caputuring (neither bubbles)
+// IE has native support, in other browsers, use event capturing (neither bubbles)
 
 // provides delegate(type: String, delegate: Selector, handler: Callback) plugin for easier event delegation
 // handler is only called when $(event.target).is(delegate), in the scope of the jquery-object for event.target
