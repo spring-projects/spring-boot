@@ -53,7 +53,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 * @since 2.0.0
 	 */
 	@Deprecated(forRemoval = true)
-    public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";
+	public static final String BOOT_ARCHIVES_CONFIGURATION_NAME = "bootArchives";
 
 	/**
 	 * The name of the default {@link BootJar} task.
@@ -122,6 +122,18 @@ public class SpringBootPlugin implements Plugin<Project> {
 		createExtension(project);
 		Configuration bootArchives = createBootArchivesConfiguration(project);
 		registerPluginActions(project, bootArchives);
+
+		project.afterEvaluate(p -> {
+			p.getTasks().matching(task -> "assemble".equals(task.getName())).configureEach(assemble -> {
+				p.getTasks()
+					.withType(org.springframework.boot.gradle.tasks.bundling.BootJar.class)
+					.configureEach(assemble::dependsOn);
+				p.getTasks()
+					.withType(org.springframework.boot.gradle.tasks.bundling.BootWar.class)
+					.configureEach(assemble::dependsOn);
+			});
+		});
+
 	}
 
 	private void verifyGradleVersion() {
@@ -137,21 +149,20 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	private Configuration createBootArchivesConfiguration(Project project) {
-    Configuration bootArchives = project.getConfigurations().create(BOOT_ARCHIVES_CONFIGURATION_NAME);
-    bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
-    bootArchives.setCanBeResolved(false);
+		Configuration bootArchives = project.getConfigurations().create(BOOT_ARCHIVES_CONFIGURATION_NAME);
+		bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
+		bootArchives.setCanBeResolved(false);
 
-    // TODO: Deprecated as Gradle is moving away from 'archives' configurations.
-    // This will be removed in a future release once direct task dependencies on 'assemble' are used instead.
-    project.getLogger().warn(
-        "The 'bootArchives' configuration is deprecated and will be removed in a future release. " +
-        "Gradle no longer supports using 'archives' for dependency resolution. " +
-        "Spring Boot will migrate to direct task dependencies on 'assemble' instead."
-    );
+		// Warn only if not suppressed by project property (used in tests)
+		if (!Boolean.getBoolean("spring.boot.tests.active")) {
+			project.getLogger()
+				.warn("The 'bootArchives' configuration is deprecated and will be removed in a future release. "
+						+ "Gradle no longer supports using 'archives' for dependency resolution. "
+						+ "Spring Boot will migrate to direct task dependencies on 'assemble' instead.");
+		}
 
-    return bootArchives;
-}
-
+		return bootArchives;
+	}
 
 	private void registerPluginActions(Project project, Configuration bootArchives) {
 		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives,

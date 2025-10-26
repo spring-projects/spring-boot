@@ -41,6 +41,7 @@ class SpringBootPluginTests {
 	@SuppressWarnings("NullAway.Init")
 	File temp;
 
+	@SuppressWarnings("removal")
 	@Test
 	void bootArchivesConfigurationsCannotBeResolved() {
 		Project project = GradleProjectBuilder.builder().withProjectDir(this.temp).build();

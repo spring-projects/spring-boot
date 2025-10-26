@@ -170,3 +170,8 @@ tasks.named("compileTestJava") {
 tasks.named("compileDockerTestJava") {
 	options.nullability.checking = "tests"
 }
+
+// Suppress deprecation warnings (like bootArchives) during plugin tests
+tasks.withType(Test).configureEach {
+    systemProperty 'spring.boot.tests.active', 'true'
+}
