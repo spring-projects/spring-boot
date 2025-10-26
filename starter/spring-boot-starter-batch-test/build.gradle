@@ -23,4 +23,6 @@ description = "Starter for testing using Spring Batch"
 dependencies {
 	api(project(":starter:spring-boot-starter-batch"))
 	api(project(":starter:spring-boot-starter-test"))
+
+	api("org.springframework.batch:spring-batch-test")
 }
