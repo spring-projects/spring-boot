@@ -123,14 +123,19 @@ public class SpringBootPlugin implements Plugin<Project> {
 		Configuration bootArchives = createBootArchivesConfiguration(project);
 		registerPluginActions(project, bootArchives);
 
-		project.afterEvaluate(p -> {
-			p.getTasks().matching(task -> "assemble".equals(task.getName())).configureEach(assemble -> {
-				p.getTasks()
-					.withType(org.springframework.boot.gradle.tasks.bundling.BootJar.class)
-					.configureEach(assemble::dependsOn);
-				p.getTasks()
-					.withType(org.springframework.boot.gradle.tasks.bundling.BootWar.class)
-					.configureEach(assemble::dependsOn);
+		project.getPluginManager().withPlugin("java", (plugin) -> {
+			project.getTasks().named("assemble").configure((assemble) -> {
+				project.getTasks()
+					.named(BOOT_JAR_TASK_NAME, BootJar.class)
+					.configure((bootJar) -> assemble.dependsOn(bootJar));
+			});
+		});
+
+		project.getPluginManager().withPlugin("war", (plugin) -> {
+			project.getTasks().named("assemble").configure((assemble) -> {
+				project.getTasks()
+					.named(BOOT_WAR_TASK_NAME, BootWar.class)
+					.configure((bootWar) -> assemble.dependsOn(bootWar));
 			});
 		});
 
@@ -152,14 +157,6 @@ public class SpringBootPlugin implements Plugin<Project> {
 		Configuration bootArchives = project.getConfigurations().create(BOOT_ARCHIVES_CONFIGURATION_NAME);
 		bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
 		bootArchives.setCanBeResolved(false);
-
-		// Warn only if not suppressed by project property (used in tests)
-		if (!Boolean.getBoolean("spring.boot.tests.active")) {
-			project.getLogger()
-				.warn("The 'bootArchives' configuration is deprecated and will be removed in a future release. "
-						+ "Gradle no longer supports using 'archives' for dependency resolution. "
-						+ "Spring Boot will migrate to direct task dependencies on 'assemble' instead.");
-		}
 
 		return bootArchives;
 	}
