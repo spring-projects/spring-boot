@@ -1,1 +1,1 @@
-org.springframework.boot.jackson.autoconfigure.Jackson2AutoConfiguration
+org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration
