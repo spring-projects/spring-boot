@@ -58,13 +58,13 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		List<CertificateChainInfo> validCertificateChains = new ArrayList<>();
 		List<CertificateChainInfo> invalidCertificateChains = new ArrayList<>();
-		List<CertificateChainInfo> expiringCerificateChains = new ArrayList<>();
+		List<CertificateChainInfo> expiringCertificateChains = new ArrayList<>();
 		for (BundleInfo bundle : this.sslInfo.getBundles()) {
 			for (CertificateChainInfo certificateChain : bundle.getCertificateChains()) {
 				if (containsOnlyValidCertificates(certificateChain)) {
 					validCertificateChains.add(certificateChain);
 					if (containsExpiringCertificate(certificateChain)) {
-						expiringCerificateChains.add(certificateChain);
+						expiringCertificateChains.add(certificateChain);
 					}
 				}
 				else if (containsInvalidCertificate(certificateChain)) {
@@ -73,7 +73,7 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 			}
 		}
 		builder.status((invalidCertificateChains.isEmpty()) ? Status.UP : Status.OUT_OF_SERVICE);
-		builder.withDetail("expiringChains", expiringCerificateChains);
+		builder.withDetail("expiringChains", expiringCertificateChains);
 		builder.withDetail("invalidChains", invalidCertificateChains);
 		builder.withDetail("validChains", validCertificateChains);
 	}

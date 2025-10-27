@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Condition;
 
 /**
- * {@link Condition} used to check if security username or passowrd properties have been
+ * {@link Condition} used to check if security username or password properties have been
  * set or there are no alternatives to the user details manager available.
  *
  * @author Andy Wilkinson
