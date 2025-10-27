@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jackson2.autoconfigure;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -27,7 +27,7 @@ import org.springframework.boot.test.autoconfigure.json.ConditionalOnJsonTesters
 import org.springframework.boot.test.autoconfigure.json.JsonMarshalTesterRuntimeHints;
 import org.springframework.boot.test.autoconfigure.json.JsonTesterFactoryBean;
 import org.springframework.boot.test.json.GsonTester;
-import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.Jackson2Tester;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.annotation.Scope;
@@ -46,16 +46,16 @@ final class Jackson2TesterTestAutoConfiguration {
 
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-	@ConditionalOnBean(JsonMapper.class)
+	@ConditionalOnBean(ObjectMapper.class)
 	@ImportRuntimeHints(Jackson2TesterRuntimeHints.class)
-	FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(JsonMapper mapper) {
-		return new JsonTesterFactoryBean<>(JacksonTester.class, mapper);
+	FactoryBean<Jackson2Tester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
+		return new JsonTesterFactoryBean<>(Jackson2Tester.class, mapper);
 	}
 
 	static class Jackson2TesterRuntimeHints extends JsonMarshalTesterRuntimeHints {
 
 		Jackson2TesterRuntimeHints() {
-			super(JacksonTester.class);
+			super(Jackson2Tester.class);
 		}
 
 	}
