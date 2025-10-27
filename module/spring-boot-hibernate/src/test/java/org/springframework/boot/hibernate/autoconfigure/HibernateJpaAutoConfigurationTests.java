@@ -113,6 +113,7 @@ import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager
 import org.springframework.orm.jpa.persistenceunit.ManagedClassNameFilter;
 import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -347,6 +348,19 @@ class HibernateJpaAutoConfigurationTests {
 				assertThat(persistenceUnitInfo).isNotNull();
 				assertThat(persistenceUnitInfo.getManagedClassNames())
 					.contains("customized.attribute.converter.class.name");
+			});
+	}
+
+	@Test
+	void shouldProcessAllPersistenceUnitPostProcessorsDeclaredAsBeans() {
+		this.contextRunner.withUserConfiguration(TestConfigurationWithMultipleCustomPersistenceUnitPostProcessors.class)
+			.run((context) -> {
+				LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class);
+				PersistenceUnitInfo persistenceUnitInfo = entityManagerFactoryBean.getPersistenceUnitInfo();
+				assertThat(persistenceUnitInfo).isNotNull();
+				assertThat(persistenceUnitInfo.getManagedClassNames()).contains(
+						"customized.attribute.converter.class.name", "customized.attribute.converter.class.othername");
 			});
 	}
 
@@ -1145,6 +1159,24 @@ class HibernateJpaAutoConfigurationTests {
 		EntityManagerFactoryBuilderCustomizer entityManagerFactoryBuilderCustomizer() {
 			return (builder) -> builder.setPersistenceUnitPostProcessors(
 					(pui) -> pui.addManagedClassName("customized.attribute.converter.class.name"));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(HibernateJpaAutoConfigurationTests.class)
+	static class TestConfigurationWithMultipleCustomPersistenceUnitPostProcessors {
+
+		@Bean
+		EntityManagerFactoryBuilderCustomizer entityManagerFactoryBuilderCustomizer() {
+			return (builder) -> builder.addPersistenceUnitPostProcessors(
+					(pui) -> pui.addManagedClassName("customized.attribute.converter.class.name"));
+		}
+
+		@Bean
+		EntityManagerFactoryBuilderCustomizer otherEntityManagerFactoryBuilderCustomizer() {
+			return (builder) -> builder.addPersistenceUnitPostProcessors(
+					(pui) -> pui.addManagedClassName("customized.attribute.converter.class.othername"));
 		}
 
 	}
