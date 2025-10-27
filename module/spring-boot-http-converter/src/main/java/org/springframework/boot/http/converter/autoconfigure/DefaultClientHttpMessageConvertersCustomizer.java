@@ -43,22 +43,22 @@ class DefaultClientHttpMessageConvertersCustomizer implements ClientHttpMessageC
 	@Override
 	public void customize(ClientBuilder builder) {
 		if (this.legacyConverters != null) {
-			this.legacyConverters.forEach(builder::customMessageConverter);
+			this.legacyConverters.forEach(builder::addCustomConverter);
 		}
 		else {
 			builder.registerDefaults();
 			this.converters.forEach((converter) -> {
 				if (converter instanceof StringHttpMessageConverter) {
-					builder.stringMessageConverter(converter);
+					builder.withStringConverter(converter);
 				}
 				else if (converter instanceof KotlinSerializationJsonHttpMessageConverter) {
-					builder.customMessageConverter(converter);
+					builder.addCustomConverter(converter);
 				}
 				else if (converter.getSupportedMediaTypes().contains(MediaType.APPLICATION_JSON)) {
-					builder.jsonMessageConverter(converter);
+					builder.withJsonConverter(converter);
 				}
 				else {
-					builder.customMessageConverter(converter);
+					builder.addCustomConverter(converter);
 				}
 			});
 		}

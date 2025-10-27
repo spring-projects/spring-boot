@@ -58,8 +58,8 @@ class HttpMessageConvertersTests {
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				ResourceRegionHttpMessageConverter.class, AllEncompassingFormHttpMessageConverter.class,
-				JacksonJsonHttpMessageConverter.class, JacksonCborHttpMessageConverter.class,
-				JacksonXmlHttpMessageConverter.class);
+				KotlinSerializationJsonHttpMessageConverter.class, JacksonJsonHttpMessageConverter.class,
+				JacksonCborHttpMessageConverter.class, JacksonXmlHttpMessageConverter.class);
 	}
 
 	@Test
@@ -87,8 +87,8 @@ class HttpMessageConvertersTests {
 		GsonHttpMessageConverter converter1 = new GsonHttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter1);
 		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
-		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
-				JacksonJsonHttpMessageConverter.class);
+		assertThat(converterClasses).containsSequence(KotlinSerializationJsonHttpMessageConverter.class,
+				GsonHttpMessageConverter.class, JacksonJsonHttpMessageConverter.class);
 	}
 
 	@Test
@@ -106,8 +106,8 @@ class HttpMessageConvertersTests {
 		KotlinSerializationJsonHttpMessageConverter converter2 = new KotlinSerializationJsonHttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter1, converter2);
 		Stream<Class<?>> converterClasses = converters.getConverters().stream().map(HttpMessageConverter::getClass);
-		assertThat(converterClasses).containsSequence(GsonHttpMessageConverter.class,
-				KotlinSerializationJsonHttpMessageConverter.class, JacksonJsonHttpMessageConverter.class);
+		assertThat(converterClasses).containsSequence(KotlinSerializationJsonHttpMessageConverter.class,
+				GsonHttpMessageConverter.class, JacksonJsonHttpMessageConverter.class);
 	}
 
 	@Test
@@ -147,7 +147,8 @@ class HttpMessageConvertersTests {
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				ResourceRegionHttpMessageConverter.class, AllEncompassingFormHttpMessageConverter.class,
-				JacksonJsonHttpMessageConverter.class, JacksonCborHttpMessageConverter.class);
+				KotlinSerializationJsonHttpMessageConverter.class, JacksonJsonHttpMessageConverter.class,
+				JacksonCborHttpMessageConverter.class);
 	}
 
 	@Test
@@ -168,7 +169,8 @@ class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
-				JacksonJsonHttpMessageConverter.class, JacksonCborHttpMessageConverter.class);
+				KotlinSerializationJsonHttpMessageConverter.class, JacksonJsonHttpMessageConverter.class,
+				JacksonCborHttpMessageConverter.class);
 	}
 
 	private List<HttpMessageConverter<?>> extractFormPartConverters(List<HttpMessageConverter<?>> converters) {

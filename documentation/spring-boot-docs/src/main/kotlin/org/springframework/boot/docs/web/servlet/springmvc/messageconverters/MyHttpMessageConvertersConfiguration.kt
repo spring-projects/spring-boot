@@ -28,8 +28,8 @@ class MyHttpMessageConvertersConfiguration {
 	fun myClientConvertersCustomizer(): ClientHttpMessageConvertersCustomizer {
 		return ClientHttpMessageConvertersCustomizer { clientBuilder: HttpMessageConverters.ClientBuilder ->
 			clientBuilder
-				.customMessageConverter(AdditionalHttpMessageConverter())
-				.customMessageConverter(AnotherHttpMessageConverter())
+				.addCustomConverter(AdditionalHttpMessageConverter())
+				.addCustomConverter(AnotherHttpMessageConverter())
 		}
 	}
 

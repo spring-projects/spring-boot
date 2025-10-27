@@ -60,12 +60,6 @@ class ClientHttpRequestFactoryRuntimeHintsTests {
 		new ClientHttpRequestFactoryRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
 		assertThat(reflection
-			.onMethodInvocation(method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
-			.accepts(hints);
-		assertThat(reflection.onMethodInvocation(
-				method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", Duration.class)))
-			.accepts(hints);
-		assertThat(reflection
 			.onMethodInvocation(method(HttpComponentsClientHttpRequestFactory.class, "setReadTimeout", int.class)))
 			.accepts(hints);
 		assertThat(reflection

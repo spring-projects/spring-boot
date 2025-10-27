@@ -25,8 +25,8 @@ public class MyHttpMessageConvertersConfiguration {
 
 	@Bean
 	public ClientHttpMessageConvertersCustomizer myClientConvertersCustomizer() {
-		return (clientBuilder) -> clientBuilder.customMessageConverter(new AdditionalHttpMessageConverter())
-			.customMessageConverter(new AnotherHttpMessageConverter());
+		return (clientBuilder) -> clientBuilder.addCustomConverter(new AdditionalHttpMessageConverter())
+			.addCustomConverter(new AnotherHttpMessageConverter());
 	}
 
 }

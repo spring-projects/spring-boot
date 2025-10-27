@@ -37,8 +37,8 @@ class HttpMessageConvertersRestClientCustomizerTests {
 	void customizeConfiguresMessageConverters() {
 		HttpMessageConverter<?> c0 = mock();
 		HttpMessageConverter<?> c1 = mock();
-		ClientHttpMessageConvertersCustomizer customizer = (clientBuilder) -> clientBuilder.customMessageConverter(c0)
-			.customMessageConverter(c1);
+		ClientHttpMessageConvertersCustomizer customizer = (clientBuilder) -> clientBuilder.addCustomConverter(c0)
+			.addCustomConverter(c1);
 
 		RestClient.Builder builder = RestClient.builder();
 		new HttpMessageConvertersRestClientCustomizer(customizer).customize(builder);
