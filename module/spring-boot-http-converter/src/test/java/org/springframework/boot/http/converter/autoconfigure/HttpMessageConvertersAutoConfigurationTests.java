@@ -18,6 +18,7 @@ package org.springframework.boot.http.converter.autoconfigure;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -29,6 +30,7 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.xml.XmlMapper;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.http.converter.autoconfigure.JacksonHttpMessageConvertersConfiguration.JacksonJsonHttpMessageConverterConfiguration;
@@ -345,6 +347,27 @@ class HttpMessageConvertersAutoConfigurationTests {
 				assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
 				assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
 					.isEqualTo(StandardCharsets.UTF_16);
+			});
+	}
+
+	@Test
+	void defaultServerConvertersCustomizerHasOrderZero() {
+		defaultConvertersCustomizerHasOrderZero(DefaultServerHttpMessageConvertersCustomizer.class);
+	}
+
+	@Test
+	void defaultClientConvertersCustomizerHasOrderZero() {
+		defaultConvertersCustomizerHasOrderZero(DefaultClientHttpMessageConvertersCustomizer.class);
+	}
+
+	private <T> void defaultConvertersCustomizerHasOrderZero(Class<T> customizerType) {
+		new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.run((context) -> {
+				Map<String, T> customizers = context.getBeansOfType(customizerType);
+				assertThat(customizers).hasSize(1);
+				DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) context.getBeanFactory();
+				customizers.keySet().forEach((beanName) -> assertThat(beanFactory.getOrder(beanName)).isZero());
 			});
 	}
 

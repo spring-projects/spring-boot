@@ -19,8 +19,10 @@ package org.springframework.boot.resttestclient.autoconfigure;
 import org.assertj.core.extractor.Extractors;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
@@ -28,6 +30,8 @@ import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriBuilderFactory;
@@ -35,6 +39,7 @@ import org.springframework.web.util.UriBuilderFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -86,6 +91,23 @@ class RestTestClientAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void clientHttpMessageConverterCustomizersAreAppliedInOrder() {
+		this.contextRunner.withUserConfiguration(ClientHttpMessageConverterCustomizersConfiguration.class)
+			.run((context) -> {
+				ClientHttpMessageConvertersCustomizer customizer1 = context.getBean("customizer1",
+						ClientHttpMessageConvertersCustomizer.class);
+				ClientHttpMessageConvertersCustomizer customizer2 = context.getBean("customizer2",
+						ClientHttpMessageConvertersCustomizer.class);
+				ClientHttpMessageConvertersCustomizer customizer3 = context.getBean("customizer3",
+						ClientHttpMessageConvertersCustomizer.class);
+				InOrder inOrder = inOrder(customizer1, customizer2, customizer3);
+				inOrder.verify(customizer3).customize(any(ClientBuilder.class));
+				inOrder.verify(customizer1).customize(any(ClientBuilder.class));
+				inOrder.verify(customizer2).customize(any(ClientBuilder.class));
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class RestTestClientCustomConfig {
 
@@ -102,6 +124,29 @@ class RestTestClientAutoConfigurationTests {
 		@Override
 		public @Nullable LocalTestWebServer getLocalTestWebServer() {
 			return LocalTestWebServer.of(Scheme.HTTPS, 8182);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ClientHttpMessageConverterCustomizersConfiguration {
+
+		@Bean
+		@Order(-5)
+		ClientHttpMessageConvertersCustomizer customizer1() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
+		}
+
+		@Bean
+		@Order(5)
+		ClientHttpMessageConvertersCustomizer customizer2() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
+		}
+
+		@Bean
+		@Order(-10)
+		ClientHttpMessageConvertersCustomizer customizer3() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
 		}
 
 	}

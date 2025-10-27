@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
+import org.mockito.InOrder;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -31,6 +32,7 @@ import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
+import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.ssl.SslBundle;
@@ -40,9 +42,11 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
@@ -50,6 +54,7 @@ import org.springframework.web.client.RestClient.Builder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -296,6 +301,24 @@ class RestClientAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(RestClient.Builder.class));
 	}
 
+	@Test
+	void clientHttpMessageConverterCustomizersAreAppliedInOrder() {
+		this.contextRunner.withUserConfiguration(ClientHttpMessageConverterCustomizersConfiguration.class)
+			.run((context) -> {
+				context.getBean(RestClient.Builder.class).build();
+				ClientHttpMessageConvertersCustomizer customizer1 = context.getBean("customizer1",
+						ClientHttpMessageConvertersCustomizer.class);
+				ClientHttpMessageConvertersCustomizer customizer2 = context.getBean("customizer2",
+						ClientHttpMessageConvertersCustomizer.class);
+				ClientHttpMessageConvertersCustomizer customizer3 = context.getBean("customizer3",
+						ClientHttpMessageConvertersCustomizer.class);
+				InOrder inOrder = inOrder(customizer1, customizer2, customizer3);
+				inOrder.verify(customizer3).customize(any(ClientBuilder.class));
+				inOrder.verify(customizer1).customize(any(ClientBuilder.class));
+				inOrder.verify(customizer2).customize(any(ClientBuilder.class));
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class RestClientCustomizerConfig {
 
@@ -331,6 +354,29 @@ class RestClientAutoConfigurationTests {
 	}
 
 	static class CustomHttpMessageConverter extends ByteArrayHttpMessageConverter {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ClientHttpMessageConverterCustomizersConfiguration {
+
+		@Bean
+		@Order(-5)
+		ClientHttpMessageConvertersCustomizer customizer1() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
+		}
+
+		@Bean
+		@Order(5)
+		ClientHttpMessageConvertersCustomizer customizer2() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
+		}
+
+		@Bean
+		@Order(-10)
+		ClientHttpMessageConvertersCustomizer customizer3() {
+			return mock(ClientHttpMessageConvertersCustomizer.class);
+		}
 
 	}
 

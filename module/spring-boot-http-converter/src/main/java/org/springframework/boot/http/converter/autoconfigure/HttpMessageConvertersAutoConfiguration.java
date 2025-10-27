@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -67,7 +66,7 @@ public final class HttpMessageConvertersAutoConfiguration {
 	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
 
 	@Bean
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Order(0)
 	@SuppressWarnings("deprecation")
 	ClientHttpMessageConvertersCustomizer clientConvertersCustomizer(
 			ObjectProvider<HttpMessageConverters> legacyConverters,
@@ -77,7 +76,7 @@ public final class HttpMessageConvertersAutoConfiguration {
 	}
 
 	@Bean
-	@Order(Ordered.LOWEST_PRECEDENCE)
+	@Order(0)
 	@SuppressWarnings("deprecation")
 	ServerHttpMessageConvertersCustomizer serverConvertersCustomizer(
 			ObjectProvider<HttpMessageConverters> legacyConverters,

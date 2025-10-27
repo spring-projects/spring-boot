@@ -244,7 +244,8 @@ public final class WebMvcAutoConfiguration {
 
 		@Override
 		public void configureMessageConverters(ServerBuilder builder) {
-			this.httpMessageConvertersCustomizerProvider.forEach((customizer) -> customizer.customize(builder));
+			this.httpMessageConvertersCustomizerProvider.orderedStream()
+				.forEach((customizer) -> customizer.customize(builder));
 		}
 
 		@Override
