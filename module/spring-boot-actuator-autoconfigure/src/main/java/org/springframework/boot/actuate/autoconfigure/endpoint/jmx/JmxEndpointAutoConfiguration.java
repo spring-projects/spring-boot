@@ -138,7 +138,7 @@ public final class JmxEndpointAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ObjectMapper.class)
 	@ConditionalOnMissingClass("tools.jackson.databind.json.JsonMapper")
-	@Deprecated(since = "4.2.0", forRemoval = true)
+	@Deprecated(since = "4.0.0", forRemoval = true)
 	@SuppressWarnings("removal")
 	static class JmxJackson2EndpointConfiguration {
 
