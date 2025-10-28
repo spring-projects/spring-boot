@@ -25,7 +25,6 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":module:spring-boot-webtestclient"))
 	testImplementation(project(":starter:spring-boot-starter-graphql-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }

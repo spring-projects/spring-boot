@@ -26,4 +26,5 @@ dependencies {
 	api(project(":starter:spring-boot-starter-jackson-test"))
 
 	api(project(":module:spring-boot-graphql-test"))
+	api(project(":module:spring-boot-webtestclient"))
 }
