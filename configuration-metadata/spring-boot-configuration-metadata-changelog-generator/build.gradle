@@ -45,8 +45,8 @@ architectureCheck {
 }
 
 def dependenciesOf(String version) {
-	if (version.startsWith("4.")) {
-		def modules = [
+	if (version.startsWith("4.0")) {
+		return [
 			"spring-boot",
 			"spring-boot-activemq",
 			"spring-boot-actuator",
@@ -55,6 +55,7 @@ def dependenciesOf(String version) {
 			"spring-boot-artemis",
 			"spring-boot-autoconfigure",
 			"spring-boot-batch",
+			"spring-boot-batch-jdbc",
 			"spring-boot-cache",
 			"spring-boot-cassandra",
 			"spring-boot-couchbase",
@@ -81,13 +82,16 @@ def dependenciesOf(String version) {
 			"spring-boot-h2console",
 			"spring-boot-hateoas",
 			"spring-boot-hazelcast",
+			"spring-boot-health",
 			"spring-boot-hibernate",
 			"spring-boot-http-client",
 			"spring-boot-http-codec",
 			"spring-boot-http-converter",
 			"spring-boot-integration",
 			"spring-boot-jackson",
+			"spring-boot-jackson2",
 			"spring-boot-jdbc",
+			"spring-boot-jdbc-test",
 			"spring-boot-jetty",
 			"spring-boot-jms",
 			"spring-boot-jooq",
@@ -96,6 +100,11 @@ def dependenciesOf(String version) {
 			"spring-boot-ldap",
 			"spring-boot-liquibase",
 			"spring-boot-mail",
+			"spring-boot-micrometer-metrics",
+			"spring-boot-micrometer-metrics-test",
+			"spring-boot-micrometer-observation",
+			"spring-boot-micrometer-tracing",
+			"spring-boot-micrometer-tracing-test",
 			"spring-boot-mongodb",
 			"spring-boot-mustache",
 			"spring-boot-neo4j",
@@ -108,6 +117,8 @@ def dependenciesOf(String version) {
 			"spring-boot-reactor",
 			"spring-boot-reactor-netty",
 			"spring-boot-restclient",
+			"spring-boot-restclient-test",
+			"spring-boot-restdocs",
 			"spring-boot-rsocket",
 			"spring-boot-security",
 			"spring-boot-security-oauth2-authorization-server",
@@ -117,65 +128,25 @@ def dependenciesOf(String version) {
 			"spring-boot-sendgrid",
 			"spring-boot-servlet",
 			"spring-boot-session",
-			"spring-boot-session-data-mongodb",
 			"spring-boot-session-data-redis",
-			"spring-boot-session-hazelcast",
 			"spring-boot-session-jdbc",
 			"spring-boot-sql",
 			"spring-boot-test-autoconfigure",
 			"spring-boot-testcontainers",
 			"spring-boot-thymeleaf",
 			"spring-boot-tomcat",
-			"spring-boot-tx",
+			"spring-boot-transaction",
 			"spring-boot-validation",
 			"spring-boot-web-server",
 			"spring-boot-webclient",
 			"spring-boot-webflux",
+			"spring-boot-webflux-test",
 			"spring-boot-webmvc",
+			"spring-boot-webmvc-test",
 			"spring-boot-webservices",
+			"spring-boot-webservices-test",
 			"spring-boot-zipkin"
 		]
-		if (version.equals("4.0.0-M1") || version.equals("4.0.0-M2")) {
-			modules += [
-				"spring-boot-jersey"
-			]
-		}
-		if (version.equals("4.0.0-M1")) {
-			modules += [
-				"spring-boot-metrics",
-				"spring-boot-observation",
-				"spring-boot-tracing"
-			]
-		}
-		else {
-			modules += [
-				"spring-boot-micrometer-metrics",
-				"spring-boot-micrometer-observation",
-				"spring-boot-micrometer-tracing"
-			]
-		}
-		if (version.equals("4.0.0-RC1")) {
-			modules -= [
-				"spring-boot-session-data-mongodb",
-				"spring-boot-session-hazelcast",
-				"spring-boot-tx"
-			]
-			modules += [
-				"spring-boot-batch-jdbc",
-				"spring-boot-health",
-				"spring-boot-jackson2",
-				"spring-boot-jdbc-test",
-				"spring-boot-micrometer-metrics-test",
-				"spring-boot-micrometer-tracing-test",
-				"spring-boot-transaction",
-				"spring-boot-restclient-test",
-				"spring-boot-restdocs",
-				"spring-boot-webflux-test",
-				"spring-boot-webmvc-test",
-				"spring-boot-webservices-test"
-			]
-		}
-		return modules
 	}
 	return [
 		"spring-boot",
