@@ -19,6 +19,7 @@ package org.springframework.boot.elasticsearch.autoconfigure;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.JsonpMapper;
 import co.elastic.clients.json.SimpleJsonpMapper;
+import co.elastic.clients.json.jackson.Jackson3JsonpMapper;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.json.jsonb.JsonbJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
@@ -28,6 +29,7 @@ import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.spi.JsonProvider;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -44,16 +46,29 @@ import org.springframework.context.annotation.Import;
  */
 class ElasticsearchClientConfigurations {
 
-	@Import({ JacksonJsonpMapperConfiguration.class, JsonbJsonpMapperConfiguration.class,
-			SimpleJsonpMapperConfiguration.class })
+	@Import({ JacksonJsonpMapperConfiguration.class, Jackson2JsonpMapperConfiguration.class,
+			JsonbJsonpMapperConfiguration.class, SimpleJsonpMapperConfiguration.class })
 	static class JsonpMapperConfiguration {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(JsonpMapper.class)
+	@ConditionalOnClass(JsonMapper.class)
+	static class JacksonJsonpMapperConfiguration {
+
+		@Bean
+		Jackson3JsonpMapper jacksonJsonpMapper() {
+			return new Jackson3JsonpMapper();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(JsonpMapper.class)
 	@ConditionalOnClass(ObjectMapper.class)
-	@Configuration(proxyBeanMethods = false)
-	static class JacksonJsonpMapperConfiguration {
+	@Deprecated(since = "4.0.0", forRemoval = true)
+	static class Jackson2JsonpMapperConfiguration {
 
 		@Bean
 		JacksonJsonpMapper jacksonJsonpMapper() {
