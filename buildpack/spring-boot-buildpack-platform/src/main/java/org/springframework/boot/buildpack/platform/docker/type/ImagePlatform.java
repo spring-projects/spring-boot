@@ -101,4 +101,31 @@ public class ImagePlatform {
 		return new ImagePlatform(image.getOs(), image.getArchitecture(), image.getVariant());
 	}
 
+	/**
+	 * Return the value to use for the Docker API {@code platform} query parameter for the
+	 * given API version.
+	 *
+	 * For API versions that support JSON (1.49 and above), this method returns a JSON
+	 * object in the form {@code {"os":"...","architecture":"...","variant":"..."}}.
+	 * For lower API versions, the legacy string representation {@code os[/arch[/variant]]}
+	 * is returned.
+	 * @param apiVersion the Docker API version to target
+	 * @return the query parameter value to use for {@code platform}
+	 */
+	public String toQueryParameter(ApiVersion apiVersion) {
+		Assert.notNull(apiVersion, "'apiVersion' must not be null");
+		if (apiVersion.supports(ApiVersion.of(1, 49))) {
+			StringBuilder json = new StringBuilder("{");
+			json.append("\"os\":\"").append(this.os).append("\"");
+			if (this.architecture != null && !this.architecture.isEmpty()) {
+				json.append(",\"architecture\":\"").append(this.architecture).append("\"");
+			}
+			if (this.variant != null && !this.variant.isEmpty()) {
+				json.append(",\"variant\":\"").append(this.variant).append("\"");
+			}
+			json.append("}");
+			return json.toString();
+		}
+		return toString();
+	}
 }
