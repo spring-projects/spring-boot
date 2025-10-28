@@ -39,12 +39,12 @@ import org.springframework.data.jdbc.core.convert.DataAccessStrategy;
 import org.springframework.data.jdbc.core.convert.JdbcConverter;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.core.convert.RelationResolver;
+import org.springframework.data.jdbc.core.dialect.JdbcDialect;
 import org.springframework.data.jdbc.core.mapping.JdbcMappingContext;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
 import org.springframework.data.jdbc.repository.config.JdbcRepositoryConfigExtension;
 import org.springframework.data.relational.RelationalManagedTypes;
-import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
@@ -115,7 +115,7 @@ public final class DataJdbcRepositoriesAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public JdbcConverter jdbcConverter(JdbcMappingContext mappingContext, NamedParameterJdbcOperations operations,
-				@Lazy RelationResolver relationResolver, JdbcCustomConversions conversions, Dialect dialect) {
+				@Lazy RelationResolver relationResolver, JdbcCustomConversions conversions, JdbcDialect dialect) {
 			return super.jdbcConverter(mappingContext, operations, relationResolver, conversions, dialect);
 		}
 
@@ -138,16 +138,16 @@ public final class DataJdbcRepositoriesAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public DataAccessStrategy dataAccessStrategyBean(NamedParameterJdbcOperations operations,
-				JdbcConverter jdbcConverter, JdbcMappingContext context, Dialect dialect) {
+				JdbcConverter jdbcConverter, JdbcMappingContext context, JdbcDialect dialect) {
 			return super.dataAccessStrategyBean(operations, jdbcConverter, context, dialect);
 		}
 
 		@Override
 		@Bean
 		@ConditionalOnMissingBean
-		public Dialect jdbcDialect(NamedParameterJdbcOperations operations) {
+		public JdbcDialect jdbcDialect(NamedParameterJdbcOperations operations) {
 			DataJdbcDatabaseDialect dialect = this.properties.getDialect();
-			return (dialect != null) ? dialect.getDialect(operations.getJdbcOperations())
+			return (dialect != null) ? dialect.getJdbcDialect(operations.getJdbcOperations())
 					: super.jdbcDialect(operations);
 		}
 

@@ -41,6 +41,7 @@ import org.springframework.data.jdbc.core.JdbcAggregateTemplate;
 import org.springframework.data.jdbc.core.convert.DataAccessStrategy;
 import org.springframework.data.jdbc.core.convert.JdbcConverter;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
+import org.springframework.data.jdbc.core.dialect.JdbcDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.jdbc.core.mapping.JdbcMappingContext;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
@@ -193,7 +194,7 @@ class DataJdbcRepositoriesAutoConfigurationTests {
 
 	@Test
 	void allowsUserToDefineCustomDialect() {
-		allowsUserToDefineCustomBean(DialectConfiguration.class, Dialect.class, "customDialect");
+		allowsUserToDefineCustomBean(DialectConfiguration.class, JdbcDialect.class, "customDialect");
 	}
 
 	@Test

@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import org.springframework.data.jdbc.core.dialect.DialectResolver;
 import org.springframework.data.jdbc.core.dialect.JdbcDb2Dialect;
+import org.springframework.data.jdbc.core.dialect.JdbcDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcH2Dialect;
 import org.springframework.data.jdbc.core.dialect.JdbcHsqlDbDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcMariaDbDialect;
@@ -27,7 +28,6 @@ import org.springframework.data.jdbc.core.dialect.JdbcMySqlDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcOracleDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcSqlServerDialect;
-import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.util.Assert;
 
@@ -81,22 +81,22 @@ public enum DataJdbcDatabaseDialect {
 	 */
 	SQL_SERVER(JdbcSqlServerDialect.INSTANCE);
 
-	private final Function<JdbcOperations, Dialect> dialectResolver;
+	private final Function<JdbcOperations, JdbcDialect> jdbcDialectResolver;
 
-	DataJdbcDatabaseDialect(Class<? extends Dialect> dialectType) {
-		this.dialectResolver = (jdbc) -> {
-			Dialect dialect = DialectResolver.getDialect(jdbc);
-			Assert.isInstanceOf(dialectType, dialect);
+	DataJdbcDatabaseDialect(Class<? extends JdbcDialect> jdbcDialectType) {
+		this.jdbcDialectResolver = (jdbc) -> {
+			JdbcDialect dialect = DialectResolver.getDialect(jdbc);
+			Assert.isInstanceOf(jdbcDialectType, dialect);
 			return dialect;
 		};
 	}
 
-	DataJdbcDatabaseDialect(Dialect dialect) {
-		this.dialectResolver = (jdbc) -> dialect;
+	DataJdbcDatabaseDialect(JdbcDialect jdbcDialect) {
+		this.jdbcDialectResolver = (jdbc) -> jdbcDialect;
 	}
 
-	Dialect getDialect(JdbcOperations jdbc) {
-		return this.dialectResolver.apply(jdbc);
+	JdbcDialect getJdbcDialect(JdbcOperations jdbc) {
+		return this.jdbcDialectResolver.apply(jdbc);
 	}
 
 }
