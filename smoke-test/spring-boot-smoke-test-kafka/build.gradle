@@ -44,7 +44,6 @@ dependencies {
 
 	testImplementation(project(":starter:spring-boot-starter-kafka-test"))
 	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.springframework.kafka:spring-kafka-test")
 }
 
 tasks.named("compileTestJava") {

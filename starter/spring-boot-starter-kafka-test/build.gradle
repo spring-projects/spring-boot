@@ -23,4 +23,14 @@ description = "Starter for testing Apache Kafka"
 dependencies {
 	api(project(":starter:spring-boot-starter-kafka"))
 	api(project(":starter:spring-boot-starter-test"))
+	api("org.springframework.kafka:spring-kafka-test") {
+		exclude group: "org.apache.logging.log4j", module: "log4j-slf4j-impl"
+	}
+}
+
+checkRuntimeClasspathForConflicts {
+	ignore { name -> name == "NOTICE" ||
+				name.equals("kafka/kafka-version.properties") ||
+				name.equals("log4j2.yaml")
+	}
 }
