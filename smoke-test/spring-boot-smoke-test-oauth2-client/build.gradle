@@ -25,7 +25,6 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-security-oauth2-client-test"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }

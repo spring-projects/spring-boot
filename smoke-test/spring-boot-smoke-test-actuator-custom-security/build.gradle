@@ -26,8 +26,8 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
+	testImplementation(project(":starter:spring-boot-starter-actuator-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
 
 	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }

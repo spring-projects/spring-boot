@@ -24,7 +24,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-freemarker"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-freemarker-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }
 

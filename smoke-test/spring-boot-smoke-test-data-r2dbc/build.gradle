@@ -21,13 +21,13 @@ plugins {
 description = "Spring Boot Data R2DBC smoke test"
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-data-r2dbc"))
 	implementation(project(":starter:spring-boot-starter-webflux"))
-	implementation(project(":starter:spring-boot-starter-actuator"))
 
 	runtimeOnly("io.r2dbc:r2dbc-h2")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-data-r2dbc-test"))
 	testImplementation(project(":starter:spring-boot-starter-webflux-test"))
 }
 

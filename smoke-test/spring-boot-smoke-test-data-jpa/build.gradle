@@ -21,16 +21,14 @@ plugins {
 description = "Spring Boot Data JPA smoke test"
 
 dependencies {
+	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-data-jpa"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
-	implementation(project(":starter:spring-boot-starter-actuator"))
 
 	runtimeOnly("com.h2database:h2")
 
-
-	testImplementation(project(":module:spring-boot-data-jpa-test"))
-	testImplementation(project(":module:spring-boot-webmvc-test"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-data-jpa-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }
 
 tasks.named("compileTestJava") {

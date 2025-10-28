@@ -21,8 +21,7 @@ plugins {
 description = "Spring Boot Auto-Configure Classic smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter"))
-	implementation(project(":module:spring-boot-autoconfigure-classic"))
+	implementation(project(":starter:spring-boot-starter-classic"))
 
 	testImplementation(project(":starter:spring-boot-starter-test"))
 }

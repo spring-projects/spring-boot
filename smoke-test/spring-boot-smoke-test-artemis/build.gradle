@@ -24,8 +24,8 @@ description = "Spring Boot Artemis smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-artemis"))
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-artemis-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.testcontainers:testcontainers-activemq")

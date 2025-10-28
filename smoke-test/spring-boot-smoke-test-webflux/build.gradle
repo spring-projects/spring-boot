@@ -26,7 +26,6 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-webflux"))
 
 	testImplementation(project(":module:spring-boot-resttestclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation(project(":starter:spring-boot-starter-webflux-test"))
 	testImplementation("io.projectreactor:reactor-test")
 }

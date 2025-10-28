@@ -35,14 +35,14 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-jackson"))
 	implementation(project(":starter:spring-boot-starter-kafka"))
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
-	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-kafka-test"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers-kafka")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-kafka-test"))
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.springframework.kafka:spring-kafka-test")
 }

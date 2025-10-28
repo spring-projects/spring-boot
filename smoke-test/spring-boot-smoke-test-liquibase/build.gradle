@@ -27,7 +27,7 @@ dependencies {
 
 	runtimeOnly("com.h2database:h2")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-liquibase-test"))
 }
 
 tasks.named("compileTestJava") {

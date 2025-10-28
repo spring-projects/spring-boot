@@ -29,8 +29,8 @@ dependencies {
 	runtimeOnly(project(":starter:spring-boot-starter-jdbc"))
 	runtimeOnly("com.h2database:h2")
 
+	testImplementation(project(":starter:spring-boot-starter-session-jdbc-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
 }
 
 tasks.named("compileTestJava") {

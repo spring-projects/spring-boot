@@ -23,7 +23,7 @@ description = "Spring Boot Batch smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-batch"))
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-batch-test"))
 }
 
 tasks.named("compileTestJava") {

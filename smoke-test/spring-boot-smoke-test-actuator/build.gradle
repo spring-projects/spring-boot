@@ -30,8 +30,9 @@ dependencies {
 
 	runtimeOnly("com.h2database:h2")
 
+	testImplementation(project(":starter:spring-boot-starter-actuator-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+
 	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }
 

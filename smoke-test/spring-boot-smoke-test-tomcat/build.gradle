@@ -24,7 +24,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":module:spring-boot-resttestclient"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }
 
 tasks.named("compileTestJava") {

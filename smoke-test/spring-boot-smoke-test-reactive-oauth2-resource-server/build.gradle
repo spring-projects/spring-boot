@@ -24,9 +24,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security-oauth2-resource-server"))
 	implementation(project(":starter:spring-boot-starter-webflux"))
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation(project(":starter:spring-boot-starter-webflux-test"))
-	testImplementation(project(":starter:spring-boot-starter-security-oauth2-resource-server"))
 	testImplementation(project(":starter:spring-boot-starter-security-oauth2-resource-server-test"))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 }

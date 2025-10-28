@@ -33,7 +33,6 @@ dependencies {
 	providedRuntime("org.glassfish.web:jakarta.servlet.jsp.jstl")
 	providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }
 

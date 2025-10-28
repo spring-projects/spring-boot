@@ -24,8 +24,8 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security-saml2"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
+	testImplementation(project(":starter:spring-boot-starter-security-saml2-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }
 

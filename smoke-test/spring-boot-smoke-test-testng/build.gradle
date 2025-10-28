@@ -22,12 +22,9 @@ description = "Spring Boot TestNG smoke test"
 
 dependencies {
 	implementation(platform(project(":platform:spring-boot-dependencies")))
-	implementation(project(":starter:spring-boot-starter"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":core:spring-boot-test"))
-	testImplementation(project(":module:spring-boot-restclient"))
-	testImplementation(project(":module:spring-boot-restclient-test"))
+	testImplementation(project(":starter:spring-boot-starter-restclient-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.springframework:spring-test")

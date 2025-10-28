@@ -62,9 +62,8 @@ dependencies {
 	infinispan("org.infinispan:infinispan-core")
 	infinispan("org.infinispan:infinispan-jcache")
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-data-redis"))
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-data-redis-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")

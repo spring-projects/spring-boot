@@ -23,7 +23,7 @@ description = "Spring Boot AspectJ smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-aspectj"))
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-aspectj-test"))
 }
 
 tasks.named("compileTestJava") {

@@ -23,7 +23,7 @@ description = "Spring Boot Security smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-security"))
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-security-test"))
 }
 
 tasks.named("compileTestJava") {

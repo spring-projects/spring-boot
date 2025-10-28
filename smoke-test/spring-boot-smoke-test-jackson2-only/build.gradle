@@ -27,7 +27,6 @@ dependencies {
 		exclude module: 'spring-boot-starter-jackson'
 	}
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test")) {
 		exclude module: 'spring-boot-starter-jackson'
 	}

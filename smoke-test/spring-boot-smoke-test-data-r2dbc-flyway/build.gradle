@@ -23,18 +23,16 @@ description = "Spring Boot Data R2DBC with Flyway smoke test"
 
 dependencies {
 	implementation(project(":starter:spring-boot-starter-data-r2dbc"))
+	implementation(project(":starter:spring-boot-starter-flyway"))
 
-	runtimeOnly(project(":module:spring-boot-flyway"))
 	runtimeOnly("org.flywaydb:flyway-database-postgresql")
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("org.postgresql:r2dbc-postgresql")
-	runtimeOnly("org.springframework:spring-jdbc")
 
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
-	dockerTestImplementation(project(":module:spring-boot-data-r2dbc-test"))
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-data-r2dbc-test"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-flyway-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
-	dockerTestImplementation("io.projectreactor:reactor-test")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers-postgresql")
 	dockerTestImplementation("org.testcontainers:testcontainers-r2dbc")

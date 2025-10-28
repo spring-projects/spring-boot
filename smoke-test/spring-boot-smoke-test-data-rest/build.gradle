@@ -29,8 +29,7 @@ dependencies {
 
 	runtimeOnly(project(":starter:spring-boot-starter-jetty"))
 
-	testImplementation(project(":module:spring-boot-webmvc-test"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-data-rest-test"))
 
 	testRuntimeOnly("com.jayway.jsonpath:json-path")
 }

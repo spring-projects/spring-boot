@@ -21,10 +21,9 @@ plugins {
 description = "Spring Boot Tomcat SSL smoke test"
 
 dependencies {
-	implementation(project(":starter:spring-boot-starter-webmvc"))
 	implementation(project(":starter:spring-boot-starter-actuator"))
+	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }

@@ -25,7 +25,7 @@ dependencies {
 
 	runtimeOnly("com.unboundid:unboundid-ldapsdk")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-data-ldap-test"))
 }
 
 tasks.named("compileTestJava") {

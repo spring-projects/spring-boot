@@ -30,8 +30,8 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":module:spring-boot-webmvc-test"))
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-actuator-test"))
+	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }
 
 tasks.named("compileTestJava") {

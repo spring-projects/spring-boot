@@ -24,8 +24,8 @@ description = "Spring Boot AMQP smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-amqp"))
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-amqp-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")

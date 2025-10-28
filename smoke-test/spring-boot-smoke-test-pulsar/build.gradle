@@ -24,9 +24,9 @@ description = "Spring Boot Pulsar smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-pulsar"))
 
-	dockerTestImplementation(project(":starter:spring-boot-starter-test"))
-	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":starter:spring-boot-starter-pulsar-test"))
+	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers-pulsar")

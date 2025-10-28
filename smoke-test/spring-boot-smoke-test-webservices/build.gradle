@@ -27,8 +27,7 @@ dependencies {
 	runtimeOnly("jaxen:jaxen")
 	runtimeOnly("wsdl4j:wsdl4j")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
-	testImplementation(project(":module:spring-boot-webservices-test"))
+	testImplementation(project(":starter:spring-boot-starter-webservices-test"))
 }
 
 tasks.named("compileTestJava") {

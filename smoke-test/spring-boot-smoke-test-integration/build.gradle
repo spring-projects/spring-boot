@@ -27,7 +27,7 @@ dependencies {
 	implementation("org.springframework.integration:spring-integration-file")
 	implementation("org.springframework.integration:spring-integration-jmx")
 
-	testImplementation(project(":starter:spring-boot-starter-test"))
+	testImplementation(project(":starter:spring-boot-starter-integration-test"))
 	testImplementation("org.awaitility:awaitility")
 }
 
