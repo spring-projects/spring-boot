@@ -16,8 +16,6 @@
 
 package org.springframework.boot.build;
 
-import java.net.URI;
-
 import dev.detekt.gradle.Detekt;
 import dev.detekt.gradle.extensions.DetektExtension;
 import dev.detekt.gradle.plugin.DetektPlugin;
@@ -76,26 +74,24 @@ class KotlinConventions {
 
 	private void configureDokka(Project project) {
 		DokkaExtension dokka = project.getExtensions().getByType(DokkaExtension.class);
-		dokka.getDokkaSourceSets().configureEach((sourceSet) -> {
-			if (SourceSet.MAIN_SOURCE_SET_NAME.equals(sourceSet.getName())) {
-				sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
-				sourceSet.getClasspath()
-					.from(project.getExtensions()
-						.getByType(SourceSetContainer.class)
-						.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-						.getOutput());
-				sourceSet.getExternalDocumentationLinks().create("spring-boot-javadoc", (link) -> {
-					link.getUrl().set(URI.create("https://docs.spring.io/spring-boot/api/java/"));
-					link.getPackageListUrl()
-						.set(URI.create("https://docs.spring.io/spring-boot/api/java/element-list"));
-				});
-				sourceSet.getExternalDocumentationLinks().create("spring-framework-javadoc", (link) -> {
-					String url = "https://docs.spring.io/spring-framework/docs/%s/javadoc-api/"
-						.formatted(project.property("springFrameworkVersion"));
-					link.getUrl().set(URI.create(url));
-					link.getPackageListUrl().set(URI.create(url + "/element-list"));
-				});
-			}
+		dokka.getDokkaSourceSets().forEach((sourceSet) -> {
+			sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
+			sourceSet.getClasspath()
+				.from(project.getExtensions()
+					.getByType(SourceSetContainer.class)
+					.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+					.getOutput());
+			var externalDocumentationLinks = sourceSet.getExternalDocumentationLinks();
+			externalDocumentationLinks.register("spring-boot-javadoc", (spec) -> {
+				spec.url("https://docs.spring.io/spring-boot/api/java/");
+				spec.packageListUrl("https://docs.spring.io/spring-boot/api/java/element-list");
+			});
+			externalDocumentationLinks.register("spring-framework-javadoc", (spec) -> {
+				String url = "https://docs.spring.io/spring-framework/docs/%s/javadoc-api/"
+					.formatted(project.property("springFrameworkVersion"));
+				spec.url(url);
+				spec.packageListUrl(url + "/element-list");
+			});
 		});
 	}
 
