@@ -26,4 +26,5 @@ dependencies {
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-rsocket-test"))
+	api("io.projectreactor:reactor-test")
 }
