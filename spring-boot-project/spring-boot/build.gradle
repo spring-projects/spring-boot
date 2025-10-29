@@ -15,13 +15,13 @@
  */
 
 plugins {
-	id "dev.adamko.dokkatoo-html"
-	id "java-library"
-	id "java-test-fixtures"
 	id "org.jetbrains.kotlin.jvm"
+	id "dev.adamko.dokkatoo-html"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
+	id "java-library"
+	id "java-test-fixtures"
 }
 
 description = "Spring Boot"
