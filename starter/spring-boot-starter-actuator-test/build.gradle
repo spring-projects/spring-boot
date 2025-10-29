@@ -25,5 +25,4 @@ dependencies {
 	api(project(":starter:spring-boot-starter-test"))
 
 	api(project(":module:spring-boot-micrometer-metrics-test"))
-	api(project(":module:spring-boot-micrometer-tracing-test"))
 }
