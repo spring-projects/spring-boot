@@ -17,10 +17,10 @@
 import org.springframework.boot.build.docs.ConfigureJavadocLinks
 
 plugins {
+	id "org.jetbrains.kotlin.jvm"
 	id "dev.adamko.dokkatoo-html"
 	id "java"
 	id "org.antora"
-	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.aggregator"
 	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.antora-dependencies"
