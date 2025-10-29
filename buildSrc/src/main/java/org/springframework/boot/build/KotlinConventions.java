@@ -96,6 +96,9 @@ class KotlinConventions {
 					link.getPackageListUrl().set(URI.create(url + "/element-list"));
 				});
 			}
+			else {
+				sourceSet.getSuppress().set(true);
+			}
 		});
 	}
 

@@ -15,9 +15,9 @@
  */
 
 plugins {
+	id "org.jetbrains.kotlin.jvm"
 	id "org.jetbrains.dokka"
 	id "java-library"
-	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"

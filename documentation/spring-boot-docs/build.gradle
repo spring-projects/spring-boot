@@ -21,10 +21,10 @@ import org.springframework.boot.build.docs.ConfigureJavadocLinks
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin
 
 plugins {
+	id "org.jetbrains.kotlin.jvm"
 	id "org.jetbrains.dokka"
 	id "java"
 	id "org.antora"
-	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.aggregator"
 	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.antora-dependencies"

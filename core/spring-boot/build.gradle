@@ -15,10 +15,10 @@
  */
 
 plugins {
+	id "org.jetbrains.kotlin.jvm"
 	id "org.jetbrains.dokka"
 	id "java-library"
 	id "java-test-fixtures"
-	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
