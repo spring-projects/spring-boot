@@ -43,7 +43,7 @@ class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizableTypeExclude
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
 	private static final String[] OPTIONAL_INCLUDES = { "tools.jackson.databind.JacksonModule",
-			"org.springframework.boot.jackson.JsonComponent" };
+			"org.springframework.boot.jackson.JacksonComponent" };
 
 	private static final Set<Class<?>> KNOWN_INCLUDES;
 

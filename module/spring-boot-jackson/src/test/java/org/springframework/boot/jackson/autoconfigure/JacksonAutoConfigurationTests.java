@@ -609,7 +609,7 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	void jsonComponentThatInjectsJsonMapperCausesBeanCurrentlyInCreationException() {
+	void jacksonComponentThatInjectsJsonMapperCausesBeanCurrentlyInCreationException() {
 		this.contextRunner.withUserConfiguration(CircularDependencySerializerConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context).getFailure().hasRootCauseInstanceOf(BeanCurrentlyInCreationException.class);

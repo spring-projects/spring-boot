@@ -31,13 +31,13 @@ import org.springframework.boot.jackson.ObjectValueSerializer;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 
 /**
- * Example {@link JacksonComponent @JsonComponent} for use with {@link JsonTest @JsonTest}
- * tests.
+ * Example {@link JacksonComponent @JacksonComponent} for use with
+ * {@link JsonTest @JsonTest} tests.
  *
  * @author Phillip Webb
  */
 @JacksonComponent
-public class ExampleJsonComponent {
+public class ExampleJacksonComponent {
 
 	static class Serializer extends ObjectValueSerializer<ExampleCustomObject> {
 

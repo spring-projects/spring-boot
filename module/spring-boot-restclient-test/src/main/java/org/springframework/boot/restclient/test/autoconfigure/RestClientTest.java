@@ -45,12 +45,12 @@ import org.springframework.web.client.RestClient.Builder;
  * Using this annotation only enables auto-configuration that is relevant to rest client
  * tests. Similarly, component scanning is limited to beans annotated with:
  * <ul>
- * <li>{@code @JsonComponent}</li>
+ * <li>{@code @JacksonComponent}</li>
  * </ul>
  * <p>
  * as well as beans that implement:
  * <ul>
- * <li>{@code Module}, if Jackson is available</li>
+ * <li>{@code JacksonModule}, if Jackson is available</li>
  * </ul>
  * <p>
  * By default, tests annotated with {@code RestClientTest} will also auto-configure a
@@ -107,8 +107,8 @@ public @interface RestClientTest {
 
 	/**
 	 * Determines if default filtering should be used with
-	 * {@link SpringBootApplication @SpringBootApplication}. By default only
-	 * {@code @JsonComponent} and {@code Module} beans are included.
+	 * {@link SpringBootApplication @SpringBootApplication}. By default, only
+	 * {@code @JacksonComponent} and {@code JacksonModule} beans are included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
 	 * @return if default filters should be used

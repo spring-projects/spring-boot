@@ -95,8 +95,8 @@ public @interface WebServiceClientTest {
 
 	/**
 	 * Determines if default filtering should be used with
-	 * {@link SpringBootApplication @SpringBootApplication}. By default only
-	 * {@code @JsonComponent} and {@code Module} beans are included.
+	 * {@link SpringBootApplication @SpringBootApplication}. By default, only
+	 * {@code @JacksonComponent} and {@code JacksonModule} beans are included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
 	 * @return if default filters should be used

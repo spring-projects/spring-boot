@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jackson.autoconfigure.jsontest.app;
+package org.springframework.boot.webflux.test.autoconfigure;
 
-import java.util.Date;
-import java.util.UUID;
+import org.springframework.boot.jackson.JacksonComponent;
 
 /**
- * Example object to read/write as JSON through {@link ExampleJacksonComponent}.
+ * Example result that requires a {@link JacksonComponent}.
  *
- * @author Phillip Webb
- * @param value the value
- * @param date a date
- * @param uuid a uuid
+ * @param id sample data
+ * @author Stephane Nicoll
  */
-public record ExampleCustomObject(String value, Date date, UUID uuid) {
-
+public record ExampleResult(String id) {
 }

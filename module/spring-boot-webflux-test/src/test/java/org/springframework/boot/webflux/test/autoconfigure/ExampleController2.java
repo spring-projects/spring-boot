@@ -21,6 +21,8 @@ import reactor.core.publisher.Mono;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -40,6 +42,12 @@ public class ExampleController2 {
 	@GetMapping("/two/{id}")
 	public Mono<String> two(@PathVariable ExampleId id) {
 		return Mono.just(id.getId() + "two");
+	}
+
+	@PostMapping("/two/{id}")
+	@ResponseBody
+	public Mono<ExampleResult> twoUpdate(@PathVariable String id) {
+		return Mono.just(new ExampleResult(id));
 	}
 
 }

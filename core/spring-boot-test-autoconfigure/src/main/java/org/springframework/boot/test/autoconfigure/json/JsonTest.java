@@ -44,12 +44,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Using this annotation only enables auto-configuration that is relevant to JSON tests.
  * Similarly, component scanning is limited to beans annotated with:
  * <ul>
- * <li>{@code @JsonComponent}</li>
+ * <li>{@code @JacksonComponent}</li>
  * </ul>
  * <p>
  * as well as beans that implement:
  * <ul>
- * <li>{@code Module}, if Jackson is available</li>
+ * <li>{@code JacksonModule}, if Jackson is available</li>
  * </ul>
  * <p>
  * By default, tests annotated with {@code JsonTest} will also initialize
@@ -88,8 +88,8 @@ public @interface JsonTest {
 
 	/**
 	 * Determines if default filtering should be used with
-	 * {@link SpringBootApplication @SpringBootApplication}. By default only
-	 * {@code @JsonComponent} and {@code Module} beans are included.
+	 * {@link SpringBootApplication @SpringBootApplication}. By default, only
+	 * {@code @JacksonComponent} and {@code JacksonModule} beans are included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
 	 * @return if default filters should be used

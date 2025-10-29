@@ -20,6 +20,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -40,6 +41,12 @@ public class ExampleController2 {
 	@ResponseBody
 	public String two(@PathVariable ExampleId id) {
 		return id.getId() + "two";
+	}
+
+	@PostMapping("/two/{id}")
+	@ResponseBody
+	public ExampleResult twoUpdate(@PathVariable String id) {
+		return new ExampleResult(id);
 	}
 
 }

@@ -47,7 +47,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * <ul>
  * <li>{@code @Controller}</li>
  * <li>{@code @ControllerAdvice}</li>
- * <li>{@code @JsonComponent}</li>
+ * <li>{@code @JacksonComponent}</li>
  * </ul>
  * <p>
  * as well as beans that implement:
@@ -62,7 +62,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * <li>{@code HandlerMethodArgumentResolver}</li>
  * <li>{@code HttpMessageConverter}</li>
  * <li>{@code IDialect}, if Thymeleaf is available</li>
- * <li>{@code Module}, if Jackson is available</li>
+ * <li>{@code JacksonModule}, if Jackson is available</li>
  * <li>{@code SecurityFilterChain}</li>
  * <li>{@code WebMvcConfigurer}</li>
  * <li>{@code WebMvcRegistrations}</li>

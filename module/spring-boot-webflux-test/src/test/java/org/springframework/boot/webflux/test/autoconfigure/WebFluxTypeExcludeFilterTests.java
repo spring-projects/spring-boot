@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import tools.jackson.databind.module.SimpleModule;
 
+import org.springframework.boot.jackson.JacksonComponent;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -59,6 +60,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 		assertThat(excludes(filter, ExampleModule.class)).isFalse();
+		assertThat(excludes(filter, ExampleJacksonComponent.class)).isFalse();
 	}
 
 	@Test
@@ -72,6 +74,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 		assertThat(excludes(filter, ExampleModule.class)).isFalse();
+		assertThat(excludes(filter, ExampleJacksonComponent.class)).isFalse();
 	}
 
 	@Test
@@ -85,6 +88,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isTrue();
 		assertThat(excludes(filter, ExampleModule.class)).isTrue();
+		assertThat(excludes(filter, ExampleJacksonComponent.class)).isTrue();
 	}
 
 	@Test
@@ -98,6 +102,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 		assertThat(excludes(filter, ExampleModule.class)).isFalse();
+		assertThat(excludes(filter, ExampleJacksonComponent.class)).isFalse();
 	}
 
 	@Test
@@ -111,6 +116,7 @@ class WebFluxTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebFilter.class)).isFalse();
 		assertThat(excludes(filter, ExampleModule.class)).isFalse();
+		assertThat(excludes(filter, ExampleJacksonComponent.class)).isFalse();
 	}
 
 	private boolean excludes(WebFluxTypeExcludeFilter filter, Class<?> type) throws IOException {
@@ -182,6 +188,11 @@ class WebFluxTypeExcludeFilterTests {
 	}
 
 	static class ExampleModule extends SimpleModule {
+
+	}
+
+	@JacksonComponent
+	static class ExampleJacksonComponent {
 
 	}
 
