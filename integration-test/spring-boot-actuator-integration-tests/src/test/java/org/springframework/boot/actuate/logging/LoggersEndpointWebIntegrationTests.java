@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.minidev.json.JSONArray;
-import org.hamcrest.collection.IsIterableContainingInAnyOrder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -39,9 +38,11 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -63,6 +64,9 @@ class LoggersEndpointWebIntegrationTests {
 	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
 
 	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
+
+	private static final ParameterizedTypeReference<List<String>> STRING_LIST = new ParameterizedTypeReference<>() {
+	};
 
 	private WebTestClient client;
 
@@ -134,6 +138,7 @@ class LoggersEndpointWebIntegrationTests {
 	}
 
 	@WebEndpointTest
+	@SuppressWarnings("unchecked")
 	void getLoggerGroupShouldReturnConfiguredLogLevelAndMembers() {
 		setLogLevelToDebug("test");
 		this.client.get()
@@ -145,7 +150,8 @@ class LoggersEndpointWebIntegrationTests {
 			.jsonPath("$.length()")
 			.isEqualTo(2)
 			.jsonPath("members")
-			.value(IsIterableContainingInAnyOrder.containsInAnyOrder("test.member1", "test.member2"))
+			.value(STRING_LIST,
+					(members) -> assertThat(members).containsExactlyInAnyOrder("test.member1", "test.member2"))
 			.jsonPath("configuredLevel")
 			.isEqualTo("DEBUG");
 	}
@@ -293,6 +299,7 @@ class LoggersEndpointWebIntegrationTests {
 	}
 
 	@WebEndpointTest
+	@SuppressWarnings("unchecked")
 	void logLevelForLoggerGroupWithNameThatCouldBeMistakenForAPathExtension() {
 		setLogLevelToDebug("group.png");
 		this.client.get()
@@ -306,7 +313,8 @@ class LoggersEndpointWebIntegrationTests {
 			.jsonPath("configuredLevel")
 			.isEqualTo("DEBUG")
 			.jsonPath("members")
-			.value(IsIterableContainingInAnyOrder.containsInAnyOrder("png.member1", "png.member2"));
+			.value(STRING_LIST,
+					(members) -> assertThat(members).containsExactlyInAnyOrder("png.member1", "png.member2"));
 	}
 
 	private void setLogLevelToDebug(String name) {

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import graphql.schema.idl.TypeRuntimeWiring;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -53,7 +54,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 
 /**
  * Tests for {@link GraphQlWebFluxAutoConfiguration}
@@ -209,7 +209,7 @@ class GraphQlWebFluxAutoConfigurationTests {
 			.expectHeader()
 			.contentType(MediaType.TEXT_PLAIN)
 			.expectBody(String.class)
-			.value(containsString("type Book")));
+			.value((Consumer<@Nullable String>) (body) -> assertThat(body).contains("type Book")));
 	}
 
 	@Test

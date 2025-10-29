@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.context.properties;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 
@@ -30,8 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link ConfigurationPropertiesReportEndpoint} exposed by Jersey,
@@ -50,6 +50,7 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 	}
 
 	@WebEndpointTest
+	@SuppressWarnings("unchecked")
 	void noFilters() {
 		this.client.get()
 			.uri("/actuator/configprops")
@@ -58,7 +59,7 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 			.isOk()
 			.expectBody()
 			.jsonPath("$..beans[*]")
-			.value(hasSize(greaterThanOrEqualTo(2)))
+			.value(List.class, (beans) -> assertThat(beans).hasSizeGreaterThanOrEqualTo(2))
 			.jsonPath("$..beans['fooDotCom']")
 			.exists()
 			.jsonPath("$..beans['barDotCom']")
@@ -66,6 +67,7 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 	}
 
 	@WebEndpointTest
+	@SuppressWarnings("unchecked")
 	void filterByExactPrefix() {
 		this.client.get()
 			.uri("/actuator/configprops/com.foo")
@@ -74,12 +76,13 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 			.isOk()
 			.expectBody()
 			.jsonPath("$..beans[*]")
-			.value(hasSize(1))
+			.value(List.class, (beans) -> assertThat(beans).hasSize(1))
 			.jsonPath("$..beans['fooDotCom']")
 			.exists();
 	}
 
 	@WebEndpointTest
+	@SuppressWarnings("unchecked")
 	void filterByGeneralPrefix() {
 		this.client.get()
 			.uri("/actuator/configprops/com.")
@@ -88,7 +91,7 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 			.isOk()
 			.expectBody()
 			.jsonPath("$..beans[*]")
-			.value(hasSize(2))
+			.value(List.class, (beans) -> assertThat(beans).hasSize(2))
 			.jsonPath("$..beans['fooDotCom']")
 			.exists()
 			.jsonPath("$..beans['barDotCom']")
