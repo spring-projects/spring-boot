@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-class ReactiveSecurityAutoConfigurationTests {
+class ReactiveWebSecurityAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ReactiveWebSecurityAutoConfiguration.class));
