@@ -127,23 +127,20 @@ tasks.register("tar", Tar) {
 }
 
 if (BuildProperties.get(project).buildType() == BuildType.OPEN_SOURCE) {
-	tasks.register("homebrewFormula", org.springframework.boot.build.cli.HomebrewFormula) {
+	def homebrewFormula = tasks.register("homebrewFormula", org.springframework.boot.build.cli.HomebrewFormula) {
 		dependsOn tar
 		outputDir = layout.buildDirectory.dir("homebrew")
 		template = file("src/main/homebrew/spring-boot.rb")
 		archive = tar.archiveFile
 	}
 
-	def homebrewFormulaArtifact = artifacts.add("archives", file(layout.buildDirectory.file("homebrew/spring-boot.rb"))) {
-		type = "rb"
-		classifier = "homebrew"
-		builtBy "homebrewFormula"
-	}
-
 	publishing {
 		publications {
 			getByName("maven") {
-				artifact homebrewFormulaArtifact
+				artifact(homebrewFormula.map { it.outputDir.file("spring-boot.rb") }) { formula ->
+					formula.classifier = "homebrew"
+					formula.extension = "rb"
+				}
 			}
 		}
 	}

@@ -39,7 +39,9 @@ import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.PathSensitive;
@@ -73,6 +75,7 @@ public abstract class GenerateTestSliceMetadata extends DefaultTask {
 	@Inject
 	public GenerateTestSliceMetadata(ObjectFactory objectFactory) {
 		this.objectFactory = objectFactory;
+		this.getModuleName().convention(getProject().getName());
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
@@ -90,6 +93,9 @@ public abstract class GenerateTestSliceMetadata extends DefaultTask {
 	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
 	abstract RegularFileProperty getSpringFactories();
+
+	@Input
+	public abstract Property<String> getModuleName();
 
 	@Classpath
 	FileCollection getClasspath() {
@@ -126,7 +132,7 @@ public abstract class GenerateTestSliceMetadata extends DefaultTask {
 				testSlices.addAll(readTestSlices(classesDir, metadataReaderFactory, springFactories));
 			}
 		}
-		return new TestSliceMetadata(getProject().getName(), testSlices);
+		return new TestSliceMetadata(getModuleName().get(), testSlices);
 	}
 
 	/**
