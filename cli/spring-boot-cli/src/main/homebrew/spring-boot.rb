@@ -9,9 +9,9 @@ class SpringBoot < Formula
 
   def install
     if build.head?
-      system './gradlew spring-boot-project:spring-boot-tools:spring-boot-cli:tar'
-      system 'tar -xzf spring-boot-project/spring-boot-tools/spring-boot-cli/build/distributions/spring-* -C spring-boot-project/spring-boot-tools/spring-boot-cli/build/distributions'
-      root = 'spring-boot-project/spring-boot-tools/spring-boot-cli/build/distributions/spring-*'
+      system './gradlew cli:spring-boot-cli:tar'
+      system 'tar -xzf cli/spring-boot-cli/build/distributions/spring-* -C cli/spring-boot-cli/build/distributions'
+      root = 'cli/spring-boot-cli/build/distributions/spring-*'
     else
       root = '.'
     end
