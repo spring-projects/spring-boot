@@ -50,6 +50,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * <li>{@code @Controller}</li>
  * <li>{@code @ControllerAdvice}</li>
  * <li>{@code @JacksonComponent}</li>
+ * <li>{@code @JsonComponent} (Jackson 2, deprecated)</li>
  * </ul>
  * <p>
  * as well as beans that implement:
@@ -58,6 +59,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * <li>{@code GenericConverter}</li>
  * <li>{@code IDialect}, if Thymeleaf is available</li>
  * <li>{@code JacksonModule}, if Jackson is available</li>
+ * <li>{@code Module}, if Jackson 2 is available (deprecated)</li>
  * <li>{@code WebExceptionHandler}</li>
  * <li>{@code WebFluxConfigurer}</li>
  * <li>{@code WebFilter}</li>

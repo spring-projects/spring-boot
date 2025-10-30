@@ -46,11 +46,13 @@ import org.springframework.web.client.RestClient.Builder;
  * tests. Similarly, component scanning is limited to beans annotated with:
  * <ul>
  * <li>{@code @JacksonComponent}</li>
+ * <li>{@code @JsonComponent}(deprecated)</li>
  * </ul>
  * <p>
  * as well as beans that implement:
  * <ul>
  * <li>{@code JacksonModule}, if Jackson is available</li>
+ * <li>{@code Module}, if Jackson 2 is available (deprecated)</li>
  * </ul>
  * <p>
  * By default, tests annotated with {@code RestClientTest} will also auto-configure a

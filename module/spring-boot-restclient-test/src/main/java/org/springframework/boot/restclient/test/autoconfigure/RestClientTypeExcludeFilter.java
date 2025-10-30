@@ -22,7 +22,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.boot.jackson.JacksonComponent;
 import org.springframework.boot.test.context.filter.annotation.StandardAnnotationCustomizableTypeExcludeFilter;
 import org.springframework.util.ClassUtils;
 
@@ -35,21 +34,21 @@ class RestClientTypeExcludeFilter extends StandardAnnotationCustomizableTypeExcl
 
 	private static final Class<?>[] NO_COMPONENTS = {};
 
-	private static final String DATABIND_MODULE_CLASS_NAME = "tools.jackson.databind.JacksonModule";
+	private static final String[] OPTIONAL_INCLUDES = { "tools.jackson.databind.JacksonModule",
+			"org.springframework.boot.jackson.JacksonComponent", "com.fasterxml.jackson.databind.Module",
+			"org.springframework.boot.jackson2.JsonComponent" };
 
 	private static final Set<Class<?>> KNOWN_INCLUDES;
 
 	static {
 		Set<Class<?>> includes = new LinkedHashSet<>();
-		if (ClassUtils.isPresent(DATABIND_MODULE_CLASS_NAME, RestClientTypeExcludeFilter.class.getClassLoader())) {
+		for (String optionalInclude : OPTIONAL_INCLUDES) {
 			try {
-				includes.add(Class.forName(DATABIND_MODULE_CLASS_NAME, true,
-						RestClientTypeExcludeFilter.class.getClassLoader()));
+				includes.add(ClassUtils.forName(optionalInclude, null));
 			}
-			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException("Failed to load " + DATABIND_MODULE_CLASS_NAME, ex);
+			catch (Exception ex) {
+				// Ignore
 			}
-			includes.add(JacksonComponent.class);
 		}
 		KNOWN_INCLUDES = Collections.unmodifiableSet(includes);
 	}

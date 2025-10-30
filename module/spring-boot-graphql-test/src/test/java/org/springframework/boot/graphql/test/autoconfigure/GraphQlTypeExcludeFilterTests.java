@@ -197,7 +197,6 @@ class GraphQlTypeExcludeFilterTests {
 
 	}
 
-	@SuppressWarnings("serial")
 	static class ExampleModule extends SimpleModule {
 
 	}

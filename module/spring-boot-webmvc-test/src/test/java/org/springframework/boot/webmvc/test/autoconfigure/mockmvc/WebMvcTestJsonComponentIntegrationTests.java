@@ -14,36 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webflux.test.autoconfigure;
+package org.springframework.boot.webmvc.test.autoconfigure.mockmvc;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.JacksonComponent;
-import org.springframework.test.json.JsonCompareMode;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebFluxTest @WebFluxTest} to validate {@link JacksonComponent} beans
- * are discovered.
+ * Tests for {@link WebMvcTest @WebMvcTest} to validate
+ * {@link org.springframework.boot.jackson2.JsonComponent} beans are discovered.
  *
  * @author Stephane Nicoll
  */
-@WebFluxTest(controllers = ExampleController2.class)
-class WebFluxTestJacksonComponentIntegrationTests {
+@WebMvcTest(controllers = ExampleController2.class,
+		properties = "spring.http.converters.preferred-json-mapper=jackson2")
+class WebMvcTestJsonComponentIntegrationTests {
 
 	@Autowired
-	private WebTestClient webClient;
+	private MockMvcTester mvc;
 
 	@Test
-	void shouldFindJacksonComponent() {
-		this.webClient.post()
-			.uri("/two/" + "1234abcd")
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.json("{ \"identifier\": \"1234abcd\" }", JsonCompareMode.LENIENT);
+	void shouldFindJsonComponent() {
+		assertThat(this.mvc.post().uri("/two2/1234abcd")).hasStatusOk().bodyJson().isLenientlyEqualTo("""
+				{ "identifier2": "1234abcd" }
+				""");
 	}
 
 }

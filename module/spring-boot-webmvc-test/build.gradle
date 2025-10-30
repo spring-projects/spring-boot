@@ -36,6 +36,7 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-test-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-jackson2"))
 	optional(project(":module:spring-boot-validation"))
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.seleniumhq.selenium:htmlunit3-driver") {

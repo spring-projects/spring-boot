@@ -29,6 +29,7 @@ dependencies {
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-jackson"))
+	optional(project(":module:spring-boot-jackson2"))
 	optional(project(":module:spring-boot-restclient"))
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.junit.jupiter:junit-jupiter-api")

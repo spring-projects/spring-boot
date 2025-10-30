@@ -48,6 +48,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * <li>{@code @Controller}
  * <li>{@code RuntimeWiringConfigurer}
  * <li>{@code @JacksonComponent}
+ * <li>{@code @JsonComponent} (deprecated)
  * <li>{@code Converter}
  * <li>{@code GenericConverter}
  * <li>{@code DataFetcherExceptionResolver}
@@ -122,9 +123,9 @@ public @interface GraphQlTest {
 	 * {@link SpringBootApplication @SpringBootApplication}. By default, only
 	 * {@code @Controller} (when no explicit {@link #controllers() controllers} are
 	 * defined), {@code RuntimeWiringConfigurer}, {@code @JacksonComponent},
-	 * {@code Converter}, {@code GenericConverter}, {@code DataFetcherExceptionResolver},
-	 * {@code Instrumentation} and {@code GraphQlSourceBuilderCustomizer} beans are
-	 * included.
+	 * {@code @JsonComponent} (deprecated), {@code Converter}, {@code GenericConverter},
+	 * {@code DataFetcherExceptionResolver}, {@code Instrumentation} and
+	 * {@code GraphQlSourceBuilderCustomizer} beans are included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
 	 * @return if default filters should be used
