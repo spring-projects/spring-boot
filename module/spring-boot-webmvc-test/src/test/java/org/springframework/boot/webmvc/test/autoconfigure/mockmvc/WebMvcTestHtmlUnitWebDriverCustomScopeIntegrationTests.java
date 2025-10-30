@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @WebMvcTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
-class WebMvcTestWebDriverCustomScopeIntegrationTests {
+class WebMvcTestHtmlUnitWebDriverCustomScopeIntegrationTests {
 
 	// gh-7454
 
@@ -52,7 +52,7 @@ class WebMvcTestWebDriverCustomScopeIntegrationTests {
 
 	@Test
 	void shouldAutoConfigureWebClient() {
-		WebMvcTestWebDriverCustomScopeIntegrationTests.previousWebDriver = this.webDriver;
+		WebMvcTestHtmlUnitWebDriverCustomScopeIntegrationTests.previousWebDriver = this.webDriver;
 	}
 
 	@Test

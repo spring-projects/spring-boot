@@ -28,10 +28,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.web.htmlunit.UriBuilderFactoryWebConnectionHtmlUnitDriver;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.htmlunit.webdriver.MockMvcHtmlUnitDriverBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import org.springframework.web.util.UriBuilderFactory;
 
 /**
  * Auto-configuration for Selenium {@link WebDriver} MockMVC integration.
@@ -41,22 +41,17 @@ import org.springframework.web.util.UriBuilderFactory;
  */
 @AutoConfiguration(after = MockMvcAutoConfiguration.class)
 @ConditionalOnClass(HtmlUnitDriver.class)
-@ConditionalOnBooleanProperty(name = "spring.test.mockmvc.webdriver.enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.test.mockmvc.htmlunit.webdriver.enabled", matchIfMissing = true)
 public final class MockMvcWebDriverAutoConfiguration {
-
-	/**
-	 * A {@link UriBuilderFactory} that is suitable for Mock access (i.e. without a
-	 * running web server).
-	 */
-	private static final UriBuilderFactory MOCK_URI_BUILDER_FACTORY = new DefaultUriBuilderFactory("http://localhost");
 
 	@Bean
 	@ConditionalOnMissingBean({ WebDriver.class, MockMvcHtmlUnitDriverBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
-	MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc) {
+	MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(Environment environment, MockMvc mockMvc) {
+		String url = environment.getProperty("spring.test.mockmvc.htmlunit.url", "http://localhost");
 		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
-			.withDelegate(
-					new UriBuilderFactoryWebConnectionHtmlUnitDriver(MOCK_URI_BUILDER_FACTORY, BrowserVersion.CHROME));
+			.withDelegate(new UriBuilderFactoryWebConnectionHtmlUnitDriver(new DefaultUriBuilderFactory(url),
+					BrowserVersion.CHROME));
 	}
 
 	@Bean

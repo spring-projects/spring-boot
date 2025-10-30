@@ -25,6 +25,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc.HtmlUnit;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +39,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 @WebMvcTest
 @TestMethodOrder(MethodOrderer.MethodName.class)
-class WebMvcTestWebDriverIntegrationTests {
+@AutoConfigureMockMvc(htmlUnit = @HtmlUnit(url = "http://localhost:8181"))
+class WebMvcTestHtmlUnitWebDriverIntegrationTests {
 
 	private static WebDriver previousWebDriver;
 
@@ -49,7 +52,7 @@ class WebMvcTestWebDriverIntegrationTests {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
-		WebMvcTestWebDriverIntegrationTests.previousWebDriver = this.webDriver;
+		WebMvcTestHtmlUnitWebDriverIntegrationTests.previousWebDriver = this.webDriver;
 	}
 
 	@Test
@@ -59,6 +62,7 @@ class WebMvcTestWebDriverIntegrationTests {
 		assertThat(element.getText()).isEqualTo("Hello");
 		assertThatExceptionOfType(NoSuchSessionException.class).isThrownBy(previousWebDriver::getWindowHandle);
 		assertThat(previousWebDriver).isNotNull().isNotSameAs(this.webDriver);
+		assertThat(this.webDriver.getCurrentUrl()).isEqualTo("http://localhost:8181/html");
 	}
 
 }

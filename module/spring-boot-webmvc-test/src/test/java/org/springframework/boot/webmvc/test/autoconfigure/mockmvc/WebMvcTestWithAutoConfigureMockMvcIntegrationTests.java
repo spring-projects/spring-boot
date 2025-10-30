@@ -23,6 +23,7 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc.HtmlUnit;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
@@ -38,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Stephane Nicoll
  */
 @WebMvcTest
-@AutoConfigureMockMvc(addFilters = false, webClientEnabled = false, webDriverEnabled = false)
+@AutoConfigureMockMvc(addFilters = false, htmlUnit = @HtmlUnit(webClient = false, webDriver = false))
 class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 
 	@Autowired

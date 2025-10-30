@@ -72,19 +72,43 @@ public @interface AutoConfigureMockMvc {
 	boolean printOnlyOnFailure() default true;
 
 	/**
-	 * If a {@link WebClient} should be auto-configured when HtmlUnit is on the classpath.
-	 * Defaults to {@code true}.
-	 * @return if a {@link WebClient} is auto-configured
+	 * Settings for the integration between MockMVC and HtmlUnit.
+	 * @return the HtmlUnit settings
 	 */
-	@PropertyMapping("webclient.enabled")
-	boolean webClientEnabled() default true;
+	@PropertyMapping("htmlunit")
+	HtmlUnit htmlUnit() default @HtmlUnit;
 
 	/**
-	 * If a {@link WebDriver} should be auto-configured when Selenium is on the classpath.
-	 * Defaults to {@code true}.
-	 * @return if a {@link WebDriver} is auto-configured
+	 * HtmlUnit settings.
 	 */
-	@PropertyMapping("webdriver.enabled")
-	boolean webDriverEnabled() default true;
+	@Target({ ElementType.TYPE, ElementType.METHOD })
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Inherited
+	@interface HtmlUnit {
+
+		/**
+		 * The URL that should be used when expanding relative paths.
+		 * @return the URL used to expand relative paths
+		 */
+		String url() default "http://localhost";
+
+		/**
+		 * If a {@link WebClient} should be auto-configured when HtmlUnit is on the
+		 * classpath. Defaults to {@code true}.
+		 * @return if a {@link WebClient} is auto-configured
+		 */
+		@PropertyMapping("webclient.enabled")
+		boolean webClient() default true;
+
+		/**
+		 * If a {@link WebDriver} should be auto-configured when Selenium is on the
+		 * classpath. Defaults to {@code true}.
+		 * @return if a {@link WebDriver} is auto-configured
+		 */
+		@PropertyMapping("webdriver.enabled")
+		boolean webDriver() default true;
+
+	}
 
 }

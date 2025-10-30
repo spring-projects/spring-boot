@@ -25,10 +25,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.web.htmlunit.UriBuilderFactoryWebClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import org.springframework.web.util.UriBuilderFactory;
 
 /**
  * Auto-configuration for HtmlUnit {@link WebClient} MockMVC integration.
@@ -38,21 +38,16 @@ import org.springframework.web.util.UriBuilderFactory;
  */
 @AutoConfiguration(after = MockMvcAutoConfiguration.class)
 @ConditionalOnClass(WebClient.class)
-@ConditionalOnBooleanProperty(name = "spring.test.mockmvc.webclient.enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.test.mockmvc.htmlunit.webclient.enabled", matchIfMissing = true)
 public final class MockMvcWebClientAutoConfiguration {
-
-	/**
-	 * A {@link UriBuilderFactory} that is suitable for Mock access (i.e. without a
-	 * running web server).
-	 */
-	private static final UriBuilderFactory MOCK_URI_BUILDER_FACTORY = new DefaultUriBuilderFactory("http://localhost");
 
 	@Bean
 	@ConditionalOnMissingBean({ WebClient.class, MockMvcWebClientBuilder.class })
 	@ConditionalOnBean(MockMvc.class)
-	MockMvcWebClientBuilder mockMvcWebClientBuilder(MockMvc mockMvc) {
+	MockMvcWebClientBuilder mockMvcWebClientBuilder(Environment environment, MockMvc mockMvc) {
+		String url = environment.getProperty("spring.test.mockmvc.htmlunit.url", "http://localhost");
 		return MockMvcWebClientBuilder.mockMvcSetup(mockMvc)
-			.withDelegate(new UriBuilderFactoryWebClient(MOCK_URI_BUILDER_FACTORY));
+			.withDelegate(new UriBuilderFactoryWebClient(new DefaultUriBuilderFactory(url)));
 	}
 
 	@Bean
