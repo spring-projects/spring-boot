@@ -21,9 +21,6 @@
     {
       "name": "spring.test.mockmvc.webclient.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether HTMLUnit's WebClient should be auto-configured when it's on the classpath.",
-      "defaultValue": true,
-      "deprecated": true,
       "deprecation": {
         "level": "error",
         "replacement": "spring.test.mockmvc.htmlunit.webclient.enabled",
@@ -33,9 +30,6 @@
     {
       "name": "spring.test.mockmvc.webdriver.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether Selenium's WebDriver should be auto-configured when it's on the classpath.",
-      "defaultValue": true,
-      "deprecated": true,
       "deprecation": {
         "level": "error",
         "replacement": "spring.test.mockmvc.htmlunit.webdriver.enabled",
