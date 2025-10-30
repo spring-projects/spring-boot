@@ -400,6 +400,7 @@ For example, javadoc:org.springframework.boot.actuate.endpoint.web.annotation.We
 
 You can write technology-specific extensions by using javadoc:org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension[format=annotation] and javadoc:org.springframework.boot.actuate.endpoint.jmx.annotation.EndpointJmxExtension[format=annotation].
 These annotations let you provide technology-specific operations to augment an existing endpoint.
+An endpoint may have at most one extension of each type.
 
 Finally, if you need access to web-framework-specific functionality, you can implement servlet or Spring javadoc:org.springframework.stereotype.Controller[format=annotation] and javadoc:org.springframework.web.bind.annotation.RestController[format=annotation] endpoints at the cost of them not being available over JMX or when using a different web framework.
 
