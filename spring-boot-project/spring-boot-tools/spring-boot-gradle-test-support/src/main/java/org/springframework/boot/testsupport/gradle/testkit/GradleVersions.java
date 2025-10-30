@@ -34,21 +34,21 @@ public final class GradleVersions {
 
 	public static List<String> allCompatible() {
 		if (isJavaVersion(JavaVersion.VERSION_25)) {
-			return Arrays.asList("9.0.0", "9.1.0");
+			return Arrays.asList("9.0.0", "9.2.0");
 		}
 		if (isJavaVersion(JavaVersion.VERSION_24)) {
-			return Arrays.asList(GradleVersion.current().getVersion(), "9.0.0", "9.1.0");
+			return Arrays.asList(GradleVersion.current().getVersion(), "9.0.0", "9.2.0");
 		}
 		if (isJavaVersion(JavaVersion.VERSION_23)) {
-			return Arrays.asList(GradleVersion.current().getVersion(), "9.0.0", "9.1.0");
+			return Arrays.asList(GradleVersion.current().getVersion(), "9.0.0", "9.2.0");
 		}
 		if (isJavaVersion(JavaVersion.VERSION_22)) {
-			return Arrays.asList("8.8", GradleVersion.current().getVersion(), "9.0.0", "9.1.0");
+			return Arrays.asList("8.8", GradleVersion.current().getVersion(), "9.0.0", "9.2.0");
 		}
 		if (isJavaVersion(JavaVersion.VERSION_21)) {
-			return Arrays.asList("8.5", GradleVersion.current().getVersion(), "9.0.0", "9.1.0");
+			return Arrays.asList("8.5", GradleVersion.current().getVersion(), "9.0.0", "9.2.0");
 		}
-		return Arrays.asList("7.6.6", "8.4", GradleVersion.current().getVersion(), "9.0.0", "9.1.0");
+		return Arrays.asList("7.6.6", "8.4", GradleVersion.current().getVersion(), "9.0.0", "9.2.0");
 	}
 
 	public static String minimumCompatible() {
