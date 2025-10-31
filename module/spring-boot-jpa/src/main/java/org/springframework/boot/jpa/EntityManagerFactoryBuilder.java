@@ -17,9 +17,12 @@
 package org.springframework.boot.jpa;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -127,6 +130,24 @@ public class EntityManagerFactoryBuilder {
 	 */
 	public void setPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
 		this.persistenceUnitPostProcessors = persistenceUnitPostProcessors;
+	}
+
+	/**
+	 * Add some {@linkplain PersistenceUnitPostProcessor persistence unit post processors}
+	 * to be applied to the PersistenceUnitInfo used for creating the
+	 * {@link LocalContainerEntityManagerFactoryBean}.
+	 * @param persistenceUnitPostProcessors the persistence unit post processors to use
+	 */
+	public void addPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
+		if (this.persistenceUnitPostProcessors == null) {
+			this.persistenceUnitPostProcessors = persistenceUnitPostProcessors;
+			return;
+		}
+
+		var combined = new ArrayList<>(Arrays.asList(this.persistenceUnitPostProcessors));
+		combined.addAll(Arrays.asList(persistenceUnitPostProcessors));
+
+		this.persistenceUnitPostProcessors = combined.toArray(PersistenceUnitPostProcessor[]::new);
 	}
 
 	/**
