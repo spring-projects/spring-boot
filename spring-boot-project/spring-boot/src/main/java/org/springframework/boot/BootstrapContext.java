@@ -27,9 +27,13 @@ import org.springframework.core.env.Environment;
  * <p>
  * Provides lazy access to singletons that may be expensive to create, or need to be
  * shared before the {@link ApplicationContext} is available.
+ * <p>
+ * Instances are registered by type. The contact may return {@code null} values when a
+ * type has been registered but no value is actually supplied.
  *
  * @author Phillip Webb
  * @since 2.4.0
+ * @see BootstrapRegistry
  */
 public interface BootstrapContext {
 
@@ -38,7 +42,7 @@ public interface BootstrapContext {
 	 * will be created if it hasn't been accessed previously.
 	 * @param <T> the instance type
 	 * @param type the instance type
-	 * @return the instance managed by the context
+	 * @return the instance managed by the context, which may be {@code null}
 	 * @throws IllegalStateException if the type has not been registered
 	 */
 	<T> T get(Class<T> type) throws IllegalStateException;
@@ -49,7 +53,7 @@ public interface BootstrapContext {
 	 * @param <T> the instance type
 	 * @param type the instance type
 	 * @param other the instance to use if the type has not been registered
-	 * @return the instance
+	 * @return the instance, which may be {@code null}
 	 */
 	<T> T getOrElse(Class<T> type, T other);
 
@@ -59,7 +63,7 @@ public interface BootstrapContext {
 	 * @param <T> the instance type
 	 * @param type the instance type
 	 * @param other a supplier for the instance to use if the type has not been registered
-	 * @return the instance
+	 * @return the instance, which may be {@code null}
 	 */
 	<T> T getOrElseSupply(Class<T> type, Supplier<T> other);
 
@@ -70,7 +74,7 @@ public interface BootstrapContext {
 	 * @param <X> the exception to throw if the type is not registered
 	 * @param type the instance type
 	 * @param exceptionSupplier the supplier which will return the exception to be thrown
-	 * @return the instance managed by the context
+	 * @return the instance managed by the context, which may be {@code null}
 	 * @throws X if the type has not been registered
 	 * @throws IllegalStateException if the type has not been registered
 	 */
