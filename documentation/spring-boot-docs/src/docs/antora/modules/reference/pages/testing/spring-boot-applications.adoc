@@ -178,8 +178,10 @@ If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an avai
 
 The javadoc:org.springframework.boot.test.web.server.LocalServerPort[format=annotation] annotation can be used to xref:how-to:webserver.adoc#howto.webserver.discover-port[inject the actual port used] into your test.
 
-For convenience, tests that need to make REST calls to the started server can additionally autowire a
-{url-spring-framework-docs}/testing/resttestclient.html[`RestTestClient`] which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
+Tests that need to make REST calls to the started server can autowire a
+{url-spring-framework-docs}/testing/resttestclient.html[`RestTestClient`] by annotating the test class with javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient[format=annotation].
+
+The configured client resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
 
 include-code::MyRandomPortRestTestClientTests[]
 
@@ -187,7 +189,9 @@ If you prefer to use AssertJ, dedicated assertions are available from javadoc:or
 
 include-code::MyRandomPortRestTestClientAssertJTests[]
 
-If you have `spring-webflux` on the classpath, you can also autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] that provides a similar API:
+If you have `spring-webflux` on the classpath, you can also autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] by annotating the test class with javadoc:org.springframework.boot.webtestclient.AutoConfigureWebTestClient[format=annotation].
+
+`WebTestClient` provides a similar API, as shown in the following example:
 
 include-code::MyRandomPortWebTestClientTests[]
 
@@ -387,6 +391,7 @@ Often, javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[f
 javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] also auto-configures {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`], which offers a powerful way to quickly test WebFlux controllers without needing to start a full HTTP server.
 
 TIP: You can also auto-configure javadoc:org.springframework.test.web.reactive.server.WebTestClient[] in a non-`@WebFluxTest` (such as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation]) by annotating it with javadoc:org.springframework.boot.webflux.test.autoconfigure.AutoConfigureWebTestClient[format=annotation].
+
 The following example shows a class that uses both javadoc:org.springframework.boot.webflux.test.autoconfigure.WebFluxTest[format=annotation] and a javadoc:org.springframework.test.web.reactive.server.WebTestClient[]:
 
 include-code::MyControllerTests[]
