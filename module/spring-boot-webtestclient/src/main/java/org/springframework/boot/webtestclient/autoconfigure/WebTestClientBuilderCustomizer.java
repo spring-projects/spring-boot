@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webtestclient;
+package org.springframework.boot.webtestclient.autoconfigure;
 
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.Builder;

@@ -189,7 +189,7 @@ If you prefer to use AssertJ, dedicated assertions are available from javadoc:or
 
 include-code::MyRandomPortRestTestClientAssertJTests[]
 
-If you have `spring-webflux` on the classpath, you can also autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] by annotating the test class with javadoc:org.springframework.boot.webtestclient.AutoConfigureWebTestClient[format=annotation].
+If you have `spring-webflux` on the classpath, you can also autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] by annotating the test class with javadoc:org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient[format=annotation].
 
 `WebTestClient` provides a similar API, as shown in the following example:
 

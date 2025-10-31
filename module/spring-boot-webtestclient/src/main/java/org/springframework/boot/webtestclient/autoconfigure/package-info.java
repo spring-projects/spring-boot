@@ -18,6 +18,6 @@
  * Auto-configuration for WebTestClient.
  */
 @NullMarked
-package org.springframework.boot.webtestclient;
+package org.springframework.boot.webtestclient.autoconfigure;
 
 import org.jspecify.annotations.NullMarked;

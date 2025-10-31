@@ -17,7 +17,7 @@
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withwebtestclient;
 
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.webtestclient.WebTestClientBuilderCustomizer;
+import org.springframework.boot.webtestclient.autoconfigure.WebTestClientBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;

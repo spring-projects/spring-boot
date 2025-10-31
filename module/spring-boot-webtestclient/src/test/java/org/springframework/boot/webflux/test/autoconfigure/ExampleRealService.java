@@ -16,7 +16,7 @@
 
 package org.springframework.boot.webflux.test.autoconfigure;
 
-import org.springframework.boot.webtestclient.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.stereotype.Service;
 
 /**

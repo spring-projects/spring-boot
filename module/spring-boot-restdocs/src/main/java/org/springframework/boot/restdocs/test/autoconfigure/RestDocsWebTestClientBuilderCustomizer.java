@@ -18,7 +18,7 @@ package org.springframework.boot.restdocs.test.autoconfigure;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.webtestclient.WebTestClientBuilderCustomizer;
+import org.springframework.boot.webtestclient.autoconfigure.WebTestClientBuilderCustomizer;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.StringUtils;

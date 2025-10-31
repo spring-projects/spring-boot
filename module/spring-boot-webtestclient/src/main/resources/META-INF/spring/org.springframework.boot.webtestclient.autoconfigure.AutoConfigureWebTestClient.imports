@@ -1,0 +1,2 @@
+org.springframework.boot.http.codec.autoconfigure.CodecsAutoConfiguration
+org.springframework.boot.webtestclient.autoconfigure.WebTestClientAutoConfiguration

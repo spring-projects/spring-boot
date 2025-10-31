@@ -17,7 +17,7 @@
 package org.springframework.boot.webflux.test.autoconfigure;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.webtestclient.AutoConfigureWebTestClient;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 
 /**
  * Example {@link SpringBootApplication @SpringBootApplication} used with

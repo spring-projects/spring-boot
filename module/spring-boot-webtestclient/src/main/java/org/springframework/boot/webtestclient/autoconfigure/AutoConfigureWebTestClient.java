@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.webtestclient;
+package org.springframework.boot.webtestclient.autoconfigure;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

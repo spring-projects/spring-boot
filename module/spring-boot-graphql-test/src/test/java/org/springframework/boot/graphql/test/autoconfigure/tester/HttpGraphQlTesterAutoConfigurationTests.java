@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
 import org.springframework.boot.test.http.server.LocalTestWebServer.Scheme;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
-import org.springframework.boot.webtestclient.WebTestClientAutoConfiguration;
+import org.springframework.boot.webtestclient.autoconfigure.WebTestClientAutoConfiguration;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.util.UriBuilderFactory;
