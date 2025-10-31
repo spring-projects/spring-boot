@@ -17,11 +17,14 @@
 package org.springframework.boot.logging.structured;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -66,10 +69,11 @@ class StructuredLoggingJsonPropertiesTests {
 		environment.setProperty("logging.structured.json.stacktrace.max-throwable-depth", "5");
 		environment.setProperty("logging.structured.json.stacktrace.include-common-frames", "true");
 		environment.setProperty("logging.structured.json.stacktrace.include-hashes", "true");
+		environment.setProperty("logging.structured.json.stacktrace.excluded-frames", "java.lang.reflect.Method");
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		assertThat(properties).isNotNull();
-		assertThat(properties.stackTrace())
-			.isEqualTo(new StructuredLoggingJsonProperties.StackTrace("standard", Root.FIRST, 1024, 5, true, true));
+		assertThat(properties.stackTrace()).isEqualTo(new StructuredLoggingJsonProperties.StackTrace("standard",
+				Root.FIRST, 1024, 5, true, true, List.of("java.lang.reflect.Method")));
 	}
 
 	private void setupJsonProperties(MockEnvironment environment) {
@@ -98,7 +102,7 @@ class StructuredLoggingJsonPropertiesTests {
 			.accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onConstructorInvocation(StackTrace.class.getDeclaredConstructor(String.class, Root.class, Integer.class,
-					Integer.class, Boolean.class, Boolean.class)))
+					Integer.class, Boolean.class, Boolean.class, List.class)))
 			.accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onConstructorInvocation(Context.class.getDeclaredConstructor(boolean.class, String.class))).accepts(hints);
@@ -115,44 +119,44 @@ class StructuredLoggingJsonPropertiesTests {
 
 		@Test
 		void createPrinterWhenEmptyReturnsNull() {
-			StackTrace properties = new StackTrace(null, null, null, null, null, null);
+			StackTrace properties = new StackTrace(null, null, null, null, null, null, null);
 			assertThat(properties.createPrinter()).isNull();
 		}
 
 		@Test
 		void createPrinterWhenNoPrinterAndNotEmptyReturnsStandard() {
-			StackTrace properties = new StackTrace(null, Root.LAST, null, null, null, null);
+			StackTrace properties = new StackTrace(null, Root.LAST, null, null, null, null, null);
 			assertThat(properties.createPrinter()).isInstanceOf(StandardStackTracePrinter.class);
 		}
 
 		@Test
 		void createPrinterWhenLoggingSystemReturnsNull() {
-			StackTrace properties = new StackTrace("logging-system", null, null, null, null, null);
+			StackTrace properties = new StackTrace("logging-system", null, null, null, null, null, null);
 			assertThat(properties.createPrinter()).isNull();
 		}
 
 		@Test
 		void createPrinterWhenLoggingSystemRelaxedReturnsNull() {
-			StackTrace properties = new StackTrace("LoggingSystem", null, null, null, null, null);
+			StackTrace properties = new StackTrace("LoggingSystem", null, null, null, null, null, null);
 			assertThat(properties.createPrinter()).isNull();
 		}
 
 		@Test
 		void createPrinterWhenStandardReturnsStandardPrinter() {
-			StackTrace properties = new StackTrace("standard", null, null, null, null, null);
+			StackTrace properties = new StackTrace("standard", null, null, null, null, null, null);
 			assertThat(properties.createPrinter()).isInstanceOf(StandardStackTracePrinter.class);
 		}
 
 		@Test
 		void createPrinterWhenStandardRelaxedReturnsStandardPrinter() {
-			StackTrace properties = new StackTrace("STANDARD", null, null, null, null, null);
+			StackTrace properties = new StackTrace("STANDARD", null, null, null, null, null, null);
 			assertThat(properties.createPrinter()).isInstanceOf(StandardStackTracePrinter.class);
 		}
 
 		@Test
 		void createPrinterWhenStandardAppliesCustomizations() {
 			Exception exception = TestException.create();
-			StackTrace properties = new StackTrace(null, Root.FIRST, 300, 2, true, false);
+			StackTrace properties = new StackTrace(null, Root.FIRST, 300, 2, true, false, null);
 			StandardStackTracePrinter printer = (StandardStackTracePrinter) properties.createPrinter();
 			assertThat(printer).isNotNull();
 			printer = printer.withLineSeparator("\n");
@@ -168,17 +172,32 @@ class StructuredLoggingJsonPropertiesTests {
 		@Test
 		void createPrinterWhenStandardWithHashesPrintsHash() {
 			Exception exception = TestException.create();
-			StackTrace properties = new StackTrace(null, null, null, null, null, true);
+			StackTrace properties = new StackTrace(null, null, null, null, null, true, null);
 			StackTracePrinter printer = properties.createPrinter();
 			assertThat(printer).isNotNull();
 			String actual = printer.printStackTraceToString(exception);
 			assertThat(actual).containsPattern("<#[0-9a-z]{8}>");
 		}
 
+		@ParameterizedTest
+		@CsvSource({
+				"org.springframework.boot.logging.TestException.createTestException, org.springframework.boot.logging.TestException.createException, org.springframework.boot.logging.TestException.createTestException",
+				"org.springframework.boot.logging.TestException.createException, org.springframework.boot.logging.TestException.createTestException, org.springframework.boot.logging.TestException.createException" })
+		void createPrinterWhenStandardWithExcludedFramesSuppressFrames(String excludedFrame, String present,
+				String absent) {
+			Exception exception = TestException.create();
+			StackTrace properties = new StackTrace(null, null, null, null, null, null, List.of(excludedFrame));
+			StackTracePrinter printer = properties.createPrinter();
+			assertThat(printer).isNotNull();
+			String actual = printer.printStackTraceToString(exception);
+			assertThat(actual).containsPattern(present).doesNotContain(absent).contains("filtered");
+		}
+
 		@Test
 		void createPrinterWhenClassNameCreatesPrinter() {
 			Exception exception = TestException.create();
-			StackTrace properties = new StackTrace(TestStackTracePrinter.class.getName(), null, null, null, true, null);
+			StackTrace properties = new StackTrace(TestStackTracePrinter.class.getName(), null, null, null, true, null,
+					null);
 			StackTracePrinter printer = properties.createPrinter();
 			assertThat(printer).isNotNull();
 			assertThat(printer.printStackTraceToString(exception)).isEqualTo("java.lang.RuntimeException: exception");
@@ -188,7 +207,7 @@ class StructuredLoggingJsonPropertiesTests {
 		void createPrinterWhenClassNameInjectsConfiguredPrinter() {
 			Exception exception = TestException.create();
 			StackTrace properties = new StackTrace(TestStackTracePrinterCustomized.class.getName(), Root.FIRST, 300, 2,
-					true, null);
+					true, null, null);
 			StackTracePrinter printer = properties.createPrinter();
 			assertThat(printer).isNotNull();
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
@@ -197,25 +216,25 @@ class StructuredLoggingJsonPropertiesTests {
 
 		@Test
 		void hasCustomPrinterShouldReturnFalseWhenPrinterIsEmpty() {
-			StackTrace stackTrace = new StackTrace("", null, null, null, null, null);
+			StackTrace stackTrace = new StackTrace("", null, null, null, null, null, null);
 			assertThat(stackTrace.hasCustomPrinter()).isFalse();
 		}
 
 		@Test
 		void hasCustomPrinterShouldReturnFalseWhenPrinterHasLoggingSystem() {
-			StackTrace stackTrace = new StackTrace("loggingsystem", null, null, null, null, null);
+			StackTrace stackTrace = new StackTrace("loggingsystem", null, null, null, null, null, null);
 			assertThat(stackTrace.hasCustomPrinter()).isFalse();
 		}
 
 		@Test
 		void hasCustomPrinterShouldReturnFalseWhenPrinterHasStandard() {
-			StackTrace stackTrace = new StackTrace("standard", null, null, null, null, null);
+			StackTrace stackTrace = new StackTrace("standard", null, null, null, null, null, null);
 			assertThat(stackTrace.hasCustomPrinter()).isFalse();
 		}
 
 		@Test
 		void hasCustomPrinterShouldReturnTrueWhenPrinterHasCustom() {
-			StackTrace stackTrace = new StackTrace("custom-printer", null, null, null, null, null);
+			StackTrace stackTrace = new StackTrace("custom-printer", null, null, null, null, null, null);
 			assertThat(stackTrace.hasCustomPrinter()).isTrue();
 		}
 
