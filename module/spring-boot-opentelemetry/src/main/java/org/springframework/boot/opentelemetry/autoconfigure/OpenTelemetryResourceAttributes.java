@@ -45,7 +45,8 @@ import org.springframework.util.StringUtils;
 public class OpenTelemetryResourceAttributes {
 
 	/**
-	 * Default value for service name if {@code service.name} is not set.
+	 * Default value for service name. Used if {@code service.name} is not set and no name
+	 * can be deduced from the running application.
 	 */
 	private static final String DEFAULT_SERVICE_NAME = "unknown_service";
 
