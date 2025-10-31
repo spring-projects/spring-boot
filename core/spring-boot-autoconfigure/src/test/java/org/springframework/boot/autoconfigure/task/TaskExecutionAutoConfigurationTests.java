@@ -25,11 +25,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
@@ -48,13 +50,16 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.core.task.support.CompositeTaskDecorator;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link TaskExecutionAutoConfiguration}.
@@ -387,6 +392,62 @@ class TaskExecutionAutoConfigurationTests {
 				TestBean bean = context.getBean(TestBean.class);
 				String text = bean.echo("something").get();
 				assertThat(text).contains("async-task-").contains("something");
+			});
+	}
+
+	@Test
+	void enableAsyncLinksToCustomTaskExecutorWhenAsyncConfigurerOverridesIt() {
+		Executor executor = createCustomAsyncExecutor("async-task-");
+		AsyncUncaughtExceptionHandler asyncUncaughtExceptionHandler = mock(AsyncUncaughtExceptionHandler.class);
+		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-")
+			.withBean("taskScheduler", TaskScheduler.class, () -> mock(ThreadPoolTaskScheduler.class))
+			.withBean("customAsyncConfigurer", AsyncConfigurer.class, () -> new AsyncConfigurer() {
+
+				@Override
+				public @Nullable Executor getAsyncExecutor() {
+					return executor;
+				}
+
+				@Override
+				public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+					return asyncUncaughtExceptionHandler;
+				}
+			})
+			.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncConfigurer.class);
+				assertThat(context.getBeansOfType(Executor.class)).containsOnlyKeys("applicationTaskExecutor",
+						"taskScheduler");
+				TestBean bean = context.getBean(TestBean.class);
+				String text = bean.echo("something").get();
+				assertThat(text).contains("async-task-").contains("something");
+				AsyncConfigurer asyncConfigurer = context.getBean(AsyncConfigurer.class);
+				assertThat(asyncConfigurer.getAsyncExecutor()).isEqualTo(executor);
+				assertThat(asyncConfigurer.getAsyncUncaughtExceptionHandler()).isEqualTo(asyncUncaughtExceptionHandler);
+			});
+	}
+
+	@Test
+	void enableAsyncLinksToApplicationTaskExecutorWhenAsyncConfigurerDoesNotOverrideIt() {
+		AsyncUncaughtExceptionHandler asyncUncaughtExceptionHandler = mock(AsyncUncaughtExceptionHandler.class);
+		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=auto-task-")
+			.withBean("taskScheduler", TaskScheduler.class, () -> mock(ThreadPoolTaskScheduler.class))
+			.withBean("customAsyncConfigurer", AsyncConfigurer.class, () -> new AsyncConfigurer() {
+				@Override
+				public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+					return asyncUncaughtExceptionHandler;
+				}
+			})
+			.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncConfigurer.class);
+				assertThat(context.getBeansOfType(Executor.class)).containsOnlyKeys("applicationTaskExecutor",
+						"taskScheduler");
+				TestBean bean = context.getBean(TestBean.class);
+				String text = bean.echo("something").get();
+				assertThat(text).contains("auto-task-").contains("something");
+				assertThat(context.getBean(AsyncConfigurer.class).getAsyncUncaughtExceptionHandler())
+					.isEqualTo(asyncUncaughtExceptionHandler);
 			});
 	}
 

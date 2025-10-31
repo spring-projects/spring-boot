@@ -21,10 +21,14 @@ import java.util.concurrent.Executor;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
@@ -66,7 +70,7 @@ class TaskExecutorConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(OnExecutorCondition.class)
-	@Import(AsyncConfigurerConfiguration.class)
+	@Import({ AsyncConfigurerWrapperConfiguration.class, AsyncConfigurerConfiguration.class })
 	static class TaskExecutorConfiguration {
 
 		@Bean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
@@ -161,19 +165,33 @@ class TaskExecutorConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(AsyncConfigurer.class)
+	static class AsyncConfigurerWrapperConfiguration {
+
+		@Bean
+		static BeanPostProcessor applicationTaskExecutorAsyncConfigurerBeanPostProcessor(
+				ObjectProvider<BeanFactory> beanFactory) {
+			return new BeanPostProcessor() {
+				@Override
+				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+					if (bean instanceof AsyncConfigurer asyncConfigurer
+							&& !(bean instanceof ApplicationTaskExecutorAsyncConfigurer)) {
+						return new ApplicationTaskExecutorAsyncConfigurer(beanFactory.getObject(), asyncConfigurer);
+					}
+					return bean;
+				}
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(AsyncConfigurer.class)
 	static class AsyncConfigurerConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		AsyncConfigurer applicationTaskExecutorAsyncConfigurer(BeanFactory beanFactory) {
-			return new AsyncConfigurer() {
-				@Override
-				public Executor getAsyncExecutor() {
-					return beanFactory.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
-							Executor.class);
-				}
-			};
+		ApplicationTaskExecutorAsyncConfigurer applicationTaskExecutorAsyncConfigurer(BeanFactory beanFactory) {
+			return new ApplicationTaskExecutorAsyncConfigurer(beanFactory, null);
 		}
 
 	}
@@ -211,6 +229,41 @@ class TaskExecutorConfigurations {
 		@ConditionalOnProperty(value = "spring.task.execution.mode", havingValue = "force")
 		private static final class ModelCondition {
 
+		}
+
+	}
+
+	/**
+	 * {@link AsyncConfigurer} implementation that delegates to the user-defined
+	 * {@link AsyncConfigurer} instance, if any. Consistently use the executor named
+	 * {@value TaskExecutionAutoConfiguration#APPLICATION_TASK_EXECUTOR_BEAN_NAME} in the
+	 * absence of a custom executor.
+	 */
+	static class ApplicationTaskExecutorAsyncConfigurer implements AsyncConfigurer {
+
+		private final BeanFactory beanFactory;
+
+		private final @Nullable AsyncConfigurer delegate;
+
+		ApplicationTaskExecutorAsyncConfigurer(BeanFactory beanFactory, @Nullable AsyncConfigurer delegate) {
+			this.beanFactory = beanFactory;
+			this.delegate = delegate;
+		}
+
+		@Override
+		public Executor getAsyncExecutor() {
+			Executor executor = (this.delegate != null) ? this.delegate.getAsyncExecutor() : null;
+			return (executor != null) ? executor : getApplicationTaskExecutor();
+		}
+
+		@Override
+		public @Nullable AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+			return (this.delegate != null) ? this.delegate.getAsyncUncaughtExceptionHandler() : null;
+		}
+
+		private Executor getApplicationTaskExecutor() {
+			return this.beanFactory.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+					Executor.class);
 		}
 
 	}
