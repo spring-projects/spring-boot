@@ -44,13 +44,13 @@ class WebResourcesRuntimeHintsTests {
 		RuntimeHints hints = register(
 				new TestClassLoader(List.of("META-INF/resources/", "resources/", "static/", "public/")));
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-			.satisfies(include("META-INF/resources/*", "resources/*", "static/*", "public/*"));
+			.satisfies(include("META-INF/resources/**", "resources/**", "static/**", "public/**"));
 	}
 
 	@Test
 	void registerHintsWithOnlyStaticLocations() {
 		RuntimeHints hints = register(new TestClassLoader(List.of("static/")));
-		assertThat(hints.resources().resourcePatternHints()).singleElement().satisfies(include("static/*"));
+		assertThat(hints.resources().resourcePatternHints()).singleElement().satisfies(include("static/**"));
 	}
 
 	@Test
