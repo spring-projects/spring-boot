@@ -183,6 +183,10 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 include-code::MyRandomPortRestTestClientTests[]
 
+If you prefer to use AssertJ, dedicated assertions are available from javadoc:org.springframework.test.web.servlet.client.assertj.RestTestClientResponse[], as shown in the following example:
+
+include-code::MyRandomPortRestTestClientAssertJTests[]
+
 If you have `spring-webflux` on the classpath, you can also autowire a {url-spring-framework-docs}/testing/webtestclient.html[`WebTestClient`] that provides a similar API:
 
 include-code::MyRandomPortWebTestClientTests[]

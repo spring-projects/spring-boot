@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.test.web.servlet.client.RestTestClient.ResponseSpec;
+import org.springframework.test.web.servlet.client.assertj.RestTestClientResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
@@ -92,7 +94,8 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Test
 	void injectRestTestClient() {
-		this.restClient.get().uri("/").exchange().expectBody(String.class).isEqualTo("Hello World");
+		ResponseSpec spec = this.restClient.get().uri("/").exchange();
+		assertThat(RestTestClientResponse.from(spec)).bodyText().isEqualTo("Hello World");
 	}
 
 	@Test

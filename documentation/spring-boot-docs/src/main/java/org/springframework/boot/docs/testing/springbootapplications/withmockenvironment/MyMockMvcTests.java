@@ -26,6 +26,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.test.web.servlet.client.RestTestClient.ResponseSpec;
+import org.springframework.test.web.servlet.client.assertj.RestTestClientResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,13 +41,20 @@ class MyMockMvcTests {
 
 	@Test
 	void testWithMockMvc(@Autowired MockMvc mvc) throws Exception {
-		mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Hello World"));
+		// @formatter:off
+		mvc.perform(get("/"))
+				.andExpect(status().isOk())
+				.andExpect(content().string("Hello World"));
+		// @formatter:on
 	}
 
-	// If AssertJ is on the classpath, you can use MockMvcTester
-	@Test
+	@Test // If AssertJ is on the classpath, you can use MockMvcTester
 	void testWithMockMvcTester(@Autowired MockMvcTester mvc) {
-		assertThat(mvc.get().uri("/")).hasStatusOk().hasBodyTextEqualTo("Hello World");
+		// @formatter:off
+		assertThat(mvc.get().uri("/"))
+				.hasStatusOk()
+				.hasBodyTextEqualTo("Hello World");
+		// @formatter:on
 	}
 
 	@Test
@@ -59,8 +68,17 @@ class MyMockMvcTests {
 		// @formatter:on
 	}
 
-	// If Spring WebFlux is on the classpath, you can drive MVC tests with a WebTestClient
-	@Test
+	@Test // If you prefer AssertJ, dedicated assertions are available
+	void testWithRestTestClientAssertJ(@Autowired RestTestClient webClient) {
+		// @formatter:off
+		ResponseSpec spec = webClient.get().uri("/").exchange();
+		RestTestClientResponse response = RestTestClientResponse.from(spec);
+		assertThat(response).hasStatusOk()
+				.bodyText().isEqualTo("Hello World");
+		// @formatter:on
+	}
+
+	@Test // If Spring WebFlux is on the classpath
 	void testWithWebTestClient(@Autowired WebTestClient webClient) {
 		// @formatter:off
 		webClient
