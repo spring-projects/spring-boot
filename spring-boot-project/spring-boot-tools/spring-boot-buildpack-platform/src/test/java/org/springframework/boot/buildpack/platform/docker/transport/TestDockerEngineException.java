@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-present the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,18 @@
 
 package org.springframework.boot.buildpack.platform.docker.transport;
 
-public class ProxyAuthenticationException extends RuntimeException {
+import java.net.URI;
 
-	public ProxyAuthenticationException(String message) {
-		super(message);
-	}
+/**
+ * Subclass of {@link DockerEngineException} for testing.
+ *
+ * @author Phillip Webb
+ */
+public class TestDockerEngineException extends DockerEngineException {
 
-	public ProxyAuthenticationException(String message, Throwable cause) {
-		super(message, cause);
+	public TestDockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
+			Message responseMessage, byte[] content) {
+		super(host, uri, statusCode, reasonPhrase, errors, responseMessage, content);
 	}
 
 }

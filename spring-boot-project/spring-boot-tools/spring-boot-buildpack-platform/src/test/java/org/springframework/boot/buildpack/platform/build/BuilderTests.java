@@ -31,7 +31,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
-import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
+import org.springframework.boot.buildpack.platform.docker.transport.TestDockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
@@ -313,12 +313,12 @@ class BuilderTests {
 					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF))))
-			.willThrow(
-					new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null))
 			.willReturn(builderImage);
 		given(docker.image().inspect(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb"))))
-			.willThrow(
-					new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null))
 			.willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.IF_NOT_PRESENT);
