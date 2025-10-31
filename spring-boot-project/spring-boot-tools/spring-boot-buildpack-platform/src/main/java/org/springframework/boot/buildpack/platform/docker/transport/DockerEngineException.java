@@ -17,8 +17,12 @@
 package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.hc.core5.http.HttpStatus;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -26,6 +30,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Siva Sai Udayagiri
  * @since 2.3.0
  */
 public class DockerEngineException extends RuntimeException {
@@ -38,9 +43,26 @@ public class DockerEngineException extends RuntimeException {
 
 	private final Message responseMessage;
 
+	/**
+	 * Create a new {@link DockerEngineException}.
+	 * @param host the host
+	 * @param uri the URI being called
+	 * @param statusCode the status code
+	 * @param reasonPhrase the reason phrase
+	 * @param errors the errors or {@code null}
+	 * @param responseMessage the response message
+	 * @deprecated since 3.4.12 for removal in 4.0.0 since the exception should only be
+	 * thrown by the transport.
+	 */
+	@Deprecated(since = "3.4.12", forRemoval = true)
 	public DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
 			Message responseMessage) {
-		super(buildMessage(host, uri, statusCode, reasonPhrase, errors, responseMessage));
+		this(host, uri, statusCode, reasonPhrase, errors, responseMessage, null);
+	}
+
+	DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
+			Message responseMessage, byte[] content) {
+		super(buildMessage(host, uri, statusCode, reasonPhrase, errors, responseMessage, content));
 		this.statusCode = statusCode;
 		this.reasonPhrase = reasonPhrase;
 		this.errors = errors;
@@ -82,7 +104,7 @@ public class DockerEngineException extends RuntimeException {
 	}
 
 	private static String buildMessage(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
-			Message responseMessage) {
+			Message responseMessage, byte[] content) {
 		Assert.notNull(host, "'host' must not be null");
 		Assert.notNull(uri, "'uri' must not be null");
 		StringBuilder message = new StringBuilder(
@@ -92,6 +114,10 @@ public class DockerEngineException extends RuntimeException {
 		}
 		if (responseMessage != null && StringUtils.hasLength(responseMessage.getMessage())) {
 			message.append(" and message \"").append(responseMessage.getMessage()).append("\"");
+		}
+		else if (statusCode == HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED && !ObjectUtils.isEmpty(content)) {
+			String contentString = new String(content, StandardCharsets.UTF_8);
+			message.append(" and content \"").append(contentString.trim()).append("\"");
 		}
 		if (errors != null && !errors.isEmpty()) {
 			message.append(" ").append(errors);
