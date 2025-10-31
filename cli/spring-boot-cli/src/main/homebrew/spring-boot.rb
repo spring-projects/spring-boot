@@ -5,18 +5,9 @@ class SpringBoot < Formula
   url '${repo}/org/springframework/boot/spring-boot-cli/${version}/spring-boot-cli-${version}-bin.tar.gz'
   version '${version}'
   sha256 '${hash}'
-  head 'https://github.com/spring-projects/spring-boot.git', :branch => "main"
 
   def install
-    if build.head?
-      system './gradlew cli:spring-boot-cli:tar'
-      system 'tar -xzf cli/spring-boot-cli/build/distributions/spring-* -C cli/spring-boot-cli/build/distributions'
-      root = 'cli/spring-boot-cli/build/distributions/spring-*'
-    else
-      root = '.'
-    end
-
-    libexec.install Dir["#{root}/*"]
+    libexec.install Dir["./*"]
     (bin/"spring").write_env_script libexec/"bin/spring", {}
 
     bash_comp = libexec/"shell-completion/bash/spring"
