@@ -191,3 +191,8 @@ NOTE: In the example above, the customization uses javadoc:org.springframework.b
 Then you can use the factory in any javadoc:org.springframework.jms.annotation.JmsListener[format=annotation]-annotated method as follows:
 
 include-code::custom/MyBean[]
+
+Analogous to `DefaultJmsListenerContainerFactoryConfigurer`, Spring Boot also provides a javadoc:org.springframework.boot.jms.autoconfigure.SimpleJmsListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.jms.config.SimpleJmsListenerContainerFactory[] and apply the related settings that auto-configuration provides.
+
+TIP: In contrast to javadoc:org.springframework.jms.listener.DefaultMessageListenerContainer[] that uses a pull-based mechanism (polling) to process messages, javadoc:org.springframework.jms.listener.SimpleMessageListenerContainer[] uses a push-based mechanism that's very close to the spirit of the standalone JMS specification.
+To learn more about the differences between the two listener containers, consult their respective javadocs and {url-spring-framework-docs}/integration/jms/using.html#jms-mdp[Spring Framework reference documentation].
