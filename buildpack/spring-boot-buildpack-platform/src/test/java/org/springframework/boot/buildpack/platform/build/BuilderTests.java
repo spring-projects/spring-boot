@@ -36,7 +36,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerLog;
 import org.springframework.boot.buildpack.platform.docker.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
-import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
+import org.springframework.boot.buildpack.platform.docker.transport.TestDockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
@@ -331,12 +331,12 @@ class BuilderTests {
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		given(docker.image().inspect(eq(DEFAULT_BUILDER)))
-			.willThrow(
-					new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null))
 			.willReturn(builderImage);
 		given(docker.image().inspect(eq(BASE_CNB)))
-			.willThrow(
-					new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
+					null, null))
 			.willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.IF_NOT_PRESENT);

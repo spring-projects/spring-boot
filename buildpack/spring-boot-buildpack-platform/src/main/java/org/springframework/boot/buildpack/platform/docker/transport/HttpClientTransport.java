@@ -168,7 +168,7 @@ abstract class HttpClientTransport implements HttpTransport {
 				Errors errors = (statusCode != 500) ? deserializeErrors(content) : null;
 				Message message = deserializeMessage(content);
 				throw new DockerEngineException(this.host.toHostString(), request.getUri(), statusCode,
-						response.getReasonPhrase(), errors, message);
+						response.getReasonPhrase(), errors, message, content);
 			}
 			return new HttpClientResponse(response);
 		}
