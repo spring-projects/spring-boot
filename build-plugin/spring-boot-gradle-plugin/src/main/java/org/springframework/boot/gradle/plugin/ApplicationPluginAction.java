@@ -72,8 +72,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	private void applyApplicationDefaultJvmArgsToRunTask(TaskContainer tasks, JavaApplication javaApplication,
 			String taskName) {
 		tasks.named(taskName, BootRun.class)
-			.configure((bootRun) -> bootRun.getConventionMapping()
-				.map("jvmArgs", javaApplication::getApplicationDefaultJvmArgs));
+			.configure(
+					(bootRun) -> bootRun.getJvmArguments().convention(javaApplication.getApplicationDefaultJvmArgs()));
 	}
 
 	private void configureCreateStartScripts(Project project, JavaApplication javaApplication,
