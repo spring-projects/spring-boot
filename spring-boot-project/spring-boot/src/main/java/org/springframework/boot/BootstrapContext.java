@@ -76,7 +76,6 @@ public interface BootstrapContext {
 	 * @param exceptionSupplier the supplier which will return the exception to be thrown
 	 * @return the instance managed by the context, which may be {@code null}
 	 * @throws X if the type has not been registered
-	 * @throws IllegalStateException if the type has not been registered
 	 */
 	<T, X extends Throwable> T getOrElseThrow(Class<T> type, Supplier<? extends X> exceptionSupplier) throws X;
 
