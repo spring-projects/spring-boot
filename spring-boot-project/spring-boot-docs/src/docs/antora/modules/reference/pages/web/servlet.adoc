@@ -110,7 +110,7 @@ This can be useful when you want to re-order or remove some of the converters th
 === MessageCodesResolver
 
 Spring MVC has a strategy for generating error codes for rendering error messages from binding errors: javadoc:org.springframework.validation.MessageCodesResolver[].
-If you set the configprop:spring.mvc.message-codes-resolver-format[] property `PREFIX_ERROR_CODE` or `POSTFIX_ERROR_CODE`, Spring Boot creates one for you (see the enumeration in javadoc:org.springframework.validation.DefaultMessageCodesResolver#Format[]).
+If you set the configprop:spring.mvc.message-codes-resolver-format[] property `PREFIX_ERROR_CODE` or `POSTFIX_ERROR_CODE`, Spring Boot creates one for you (see the enumeration in javadoc:org.springframework.validation.DefaultMessageCodesResolver$Format[]).
 
 
 

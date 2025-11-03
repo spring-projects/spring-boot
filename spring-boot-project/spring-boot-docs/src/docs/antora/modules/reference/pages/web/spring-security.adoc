@@ -61,8 +61,9 @@ javadoc:org.springframework.boot.autoconfigure.security.servlet.PathRequest[] ca
 
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
 The default security configuration is implemented in javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] and javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration[].
-javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] imports `WebFluxSecurityConfiguration` for web security and javadoc:org.springframework.boot.autoconfigure.security.reactive.UserDetailsServiceAutoConfiguration[] for authentication.
 In addition to reactive web applications, the latter is also auto-configured when RSocket is in use.
+javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] imports `WebFluxSecurityConfiguration` for web security.
+javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration[] auto-configures authentication.
 
 To completely switch off the default web application security configuration, including Actuator security, add a bean of type javadoc:org.springframework.security.web.server.WebFilterChainProxy[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] configuration).
 To also switch off the javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] configuration, add a bean of type javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] or javadoc:org.springframework.security.authentication.ReactiveAuthenticationManager[].
