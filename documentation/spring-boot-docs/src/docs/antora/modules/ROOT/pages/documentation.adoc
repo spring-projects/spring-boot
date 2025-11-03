@@ -27,6 +27,7 @@ Depending on the version that you are upgrading to, you can find some additional
 
 * *From 1.x to 2.x:* xref:upgrading.adoc#upgrading.from-1x[Upgrading from 1.x]
 * *From 2.x:* xref:upgrading.adoc#upgrading.from-2x[Upgrading from 2.x]
+* *From 3.x:* xref:upgrading.adoc#upgrading.from-3x[Upgrading from 3.x]
 * *To a new feature release:* xref:upgrading.adoc#upgrading.to-feature[Upgrading to New Feature Release]
 * *Spring Boot CLI:* xref:upgrading.adoc#upgrading.cli[Upgrading the Spring Boot CLI]
 
