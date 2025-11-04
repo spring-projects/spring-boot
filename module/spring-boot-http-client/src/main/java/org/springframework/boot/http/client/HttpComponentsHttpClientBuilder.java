@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -52,23 +53,27 @@ public final class HttpComponentsHttpClientBuilder {
 
 	private final Consumer<SocketConfig.Builder> socketConfigCustomizer;
 
+	private final Consumer<ConnectionConfig.Builder> connectionConfigCustomizer;
+
 	private final Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer;
 
 	private final TlsSocketStrategyFactory tlsSocketStrategyFactory;
 
 	public HttpComponentsHttpClientBuilder() {
-		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
+		this(Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(), Empty.consumer(),
 				HttpComponentsSslBundleTlsStrategy::get);
 	}
 
 	private HttpComponentsHttpClientBuilder(Consumer<HttpClientBuilder> customizer,
 			Consumer<PoolingHttpClientConnectionManagerBuilder> connectionManagerCustomizer,
 			Consumer<SocketConfig.Builder> socketConfigCustomizer,
+			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer,
 			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer,
 			TlsSocketStrategyFactory tlsSocketStrategyFactory) {
 		this.customizer = customizer;
 		this.connectionManagerCustomizer = connectionManagerCustomizer;
 		this.socketConfigCustomizer = socketConfigCustomizer;
+		this.connectionConfigCustomizer = connectionConfigCustomizer;
 		this.defaultRequestConfigCustomizer = defaultRequestConfigCustomizer;
 		this.tlsSocketStrategyFactory = tlsSocketStrategyFactory;
 	}
@@ -82,8 +87,8 @@ public final class HttpComponentsHttpClientBuilder {
 	public HttpComponentsHttpClientBuilder withCustomizer(Consumer<HttpClientBuilder> customizer) {
 		Assert.notNull(customizer, "'customizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer.andThen(customizer),
-				this.connectionManagerCustomizer, this.socketConfigCustomizer, this.defaultRequestConfigCustomizer,
-				this.tlsSocketStrategyFactory);
+				this.connectionManagerCustomizer, this.socketConfigCustomizer, this.connectionConfigCustomizer,
+				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory);
 	}
 
 	/**
@@ -97,7 +102,7 @@ public final class HttpComponentsHttpClientBuilder {
 		Assert.notNull(connectionManagerCustomizer, "'connectionManagerCustomizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer,
 				this.connectionManagerCustomizer.andThen(connectionManagerCustomizer), this.socketConfigCustomizer,
-				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory);
+				this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory);
 	}
 
 	/**
@@ -111,8 +116,23 @@ public final class HttpComponentsHttpClientBuilder {
 			Consumer<SocketConfig.Builder> socketConfigCustomizer) {
 		Assert.notNull(socketConfigCustomizer, "'socketConfigCustomizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
-				this.socketConfigCustomizer.andThen(socketConfigCustomizer), this.defaultRequestConfigCustomizer,
-				this.tlsSocketStrategyFactory);
+				this.socketConfigCustomizer.andThen(socketConfigCustomizer), this.connectionConfigCustomizer,
+				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsHttpClientBuilder} that applies additional
+	 * customization to the underlying
+	 * {@link org.apache.hc.client5.http.config.ConnectionConfig.Builder}.
+	 * @param connectionConfigCustomizer the customizer to apply
+	 * @return a new {@link HttpComponentsHttpClientBuilder} instance
+	 */
+	public HttpComponentsHttpClientBuilder withConnectionConfigCustomizer(
+			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer) {
+		Assert.notNull(connectionConfigCustomizer, "'connectionConfigCustomizer' must not be null");
+		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
+				this.socketConfigCustomizer.andThen(this.socketConfigCustomizer), this.connectionConfigCustomizer,
+				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory);
 	}
 
 	/**
@@ -128,7 +148,8 @@ public final class HttpComponentsHttpClientBuilder {
 			TlsSocketStrategyFactory tlsSocketStrategyFactory) {
 		Assert.notNull(tlsSocketStrategyFactory, "'tlsSocketStrategyFactory' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
-				this.socketConfigCustomizer, this.defaultRequestConfigCustomizer, tlsSocketStrategyFactory);
+				this.socketConfigCustomizer, this.connectionConfigCustomizer, this.defaultRequestConfigCustomizer,
+				tlsSocketStrategyFactory);
 	}
 
 	/**
@@ -143,7 +164,7 @@ public final class HttpComponentsHttpClientBuilder {
 			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer) {
 		Assert.notNull(defaultRequestConfigCustomizer, "'defaultRequestConfigCustomizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
-				this.socketConfigCustomizer,
+				this.socketConfigCustomizer, this.connectionConfigCustomizer,
 				this.defaultRequestConfigCustomizer.andThen(defaultRequestConfigCustomizer),
 				this.tlsSocketStrategyFactory);
 	}
@@ -155,7 +176,6 @@ public final class HttpComponentsHttpClientBuilder {
 	 */
 	public CloseableHttpClient build(@Nullable HttpClientSettings settings) {
 		settings = (settings != null) ? settings : HttpClientSettings.defaults();
-		Assert.isTrue(settings.connectTimeout() == null, "'settings' must not have a 'connectTimeout'");
 		HttpClientBuilder builder = HttpClientBuilder.create()
 			.useSystemProperties()
 			.setRedirectStrategy(HttpComponentsRedirectStrategy.get(settings.redirects()))
@@ -169,7 +189,8 @@ public final class HttpComponentsHttpClientBuilder {
 		PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create()
 			.useSystemProperties();
 		PropertyMapper map = PropertyMapper.get();
-		builder.setDefaultSocketConfig(createSocketConfig(settings));
+		builder.setDefaultSocketConfig(createSocketConfig());
+		builder.setDefaultConnectionConfig(createConnectionConfig(settings));
 		map.from(settings::sslBundle)
 			.always()
 			.as(this.tlsSocketStrategyFactory::getTlsSocketStrategy)
@@ -178,13 +199,22 @@ public final class HttpComponentsHttpClientBuilder {
 		return builder.build();
 	}
 
-	private SocketConfig createSocketConfig(HttpClientSettings settings) {
+	private SocketConfig createSocketConfig() {
 		SocketConfig.Builder builder = SocketConfig.custom();
+		this.socketConfigCustomizer.accept(builder);
+		return builder.build();
+	}
+
+	private ConnectionConfig createConnectionConfig(HttpClientSettings settings) {
+		ConnectionConfig.Builder builder = ConnectionConfig.custom();
 		PropertyMapper map = PropertyMapper.get();
+		map.from(settings::connectTimeout)
+			.as(Duration::toMillis)
+			.to((timeout) -> builder.setConnectTimeout(timeout, TimeUnit.MILLISECONDS));
 		map.from(settings::readTimeout)
 			.asInt(Duration::toMillis)
-			.to((timeout) -> builder.setSoTimeout(timeout, TimeUnit.MILLISECONDS));
-		this.socketConfigCustomizer.accept(builder);
+			.to((timeout) -> builder.setSocketTimeout(timeout, TimeUnit.MILLISECONDS));
+		this.connectionConfigCustomizer.accept(builder);
 		return builder.build();
 	}
 

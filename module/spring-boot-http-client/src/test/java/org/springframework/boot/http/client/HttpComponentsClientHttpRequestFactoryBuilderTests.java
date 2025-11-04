@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hc.client5.http.HttpRoute;
-import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.core5.function.Resolver;
@@ -103,22 +104,25 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 
 	@Override
 	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		Object field = ReflectionTestUtils.getField(requestFactory, "connectTimeout");
-		assertThat(field).isNotNull();
-		return (long) field;
+		return getConnectorConfig(requestFactory).getConnectTimeout().toMilliseconds();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected long readTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		HttpClient httpClient = requestFactory.getHttpClient();
-		Object connectionManager = ReflectionTestUtils.getField(httpClient, "connManager");
-		assertThat(connectionManager).isNotNull();
-		Resolver<HttpRoute, SocketConfig> socketConfigResolver = (Resolver<HttpRoute, SocketConfig>) ReflectionTestUtils
-			.getField(connectionManager, "socketConfigResolver");
-		assertThat(socketConfigResolver).isNotNull();
-		SocketConfig socketConfig = socketConfigResolver.resolve(null);
-		return socketConfig.getSoTimeout().toMilliseconds();
+		return getConnectorConfig(requestFactory).getSocketTimeout().toMilliseconds();
+	}
+
+	@SuppressWarnings("unchecked")
+	private ConnectionConfig getConnectorConfig(HttpComponentsClientHttpRequestFactory requestFactory) {
+		CloseableHttpClient httpClient = (CloseableHttpClient) ReflectionTestUtils.getField(requestFactory,
+				"httpClient");
+		assertThat(httpClient).isNotNull();
+		Object manager = ReflectionTestUtils.getField(httpClient, "connManager");
+		assertThat(manager).isNotNull();
+		Resolver<HttpRoute, ConnectionConfig> resolver = (Resolver<HttpRoute, ConnectionConfig>) ReflectionTestUtils
+			.getField(manager, "connectionConfigResolver");
+		assertThat(resolver).isNotNull();
+		return resolver.resolve(null);
 	}
 
 }
