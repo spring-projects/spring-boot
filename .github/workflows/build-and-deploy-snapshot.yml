@@ -28,7 +28,7 @@ jobs:
           gradle-cache-read-only: false
           publish: true
       - name: Deploy
-        uses: spring-io/artifactory-deploy-action@dc1913008c0599f0c4b1fdafb6ff3c502b3565ea # v0.0.2
+        uses: spring-io/artifactory-deploy-action@98413f56596824690f670a8cd1534594a05278c5 # v0.0.4-SNAPSHOT
         with:
           build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', github.ref_name) || format('spring-boot-{0}', github.ref_name) }}
           folder: 'deployment-repository'
@@ -37,6 +37,7 @@ jobs:
           repository: ${{ vars.COMMERCIAL && 'spring-enterprise-maven-dev-local' || 'libs-snapshot-local' }}
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          threads: 8
           uri: ${{ vars.COMMERCIAL_DEPLOY_REPO_URL || 'https://repo.spring.io' }}
           username: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_USERNAME || secrets.ARTIFACTORY_USERNAME }}
       - name: Send Notification
