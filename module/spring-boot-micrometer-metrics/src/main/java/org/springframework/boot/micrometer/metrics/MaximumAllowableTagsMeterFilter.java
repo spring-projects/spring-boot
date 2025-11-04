@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 4.0.0
  */
-public final class OnlyOnceLoggingDenyMeterFilter implements MeterFilter {
+public final class MaximumAllowableTagsMeterFilter implements MeterFilter {
 
 	private final Log logger;
 
@@ -56,36 +56,36 @@ public final class OnlyOnceLoggingDenyMeterFilter implements MeterFilter {
 	private final Set<String> observedTagValues = ConcurrentHashMap.newKeySet();
 
 	/**
-	 * Create a new {@link OnlyOnceLoggingDenyMeterFilter} with an upper bound on the
+	 * Create a new {@link MaximumAllowableTagsMeterFilter} with an upper bound on the
 	 * number of tags produced by matching metrics.
 	 * @param meterNamePrefix the prefix of the meter name to apply the filter to
 	 * @param tagKey the tag to place an upper bound on
 	 * @param maximumTagValues the total number of tag values that are allowable
 	 */
-	public OnlyOnceLoggingDenyMeterFilter(String meterNamePrefix, String tagKey, int maximumTagValues) {
+	public MaximumAllowableTagsMeterFilter(String meterNamePrefix, String tagKey, int maximumTagValues) {
 		this(meterNamePrefix, tagKey, maximumTagValues, (String) null);
 	}
 
 	/**
-	 * Create a new {@link OnlyOnceLoggingDenyMeterFilter} with an upper bound on the
+	 * Create a new {@link MaximumAllowableTagsMeterFilter} with an upper bound on the
 	 * number of tags produced by matching metrics.
 	 * @param meterNamePrefix the prefix of the meter name to apply the filter to
 	 * @param tagKey the tag to place an upper bound on
 	 * @param maximumTagValues the total number of tag values that are allowable
 	 * @param hint an additional hint to add to the logged message or {@code null}
 	 */
-	public OnlyOnceLoggingDenyMeterFilter(String meterNamePrefix, String tagKey, int maximumTagValues,
+	public MaximumAllowableTagsMeterFilter(String meterNamePrefix, String tagKey, int maximumTagValues,
 			@Nullable String hint) {
 		this(null, meterNamePrefix, tagKey, maximumTagValues,
 				() -> String.format("Reached the maximum number of '%s' tags for '%s'.%s", tagKey, meterNamePrefix,
 						(hint != null) ? " " + hint : ""));
 	}
 
-	private OnlyOnceLoggingDenyMeterFilter(@Nullable Log logger, String meterNamePrefix, String tagKey,
+	private MaximumAllowableTagsMeterFilter(@Nullable Log logger, String meterNamePrefix, String tagKey,
 			int maximumTagValues, Supplier<String> message) {
 		Assert.notNull(message, "'message' must not be null");
 		Assert.isTrue(maximumTagValues >= 0, "'maximumTagValues' must be positive");
-		this.logger = (logger != null) ? logger : LogFactory.getLog(OnlyOnceLoggingDenyMeterFilter.class);
+		this.logger = (logger != null) ? logger : LogFactory.getLog(MaximumAllowableTagsMeterFilter.class);
 		this.meterNamePrefix = meterNamePrefix;
 		this.maximumTagValues = maximumTagValues;
 		this.tagKey = tagKey;

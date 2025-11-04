@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.micrometer.metrics.OnlyOnceLoggingDenyMeterFilter;
+import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.context.annotation.Bean;
@@ -63,10 +63,10 @@ public final class WebFluxObservationAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	OnlyOnceLoggingDenyMeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties) {
+	MaximumAllowableTagsMeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties) {
 		String meterNamePrefix = this.observationProperties.getHttp().getServer().getRequests().getName();
 		int maxUriTags = metricsProperties.getWeb().getServer().getMaxUriTags();
-		return new OnlyOnceLoggingDenyMeterFilter(meterNamePrefix, "uri", maxUriTags);
+		return new MaximumAllowableTagsMeterFilter(meterNamePrefix, "uri", maxUriTags);
 	}
 
 	@Bean

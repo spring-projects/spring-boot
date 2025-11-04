@@ -38,7 +38,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.micrometer.metrics.OnlyOnceLoggingDenyMeterFilter;
+import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryPostProcessor.CompositeMeterRegistries;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -136,7 +136,7 @@ class MeterRegistryPostProcessorTests {
 
 	@Test
 	void postProcessAndInitializeOnlyAppliesLmiitedFiltersToAutoConfigured() {
-		OnlyOnceLoggingDenyMeterFilter onlyOnceFilter = mock();
+		MaximumAllowableTagsMeterFilter onlyOnceFilter = mock();
 		this.filters.add(this.mockFilter);
 		this.filters.add(onlyOnceFilter);
 		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.AUTO_CONFIGURED,

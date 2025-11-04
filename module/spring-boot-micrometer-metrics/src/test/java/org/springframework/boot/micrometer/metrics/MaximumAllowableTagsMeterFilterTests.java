@@ -29,22 +29,22 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OnlyOnceLoggingDenyMeterFilter}.
+ * Tests for {@link MaximumAllowableTagsMeterFilter}.
  *
  * @author Phillip Webb
  */
-class OnlyOnceLoggingDenyMeterFilterTests {
+class MaximumAllowableTagsMeterFilterTests {
 
 	@Test
 	void applyWhenNameDoesNotHavePrefixReturnsNeutral() {
-		OnlyOnceLoggingDenyMeterFilter filter = new OnlyOnceLoggingDenyMeterFilter("test", "k", 1);
+		MaximumAllowableTagsMeterFilter filter = new MaximumAllowableTagsMeterFilter("test", "k", 1);
 		assertThat(filter.accept(meterId("tset", "k", "v"))).isEqualTo(MeterFilterReply.NEUTRAL);
 		assertThat(filter).extracting("observedTagValues").asInstanceOf(InstanceOfAssertFactories.COLLECTION).isEmpty();
 	}
 
 	@Test
 	void applyWhenNameHasPrefixButNoTagKeyReturnsNeutral() {
-		OnlyOnceLoggingDenyMeterFilter filter = new OnlyOnceLoggingDenyMeterFilter("test", "k", 1);
+		MaximumAllowableTagsMeterFilter filter = new MaximumAllowableTagsMeterFilter("test", "k", 1);
 		assertThat(filter.accept(meterId("test", "k", "v"))).isEqualTo(MeterFilterReply.NEUTRAL);
 		assertThat(filter).extracting("observedTagValues")
 			.asInstanceOf(InstanceOfAssertFactories.COLLECTION)
@@ -53,7 +53,7 @@ class OnlyOnceLoggingDenyMeterFilterTests {
 
 	@Test
 	void applyWhenNameHasPrefixAndTagKeyReturnsNeutralUntilLimit() {
-		OnlyOnceLoggingDenyMeterFilter filter = new OnlyOnceLoggingDenyMeterFilter("test", "k", 1);
+		MaximumAllowableTagsMeterFilter filter = new MaximumAllowableTagsMeterFilter("test", "k", 1);
 		assertThat(filter.accept(meterId("test", "k", "v1"))).isEqualTo(MeterFilterReply.NEUTRAL);
 		assertThat(filter.accept(meterId("test", "k", "v2"))).isEqualTo(MeterFilterReply.DENY);
 		assertThat(filter.accept(meterId("test", "k", "v3"))).isEqualTo(MeterFilterReply.DENY);

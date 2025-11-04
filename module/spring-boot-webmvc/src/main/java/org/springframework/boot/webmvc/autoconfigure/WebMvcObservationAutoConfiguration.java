@@ -30,7 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilt
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.micrometer.metrics.OnlyOnceLoggingDenyMeterFilter;
+import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -85,11 +85,11 @@ public final class WebMvcObservationAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		OnlyOnceLoggingDenyMeterFilter metricsHttpServerUriTagFilter(ObservationProperties observationProperties,
+		MaximumAllowableTagsMeterFilter metricsHttpServerUriTagFilter(ObservationProperties observationProperties,
 				MetricsProperties metricsProperties) {
 			String meterNamePrefix = observationProperties.getHttp().getServer().getRequests().getName();
 			int maxUriTags = metricsProperties.getWeb().getServer().getMaxUriTags();
-			return new OnlyOnceLoggingDenyMeterFilter(meterNamePrefix, "uri", maxUriTags);
+			return new MaximumAllowableTagsMeterFilter(meterNamePrefix, "uri", maxUriTags);
 		}
 
 	}

@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.micrometer.metrics.OnlyOnceLoggingDenyMeterFilter;
+import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties.Web.Client;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
@@ -50,12 +50,12 @@ public final class HttpClientMetricsAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	OnlyOnceLoggingDenyMeterFilter metricsHttpClientUriTagFilter(ObservationProperties observationProperties,
+	MaximumAllowableTagsMeterFilter metricsHttpClientUriTagFilter(ObservationProperties observationProperties,
 			MetricsProperties metricsProperties) {
 		Client clientProperties = metricsProperties.getWeb().getClient();
 		String meterNamePrefix = observationProperties.getHttp().getClient().getRequests().getName();
 		int maxUriTags = clientProperties.getMaxUriTags();
-		return new OnlyOnceLoggingDenyMeterFilter(meterNamePrefix, "uri", maxUriTags, "Are you using 'uriVariables'?");
+		return new MaximumAllowableTagsMeterFilter(meterNamePrefix, "uri", maxUriTags, "Are you using 'uriVariables'?");
 	}
 
 }
