@@ -104,7 +104,7 @@ class WebClientObservationConfigurationTests {
 			assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(1);
 			// MeterFilter.maximumAllowableTags() works with prefix matching.
 			assertThat(meterRegistry.find("http.client.requests.active").longTaskTimers()).hasSize(1);
-			assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
+			assertThat(output).contains("Reached the maximum number of 'uri' tags for 'http.client.requests'.")
 				.contains("Are you using 'uriVariables'?");
 		});
 	}
@@ -116,7 +116,7 @@ class WebClientObservationConfigurationTests {
 			assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(3);
-			assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
+			assertThat(output).doesNotContain("Reached the maximum number of 'uri' tags for 'http.client.requests'.")
 				.doesNotContain("Are you using 'uriVariables'?");
 		});
 	}

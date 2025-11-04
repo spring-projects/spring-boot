@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 
-import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.ObservationRegistry;
 import org.glassfish.jersey.micrometer.server.JerseyObservationConvention;
 import org.glassfish.jersey.micrometer.server.ObservationApplicationEventListener;
@@ -70,12 +69,10 @@ public class JerseyServerMetricsAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	public MeterFilter jerseyMetricsUriTagFilter(MetricsProperties metricsProperties) {
-		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();
-		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
-		return MeterFilter.maximumAllowableTags(metricName, "uri",
-				metricsProperties.getWeb().getServer().getMaxUriTags(), filter);
+	public OnlyOnceLoggingDenyMeterFilter jerseyMetricsUriTagFilter(MetricsProperties metricsProperties) {
+		String meterNamePrefix = this.observationProperties.getHttp().getServer().getRequests().getName();
+		int maximumTagValues = metricsProperties.getWeb().getServer().getMaxUriTags();
+		return new OnlyOnceLoggingDenyMeterFilter(meterNamePrefix, "uri", maximumTagValues);
 	}
 
 }

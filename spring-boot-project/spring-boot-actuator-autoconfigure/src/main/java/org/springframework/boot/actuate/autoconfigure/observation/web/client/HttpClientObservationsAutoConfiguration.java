@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 
@@ -68,14 +67,13 @@ public class HttpClientObservationsAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		MeterFilter metricsHttpClientUriTagFilter(ObservationProperties observationProperties,
+		OnlyOnceLoggingDenyMeterFilter metricsHttpClientUriTagFilter(ObservationProperties observationProperties,
 				MetricsProperties metricsProperties) {
 			Client clientProperties = metricsProperties.getWeb().getClient();
-			String name = observationProperties.getHttp().getClient().getRequests().getName();
-			MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(
-					() -> "Reached the maximum number of URI tags for '%s'. Are you using 'uriVariables'?"
-						.formatted(name));
-			return MeterFilter.maximumAllowableTags(name, "uri", clientProperties.getMaxUriTags(), denyFilter);
+			String meterNamePrefix = observationProperties.getHttp().getClient().getRequests().getName();
+			int maxUriTags = clientProperties.getMaxUriTags();
+			return new OnlyOnceLoggingDenyMeterFilter(meterNamePrefix, "uri", maxUriTags,
+					"Are you using 'uriVariables'?");
 		}
 
 	}

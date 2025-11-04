@@ -27,6 +27,7 @@ import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -122,6 +123,22 @@ class MeterRegistryPostProcessorTests {
 				createObjectProvider(this.filters), createObjectProvider(this.binders));
 		postProcessAndInitialize(processor, this.mockRegistry);
 		then(this.mockConfig).should().meterFilter(this.mockFilter);
+	}
+
+	@Test
+	void postProcessAndInitializeOnlyAppliesLmiitedFiltersToAutoConfigured() {
+		OnlyOnceLoggingDenyMeterFilter onlyOnceFilter = mock();
+		this.filters.add(this.mockFilter);
+		this.filters.add(onlyOnceFilter);
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.AUTO_CONFIGURED,
+				createObjectProvider(this.properties), createObjectProvider(this.customizers),
+				createObjectProvider(this.filters), createObjectProvider(this.binders));
+		AutoConfiguredCompositeMeterRegistry composite = new AutoConfiguredCompositeMeterRegistry(Clock.SYSTEM,
+				Collections.emptyList());
+		postProcessAndInitialize(processor, composite);
+		assertThat(composite).extracting("filters")
+			.asInstanceOf(InstanceOfAssertFactories.ARRAY)
+			.containsExactly(onlyOnceFilter);
 	}
 
 	@Test
