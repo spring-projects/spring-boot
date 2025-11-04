@@ -27,7 +27,7 @@ jobs:
           gradle-cache-read-only: false
           publish: true
       - name: Stage Release
-        uses: spring-io/artifactory-deploy-action@98413f56596824690f670a8cd1534594a05278c5 # v0.0.4-SNAPSHOT
+        uses: spring-io/artifactory-deploy-action@926d7f7cc810569395346bf3a4d91b380b3e355b # v0.0.4
         with:
           build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', steps.build-and-publish.outputs.version) || format('spring-boot-{0}', steps.build-and-publish.outputs.version) }}
           folder: 'deployment-repository'
