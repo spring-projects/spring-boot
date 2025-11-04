@@ -135,7 +135,7 @@ class WebMvcObservationAutoConfigurationTests {
 			.run((context) -> {
 				MeterRegistry registry = getInitializedMeterRegistry(context);
 				assertThat(registry.get("http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
-				assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
+				assertThat(output).contains("Reached the maximum number of 'uri' tags for 'http.server.requests'");
 			});
 	}
 
@@ -149,7 +149,7 @@ class WebMvcObservationAutoConfigurationTests {
 			.run((context) -> {
 				MeterRegistry registry = getInitializedMeterRegistry(context);
 				assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
-				assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
+				assertThat(output).contains("Reached the maximum number of 'uri' tags for 'my.http.server.requests'");
 			});
 	}
 
@@ -162,7 +162,8 @@ class WebMvcObservationAutoConfigurationTests {
 			.run((context) -> {
 				MeterRegistry registry = getInitializedMeterRegistry(context);
 				assertThat(registry.get("http.server.requests").meters()).hasSize(3);
-				assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
+				assertThat(output)
+					.doesNotContain("Reached the maximum number of 'uri' tags for 'http.server.requests'");
 			});
 	}
 

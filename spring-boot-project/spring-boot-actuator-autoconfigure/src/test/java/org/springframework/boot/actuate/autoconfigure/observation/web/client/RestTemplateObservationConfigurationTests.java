@@ -114,7 +114,7 @@ class RestTemplateObservationConfigurationTests {
 				assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
 				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
-				assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
+				assertThat(output).contains("Reached the maximum number of 'uri' tags for 'http.client.requests'.")
 					.contains("Are you using 'uriVariables'?");
 			});
 	}

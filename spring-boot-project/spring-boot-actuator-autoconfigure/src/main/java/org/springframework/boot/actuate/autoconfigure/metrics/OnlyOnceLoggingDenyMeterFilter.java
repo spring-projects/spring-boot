@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
@@ -28,29 +30,98 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
 /**
- * {@link MeterFilter} to log only once a warning message and deny a {@link Id Meter.Id}.
+ * {@link MeterFilter} to log a single warning message and deny a {@link Id Meter.Id}
+ * after a number of attempts for a given tag.
  *
  * @author Jon Schneider
  * @author Dmytro Nosan
+ * @author Phillip Webb
  * @since 2.0.5
  */
 public final class OnlyOnceLoggingDenyMeterFilter implements MeterFilter {
 
-	private static final Log logger = LogFactory.getLog(OnlyOnceLoggingDenyMeterFilter.class);
+	private final Log logger;
 
 	private final AtomicBoolean alreadyWarned = new AtomicBoolean();
 
+	private final String meterNamePrefix;
+
+	private final int maximumTagValues;
+
+	private final String tagKey;
+
 	private final Supplier<String> message;
 
+	private final Set<String> observedTagValues = ConcurrentHashMap.newKeySet();
+
+	/**
+	 * Create a new {@link OnlyOnceLoggingDenyMeterFilter} instance.
+	 * @param message the message to log
+	 * @since 2.0.5
+	 * @deprecated since 3.4.12 in favor of
+	 * {@link #OnlyOnceLoggingDenyMeterFilter(String, String, int, String)}
+	 */
+	@Deprecated(since = "3.4.12", forRemoval = true)
 	public OnlyOnceLoggingDenyMeterFilter(Supplier<String> message) {
-		Assert.notNull(message, "Message must not be null");
+		this(null, null, null, 0, message);
+	}
+
+	/**
+	 * Create a new {@link OnlyOnceLoggingDenyMeterFilter} with an upper bound on the
+	 * number of tags produced by matching metrics.
+	 * @param meterNamePrefix the prefix of the meter name to apply the filter to
+	 * @param tagKey the tag to place an upper bound on
+	 * @param maximumTagValues the total number of tag values that are allowable
+	 * @since 3.4.12
+	 */
+	public OnlyOnceLoggingDenyMeterFilter(String meterNamePrefix, String tagKey, int maximumTagValues) {
+		this(meterNamePrefix, tagKey, maximumTagValues, (String) null);
+	}
+
+	/**
+	 * Create a new {@link OnlyOnceLoggingDenyMeterFilter} with an upper bound on the
+	 * number of tags produced by matching metrics.
+	 * @param meterNamePrefix the prefix of the meter name to apply the filter to
+	 * @param tagKey the tag to place an upper bound on
+	 * @param maximumTagValues the total number of tag values that are allowable
+	 * @param hint an additional hint to add to the logged message or {@code null}
+	 * @since 3.4.12
+	 */
+	public OnlyOnceLoggingDenyMeterFilter(String meterNamePrefix, String tagKey, int maximumTagValues, String hint) {
+		this(null, meterNamePrefix, tagKey, maximumTagValues,
+				() -> String.format("Reached the maximum number of '%s' tags for '%s'.%s", tagKey, meterNamePrefix,
+						(hint != null) ? " " + hint : ""));
+	}
+
+	private OnlyOnceLoggingDenyMeterFilter(Log logger, String meterNamePrefix, String tagKey, int maximumTagValues,
+			Supplier<String> message) {
+		Assert.notNull(message, "'message' must not be null");
+		Assert.isTrue(maximumTagValues >= 0, "'maximumTagValues' must be positive");
+		this.logger = (logger != null) ? logger : LogFactory.getLog(OnlyOnceLoggingDenyMeterFilter.class);
+		this.meterNamePrefix = meterNamePrefix;
+		this.maximumTagValues = maximumTagValues;
+		this.tagKey = tagKey;
 		this.message = message;
 	}
 
 	@Override
 	public MeterFilterReply accept(Id id) {
-		if (logger.isWarnEnabled() && this.alreadyWarned.compareAndSet(false, true)) {
-			logger.warn(this.message.get());
+		if (this.meterNamePrefix == null) {
+			return logAndDeny();
+		}
+		String tagValue = id.getName().startsWith(this.meterNamePrefix) ? id.getTag(this.tagKey) : null;
+		if (tagValue != null && !this.observedTagValues.contains(tagValue)) {
+			if (this.observedTagValues.size() >= this.maximumTagValues) {
+				return logAndDeny();
+			}
+			this.observedTagValues.add(tagValue);
+		}
+		return MeterFilterReply.NEUTRAL;
+	}
+
+	private MeterFilterReply logAndDeny() {
+		if (this.logger.isWarnEnabled() && this.alreadyWarned.compareAndSet(false, true)) {
+			this.logger.warn(this.message.get());
 		}
 		return MeterFilterReply.DENY;
 	}
