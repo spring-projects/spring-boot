@@ -61,11 +61,6 @@ public class MustacheProperties {
 	private @Nullable String requestContextAttribute;
 
 	/**
-	 * Whether to enable MVC view resolution for Mustache.
-	 */
-	private boolean enabled = true;
-
-	/**
 	 * Template encoding.
 	 */
 	private Charset charset = DEFAULT_CHARSET;
@@ -143,14 +138,6 @@ public class MustacheProperties {
 
 	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
 		this.checkTemplateLocation = checkTemplateLocation;
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	public static class Servlet {

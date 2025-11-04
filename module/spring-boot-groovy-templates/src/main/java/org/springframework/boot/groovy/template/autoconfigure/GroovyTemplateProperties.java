@@ -55,11 +55,6 @@ public class GroovyTemplateProperties {
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * Whether to enable MVC view resolution for this technology.
-	 */
-	private boolean enabled = true;
-
-	/**
 	 * Whether to enable template caching.
 	 */
 	private boolean cache;
@@ -184,14 +179,6 @@ public class GroovyTemplateProperties {
 	 * Whether attributes should use double quotes.
 	 */
 	private boolean useDoubleQuotes;
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 
 	public boolean isCheckTemplateLocation() {
 		return this.checkTemplateLocation;

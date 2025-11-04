@@ -2,6 +2,14 @@
   "groups": [],
   "properties": [
     {
+      "name": "spring.thymeleaf.enabled",
+      "deprecation": {
+        "level": "error",
+        "reason": "No longer required. To use Thymeleaf without auto-configuration, depend directly on Thymeleaf instead of spring-boot-thymeleaf.",
+        "since": "4.0.0"
+      }
+    },
+    {
       "name": "spring.thymeleaf.prefix",
       "defaultValue": "classpath:/templates/"
     },

@@ -25,7 +25,6 @@ import org.thymeleaf.spring6.SpringWebFluxTemplateEngine;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -59,7 +58,6 @@ class TemplateEngineConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@ConditionalOnBooleanProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ReactiveTemplateEngineConfiguration {
 
 		@Bean

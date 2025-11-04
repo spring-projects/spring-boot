@@ -18,6 +18,14 @@
       "description": "Content-Type value. Only supported with Spring MVC."
     },
     {
+      "name": "spring.freemarker.enabled",
+      "deprecation": {
+        "level": "error",
+        "reason": "No longer required. To use FreeMarker without auto-configuration, depend directly on FreeMarker instead of spring-boot-freemarker.",
+        "since": "4.0.0"
+      }
+    },
+    {
       "name": "spring.freemarker.expose-request-attributes",
       "description": "Whether all request attributes should be added to the model prior to merging with the template. Only supported with Spring MVC."
     },

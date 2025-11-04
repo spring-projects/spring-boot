@@ -44,7 +44,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
@@ -110,13 +109,6 @@ class GroovyTemplateAutoConfigurationTests {
 		String result = response.getContentAsString();
 		assertThat(result).contains("here");
 		assertThat(response.getContentType()).isEqualTo("text/html;charset=UTF-8");
-	}
-
-	@Test
-	void disableViewResolution() {
-		TestPropertyValues.of("spring.groovy.template.enabled:false").applyTo(this.context);
-		registerAndRefreshContext();
-		assertThat(this.context.getBeanNamesForType(ViewResolver.class)).isEmpty();
 	}
 
 	@Test

@@ -33,7 +33,6 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
@@ -128,7 +127,6 @@ public final class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnBooleanProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebMvcConfiguration {
 
 		@Bean
@@ -181,7 +179,6 @@ public final class ThymeleafAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@ConditionalOnBooleanProperty(name = "spring.thymeleaf.enabled", matchIfMissing = true)
 	static class ThymeleafWebFluxConfiguration {
 
 		@Bean

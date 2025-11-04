@@ -51,11 +51,6 @@ public class FreeMarkerProperties {
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	/**
-	 * Whether to enable MVC view resolution for this technology.
-	 */
-	private boolean enabled = true;
-
-	/**
 	 * Whether to enable template caching.
 	 */
 	private boolean cache;
@@ -142,14 +137,6 @@ public class FreeMarkerProperties {
 	 * considered.
 	 */
 	private boolean preferFileSystemAccess;
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
 
 	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
 		this.checkTemplateLocation = checkTemplateLocation;

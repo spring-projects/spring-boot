@@ -108,22 +108,9 @@ public class ThymeleafProperties {
 	 */
 	private boolean renderHiddenMarkersBeforeCheckboxes = false;
 
-	/**
-	 * Whether to enable Thymeleaf view resolution for Web frameworks.
-	 */
-	private boolean enabled = true;
-
 	private final Servlet servlet = new Servlet();
 
 	private final Reactive reactive = new Reactive();
-
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 
 	public boolean isCheckTemplate() {
 		return this.checkTemplate;

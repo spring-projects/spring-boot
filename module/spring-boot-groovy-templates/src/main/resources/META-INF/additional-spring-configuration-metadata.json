@@ -97,6 +97,14 @@
       }
     },
     {
+      "name": "spring.groovy.template.enabled",
+      "deprecation": {
+        "level": "error",
+        "reason": "No longer required. To use Groovy Templates without auto-configuration, depend directly on Groovy Templates instead of spring-boot-groovy-templates.",
+        "since": "4.0.0"
+      }
+    },
+    {
       "name": "spring.groovy.template.prefix",
       "defaultValue": ""
     },

@@ -18,7 +18,6 @@ package org.springframework.boot.mustache.autoconfigure;
 
 import com.samskivert.mustache.Mustache.Compiler;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -34,7 +33,6 @@ class MustacheReactiveWebConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBooleanProperty(name = "spring.mustache.enabled", matchIfMissing = true)
 	MustacheViewResolver mustacheViewResolver(Compiler mustacheCompiler, MustacheProperties mustache) {
 		MustacheViewResolver resolver = new MustacheViewResolver(mustacheCompiler);
 		PropertyMapper map = PropertyMapper.get();

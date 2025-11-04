@@ -18,7 +18,6 @@ package org.springframework.boot.freemarker.autoconfigure;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -61,7 +60,6 @@ class FreeMarkerReactiveWebConfiguration extends AbstractFreeMarkerConfiguration
 
 	@Bean
 	@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
-	@ConditionalOnBooleanProperty(name = "spring.freemarker.enabled", matchIfMissing = true)
 	FreeMarkerViewResolver freeMarkerViewResolver() {
 		FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
 		resolver.setPrefix(getProperties().getPrefix());
