@@ -68,9 +68,9 @@ public class DockerApi {
 
 	static final ApiVersion PLATFORM_API_VERSION = ApiVersion.of(1, 41);
 
-    static final ApiVersion INSPECT_PLATFORM_API_VERSION = ApiVersion.of(1, 49);
+	static final ApiVersion EXPORT_PLATFORM_API_VERSION = ApiVersion.of(1, 48);
 
-    static final ApiVersion EXPORT_PLATFORM_API_VERSION = ApiVersion.of(1, 51);
+    static final ApiVersion INSPECT_PLATFORM_API_VERSION = ApiVersion.of(1, 49);
 
 	static final ApiVersion UNKNOWN_API_VERSION = ApiVersion.of(0, 0);
 
@@ -243,12 +243,17 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-                ApiVersion callVersion = API_VERSION;
                 if (platform != null) {
-                    callVersion = (getApiVersion().supports(INSPECT_PLATFORM_API_VERSION))
-                            ? INSPECT_PLATFORM_API_VERSION : PLATFORM_API_VERSION;
+                    if (getApiVersion().supports(INSPECT_PLATFORM_API_VERSION)) {
+                        return inspect(INSPECT_PLATFORM_API_VERSION, reference, platform);
+                    }
+					String digest = digestCapture.getDigest();
+					if (digest != null) {
+						ImageReference digestRef = reference.withDigest(digest);
+						return inspect(API_VERSION, digestRef);
+					}
                 }
-                return inspect(callVersion, reference, platform);
+                return inspect(API_VERSION, reference);
 			}
 			finally {
 				listener.onFinish();
@@ -335,19 +340,12 @@ public class DockerApi {
 				IOBiConsumer<String, TarArchive> exports) throws IOException {
 			Assert.notNull(reference, "'reference' must not be null");
 			Assert.notNull(exports, "'exports' must not be null");
-			URI uri;
+			URI uri = buildUrl("/images/" + reference + "/get");
 			if (platform != null) {
 				if (getApiVersion().supports(EXPORT_PLATFORM_API_VERSION)) {
 					uri = buildUrl(EXPORT_PLATFORM_API_VERSION, "/images/" + reference + "/get", "platform",
-							platform.toString());
+							platform.toQueryParameter(getApiVersion()));
 				}
-				else {
-					// Platform selection for /images/{ref}/get is supported from 1.51
-					uri = buildUrl("/images/" + reference + "/get");
-				}
-			}
-			else {
-				uri = buildUrl("/images/" + reference + "/get");
 			}
 			try (Response response = http().get(uri)) {
 				try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference, response.getContent())) {
