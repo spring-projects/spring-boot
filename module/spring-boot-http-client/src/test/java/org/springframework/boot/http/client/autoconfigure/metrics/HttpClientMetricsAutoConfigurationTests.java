@@ -52,7 +52,7 @@ class HttpClientMetricsAutoConfigurationTests {
 					meterRegistry.timer("http.client.requests", "uri", "/test/" + i).record(Duration.ofSeconds(1));
 				}
 				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
-				assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
+				assertThat(output).contains("Reached the maximum number of 'uri' tags for 'http.client.requests'.")
 					.contains("Are you using 'uriVariables'?");
 			});
 	}

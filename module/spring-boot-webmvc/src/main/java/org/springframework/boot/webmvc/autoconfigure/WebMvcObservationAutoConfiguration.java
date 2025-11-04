@@ -17,7 +17,6 @@
 package org.springframework.boot.webmvc.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.servlet.DispatcherType;
@@ -86,13 +85,11 @@ public final class WebMvcObservationAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		MeterFilter metricsHttpServerUriTagFilter(ObservationProperties observationProperties,
+		OnlyOnceLoggingDenyMeterFilter metricsHttpServerUriTagFilter(ObservationProperties observationProperties,
 				MetricsProperties metricsProperties) {
-			String name = observationProperties.getHttp().getServer().getRequests().getName();
-			MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-					() -> String.format("Reached the maximum number of URI tags for '%s'.", name));
-			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
-					filter);
+			String meterNamePrefix = observationProperties.getHttp().getServer().getRequests().getName();
+			int maxUriTags = metricsProperties.getWeb().getServer().getMaxUriTags();
+			return new OnlyOnceLoggingDenyMeterFilter(meterNamePrefix, "uri", maxUriTags);
 		}
 
 	}

@@ -17,7 +17,6 @@
 package org.springframework.boot.webflux.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 
@@ -64,12 +63,10 @@ public final class WebFluxObservationAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties) {
-		String name = this.observationProperties.getHttp().getServer().getRequests().getName();
-		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-				() -> "Reached the maximum number of URI tags for '%s'.".formatted(name));
-		return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
-				filter);
+	OnlyOnceLoggingDenyMeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties) {
+		String meterNamePrefix = this.observationProperties.getHttp().getServer().getRequests().getName();
+		int maxUriTags = metricsProperties.getWeb().getServer().getMaxUriTags();
+		return new OnlyOnceLoggingDenyMeterFilter(meterNamePrefix, "uri", maxUriTags);
 	}
 
 	@Bean

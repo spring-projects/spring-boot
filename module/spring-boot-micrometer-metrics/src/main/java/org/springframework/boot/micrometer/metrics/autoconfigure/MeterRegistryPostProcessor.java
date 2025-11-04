@@ -19,6 +19,7 @@ package org.springframework.boot.micrometer.metrics.autoconfigure;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Metrics;
@@ -30,6 +31,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.micrometer.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.ApplicationContext;
 
@@ -109,10 +111,13 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	private void applyFilters(MeterRegistry meterRegistry) {
-		if (meterRegistry instanceof AutoConfiguredCompositeMeterRegistry) {
-			return;
+		if (this.filters != null) {
+			Stream<MeterFilter> filters = this.filters.orderedStream();
+			if (isAutoConfiguredComposite(meterRegistry)) {
+				filters = filters.filter(OnlyOnceLoggingDenyMeterFilter.class::isInstance);
+			}
+			filters.forEach(meterRegistry.config()::meterFilter);
 		}
-		this.filters.orderedStream().forEach(meterRegistry.config()::meterFilter);
 	}
 
 	private void addToGlobalRegistryIfNecessary(MeterRegistry meterRegistry) {
