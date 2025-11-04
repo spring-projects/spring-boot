@@ -2427,7 +2427,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
-	library("Spring GraphQL", "2.0.0-RC2") {
+	library("Spring GraphQL", "2.0.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
