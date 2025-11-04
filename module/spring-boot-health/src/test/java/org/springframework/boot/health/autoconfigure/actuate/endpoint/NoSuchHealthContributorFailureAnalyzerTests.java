@@ -52,7 +52,9 @@ class NoSuchHealthContributorFailureAnalyzerTests {
 		AtomicReference<Throwable> failure = new AtomicReference<>();
 		this.runner.withPropertyValues("management.endpoint.health.group.readiness.include=dummy").run((context) -> {
 			assertThat(context).hasFailed();
-			failure.set(context.getStartupFailure());
+			Throwable startupFailure = context.getStartupFailure();
+			assertThat(startupFailure).isNotNull();
+			failure.set(startupFailure);
 		});
 		Throwable throwable = failure.get();
 		if (throwable instanceof NoSuchHealthContributorException) {

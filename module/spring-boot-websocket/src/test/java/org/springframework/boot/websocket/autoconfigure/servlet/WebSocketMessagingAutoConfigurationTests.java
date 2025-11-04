@@ -254,6 +254,7 @@ class WebSocketMessagingAutoConfigurationTests {
 
 					@Override
 					public void handleFrame(StompHeaders headers, @Nullable Object payload) {
+						assertThat(payload).isNotNull();
 						result.set(payload);
 						latch.countDown();
 					}
