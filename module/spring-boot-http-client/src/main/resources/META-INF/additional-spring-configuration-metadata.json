@@ -100,7 +100,7 @@
     },
     {
       "name": "spring.http.serviceclient",
-      "type": "java.util.Map<String.org.springframework.boot.http.client.autoconfigure.HttpClientProperties>",
+      "type": "java.util.Map<String,org.springframework.boot.http.client.autoconfigure.HttpClientProperties>",
       "description": "HTTP Service Client definitions",
       "sourceType": "org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientProperties"
     }
