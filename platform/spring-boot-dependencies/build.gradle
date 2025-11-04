@@ -367,7 +367,8 @@ bom {
 		}
 		group("co.elastic.clients") {
 			modules = [
-				"elasticsearch-java"
+				"elasticsearch-java",
+				"elasticsearch-rest5-client"
 			]
 		}
 		links {
