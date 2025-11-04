@@ -344,7 +344,7 @@ public class DockerApi {
 			if (platform != null) {
 				if (getApiVersion().supports(EXPORT_PLATFORM_API_VERSION)) {
 					uri = buildUrl(EXPORT_PLATFORM_API_VERSION, "/images/" + reference + "/get", "platform",
-							platform.toQueryParameter(getApiVersion()));
+							platform.toJson());
 				}
 			}
 			try (Response response = http().get(uri)) {
@@ -385,7 +385,7 @@ public class DockerApi {
 				throws IOException {
 			Assert.notNull(reference, "'reference' must not be null");
             URI imageUri = (platform != null)
-                    ? buildUrl(apiVersion, "/images/" + reference + "/json", "platform", platform.toQueryParameter(getApiVersion()))
+                    ? buildUrl(apiVersion, "/images/" + reference + "/json", "platform", platform.toJson())
                     : buildUrl(apiVersion, "/images/" + reference + "/json");
 			try (Response response = http().get(imageUri)) {
 				return Image.of(response.getContent());
