@@ -32,6 +32,7 @@ import java.util.function.UnaryOperator;
 import javax.net.ssl.SSLContext;
 
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -41,7 +42,6 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuil
 import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
-import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.ssl.TLS;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
@@ -1114,18 +1114,15 @@ public class TestRestTemplate {
 					: StandardCookieSpec.IGNORE);
 			this.enableRedirects = settings.redirects() != Redirects.DONT_FOLLOW;
 			boolean ssl = HttpClientOption.SSL.isPresent(httpClientOptions);
-			if (settings.readTimeout() != null || ssl) {
-				setHttpClient(createHttpClient(settings.readTimeout(), ssl));
-			}
-			if (settings.connectTimeout() != null) {
-				setConnectTimeout((int) settings.connectTimeout().toMillis());
+			if (settings.connectTimeout() != null || settings.readTimeout() != null || ssl) {
+				setHttpClient(createHttpClient(settings.connectTimeout(), settings.readTimeout(), ssl));
 			}
 		}
 
-		private HttpClient createHttpClient(Duration readTimeout, boolean ssl) {
+		private HttpClient createHttpClient(Duration connectTimeout, Duration readTimeout, boolean ssl) {
 			try {
 				HttpClientBuilder builder = HttpClients.custom();
-				builder.setConnectionManager(createConnectionManager(readTimeout, ssl));
+				builder.setConnectionManager(createConnectionManager(connectTimeout, readTimeout, ssl));
 				builder.setDefaultRequestConfig(createRequestConfig());
 				return builder.build();
 			}
@@ -1134,17 +1131,22 @@ public class TestRestTemplate {
 			}
 		}
 
-		private PoolingHttpClientConnectionManager createConnectionManager(Duration readTimeout, boolean ssl)
+		private PoolingHttpClientConnectionManager createConnectionManager(Duration connectTimeout,
+				Duration readTimeout, boolean ssl)
 				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 			PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
+			if (connectTimeout != null || readTimeout != null) {
+				ConnectionConfig.Builder connectionConfig = ConnectionConfig.custom();
+				if (connectTimeout != null) {
+					connectionConfig.setConnectTimeout(connectTimeout.toMillis(), TimeUnit.MILLISECONDS);
+				}
+				if (readTimeout != null) {
+					connectionConfig.setSocketTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS);
+				}
+				builder.setDefaultConnectionConfig(connectionConfig.build());
+			}
 			if (ssl) {
 				builder.setTlsSocketStrategy(createTlsSocketStrategy());
-			}
-			if (readTimeout != null) {
-				SocketConfig socketConfig = SocketConfig.custom()
-					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
-					.build();
-				builder.setDefaultSocketConfig(socketConfig);
 			}
 			return builder.build();
 		}

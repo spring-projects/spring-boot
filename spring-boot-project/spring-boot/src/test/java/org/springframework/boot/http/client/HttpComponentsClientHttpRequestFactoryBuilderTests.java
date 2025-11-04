@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.apache.hc.client5.http.HttpRoute;
-import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
@@ -95,18 +96,22 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 
 	@Override
 	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+		return getConnectorConfig(requestFactory).getConnectTimeout().toMilliseconds();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected long readTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		HttpClient httpClient = requestFactory.getHttpClient();
-		Object connectionManager = ReflectionTestUtils.getField(httpClient, "connManager");
-		SocketConfig socketConfig = ((Resolver<HttpRoute, SocketConfig>) ReflectionTestUtils.getField(connectionManager,
-				"socketConfigResolver"))
-			.resolve(null);
-		return socketConfig.getSoTimeout().toMilliseconds();
+		return getConnectorConfig(requestFactory).getSocketTimeout().toMilliseconds();
+	}
+
+	@SuppressWarnings("unchecked")
+	private ConnectionConfig getConnectorConfig(HttpComponentsClientHttpRequestFactory requestFactory) {
+		CloseableHttpClient httpClient = (CloseableHttpClient) ReflectionTestUtils.getField(requestFactory,
+				"httpClient");
+		Object manager = ReflectionTestUtils.getField(httpClient, "connManager");
+		ConnectionConfig connectorConfig = ((Resolver<HttpRoute, ConnectionConfig>) ReflectionTestUtils
+			.getField(manager, "connectionConfigResolver")).resolve(null);
+		return connectorConfig;
 	}
 
 }

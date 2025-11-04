@@ -16,20 +16,19 @@
 
 package org.springframework.boot.http.client;
 
-import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
 
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -114,6 +113,21 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	}
 
 	/**
+	 * Return a new {@link HttpComponentsHttpClientBuilder} that applies additional
+	 * customization to the underlying
+	 * {@link org.apache.hc.client5.http.config.ConnectionConfig.Builder}.
+	 * @param connectionConfigCustomizer the customizer to apply
+	 * @return a new {@link HttpComponentsHttpClientBuilder} instance
+	 * @since 3.5.8
+	 */
+	public HttpComponentsClientHttpRequestFactoryBuilder withConnectionConfigCustomizer(
+			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer) {
+		Assert.notNull(connectionConfigCustomizer, "'connectionConfigCustomizer' must not be null");
+		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientBuilder.withConnectionConfigCustomizer(connectionConfigCustomizer));
+	}
+
+	/**
 	 * Return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} with a
 	 * replacement {@link TlsSocketStrategy} factory.
 	 * @param tlsSocketStrategyFactory the new factory used to create a
@@ -145,11 +159,8 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	@Override
 	protected HttpComponentsClientHttpRequestFactory createClientHttpRequestFactory(
 			ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings.withConnectTimeout(null)));
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(factory::setConnectTimeout);
-		return factory;
+		HttpClient httpClient = this.httpClientBuilder.build(asHttpClientSettings(settings));
+		return new HttpComponentsClientHttpRequestFactory(httpClient);
 	}
 
 	static class Classes {

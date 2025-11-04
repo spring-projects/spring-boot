@@ -142,7 +142,7 @@ class HttpClientAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ClientHttpRequestFactoryBuilderCustomizersConfiguration.class)
 			.run((context) -> {
 				ClientHttpRequestFactory factory = context.getBean(ClientHttpRequestFactoryBuilder.class).build();
-				assertThat(factory).extracting("connectTimeout").isEqualTo(5L);
+				assertThat(factory).extracting("readTimeout").isEqualTo(5L);
 			});
 	}
 
@@ -151,7 +151,7 @@ class HttpClientAutoConfigurationTests {
 
 		@Bean
 		ClientHttpRequestFactoryBuilderCustomizer<HttpComponentsClientHttpRequestFactoryBuilder> httpComponentsCustomizer() {
-			return (builder) -> builder.withCustomizer((factory) -> factory.setConnectTimeout(5));
+			return (builder) -> builder.withCustomizer((factory) -> factory.setReadTimeout(5));
 		}
 
 		@Bean
