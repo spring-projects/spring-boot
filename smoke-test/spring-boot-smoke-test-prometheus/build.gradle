@@ -23,7 +23,7 @@ description = "Spring Boot Prometheus smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
 	implementation(project(":starter:spring-boot-starter-webmvc"))
-	implementation(project(":module:spring-boot-micrometer-tracing"))
+	implementation(project(":module:spring-boot-micrometer-tracing-brave"))
 	implementation('io.micrometer:micrometer-tracing-bridge-brave')
 
 	runtimeOnly('io.micrometer:micrometer-registry-prometheus')

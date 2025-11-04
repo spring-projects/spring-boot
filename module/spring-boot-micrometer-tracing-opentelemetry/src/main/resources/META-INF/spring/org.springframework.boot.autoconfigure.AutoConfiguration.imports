@@ -1,0 +1,3 @@
+org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryTracingAutoConfiguration
+org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingAutoConfiguration
+org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.zipkin.ZipkinWithOpenTelemetryTracingAutoConfiguration

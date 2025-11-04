@@ -136,9 +136,9 @@ Tracing with OpenTelemetry and reporting using OTLP requires the following depen
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
 * `io.opentelemetry:opentelemetry-exporter-otlp` - reports traces to a collector that can accept OTLP.
 
-Use the `management.otlp.tracing.*` configuration properties to configure reporting using OTLP.
+Use the `management.opentelemetry.tracing.export.otlp.*` configuration properties to configure reporting using OTLP.
 
-NOTE: If you need to apply advanced customizations to OTLP span exporters, consider registering javadoc:org.springframework.boot.micrometer.tracing.autoconfigure.otlp.OtlpHttpSpanExporterBuilderCustomizer[] or javadoc:org.springframework.boot.micrometer.tracing.autoconfigure.otlp.OtlpGrpcSpanExporterBuilderCustomizer[] beans.
+NOTE: If you need to apply advanced customizations to OTLP span exporters, consider registering javadoc:org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpHttpSpanExporterBuilderCustomizer[] or javadoc:org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpGrpcSpanExporterBuilderCustomizer[] beans.
 These will be invoked before the creation of the `OtlpHttpSpanExporter` or `OtlpGrpcSpanExporter`.
 The customizers take precedence over anything applied by the auto-configuration.
 

@@ -23,7 +23,7 @@ description = "Starter for using Zipkin"
 dependencies {
 	api(project(":starter:spring-boot-starter"))
 
-	api(project(":module:spring-boot-micrometer-tracing"))
+	api(project(":module:spring-boot-micrometer-tracing-brave"))
 	api(project(":module:spring-boot-zipkin"))
 
 	runtimeOnly("io.micrometer:micrometer-tracing-bridge-brave") {

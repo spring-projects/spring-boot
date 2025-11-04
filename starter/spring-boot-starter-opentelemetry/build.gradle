@@ -23,7 +23,7 @@ description = "Starter for using OpenTelemetry"
 dependencies {
 	api(project(":starter:spring-boot-starter"))
 	api(project(":module:spring-boot-micrometer-metrics"))
-	api(project(":module:spring-boot-micrometer-tracing"))
+	api(project(":module:spring-boot-micrometer-tracing-opentelemetry"))
 	api(project(":module:spring-boot-opentelemetry"))
 
 	runtimeOnly 'io.micrometer:micrometer-registry-otlp'

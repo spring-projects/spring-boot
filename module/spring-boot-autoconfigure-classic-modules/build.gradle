@@ -175,6 +175,12 @@ dependencies {
 	api(project(":module:spring-boot-micrometer-tracing")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-micrometer-tracing-brave")) {
+		transitive = false
+	}
+	api(project(":module:spring-boot-micrometer-tracing-opentelemetry")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-mongodb")) {
 		transitive = false
 	}

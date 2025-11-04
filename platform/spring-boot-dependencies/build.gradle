@@ -2062,6 +2062,8 @@ bom {
 				"spring-boot-micrometer-metrics-test",
 				"spring-boot-micrometer-observation",
 				"spring-boot-micrometer-tracing",
+				"spring-boot-micrometer-tracing-brave",
+				"spring-boot-micrometer-tracing-opentelemetry",
 				"spring-boot-micrometer-tracing-test",
 				"spring-boot-mongodb",
 				"spring-boot-mustache",

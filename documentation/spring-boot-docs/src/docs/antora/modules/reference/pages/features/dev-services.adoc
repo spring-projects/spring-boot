@@ -116,7 +116,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
-| javadoc:org.springframework.boot.micrometer.tracing.autoconfigure.otlp.OtlpTracingConnectionDetails[]
+| javadoc:org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.otlp.OtlpTracingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
 | javadoc:org.springframework.boot.pulsar.autoconfigure.PulsarConnectionDetails[]
