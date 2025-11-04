@@ -250,7 +250,7 @@ public class DockerApi {
 					String digest = digestCapture.getDigest();
 					if (digest != null) {
 						ImageReference digestRef = reference.withDigest(digest);
-						return inspect(API_VERSION, digestRef);
+						return inspect(PLATFORM_API_VERSION, digestRef);
 					}
                 }
                 return inspect(API_VERSION, reference);

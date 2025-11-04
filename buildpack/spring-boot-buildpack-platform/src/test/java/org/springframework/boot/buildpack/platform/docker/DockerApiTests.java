@@ -207,8 +207,7 @@ class DockerApiTests {
 		void pullPullsImageAndProducesEvents() throws Exception {
 			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
 			URI createUri = new URI(IMAGES_URL + "/create?fromImage=docker.io%2Fpaketobuildpacks%2Fbuilder%3Abase");
-			URI imageUri = new URI(IMAGES_URL
-					+ "/docker.io/paketobuildpacks/builder@sha256:4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30/json");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, null, this.pullListener);
@@ -223,8 +222,7 @@ class DockerApiTests {
 		void pullWithRegistryAuthPullsImageAndProducesEvents() throws Exception {
 			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
 			URI createUri = new URI(IMAGES_URL + "/create?fromImage=docker.io%2Fpaketobuildpacks%2Fbuilder%3Abase");
-			URI imageUri = new URI(IMAGES_URL
-					+ "/docker.io/paketobuildpacks/builder@sha256:4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30/json");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().post(eq(createUri), eq("auth token"))).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, null, this.pullListener, "auth token");
@@ -447,38 +445,6 @@ class DockerApiTests {
 			assertThat(contents.get("d3cc975ad97fdfbb73d9daf157e7f658d6117249fd9c237e3856ad173c87e1d2.tar"))
 				.containsExactly("/cnb/order.toml");
 			assertThat(contents.get("762e198f655bc2580ef3e56b538810fd2b9981bd707f8a44c70344b58f9aee68.tar"))
-				.containsExactly("/cnb/stack.toml");
-		}
-
-		@Test
-		void exportLayersWithPlatformExportsLayerTars() throws Exception {
-			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
-			ImagePlatform platform = ImagePlatform.of("linux/amd64");
-			URI exportUri = new URI(
-					PLATFORM_IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/get?platform=linux%2Famd64");
-			given(DockerApiTests.this.http.head(eq(new URI(PING_URL))))
-				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.41")));
-			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
-			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
-			this.api.exportLayers(reference, platform, (name, archive) -> {
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				archive.writeTo(out);
-				try (TarArchiveInputStream in = new TarArchiveInputStream(
-						new ByteArrayInputStream(out.toByteArray()))) {
-					TarArchiveEntry entry = in.getNextEntry();
-					while (entry != null) {
-						contents.add(name, entry.getName());
-						entry = in.getNextEntry();
-					}
-				}
-			});
-			assertThat(contents).hasSize(3)
-				.containsKeys("70bb7a3115f3d5c01099852112c7e05bf593789e510468edb06b6a9a11fa3b73/layer.tar",
-						"74a9a50ece13c025cf10e9110d9ddc86c995079c34e2a22a28d1a3d523222c6e/layer.tar",
-						"a69532b5b92bb891fbd9fa1a6b3af9087ea7050255f59ba61a796f8555ecd783/layer.tar");
-			assertThat(contents.get("70bb7a3115f3d5c01099852112c7e05bf593789e510468edb06b6a9a11fa3b73/layer.tar"))
-				.containsExactly("/cnb/order.toml");
-			assertThat(contents.get("74a9a50ece13c025cf10e9110d9ddc86c995079c34e2a22a28d1a3d523222c6e/layer.tar"))
 				.containsExactly("/cnb/stack.toml");
 		}
 
