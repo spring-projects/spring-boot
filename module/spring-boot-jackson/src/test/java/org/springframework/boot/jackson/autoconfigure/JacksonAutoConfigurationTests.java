@@ -57,6 +57,7 @@ import tools.jackson.databind.json.JsonMapper.Builder;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.util.StdDateFormat;
 import tools.jackson.dataformat.cbor.CBORMapper;
+import tools.jackson.dataformat.xml.XmlMapper;
 import tools.jackson.module.kotlin.KotlinModule;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -72,6 +73,7 @@ import org.springframework.boot.jackson.ObjectValueSerializer;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.CborConfiguration.StandardCborMapperBuilderCustomizer;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.JacksonAutoConfigurationRuntimeHints;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.JacksonJsonMapperBuilderCustomizerConfiguration.StandardJsonMapperBuilderCustomizer;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration.XmlConfiguration.StandardXmlMapperBuilderCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -130,7 +132,7 @@ class JacksonAutoConfigurationTests {
 	void mapperDoesNotBackOffWhenObjectMapperIsDefined(MapperType mapperType) {
 		this.contextRunner.withBean(ObjectMapper.class).run((context) -> {
 			assertThat(context).hasSingleBean(mapperType.mapperClass);
-			assertThat(context.getBeansOfType(ObjectMapper.class)).hasSize(3);
+			assertThat(context.getBeansOfType(ObjectMapper.class)).hasSize(MapperType.values().length + 1);
 		});
 	}
 
@@ -151,6 +153,12 @@ class JacksonAutoConfigurationTests {
 	void standardCborMapperBuilderCustomizerDoesNotBackOffWhenCustomizerIsDefined() {
 		this.contextRunner.withBean(CborMapperBuilderCustomizer.class, () -> mock(CborMapperBuilderCustomizer.class))
 			.run((context) -> assertThat(context).hasSingleBean(StandardCborMapperBuilderCustomizer.class));
+	}
+
+	@Test
+	void standardXmlMapperBuilderCustomizerDoesNotBackOffWhenCustomizerIsDefined() {
+		this.contextRunner.withBean(XmlMapperBuilderCustomizer.class, () -> mock(XmlMapperBuilderCustomizer.class))
+			.run((context) -> assertThat(context).hasSingleBean(StandardXmlMapperBuilderCustomizer.class));
 	}
 
 	@Test
@@ -416,6 +424,16 @@ class JacksonAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void customModulesRegisteredByXmlMapperBuilderCustomizerShouldBeRetained() {
+		this.contextRunner.withUserConfiguration(ModuleConfig.class, CustomModuleXmlMapperBuilderCustomizerConfig.class)
+			.run((context) -> {
+				XmlMapper mapper = context.getBean(XmlMapper.class);
+				assertThat(mapper.registeredModules()).extracting(JacksonModule::getModuleName)
+					.contains("module-A", "module-B", CustomModule.class.getName());
+			});
+	}
+
 	@EnumSource
 	@ParameterizedTest
 	void defaultSerializationInclusion(MapperType mapperType) {
@@ -454,6 +472,16 @@ class JacksonAutoConfigurationTests {
 				Date date = new Date(1436966242231L);
 				assertThat(mapper.writeValueAsBytes(date))
 					.isEqualTo(new byte[] { 105, 71, 77, 84, 43, 49, 48, 58, 48, 48 });
+			});
+	}
+
+	@Test
+	void customTimeZoneFormattingADateToXml() {
+		this.contextRunner.withPropertyValues("spring.jackson.time-zone:GMT+10", "spring.jackson.date-format:z")
+			.run((context) -> {
+				XmlMapper mapper = context.getBean(XmlMapper.class);
+				Date date = new Date(1436966242231L);
+				assertThat(mapper.writeValueAsString(date)).isEqualTo("<Date>GMT+10:00</Date>");
 			});
 	}
 
@@ -564,6 +592,17 @@ class JacksonAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void additionalXmlMapperBuilderCustomization() {
+		this.contextRunner.withBean(XmlMapperBuilderCustomizer.class, () -> null)
+			.withUserConfiguration(XmlMapperBuilderCustomConfig.class)
+			.run((context) -> {
+				XmlMapper mapper = context.getBean(XmlMapper.class);
+				assertThat(mapper.deserializationConfig().getDateFormat()).isInstanceOf(MyDateFormat.class);
+				assertThat(mapper.serializationConfig().getDateFormat()).isInstanceOf(MyDateFormat.class);
+			});
+	}
+
 	@EnumSource
 	@ParameterizedTest
 	void writeDurationAsTimestampsDefault(MapperType mapperType) {
@@ -609,6 +648,16 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	void xmlMapperBuilderIsNotSharedAcrossMultipleInjectionPoints() {
+		this.contextRunner.withUserConfiguration(XmlMapperBuilderConsumerConfig.class).run((context) -> {
+			XmlMapperBuilderConsumerConfig consumer = context.getBean(XmlMapperBuilderConsumerConfig.class);
+			assertThat(consumer.builderOne).isNotNull();
+			assertThat(consumer.builderTwo).isNotNull();
+			assertThat(consumer.builderOne).isNotSameAs(consumer.builderTwo);
+		});
+	}
+
+	@Test
 	void jacksonComponentThatInjectsJsonMapperCausesBeanCurrentlyInCreationException() {
 		this.contextRunner.withUserConfiguration(CircularDependencySerializerConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
@@ -624,13 +673,25 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldRegisterProblemDetailsMixin() {
+	void shouldRegisterProblemDetailsMixinWithJsonMapper() {
 		this.contextRunner.run((context) -> {
 			JsonMapper mapper = context.getBean(JsonMapper.class);
 			ProblemDetail problemDetail = ProblemDetail.forStatus(404);
 			problemDetail.setProperty("spring", "boot");
 			String json = mapper.writeValueAsString(problemDetail);
 			assertThat(json).isEqualTo("{\"status\":404,\"title\":\"Not Found\",\"spring\":\"boot\"}");
+		});
+	}
+
+	@Test
+	void shouldRegisterProblemDetailsMixinWithXmlMapper() {
+		this.contextRunner.run((context) -> {
+			XmlMapper mapper = context.getBean(XmlMapper.class);
+			ProblemDetail problemDetail = ProblemDetail.forStatus(404);
+			problemDetail.setProperty("spring", "boot");
+			String xml = mapper.writeValueAsString(problemDetail);
+			assertThat(xml).isEqualTo(
+					"<ProblemDetail><status>404</status><title>Not Found</title><spring>boot</spring></ProblemDetail>");
 		});
 	}
 
@@ -661,6 +722,19 @@ class JacksonAutoConfigurationTests {
 				.isEqualTo(jackson2ConfiguredCborMapper.deserializationConfig().getFormatReadFeatures());
 			assertThat(cborMapper.serializationConfig().getFormatWriteFeatures())
 				.isEqualTo(jackson2ConfiguredCborMapper.serializationConfig().getFormatWriteFeatures());
+		});
+	}
+
+	@Test
+	void whenUsingJackson2DefaultsXmlMapperShouldBeConfiguredUsingConfigureForJackson2() {
+		this.contextRunner.withPropertyValues("spring.jackson.use-jackson2-defaults=true").run((context) -> {
+			XmlMapper xmlMapper = context.getBean(XmlMapper.class);
+			XmlMapper jackson2ConfiguredXmlMapper = XmlMapper.builder().configureForJackson2().build();
+			assertCommonFeatureConfiguration(xmlMapper, jackson2ConfiguredXmlMapper);
+			assertThat(xmlMapper.deserializationConfig().getFormatReadFeatures())
+				.isEqualTo(jackson2ConfiguredXmlMapper.deserializationConfig().getFormatReadFeatures());
+			assertThat(xmlMapper.serializationConfig().getFormatWriteFeatures())
+				.isEqualTo(jackson2ConfiguredXmlMapper.serializationConfig().getFormatWriteFeatures());
 		});
 	}
 
@@ -793,6 +867,16 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class XmlMapperBuilderCustomConfig {
+
+		@Bean
+		XmlMapperBuilderCustomizer customDateFormat() {
+			return (builder) -> builder.defaultDateFormat(new MyDateFormat());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomModuleJsonMapperBuilderCustomizerConfig {
 
 		@Bean
@@ -821,6 +905,23 @@ class JacksonAutoConfigurationTests {
 		@Bean
 		@Order(1)
 		CborMapperBuilderCustomizer lowPrecedenceCustomizer() {
+			return (builder) -> builder.addModule(new SimpleModule("module-B"));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomModuleXmlMapperBuilderCustomizerConfig {
+
+		@Bean
+		@Order(-1)
+		XmlMapperBuilderCustomizer highPrecedenceCustomizer() {
+			return (builder) -> builder.addModule(new SimpleModule("module-A"));
+		}
+
+		@Bean
+		@Order(1)
+		XmlMapperBuilderCustomizer lowPrecedenceCustomizer() {
 			return (builder) -> builder.addModule(new SimpleModule("module-B"));
 		}
 
@@ -862,6 +963,27 @@ class JacksonAutoConfigurationTests {
 
 		@Bean
 		String consumerTwo(CBORMapper.Builder builder) {
+			this.builderTwo = builder;
+			return "two";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class XmlMapperBuilderConsumerConfig {
+
+		XmlMapper.@Nullable Builder builderOne;
+
+		XmlMapper.@Nullable Builder builderTwo;
+
+		@Bean
+		String consumerOne(XmlMapper.Builder builder) {
+			this.builderOne = builder;
+			return "one";
+		}
+
+		@Bean
+		String consumerTwo(XmlMapper.Builder builder) {
 			this.builderTwo = builder;
 			return "two";
 		}
@@ -991,7 +1113,8 @@ class JacksonAutoConfigurationTests {
 
 	enum MapperType {
 
-		CBOR(CBORMapper.class, CBORMapper.Builder.class), JSON(JsonMapper.class, JsonMapper.Builder.class);
+		CBOR(CBORMapper.class, CBORMapper.Builder.class), JSON(JsonMapper.class, JsonMapper.Builder.class),
+		XML(XmlMapper.class, XmlMapper.Builder.class);
 
 		private final Class<? extends ObjectMapper> mapperClass;
 

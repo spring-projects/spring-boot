@@ -40,6 +40,7 @@ import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.cfg.MapperBuilder;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.cbor.CBORMapper;
+import tools.jackson.dataformat.xml.XmlMapper;
 
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
@@ -163,7 +164,7 @@ public final class JacksonAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ProblemDetail.class)
-	static class ProblemDetailsConfiguration {
+	static class JsonProblemDetailsConfiguration {
 
 		@Bean
 		ProblemDetailJsonMapperBuilderCustomizer problemDetailJsonMapperBuilderCustomizer() {
@@ -230,6 +231,80 @@ public final class JacksonAutoConfiguration {
 				super.customize(builder);
 				configureFeatures(builder, this.cborProperties.getRead(), builder::configure);
 				configureFeatures(builder, this.cborProperties.getWrite(), builder::configure);
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(XmlMapper.class)
+	@EnableConfigurationProperties(JacksonXmlProperties.class)
+	static class XmlConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		XmlMapper xmlMapper(XmlMapper.Builder builder) {
+			return builder.build();
+		}
+
+		@Bean
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+		@ConditionalOnMissingBean
+		XmlMapper.Builder xmlMapperBuilder(List<XmlMapperBuilderCustomizer> customizers) {
+			XmlMapper.Builder builder = XmlMapper.builder();
+			customize(builder, customizers);
+			return builder;
+		}
+
+		private void customize(XmlMapper.Builder builder, List<XmlMapperBuilderCustomizer> customizers) {
+			for (XmlMapperBuilderCustomizer customizer : customizers) {
+				customizer.customize(builder);
+			}
+		}
+
+		@Bean
+		StandardXmlMapperBuilderCustomizer standardXmlMapperBuilderCustomizer(JacksonProperties jacksonProperties,
+				ObjectProvider<JacksonModule> modules, JacksonXmlProperties xmlProperties) {
+			return new StandardXmlMapperBuilderCustomizer(jacksonProperties, modules.stream().toList(), xmlProperties);
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(ProblemDetail.class)
+		static class XmlProblemDetailsConfiguration {
+
+			@Bean
+			ProblemDetailXmlMapperBuilderCustomizer problemDetailXmlMapperBuilderCustomizer() {
+				return new ProblemDetailXmlMapperBuilderCustomizer();
+			}
+
+			static final class ProblemDetailXmlMapperBuilderCustomizer implements XmlMapperBuilderCustomizer {
+
+				@Override
+				public void customize(XmlMapper.Builder builder) {
+					builder.addMixIn(ProblemDetail.class, ProblemDetailJacksonMixin.class);
+				}
+
+			}
+
+		}
+
+		static class StandardXmlMapperBuilderCustomizer extends AbstractMapperBuilderCustomizer<XmlMapper.Builder>
+				implements XmlMapperBuilderCustomizer {
+
+			private final JacksonXmlProperties xmlProperties;
+
+			StandardXmlMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules,
+					JacksonXmlProperties xmlProperties) {
+				super(jacksonProperties, modules);
+				this.xmlProperties = xmlProperties;
+			}
+
+			@Override
+			public void customize(XmlMapper.Builder builder) {
+				super.customize(builder);
+				configureFeatures(builder, this.xmlProperties.getRead(), builder::configure);
+				configureFeatures(builder, this.xmlProperties.getWrite(), builder::configure);
 			}
 
 		}
