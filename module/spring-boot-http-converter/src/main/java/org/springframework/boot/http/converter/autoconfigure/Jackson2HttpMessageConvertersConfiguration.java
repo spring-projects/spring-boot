@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
@@ -50,6 +51,7 @@ class Jackson2HttpMessageConvertersConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@Order(0)
 		org.springframework.http.converter.json.MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
 				ObjectMapper objectMapper) {
 			return new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(objectMapper);
@@ -64,6 +66,7 @@ class Jackson2HttpMessageConvertersConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@Order(0)
 		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
 				Jackson2ObjectMapperBuilder builder) {
 			return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(true).build());

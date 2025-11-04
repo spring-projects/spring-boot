@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.http.converter.xml.JacksonXmlHttpMessageConverter;
 
@@ -47,6 +48,7 @@ class JacksonHttpMessageConvertersConfiguration {
 		@ConditionalOnMissingBean(
 				ignoredType = { "org.springframework.hateoas.server.mvc.TypeConstrainedJacksonJsonHttpMessageConverter",
 						"org.springframework.data.rest.webmvc.alps.AlpsJacksonJsonHttpMessageConverter" })
+		@Order(0)
 		JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter(JsonMapper jsonMapper) {
 			return new JacksonJsonHttpMessageConverter(jsonMapper);
 		}
@@ -60,6 +62,7 @@ class JacksonHttpMessageConvertersConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@Order(0)
 		public JacksonXmlHttpMessageConverter jacksonXmlHttpMessageConverter(XmlMapper xmlMapper) {
 			return new JacksonXmlHttpMessageConverter(xmlMapper);
 		}

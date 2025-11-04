@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 
@@ -47,6 +48,7 @@ class GsonHttpMessageConvertersConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@Order(0)
 		GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
 			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
 			converter.setGson(gson);

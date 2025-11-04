@@ -92,6 +92,7 @@ public final class HttpMessageConvertersAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@Order(0)
 		StringHttpMessageConverter stringHttpMessageConverter(HttpMessageConvertersProperties properties) {
 			StringHttpMessageConverter converter = new StringHttpMessageConverter(
 					properties.getStringEncodingCharset());
