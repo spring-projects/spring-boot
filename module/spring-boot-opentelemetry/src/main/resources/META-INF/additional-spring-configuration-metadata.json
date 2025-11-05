@@ -7,12 +7,12 @@
 			"description": "Whether auto-configuration of logging is enabled to export logs.",
 			"defaultValue": true,
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export.enabled",
+				"replacement": "management.logging.export.otlp.enabled",
 				"level": "error"
 			}
 		},
 		{
-			"name": "management.opentelemetry.logging.export.enabled",
+			"name": "management.logging.export.otlp.enabled",
 			"type": "java.lang.Boolean",
 			"description": "Whether auto-configuration of logging is enabled to export logs over OTLP."
     	},
@@ -21,7 +21,7 @@
 			"type": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
 			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export",
+				"replacement": "management.opentelemetry.logging.export.otlp",
 				"level": "error"
 			}
 		},
@@ -32,7 +32,7 @@
 			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
 			"defaultValue": "none",
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export.compression",
+				"replacement": "management.opentelemetry.logging.export.otlp.compression",
 				"level": "error"
 			}
 		},
@@ -43,7 +43,7 @@
 			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
 			"defaultValue": "10s",
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export.connect-timeout",
+				"replacement": "management.opentelemetry.logging.export.otlp.connect-timeout",
 				"level": "error"
 			}
 		},
@@ -53,7 +53,7 @@
 			"description": "URL to the OTel collector's HTTP API.",
 			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export.endpoint",
+				"replacement": "management.opentelemetry.logging.export.otlp.endpoint",
 				"level": "error"
 			}
 		},
@@ -62,7 +62,7 @@
 			"type": "java.lang.Boolean",
 			"description": "Whether auto-configuration of logging is enabled to export OTLP logs.",
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export.enabled",
+				"replacement": "management.logging.export.otlp.enabled",
 				"level": "error"
 			}
 		},
@@ -72,7 +72,7 @@
 			"description": "Custom HTTP headers you want to pass to the collector, for example auth headers.",
 			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export.headers",
+				"replacement": "management.opentelemetry.logging.export.otlp.headers",
 				"level": "error"
 			}
 		},
@@ -83,7 +83,7 @@
 			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
 			"defaultValue": "10s",
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export.timeout",
+				"replacement": "management.opentelemetry.logging.export.otlp.timeout",
 				"level": "error"
 			}
 		},
@@ -94,7 +94,7 @@
 			"sourceType": "org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingExportProperties",
 			"defaultValue": "http",
 			"deprecation": {
-				"replacement": "management.opentelemetry.logging.export.transport",
+				"replacement": "management.opentelemetry.logging.export.otlp.transport",
 				"level": "error"
 			}
 		}

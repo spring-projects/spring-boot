@@ -45,7 +45,8 @@ management:
   opentelemetry:
     logging:
       export:
-        endpoint: "https://otlp.example.com:4318/v1/logs"
+        otlp:
+          endpoint: "https://otlp.example.com:4318/v1/logs"
 ----
 
 NOTE: The OpenTelemetry Logback appender and Log4j appender are not part of Spring Boot.

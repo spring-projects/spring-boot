@@ -48,7 +48,7 @@ class OtlpLoggingAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("spring.application.name=otlp-logs-test",
-				"management.opentelemetry.logging.export.headers.Authorization=Bearer my-token")
+				"management.opentelemetry.logging.export.otlp.headers.Authorization=Bearer my-token")
 		.withConfiguration(
 				AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class, OtlpLoggingAutoConfiguration.class));
 
@@ -68,7 +68,7 @@ class OtlpLoggingAutoConfigurationIntegrationTests {
 	void httpLogRecordExporterShouldUseProtobufAndNoCompressionByDefault() {
 		this.mockWebServer.enqueue(new MockResponse());
 		this.contextRunner
-			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:%d/v1/logs"
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:%d/v1/logs"
 				.formatted(this.mockWebServer.getPort()))
 			.run((context) -> {
 				logMessage(context);
@@ -88,8 +88,10 @@ class OtlpLoggingAutoConfigurationIntegrationTests {
 	void httpLogRecordExporterCanBeConfiguredToUseGzipCompression() {
 		this.mockWebServer.enqueue(new MockResponse());
 		this.contextRunner
-			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:%d/v1/logs"
-				.formatted(this.mockWebServer.getPort()), "management.opentelemetry.logging.export.compression=gzip")
+			.withPropertyValues(
+					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:%d/v1/logs"
+						.formatted(this.mockWebServer.getPort()),
+					"management.opentelemetry.logging.export.otlp.compression=gzip")
 			.run((context) -> {
 				logMessage(context);
 				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);

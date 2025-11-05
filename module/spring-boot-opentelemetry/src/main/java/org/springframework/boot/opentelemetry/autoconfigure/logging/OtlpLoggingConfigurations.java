@@ -25,6 +25,7 @@ import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporterBuilder;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.logging.ConditionalOnEnabledLoggingExport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,7 +47,7 @@ final class OtlpLoggingConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty("management.opentelemetry.logging.export.endpoint")
+		@ConditionalOnProperty("management.opentelemetry.logging.export.otlp.endpoint")
 		PropertiesOtlpLoggingConnectionDetails openTelemetryLoggingConnectionDetails(OtlpLoggingProperties properties) {
 			return new PropertiesOtlpLoggingConnectionDetails(properties);
 		}
@@ -80,10 +81,11 @@ final class OtlpLoggingConfigurations {
 	@ConditionalOnClass(OtlpHttpLogRecordExporter.class)
 	@ConditionalOnMissingBean({ OtlpGrpcLogRecordExporter.class, OtlpHttpLogRecordExporter.class })
 	@ConditionalOnBean(OtlpLoggingConnectionDetails.class)
+	@ConditionalOnEnabledLoggingExport("otlp")
 	static class Exporters {
 
 		@Bean
-		@ConditionalOnProperty(name = "management.opentelemetry.logging.export.transport", havingValue = "http",
+		@ConditionalOnProperty(name = "management.opentelemetry.logging.export.otlp.transport", havingValue = "http",
 				matchIfMissing = true)
 		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpLoggingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider) {
@@ -98,7 +100,7 @@ final class OtlpLoggingConfigurations {
 		}
 
 		@Bean
-		@ConditionalOnProperty(name = "management.opentelemetry.logging.export.transport", havingValue = "grpc")
+		@ConditionalOnProperty(name = "management.opentelemetry.logging.export.otlp.transport", havingValue = "grpc")
 		OtlpGrpcLogRecordExporter otlpGrpcLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpLoggingConnectionDetails connectionDetails, ObjectProvider<MeterProvider> meterProvider) {
 			OtlpGrpcLogRecordExporterBuilder builder = OtlpGrpcLogRecordExporter.builder()

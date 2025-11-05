@@ -77,7 +77,7 @@ class OtlpLoggingAutoConfigurationTests {
 	@Test
 	void whenHasEndpointPropertyProvidesBeans() {
 		this.contextRunner
-			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs")
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
 				OtlpLoggingConnectionDetails connectionDetails = context.getBean(OtlpLoggingConnectionDetails.class);
@@ -98,10 +98,10 @@ class OtlpLoggingAutoConfigurationTests {
 	@Test
 	void whenOpenTelemetryLoggingExportEnabledPropertyIsFalseProvidesExpectedBeans() {
 		this.contextRunner
-			.withPropertyValues("management.opentelemetry.logging.export.enabled=false",
-					"management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs")
+			.withPropertyValues("management.logging.export.otlp.enabled=false",
+					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
 				assertThat(context).doesNotHaveBean(LogRecordExporter.class);
 			});
 	}
@@ -110,9 +110,9 @@ class OtlpLoggingAutoConfigurationTests {
 	void whenLoggingExportEnabledPropertyIsFalseNoProvideExpectedBeans() {
 		this.contextRunner
 			.withPropertyValues("management.logging.export.enabled=false",
-					"management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs")
+					"management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
 				assertThat(context).doesNotHaveBean(LogRecordExporter.class);
 			});
 	}
@@ -146,7 +146,7 @@ class OtlpLoggingAutoConfigurationTests {
 	@Test
 	void whenHasNoTransportPropertySetUsesHttpExporter() {
 		this.contextRunner
-			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs")
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
 				assertThat(context).hasSingleBean(LogRecordExporter.class);
@@ -157,8 +157,8 @@ class OtlpLoggingAutoConfigurationTests {
 	@Test
 	void whenHasTransportPropertySetToHttpUsesHttpExporter() {
 		this.contextRunner
-			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs",
-					"management.opentelemetry.logging.export.transport=http")
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs",
+					"management.opentelemetry.logging.export.otlp.transport=http")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
 				assertThat(context).hasSingleBean(LogRecordExporter.class);
@@ -169,8 +169,8 @@ class OtlpLoggingAutoConfigurationTests {
 	@Test
 	void whenHasTransportPropertySetToGrpcUsesGrpcExporter() {
 		this.contextRunner
-			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs",
-					"management.opentelemetry.logging.export.transport=grpc")
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs",
+					"management.opentelemetry.logging.export.otlp.transport=grpc")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpGrpcLogRecordExporter.class);
 				assertThat(context).hasSingleBean(LogRecordExporter.class);
@@ -181,7 +181,7 @@ class OtlpLoggingAutoConfigurationTests {
 	@Test
 	void whenHasMeterProviderBeanAddsItToHttpExporter() {
 		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class)
-			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs")
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
 				OtlpHttpLogRecordExporter otlpHttpLogRecordExporter = context.getBean(OtlpHttpLogRecordExporter.class);
 				assertThat(otlpHttpLogRecordExporter.toBuilder())
@@ -194,8 +194,8 @@ class OtlpLoggingAutoConfigurationTests {
 	@Test
 	void whenHasMeterProviderBeanAddsItToGrpcExporter() {
 		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class)
-			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs",
-					"management.opentelemetry.logging.export.transport=grpc")
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs",
+					"management.opentelemetry.logging.export.otlp.transport=grpc")
 			.run((context) -> {
 				OtlpGrpcLogRecordExporter otlpGrpcLogRecordExporter = context.getBean(OtlpGrpcLogRecordExporter.class);
 				assertThat(otlpGrpcLogRecordExporter.toBuilder())

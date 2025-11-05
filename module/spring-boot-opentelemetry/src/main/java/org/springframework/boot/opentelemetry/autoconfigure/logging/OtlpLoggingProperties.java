@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jonatan Ivanov
  * @since 4.0.0
  */
-@ConfigurationProperties("management.opentelemetry.logging.export")
+@ConfigurationProperties("management.opentelemetry.logging.export.otlp")
 public class OtlpLoggingProperties {
 
 	/**

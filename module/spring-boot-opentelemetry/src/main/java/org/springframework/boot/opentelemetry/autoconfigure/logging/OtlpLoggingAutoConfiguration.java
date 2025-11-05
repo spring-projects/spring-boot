@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration
 @ConditionalOnClass({ ConditionalOnEnabledLoggingExport.class, OpenTelemetry.class, SdkLoggerProvider.class })
-@ConditionalOnEnabledLoggingExport("opentelemetry")
 @EnableConfigurationProperties(OtlpLoggingProperties.class)
 @Import({ ConnectionDetails.class, Exporters.class })
 public final class OtlpLoggingAutoConfiguration {
