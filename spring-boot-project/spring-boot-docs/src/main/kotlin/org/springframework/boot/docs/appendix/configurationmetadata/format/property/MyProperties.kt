@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
 class MyProperties(val name: String?) {
 
 	var target: String? = null
-		@Deprecated("") @DeprecatedConfigurationProperty(replacement = "my.app.name") get
+		@Deprecated("") @DeprecatedConfigurationProperty(replacement = "my.app.name", since = "1.2.0") get
 		@Deprecated("") set
 
 }

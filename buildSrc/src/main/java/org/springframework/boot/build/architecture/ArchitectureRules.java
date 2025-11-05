@@ -98,6 +98,7 @@ final class ArchitectureRules {
 		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(conditionsShouldNotBePublic());
 		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
+		rules.add(allDeprecatedConfigurationPropertiesShouldIncludeSince());
 		return List.copyOf(rules);
 	}
 
@@ -345,6 +346,22 @@ final class ArchitectureRules {
 			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationPropertiesBinding")
 			.should()
 			.beStatic()
+			.allowEmptyShould(true);
+	}
+
+	private static ArchRule allDeprecatedConfigurationPropertiesShouldIncludeSince() {
+		return methodsThatAreAnnotatedWith(
+				"org.springframework.boot.context.properties.DeprecatedConfigurationProperty")
+			.should(check("include a non-empty 'since' attribute", (method, events) -> {
+				JavaAnnotation<JavaMethod> annotation = method
+					.getAnnotationOfType("org.springframework.boot.context.properties.DeprecatedConfigurationProperty");
+				Map<String, Object> properties = annotation.getProperties();
+				Object since = properties.get("since");
+				if (!(since instanceof String) || ((String) since).isEmpty()) {
+					addViolation(events, method, annotation.getDescription()
+							+ " should include a non-empty 'since' attribute of @DeprecatedConfigurationProperty");
+				}
+			}))
 			.allowEmptyShould(true);
 	}
 

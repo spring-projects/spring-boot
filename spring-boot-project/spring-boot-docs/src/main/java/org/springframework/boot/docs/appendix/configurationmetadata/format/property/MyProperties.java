@@ -33,7 +33,7 @@ public class MyProperties {
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "my.app.name")
+	@DeprecatedConfigurationProperty(replacement = "my.app.name", since = "1.2.0")
 	public String getTarget() {
 		return this.name;
 	}
