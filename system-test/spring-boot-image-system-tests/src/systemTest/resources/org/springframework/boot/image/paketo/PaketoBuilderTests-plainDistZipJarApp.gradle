@@ -55,6 +55,6 @@ application {
 
 bootBuildImage {
 	archiveFile = distZip.archiveFile
-	runImage = "paketobuildpacks/ubuntu-noble-run-base:latest"
+	runImage = "paketobuildpacks/ubuntu-noble-run:latest"
 	environment = ['BP_JVM_VERSION': java.targetCompatibility.getMajorVersion()]
 }
