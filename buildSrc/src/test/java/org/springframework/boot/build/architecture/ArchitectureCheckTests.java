@@ -19,14 +19,17 @@ package org.springframework.boot.build.architecture;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.testkit.runner.BuildResult;
@@ -41,6 +44,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.boot.build.architecture.annotations.TestConditionalOnClass;
+import org.springframework.boot.build.architecture.annotations.TestDeprecatedConfigurationProperty;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
@@ -316,6 +320,16 @@ class ArchitectureCheckTests {
 		build(gradleBuild, Task.CHECK_ARCHITECTURE_TEST);
 	}
 
+	@Test
+	void whenDeprecatedConfigurationPropertyIsMissingSinceShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties", "annotations");
+		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT)
+			.withDeprecatedConfigurationPropertyAnnotation(TestDeprecatedConfigurationProperty.class.getName());
+		buildAndFail(gradleBuild, Task.CHECK_ARCHITECTURE_MAIN,
+				"should include a non-empty 'since' attribute of @DeprecatedConfigurationProperty",
+				"DeprecatedConfigurationPropertySince.getProperty");
+	}
+
 	private void prepareTask(Task task, String... sourceDirectories) throws IOException {
 		for (String sourceDirectory : sourceDirectories) {
 			FileSystemUtils.copyRecursively(
@@ -348,7 +362,12 @@ class ArchitectureCheckTests {
 		try {
 			BuildResult buildResult = gradleBuild.buildAndFail(task.toString());
 			assertThat(buildResult.taskPaths(TaskOutcome.FAILED)).as(buildResult.getOutput()).contains(":" + task);
-			assertThat(task.getFailureReport(gradleBuild.getProjectDir())).contains(messages);
+			try {
+				assertThat(task.getFailureReport(gradleBuild.getProjectDir())).contains(messages);
+			}
+			catch (NoSuchFileException ex) {
+				throw new AssertionError("Expected failure report not found\n" + buildResult.getOutput());
+			}
 		}
 		catch (UnexpectedBuildSuccess ex) {
 			throw new AssertionError("Expected build to fail but it succeeded\n" + ex.getBuildResult().getOutput(), ex);
@@ -410,9 +429,18 @@ class ArchitectureCheckTests {
 			return this;
 		}
 
-		GradleBuild withConditionalOnClassAnnotation(String annotationName) {
+		GradleBuild withConditionalOnClassAnnotation(String annotationClass) {
 			for (Task task : Task.values()) {
-				configureTask(task, (configuration) -> configuration.withConditionalOnClassAnnotation(annotationName));
+				configureTask(task, (configuration) -> configuration
+					.withAnnotation(ArchitectureCheck.CONDITIONAL_ON_CLASS, annotationClass));
+			}
+			return this;
+		}
+
+		GradleBuild withDeprecatedConfigurationPropertyAnnotation(String annotationClass) {
+			for (Task task : Task.values()) {
+				configureTask(task, (configuration) -> configuration
+					.withAnnotation(ArchitectureCheck.DEPRECATED_CONFIGURATION_PROPERTY, annotationClass));
 			}
 			return this;
 		}
@@ -454,17 +482,17 @@ class ArchitectureCheckTests {
 				for (String dependency : this.dependencies) {
 					buildFile.append("\n    implementation ").append(StringUtils.quote(dependency));
 				}
-				buildFile.append("}\n");
+				buildFile.append("\n}\n\n");
 			}
 			this.taskConfigurations.forEach((task, configuration) -> {
 				buildFile.append(task).append(" {");
-				if (configuration.conditionalOnClassAnnotation() != null) {
-					buildFile.append("\n    conditionalOnClassAnnotation = ")
-						.append(StringUtils.quote(configuration.conditionalOnClassAnnotation()));
-				}
 				if (configuration.prohibitObjectsRequireNonNull() != null) {
 					buildFile.append("\n    prohibitObjectsRequireNonNull = ")
 						.append(configuration.prohibitObjectsRequireNonNull());
+				}
+				if (configuration.annotations() != null && !configuration.annotations().isEmpty()) {
+					buildFile.append("\n    annotationClasses = ")
+						.append(toGroovyMapString(configuration.annotations()));
 				}
 				buildFile.append("\n}\n");
 			});
@@ -475,15 +503,31 @@ class ArchitectureCheckTests {
 				.withPluginClasspath();
 		}
 
-		private record TaskConfiguration(Boolean prohibitObjectsRequireNonNull, String conditionalOnClassAnnotation) {
+		static String toGroovyMapString(Map<String, String> map) {
+			return map.entrySet()
+				.stream()
+				.map((entry) -> "'" + entry.getKey() + "' : '" + entry.getValue() + "'")
+				.collect(Collectors.joining(", ", "[", "]"));
+		}
 
-			private TaskConfiguration withConditionalOnClassAnnotation(String annotationName) {
-				return new TaskConfiguration(this.prohibitObjectsRequireNonNull, annotationName);
+		private record TaskConfiguration(Boolean prohibitObjectsRequireNonNull, Map<String, String> annotations) {
+
+			public TaskConfiguration {
+				if (annotations == null) {
+					annotations = new HashMap<>();
+				}
 			}
 
 			private TaskConfiguration withProhibitObjectsRequireNonNull(Boolean prohibitObjectsRequireNonNull) {
-				return new TaskConfiguration(prohibitObjectsRequireNonNull, this.conditionalOnClassAnnotation);
+				return new TaskConfiguration(prohibitObjectsRequireNonNull, this.annotations);
 			}
+
+			private TaskConfiguration withAnnotation(String name, String annotationClass) {
+				Map<String, String> map = new HashMap<>(this.annotations);
+				map.put(name, annotationClass);
+				return new TaskConfiguration(this.prohibitObjectsRequireNonNull, map);
+			}
+
 		}
 
 	}
