@@ -124,7 +124,7 @@ Tracing with OpenTelemetry and reporting to Zipkin requires the following depend
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
 * `io.opentelemetry:opentelemetry-exporter-zipkin` - reports traces to Zipkin.
 
-Use the `management.zipkin.tracing.*` configuration properties to configure reporting to Zipkin.
+Use the `management.tracing.export.zipkin.*` configuration properties to configure reporting to Zipkin.
 
 
 
@@ -152,7 +152,7 @@ Tracing with OpenZipkin Brave and reporting to Zipkin requires the following dep
 * `io.micrometer:micrometer-tracing-bridge-brave` - bridges the Micrometer Observation API to Brave.
 * `io.zipkin.reporter2:zipkin-reporter-brave` - reports traces to Zipkin.
 
-Use the `management.zipkin.tracing.*` configuration properties to configure reporting to Zipkin.
+Use the `management.tracing.export.zipkin.*` configuration properties to configure reporting to Zipkin.
 
 
 

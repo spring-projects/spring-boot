@@ -2,10 +2,32 @@
   "groups": [],
   "properties": [
     {
+      "name": "management.zipkin.tracing.connect-timeout",
+      "deprecation": {
+        "replacement": "management.tracing.export.zipkin.connect-timeout",
+        "level": "error"
+      }
+    },
+    {
       "name": "management.zipkin.tracing.encoding",
-      "defaultValue": [
-        "JSON"
-      ]
+      "deprecation": {
+        "replacement": "management.tracing.export.zipkin.encoding",
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.zipkin.tracing.endpoint",
+      "deprecation": {
+        "replacement": "management.tracing.export.zipkin.endpoint",
+        "level": "error"
+      }
+    },
+    {
+      "name": "management.zipkin.tracing.read-timeout",
+      "deprecation": {
+        "replacement": "management.tracing.export.zipkin.read-timeout",
+        "level": "error"
+      }
     }
   ],
   "hints": []
