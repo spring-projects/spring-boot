@@ -24,13 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link OpenTelemetryMetricsDockerComposeConnectionDetailsFactory}
- * using {@link TestImage#OPENTELEMETRY}.
+ * using {@link TestImage#OTEL_COLLECTOR}.
  *
  * @author Eddú Meléndez
  */
 class OpenTelemetryMetricsDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OPENTELEMETRY)
+	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OTEL_COLLECTOR)
 	void runCreatesConnectionDetails(OtlpMetricsConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/metrics");
 	}

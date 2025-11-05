@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class OtelCollectorOtlpLoggingDockerComposeConnectionDetailsFactoryTests {
 
-	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OPENTELEMETRY)
+	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OTEL_COLLECTOR)
 	void runCreatesConnectionDetails(OtlpLoggingConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUrl(Transport.HTTP)).startsWith("http://").endsWith("/v1/logs");
 		assertThat(connectionDetails.getUrl(Transport.GRPC)).startsWith("http://").endsWith("/v1/logs");

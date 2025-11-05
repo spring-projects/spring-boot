@@ -214,9 +214,10 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(2))),
 
 	/**
-	 * A container image suitable for testing Opentelemetry.
+	 * A container image suitable for testing OpenTelemetry using the OpenTelemetry
+	 * collector.
 	 */
-	OPENTELEMETRY("otel/opentelemetry-collector-contrib", "0.75.0"),
+	OTEL_COLLECTOR("otel/opentelemetry-collector-contrib", "0.75.0"),
 
 	/**
 	 * A container image suitable for testing Postgres.

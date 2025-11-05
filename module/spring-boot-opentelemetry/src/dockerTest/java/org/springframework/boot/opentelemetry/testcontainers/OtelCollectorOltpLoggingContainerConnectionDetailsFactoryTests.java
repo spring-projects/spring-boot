@@ -44,7 +44,7 @@ class OtelCollectorOltpLoggingContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = TestImage.OPENTELEMETRY.genericContainer()
+	static final GenericContainer<?> container = TestImage.OTEL_COLLECTOR.genericContainer()
 		.withExposedPorts(4317, 4318);
 
 	@Autowired
