@@ -19,7 +19,7 @@ package org.springframework.boot.opentelemetry.testcontainers;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConnectionDetails;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.Transport;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
@@ -27,34 +27,34 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create
- * {@link OpenTelemetryLoggingConnectionDetails} from a
+ * {@link OtlpLoggingConnectionDetails} from a
  * {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer} using
  * the {@code "otel/opentelemetry-collector-contrib"} image.
  *
  * @author Eddú Meléndez
  * @author Moritz Halbritter
  */
-class OpenTelemetryLoggingContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<Container<?>, OpenTelemetryLoggingConnectionDetails> {
+class OtelCollectorOltpLoggingContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<Container<?>, OtlpLoggingConnectionDetails> {
 
 	private static final int OTLP_GRPC_PORT = 4317;
 
 	private static final int OTLP_HTTP_PORT = 4318;
 
-	OpenTelemetryLoggingContainerConnectionDetailsFactory() {
+	OtelCollectorOltpLoggingContainerConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib");
 	}
 
 	@Override
-	protected OpenTelemetryLoggingConnectionDetails getContainerConnectionDetails(
+	protected OtlpLoggingConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<Container<?>> source) {
-		return new OpenTelemetryLoggingContainerConnectionDetails(source);
+		return new OtlpLoggingContainerConnectionDetails(source);
 	}
 
-	private static final class OpenTelemetryLoggingContainerConnectionDetails
-			extends ContainerConnectionDetails<Container<?>> implements OpenTelemetryLoggingConnectionDetails {
+	private static final class OtlpLoggingContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
+			implements OtlpLoggingConnectionDetails {
 
-		private OpenTelemetryLoggingContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
+		private OtlpLoggingContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 		}
 

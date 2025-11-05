@@ -24,6 +24,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConfigurations.ConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConfigurations.Exporters;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -35,8 +37,8 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @ConditionalOnClass({ ConditionalOnEnabledLoggingExport.class, OpenTelemetry.class, SdkLoggerProvider.class })
 @ConditionalOnEnabledLoggingExport("opentelemetry")
-@EnableConfigurationProperties(OpenTelemetryLoggingExportProperties.class)
-@Import({ OpenTelemetryLoggingConnectionDetailsConfiguration.class, OpenTelemetryLoggingTransportConfiguration.class })
-public final class OpenTelemetryLoggingExportAutoConfiguration {
+@EnableConfigurationProperties(OtlpLoggingProperties.class)
+@Import({ ConnectionDetails.class, Exporters.class })
+public final class OtlpLoggingAutoConfiguration {
 
 }

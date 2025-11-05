@@ -35,7 +35,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
 import org.springframework.boot.opentelemetry.autoconfigure.SdkLoggerProviderBuilderCustomizer;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingConnectionDetailsConfiguration.PropertiesOpenTelemetryLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConfigurations.ConnectionDetails.PropertiesOtlpLoggingConnectionDetails;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,24 +44,24 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OpenTelemetryLoggingExportAutoConfiguration}.
+ * Tests for {@link OtlpLoggingAutoConfiguration}.
  *
  * @author Toshiaki Maki
  * @author Moritz Halbritter
  */
-class OpenTelemetryLoggingExportAutoConfigurationTests {
+class OtlpLoggingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner;
 
-	OpenTelemetryLoggingExportAutoConfigurationTests() {
-		this.contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-			.of(OpenTelemetrySdkAutoConfiguration.class, OpenTelemetryLoggingExportAutoConfiguration.class));
+	OtlpLoggingAutoConfigurationTests() {
+		this.contextRunner = new ApplicationContextRunner().withConfiguration(
+				AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class, OtlpLoggingAutoConfiguration.class));
 	}
 
 	@Test
 	void registeredInAutoConfigurationImports() {
 		assertThat(ImportCandidates.load(AutoConfiguration.class, null).getCandidates())
-			.contains(OpenTelemetryLoggingExportAutoConfiguration.class.getName());
+			.contains(OtlpLoggingAutoConfiguration.class.getName());
 	}
 
 	@ParameterizedTest
@@ -69,7 +69,7 @@ class OpenTelemetryLoggingExportAutoConfigurationTests {
 			"io.opentelemetry.exporter.otlp.http.logs" })
 	void whenOpenTelemetryIsNotOnClasspathDoesNotProvideBeans(String packageName) {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(packageName)).run((context) -> {
-			assertThat(context).doesNotHaveBean(OpenTelemetryLoggingConnectionDetails.class);
+			assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
 			assertThat(context).doesNotHaveBean(OtlpHttpLogRecordExporter.class);
 		});
 	}
@@ -79,9 +79,8 @@ class OpenTelemetryLoggingExportAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(OpenTelemetryLoggingConnectionDetails.class);
-				OpenTelemetryLoggingConnectionDetails connectionDetails = context
-					.getBean(OpenTelemetryLoggingConnectionDetails.class);
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
+				OtlpLoggingConnectionDetails connectionDetails = context.getBean(OtlpLoggingConnectionDetails.class);
 				assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/logs");
 				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
 				assertThat(context).hasSingleBean(LogRecordExporter.class);
@@ -91,7 +90,7 @@ class OpenTelemetryLoggingExportAutoConfigurationTests {
 	@Test
 	void whenHasNoEndpointPropertyDoesNotProvideBeans() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).doesNotHaveBean(OpenTelemetryLoggingConnectionDetails.class);
+			assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
 			assertThat(context).doesNotHaveBean(OtlpHttpLogRecordExporter.class);
 		});
 	}
@@ -102,7 +101,7 @@ class OpenTelemetryLoggingExportAutoConfigurationTests {
 			.withPropertyValues("management.opentelemetry.logging.export.enabled=false",
 					"management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(OpenTelemetryLoggingConnectionDetails.class);
+				assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
 				assertThat(context).doesNotHaveBean(LogRecordExporter.class);
 			});
 	}
@@ -113,7 +112,7 @@ class OpenTelemetryLoggingExportAutoConfigurationTests {
 			.withPropertyValues("management.logging.export.enabled=false",
 					"management.opentelemetry.logging.export.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(OpenTelemetryLoggingConnectionDetails.class);
+				assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
 				assertThat(context).doesNotHaveBean(LogRecordExporter.class);
 			});
 	}
@@ -136,8 +135,8 @@ class OpenTelemetryLoggingExportAutoConfigurationTests {
 	void whenHasCustomLoggingConnectionDetailsDoesNotProvideExporterBean() {
 		this.contextRunner.withUserConfiguration(CustomOtlpLoggingConnectionDetailsConfiguration.class)
 			.run((context) -> {
-				assertThat(context).hasSingleBean(OpenTelemetryLoggingConnectionDetails.class)
-					.doesNotHaveBean(PropertiesOpenTelemetryLoggingConnectionDetails.class);
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class)
+					.doesNotHaveBean(PropertiesOtlpLoggingConnectionDetails.class);
 				OtlpHttpLogRecordExporter otlpHttpLogRecordExporter = context.getBean(OtlpHttpLogRecordExporter.class);
 				assertThat(otlpHttpLogRecordExporter).extracting("delegate.httpSender.url")
 					.isEqualTo(HttpUrl.get("https://otel.example.com/v1/logs"));
@@ -272,7 +271,7 @@ class OpenTelemetryLoggingExportAutoConfigurationTests {
 	private static final class CustomOtlpLoggingConnectionDetailsConfiguration {
 
 		@Bean
-		OpenTelemetryLoggingConnectionDetails customOtlpLoggingConnectionDetails() {
+		OtlpLoggingConnectionDetails customOtlpLoggingConnectionDetails() {
 			return (transport) -> "https://otel.example.com/v1/logs";
 		}
 

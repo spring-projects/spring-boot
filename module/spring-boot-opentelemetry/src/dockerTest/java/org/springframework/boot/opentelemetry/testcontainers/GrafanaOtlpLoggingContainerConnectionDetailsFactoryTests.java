@@ -17,14 +17,14 @@
 package org.springframework.boot.opentelemetry.testcontainers;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.grafana.LgtmStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingExportAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConnectionDetails;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.Transport;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -34,32 +34,31 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OpenTelemetryLoggingContainerConnectionDetailsFactory}.
+ * Tests for {@link GrafanaOtlpLoggingContainerConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class OpenTelemetryLoggingContainerConnectionDetailsFactoryIntegrationTests {
+class GrafanaOtlpLoggingContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = TestImage.OPENTELEMETRY.genericContainer()
-		.withExposedPorts(4317, 4318);
+	static final LgtmStackContainer container = TestImage.container(LgtmStackContainer.class);
 
 	@Autowired
-	private OpenTelemetryLoggingConnectionDetails connectionDetails;
+	private OtlpLoggingConnectionDetails connectionDetails;
 
 	@Test
 	void connectionCanBeMadeToOpenTelemetryContainer() {
-		assertThat(this.connectionDetails.getUrl(Transport.HTTP))
-			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4318) + "/v1/logs");
 		assertThat(this.connectionDetails.getUrl(Transport.GRPC))
-			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4317) + "/v1/logs");
+			.isEqualTo("%s/v1/logs".formatted(container.getOtlpGrpcUrl()));
+		assertThat(this.connectionDetails.getUrl(Transport.HTTP))
+			.isEqualTo("%s/v1/logs".formatted(container.getOtlpHttpUrl()));
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(OpenTelemetryLoggingExportAutoConfiguration.class)
+	@ImportAutoConfiguration(OtlpLoggingAutoConfiguration.class)
 	static class TestConfiguration {
 
 	}

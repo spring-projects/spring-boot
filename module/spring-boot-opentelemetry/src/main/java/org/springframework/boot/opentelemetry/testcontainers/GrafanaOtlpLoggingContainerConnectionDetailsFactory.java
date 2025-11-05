@@ -18,7 +18,7 @@ package org.springframework.boot.opentelemetry.testcontainers;
 
 import org.testcontainers.grafana.LgtmStackContainer;
 
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConnectionDetails;
 import org.springframework.boot.opentelemetry.autoconfigure.logging.Transport;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
@@ -26,29 +26,29 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 /**
  * {@link ContainerConnectionDetailsFactory} to create
- * {@link OpenTelemetryLoggingConnectionDetails} from a
+ * {@link OtlpLoggingConnectionDetails} from a
  * {@link ServiceConnection @ServiceConnection}-annotated {@link LgtmStackContainer} using
  * the {@code "grafana/otel-lgtm"} image.
  *
  * @author Eddú Meléndez
  */
-class GrafanaOpenTelemetryLoggingContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<LgtmStackContainer, OpenTelemetryLoggingConnectionDetails> {
+class GrafanaOtlpLoggingContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<LgtmStackContainer, OtlpLoggingConnectionDetails> {
 
-	GrafanaOpenTelemetryLoggingContainerConnectionDetailsFactory() {
+	GrafanaOtlpLoggingContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME);
 	}
 
 	@Override
-	protected OpenTelemetryLoggingConnectionDetails getContainerConnectionDetails(
+	protected OtlpLoggingConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<LgtmStackContainer> source) {
-		return new OpenTelemetryLoggingContainerConnectionDetails(source);
+		return new OtlpLoggingContainerConnectionDetails(source);
 	}
 
-	private static final class OpenTelemetryLoggingContainerConnectionDetails
-			extends ContainerConnectionDetails<LgtmStackContainer> implements OpenTelemetryLoggingConnectionDetails {
+	private static final class OtlpLoggingContainerConnectionDetails
+			extends ContainerConnectionDetails<LgtmStackContainer> implements OtlpLoggingConnectionDetails {
 
-		private OpenTelemetryLoggingContainerConnectionDetails(ContainerConnectionSource<LgtmStackContainer> source) {
+		private OtlpLoggingContainerConnectionDetails(ContainerConnectionSource<LgtmStackContainer> source) {
 			super(source);
 		}
 

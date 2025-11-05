@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 4.0.0
  */
 @ConfigurationProperties("management.opentelemetry.logging.export")
-public class OpenTelemetryLoggingExportProperties {
+public class OtlpLoggingProperties {
 
 	/**
 	 * URL to the OTel collector's HTTP API.

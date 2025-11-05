@@ -40,17 +40,17 @@ import org.springframework.context.ApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OpenTelemetryLoggingExportAutoConfiguration}.
+ * Integration tests for {@link OtlpLoggingAutoConfiguration}.
  *
  * @author Toshiaki Maki
  */
-class OpenTelemetryLoggingExportAutoConfigurationIntegrationTests {
+class OtlpLoggingAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("spring.application.name=otlp-logs-test",
 				"management.opentelemetry.logging.export.headers.Authorization=Bearer my-token")
-		.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
-				OpenTelemetryLoggingExportAutoConfiguration.class));
+		.withConfiguration(
+				AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class, OtlpLoggingAutoConfiguration.class));
 
 	private final MockWebServer mockWebServer = new MockWebServer();
 

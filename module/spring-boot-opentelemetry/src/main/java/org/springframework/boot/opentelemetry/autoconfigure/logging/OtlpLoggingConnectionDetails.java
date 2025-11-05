@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * @author Toshiaki Maki
  * @since 4.0.0
  */
-public interface OpenTelemetryLoggingConnectionDetails extends ConnectionDetails {
+public interface OtlpLoggingConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Address to where logs will be published.
