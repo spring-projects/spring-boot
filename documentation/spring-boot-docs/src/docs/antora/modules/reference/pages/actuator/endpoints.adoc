@@ -95,7 +95,7 @@ Subject to xref:actuator/endpoints.adoc#actuator.endpoints.sanitization[sanitiza
 | Performs a thread dump.
 |===
 
-If your application is a web application (Spring MVC or Spring WebFlux), you can use the following additional endpoints:
+If your application is a web application (Spring MVC, Spring WebFlux, or Jersey), you can use the following additional endpoints:
 
 [cols="2,5"]
 |===
@@ -388,7 +388,8 @@ TIP: See javadoc:org.springframework.boot.actuate.autoconfigure.endpoint.web.Cor
 == Implementing Custom Endpoints
 
 If you add a javadoc:org.springframework.context.annotation.Bean[format=annotation] annotated with javadoc:org.springframework.boot.actuate.endpoint.annotation.Endpoint[format=annotation], any methods annotated with javadoc:org.springframework.boot.actuate.endpoint.annotation.ReadOperation[format=annotation], javadoc:org.springframework.boot.actuate.endpoint.annotation.WriteOperation[format=annotation], or javadoc:org.springframework.boot.actuate.endpoint.annotation.DeleteOperation[format=annotation] are automatically exposed over JMX and, in a web application, over HTTP as well.
-Endpoints can be exposed over HTTP by using Spring MVC or Spring WebFlux.
+Endpoints can be exposed over HTTP by using Jersey, Spring MVC, or Spring WebFlux.
+If both Jersey and Spring MVC are available, Spring MVC is used.
 
 The following example exposes a read operation that returns a custom object:
 
@@ -451,7 +452,8 @@ Before calling an operation method, the input received over JMX or HTTP is conve
 [[actuator.endpoints.implementing-custom.web]]
 === Custom Web Endpoints
 
-Operations on an javadoc:org.springframework.boot.actuate.endpoint.annotation.Endpoint[format=annotation], javadoc:org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint[format=annotation], or javadoc:org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension[format=annotation] are automatically exposed over HTTP using Spring MVC or Spring WebFlux.
+Operations on an javadoc:org.springframework.boot.actuate.endpoint.annotation.Endpoint[format=annotation], javadoc:org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint[format=annotation], or javadoc:org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension[format=annotation] are automatically exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
+If both Jersey and Spring MVC are available, Spring MVC is used.
 
 
 
@@ -538,6 +540,8 @@ If an operation is invoked without a required parameter or with a parameter that
 
 You can use an HTTP range request to request part of an HTTP resource.
 When using Spring MVC or Spring Web Flux, operations that return a javadoc:org.springframework.core.io.Resource[] automatically support range requests.
+
+NOTE: Range requests are not supported when using Jersey.
 
 
 

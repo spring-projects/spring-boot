@@ -4,6 +4,7 @@
 ** xref:how-to:properties-and-configuration.adoc[]
 ** xref:how-to:webserver.adoc[]
 ** xref:how-to:spring-mvc.adoc[]
+** xref:how-to:jersey.adoc[]
 ** xref:how-to:http-clients.adoc[]
 ** xref:how-to:logging.adoc[]
 ** xref:how-to:data-access.adoc[]

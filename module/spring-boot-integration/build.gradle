@@ -42,6 +42,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-rsocket"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":module:spring-boot-sql")))
+	testImplementation(testFixtures(project(":module:spring-boot-jersey")))
 	testImplementation(testFixtures(project(":module:spring-boot-webflux")))
 	testImplementation(testFixtures(project(":module:spring-boot-webmvc")))
 	testImplementation("org.springframework:spring-web")

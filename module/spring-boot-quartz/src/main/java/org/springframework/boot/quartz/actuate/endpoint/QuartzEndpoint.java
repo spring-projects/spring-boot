@@ -415,7 +415,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of a triggered on-demand {@link Job Quartz Job}.
 	 */
-	public static final class QuartzJobTriggerDescriptor {
+	public static final class QuartzJobTriggerDescriptor implements OperationResponseBody {
 
 		private final String group;
 

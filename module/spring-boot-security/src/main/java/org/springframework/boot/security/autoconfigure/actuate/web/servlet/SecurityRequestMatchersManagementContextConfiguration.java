@@ -16,12 +16,16 @@
 
 package org.springframework.boot.security.autoconfigure.actuate.web.servlet;
 
+import org.glassfish.jersey.server.ResourceConfig;
+
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.jersey.autoconfigure.JerseyApplicationPath;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,6 +53,19 @@ public class SecurityRequestMatchersManagementContextConfiguration {
 		@ConditionalOnMissingBean
 		public RequestMatcherProvider requestMatcherProvider(DispatcherServletPath servletPath) {
 			return new PathPatternRequestMatcherProvider(servletPath::getRelativePath);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ResourceConfig.class)
+	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
+	@ConditionalOnBean(JerseyApplicationPath.class)
+	public static class JerseyRequestMatcherConfiguration {
+
+		@Bean
+		public RequestMatcherProvider requestMatcherProvider(JerseyApplicationPath applicationPath) {
+			return new PathPatternRequestMatcherProvider(applicationPath::getRelativePath);
 		}
 
 	}

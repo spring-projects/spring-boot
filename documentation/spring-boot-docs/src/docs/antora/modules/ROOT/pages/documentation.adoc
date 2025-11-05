@@ -64,7 +64,7 @@ xref:reference:features/index.adoc[The following content is for you]:
 
 If you develop Spring Boot web applications, take a look at the following content:
 
-* *Servlet Web Applications:* xref:reference:web/servlet.adoc[Spring MVC, Embedded Servlet Containers]
+* *Servlet Web Applications:* xref:reference:web/servlet.adoc[Spring MVC, Jersey, Embedded Servlet Containers]
 * *Reactive Web Applications:* xref:reference:web/reactive.adoc[Spring Webflux, Embedded Servlet Containers]
 * *Graceful Shutdown:* xref:reference:web/graceful-shutdown.adoc[Graceful Shutdown]
 * *Spring Security:* xref:reference:web/spring-security.adoc[Default Security Configuration, Auto-configuration for OAuth2, SAML]

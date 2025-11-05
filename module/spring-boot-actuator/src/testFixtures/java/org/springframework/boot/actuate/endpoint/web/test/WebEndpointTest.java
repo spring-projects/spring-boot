@@ -46,9 +46,14 @@ public @interface WebEndpointTest {
 	 * The infrastructure against which the test should run.
 	 * @return the infrastructure to run the tests against
 	 */
-	Infrastructure[] infrastructure() default { Infrastructure.MVC, Infrastructure.WEBFLUX };
+	Infrastructure[] infrastructure() default { Infrastructure.JERSEY, Infrastructure.MVC, Infrastructure.WEBFLUX };
 
 	enum Infrastructure {
+
+		/**
+		 * Actuator running on the Jersey-based infrastructure.
+		 */
+		JERSEY("Jersey"),
 
 		/**
 		 * Actuator running on the WebMVC-based infrastructure.

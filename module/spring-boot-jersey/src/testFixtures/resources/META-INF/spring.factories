@@ -1,0 +1,2 @@
+org.springframework.boot.actuate.endpoint.web.test.WebEndpointInfrastructureProvider=\
+org.springframework.boot.jersey.actuate.endpoint.web.test.JerseyWebEndpointInfrastructureProvider

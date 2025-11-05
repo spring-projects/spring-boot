@@ -62,6 +62,7 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
+	testImplementation(testFixtures(project(":module:spring-boot-jersey")))
 	testImplementation(testFixtures(project(":module:spring-boot-webmvc")))
 	testImplementation(testFixtures(project(":module:spring-boot-webflux")))
 

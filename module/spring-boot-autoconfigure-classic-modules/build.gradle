@@ -136,6 +136,9 @@ dependencies {
 	api(project(":module:spring-boot-jdbc")) {
 		transitive = false
 	}
+	api(project(":module:spring-boot-jersey")) {
+		transitive = false
+	}
 	api(project(":module:spring-boot-jetty")) {
 		transitive = false
 	}

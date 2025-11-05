@@ -77,8 +77,8 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 				.findFirst()
 				.ifPresent((provider) -> this.infrastructures.put(infrastructure,
 						provider.getInfrastructureConfiguration(infrastructure))));
-		this.contextFactories = Map.of(Infrastructure.MVC, this::createWebMvcContext, Infrastructure.WEBFLUX,
-				this::createWebFluxContext);
+		this.contextFactories = Map.of(Infrastructure.JERSEY, this::createJerseyContext, Infrastructure.MVC,
+				this::createWebMvcContext, Infrastructure.WEBFLUX, this::createWebFluxContext);
 	}
 
 	@Override
@@ -98,6 +98,14 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 
 	private WebEndpointsInvocationContext createInvocationContext(Infrastructure infrastructure) {
 		return infrastructure.createInvocationContext(this.contextFactories.get(infrastructure));
+	}
+
+	private ConfigurableApplicationContext createJerseyContext(List<Class<?>> classes) {
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
+		classes.addAll(getEndpointInfrastructureConfiguration(Infrastructure.JERSEY));
+		context.register(ClassUtils.toClassArray(classes));
+		context.refresh();
+		return context;
 	}
 
 	private ConfigurableApplicationContext createWebMvcContext(List<Class<?>> classes) {

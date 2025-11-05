@@ -39,6 +39,7 @@ dependencies {
 	testImplementation(project(":module:spring-boot-liquibase"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":module:spring-boot-sql")))
+	testImplementation(testFixtures(project(":module:spring-boot-jersey")))
 	testImplementation(testFixtures(project(":module:spring-boot-webflux")))
 	testImplementation(testFixtures(project(":module:spring-boot-webmvc")))
 	testImplementation("net.minidev:json-smart")

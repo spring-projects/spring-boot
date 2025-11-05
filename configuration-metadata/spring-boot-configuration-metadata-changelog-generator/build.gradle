@@ -92,6 +92,7 @@ def dependenciesOf(String version) {
 			"spring-boot-jackson2",
 			"spring-boot-jdbc",
 			"spring-boot-jdbc-test",
+			"spring-boot-jersey",
 			"spring-boot-jetty",
 			"spring-boot-jms",
 			"spring-boot-jooq",

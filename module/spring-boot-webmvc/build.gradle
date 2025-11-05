@@ -49,7 +49,6 @@ dependencies {
 	testFixturesApi(testFixtures(project(":module:spring-boot-actuator")))
 	testFixturesImplementation(project(":module:spring-boot-http-converter"))
 	testFixturesImplementation(project(":module:spring-boot-jackson"))
-	testFixturesImplementation(project(":module:spring-boot-tomcat"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-jackson"))
