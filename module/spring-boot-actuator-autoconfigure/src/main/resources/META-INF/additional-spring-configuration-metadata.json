@@ -135,6 +135,12 @@
       "defaultValue": false
     },
     {
+      "name": "management.logging.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of logging is enabled to export logs.",
+      "defaultValue": true
+    },
+    {
       "name": "management.server.add-application-context-header",
       "type": "java.lang.Boolean",
       "description": "Add the \"X-Application-Context\" HTTP header in each response.",

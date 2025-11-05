@@ -2,10 +2,7 @@
 	"groups": [],
 	"properties": [
 		{
-			"name": "management.logging.export.enabled",
-			"type": "java.lang.Boolean",
-			"description": "Whether auto-configuration of logging is enabled to export logs.",
-			"defaultValue": true,
+			"name": "management.otlp.logging.export.enabled",
 			"deprecation": {
 				"replacement": "management.logging.export.otlp.enabled",
 				"level": "error"
