@@ -37,7 +37,7 @@ class OnEnabledTracingExportCondition extends SpringBootCondition {
 
 	private static final String GLOBAL_PROPERTY = "management.tracing.export.enabled";
 
-	private static final String EXPORTER_PROPERTY = "management.%s.tracing.export.enabled";
+	private static final String EXPORTER_PROPERTY = "management.tracing.export.%s.enabled";
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {

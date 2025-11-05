@@ -2,9 +2,16 @@
   "groups": [],
   "properties": [
     {
-      "name": "management.otlp.tracing.export.enabled",
+      "name": "management.tracing.export.otlp.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of tracing is enabled to export OTLP traces."
+    },
+    {
+      "name": "management.otlp.tracing.export.enabled",
+      "deprecation": {
+        "replacement": "management.tracing.export.otlp.enabled",
+        "level": "error"
+      }
     }
   ]
 }

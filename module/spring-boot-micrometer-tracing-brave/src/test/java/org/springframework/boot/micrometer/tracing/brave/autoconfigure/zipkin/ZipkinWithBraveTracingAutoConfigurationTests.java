@@ -96,7 +96,7 @@ class ZipkinWithBraveTracingAutoConfigurationTests {
 
 	@Test
 	void shouldNotSupplyAsyncZipkinSpanHandlerIfZipkinTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.zipkin.tracing.export.enabled=false")
+		this.contextRunner.withPropertyValues("management.tracing.export.zipkin.enabled=false")
 			.withUserConfiguration(SenderConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(AsyncZipkinSpanHandler.class));
 	}

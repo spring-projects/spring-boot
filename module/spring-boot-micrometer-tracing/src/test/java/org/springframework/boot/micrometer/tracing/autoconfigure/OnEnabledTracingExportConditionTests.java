@@ -69,44 +69,44 @@ class OnEnabledTracingExportConditionTests {
 	void shouldNotMatchIfExporterPropertyIsFalse() {
 		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
-				mockConditionContext(Map.of("management.zipkin.tracing.export.enabled", "false")),
+				mockConditionContext(Map.of("management.tracing.export.zipkin.enabled", "false")),
 				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledTracingExport management.zipkin.tracing.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.tracing.export.zipkin.enabled is false");
 	}
 
 	@Test
 	void shouldMatchIfExporterPropertyIsTrue() {
 		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
-				mockConditionContext(Map.of("management.zipkin.tracing.export.enabled", "true")),
+				mockConditionContext(Map.of("management.tracing.export.zipkin.enabled", "true")),
 				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledTracingExport management.zipkin.tracing.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.tracing.export.zipkin.enabled is true");
 	}
 
 	@Test
 	void exporterPropertyShouldOverrideGlobalPropertyIfTrue() {
 		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(Map
-			.of("management.tracing.export.enabled", "false", "management.zipkin.tracing.export.enabled", "true")),
+			.of("management.tracing.export.enabled", "false", "management.tracing.export.zipkin.enabled", "true")),
 				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledTracingExport management.zipkin.tracing.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.tracing.export.zipkin.enabled is true");
 	}
 
 	@Test
 	void exporterPropertyShouldOverrideGlobalPropertyIfFalse() {
 		OnEnabledTracingExportCondition condition = new OnEnabledTracingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(Map
-			.of("management.tracing.export.enabled", "true", "management.zipkin.tracing.export.enabled", "false")),
+			.of("management.tracing.export.enabled", "true", "management.tracing.export.zipkin.enabled", "false")),
 				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledTracingExport management.zipkin.tracing.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledTracingExport management.tracing.export.zipkin.enabled is false");
 	}
 
 	private ConditionContext mockConditionContext() {

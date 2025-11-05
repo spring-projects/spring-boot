@@ -136,7 +136,7 @@ class OtlpTracingAutoConfigurationTests {
 
 	@Test
 	void shouldNotSupplyBeansIfOtlpTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.otlp.tracing.export.enabled=false")
+		this.contextRunner.withPropertyValues("management.tracing.export.otlp.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(SpanExporter.class));
 	}
 
