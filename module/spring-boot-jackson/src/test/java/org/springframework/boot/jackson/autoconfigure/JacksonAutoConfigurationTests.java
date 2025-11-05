@@ -57,6 +57,7 @@ import tools.jackson.databind.json.JsonMapper.Builder;
 import tools.jackson.databind.module.SimpleModule;
 import tools.jackson.databind.util.StdDateFormat;
 import tools.jackson.dataformat.cbor.CBORMapper;
+import tools.jackson.dataformat.smile.SmileMapper;
 import tools.jackson.dataformat.xml.XmlMapper;
 import tools.jackson.module.kotlin.KotlinModule;
 
@@ -100,6 +101,7 @@ import static org.mockito.Mockito.mock;
  * @author Grzegorz Poznachowski
  * @author Ralf Ueberfuhr
  * @author Eddú Meléndez
+ * @author Yanming Zhou
  */
 class JacksonAutoConfigurationTests {
 
@@ -648,6 +650,16 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	void smileMapperBuilderIsNotSharedAcrossMultipleInjectionPoints() {
+		this.contextRunner.withUserConfiguration(SmileMapperBuilderConsumerConfig.class).run((context) -> {
+			SmileMapperBuilderConsumerConfig consumer = context.getBean(SmileMapperBuilderConsumerConfig.class);
+			assertThat(consumer.builderOne).isNotNull();
+			assertThat(consumer.builderTwo).isNotNull();
+			assertThat(consumer.builderOne).isNotSameAs(consumer.builderTwo);
+		});
+	}
+
+	@Test
 	void xmlMapperBuilderIsNotSharedAcrossMultipleInjectionPoints() {
 		this.contextRunner.withUserConfiguration(XmlMapperBuilderConsumerConfig.class).run((context) -> {
 			XmlMapperBuilderConsumerConfig consumer = context.getBean(XmlMapperBuilderConsumerConfig.class);
@@ -722,6 +734,19 @@ class JacksonAutoConfigurationTests {
 				.isEqualTo(jackson2ConfiguredCborMapper.deserializationConfig().getFormatReadFeatures());
 			assertThat(cborMapper.serializationConfig().getFormatWriteFeatures())
 				.isEqualTo(jackson2ConfiguredCborMapper.serializationConfig().getFormatWriteFeatures());
+		});
+	}
+
+	@Test
+	void whenUsingJackson2DefaultsSmileMapperShouldBeConfiguredUsingConfigureForJackson2() {
+		this.contextRunner.withPropertyValues("spring.jackson.use-jackson2-defaults=true").run((context) -> {
+			SmileMapper smileMapper = context.getBean(SmileMapper.class);
+			SmileMapper jackson2ConfiguredSmileMapper = SmileMapper.builder().configureForJackson2().build();
+			assertCommonFeatureConfiguration(smileMapper, jackson2ConfiguredSmileMapper);
+			assertThat(smileMapper.deserializationConfig().getFormatReadFeatures())
+				.isEqualTo(jackson2ConfiguredSmileMapper.deserializationConfig().getFormatReadFeatures());
+			assertThat(smileMapper.serializationConfig().getFormatWriteFeatures())
+				.isEqualTo(jackson2ConfiguredSmileMapper.serializationConfig().getFormatWriteFeatures());
 		});
 	}
 
@@ -970,6 +995,27 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class SmileMapperBuilderConsumerConfig {
+
+		SmileMapper.@Nullable Builder builderOne;
+
+		SmileMapper.@Nullable Builder builderTwo;
+
+		@Bean
+		String consumerOne(SmileMapper.Builder builder) {
+			this.builderOne = builder;
+			return "one";
+		}
+
+		@Bean
+		String consumerTwo(SmileMapper.Builder builder) {
+			this.builderTwo = builder;
+			return "two";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class XmlMapperBuilderConsumerConfig {
 
 		XmlMapper.@Nullable Builder builderOne;
@@ -1114,7 +1160,7 @@ class JacksonAutoConfigurationTests {
 	enum MapperType {
 
 		CBOR(CBORMapper.class, CBORMapper.Builder.class), JSON(JsonMapper.class, JsonMapper.Builder.class),
-		XML(XmlMapper.class, XmlMapper.Builder.class);
+		SMILE(SmileMapper.class, SmileMapper.Builder.class), XML(XmlMapper.class, XmlMapper.Builder.class);
 
 		private final Class<? extends ObjectMapper> mapperClass;
 

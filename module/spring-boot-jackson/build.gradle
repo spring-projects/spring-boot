@@ -32,6 +32,7 @@ dependencies {
 	optional(project(":core:spring-boot-test-autoconfigure"))
 	optional("org.springframework:spring-web")
 	optional("tools.jackson.dataformat:jackson-dataformat-cbor")
+	optional("tools.jackson.dataformat:jackson-dataformat-smile")
 	optional("tools.jackson.dataformat:jackson-dataformat-xml")
 	optional("tools.jackson.module:jackson-module-jakarta-xmlbind-annotations")
 

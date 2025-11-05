@@ -40,6 +40,7 @@ import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.cfg.MapperBuilder;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.cbor.CBORMapper;
+import tools.jackson.dataformat.smile.SmileMapper;
 import tools.jackson.dataformat.xml.XmlMapper;
 
 import org.springframework.aot.hint.ReflectionHints;
@@ -81,6 +82,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Ralf Ueberfuhr
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -231,6 +233,61 @@ public final class JacksonAutoConfiguration {
 				super.customize(builder);
 				configureFeatures(builder, this.cborProperties.getRead(), builder::configure);
 				configureFeatures(builder, this.cborProperties.getWrite(), builder::configure);
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(SmileMapper.class)
+	@EnableConfigurationProperties(JacksonSmileProperties.class)
+	static class SmileConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		SmileMapper smileMapper(SmileMapper.Builder builder) {
+			return builder.build();
+		}
+
+		@Bean
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+		@ConditionalOnMissingBean
+		SmileMapper.Builder smileMapperBuilder(List<SmileMapperBuilderCustomizer> customizers) {
+			SmileMapper.Builder builder = SmileMapper.builder();
+			customize(builder, customizers);
+			return builder;
+		}
+
+		private void customize(SmileMapper.Builder builder, List<SmileMapperBuilderCustomizer> customizers) {
+			for (SmileMapperBuilderCustomizer customizer : customizers) {
+				customizer.customize(builder);
+			}
+		}
+
+		@Bean
+		StandardSmileMapperBuilderCustomizer standardSmileMapperBuilderCustomizer(JacksonProperties jacksonProperties,
+				ObjectProvider<JacksonModule> modules, JacksonSmileProperties smileProperties) {
+			return new StandardSmileMapperBuilderCustomizer(jacksonProperties, modules.stream().toList(),
+					smileProperties);
+		}
+
+		static class StandardSmileMapperBuilderCustomizer extends AbstractMapperBuilderCustomizer<SmileMapper.Builder>
+				implements SmileMapperBuilderCustomizer {
+
+			private final JacksonSmileProperties smileProperties;
+
+			StandardSmileMapperBuilderCustomizer(JacksonProperties jacksonProperties, Collection<JacksonModule> modules,
+					JacksonSmileProperties smileProperties) {
+				super(jacksonProperties, modules);
+				this.smileProperties = smileProperties;
+			}
+
+			@Override
+			public void customize(SmileMapper.Builder builder) {
+				super.customize(builder);
+				configureFeatures(builder, this.smileProperties.getRead(), builder::configure);
+				configureFeatures(builder, this.smileProperties.getWrite(), builder::configure);
 			}
 
 		}
