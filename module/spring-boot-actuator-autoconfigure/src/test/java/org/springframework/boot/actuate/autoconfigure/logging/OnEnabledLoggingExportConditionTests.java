@@ -40,7 +40,7 @@ class OnEnabledLoggingExportConditionTests {
 
 	private static final String GLOBAL_PROPERTY_NAME = "management.logging.export.enabled";
 
-	private static final String OTLP_PROPERTY_NAME = "management.otlp.logging.export.enabled";
+	private static final String OTLP_PROPERTY_NAME = "management.logging.export.otlp.enabled";
 
 	@Test
 	void shouldMatchIfNoPropertyIsSet() {
@@ -77,7 +77,7 @@ class OnEnabledLoggingExportConditionTests {
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.logging.export.otlp.enabled is false");
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class OnEnabledLoggingExportConditionTests {
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.logging.export.otlp.enabled is true");
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class OnEnabledLoggingExportConditionTests {
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.logging.export.otlp.enabled is true");
 	}
 
 	@Test
@@ -109,7 +109,7 @@ class OnEnabledLoggingExportConditionTests {
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.logging.export.otlp.enabled is false");
 	}
 
 	private ConditionContext mockConditionContext() {

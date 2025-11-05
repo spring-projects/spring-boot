@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Conditional;
  * {@link Conditional @Conditional} that checks whether logging export is enabled. It
  * matches if the value of the {@code management.logging.export.enabled} property is
  * {@code true} or if it is not configured. If the {@link #value() logging exporter name}
- * is set, the {@code management.<name>.logging.export.enabled} property can be used to
+ * is set, the {@code management.logging.export.<name>.enabled} property can be used to
  * control the behavior for the specific logging exporter. In that case, the
  * exporter-specific property takes precedence over the global property.
  *

@@ -38,7 +38,7 @@ class OnEnabledLoggingExportCondition extends SpringBootCondition {
 
 	private static final String GLOBAL_PROPERTY = "management.logging.export.enabled";
 
-	private static final String EXPORTER_PROPERTY = "management.%s.logging.export.enabled";
+	private static final String EXPORTER_PROPERTY = "management.logging.export.%s.enabled";
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
