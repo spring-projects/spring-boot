@@ -270,6 +270,7 @@ class PaketoBuilderTests {
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
+			container.withCreateContainerCmdModifier(cmd -> cmd.withUser("root"));
 			container.waitingFor(Wait.forHttp("/test")).start();
 			ContainerConfig config = container.getContainerInfo().getConfig();
 			ImageAssertions.assertThat(config).buildMetadata((metadata) -> {
