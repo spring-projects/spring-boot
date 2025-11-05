@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.opentelemetry.autoconfigure.logging;
+package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 
@@ -49,8 +50,8 @@ class OtlpLoggingAutoConfigurationIntegrationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("spring.application.name=otlp-logs-test",
 				"management.opentelemetry.logging.export.otlp.headers.Authorization=Bearer my-token")
-		.withConfiguration(
-				AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class, OtlpLoggingAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
+				OpenTelemetryLoggingAutoConfiguration.class, OtlpLoggingAutoConfiguration.class));
 
 	private final MockWebServer mockWebServer = new MockWebServer();
 

@@ -16,22 +16,23 @@
 
 package org.springframework.boot.opentelemetry.autoconfigure.logging;
 
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import io.opentelemetry.sdk.logs.SdkLoggerProvider;
+import io.opentelemetry.sdk.logs.SdkLoggerProviderBuilder;
 
 /**
- * Details required for actuator to establish a connection to an OpenTelemetry logging
- * service.
+ * Callback interface that can be used to customize the {@link SdkLoggerProviderBuilder}
+ * that is used to create the auto-configured {@link SdkLoggerProvider}.
  *
  * @author Toshiaki Maki
  * @since 4.0.0
  */
-public interface OtlpLoggingConnectionDetails extends ConnectionDetails {
+@FunctionalInterface
+public interface SdkLoggerProviderBuilderCustomizer {
 
 	/**
-	 * Address to where logs will be published.
-	 * @param transport the transport to use
-	 * @return the address to where logs will be published
+	 * Customize the given {@code builder}.
+	 * @param builder the builder to customize
 	 */
-	String getUrl(Transport transport);
+	void customize(SdkLoggerProviderBuilder builder);
 
 }

@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.opentelemetry.autoconfigure;
-
-import io.opentelemetry.sdk.logs.SdkLoggerProvider;
-import io.opentelemetry.sdk.logs.SdkLoggerProviderBuilder;
+package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
 /**
- * Callback interface that can be used to customize the {@link SdkLoggerProviderBuilder}
- * that is used to create the auto-configured {@link SdkLoggerProvider}.
+ * Transport used to send OTLP log data.
  *
- * @author Toshiaki Maki
+ * @author Moritz Halbritter
  * @since 4.0.0
  */
-@FunctionalInterface
-public interface SdkLoggerProviderBuilderCustomizer {
+public enum Transport {
 
 	/**
-	 * Customize the given {@code builder}.
-	 * @param builder the builder to customize
+	 * HTTP transport.
 	 */
-	void customize(SdkLoggerProviderBuilder builder);
+	HTTP,
+
+	/**
+	 * gRPC transport.
+	 */
+	GRPC
 
 }

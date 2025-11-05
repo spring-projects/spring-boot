@@ -18,8 +18,8 @@ package org.springframework.boot.opentelemetry.testcontainers;
 
 import org.testcontainers.grafana.LgtmStackContainer;
 
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConnectionDetails;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.Transport;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.Transport;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

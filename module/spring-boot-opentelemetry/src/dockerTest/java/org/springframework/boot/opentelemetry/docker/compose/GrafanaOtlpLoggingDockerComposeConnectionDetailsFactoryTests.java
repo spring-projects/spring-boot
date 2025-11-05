@@ -17,8 +17,8 @@
 package org.springframework.boot.opentelemetry.docker.compose;
 
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConnectionDetails;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.Transport;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.Transport;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -23,9 +23,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingAutoConfiguration;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConnectionDetails;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.Transport;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.Transport;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;

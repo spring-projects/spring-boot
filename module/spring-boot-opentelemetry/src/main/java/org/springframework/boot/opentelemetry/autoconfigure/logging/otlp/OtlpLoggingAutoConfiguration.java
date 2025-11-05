@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.opentelemetry.autoconfigure.logging;
+package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
@@ -24,8 +24,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConfigurations.ConnectionDetails;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConfigurations.Exporters;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConfigurations.ConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConfigurations.Exporters;
 import org.springframework.context.annotation.Import;
 
 /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.opentelemetry.autoconfigure.logging;
+package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -34,8 +34,9 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.opentelemetry.autoconfigure.OpenTelemetrySdkAutoConfiguration;
-import org.springframework.boot.opentelemetry.autoconfigure.SdkLoggerProviderBuilderCustomizer;
-import org.springframework.boot.opentelemetry.autoconfigure.logging.OtlpLoggingConfigurations.ConnectionDetails.PropertiesOtlpLoggingConnectionDetails;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.OpenTelemetryLoggingAutoConfiguration;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.SdkLoggerProviderBuilderCustomizer;
+import org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConfigurations.ConnectionDetails.PropertiesOtlpLoggingConnectionDetails;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -54,8 +55,9 @@ class OtlpLoggingAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner;
 
 	OtlpLoggingAutoConfigurationTests() {
-		this.contextRunner = new ApplicationContextRunner().withConfiguration(
-				AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class, OtlpLoggingAutoConfiguration.class));
+		this.contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(OpenTelemetrySdkAutoConfiguration.class,
+					OpenTelemetryLoggingAutoConfiguration.class, OtlpLoggingAutoConfiguration.class));
 	}
 
 	@Test
