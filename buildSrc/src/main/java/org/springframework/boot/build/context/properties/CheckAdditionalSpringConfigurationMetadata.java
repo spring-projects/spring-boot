@@ -37,6 +37,7 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
+import tools.jackson.core.StreamReadFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
@@ -75,7 +76,7 @@ public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceT
 
 	@SuppressWarnings("unchecked")
 	private Report createReport() {
-		JsonMapper jsonMapper = new JsonMapper();
+		JsonMapper jsonMapper = JsonMapper.builder().enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION).build();
 		Report report = new Report();
 		for (File file : getSource().getFiles()) {
 			Analysis analysis = report.analysis(this.projectDir.toPath().relativize(file.toPath()));
