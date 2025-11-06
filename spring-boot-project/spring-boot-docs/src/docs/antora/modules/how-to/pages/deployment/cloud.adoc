@@ -252,17 +252,22 @@ https://www.openshift.com/[OpenShift] has many resources describing how to deplo
 [[howto.deployment.cloud.aws]]
 == Amazon Web Services (AWS)
 
-Amazon Web Services offers multiple ways to install Spring Boot-based applications, either as traditional web applications (war) or as executable jar files with an embedded web server.
-The options include:
+Amazon Web Services provides several options that are suitable for running Spring Boot-based applications, either as containers, traditional web applications (war), or self-contained executable jar files.
+Popular options are:
 
+* Amazon Elastic Container Service (ECS)
 * AWS Elastic Beanstalk
-* AWS Code Deploy
-* AWS OPS Works
-* AWS Cloud Formation
-* AWS Container Registry
 
-Each has different features and pricing models.
-In this document, we describe to approach using AWS Elastic Beanstalk.
+
+
+[[howto.deployment.cloud.aws.ecs]]
+=== Amazon Elastic Container Service (ECS)
+
+Official https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html[Amazon ECS developer guide] provides comprehensive overview of platform's features and includes https://docs.aws.amazon.com/AmazonECS/latest/developerguide/getting-started.html[getting started guide] that walks you through the steps needed to get your containers up and running.
+
+NOTE: Spring Boot applications can be packaged in Docker containers using techniques described in xref:reference:packaging/container-images/index.adoc[].
+
+In addition to the developer guide, AWS also provides a https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-container-image.html[topical guide] for deploying containerized Java services on Amazon ECS using AWS Fargate.
 
 
 
@@ -278,8 +283,9 @@ You can either use the "`Tomcat Platform`" or the "`Java SE platform`".
 ==== Using the Tomcat Platform
 
 This option applies to Spring Boot projects that produce a war file.
-No special configuration is required.
-You need only follow the official guide.
+Follow the official guide and https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/tomcat-quickstart.html[Java on Tomcat tutorial].
+
+NOTE: Creating deployable war for a Spring Boot application is described in xref:deployment/traditional-deployment.adoc[].
 
 
 
@@ -287,51 +293,8 @@ You need only follow the official guide.
 ==== Using the Java SE Platform
 
 This option applies to Spring Boot projects that produce a jar file and run an embedded web container.
-Elastic Beanstalk environments run an nginx instance on port 80 to proxy the actual application, running on port 5000.
-To configure it, add the following line to your `application.properties` file:
-
-[configprops,yaml]
-----
-server:
-  port: 5000
-----
-
-
-[TIP]
-.Upload binaries instead of sources
-====
-By default, Elastic Beanstalk uploads sources and compiles them in AWS.
-However, it is best to upload the binaries instead.
-To do so, add lines similar to the following to your `.elasticbeanstalk/config.yml` file:
-
-[source,xml]
-----
-deploy:
-	artifact: target/demo-0.0.1-SNAPSHOT.jar
-----
-====
-
-[TIP]
-.Reduce costs by setting the environment type
-====
-By default an Elastic Beanstalk environment is load balanced.
-The load balancer has a significant cost.
-To avoid that cost, set the environment type to "`Single instance`", as described in https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[the Amazon documentation].
-You can also create single instance environments by using the CLI and the following command:
-
-[source]
-----
-eb create -s
-----
-====
-
-
-
-[[howto.deployment.cloud.aws.summary]]
-=== Summary
-
-This is one of the easiest ways to get to AWS, but there are more things to cover, such as how to integrate Elastic Beanstalk into any CI / CD tool, use the Elastic Beanstalk Maven plugin instead of the CLI, and others.
-There is a https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog post] covering these topics more in detail.
+Follow the official guide and https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/java-quickstart.html[Java tutorial].
+There are also community provided tutorials such as https://www.baeldung.com/spring-boot-deploy-aws-beanstalk[this one].
 
 
 
