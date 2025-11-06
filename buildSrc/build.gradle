@@ -47,7 +47,7 @@ dependencies {
 	implementation(platform("com.fasterxml.jackson:jackson-bom:${jackson2Version}"))
 	implementation(platform("tools.jackson:jackson-bom:${jacksonVersion}"))
 	implementation(platform("org.springframework:spring-framework-bom:${springFrameworkVersion}"))
-	implementation("com.github.node-gradle:gradle-node-plugin:3.5.1")
+	implementation("com.github.node-gradle:gradle-node-plugin:7.1.0")
 	implementation("com.gradle:develocity-gradle-plugin:3.17.2")
 	implementation("com.tngtech.archunit:archunit:1.4.1")
 	implementation("commons-codec:commons-codec:${commonsCodecVersion}")
