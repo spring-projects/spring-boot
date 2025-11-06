@@ -2549,7 +2549,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
-	library("Spring Security", "7.0.0-RC2") {
+	library("Spring Security", "7.0.0-RC3") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			bom("spring-security-bom")
