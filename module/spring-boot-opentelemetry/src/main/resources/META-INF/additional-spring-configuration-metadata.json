@@ -4,6 +4,7 @@
 		{
 			"name": "management.logging.export.otlp.enabled",
 			"type": "java.lang.Boolean",
+      "defaultValue": true,
 			"description": "Whether auto-configuration of logging is enabled to export logs over OTLP."
   	},
 		{
