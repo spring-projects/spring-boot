@@ -44,4 +44,13 @@ class DockerCliContextResponseTests {
 		assertThat(response).isEqualTo(expected);
 	}
 
+	@Test
+	void deserializePodmanJson() throws IOException {
+		String json = new ClassPathResource("docker-context-podman.json", getClass())
+			.getContentAsString(StandardCharsets.UTF_8);
+		DockerCliContextResponse response = DockerJson.deserialize(json, DockerCliContextResponse.class);
+		DockerCliContextResponse expected = new DockerCliContextResponse("podman-machine-default", false, null);
+		assertThat(response).isEqualTo(expected);
+	}
+
 }

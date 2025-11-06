@@ -37,6 +37,7 @@ final class DockerJson {
 		.defaultLocale(Locale.ENGLISH)
 		.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
 		.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+		.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 		.build();
 
 	private DockerJson() {
