@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JsonNode;
@@ -52,6 +53,8 @@ public class Image extends MappedObject {
 
 	private final @Nullable String created;
 
+    private final @Nullable Descriptor descriptor;
+
 	Image(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		this.digests = childrenAt("/RepoDigests", JsonNode::asString);
@@ -61,6 +64,8 @@ public class Image extends MappedObject {
 		this.architecture = valueAt("/Architecture", String.class);
 		this.variant = valueAt("/Variant", String.class);
 		this.created = valueAt("/Created", String.class);
+		JsonNode descriptorNode = getNode().path("Descriptor");
+		this.descriptor = (descriptorNode.isMissingNode() || descriptorNode.isNull()) ? null : new Descriptor(descriptorNode);
 	}
 
 	private List<LayerId> extractLayers(String @Nullable [] layers) {
@@ -124,6 +129,46 @@ public class Image extends MappedObject {
 	 */
 	public @Nullable String getCreated() {
 		return this.created;
+	}
+
+	/**
+	 * Return the descriptor for this image as reported by Docker Engine inspect.
+	 * @return the image descriptor or {@code null}
+	 */
+	public @Nullable Descriptor getDescriptor() {
+		return this.descriptor;
+	}
+
+	/**
+	 * Descriptor details as reported by the Docker Engine inspect response.
+	 */
+    public static final class Descriptor extends MappedObject {
+
+        private final @Nullable String mediaType;
+
+        private final String digest;
+
+        private final @Nullable Long size;
+
+        Descriptor(JsonNode node) {
+            super(node, MethodHandles.lookup());
+            this.mediaType = valueAt("/mediaType", String.class);
+            this.digest = Objects.requireNonNull(valueAt("/digest", String.class));
+            this.size = valueAt("/size", Long.class);
+        }
+
+        public @Nullable String getMediaType() {
+            return this.mediaType;
+        }
+
+        public String getDigest() {
+            return this.digest;
+        }
+
+        public @Nullable Long getSize() {
+            return this.size;
+        }
+
 	}
 
 	/**

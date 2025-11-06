@@ -105,14 +105,22 @@ public class Builder {
 		Assert.notNull(request, "'request' must not be null");
 		this.log.start(request);
 		validateBindings(request.getBindings());
-		PullPolicy pullPolicy = request.getPullPolicy();
-		ImageFetcher imageFetcher = new ImageFetcher(this.dockerConfiguration.builderRegistryAuthentication(),
-				pullPolicy, request.getImagePlatform());
+        PullPolicy pullPolicy = request.getPullPolicy();
+        ImagePlatform requestedPlatform = request.getImagePlatform();
+        ImageFetcher imageFetcher = new ImageFetcher(this.dockerConfiguration.builderRegistryAuthentication(),
+                pullPolicy, requestedPlatform);
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		request = withRunImageIfNeeded(request, builderMetadata);
-		Assert.state(request.getRunImage() != null, "'request.getRunImage()' must not be null");
-		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage());
+        ImageReference imageReference = request.getRunImage();
+        Assert.state(imageReference != null, "'imageReference' must not be null");
+		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, imageReference);
+		String digest = this.docker.image().resolveManifestDigest(imageReference, requestedPlatform);
+		if (StringUtils.hasText(digest)) {
+			imageReference = imageReference.withDigest(digest);
+			runImage = imageFetcher.fetchImage(ImageType.RUNNER, imageReference);
+		}
+        request = request.withRunImage(imageReference);
 		assertStackIdsMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
 		BuildpackLayersMetadata buildpackLayersMetadata = BuildpackLayersMetadata.fromImage(builderImage);
@@ -355,8 +363,21 @@ public class Builder {
 		@Override
 		public void exportImageLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
-			Builder.this.docker.image().exportLayers(reference, this.imageFetcher.defaultPlatform, exports);
-		}
+            try {
+                ImageReference pinned = reference;
+				String digest = Builder.this.docker.image().resolveManifestDigest(reference,
+						this.imageFetcher.defaultPlatform);
+				if (org.springframework.util.StringUtils.hasText(digest)) {
+					pinned = pinned.withDigest(digest);
+				}
+                if (!pinned.equals(reference)) {
+                    Builder.this.docker.image().exportLayers(pinned, null, exports);
+                }
+            }
+            catch (Exception ex) {
+				Builder.this.docker.image().exportLayers(reference, this.imageFetcher.defaultPlatform, exports);
+			}
+        }
 
 	}
 

@@ -243,16 +243,9 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-                if (platform != null) {
-                    if (getApiVersion().supports(INSPECT_PLATFORM_API_VERSION)) {
-                        return inspect(INSPECT_PLATFORM_API_VERSION, reference, platform);
-                    }
-					String digest = digestCapture.getDigest();
-					if (digest != null) {
-						ImageReference digestRef = reference.withDigest(digest);
-						return inspect(PLATFORM_API_VERSION, digestRef);
-					}
-                }
+				if (platform != null) {
+					return inspect(INSPECT_PLATFORM_API_VERSION, reference, platform);
+				}
                 return inspect(API_VERSION, reference);
 			}
 			finally {
@@ -342,16 +335,40 @@ public class DockerApi {
 			Assert.notNull(exports, "'exports' must not be null");
 			URI uri = buildUrl("/images/" + reference + "/get");
 			if (platform != null) {
-				if (getApiVersion().supports(EXPORT_PLATFORM_API_VERSION)) {
-					uri = buildUrl(EXPORT_PLATFORM_API_VERSION, "/images/" + reference + "/get", "platform",
-							platform.toJson());
-				}
+				uri = buildUrl(EXPORT_PLATFORM_API_VERSION, "/images/" + reference + "/get", "platform",
+						platform.toJson());
 			}
 			try (Response response = http().get(uri)) {
 				try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference, response.getContent())) {
 					exportedImageTar.exportLayers(exports);
 				}
 			}
+		}
+
+        /**
+         * Resolve an image manifest digest via Docker inspect.
+         * If {@code platform} is provided, performs a platform-aware inspect.
+         * Preference order: {@code Descriptor.digest} then first {@code RepoDigest}.
+         * Returns an empty string if no digest can be determined.
+         * @param reference image reference
+         * @param platform desired platform
+         * @return resolved digest or empty string
+         * @throws IOException on IO error
+         */
+		public String resolveManifestDigest(ImageReference reference, @Nullable ImagePlatform platform)
+				throws IOException {
+			Assert.notNull(reference, "'reference' must not be null");
+			Image image = inspect(API_VERSION, reference);
+			if (platform != null) {
+				 image = inspect(INSPECT_PLATFORM_API_VERSION, reference, platform);
+			}
+            Image.Descriptor descriptor = image.getDescriptor();
+            if (descriptor != null && StringUtils.hasText(descriptor.getDigest())) {
+                return descriptor.getDigest();
+            }
+            List<String> repoDigests = image.getDigests();
+			String digest = repoDigests.isEmpty() ? "" : repoDigests.get(0);
+			return digest.substring(digest.indexOf('@') + 1);
 		}
 
 		/**
@@ -587,10 +604,6 @@ public class DockerApi {
 				Assert.state(this.digest == null || this.digest.equals(digest), "Different digests IDs provided");
 				this.digest = digest;
 			}
-		}
-
-		private @Nullable String getDigest() {
-			return this.digest;
 		}
 
 	}
