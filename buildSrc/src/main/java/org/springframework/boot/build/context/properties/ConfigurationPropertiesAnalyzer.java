@@ -133,6 +133,26 @@ class ConfigurationPropertiesAnalyzer {
 		return property.get("description") != null;
 	}
 
+	void analyzeDeprecationSince(Report report) throws IOException {
+		for (File source : this.sources) {
+			report.registerAnalysis(source, analyzeDeprecationSince(source));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Analysis analyzeDeprecationSince(File source) throws IOException {
+		Analysis analysis = new Analysis("The following properties are deprecated without a 'since' version:");
+		Map<String, Object> json = readJsonContent(source);
+		List<Map<String, Object>> properties = (List<Map<String, Object>>) json.get("properties");
+		properties.stream().filter((property) -> property.containsKey("deprecation")).forEach((property) -> {
+			Map<String, Object> deprecation = (Map<String, Object>) property.get("deprecation");
+			if (!deprecation.containsKey("since")) {
+				analysis.addItem(property.get("name").toString());
+			}
+		});
+		return analysis;
+	}
+
 	private Map<String, Object> readJsonContent(File source) throws IOException {
 		return this.objectMapperSupplier.obtain().readValue(source, new TypeReference<Map<String, Object>>() {
 		});
