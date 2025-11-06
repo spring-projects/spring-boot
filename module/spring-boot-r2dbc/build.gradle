@@ -31,7 +31,6 @@ dependencies {
 	api(project(":module:spring-boot-sql"))
 	api(project(":module:spring-boot-transaction"))
 	api("org.springframework:spring-r2dbc")
-	api("org.springframework:spring-r2dbc")
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 	compileOnly("com.google.code.findbugs:jsr305")
