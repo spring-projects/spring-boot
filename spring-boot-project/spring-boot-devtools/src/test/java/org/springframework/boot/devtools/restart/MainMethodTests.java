@@ -18,7 +18,6 @@ package org.springframework.boot.devtools.restart;
 
 import java.lang.reflect.Method;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.launch.FakeJarLauncher;
@@ -37,13 +36,6 @@ class MainMethodTests {
 
 	private static final ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
-	private Method actualMain;
-
-	@BeforeEach
-	void setup() throws Exception {
-		this.actualMain = Valid.class.getMethod("main", String[].class);
-	}
-
 	@Test
 	void threadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MainMethod(null))
@@ -52,9 +44,10 @@ class MainMethodTests {
 
 	@Test
 	void validMainMethod() throws Exception {
+		Method actualMain = Valid.class.getMethod("main", String[].class);
 		MainMethod method = new TestThread(Valid::main).test();
-		assertThat(method.getMethod()).isEqualTo(this.actualMain);
-		assertThat(method.getDeclaringClassName()).isEqualTo(this.actualMain.getDeclaringClass().getName());
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
 	}
 
 	@Test // gh-35214
@@ -75,9 +68,19 @@ class MainMethodTests {
 	}
 
 	@Test
-	void missingArgsMainMethod() {
-		assertThatIllegalStateException().isThrownBy(() -> new TestThread(MissingArgs::main).test())
-			.withMessageContaining("Unable to find main method");
+	void missingArgsMainMethod() throws Exception {
+		Method actualMain = MissingArgs.class.getMethod("main");
+		MainMethod method = new TestThread(MissingArgs::main).test();
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
+	}
+
+	@Test
+	void missingArgsPackagePrivateMainMethod() throws Exception {
+		Method actualMain = MissingArgsPackagePrivate.class.getDeclaredMethod("main");
+		MainMethod method = new TestThread(MissingArgsPackagePrivate::main).test();
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
 	}
 
 	@Test
@@ -144,6 +147,14 @@ class MainMethodTests {
 	public static class MissingArgs {
 
 		public static void main() {
+			mainMethod.set(new MainMethod());
+		}
+
+	}
+
+	public static class MissingArgsPackagePrivate {
+
+		static void main() {
 			mainMethod.set(new MainMethod());
 		}
 
