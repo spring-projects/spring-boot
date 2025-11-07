@@ -367,7 +367,7 @@ public class Builder {
                 ImageReference pinned = reference;
 				String digest = Builder.this.docker.image().resolveManifestDigest(reference,
 						this.imageFetcher.defaultPlatform);
-				if (org.springframework.util.StringUtils.hasText(digest)) {
+				if (StringUtils.hasText(digest)) {
 					pinned = pinned.withDigest(digest);
 				}
                 if (!pinned.equals(reference)) {
