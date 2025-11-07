@@ -26,6 +26,5 @@ dependencies {
 	api(project(":module:spring-boot-data-mongodb"))
 	api(project(":module:spring-boot-reactor"))
 
-	api("io.projectreactor:reactor-test")
 	api("org.mongodb:mongodb-driver-reactivestreams")
 }
