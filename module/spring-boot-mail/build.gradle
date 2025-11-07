@@ -28,12 +28,14 @@ description = "Spring Boot Mail"
 dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework:spring-context-support")
-	api("org.eclipse.angus:jakarta.mail")
+	api("jakarta.mail:jakarta.mail-api")
 
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-health"))
+
+	runtimeOnly("org.eclipse.angus:angus-mail")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
