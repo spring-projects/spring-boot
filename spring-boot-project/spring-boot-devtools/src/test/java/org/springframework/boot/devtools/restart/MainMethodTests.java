@@ -68,24 +68,41 @@ class MainMethodTests {
 	}
 
 	@Test
-	void missingArgsMainMethod() throws Exception {
-		Method actualMain = MissingArgs.class.getMethod("main");
-		MainMethod method = new TestThread(MissingArgs::main).test();
+	void detectPublicMainMethod() throws Exception {
+		Method actualMain = PublicMainMethod.class.getMethod("main", String[].class);
+		MainMethod method = new TestThread(PublicMainMethod::main).test();
 		assertThat(method.getMethod()).isEqualTo(actualMain);
 		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
 	}
 
 	@Test
-	void missingArgsPackagePrivateMainMethod() throws Exception {
-		Method actualMain = MissingArgsPackagePrivate.class.getDeclaredMethod("main");
-		MainMethod method = new TestThread(MissingArgsPackagePrivate::main).test();
+	void detectPublicParameterlessMainMethod() throws Exception {
+		Method actualMain = PublicParameterlessMainMethod.class.getMethod("main");
+		MainMethod method = new TestThread(PublicParameterlessMainMethod::main).test();
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
+	}
+
+	@Test
+	void detectPackagePrivateMainMethod() throws Exception {
+		Method actualMain = PackagePrivateMainMethod.class.getDeclaredMethod("main", String[].class);
+		MainMethod method = new TestThread(PackagePrivateMainMethod::main).test();
+		assertThat(method.getMethod()).isEqualTo(actualMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
+	}
+
+	@Test
+	void detectPackagePrivateParameterlessMainMethod() throws Exception {
+		Method actualMain = PackagePrivateParameterlessMainMethod.class.getDeclaredMethod("main");
+		MainMethod method = new TestThread(PackagePrivateParameterlessMainMethod::main).test();
 		assertThat(method.getMethod()).isEqualTo(actualMain);
 		assertThat(method.getDeclaringClassName()).isEqualTo(actualMain.getDeclaringClass().getName());
 	}
 
 	@Test
 	void nonStatic() {
-		assertThatIllegalStateException().isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new TestThread(() -> new NonStaticMainMethod().main()).test())
 			.withMessageContaining("Unable to find main method");
 	}
 
@@ -144,7 +161,15 @@ class MainMethodTests {
 
 	}
 
-	public static class MissingArgs {
+	public static class PublicMainMethod {
+
+		public static void main(String... args) {
+			mainMethod.set(new MainMethod());
+		}
+
+	}
+
+	public static class PublicParameterlessMainMethod {
 
 		public static void main() {
 			mainMethod.set(new MainMethod());
@@ -152,7 +177,15 @@ class MainMethodTests {
 
 	}
 
-	public static class MissingArgsPackagePrivate {
+	public static class PackagePrivateMainMethod {
+
+		static void main(String... args) {
+			mainMethod.set(new MainMethod());
+		}
+
+	}
+
+	public static class PackagePrivateParameterlessMainMethod {
 
 		static void main() {
 			mainMethod.set(new MainMethod());
@@ -160,7 +193,7 @@ class MainMethodTests {
 
 	}
 
-	public static class NonStaticMain {
+	public static class NonStaticMainMethod {
 
 		void main(String... args) {
 			mainMethod.set(new MainMethod());
