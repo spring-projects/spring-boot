@@ -1555,7 +1555,7 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
-	library("Micrometer Tracing", "1.6.0-RC1") {
+	library("Micrometer Tracing", "1.6.0") {
 		considerSnapshots()
 		group("io.micrometer") {
 			bom("micrometer-tracing-bom")
