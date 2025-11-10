@@ -53,14 +53,15 @@ class SpringFactoriesEnvironmentPostProcessorsFactory implements EnvironmentPost
 		argumentResolver = argumentResolver.and(BootstrapRegistry.class, bootstrapContext);
 		List<Object> postProcessors = new ArrayList<>();
 		postProcessors.addAll(this.loader.load(EnvironmentPostProcessor.class, argumentResolver));
-		postProcessors.addAll(loadDeprecatedPostProcessors());
+		postProcessors.addAll(loadDeprecatedPostProcessors(argumentResolver));
 		AnnotationAwareOrderComparator.sort(postProcessors);
 		return postProcessors.stream().map(Adapter::apply).collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@SuppressWarnings("removal")
-	private List<org.springframework.boot.env.EnvironmentPostProcessor> loadDeprecatedPostProcessors() {
-		return this.loader.load(org.springframework.boot.env.EnvironmentPostProcessor.class);
+	private List<org.springframework.boot.env.EnvironmentPostProcessor> loadDeprecatedPostProcessors(
+			ArgumentResolver argumentResolver) {
+		return this.loader.load(org.springframework.boot.env.EnvironmentPostProcessor.class, argumentResolver);
 	}
 
 	@SuppressWarnings("removal")
