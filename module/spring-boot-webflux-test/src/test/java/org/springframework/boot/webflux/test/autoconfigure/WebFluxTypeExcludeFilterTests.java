@@ -23,7 +23,6 @@ import reactor.core.publisher.Mono;
 import tools.jackson.databind.module.SimpleModule;
 
 import org.springframework.boot.jackson.JacksonComponent;
-import org.springframework.boot.jackson2.JsonComponent;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -209,7 +208,7 @@ class WebFluxTypeExcludeFilterTests {
 
 	}
 
-	@JsonComponent
+	@org.springframework.boot.jackson2.JsonComponent
 	@SuppressWarnings("removal")
 	static class ExampleJsonComponent {
 

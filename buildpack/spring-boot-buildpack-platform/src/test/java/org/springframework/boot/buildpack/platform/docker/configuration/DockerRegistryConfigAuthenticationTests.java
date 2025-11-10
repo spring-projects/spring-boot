@@ -76,7 +76,7 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenAuthForDockerDomain(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenAuthForDockerDomain(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("docker.io/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
@@ -99,7 +99,7 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenAuthForLegacyDockerDomain(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenAuthForLegacyDockerDomain(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("index.docker.io/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
@@ -121,7 +121,7 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenAuthForCustomDomain(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenAuthForCustomDomain(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("my-registry.example.com/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
@@ -143,7 +143,7 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenAuthForCustomDomainWithLegacyFormat(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenAuthForCustomDomainWithLegacyFormat(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("my-registry.example.com/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference);
@@ -160,7 +160,7 @@ class DockerRegistryConfigAuthenticationTests {
 			}
 			""")
 	@Test
-	void getAuthHeaderWhenEmptyConfigDirectoryReturnsFallback(@ResourcesRoot Path directory) throws Exception {
+	void getAuthHeaderWhenEmptyConfigDirectoryReturnsFallback(@ResourcesRoot Path directory) {
 		this.environment.put("DOCKER_CONFIG", directory.toString());
 		ImageReference imageReference = ImageReference.of("docker.io/ubuntu:latest");
 		String authHeader = getAuthHeader(imageReference, DockerRegistryAuthentication.EMPTY_USER);

@@ -173,7 +173,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 	static class SecurityConfig {
 
 		@Bean
-		DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
+		DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) {
 			return http.csrf(CsrfConfigurer::disable)
 				// Demonstrate that method security works
 				// Best practice to use both for defense in depth

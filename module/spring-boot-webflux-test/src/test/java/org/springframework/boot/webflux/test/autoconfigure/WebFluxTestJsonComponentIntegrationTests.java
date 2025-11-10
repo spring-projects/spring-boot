@@ -19,7 +19,6 @@ package org.springframework.boot.webflux.test.autoconfigure;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -34,9 +33,6 @@ class WebFluxTestJsonComponentIntegrationTests {
 
 	@Autowired
 	private WebTestClient webClient;
-
-	@Autowired
-	private ConfigurableApplicationContext context;
 
 	@Test
 	void shouldFindJsonComponent() {

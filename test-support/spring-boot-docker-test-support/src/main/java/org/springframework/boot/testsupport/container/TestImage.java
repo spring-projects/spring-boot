@@ -165,6 +165,7 @@ public enum TestImage {
 	 * {@link org.testcontainers.containers.MongoDBContainer}.
 	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of {@link #MONGODB}
 	 */
+	@SuppressWarnings("deprecation")
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	MONGODB_DEPRECATED("mongo", "5.0.17", () -> org.testcontainers.containers.MongoDBContainer.class,
 			(container) -> ((org.testcontainers.containers.MongoDBContainer) container).withStartupAttempts(5)
@@ -194,6 +195,7 @@ public enum TestImage {
 	 * {@link org.testcontainers.containers.Neo4jContainer}.
 	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of {@link #NEO4J}
 	 */
+	@SuppressWarnings({ "deprecation", "rawtypes" })
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	NEO4J_DEPRECATED("neo4j", "5.26.11", () -> org.testcontainers.containers.Neo4jContainer.class,
 			(container) -> ((org.testcontainers.containers.Neo4jContainer) container).withStartupAttempts(5)
@@ -236,6 +238,7 @@ public enum TestImage {
 	 * {@link org.testcontainers.containers.PulsarContainer}.
 	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of {@link #PULSAR}
 	 */
+	@SuppressWarnings("deprecation")
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	PULSAR_DEPRECATED("apachepulsar/pulsar", "3.3.3", () -> org.testcontainers.containers.PulsarContainer.class,
 			(container) -> ((org.testcontainers.containers.PulsarContainer) container).withStartupAttempts(2)
@@ -252,6 +255,7 @@ public enum TestImage {
 	 * {@link org.testcontainers.containers.RabbitMQContainer}.
 	 * @deprecated since 4.0.0 for removal in 4.2.0 in favor of {@link #RABBITMQ}
 	 */
+	@SuppressWarnings("deprecation")
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	RABBITMQ_DEPRECATED("rabbitmq", "3.11-alpine", () -> org.testcontainers.containers.RabbitMQContainer.class,
 			(container) -> ((org.testcontainers.containers.RabbitMQContainer) container)

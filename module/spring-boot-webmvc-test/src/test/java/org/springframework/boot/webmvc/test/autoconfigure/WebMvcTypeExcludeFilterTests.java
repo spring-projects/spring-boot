@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import tools.jackson.databind.module.SimpleModule;
 
 import org.springframework.boot.jackson.JacksonComponent;
-import org.springframework.boot.jackson2.JsonComponent;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
@@ -224,7 +223,7 @@ class WebMvcTypeExcludeFilterTests {
 
 	}
 
-	@JsonComponent
+	@org.springframework.boot.jackson2.JsonComponent
 	@SuppressWarnings("removal")
 	static class ExampleJsonComponent {
 
