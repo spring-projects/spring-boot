@@ -35,10 +35,18 @@ import org.springframework.util.Assert;
 public class JettyVirtualThreadsWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered {
 
-	private final ServerProperties serverProperties;
+	public JettyVirtualThreadsWebServerFactoryCustomizer() {
 
+	}
+
+	/**
+	 * Create a new JettyVirtualThreadsWebServerFactoryCustomizer.
+	 * @param serverProperties server properties
+	 * @deprecated since 3.4.12 for removal in 4.0.0 in favor of
+	 * {@link JettyVirtualThreadsWebServerFactoryCustomizer}.
+	 */
+	@Deprecated(since = "3.4.12", forRemoval = true)
 	public JettyVirtualThreadsWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
 	}
 
 	@Override

@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,9 +38,7 @@ class JettyVirtualThreadsWebServerFactoryCustomizerTests {
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void shouldConfigureVirtualThreads() {
-		ServerProperties properties = new ServerProperties();
-		JettyVirtualThreadsWebServerFactoryCustomizer customizer = new JettyVirtualThreadsWebServerFactoryCustomizer(
-				properties);
+		JettyVirtualThreadsWebServerFactoryCustomizer customizer = new JettyVirtualThreadsWebServerFactoryCustomizer();
 		ConfigurableJettyWebServerFactory factory = mock(ConfigurableJettyWebServerFactory.class);
 		customizer.customize(factory);
 		then(factory).should().setThreadPool(assertArg((threadPool) -> {

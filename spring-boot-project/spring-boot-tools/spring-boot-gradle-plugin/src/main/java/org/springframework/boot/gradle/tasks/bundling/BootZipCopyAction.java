@@ -67,6 +67,7 @@ import org.springframework.boot.loader.tools.ReachabilityMetadataProperties;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.ThrowingSupplier;
 
 /**
  * A {@link CopyAction} for creating a Spring Boot zip archive (typically a jar or war).
@@ -349,7 +350,7 @@ class BootZipCopyAction implements CopyAction {
 		private void writeJarModeLibrary(String location, JarModeLibrary library) throws IOException {
 			String name = location + library.getName();
 			writeEntry(name, ZipEntryContentWriter.fromInputStream(library.openStream()), false,
-					(entry) -> prepareStoredEntry(library.openStream(), false, entry));
+					(entry) -> prepareStoredEntry(library::openStream, false, entry));
 			if (BootZipCopyAction.this.layerResolver != null) {
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(library);
 				this.layerIndex.add(layer, name);
@@ -447,12 +448,12 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void prepareStoredEntry(FileCopyDetails details, ZipArchiveEntry archiveEntry) throws IOException {
-			prepareStoredEntry(details.open(), BootZipCopyAction.this.requiresUnpack.isSatisfiedBy(details),
+			prepareStoredEntry(details::open, BootZipCopyAction.this.requiresUnpack.isSatisfiedBy(details),
 					archiveEntry);
 		}
 
-		private void prepareStoredEntry(InputStream input, boolean unpack, ZipArchiveEntry archiveEntry)
-				throws IOException {
+		private void prepareStoredEntry(ThrowingSupplier<InputStream> input, boolean unpack,
+				ZipArchiveEntry archiveEntry) throws IOException {
 			new StoredEntryPreparator(input, unpack).prepareStoredEntry(archiveEntry);
 		}
 
@@ -578,10 +579,10 @@ class BootZipCopyAction implements CopyAction {
 
 		private long size;
 
-		StoredEntryPreparator(InputStream inputStream, boolean unpack) throws IOException {
+		StoredEntryPreparator(ThrowingSupplier<InputStream> input, boolean unpack) throws IOException {
 			this.messageDigest = (unpack) ? sha1Digest() : null;
-			try (inputStream) {
-				load(inputStream);
+			try (InputStream stream = input.get()) {
+				load(stream);
 			}
 		}
 
