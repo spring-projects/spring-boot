@@ -112,6 +112,10 @@ gradlePlugin {
 			id = "org.springframework.boot.bom"
 			implementationClass = "org.springframework.boot.build.bom.BomPlugin"
 		}
+		configurationMetadataPlugin {
+			id = "org.springframework.boot.configuration-metadata"
+			implementationClass = "org.springframework.boot.build.context.properties.ConfigurationMetadataPlugin"
+		}
 		configurationPropertiesPlugin {
 			id = "org.springframework.boot.configuration-properties"
 			implementationClass = "org.springframework.boot.build.context.properties.ConfigurationPropertiesPlugin"
