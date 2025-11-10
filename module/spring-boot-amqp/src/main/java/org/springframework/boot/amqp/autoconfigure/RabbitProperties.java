@@ -1102,9 +1102,9 @@ public class RabbitProperties {
 		private boolean enabled;
 
 		/**
-		 * Maximum number of attempts to deliver a message.
+		 * Maximum number of retry attempts to deliver a message.
 		 */
-		private long maxAttempts = 3;
+		private long maxRetries = 3;
 
 		/**
 		 * Duration between the first and second attempt to deliver a message.
@@ -1129,12 +1129,12 @@ public class RabbitProperties {
 			this.enabled = enabled;
 		}
 
-		public long getMaxAttempts() {
-			return this.maxAttempts;
+		public long getMaxRetries() {
+			return this.maxRetries;
 		}
 
-		public void setMaxAttempts(long maxAttempts) {
-			this.maxAttempts = maxAttempts;
+		public void setMaxRetries(long maxRetries) {
+			this.maxRetries = maxRetries;
 		}
 
 		public Duration getInitialInterval() {
@@ -1164,7 +1164,7 @@ public class RabbitProperties {
 		RetryPolicySettings initializeRetryPolicySettings() {
 			PropertyMapper map = PropertyMapper.get();
 			RetryPolicySettings settings = new RetryPolicySettings();
-			map.from(this::getMaxAttempts).to(settings::setMaxAttempts);
+			map.from(this::getMaxRetries).to(settings::setMaxRetries);
 			map.from(this::getInitialInterval).to(settings::setDelay);
 			map.from(this::getMultiplier).to(settings::setMultiplier);
 			map.from(this::getMaxInterval).to(settings::setMaxDelay);

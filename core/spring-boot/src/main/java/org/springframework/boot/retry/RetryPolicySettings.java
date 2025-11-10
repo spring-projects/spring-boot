@@ -39,7 +39,7 @@ public final class RetryPolicySettings {
 	/**
 	 * Default number of retry attempts.
 	 */
-	public static final long DEFAULT_MAX_ATTEMPTS = RetryPolicy.Builder.DEFAULT_MAX_ATTEMPTS;
+	public static final long DEFAULT_MAX_RETRIES = RetryPolicy.Builder.DEFAULT_MAX_RETRIES;
 
 	/**
 	 * Default initial delay.
@@ -62,7 +62,7 @@ public final class RetryPolicySettings {
 
 	private @Nullable Predicate<Throwable> exceptionPredicate;
 
-	private Long maxAttempts = DEFAULT_MAX_ATTEMPTS;
+	private Long maxRetries = DEFAULT_MAX_RETRIES;
 
 	private Duration delay = DEFAULT_DELAY;
 
@@ -84,7 +84,7 @@ public final class RetryPolicySettings {
 		map.from(this::getExceptionIncludes).to(builder::includes);
 		map.from(this::getExceptionExcludes).to(builder::excludes);
 		map.from(this::getExceptionPredicate).to(builder::predicate);
-		map.from(this::getMaxAttempts).to(builder::maxAttempts);
+		map.from(this::getMaxRetries).to(builder::maxRetries);
 		map.from(this::getDelay).to(builder::delay);
 		map.from(this::getJitter).to(builder::jitter);
 		map.from(this::getMultiplier).to(builder::multiplier);
@@ -153,18 +153,19 @@ public final class RetryPolicySettings {
 	/**
 	 * Return the maximum number of retry attempts.
 	 * @return the maximum number of retry attempts
-	 * @see #DEFAULT_MAX_ATTEMPTS
+	 * @see #DEFAULT_MAX_RETRIES
 	 */
-	public Long getMaxAttempts() {
-		return this.maxAttempts;
+	public Long getMaxRetries() {
+		return this.maxRetries;
 	}
 
 	/**
 	 * Specify the maximum number of retry attempts.
-	 * @param maxAttempts the max attempts (must be equal or greater than zero)
+	 * @param maxRetries the maximum number of retry attempts (must be equal or greater
+	 * than zero)
 	 */
-	public void setMaxAttempts(Long maxAttempts) {
-		this.maxAttempts = maxAttempts;
+	public void setMaxRetries(Long maxRetries) {
+		this.maxRetries = maxRetries;
 	}
 
 	/**

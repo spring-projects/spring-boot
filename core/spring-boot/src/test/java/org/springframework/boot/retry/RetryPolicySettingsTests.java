@@ -128,7 +128,7 @@ class RetryPolicySettingsTests {
 	@Test
 	void createRetryPolicyWithCustomAttributes() {
 		RetryPolicySettings settings = new RetryPolicySettings();
-		settings.setMaxAttempts(10L);
+		settings.setMaxRetries(10L);
 		settings.setDelay(Duration.ofSeconds(2));
 		settings.setJitter(Duration.ofMillis(500));
 		settings.setMultiplier(2.0);
