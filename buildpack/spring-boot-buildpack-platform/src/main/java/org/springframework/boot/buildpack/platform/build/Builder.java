@@ -363,18 +363,13 @@ public class Builder {
 		@Override
 		public void exportImageLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
-            try {
-                ImageReference pinned = reference;
-				String digest = Builder.this.docker.image().resolveManifestDigest(reference,
-						this.imageFetcher.defaultPlatform);
-				if (StringUtils.hasText(digest)) {
-					pinned = pinned.withDigest(digest);
-				}
-                if (!pinned.equals(reference)) {
-                    Builder.this.docker.image().exportLayers(pinned, null, exports);
-                }
-            }
-            catch (Exception ex) {
+			String digest = Builder.this.docker.image().resolveManifestDigest(reference,
+					this.imageFetcher.defaultPlatform);
+			if (StringUtils.hasText(digest)) {
+				ImageReference pinned = reference.withDigest(digest);
+				Builder.this.docker.image().exportLayers(pinned, null, exports);
+			}
+			else {
 				Builder.this.docker.image().exportLayers(reference, this.imageFetcher.defaultPlatform, exports);
 			}
         }
