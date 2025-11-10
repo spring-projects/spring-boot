@@ -72,12 +72,9 @@ import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerPrope
 @Import(PulsarConfiguration.class)
 public class PulsarReactiveAutoConfiguration {
 
-	private final PulsarProperties properties;
-
 	private final PulsarReactivePropertiesMapper propertiesMapper;
 
 	PulsarReactiveAutoConfiguration(PulsarProperties properties) {
-		this.properties = properties;
 		this.propertiesMapper = new PulsarReactivePropertiesMapper(properties);
 	}
 
