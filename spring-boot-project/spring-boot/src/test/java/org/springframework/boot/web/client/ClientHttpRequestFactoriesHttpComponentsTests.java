@@ -17,9 +17,9 @@
 package org.springframework.boot.web.client;
 
 import org.apache.hc.client5.http.HttpRoute;
-import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.function.Resolver;
-import org.apache.hc.core5.http.io.SocketConfig;
 
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -39,29 +39,33 @@ class ClientHttpRequestFactoriesHttpComponentsTests
 	}
 
 	@Override
-	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		return (long) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	protected long readTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		HttpClient httpClient = requestFactory.getHttpClient();
-		Object connectionManager = ReflectionTestUtils.getField(httpClient, "connManager");
-		SocketConfig socketConfig = ((Resolver<HttpRoute, SocketConfig>) ReflectionTestUtils.getField(connectionManager,
-				"socketConfigResolver"))
-			.resolve(null);
-		return socketConfig.getSoTimeout().toMilliseconds();
-	}
-
-	@Override
 	protected boolean supportsSettingConnectTimeout() {
 		return true;
 	}
 
 	@Override
 	protected boolean supportsSettingReadTimeout() {
-		return false;
+		return true;
+	}
+
+	@Override
+	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
+		return getConnectorConfig(requestFactory).getConnectTimeout().toMilliseconds();
+	}
+
+	@Override
+	protected long readTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
+		return getConnectorConfig(requestFactory).getSocketTimeout().toMilliseconds();
+	}
+
+	@SuppressWarnings("unchecked")
+	private ConnectionConfig getConnectorConfig(HttpComponentsClientHttpRequestFactory requestFactory) {
+		CloseableHttpClient httpClient = (CloseableHttpClient) ReflectionTestUtils.getField(requestFactory,
+				"httpClient");
+		Object manager = ReflectionTestUtils.getField(httpClient, "connManager");
+		ConnectionConfig connectorConfig = ((Resolver<HttpRoute, ConnectionConfig>) ReflectionTestUtils
+			.getField(manager, "connectionConfigResolver")).resolve(null);
+		return connectorConfig;
 	}
 
 }

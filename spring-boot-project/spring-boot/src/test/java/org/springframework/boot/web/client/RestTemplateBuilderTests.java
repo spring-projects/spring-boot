@@ -25,6 +25,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.apache.hc.client5.http.HttpRoute;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.core5.function.Resolver;
+import org.apache.hc.core5.util.Timeout;
+import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -348,11 +353,18 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void requestFactorySettingsAppliesSettings() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(1));
+			.withConnectTimeout(Duration.ofSeconds(1))
+			.withReadTimeout(Duration.ofSeconds(2));
 		RestTemplate template = this.builder.requestFactorySettings(settings).build();
-		assertThat(template.getRequestFactory()).extracting("connectTimeout").isEqualTo(1000L);
+		Resolver<HttpRoute, ConnectionConfig> resolver = (Resolver<HttpRoute, ConnectionConfig>) Extractors
+			.byName("httpClient.connManager.connectionConfigResolver")
+			.apply(template.getRequestFactory());
+		ConnectionConfig config = resolver.resolve(mock());
+		assertThat(config.getConnectTimeout()).isEqualTo(Timeout.of(Duration.ofSeconds(1)));
+		assertThat(config.getSocketTimeout()).isEqualTo(Timeout.of(Duration.ofSeconds(2)));
 	}
 
 	@Test
