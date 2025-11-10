@@ -69,6 +69,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * <li>{@code WebMvcConfigurer}</li>
  * <li>{@code WebMvcRegistrations}</li>
  * <li>{@code WebSecurityConfigurer}</li>
+ * <li>{@code WebSecurityCustomizer}</li>
  * </ul>
  * <p>
  * By default, tests annotated with {@code @WebMvcTest} will also auto-configure Spring
