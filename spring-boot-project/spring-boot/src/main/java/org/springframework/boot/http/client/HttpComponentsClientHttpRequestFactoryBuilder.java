@@ -118,7 +118,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	 * {@link org.apache.hc.client5.http.config.ConnectionConfig.Builder}.
 	 * @param connectionConfigCustomizer the customizer to apply
 	 * @return a new {@link HttpComponentsHttpClientBuilder} instance
-	 * @since 3.5.8
+	 * @since 3.4.12
 	 */
 	public HttpComponentsClientHttpRequestFactoryBuilder withConnectionConfigCustomizer(
 			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer) {
