@@ -131,7 +131,7 @@ public final class HttpComponentsHttpClientBuilder {
 			Consumer<ConnectionConfig.Builder> connectionConfigCustomizer) {
 		Assert.notNull(connectionConfigCustomizer, "'connectionConfigCustomizer' must not be null");
 		return new HttpComponentsHttpClientBuilder(this.customizer, this.connectionManagerCustomizer,
-				this.socketConfigCustomizer.andThen(this.socketConfigCustomizer), this.connectionConfigCustomizer,
+				this.socketConfigCustomizer, this.connectionConfigCustomizer.andThen(connectionConfigCustomizer),
 				this.defaultRequestConfigCustomizer, this.tlsSocketStrategyFactory);
 	}
 
