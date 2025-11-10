@@ -151,6 +151,8 @@ dependencies {
 	implementation("io.micrometer:micrometer-registry-graphite")
 	implementation("io.micrometer:micrometer-registry-jmx")
 	implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0")
+	implementation("io.opentelemetry:opentelemetry-sdk-metrics")
+	implementation("io.opentelemetry:opentelemetry-exporter-otlp")
 	implementation("io.projectreactor.netty:reactor-netty-http")
 	implementation("jakarta.annotation:jakarta.annotation-api")
 	implementation("jakarta.jms:jakarta.jms-api")
