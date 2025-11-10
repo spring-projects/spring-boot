@@ -123,10 +123,20 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 		Method method = ReflectionUtils.findMethod(requestFactory.getClass(), methodName, parameters);
 		Assert.state(method != null, () -> "Request factory %s does not have a suitable %s method"
 			.formatted(requestFactory.getClass().getName(), methodName));
-		Assert.state(!method.isAnnotationPresent(Deprecated.class),
-				() -> "Request factory %s has the %s method marked as deprecated"
-					.formatted(requestFactory.getClass().getName(), methodName));
+		String requestFactoryClassName = requestFactory.getClass().getName();
+		Assert.state(
+				!method.isAnnotationPresent(Deprecated.class)
+						|| isPermittedDeprecatedMethod(requestFactory, methodName),
+				() -> "Request factory %s has the %s method marked as deprecated".formatted(requestFactoryClassName,
+						methodName));
 		return method;
+	}
+
+	private boolean isPermittedDeprecatedMethod(ClientHttpRequestFactory requestFactory, String methodName) {
+		String requestFactoryClassName = requestFactory.getClass().getName();
+		return "setConnectTimeout".equals(methodName)
+				&& "org.springframework.http.client.HttpComponentsClientHttpRequestFactory"
+					.equals(requestFactoryClassName);
 	}
 
 	private Method tryFindMethod(ClientHttpRequestFactory requestFactory, String methodName, Class<?>... parameters) {
