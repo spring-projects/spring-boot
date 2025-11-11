@@ -279,13 +279,23 @@ public class UndertowWebServer implements WebServer {
 			}
 			try {
 				this.undertow.stop();
-				for (Closeable closeable : this.closeables) {
-					closeable.close();
-				}
 			}
 			catch (Exception ex) {
 				throw new WebServerException("Unable to stop Undertow", ex);
 			}
+		}
+	}
+
+	@Override
+	public void destroy() {
+		stop();
+		try {
+			for (Closeable closeable : this.closeables) {
+				closeable.close();
+			}
+		}
+		catch (IOException ex) {
+			throw new WebServerException("Unable to destroy Undertow", ex);
 		}
 	}
 
