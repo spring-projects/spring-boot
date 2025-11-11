@@ -37,6 +37,8 @@ NOTE: The CNB builder used for the images is `paketobuildpacks/builder-noble-jav
 It has a small footprint and reduced attack surface. It does not include a shell and contains a reduced set of system libraries.
 If you need more tools in the resulting image, you can use `paketobuildpacks/ubuntu-noble-run:latest` as the *run* image.
 
+NOTE: You have to build your application with at least JDK 25, because Buildpacks use the same GraalVM native-image version as the Java version used for compilation.
+
 
 
 [[howto.native-image.developing-your-first-application.buildpacks.system-requirements]]
