@@ -673,8 +673,8 @@ with the `key` listed in the following table:
 TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.
 
 TIP: The `ssl` javadoc:org.springframework.boot.actuate.health.HealthIndicator[] has a "warning threshold" property named configprop:management.health.ssl.certificate-validity-warning-threshold[].
-If an SSL certificate will be invalid within the time span defined by this threshold, the javadoc:org.springframework.boot.actuate.health.HealthIndicator[] will warn you but it will still return HTTP 200 to not disrupt the application.
-You can use this threshold to give yourself enough lead time to rotate the soon to be expired certificate.
+You can use this threshold to give yourself enough lead time to rotate the soon-to-be-expired certificate.
+If an SSL certificate will become invalid within the period defined by this threshold, the javadoc:org.springframework.boot.actuate.health.HealthIndicator[] will report this in the details section of its response where `details.validChains.certificates.[*].validity.status` will have the value `WILL_EXPIRE_SOON`.
 
 Additional javadoc:org.springframework.boot.actuate.health.HealthIndicator[] beans are available but are not enabled by default:
 
@@ -1257,7 +1257,7 @@ The `info` endpoint publishes information about your process, see javadoc:org.sp
 [[actuator.endpoints.info.ssl-information]]
 === SSL Information
 
-The `info` endpoint publishes information about your SSL certificates (that are configured through xref:features/ssl.adoc#features.ssl.bundles[SSL Bundles]), see javadoc:org.springframework.boot.info.SslInfo[] for more details. This endpoint reuses the "warning threshold" property of javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[]: if an SSL certificate will be invalid within the time span defined by this threshold, it will trigger a warning. See the `management.health.ssl.certificate-validity-warning-threshold` property.
+The `info` endpoint publishes information about your SSL certificates (that are configured through xref:features/ssl.adoc#features.ssl.bundles[SSL Bundles]), see javadoc:org.springframework.boot.info.SslInfo[] for more details. This endpoint reuses the "warning threshold" property of javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[] (configprop:management.health.ssl.certificate-validity-warning-threshold[]). If an SSL certificate will be invalid within the time span defined by this threshold, its status will be `WILL_EXPIRE_SOON` in the xref:api:rest/actuator/info.adoc#info.retrieving.response-structure.ssl[SSL section] of the endpoint's response.
 
 
 
