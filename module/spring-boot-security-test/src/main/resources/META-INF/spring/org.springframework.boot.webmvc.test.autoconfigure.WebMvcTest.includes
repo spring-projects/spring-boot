@@ -1,1 +1,3 @@
+org.springframework.security.config.annotation.web.WebSecurityConfigurer
+org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 org.springframework.security.web.SecurityFilterChain
