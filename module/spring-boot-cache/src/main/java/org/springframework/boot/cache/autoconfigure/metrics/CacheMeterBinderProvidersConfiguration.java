@@ -24,6 +24,7 @@ import org.cache2k.extra.micrometer.Cache2kCacheMetrics;
 import org.cache2k.extra.spring.SpringCache2kCache;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.cache.metrics.Cache2kCacheMeterBinderProvider;
 import org.springframework.boot.cache.metrics.CacheMeterBinderProvider;
 import org.springframework.boot.cache.metrics.CaffeineCacheMeterBinderProvider;
@@ -80,6 +81,7 @@ class CacheMeterBinderProvidersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JCacheCache.class, javax.cache.CacheManager.class })
+	@ConditionalOnMissingBean(JCacheCacheMeterBinderProvider.class)
 	static class JCacheCacheMeterBinderProviderConfiguration {
 
 		@Bean
