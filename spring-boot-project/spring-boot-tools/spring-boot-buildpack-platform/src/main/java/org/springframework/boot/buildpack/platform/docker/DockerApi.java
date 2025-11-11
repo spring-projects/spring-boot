@@ -68,9 +68,7 @@ public class DockerApi {
 
 	static final ApiVersion PLATFORM_API_VERSION = ApiVersion.of(1, 41);
 
-	static final ApiVersion EXPORT_PLATFORM_API_VERSION = ApiVersion.of(1, 48);
-
-	static final ApiVersion INSPECT_PLATFORM_API_VERSION = ApiVersion.of(1, 49);
+	static final ApiVersion PLATFORM_INSPECT_API_VERSION = ApiVersion.of(1, 49);
 
 	static final ApiVersion UNKNOWN_API_VERSION = ApiVersion.of(0, 0);
 
@@ -239,10 +237,7 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-				if (platform != null) {
-					return inspect(INSPECT_PLATFORM_API_VERSION, reference, platform);
-				}
-				return inspect(API_VERSION, reference);
+				return inspect(reference, platform);
 			}
 			finally {
 				listener.onFinish();
@@ -339,56 +334,14 @@ public class DockerApi {
 		 */
 		public void exportLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
-			exportLayers(reference, null, exports);
-		}
-
-		/**
-		 * Export the layers of an image as {@link TarArchive TarArchives}.
-		 * @param reference the reference to export
-		 * @param platform the platform (os/architecture/variant) of the image to export
-		 * @param exports a consumer to receive the layers (contents can only be accessed
-		 * during the callback)
-		 * @throws IOException on IO error
-		 */
-		public void exportLayers(ImageReference reference, ImagePlatform platform,
-				IOBiConsumer<String, TarArchive> exports) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(exports, "Exports must not be null");
 			URI uri = buildUrl("/images/" + reference + "/get");
-			if (platform != null) {
-				uri = buildUrl(EXPORT_PLATFORM_API_VERSION, "/images/" + reference + "/get", "platform",
-						platform.toJson());
-			}
 			try (Response response = http().get(uri)) {
 				try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference, response.getContent())) {
 					exportedImageTar.exportLayers(exports);
 				}
 			}
-		}
-
-		/**
-		 * Resolve an image manifest digest via Docker inspect. If {@code platform} is
-		 * provided, performs a platform-aware inspect. Preference order:
-		 * {@code Descriptor.digest} then first {@code RepoDigest}. Returns an empty
-		 * string if no digest can be determined.
-		 * @param reference image reference
-		 * @param platform desired platform
-		 * @return resolved digest or empty string
-		 * @throws IOException on IO error
-		 */
-		public String resolveManifestDigest(ImageReference reference, ImagePlatform platform) throws IOException {
-			Assert.notNull(reference, "'reference' must not be null");
-			Image image = inspect(API_VERSION, reference);
-			if (platform != null) {
-				image = inspect(INSPECT_PLATFORM_API_VERSION, reference, platform);
-			}
-			Image.Descriptor descriptor = image.getDescriptor();
-			if (descriptor != null && StringUtils.hasText(descriptor.getDigest())) {
-				return descriptor.getDigest();
-			}
-			List<String> repoDigests = image.getDigests();
-			String digest = repoDigests.isEmpty() ? "" : repoDigests.get(0);
-			return digest.substring(digest.indexOf('@') + 1);
 		}
 
 		/**
@@ -411,22 +364,34 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public Image inspect(ImageReference reference) throws IOException {
-			return inspect(API_VERSION, reference);
+			return inspect(reference, null);
 		}
 
-		private Image inspect(ApiVersion apiVersion, ImageReference reference) throws IOException {
-			return inspect(apiVersion, reference, null);
-		}
-
-		private Image inspect(ApiVersion apiVersion, ImageReference reference, ImagePlatform platform)
-				throws IOException {
+		/**
+		 * Inspect an image.
+		 * @param reference the image reference
+		 * @param platform the platform (os/architecture/variant) of the image to inspect.
+		 * Ignored on older versions of Docker.
+		 * @return the image from the local repository
+		 * @throws IOException on IO error
+		 * @since 3.4.12
+		 */
+		public Image inspect(ImageReference reference, ImagePlatform platform) throws IOException {
+			// The Docker documentation is incomplete but platform parameters
+			// are supported since 1.49 (see https://github.com/moby/moby/pull/49586)
 			Assert.notNull(reference, "Reference must not be null");
-			URI imageUri = (platform != null)
-					? buildUrl(apiVersion, "/images/" + reference + "/json", "platform", platform.toJson())
-					: buildUrl(apiVersion, "/images/" + reference + "/json");
-			try (Response response = http().get(imageUri)) {
+			URI inspectUrl = inspectUrl(reference, platform);
+			try (Response response = http().get(inspectUrl)) {
 				return Image.of(response.getContent());
 			}
+		}
+
+		private URI inspectUrl(ImageReference reference, ImagePlatform platform) {
+			String path = "/images/" + reference + "/json";
+			if (platform != null && getApiVersion().supports(PLATFORM_INSPECT_API_VERSION)) {
+				return buildUrl(PLATFORM_INSPECT_API_VERSION, path, "platform", platform.toJson());
+			}
+			return buildUrl(path);
 		}
 
 		public void tag(ImageReference sourceReference, ImageReference targetReference) throws IOException {

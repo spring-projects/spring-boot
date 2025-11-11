@@ -261,7 +261,6 @@ public final class ImageReference {
 				path = path.substring(0, tagSplit) + remainder;
 			}
 		}
-
 		Assert.isTrue(isLowerCase(path) && matchesPathRegex(path),
 				() -> "Unable to parse image reference \"" + value + "\". "
 						+ "Image reference must be in the form '[domainHost:port/][path/]name[:tag][@digest]', "

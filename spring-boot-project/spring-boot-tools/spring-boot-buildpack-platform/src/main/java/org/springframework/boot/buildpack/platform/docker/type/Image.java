@@ -27,6 +27,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.springframework.boot.buildpack.platform.json.MappedObject;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -140,35 +141,23 @@ public class Image extends MappedObject {
 	}
 
 	/**
-	 * Descriptor details as reported by the Docker Engine inspect response.
+	 * Return the primary digest of the image or {@code null}. Checks the
+	 * {@code Descriptor.digest} first, falling back to {@code RepoDigest}.
+	 * @return the primary digest or {@code null}
+	 * @since 3.4.12
 	 */
-	public static final class Descriptor extends MappedObject {
-
-		private final String mediaType;
-
-		private final String digest;
-
-		private final Long size;
-
-		Descriptor(JsonNode node) {
-			super(node, MethodHandles.lookup());
-			this.mediaType = valueAt("/mediaType", String.class);
-			this.digest = Objects.requireNonNull(valueAt("/digest", String.class));
-			this.size = valueAt("/size", Long.class);
+	public String getPrimaryDigest() {
+		if (this.descriptor != null && StringUtils.hasText(this.descriptor.getDigest())) {
+			return this.descriptor.getDigest();
 		}
-
-		public String getMediaType() {
-			return this.mediaType;
+		if (!CollectionUtils.isEmpty(this.digests)) {
+			try {
+				return ImageReference.of(this.digests.get(0)).getDigest();
+			}
+			catch (RuntimeException ex) {
+			}
 		}
-
-		public String getDigest() {
-			return this.digest;
-		}
-
-		public Long getSize() {
-			return this.size;
-		}
-
+		return null;
 	}
 
 	/**
@@ -179,6 +168,26 @@ public class Image extends MappedObject {
 	 */
 	public static Image of(InputStream content) throws IOException {
 		return of(content, Image::new);
+	}
+
+	/**
+	 * Descriptor details as reported in the {@code Docker inspect} response.
+	 *
+	 * @since 3.4.12
+	 */
+	public final class Descriptor extends MappedObject {
+
+		private final String digest;
+
+		Descriptor(JsonNode node) {
+			super(node, MethodHandles.lookup());
+			this.digest = Objects.requireNonNull(valueAt("/digest", String.class));
+		}
+
+		public String getDigest() {
+			return this.digest;
+		}
+
 	}
 
 }

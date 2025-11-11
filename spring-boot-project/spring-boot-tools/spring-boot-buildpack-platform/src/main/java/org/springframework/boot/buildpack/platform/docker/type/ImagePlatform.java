@@ -19,6 +19,7 @@ package org.springframework.boot.buildpack.platform.docker.type;
 import java.util.Objects;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A platform specification for a Docker image.
@@ -100,21 +101,23 @@ public class ImagePlatform {
 	}
 
 	/**
-	 * Return a JSON-encoded representation of this platform for use with Docker Engine
-	 * API 1.48+ endpoints that require the platform parameter in JSON format
-	 * (e.g., image inspect and export operations).
-	 * @return a JSON object in the form {@code {"os":"...","architecture":"...","variant":"..."}}
+	 * Return a JSON-encoded representation of this platform.
+	 * @return the JSON string
 	 */
 	public String toJson() {
 		StringBuilder json = new StringBuilder("{");
-		json.append("\"os\":\"").append(this.os).append("\"");
-		if (this.architecture != null && !this.architecture.isEmpty()) {
-			json.append(",\"architecture\":\"").append(this.architecture).append("\"");
+		json.append(jsonPair("os", this.os));
+		if (StringUtils.hasText(this.architecture)) {
+			json.append(",").append(jsonPair("architecture", this.architecture));
 		}
-		if (this.variant != null && !this.variant.isEmpty()) {
-			json.append(",\"variant\":\"").append(this.variant).append("\"");
+		if (StringUtils.hasText(this.variant)) {
+			json.append(",").append(jsonPair("variant", this.variant));
 		}
-		json.append("}");
-		return json.toString();
+		return json.append("}").toString();
 	}
+
+	private String jsonPair(String name, String value) {
+		return "\"%s\":\"%s\"".formatted(name, value);
+	}
+
 }
