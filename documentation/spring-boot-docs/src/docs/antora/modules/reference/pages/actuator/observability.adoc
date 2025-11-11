@@ -137,7 +137,17 @@ Micrometer also supports the following environment variables to configure the me
 * https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/#otel_exporter_otlp_headers[`OTEL_EXPORTER_OTLP_HEADERS`]
 * https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/#otel_exporter_otlp_metrics_headers[`OTEL_EXPORTER_OTLP_METRICS_HEADERS`]
 
-Logging and tracing use the OpenTelemetry SDK directly, so all environment variables https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/[supported by OpenTelemetry] also work.
+Other environment variables as described in https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/[the OpenTelemetry documentation] are not supported.
+
+If you want all environment variables specified by OpenTelemetry's SDK to be effective, you have to supply your own `OpenTelemetry` bean.
+
+WARNING: Doing this will switch off Spring Boot's OpenTelemetry auto-configuration and may break the built-in observability functionality.
+
+First, add a dependency to `io.opentelemetry:opentelemetry-sdk-extension-autoconfigure` to get https://opentelemetry.io/docs/languages/java/configuration/#zero-code-sdk-autoconfigure[OpenTelemetry's zero-code SDK autoconfigure module], then add this configuration:
+
+include-code::AutoConfiguredOpenTelemetrySdkConfiguration[]
+
+
 
 [[actuator.observability.opentelemetry.logging]]
 === Logging
