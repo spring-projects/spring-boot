@@ -121,7 +121,7 @@ public class NettyWebServer implements WebServer {
 			catch (Exception ex) {
 				PortInUseException.ifCausedBy(ex, ChannelBindException.class, (bindException) -> {
 					if (bindException.localPort() > 0 && !isPermissionDenied(bindException.getCause())) {
-						throw new PortInUseException(bindException.localPort(), ex);
+						PortInUseException.throwIfPortBindingException(bindException, bindException::localPort);
 					}
 				});
 				throw new WebServerException("Unable to start Netty", ex);
