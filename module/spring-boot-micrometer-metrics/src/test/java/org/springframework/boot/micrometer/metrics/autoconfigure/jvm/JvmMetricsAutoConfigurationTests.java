@@ -25,6 +25,9 @@ import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassLoadingMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadMeterConventions;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
@@ -44,6 +47,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JvmMetricsAutoConfiguration}.
@@ -83,15 +87,61 @@ class JvmMetricsAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfiguresJvmMemoryMetrics() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JvmMemoryMetrics.class));
+	}
+
+	@Test
+	void autoConfiguresJvmMemoryMetricsWithCustomJvmMemoryMeterConventions() {
+		this.contextRunner.withUserConfiguration(CustomJvmMemoryMeterConventionsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(JvmMemoryMetrics.class);
+			JvmMemoryMetrics jvmMemoryMetrics = context.getBean(JvmMemoryMetrics.class);
+			assertThat(jvmMemoryMetrics).extracting("conventions")
+				.isSameAs(context.getBean(JvmMemoryMeterConventions.class));
+		});
+	}
+
+	@Test
 	void allowsCustomJvmThreadMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
 			.run(assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customJvmThreadMetrics")));
 	}
 
 	@Test
+	void autoConfiguresJvmThreadMetrics() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JvmThreadMetrics.class));
+	}
+
+	@Test
+	void autoConfiguresJvmThreadMetricsWithCustomCustomJvmThreadMeterConventions() {
+		this.contextRunner.withUserConfiguration(CustomJvmThreadMeterConventionsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(JvmThreadMetrics.class);
+			JvmThreadMetrics jvmThreadMetrics = context.getBean(JvmThreadMetrics.class);
+			assertThat(jvmThreadMetrics).extracting("conventions")
+				.isSameAs(context.getBean(JvmThreadMeterConventions.class));
+		});
+	}
+
+	@Test
 	void allowsCustomClassLoaderMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
 			.run(assertMetricsBeans().andThen((context) -> assertThat(context).hasBean("customClassLoaderMetrics")));
+	}
+
+	@Test
+	void autoConfiguresClassLoaderMetrics() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ClassLoaderMetrics.class));
+	}
+
+	@Test
+	void autoConfiguresClassLoaderMetricsWithCustomJvmClassLoadingMeterConventions() {
+		this.contextRunner.withUserConfiguration(CustomJvmClassLoadingMeterConventionsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClassLoaderMetrics.class);
+				ClassLoaderMetrics classLoaderMetrics = context.getBean(ClassLoaderMetrics.class);
+				assertThat(classLoaderMetrics).extracting("conventions")
+					.isSameAs(context.getBean(JvmClassLoadingMeterConventions.class));
+			});
 	}
 
 	@Test
@@ -218,6 +268,36 @@ class JvmMetricsAutoConfigurationTests {
 		@Bean
 		JvmCompilationMetrics customJvmCompilationMetrics() {
 			return new JvmCompilationMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmThreadMeterConventionsConfiguration {
+
+		@Bean
+		JvmThreadMeterConventions customJvmThreadMeterConventions() {
+			return mock(JvmThreadMeterConventions.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmMemoryMeterConventionsConfiguration {
+
+		@Bean
+		JvmMemoryMeterConventions customJvmMemoryMeterConventions() {
+			return mock(JvmMemoryMeterConventions.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJvmClassLoadingMeterConventionsConfiguration {
+
+		@Bean
+		JvmClassLoadingMeterConventions customJvmClassLoadingMeterConventions() {
+			return mock(JvmClassLoadingMeterConventions.class);
 		}
 
 	}

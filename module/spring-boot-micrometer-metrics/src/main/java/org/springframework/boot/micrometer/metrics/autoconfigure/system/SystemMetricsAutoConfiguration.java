@@ -21,10 +21,12 @@ import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuMeterConventions;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -58,8 +60,9 @@ public final class SystemMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	ProcessorMetrics processorMetrics() {
-		return new ProcessorMetrics();
+	ProcessorMetrics processorMetrics(ObjectProvider<JvmCpuMeterConventions> jvmCpuMeterConventions) {
+		JvmCpuMeterConventions conventions = jvmCpuMeterConventions.getIfAvailable();
+		return (conventions != null) ? new ProcessorMetrics(Tags.empty(), conventions) : new ProcessorMetrics();
 	}
 
 	@Bean

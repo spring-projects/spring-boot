@@ -17,6 +17,7 @@
 package org.springframework.boot.micrometer.metrics.autoconfigure.jvm;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmCompilationMetrics;
@@ -25,12 +26,16 @@ import io.micrometer.core.instrument.binder.jvm.JvmHeapPressureMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmClassLoadingMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmMemoryMeterConventions;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmThreadMeterConventions;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -71,20 +76,23 @@ public final class JvmMetricsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	JvmMemoryMetrics jvmMemoryMetrics() {
-		return new JvmMemoryMetrics();
+	JvmMemoryMetrics jvmMemoryMetrics(ObjectProvider<JvmMemoryMeterConventions> jvmMemoryMeterConventions) {
+		JvmMemoryMeterConventions conventions = jvmMemoryMeterConventions.getIfAvailable();
+		return (conventions != null) ? new JvmMemoryMetrics(Tags.empty(), conventions) : new JvmMemoryMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	JvmThreadMetrics jvmThreadMetrics() {
-		return new JvmThreadMetrics();
+	JvmThreadMetrics jvmThreadMetrics(ObjectProvider<JvmThreadMeterConventions> jvmThreadMeterConventions) {
+		JvmThreadMeterConventions conventions = jvmThreadMeterConventions.getIfAvailable();
+		return (conventions != null) ? new JvmThreadMetrics(Tags.empty(), conventions) : new JvmThreadMetrics();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	ClassLoaderMetrics classLoaderMetrics() {
-		return new ClassLoaderMetrics();
+	ClassLoaderMetrics classLoaderMetrics(ObjectProvider<JvmClassLoadingMeterConventions> jvmClassLoadingMeterConventions) {
+		JvmClassLoadingMeterConventions conventions = jvmClassLoadingMeterConventions.getIfAvailable();
+		return (conventions != null) ? new ClassLoaderMetrics(conventions) : new ClassLoaderMetrics();
 	}
 
 	@Bean
