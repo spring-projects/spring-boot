@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.metrics.cache.JCacheCacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -111,6 +112,23 @@ class CacheMetricsAutoConfigurationTests {
 				assertThat(registry.find("cache.gets").meters()).map((meter) -> meter.getId().getTag("cache"))
 					.containsOnly("standard", "non-default");
 			});
+	}
+
+	@Test
+	void jcacheCacheMeterBinderProviderIsAutoConfigured() {
+		this.contextRunner.withPropertyValues("spring.cache.type=simple", "spring.cache.cache-names=cache1,cache2")
+			.run((context) -> assertThat(context).hasSingleBean(JCacheCacheMeterBinderProvider.class)
+				.hasBean("jCacheCacheMeterBinderProvider"));
+	}
+
+	@Test
+	void jcacheCacheMeterBinderProviderBacksOff() {
+		this.contextRunner.withPropertyValues("spring.cache.type=simple", "spring.cache.cache-names=cache1,cache2")
+			.withBean("customProvider", JCacheCacheMeterBinderProvider.class,
+					() -> new JCacheCacheMeterBinderProvider(true))
+			.run((context) -> assertThat(context).hasSingleBean(JCacheCacheMeterBinderProvider.class)
+				.hasBean("customProvider")
+				.doesNotHaveBean("jCacheCacheMeterBinderProvider"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
