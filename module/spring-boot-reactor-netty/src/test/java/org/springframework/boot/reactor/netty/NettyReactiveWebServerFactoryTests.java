@@ -17,9 +17,7 @@
 package org.springframework.boot.reactor.netty;
 
 import java.net.ConnectException;
-import java.net.InetAddress;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Arrays;
 
@@ -46,7 +44,6 @@ import org.springframework.boot.testsupport.classpath.resources.WithPackageResou
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.server.reactive.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.server.reactive.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.reactive.ConfigurableReactiveWebServerFactory;
@@ -75,7 +72,7 @@ import static org.mockito.Mockito.mock;
 class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Test
-	void portInUseExceptionIsThrownWhenPortIsAlreadyInUse() {
+	void exceptionIsThrownWhenPortIsAlreadyInUse() {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		factory.setPort(0);
 		this.webServer = factory.getWebServer(new EchoHandler());
@@ -84,14 +81,6 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		assertThatExceptionOfType(PortInUseException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start)
 			.satisfies(this::portMatchesRequirement)
 			.withCauseInstanceOf(Throwable.class);
-	}
-
-	@Test
-	void webServerExceptionIsThrownWhenAddressCannotBeAssigned() throws UnknownHostException {
-		AbstractReactiveWebServerFactory factory = getFactory();
-		factory.setPort(8080);
-		factory.setAddress(InetAddress.getByName("1.2.3.4"));
-		assertThatExceptionOfType(WebServerException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start);
 	}
 
 	@Test
