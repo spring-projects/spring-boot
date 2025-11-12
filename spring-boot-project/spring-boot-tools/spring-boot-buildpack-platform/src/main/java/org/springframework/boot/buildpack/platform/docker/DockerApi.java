@@ -68,6 +68,8 @@ public class DockerApi {
 
 	static final ApiVersion PLATFORM_API_VERSION = ApiVersion.of(1, 41);
 
+	static final ApiVersion PLATFORM_INSPECT_API_VERSION = ApiVersion.of(1, 49);
+
 	static final ApiVersion UNKNOWN_API_VERSION = ApiVersion.of(0, 0);
 
 	static final String API_VERSION_HEADER_NAME = "API-Version";
@@ -235,7 +237,7 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-				return inspect((platform != null) ? PLATFORM_API_VERSION : API_VERSION, reference);
+				return inspect(reference, platform);
 			}
 			finally {
 				listener.onFinish();
@@ -362,15 +364,34 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public Image inspect(ImageReference reference) throws IOException {
-			return inspect(API_VERSION, reference);
+			return inspect(reference, null);
 		}
 
-		private Image inspect(ApiVersion apiVersion, ImageReference reference) throws IOException {
+		/**
+		 * Inspect an image.
+		 * @param reference the image reference
+		 * @param platform the platform (os/architecture/variant) of the image to inspect.
+		 * Ignored on older versions of Docker.
+		 * @return the image from the local repository
+		 * @throws IOException on IO error
+		 * @since 3.4.12
+		 */
+		public Image inspect(ImageReference reference, ImagePlatform platform) throws IOException {
+			// The Docker documentation is incomplete but platform parameters
+			// are supported since 1.49 (see https://github.com/moby/moby/pull/49586)
 			Assert.notNull(reference, "Reference must not be null");
-			URI imageUri = buildUrl(apiVersion, "/images/" + reference + "/json");
-			try (Response response = http().get(imageUri)) {
+			URI inspectUrl = inspectUrl(reference, platform);
+			try (Response response = http().get(inspectUrl)) {
 				return Image.of(response.getContent());
 			}
+		}
+
+		private URI inspectUrl(ImageReference reference, ImagePlatform platform) {
+			String path = "/images/" + reference + "/json";
+			if (platform != null && getApiVersion().supports(PLATFORM_INSPECT_API_VERSION)) {
+				return buildUrl(PLATFORM_INSPECT_API_VERSION, path, "platform", platform.toJson());
+			}
+			return buildUrl(path);
 		}
 
 		public void tag(ImageReference sourceReference, ImageReference targetReference) throws IOException {

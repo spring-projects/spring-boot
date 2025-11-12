@@ -103,16 +103,23 @@ public class Builder {
 		validateBindings(request.getBindings());
 		String domain = request.getBuilder().getDomain();
 		PullPolicy pullPolicy = request.getPullPolicy();
-		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy,
-				request.getImagePlatform());
-		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
+		ImagePlatform platform = request.getImagePlatform();
+		boolean specifiedPlatform = request.getImagePlatform() != null;
+		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy);
+		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder(), platform);
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		request = withRunImageIfNeeded(request, builderMetadata);
-		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage());
+		platform = (platform != null) ? platform : ImagePlatform.from(builderImage);
+		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage(), platform);
+		if (specifiedPlatform && runImage.getPrimaryDigest() != null) {
+			request = request.withRunImage(request.getRunImage().withDigest(runImage.getPrimaryDigest()));
+			runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage(), platform);
+		}
 		assertStackIdsMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
 		BuildpackLayersMetadata buildpackLayersMetadata = BuildpackLayersMetadata.fromImage(builderImage);
-		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, builderMetadata, buildpackLayersMetadata);
+		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, platform, builderMetadata,
+				buildpackLayersMetadata);
 		EphemeralBuilder ephemeralBuilder = new EphemeralBuilder(buildOwner, builderImage, request.getName(),
 				builderMetadata, request.getCreator(), request.getEnv(), buildpacks);
 		executeLifecycle(request, ephemeralBuilder);
@@ -156,9 +163,9 @@ public class Builder {
 		}
 	}
 
-	private Buildpacks getBuildpacks(BuildRequest request, ImageFetcher imageFetcher, BuilderMetadata builderMetadata,
-			BuildpackLayersMetadata buildpackLayersMetadata) {
-		BuildpackResolverContext resolverContext = new BuilderResolverContext(imageFetcher, builderMetadata,
+	private Buildpacks getBuildpacks(BuildRequest request, ImageFetcher imageFetcher, ImagePlatform platform,
+			BuilderMetadata builderMetadata, BuildpackLayersMetadata buildpackLayersMetadata) {
+		BuildpackResolverContext resolverContext = new BuilderResolverContext(imageFetcher, platform, builderMetadata,
 				buildpackLayersMetadata);
 		return BuildpackResolvers.resolveAll(resolverContext, request.getBuildpacks());
 	}
@@ -227,51 +234,74 @@ public class Builder {
 
 		private final PullPolicy pullPolicy;
 
-		private ImagePlatform defaultPlatform;
-
-		ImageFetcher(String domain, String authHeader, PullPolicy pullPolicy, ImagePlatform platform) {
+		ImageFetcher(String domain, String authHeader, PullPolicy pullPolicy) {
 			this.domain = domain;
 			this.authHeader = authHeader;
 			this.pullPolicy = pullPolicy;
-			this.defaultPlatform = platform;
 		}
 
-		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
+		Image fetchImage(ImageType type, ImageReference reference, ImagePlatform platform) throws IOException {
 			Assert.notNull(type, "Type must not be null");
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.state(this.authHeader == null || reference.getDomain().equals(this.domain),
 					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
 							StringUtils.capitalize(type.getDescription()), reference, this.domain));
 			if (this.pullPolicy == PullPolicy.ALWAYS) {
-				return checkPlatformMismatch(pullImage(reference, type), reference);
+				return pullImageAndCheckForPlatformMismatch(type, reference, platform);
 			}
 			try {
-				return checkPlatformMismatch(Builder.this.docker.image().inspect(reference), reference);
+				Image image = Builder.this.docker.image().inspect(reference, platform);
+				return checkPlatformMismatch(image, reference, platform);
 			}
 			catch (DockerEngineException ex) {
 				if (this.pullPolicy == PullPolicy.IF_NOT_PRESENT && ex.getStatusCode() == 404) {
-					return checkPlatformMismatch(pullImage(reference, type), reference);
+					return pullImageAndCheckForPlatformMismatch(type, reference, platform);
 				}
 				throw ex;
 			}
 		}
 
-		private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
-			TotalProgressPullListener listener = new TotalProgressPullListener(
-					Builder.this.log.pullingImage(reference, this.defaultPlatform, imageType));
-			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, this.authHeader);
-			Builder.this.log.pulledImage(image, imageType);
-			if (this.defaultPlatform == null) {
-				this.defaultPlatform = ImagePlatform.from(image);
+		private Image pullImageAndCheckForPlatformMismatch(ImageType type, ImageReference reference,
+				ImagePlatform platform) throws IOException {
+			try {
+				Image image = pullImage(reference, type, platform);
+				return checkPlatformMismatch(image, reference, platform);
 			}
+			catch (DockerEngineException ex) {
+				// Try to throw our own exception for consistent log output. Matching
+				// on the message is a little brittle, but it doesn't matter too much
+				// if it fails as the original exception is still enough to stop the build
+				if (platform != null && ex.getMessage().contains("does not provide the specified platform")) {
+					throwAsPlatformMismatchException(type, reference, platform, ex);
+				}
+				throw ex;
+			}
+		}
+
+		private void throwAsPlatformMismatchException(ImageType type, ImageReference reference, ImagePlatform platform,
+				Throwable cause) throws IOException {
+			try {
+				Image image = pullImage(reference, type, null);
+				throw new PlatformMismatchException(reference, platform, ImagePlatform.from(image), cause);
+			}
+			catch (DockerEngineException ex) {
+			}
+		}
+
+		private Image pullImage(ImageReference reference, ImageType imageType, ImagePlatform platform)
+				throws IOException {
+			TotalProgressPullListener listener = new TotalProgressPullListener(
+					Builder.this.log.pullingImage(reference, platform, imageType));
+			Image image = Builder.this.docker.image().pull(reference, platform, listener, this.authHeader);
+			Builder.this.log.pulledImage(image, imageType);
 			return image;
 		}
 
-		private Image checkPlatformMismatch(Image image, ImageReference imageReference) {
-			if (this.defaultPlatform != null) {
-				ImagePlatform imagePlatform = ImagePlatform.from(image);
-				if (!imagePlatform.equals(this.defaultPlatform)) {
-					throw new PlatformMismatchException(imageReference, this.defaultPlatform, imagePlatform);
+		private Image checkPlatformMismatch(Image image, ImageReference reference, ImagePlatform requestedPlatform) {
+			if (requestedPlatform != null) {
+				ImagePlatform actualPlatform = ImagePlatform.from(image);
+				if (!actualPlatform.equals(requestedPlatform)) {
+					throw new PlatformMismatchException(reference, requestedPlatform, actualPlatform, null);
 				}
 			}
 			return image;
@@ -282,9 +312,9 @@ public class Builder {
 	private static final class PlatformMismatchException extends RuntimeException {
 
 		private PlatformMismatchException(ImageReference imageReference, ImagePlatform requestedPlatform,
-				ImagePlatform actualPlatform) {
+				ImagePlatform actualPlatform, Throwable cause) {
 			super("Image platform mismatch detected. The configured platform '%s' is not supported by the image '%s'. Requested platform '%s' but got '%s'"
-				.formatted(requestedPlatform, imageReference, requestedPlatform, actualPlatform));
+				.formatted(requestedPlatform, imageReference, requestedPlatform, actualPlatform), cause);
 		}
 
 	}
@@ -296,13 +326,16 @@ public class Builder {
 
 		private final ImageFetcher imageFetcher;
 
+		private final ImagePlatform platform;
+
 		private final BuilderMetadata builderMetadata;
 
 		private final BuildpackLayersMetadata buildpackLayersMetadata;
 
-		BuilderResolverContext(ImageFetcher imageFetcher, BuilderMetadata builderMetadata,
+		BuilderResolverContext(ImageFetcher imageFetcher, ImagePlatform platform, BuilderMetadata builderMetadata,
 				BuildpackLayersMetadata buildpackLayersMetadata) {
 			this.imageFetcher = imageFetcher;
+			this.platform = platform;
 			this.builderMetadata = builderMetadata;
 			this.buildpackLayersMetadata = buildpackLayersMetadata;
 		}
@@ -319,7 +352,7 @@ public class Builder {
 
 		@Override
 		public Image fetchImage(ImageReference reference, ImageType imageType) throws IOException {
-			return this.imageFetcher.fetchImage(imageType, reference);
+			return this.imageFetcher.fetchImage(imageType, reference, this.platform);
 		}
 
 		@Override
