@@ -98,11 +98,19 @@ final class ArchitectureRules {
 		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(conditionsShouldNotBePublic());
 		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
-		rules.add(allDeprecatedConfigurationPropertiesShouldIncludeSince());
 		return List.copyOf(rules);
 	}
 
-	static ArchRule allBeanMethodsShouldReturnNonPrivateType() {
+	static List<ArchRule> beanMethods(String annotationName) {
+		return List.of(allBeanMethodsShouldReturnNonPrivateType(),
+				allBeanMethodsShouldNotHaveConditionalOnClassAnnotation(annotationName));
+	}
+
+	static List<ArchRule> configurationProperties(String annotationName) {
+		return List.of(allDeprecatedConfigurationPropertiesShouldIncludeSince(annotationName));
+	}
+
+	private static ArchRule allBeanMethodsShouldReturnNonPrivateType() {
 		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean").should(check(
 				"not return types declared with the %s modifier, as such types are incompatible with Spring AOT processing"
 					.formatted(JavaModifier.PRIVATE),
@@ -116,7 +124,7 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
-	static ArchRule allBeanMethodsShouldNotHaveConditionalOnClassAnnotation(String annotationName) {
+	private static ArchRule allBeanMethodsShouldNotHaveConditionalOnClassAnnotation(String annotationName) {
 		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean").should()
 			.notBeAnnotatedWith(annotationName)
 			.because("@ConditionalOnClass on @Bean methods is ineffective - it doesn't prevent "
@@ -349,12 +357,10 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
-	private static ArchRule allDeprecatedConfigurationPropertiesShouldIncludeSince() {
-		return methodsThatAreAnnotatedWith(
-				"org.springframework.boot.context.properties.DeprecatedConfigurationProperty")
+	private static ArchRule allDeprecatedConfigurationPropertiesShouldIncludeSince(String annotationName) {
+		return methodsThatAreAnnotatedWith(annotationName)
 			.should(check("include a non-empty 'since' attribute", (method, events) -> {
-				JavaAnnotation<JavaMethod> annotation = method
-					.getAnnotationOfType("org.springframework.boot.context.properties.DeprecatedConfigurationProperty");
+				JavaAnnotation<JavaMethod> annotation = method.getAnnotationOfType(annotationName);
 				Map<String, Object> properties = annotation.getProperties();
 				Object since = properties.get("since");
 				if (!(since instanceof String) || ((String) since).isEmpty()) {
