@@ -16,6 +16,7 @@
 
 plugins {
 	id "java-library"
+	id "org.springframework.boot.configuration-metadata"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.test-slice"
