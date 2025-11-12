@@ -47,6 +47,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.mvc.TypeConstrainedJacksonJsonHttpMessageConverter;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
@@ -226,6 +227,24 @@ class HttpMessageConvertersAutoConfigurationTests {
 					KotlinSerializationJsonHttpMessageConverter.class);
 			assertConvertersBeanRegisteredWithHttpMessageConverters(context,
 					List.of(KotlinSerializationJsonHttpMessageConverter.class, JacksonJsonHttpMessageConverter.class));
+		});
+	}
+
+	@Test
+	void kotlinSerializationUsesLimitedPredicateWhenOtherJsonConverterIsAvailable() {
+		allOptionsRunner().run((context) -> {
+			KotlinSerializationJsonHttpMessageConverter converter = context
+				.getBean(KotlinSerializationJsonHttpMessageConverter.class);
+			assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isFalse();
+		});
+	}
+
+	@Test
+	void kotlinSerializationUsesUnrestrictedPredicateWhenNoOtherJsonConverterIsAvailable() {
+		this.contextRunner.withBean(Json.class, () -> Json.Default).run((context) -> {
+			KotlinSerializationJsonHttpMessageConverter converter = context
+				.getBean(KotlinSerializationJsonHttpMessageConverter.class);
+			assertThat(converter.canWrite(Map.class, MediaType.APPLICATION_JSON)).isTrue();
 		});
 	}
 

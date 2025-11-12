@@ -19,11 +19,14 @@ package org.springframework.boot.http.converter.autoconfigure;
 import kotlinx.serialization.Serializable;
 import kotlinx.serialization.json.Json;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter;
 
 /**
@@ -39,8 +42,23 @@ class KotlinSerializationHttpMessageConvertersConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	KotlinSerializationJsonHttpMessageConverter kotlinSerializationJsonHttpMessageConverter(Json json) {
-		return new KotlinSerializationJsonHttpMessageConverter(json);
+	KotlinSerializationJsonHttpMessageConverter kotlinSerializationJsonHttpMessageConverter(Json json,
+			ObjectProvider<HttpMessageConverter<?>> converters) {
+		return supportsApplicationJson(converters) ? new KotlinSerializationJsonHttpMessageConverter(json)
+				: new KotlinSerializationJsonHttpMessageConverter(json, (type) -> true);
+	}
+
+	private boolean supportsApplicationJson(ObjectProvider<HttpMessageConverter<?>> converters) {
+		return converters.orderedStream().filter(this::supportsApplicationJson).findFirst().isPresent();
+	}
+
+	private boolean supportsApplicationJson(HttpMessageConverter<?> converter) {
+		for (MediaType mediaType : converter.getSupportedMediaTypes()) {
+			if (!mediaType.equals(MediaType.ALL) && mediaType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
