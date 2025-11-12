@@ -17,6 +17,7 @@
 package org.springframework.boot.http.codec.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kotlinx.serialization.json.Json;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -35,9 +36,13 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.json.JacksonJsonDecoder;
 import org.springframework.http.codec.json.JacksonJsonEncoder;
+import org.springframework.http.codec.json.KotlinSerializationJsonDecoder;
+import org.springframework.http.codec.json.KotlinSerializationJsonEncoder;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -88,6 +93,29 @@ public final class CodecsAutoConfiguration {
 				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
 				defaults.jacksonJsonDecoder(new org.springframework.http.codec.json.Jackson2JsonDecoder(objectMapper));
 				defaults.jacksonJsonEncoder(new org.springframework.http.codec.json.Jackson2JsonEncoder(objectMapper));
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(Json.class)
+	static class KotlinxSerializationJsonCodecConfiguration {
+
+		@Bean
+		@ConditionalOnBean(Json.class)
+		CodecCustomizer kotlinxJsonCodecCustomizer(Json json, ResourceLoader resourceLoader) {
+			ClassLoader classLoader = resourceLoader.getClassLoader();
+			boolean hasAnyJsonSupport = ClassUtils.isPresent("tools.jackson.databind.json.JsonMapper", classLoader)
+					|| ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", classLoader)
+					|| ClassUtils.isPresent("com.google.gson.Gson", classLoader);
+
+			return (configurer) -> {
+				CodecConfigurer.DefaultCodecs defaults = configurer.defaultCodecs();
+				defaults.kotlinSerializationJsonEncoder(hasAnyJsonSupport ? new KotlinSerializationJsonEncoder(json)
+						: new KotlinSerializationJsonEncoder(json, (type) -> true));
+				defaults.kotlinSerializationJsonDecoder(hasAnyJsonSupport ? new KotlinSerializationJsonDecoder(json)
+						: new KotlinSerializationJsonDecoder(json, (type) -> true));
 			};
 		}
 

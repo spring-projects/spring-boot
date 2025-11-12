@@ -22,6 +22,7 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * A platform specification for a Docker image.
@@ -100,6 +101,26 @@ public class ImagePlatform {
 	 */
 	public static ImagePlatform from(Image image) {
 		return new ImagePlatform(image.getOs(), image.getArchitecture(), image.getVariant());
+	}
+
+	/**
+	 * Return a JSON-encoded representation of this platform.
+	 * @return the JSON string
+	 */
+	public String toJson() {
+		StringBuilder json = new StringBuilder("{");
+		json.append(jsonPair("os", this.os));
+		if (StringUtils.hasText(this.architecture)) {
+			json.append(",").append(jsonPair("architecture", this.architecture));
+		}
+		if (StringUtils.hasText(this.variant)) {
+			json.append(",").append(jsonPair("variant", this.variant));
+		}
+		return json.append("}").toString();
+	}
+
+	private String jsonPair(String name, String value) {
+		return "\"%s\":\"%s\"".formatted(name, value);
 	}
 
 }

@@ -2064,7 +2064,7 @@ bom {
 				"spring-boot-jpa-test",
 				"spring-boot-jsonb",
 				"spring-boot-kafka",
-				"spring-boot-kotlin-serialization",
+				"spring-boot-kotlinx-serialization-json",
 				"spring-boot-ldap",
 				"spring-boot-liquibase",
 				"spring-boot-loader",

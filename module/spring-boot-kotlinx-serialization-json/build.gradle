@@ -16,29 +16,27 @@
 
 plugins {
 	id "java-library"
+	id "org.jetbrains.kotlin.jvm"
+	id "org.jetbrains.kotlin.plugin.serialization"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot HTTP Codec"
+description = "Spring Boot Kotlinx Serialization JSON"
 
 dependencies {
 	api(project(":core:spring-boot"))
-	api("org.springframework:spring-web")
+	api("org.jetbrains.kotlinx:kotlinx-serialization-json")
 
 	optional(project(":core:spring-boot-autoconfigure"))
-	optional(project(":core:spring-boot-test"))
-	optional(project(":module:spring-boot-jackson"))
-	optional(project(":module:spring-boot-jackson2"))
-	optional(project(":module:spring-boot-kotlinx-serialization-json"))
-	optional("org.springframework:spring-webflux")
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
+	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")
 }
 
 tasks.named("compileTestJava") {

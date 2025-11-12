@@ -157,7 +157,7 @@ dependencies {
 	api(project(":module:spring-boot-kafka")) {
 		transitive = false
 	}
-	api(project(":module:spring-boot-kotlin-serialization")) {
+	api(project(":module:spring-boot-kotlinx-serialization-json")) {
 		transitive = false
 	}
 	api(project(":module:spring-boot-ldap")) {

@@ -35,7 +35,7 @@ dependencies {
 	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-jackson2"))
 	optional(project(":module:spring-boot-jsonb"))
-	optional(project(":module:spring-boot-kotlin-serialization"))
+	optional(project(":module:spring-boot-kotlinx-serialization-json"))
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 	optional("com.google.code.gson:gson")
 	optional("jakarta.json.bind:jakarta.json.bind-api")

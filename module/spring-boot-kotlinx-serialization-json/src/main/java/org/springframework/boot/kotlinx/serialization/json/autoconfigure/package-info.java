@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
+/**
+ * Auto-configuration for Kotlinx Serialization JSON.
+ */
+@NullMarked
+package org.springframework.boot.kotlinx.serialization.json.autoconfigure;
 
-description = "Starter for using Kotlin Serialization"
-
-dependencies {
-	api(project(":starter:spring-boot-starter"))
-
-	api(project(":module:spring-boot-kotlinx-serialization-json"))
-}
+import org.jspecify.annotations.NullMarked;
