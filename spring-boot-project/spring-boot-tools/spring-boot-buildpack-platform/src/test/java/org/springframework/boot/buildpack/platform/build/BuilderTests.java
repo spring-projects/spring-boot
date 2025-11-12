@@ -76,6 +76,9 @@ class BuilderTests {
 
 	private static final ImageReference BASE_CNB = ImageReference.of("docker.io/cloudfoundry/run:base-cnb");
 
+	private static final ImageReference PLATFORM_CNB = ImageReference
+		.of("docker.io/cloudfoundry/run@sha256:fb5ecb90a42b2067a859aab23fc1f5e9d9c2589d07ba285608879e7baa415aad");
+
 	@Test
 	void createWhenLogIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Builder((BuildLog) null))
@@ -262,8 +265,8 @@ class BuilderTests {
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(DEFAULT_BUILDER))).willReturn(builderImage);
-		given(docker.image().inspect(eq(BASE_CNB))).willReturn(runImage);
+		given(docker.image().inspect(eq(DEFAULT_BUILDER), any())).willReturn(builderImage);
+		given(docker.image().inspect(eq(BASE_CNB), any())).willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.NEVER);
 		builder.build(request);
@@ -273,7 +276,7 @@ class BuilderTests {
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 		then(docker.image()).should(never()).pull(any(), any(), any());
-		then(docker.image()).should(times(2)).inspect(any());
+		then(docker.image()).should(times(2)).inspect(any(), any());
 	}
 
 	@Test
@@ -310,11 +313,11 @@ class BuilderTests {
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
-		given(docker.image().inspect(eq(DEFAULT_BUILDER)))
+		given(docker.image().inspect(eq(DEFAULT_BUILDER), any()))
 			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
 					null, null))
 			.willReturn(builderImage);
-		given(docker.image().inspect(eq(BASE_CNB)))
+		given(docker.image().inspect(eq(BASE_CNB), any()))
 			.willThrow(new TestDockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null,
 					null, null))
 			.willReturn(runImage);
@@ -326,7 +329,7 @@ class BuilderTests {
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
-		then(docker.image()).should(times(2)).inspect(any());
+		then(docker.image()).should(times(2)).inspect(any(), any());
 		then(docker.image()).should(times(2)).pull(any(), any(), any(), isNull());
 	}
 
@@ -399,6 +402,8 @@ class BuilderTests {
 		given(docker.image().pull(eq(DEFAULT_BUILDER), eq(platform), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image().pull(eq(BASE_CNB), eq(platform), any(), isNull())).willAnswer(withPulledImage(runImage));
+		given(docker.image().pull(eq(PLATFORM_CNB), eq(platform), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withImagePlatform("linux/arm64/v1");
 		builder.build(request);
@@ -407,6 +412,7 @@ class BuilderTests {
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().pull(eq(DEFAULT_BUILDER), eq(platform), any(), isNull());
 		then(docker.image()).should().pull(eq(BASE_CNB), eq(platform), any(), isNull());
+		then(docker.image()).should().pull(eq(PLATFORM_CNB), eq(platform), any(), isNull());
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 		then(docker.image()).shouldHaveNoMoreInteractions();

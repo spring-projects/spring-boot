@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -89,19 +91,24 @@ class DockerApiTests {
 
 	private static final String API_URL = "/v" + DockerApi.API_VERSION;
 
-	private static final String PLATFORM_API_URL = "/v" + DockerApi.PLATFORM_API_VERSION;
-
 	public static final String PING_URL = "/_ping";
 
 	private static final String IMAGES_URL = API_URL + "/images";
 
-	private static final String PLATFORM_IMAGES_URL = PLATFORM_API_URL + "/images";
+	private static final String PLATFORM_IMAGES_URL = "/v" + DockerApi.PLATFORM_API_VERSION + "/images";
+
+	private static final String PLATFORM_INSPECT_IMAGES_URL = "/v" + DockerApi.PLATFORM_INSPECT_API_VERSION + "/images";
 
 	private static final String CONTAINERS_URL = API_URL + "/containers";
 
-	private static final String PLATFORM_CONTAINERS_URL = PLATFORM_API_URL + "/containers";
+	private static final String PLATFORM_CONTAINERS_URL = "/v" + DockerApi.PLATFORM_API_VERSION + "/containers";
 
 	private static final String VOLUMES_URL = API_URL + "/volumes";
+
+	private static final ImagePlatform LINUX_ARM64_PLATFORM = ImagePlatform.of("linux/arm64/v1");
+
+	private static final String ENCODED_LINUX_ARM64_PLATFORM_JSON = URLEncoder.encode(LINUX_ARM64_PLATFORM.toJson(),
+			StandardCharsets.UTF_8);
 
 	@Mock
 	private HttpTransport http;
@@ -236,15 +243,15 @@ class DockerApiTests {
 		@Test
 		void pullWithPlatformPullsImageAndProducesEvents() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
 			URI createUri = new URI(PLATFORM_IMAGES_URL
 					+ "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase&platform=linux%2Farm64%2Fv1");
-			URI imageUri = new URI(PLATFORM_IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			URI imageUri = new URI(PLATFORM_INSPECT_IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json?platform="
+					+ ENCODED_LINUX_ARM64_PLATFORM_JSON);
 			given(http().head(eq(new URI(PING_URL))))
-				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.41")));
+				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.49")));
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
-			Image image = this.api.pull(reference, platform, this.pullListener);
+			Image image = this.api.pull(reference, LINUX_ARM64_PLATFORM, this.pullListener);
 			assertThat(image.getLayers()).hasSize(46);
 			InOrder ordered = inOrder(this.pullListener);
 			ordered.verify(this.pullListener).onStart();
@@ -388,6 +395,32 @@ class DockerApiTests {
 			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.inspect(reference);
+			assertThat(image.getArchitecture()).isEqualTo("amd64");
+			assertThat(image.getLayers()).hasSize(46);
+		}
+
+		@Test
+		void inspectWithPlatformWhenSupportedVersionInspectImage() throws Exception {
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI imageUri = new URI(PLATFORM_INSPECT_IMAGES_URL
+					+ "/docker.io/paketobuildpacks/builder:base/json?platform=" + ENCODED_LINUX_ARM64_PLATFORM_JSON);
+			given(http().head(eq(new URI(PING_URL)))).willReturn(responseWithHeaders(
+					new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.PLATFORM_INSPECT_API_VERSION)));
+			given(http().get(imageUri)).willReturn(responseOf("type/image-platform.json"));
+			Image image = this.api.inspect(reference, LINUX_ARM64_PLATFORM);
+			assertThat(image.getArchitecture()).isEqualTo("arm64");
+			assertThat(image.getLayers()).hasSize(2);
+		}
+
+		@Test
+		void inspectWithPlatformWhenOldVersionInspectImage() throws Exception {
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
+			given(http().head(eq(new URI(PING_URL)))).willReturn(responseWithHeaders(
+					new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.PLATFORM_API_VERSION)));
+			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
+			Image image = this.api.inspect(reference, LINUX_ARM64_PLATFORM);
+			assertThat(image.getArchitecture()).isEqualTo("amd64");
 			assertThat(image.getLayers()).hasSize(46);
 		}
 
