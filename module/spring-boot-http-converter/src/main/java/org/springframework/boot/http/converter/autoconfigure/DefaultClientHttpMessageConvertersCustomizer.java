@@ -54,14 +54,26 @@ class DefaultClientHttpMessageConvertersCustomizer implements ClientHttpMessageC
 				else if (converter instanceof KotlinSerializationJsonHttpMessageConverter) {
 					builder.withKotlinSerializationJsonConverter(converter);
 				}
-				else if (converter.getSupportedMediaTypes().contains(MediaType.APPLICATION_JSON)) {
+				else if (supportsMediaType(converter, MediaType.APPLICATION_JSON)) {
 					builder.withJsonConverter(converter);
+				}
+				else if (supportsMediaType(converter, MediaType.APPLICATION_XML)) {
+					builder.withXmlConverter(converter);
 				}
 				else {
 					builder.addCustomConverter(converter);
 				}
 			});
 		}
+	}
+
+	private static boolean supportsMediaType(HttpMessageConverter<?> converter, MediaType mediaType) {
+		for (MediaType supportedMediaType : converter.getSupportedMediaTypes()) {
+			if (supportedMediaType.equalsTypeAndSubtype(mediaType)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
