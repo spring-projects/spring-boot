@@ -144,7 +144,7 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class NullContainer {
 
-		static @Nullable PostgreSQLContainer container = null;
+		static @Nullable PostgreSQLContainer container;
 
 	}
 

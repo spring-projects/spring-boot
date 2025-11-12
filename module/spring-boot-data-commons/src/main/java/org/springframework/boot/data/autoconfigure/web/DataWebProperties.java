@@ -60,7 +60,7 @@ public class DataWebProperties {
 		 * Whether to expose and assume 1-based page number indexes. Defaults to "false",
 		 * meaning a page number of 0 in the request equals the first page.
 		 */
-		private boolean oneIndexedParameters = false;
+		private boolean oneIndexedParameters;
 
 		/**
 		 * General prefix to be prepended to the page number and page size parameters.

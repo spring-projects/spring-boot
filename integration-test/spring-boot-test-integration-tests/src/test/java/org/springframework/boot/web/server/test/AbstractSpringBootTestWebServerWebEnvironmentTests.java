@@ -54,10 +54,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@LocalServerPort
-	private int port = 0;
+	private int port;
 
 	@Value("${value}")
-	private int value = 0;
+	private int value;
 
 	@Autowired
 	private WebApplicationContext context;

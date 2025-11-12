@@ -59,12 +59,12 @@ public class QuartzProperties {
 	/**
 	 * Whether to wait for running jobs to complete on shutdown.
 	 */
-	private boolean waitForJobsToCompleteOnShutdown = false;
+	private boolean waitForJobsToCompleteOnShutdown;
 
 	/**
 	 * Whether configured jobs should overwrite existing job definitions.
 	 */
-	private boolean overwriteExistingJobs = false;
+	private boolean overwriteExistingJobs;
 
 	/**
 	 * Additional Quartz Scheduler properties.

@@ -64,12 +64,12 @@ public class JpaProperties {
 	/**
 	 * Whether to initialize the schema on startup.
 	 */
-	private boolean generateDdl = false;
+	private boolean generateDdl;
 
 	/**
 	 * Whether to enable logging of SQL statements.
 	 */
-	private boolean showSql = false;
+	private boolean showSql;
 
 	/**
 	 * Register OpenEntityManagerInViewInterceptor. Binds a JPA EntityManager to the

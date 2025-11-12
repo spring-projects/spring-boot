@@ -235,7 +235,7 @@ public class ServerProperties {
 		/**
 		 * Whether to register the default Servlet with the container.
 		 */
-		private boolean registerDefaultServlet = false;
+		private boolean registerDefaultServlet;
 
 		private final Encoding encoding = new Encoding();
 

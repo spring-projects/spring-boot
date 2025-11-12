@@ -32,7 +32,7 @@ public class DataSourceHealthIndicatorProperties {
 	 * Whether to ignore AbstractRoutingDataSources when creating database health
 	 * indicators.
 	 */
-	private boolean ignoreRoutingDataSources = false;
+	private boolean ignoreRoutingDataSources;
 
 	public boolean isIgnoreRoutingDataSources() {
 		return this.ignoreRoutingDataSources;

@@ -67,7 +67,7 @@ public class ElasticsearchProperties {
 	/**
 	 * Whether to enable socket keep alive between client and Elasticsearch.
 	 */
-	private boolean socketKeepAlive = false;
+	private boolean socketKeepAlive;
 
 	/**
 	 * Prefix added to the path of every request sent to Elasticsearch.

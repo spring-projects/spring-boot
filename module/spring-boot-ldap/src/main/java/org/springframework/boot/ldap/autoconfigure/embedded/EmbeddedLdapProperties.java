@@ -39,7 +39,7 @@ public class EmbeddedLdapProperties {
 	/**
 	 * Embedded LDAP port.
 	 */
-	private int port = 0;
+	private int port;
 
 	/**
 	 * Embedded LDAP credentials.

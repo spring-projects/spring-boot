@@ -407,7 +407,7 @@ public class TomcatServerProperties {
 		/**
 		 * Enable access log.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * Whether logging of the request will only be enabled if
@@ -458,7 +458,7 @@ public class TomcatServerProperties {
 		 * Whether to check for log file existence so it can be recreated if an external
 		 * process has renamed it.
 		 */
-		private boolean checkExists = false;
+		private boolean checkExists;
 
 		/**
 		 * Whether to enable access log rotation.
@@ -469,7 +469,7 @@ public class TomcatServerProperties {
 		 * Whether to defer inclusion of the date stamp in the file name until rotate
 		 * time.
 		 */
-		private boolean renameOnRotate = false;
+		private boolean renameOnRotate;
 
 		/**
 		 * Number of days to retain the access log files before they are removed.
@@ -484,13 +484,13 @@ public class TomcatServerProperties {
 		/**
 		 * Whether to use IPv6 canonical representation format as defined by RFC 5952.
 		 */
-		private boolean ipv6Canonical = false;
+		private boolean ipv6Canonical;
 
 		/**
 		 * Set request attributes for the IP address, Hostname, protocol, and port used
 		 * for the request.
 		 */
-		private boolean requestAttributesEnabled = false;
+		private boolean requestAttributesEnabled;
 
 		/**
 		 * Whether to buffer output such that it is flushed only periodically.

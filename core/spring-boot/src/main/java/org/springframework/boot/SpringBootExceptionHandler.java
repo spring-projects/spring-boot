@@ -48,7 +48,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 
 	private final List<Throwable> loggedExceptions = new ArrayList<>();
 
-	private int exitCode = 0;
+	private int exitCode;
 
 	SpringBootExceptionHandler(@Nullable UncaughtExceptionHandler parent) {
 		this.parent = parent;

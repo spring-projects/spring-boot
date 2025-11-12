@@ -193,7 +193,7 @@ public class DevToolsProperties {
 		/**
 		 * Whether to enable a livereload.com-compatible server.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * Server port.

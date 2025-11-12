@@ -252,7 +252,7 @@ public class FlywayProperties {
 	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
 	 * naming convention.
 	 */
-	private boolean validateMigrationNaming = false;
+	private boolean validateMigrationNaming;
 
 	/**
 	 * Whether to automatically call validate when performing a migration.

@@ -940,7 +940,7 @@ public class RabbitProperties {
 		 * Whether to fail if the queues declared by the container are not available on
 		 * the broker.
 		 */
-		private boolean missingQueuesFatal = false;
+		private boolean missingQueuesFatal;
 
 		public @Nullable Integer getConsumersPerQueue() {
 			return this.consumersPerQueue;

@@ -373,7 +373,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private final @Nullable ConfigurationPropertyName[] names;
 
-		private int index = 0;
+		private int index;
 
 		ConfigurationPropertyNamesIterator(@Nullable ConfigurationPropertyName[] names) {
 			this.names = names;

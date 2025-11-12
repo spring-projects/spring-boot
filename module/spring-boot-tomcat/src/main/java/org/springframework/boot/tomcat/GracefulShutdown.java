@@ -44,7 +44,7 @@ final class GracefulShutdown {
 
 	private final Tomcat tomcat;
 
-	private volatile boolean aborted = false;
+	private volatile boolean aborted;
 
 	GracefulShutdown(Tomcat tomcat) {
 		this.tomcat = tomcat;

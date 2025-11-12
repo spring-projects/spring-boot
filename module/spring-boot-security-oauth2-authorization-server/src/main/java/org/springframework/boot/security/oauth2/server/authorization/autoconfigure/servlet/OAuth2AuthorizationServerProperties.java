@@ -50,7 +50,7 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	 * the issuer identifier enables supporting multiple issuers per host in a
 	 * multi-tenant hosting configuration.
 	 */
-	private boolean multipleIssuersAllowed = false;
+	private boolean multipleIssuersAllowed;
 
 	/**
 	 * Registered clients of the Authorization Server.
@@ -294,7 +294,7 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		/**
 		 * Whether authorization consent is required when the client requests access.
 		 */
-		private boolean requireAuthorizationConsent = false;
+		private boolean requireAuthorizationConsent;
 
 		/**
 		 * URL for the client's JSON Web Key Set.

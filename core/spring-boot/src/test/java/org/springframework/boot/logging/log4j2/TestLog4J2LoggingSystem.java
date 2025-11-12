@@ -22,7 +22,7 @@ import org.jspecify.annotations.Nullable;
 
 class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
-	private boolean disableSelfInitialization = false;
+	private boolean disableSelfInitialization;
 
 	TestLog4J2LoggingSystem(String contextName) {
 		// Tests add resources to the thread context classloader

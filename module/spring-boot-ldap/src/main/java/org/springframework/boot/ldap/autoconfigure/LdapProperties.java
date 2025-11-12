@@ -159,13 +159,13 @@ public class LdapProperties {
 		 * Whether PartialResultException should be ignored in searches through the
 		 * LdapTemplate.
 		 */
-		private boolean ignorePartialResultException = false;
+		private boolean ignorePartialResultException;
 
 		/**
 		 * Whether NameNotFoundException should be ignored in searches through the
 		 * LdapTemplate.
 		 */
-		private boolean ignoreNameNotFoundException = false;
+		private boolean ignoreNameNotFoundException;
 
 		/**
 		 * Whether SizeLimitExceededException should be ignored in searches through the

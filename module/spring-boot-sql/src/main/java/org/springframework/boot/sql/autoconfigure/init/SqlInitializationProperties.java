@@ -65,7 +65,7 @@ public class SqlInitializationProperties {
 	/**
 	 * Whether initialization should continue when an error occurs.
 	 */
-	private boolean continueOnError = false;
+	private boolean continueOnError;
 
 	/**
 	 * Statement separator in the schema and data scripts.

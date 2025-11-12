@@ -477,7 +477,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private String myTestProperty = "654321";
 
-		private @Nullable String nullValue = null;
+		private @Nullable String nullValue;
 
 		private Duration duration = Duration.ofSeconds(10);
 
