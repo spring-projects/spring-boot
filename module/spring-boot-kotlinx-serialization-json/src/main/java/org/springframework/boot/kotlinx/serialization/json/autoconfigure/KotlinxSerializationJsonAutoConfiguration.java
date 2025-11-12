@@ -81,21 +81,20 @@ public final class KotlinxSerializationJsonAutoConfiguration {
 			KotlinxSerializationJsonProperties properties = this.properties;
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getNamingStrategy).to(setNamingStrategy(jsonBuilder));
-			map.from(properties::getPrettyPrint).to(jsonBuilder::setPrettyPrint);
-			map.from(properties::getLenient).to(jsonBuilder::setLenient);
-			map.from(properties::getIgnoreUnknownKeys).to(jsonBuilder::setIgnoreUnknownKeys);
-			map.from(properties::getEncodeDefaults).to(jsonBuilder::setEncodeDefaults);
-			map.from(properties::getExplicitNulls).to(jsonBuilder::setExplicitNulls);
-			map.from(properties::getCoerceInputValues).to(jsonBuilder::setCoerceInputValues);
-			map.from(properties::getAllowStructuredMapKeys).to(jsonBuilder::setAllowStructuredMapKeys);
-			map.from(properties::getAllowSpecialFloatingPointValues)
-				.to(jsonBuilder::setAllowSpecialFloatingPointValues);
+			map.from(properties::isPrettyPrint).to(jsonBuilder::setPrettyPrint);
+			map.from(properties::isLenient).to(jsonBuilder::setLenient);
+			map.from(properties::isIgnoreUnknownKeys).to(jsonBuilder::setIgnoreUnknownKeys);
+			map.from(properties::isEncodeDefaults).to(jsonBuilder::setEncodeDefaults);
+			map.from(properties::isExplicitNulls).to(jsonBuilder::setExplicitNulls);
+			map.from(properties::isCoerceInputValues).to(jsonBuilder::setCoerceInputValues);
+			map.from(properties::isAllowStructuredMapKeys).to(jsonBuilder::setAllowStructuredMapKeys);
+			map.from(properties::isAllowSpecialFloatingPointValues).to(jsonBuilder::setAllowSpecialFloatingPointValues);
 			map.from(properties::getClassDiscriminator).to(jsonBuilder::setClassDiscriminator);
 			map.from(properties::getClassDiscriminatorMode).to(jsonBuilder::setClassDiscriminatorMode);
-			map.from(properties::getDecodeEnumsCaseInsensitive).to(jsonBuilder::setDecodeEnumsCaseInsensitive);
-			map.from(properties::getUseAlternativeNames).to(jsonBuilder::setUseAlternativeNames);
-			map.from(properties::getAllowTrailingComma).to(jsonBuilder::setAllowTrailingComma);
-			map.from(properties::getAllowComments).to(jsonBuilder::setAllowComments);
+			map.from(properties::isDecodeEnumsCaseInsensitive).to(jsonBuilder::setDecodeEnumsCaseInsensitive);
+			map.from(properties::isUseAlternativeNames).to(jsonBuilder::setUseAlternativeNames);
+			map.from(properties::isAllowTrailingComma).to(jsonBuilder::setAllowTrailingComma);
+			map.from(properties::isAllowComments).to(jsonBuilder::setAllowComments);
 		}
 
 		private Consumer<KotlinxSerializationJsonProperties.JsonNamingStrategy> setNamingStrategy(JsonBuilder builder) {

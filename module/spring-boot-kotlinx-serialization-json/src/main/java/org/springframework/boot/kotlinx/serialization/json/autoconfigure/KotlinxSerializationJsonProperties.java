@@ -38,83 +38,82 @@ public class KotlinxSerializationJsonProperties {
 	private @Nullable JsonNamingStrategy namingStrategy;
 
 	/**
-	 * Whether resulting JSON should be pretty-printed: formatted and optimized for human
-	 * readability.
+	 * Whether resulting JSON should be pretty-printed.
 	 */
-	private @Nullable Boolean prettyPrint;
+	private boolean prettyPrint;
 
 	/**
-	 * Enable lenient mode that removes JSON specification restriction (RFC-4627) and
-	 * makes parser more liberal to the malformed input.
+	 * Whether parser should operate in lenient mode, removing the JSON specification
+	 * restriction (RFC-4627) and being more liberal to malformed input.
 	 */
-	private @Nullable Boolean lenient;
+	private boolean lenient;
 
 	/**
 	 * Whether encounters of unknown properties in the input JSON should be ignored
 	 * instead of throwing SerializationException.
 	 */
-	private @Nullable Boolean ignoreUnknownKeys;
+	private boolean ignoreUnknownKeys;
 
 	/**
 	 * Whether default values of Kotlin properties should be encoded.
 	 */
-	private @Nullable Boolean encodeDefaults;
+	private boolean encodeDefaults;
 
 	/**
 	 * Whether null values should be encoded for nullable properties and must be present
 	 * in JSON object during decoding.
 	 */
-	private @Nullable Boolean explicitNulls;
+	private boolean explicitNulls = true;
 
 	/**
-	 * Enable coercing incorrect JSON values.
+	 * Whether to coerce incorrect JSON values.
 	 */
-	private @Nullable Boolean coerceInputValues;
+	private boolean coerceInputValues;
 
 	/**
-	 * Enable structured objects to be serialized as map keys by changing serialized form
-	 * of the map from JSON object (key-value pairs) to flat array like [k1, v1, k2, v2].
+	 * Whether to allow structured objects to be serialized as map keys by changing the
+	 * serialized form of the map from JSON object (key-value pairs) to flat array like
+	 * [k1, v1, k2, v2].
 	 */
-	private @Nullable Boolean allowStructuredMapKeys;
+	private boolean allowStructuredMapKeys;
 
 	/**
-	 * Whether to remove JSON specification restriction on special floating-point values
-	 * such as 'NaN' and 'Infinity' and enable their serialization and deserialization as
-	 * float literals without quotes.
+	 * Whether to remove the JSON specification restriction on special floating-point
+	 * values such as 'NaN' and 'Infinity' and allow their serialization and
+	 * deserialization as float literals without quotes.
 	 */
-	private @Nullable Boolean allowSpecialFloatingPointValues;
+	private boolean allowSpecialFloatingPointValues;
 
 	/**
 	 * Name of the class descriptor property for polymorphic serialization.
 	 */
-	private @Nullable String classDiscriminator;
+	private String classDiscriminator = "type";
 
 	/**
 	 * Defines which classes and objects should have class discriminator added to the
 	 * output.
 	 */
-	private @Nullable ClassDiscriminatorMode classDiscriminatorMode;
+	private ClassDiscriminatorMode classDiscriminatorMode = ClassDiscriminatorMode.POLYMORPHIC;
 
 	/**
-	 * Enable decoding enum values in a case-insensitive manner.
+	 * Whether enum values are decoded in a case-insensitive manner.
 	 */
-	private @Nullable Boolean decodeEnumsCaseInsensitive;
+	private boolean decodeEnumsCaseInsensitive;
 
 	/**
 	 * Whether Json instance makes use of JsonNames annotation.
 	 */
-	private @Nullable Boolean useAlternativeNames;
+	private boolean useAlternativeNames = true;
 
 	/**
-	 * Whether to allow parser to accept trailing (ending) commas in JSON objects and
-	 * arrays.
+	 * Whether to allow parser to accept trailing commas in JSON objects and arrays.
 	 */
-	private @Nullable Boolean allowTrailingComma;
+	private boolean allowTrailingComma;
 
 	/**
 	 * Whether to allow parser to accept C/Java-style comments in JSON input.
 	 */
-	private @Nullable Boolean allowComments;
+	private boolean allowComments;
 
 	public @Nullable JsonNamingStrategy getNamingStrategy() {
 		return this.namingStrategy;
@@ -124,115 +123,115 @@ public class KotlinxSerializationJsonProperties {
 		this.namingStrategy = namingStrategy;
 	}
 
-	public @Nullable Boolean getPrettyPrint() {
+	public boolean isPrettyPrint() {
 		return this.prettyPrint;
 	}
 
-	public void setPrettyPrint(@Nullable Boolean prettyPrint) {
+	public void setPrettyPrint(boolean prettyPrint) {
 		this.prettyPrint = prettyPrint;
 	}
 
-	public @Nullable Boolean getLenient() {
+	public boolean isLenient() {
 		return this.lenient;
 	}
 
-	public void setLenient(@Nullable Boolean lenient) {
+	public void setLenient(boolean lenient) {
 		this.lenient = lenient;
 	}
 
-	public @Nullable Boolean getIgnoreUnknownKeys() {
+	public boolean isIgnoreUnknownKeys() {
 		return this.ignoreUnknownKeys;
 	}
 
-	public void setIgnoreUnknownKeys(@Nullable Boolean ignoreUnknownKeys) {
+	public void setIgnoreUnknownKeys(boolean ignoreUnknownKeys) {
 		this.ignoreUnknownKeys = ignoreUnknownKeys;
 	}
 
-	public @Nullable Boolean getEncodeDefaults() {
+	public boolean isEncodeDefaults() {
 		return this.encodeDefaults;
 	}
 
-	public void setEncodeDefaults(@Nullable Boolean encodeDefaults) {
+	public void setEncodeDefaults(boolean encodeDefaults) {
 		this.encodeDefaults = encodeDefaults;
 	}
 
-	public @Nullable Boolean getExplicitNulls() {
+	public boolean isExplicitNulls() {
 		return this.explicitNulls;
 	}
 
-	public void setExplicitNulls(@Nullable Boolean explicitNulls) {
+	public void setExplicitNulls(boolean explicitNulls) {
 		this.explicitNulls = explicitNulls;
 	}
 
-	public @Nullable Boolean getCoerceInputValues() {
+	public boolean isCoerceInputValues() {
 		return this.coerceInputValues;
 	}
 
-	public void setCoerceInputValues(@Nullable Boolean coerceInputValues) {
+	public void setCoerceInputValues(boolean coerceInputValues) {
 		this.coerceInputValues = coerceInputValues;
 	}
 
-	public @Nullable Boolean getAllowStructuredMapKeys() {
+	public boolean isAllowStructuredMapKeys() {
 		return this.allowStructuredMapKeys;
 	}
 
-	public void setAllowStructuredMapKeys(@Nullable Boolean allowStructuredMapKeys) {
+	public void setAllowStructuredMapKeys(boolean allowStructuredMapKeys) {
 		this.allowStructuredMapKeys = allowStructuredMapKeys;
 	}
 
-	public @Nullable Boolean getAllowSpecialFloatingPointValues() {
+	public boolean isAllowSpecialFloatingPointValues() {
 		return this.allowSpecialFloatingPointValues;
 	}
 
-	public void setAllowSpecialFloatingPointValues(@Nullable Boolean allowSpecialFloatingPointValues) {
+	public void setAllowSpecialFloatingPointValues(boolean allowSpecialFloatingPointValues) {
 		this.allowSpecialFloatingPointValues = allowSpecialFloatingPointValues;
 	}
 
-	public @Nullable String getClassDiscriminator() {
+	public String getClassDiscriminator() {
 		return this.classDiscriminator;
 	}
 
-	public void setClassDiscriminator(@Nullable String classDiscriminator) {
+	public void setClassDiscriminator(String classDiscriminator) {
 		this.classDiscriminator = classDiscriminator;
 	}
 
-	public @Nullable ClassDiscriminatorMode getClassDiscriminatorMode() {
+	public ClassDiscriminatorMode getClassDiscriminatorMode() {
 		return this.classDiscriminatorMode;
 	}
 
-	public void setClassDiscriminatorMode(@Nullable ClassDiscriminatorMode classDiscriminatorMode) {
+	public void setClassDiscriminatorMode(ClassDiscriminatorMode classDiscriminatorMode) {
 		this.classDiscriminatorMode = classDiscriminatorMode;
 	}
 
-	public @Nullable Boolean getDecodeEnumsCaseInsensitive() {
+	public boolean isDecodeEnumsCaseInsensitive() {
 		return this.decodeEnumsCaseInsensitive;
 	}
 
-	public void setDecodeEnumsCaseInsensitive(@Nullable Boolean decodeEnumsCaseInsensitive) {
+	public void setDecodeEnumsCaseInsensitive(boolean decodeEnumsCaseInsensitive) {
 		this.decodeEnumsCaseInsensitive = decodeEnumsCaseInsensitive;
 	}
 
-	public @Nullable Boolean getUseAlternativeNames() {
+	public boolean isUseAlternativeNames() {
 		return this.useAlternativeNames;
 	}
 
-	public void setUseAlternativeNames(@Nullable Boolean useAlternativeNames) {
+	public void setUseAlternativeNames(boolean useAlternativeNames) {
 		this.useAlternativeNames = useAlternativeNames;
 	}
 
-	public @Nullable Boolean getAllowTrailingComma() {
+	public boolean isAllowTrailingComma() {
 		return this.allowTrailingComma;
 	}
 
-	public void setAllowTrailingComma(@Nullable Boolean allowTrailingComma) {
+	public void setAllowTrailingComma(boolean allowTrailingComma) {
 		this.allowTrailingComma = allowTrailingComma;
 	}
 
-	public @Nullable Boolean getAllowComments() {
+	public boolean isAllowComments() {
 		return this.allowComments;
 	}
 
-	public void setAllowComments(@Nullable Boolean allowComments) {
+	public void setAllowComments(boolean allowComments) {
 		this.allowComments = allowComments;
 	}
 
