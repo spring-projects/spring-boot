@@ -303,7 +303,7 @@ bom {
 			releaseNotes("https://github.com/CycloneDX/cyclonedx-maven-plugin/releases/tag/cyclonedx-maven-plugin-{version}")
 		}
 	}
-	library("DB2 JDBC", "12.1.2.0") {
+	library("DB2 JDBC", "12.1.3.0") {
 		group("com.ibm.db2") {
 			modules = [
 				"jcc"
