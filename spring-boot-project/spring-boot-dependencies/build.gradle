@@ -199,6 +199,10 @@ bom {
 		}
 	}
 	library("Cassandra Driver", "4.19.0") {
+		prohibit {
+			versionRange "[4.19.1]"
+			because "it contains a regression, see https://github.com/spring-projects/spring-data-cassandra/issues/1617"
+		}
 		group("org.apache.cassandra") {
 			bom("java-driver-bom") {
 				permit("com.datastax.oss:native-protocol")
