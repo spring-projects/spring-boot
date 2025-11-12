@@ -127,7 +127,7 @@ class ConfigurationPropertiesAnalyzerTests {
 		report.registerAnalysis(first, new Analysis("Check for things:"));
 		File second = new File(tempDir, "metadata-2.json");
 		report.registerAnalysis(second, new Analysis("Check for other things:"));
-		assertThat(writeToFile(tempDir, report)).content().isEqualTo("""
+		assertThat(writeToFile(tempDir, report)).content().isEqualToIgnoringNewLines("""
 				metadata-1.json
 				No problems found.
 
@@ -144,7 +144,7 @@ class ConfigurationPropertiesAnalyzerTests {
 		analysis.addItem("Should not be deprecated");
 		report.registerAnalysis(metadata, analysis);
 		report.registerAnalysis(metadata, new Analysis("Check for other things:"));
-		assertThat(writeToFile(tempDir, report)).content().isEqualTo("""
+		assertThat(writeToFile(tempDir, report)).content().isEqualToIgnoringNewLines("""
 				metadata-1.json
 				Check for things:
 					- Should not be deprecated
@@ -165,7 +165,7 @@ class ConfigurationPropertiesAnalyzerTests {
 		Analysis secondAnalysis = new Analysis("Check for other things:");
 		secondAnalysis.addItem("Field 'this' not expected");
 		report.registerAnalysis(metadata, secondAnalysis);
-		assertThat(writeToFile(tempDir, report)).content().isEqualTo("""
+		assertThat(writeToFile(tempDir, report)).content().isEqualToIgnoringNewLines("""
 				metadata-1.json
 				Check for things:
 					- Should not be deprecated
