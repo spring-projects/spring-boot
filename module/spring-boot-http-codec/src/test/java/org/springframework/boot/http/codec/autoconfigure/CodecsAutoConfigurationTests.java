@@ -17,8 +17,10 @@
 package org.springframework.boot.http.codec.autoconfigure;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kotlinx.serialization.json.Json;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -30,8 +32,13 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
+import org.springframework.http.MediaType;
 import org.springframework.http.codec.CodecConfigurer;
 import org.springframework.http.codec.CodecConfigurer.DefaultCodecs;
+import org.springframework.http.codec.EncoderHttpMessageWriter;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.codec.json.KotlinSerializationJsonEncoder;
 import org.springframework.http.codec.support.DefaultClientCodecConfigurer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -132,6 +139,40 @@ class CodecsAutoConfigurationTests {
 					1048576));
 	}
 
+	@Test
+	void kotlinSerializationUsesLimitedPredicateWhenOtherJsonConverterIsAvailable() {
+		this.contextRunner.withUserConfiguration(KotlinxJsonConfiguration.class).run((context) -> {
+			KotlinSerializationJsonEncoder encoder = findEncoder(context, KotlinSerializationJsonEncoder.class);
+			assertThat(encoder.canEncode(ResolvableType.forClass(Map.class), MediaType.APPLICATION_JSON)).isFalse();
+		});
+	}
+
+	@Test
+	void kotlinSerializationUsesUnrestrictedPredicateWhenNoOtherJsonConverterIsAvailable() {
+		FilteredClassLoader classLoader = new FilteredClassLoader(JsonMapper.class.getPackage().getName(),
+				ObjectMapper.class.getPackage().getName());
+		this.contextRunner.withClassLoader(classLoader)
+			.withUserConfiguration(KotlinxJsonConfiguration.class)
+			.run((context) -> {
+				KotlinSerializationJsonEncoder encoder = findEncoder(context, KotlinSerializationJsonEncoder.class);
+				assertThat(encoder.canEncode(ResolvableType.forClass(Map.class), MediaType.APPLICATION_JSON)).isTrue();
+			});
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T findEncoder(AssertableApplicationContext context, Class<T> encoderClass) {
+		ServerCodecConfigurer configurer = ServerCodecConfigurer.create();
+		context.getBeansOfType(CodecCustomizer.class).values().forEach((codec) -> codec.customize(configurer));
+		return (T) configurer.getWriters()
+			.stream()
+			.filter((writer) -> writer instanceof EncoderHttpMessageWriter<?>)
+			.map((writer) -> (EncoderHttpMessageWriter<?>) writer)
+			.map(EncoderHttpMessageWriter::getEncoder)
+			.filter((encoder) -> encoderClass.isAssignableFrom(encoder.getClass()))
+			.findFirst()
+			.orElseThrow();
+	}
+
 	private DefaultCodecs defaultCodecs(AssertableApplicationContext context) {
 		CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
 		CodecConfigurer configurer = new DefaultClientCodecConfigurer();
@@ -155,6 +196,16 @@ class CodecsAutoConfigurationTests {
 		@Bean
 		ObjectMapper objectMapper() {
 			return new ObjectMapper();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class KotlinxJsonConfiguration {
+
+		@Bean
+		Json kotlinxJson() {
+			return Json.Default;
 		}
 
 	}
