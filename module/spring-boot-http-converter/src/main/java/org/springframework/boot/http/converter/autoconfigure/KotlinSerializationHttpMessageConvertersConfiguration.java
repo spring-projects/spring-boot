@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter;
 
 /**
@@ -40,7 +39,6 @@ class KotlinSerializationHttpMessageConvertersConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@Order(-10) // configured ahead of JSON mappers
 	KotlinSerializationJsonHttpMessageConverter kotlinSerializationJsonHttpMessageConverter(Json json) {
 		return new KotlinSerializationJsonHttpMessageConverter(json);
 	}
