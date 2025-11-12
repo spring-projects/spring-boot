@@ -64,6 +64,20 @@ class ImagePlatformTests extends AbstractJsonTests {
 		assertThat(platform.toString()).isEqualTo("linux/amd64/v1");
 	}
 
+	@Test
+	void toJsonString() {
+		ImagePlatform platform = ImagePlatform.of("linux/amd64/v1");
+		assertThat(platform.toJson()).isEqualTo("""
+				{"os":"linux","architecture":"amd64","variant":"v1"}""");
+	}
+
+	@Test
+	void toJsonStringWhenOnlyOs() {
+		ImagePlatform platform = ImagePlatform.of("linux");
+		assertThat(platform.toJson()).isEqualTo("""
+				{"os":"linux"}""");
+	}
+
 	private Image getImage() throws IOException {
 		return Image.of(getContent("type/image.json"));
 	}

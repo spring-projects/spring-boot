@@ -23,6 +23,7 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.buildpack.platform.docker.type.Image.Descriptor;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,6 +97,35 @@ class ImageTests extends AbstractJsonTests {
 	void getCreatedReturnsDate() throws Exception {
 		Image image = getImage();
 		assertThat(image.getCreated()).isEqualTo("2019-10-30T19:34:56.296666503Z");
+	}
+
+	@Test
+	void getDescriptorReturnsDescriptor() throws Exception {
+		Image image = getImage();
+		Descriptor descriptor = image.getDescriptor();
+		assertThat(descriptor).isNotNull();
+		assertThat(descriptor.getDigest())
+			.isEqualTo("sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96");
+	}
+
+	@Test
+	void getPrimaryDigestWhenHasDescriptor() throws Exception {
+		Image image = getImage();
+		assertThat(image.getPrimaryDigest())
+			.isEqualTo("sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96");
+	}
+
+	@Test
+	void getPrimaryDigestWhenNoDescriptor() throws Exception {
+		Image image = Image.of(getContent("image-no-descriptor.json"));
+		assertThat(image.getPrimaryDigest())
+			.isEqualTo("sha256:21635a6b4880772f3fabbf8b660907fa38636558cf787cc26f1779fc4b4e2cba");
+	}
+
+	@Test
+	void getPrimaryDigestWhenNoDigest() throws Exception {
+		Image image = Image.of(getContent("image-no-digest.json"));
+		assertThat(image.getPrimaryDigest()).isNull();
 	}
 
 	private Image getImage() throws IOException {
