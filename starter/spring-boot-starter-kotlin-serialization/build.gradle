@@ -23,5 +23,5 @@ description = "Starter for using Kotlin Serialization"
 dependencies {
 	api(project(":starter:spring-boot-starter"))
 
-	api(project(":module:spring-boot-kotlin-serialization"))
+	api(project(":module:spring-boot-kotlinx-serialization-json"))
 }

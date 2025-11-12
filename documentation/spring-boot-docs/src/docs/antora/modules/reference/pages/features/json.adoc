@@ -101,4 +101,4 @@ The preferred JSON-B implementation is Eclipse Yasson for which dependency manag
 
 Auto-configuration for Kotlin Serialization is provided.
 When `kotlinx-serialization-json` is on the classpath a https://kotlinlang.org/api/kotlinx.serialization/kotlinx-serialization-json/kotlinx.serialization.json/-json/[Json] bean is automatically configured.
-Several `+spring.kotlin.serialization.*+` configuration properties are provided for customizing the configuration.
+Several `+spring.kotlinx.serialization.json.*+` configuration properties are provided for customizing the configuration.

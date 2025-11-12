@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kotlin.serialization.autoconfigure;
+package org.springframework.boot.kotlinx.serialization.json.autoconfigure;
 
 import kotlinx.serialization.json.ClassDiscriminatorMode;
 import kotlinx.serialization.json.Json;
@@ -23,13 +23,13 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties to configure Kotlin Serialization {@link Json}.
+ * Configuration properties to configure Kotlinx Serialization {@link Json}.
  *
  * @author Dmitry Sulman
  * @since 4.0.0
  */
-@ConfigurationProperties("spring.kotlin.serialization")
-public class KotlinSerializationProperties {
+@ConfigurationProperties("spring.kotlinx.serialization.json")
+public class KotlinxSerializationJsonProperties {
 
 	/**
 	 * Specifies JsonNamingStrategy that should be used for all properties in classes for

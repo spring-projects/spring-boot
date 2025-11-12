@@ -24,7 +24,7 @@ plugins {
 	id "org.springframework.boot.optional-dependencies"
 }
 
-description = "Spring Boot Kotlin Serialization"
+description = "Spring Boot Kotlinx Serialization JSON"
 
 dependencies {
 	api(project(":core:spring-boot"))

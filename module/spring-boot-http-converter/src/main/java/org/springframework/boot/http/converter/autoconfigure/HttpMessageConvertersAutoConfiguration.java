@@ -55,7 +55,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 		"org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration",
 		"org.springframework.boot.jsonb.autoconfigure.JsonbAutoConfiguration",
 		"org.springframework.boot.gson.autoconfigure.GsonAutoConfiguration",
-		"org.springframework.boot.kotlin.serialization.autoconfigure.KotlinSerializationAutoConfiguration" })
+		"org.springframework.boot.kotlinx.serialization.json.autoconfigure.KotlinxSerializationJsonAutoConfiguration" })
 @ConditionalOnClass(HttpMessageConverter.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 @Import({ JacksonHttpMessageConvertersConfiguration.class, Jackson2HttpMessageConvertersConfiguration.class,

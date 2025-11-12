@@ -123,7 +123,7 @@ public abstract class DocumentConfigurationProperties extends DefaultTask {
 	private void jsonPrefixes(Config config) {
 		config.accept("spring.jackson");
 		config.accept("spring.gson");
-		config.accept("spring.kotlin.serialization");
+		config.accept("spring.kotlinx.serialization.json");
 	}
 
 	private void dataPrefixes(Config config) {

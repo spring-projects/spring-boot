@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kotlin.serialization.autoconfigure;
+package org.springframework.boot.kotlinx.serialization.json.autoconfigure;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,19 +36,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Kotlin Serialization.
+ * {@link EnableAutoConfiguration Auto-configuration} for Kotlinx Serialization JSON.
  *
  * @author Dmitry Sulman
  * @since 4.0.0
  */
 @AutoConfiguration
 @ConditionalOnClass(Json.class)
-@EnableConfigurationProperties(KotlinSerializationProperties.class)
-public final class KotlinSerializationAutoConfiguration {
+@EnableConfigurationProperties(KotlinxSerializationJsonProperties.class)
+public final class KotlinxSerializationJsonAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	Json kotlinSerializationJson(List<KotlinSerializationJsonBuilderCustomizer> customizers) {
+	Json kotlinSerializationJson(List<KotlinxSerializationJsonBuilderCustomizer> customizers) {
 		Function1<JsonBuilder, Unit> builderAction = (jsonBuilder) -> {
 			customizers.forEach((c) -> c.customize(jsonBuilder));
 			return Unit.INSTANCE;
@@ -58,16 +58,16 @@ public final class KotlinSerializationAutoConfiguration {
 
 	@Bean
 	StandardKotlinSerializationJsonBuilderCustomizer standardKotlinSerializationJsonBuilderCustomizer(
-			KotlinSerializationProperties kotlinSerializationProperties) {
+			KotlinxSerializationJsonProperties kotlinSerializationProperties) {
 		return new StandardKotlinSerializationJsonBuilderCustomizer(kotlinSerializationProperties);
 	}
 
 	static final class StandardKotlinSerializationJsonBuilderCustomizer
-			implements KotlinSerializationJsonBuilderCustomizer, Ordered {
+			implements KotlinxSerializationJsonBuilderCustomizer, Ordered {
 
-		private final KotlinSerializationProperties properties;
+		private final KotlinxSerializationJsonProperties properties;
 
-		StandardKotlinSerializationJsonBuilderCustomizer(KotlinSerializationProperties properties) {
+		StandardKotlinSerializationJsonBuilderCustomizer(KotlinxSerializationJsonProperties properties) {
 			this.properties = properties;
 		}
 
@@ -78,7 +78,7 @@ public final class KotlinSerializationAutoConfiguration {
 
 		@Override
 		public void customize(JsonBuilder jsonBuilder) {
-			KotlinSerializationProperties properties = this.properties;
+			KotlinxSerializationJsonProperties properties = this.properties;
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::getNamingStrategy).to(setNamingStrategy(jsonBuilder));
 			map.from(properties::getPrettyPrint).to(jsonBuilder::setPrettyPrint);
@@ -98,7 +98,7 @@ public final class KotlinSerializationAutoConfiguration {
 			map.from(properties::getAllowComments).to(jsonBuilder::setAllowComments);
 		}
 
-		private Consumer<KotlinSerializationProperties.JsonNamingStrategy> setNamingStrategy(JsonBuilder builder) {
+		private Consumer<KotlinxSerializationJsonProperties.JsonNamingStrategy> setNamingStrategy(JsonBuilder builder) {
 			return (strategy) -> {
 				JsonNamingStrategy namingStrategy = switch (strategy) {
 					case SNAKE_CASE -> JsonNamingStrategy.Builtins.getSnakeCase();

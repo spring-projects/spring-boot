@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.kotlin.serialization.autoconfigure;
+package org.springframework.boot.kotlinx.serialization.json.autoconfigure;
 
 import kotlinx.serialization.json.Json;
 import kotlinx.serialization.json.JsonBuilder;
@@ -27,7 +27,7 @@ import kotlinx.serialization.json.JsonBuilder;
  * @since 4.0.0
  */
 @FunctionalInterface
-public interface KotlinSerializationJsonBuilderCustomizer {
+public interface KotlinxSerializationJsonBuilderCustomizer {
 
 	/**
 	 * Customize the Kotlin Serialization {@link Json} through {@link JsonBuilder}.
