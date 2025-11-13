@@ -18,6 +18,9 @@ package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -105,19 +108,15 @@ public class ImagePlatform {
 	 * @return the JSON string
 	 */
 	public String toJson() {
-		StringBuilder json = new StringBuilder("{");
-		json.append(jsonPair("os", this.os));
+		ObjectNode json = SharedObjectMapper.get().createObjectNode();
+		json.put("os", this.os);
 		if (StringUtils.hasText(this.architecture)) {
-			json.append(",").append(jsonPair("architecture", this.architecture));
+			json.put("architecture", this.architecture);
 		}
 		if (StringUtils.hasText(this.variant)) {
-			json.append(",").append(jsonPair("variant", this.variant));
+			json.put("variant", this.variant);
 		}
-		return json.append("}").toString();
-	}
-
-	private String jsonPair(String name, String value) {
-		return "\"%s\":\"%s\"".formatted(name, value);
+		return json.toString();
 	}
 
 }
