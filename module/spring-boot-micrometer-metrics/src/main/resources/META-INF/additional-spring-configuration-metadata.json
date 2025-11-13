@@ -14,7 +14,6 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "replacement": "management.metrics.enable.process.files",
         "reason": "Instead, filter 'process.files' metrics."
       }
     },
@@ -25,7 +24,6 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "replacement": "management.metrics.enable.jvm",
         "reason": "Instead, disable JvmMetricsAutoConfiguration or filter 'jvm' metrics."
       }
     },
@@ -36,7 +34,6 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "replacement": "management.metrics.enable.logback",
         "reason": "Instead, disable LogbackMetricsAutoConfiguration or filter 'logback' metrics."
       }
     },
@@ -366,7 +363,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.device-id"
+        "replacement": "management.dynatrace.metrics.export.v1.device-id"
       }
     },
     {
@@ -382,7 +379,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.group"
+        "replacement": "management.dynatrace.metrics.export.v1.group"
       }
     },
     {
@@ -413,7 +410,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.technology-type"
+        "replacement": "management.dynatrace.metrics.export.v1.technology-type"
       }
     },
     {
@@ -1189,7 +1186,7 @@
       "type": "io.micrometer.prometheus.HistogramFlavor",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.histogram-flavor"
+        "reason": "No longer supported by the Prometheus client."
       }
     },
     {
@@ -1197,7 +1194,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.base-url"
+        "replacement": "management.prometheus.metrics.export.pushgateway.address"
       }
     },
     {
@@ -1269,7 +1266,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.access-token"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
@@ -1277,7 +1274,7 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.batch-size"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
@@ -1285,7 +1282,7 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.connect-timeout"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
@@ -1293,21 +1290,22 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.enabled"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
       "name": "management.metrics.export.signalfx.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
       "name": "management.metrics.export.signalfx.published-histogram-type",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.published-histogram-type"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
@@ -1315,7 +1313,7 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.read-timeout"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
@@ -1323,7 +1321,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.source"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
@@ -1331,7 +1329,7 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.step"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {
@@ -1339,7 +1337,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.signalfx.metrics.export.uri"
+        "reason": "SignalFX is no longer supported."
       }
     },
     {

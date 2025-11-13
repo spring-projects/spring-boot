@@ -370,6 +370,12 @@ def configurationPropertiesMetadataAggregate = aggregates.create("configurationP
 	usage = "configuration-properties-metadata"
 }
 
+def checkAggregatedSpringConfigurationMetadata = tasks.register("checkAggregatedSpringConfigurationMetadata", org.springframework.boot.build.context.properties.CheckAggregatedSpringConfigurationMetadata) {
+	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
+	reportLocation = layout.buildDirectory.file("checkAggregatedSpringConfigurationMetadata/report.txt")
+}
+tasks.named("check") { dependsOn checkAggregatedSpringConfigurationMetadata }
+
 tasks.register("documentConfigurationProperties", org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurationPropertiesMetadataAggregate.files
 	deprecated = false
