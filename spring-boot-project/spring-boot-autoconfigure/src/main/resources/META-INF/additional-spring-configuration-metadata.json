@@ -2127,7 +2127,7 @@
       "deprecation": {
         "replacement": "spring.kafka.producer.ssl.key-store-location",
         "level": "error",
-        "since": "3.0.0"
+        "since": "2.1.0"
       }
     },
     {
