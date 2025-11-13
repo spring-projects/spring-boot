@@ -34,7 +34,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "reason": "Each server behaves differently. Use server specific properties instead.",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -46,49 +47,56 @@
       "name": "server.jetty.accesslog.date-format",
       "deprecation": {
         "replacement": "server.jetty.accesslog.custom-format",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "server.jetty.accesslog.extended-format",
       "deprecation": {
         "replacement": "server.jetty.accesslog.format",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "server.jetty.accesslog.locale",
       "deprecation": {
         "replacement": "server.jetty.accesslog.custom-format",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "server.jetty.accesslog.log-cookies",
       "deprecation": {
         "replacement": "server.jetty.accesslog.custom-format",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "server.jetty.accesslog.log-latency",
       "deprecation": {
         "replacement": "server.jetty.accesslog.custom-format",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "server.jetty.accesslog.log-server",
       "deprecation": {
         "replacement": "server.jetty.accesslog.custom-format",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "server.jetty.accesslog.time-zone",
       "deprecation": {
         "replacement": "server.jetty.accesslog.custom-format",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -96,14 +104,16 @@
       "type": "org.springframework.util.unit.DataSize",
       "deprecation": {
         "replacement": "server.jetty.max-http-form-post-size",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "server.max-http-header-size",
       "deprecation": {
         "replacement": "server.max-http-request-header-size",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -113,14 +123,16 @@
       "defaultValue": 0,
       "deprecation": {
         "reason": "Use dedicated property for each container.",
-        "level": "error"
+        "level": "error",
+        "since": "2.0.0"
       }
     },
     {
       "name": "server.netty.max-chunk-size",
       "deprecation": {
         "reason": "Deprecated for removal in Reactor Netty.",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -207,14 +219,16 @@
       "defaultValue": "/",
       "deprecation": {
         "replacement": "spring.mvc.servlet.path",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
       "name": "server.servlet.session.cookie.comment",
       "description": "Comment for the cookie.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -358,13 +372,15 @@
       "type": "org.springframework.util.unit.DataSize",
       "deprecation": {
         "replacement": "server.tomcat.max-http-form-post-size",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
       "name": "server.tomcat.reject-illegal-header",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.7.12"
       }
     },
     {
@@ -372,7 +388,8 @@
       "type": "java.lang.Integer",
       "description": "Number of buffer per region.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "1.5.0"
       }
     },
     {
@@ -381,7 +398,8 @@
       "deprecation": {
         "reason": "Replaced to support additional strategies.",
         "replacement": "server.forward-headers-strategy",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -390,7 +408,8 @@
       "description": "Whether to create a connection on startup. Can be used to warm up the pool on startup.",
       "defaultValue": true,
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -399,13 +418,15 @@
       "description": "Connection expiration timeout.",
       "defaultValue": "0ms",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
       "name": "spring.activemq.pool.maximum-active-session-per-connection",
       "deprecation": {
-        "replacement": "spring.activemq.pool.max-sessions-per-connection"
+        "replacement": "spring.activemq.pool.max-sessions-per-connection",
+        "since": "2.1.0"
       }
     },
     {
@@ -414,7 +435,8 @@
       "description": "Reset the connection when a \"JMSException\" occurs.",
       "defaultValue": true,
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -450,13 +472,15 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.artemis.broker-url",
-        "level": "error"
+        "level": "error",
+        "since": "2.5.0"
       }
     },
     {
       "name": "spring.artemis.pool.maximum-active-session-per-connection",
       "deprecation": {
-        "replacement": "spring.artemis.pool.max-sessions-per-connection"
+        "replacement": "spring.artemis.pool.max-sessions-per-connection",
+        "since": "2.1.0"
       }
     },
     {
@@ -464,7 +488,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.artemis.broker-url",
-        "level": "error"
+        "level": "error",
+        "since": "2.5.0"
       }
     },
     {
@@ -477,7 +502,8 @@
       "type": "org.springframework.boot.sql.init.DatabaseInitializationMode",
       "deprecation": {
         "replacement": "spring.batch.jdbc.initialize-schema",
-        "level": "error"
+        "level": "error",
+        "since": "2.5.0"
       }
     },
     {
@@ -486,7 +512,8 @@
       "description": "Create the required batch tables on startup if necessary. Enabled automatically\n if no custom table prefix is set or if a custom schema is configured.",
       "deprecation": {
         "replacement": "spring.batch.jdbc.initialize-schema",
-        "level": "error"
+        "level": "error",
+        "since": "2.0.0"
       }
     },
     {
@@ -500,7 +527,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.batch.jdbc.schema",
-        "level": "error"
+        "level": "error",
+        "since": "2.5.0"
       }
     },
     {
@@ -508,7 +536,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.batch.jdbc.table-prefix",
-        "level": "error"
+        "level": "error",
+        "since": "2.5.0"
       }
     },
     {
@@ -558,7 +587,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.cassandra.ssl.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "3.1.0"
       }
     },
     {
@@ -567,7 +597,8 @@
       "description": "Couchbase nodes (host or IP address) to bootstrap from.",
       "deprecation": {
         "replacement": "spring.couchbase.connection-string",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -576,7 +607,8 @@
       "description": "Name of the bucket to connect to.",
       "deprecation": {
         "reason": "A bucket is no longer auto-configured.",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -585,7 +617,8 @@
       "description": "Password of the bucket.",
       "deprecation": {
         "reason": "A bucket is no longer auto-configured.",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -593,7 +626,8 @@
       "type": "java.lang.Integer",
       "description": "Port for the HTTP bootstrap.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -601,7 +635,8 @@
       "type": "java.lang.Integer",
       "description": "Port for the HTTPS bootstrap.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -609,7 +644,8 @@
       "type": "java.lang.Integer",
       "description": "Number of sockets per node against the key/value service.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -617,7 +653,8 @@
       "type": "java.lang.Integer",
       "description": "Number of sockets per node against the query (N1QL) service.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -626,7 +663,8 @@
       "description": "Maximum number of sockets per node.",
       "deprecation": {
         "replacement": "spring.couchbase.env.io.max-endpoints",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -635,7 +673,8 @@
       "description": "Minimum number of sockets per node.",
       "deprecation": {
         "replacement": "spring.couchbase.env.io.min-endpoints",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -643,7 +682,8 @@
       "type": "java.lang.Integer",
       "description": "Number of sockets per node against the view service.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -652,7 +692,8 @@
       "description": "Maximum number of sockets per node.",
       "deprecation": {
         "replacement": "spring.couchbase.env.io.max-endpoints",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -661,7 +702,8 @@
       "description": "Minimum number of sockets per node.",
       "deprecation": {
         "replacement": "spring.couchbase.env.io.min-endpoints",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -689,7 +731,8 @@
       "type": "java.time.Duration",
       "description": "Socket connect connections timeout.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -703,7 +746,8 @@
       "defaultValue": "none",
       "deprecation": {
         "replacement": "spring.cassandra.compression",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -711,7 +755,8 @@
       "type": "org.springframework.core.io.Resource",
       "deprecation": {
         "replacement": "spring.cassandra.config",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -719,7 +764,8 @@
       "defaultValue": "5s",
       "deprecation": {
         "replacement": "spring.cassandra.connection.connect-timeout",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -727,7 +773,8 @@
       "defaultValue": "5s",
       "deprecation": {
         "replacement": "spring.cassandra.connection.init-query-timeout",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -737,7 +784,8 @@
       ],
       "deprecation": {
         "replacement": "spring.cassandra.contact-points",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -745,7 +793,8 @@
       "defaultValue": "5s",
       "deprecation": {
         "replacement": "spring.cassandra.controlconnection.timeout",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -754,7 +803,8 @@
       "description": "Whether to enable JMX reporting. Default to false as Cassandra JMX reporting is not compatible with Dropwizard Metrics.",
       "deprecation": {
         "reason": "Cassandra no longer provides JMX metrics.",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -762,7 +812,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.cassandra.keyspace-name",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -770,7 +821,8 @@
       "type": "java.lang.Class",
       "description": "Class name of the load balancing policy. The class must have a default constructor.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -778,7 +830,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.cassandra.local-datacenter",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -786,7 +839,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.cassandra.password",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -794,7 +848,8 @@
       "defaultValue": "30s",
       "deprecation": {
         "replacement": "spring.cassandra.pool.heartbeat-interval",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -802,7 +857,8 @@
       "defaultValue": "5s",
       "deprecation": {
         "replacement": "spring.cassandra.pool.idle-timeout",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -810,7 +866,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.cassandra.request.throttler.max-queue-size",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -819,7 +876,8 @@
       "description": "Pool timeout when trying to acquire a connection from a host's pool.",
       "deprecation": {
         "reason": "No longer available.",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -827,7 +885,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.cassandra.port",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -835,7 +894,8 @@
       "type": "java.lang.Class",
       "description": "Class name of the reconnection policy. The class must have a default constructor.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -849,7 +909,8 @@
       "type": "com.datastax.oss.driver.api.core.DefaultConsistencyLevel",
       "deprecation": {
         "replacement": "spring.cassandra.request.consistency",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -857,7 +918,8 @@
       "defaultValue": 5000,
       "deprecation": {
         "replacement": "spring.cassandra.request.page-size",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -865,7 +927,8 @@
       "type": "com.datastax.oss.driver.api.core.DefaultConsistencyLevel",
       "deprecation": {
         "replacement": "spring.cassandra.request.serial-consistency",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -873,7 +936,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.cassandra.request.throttler.drain-interval",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -881,7 +945,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.cassandra.request.throttler.max-concurrent-requests",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -889,7 +954,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.cassandra.request.throttler.max-queue-size",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -897,7 +963,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.cassandra.request.throttler.max-requests-per-second",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -905,7 +972,8 @@
       "defaultValue": "none",
       "deprecation": {
         "replacement": "spring.cassandra.request.throttler.type",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -913,7 +981,8 @@
       "defaultValue": "2s",
       "deprecation": {
         "replacement": "spring.cassandra.request.timeout",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -921,7 +990,8 @@
       "type": "java.lang.Class",
       "description": "Class name of the retry policy. The class must have a default constructor.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -929,7 +999,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.cassandra.schema-action",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -937,7 +1008,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.cassandra.session-name",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -945,7 +1017,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.cassandra.ssl.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -953,14 +1026,16 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.cassandra.username",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.data.couchbase.consistency",
       "type": "org.springframework.data.couchbase.core.query.Consistency",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -974,7 +1049,8 @@
       "type": "java.lang.String",
       "description": "Elasticsearch cluster name.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -982,7 +1058,8 @@
       "type": "java.lang.String",
       "description": "Comma-separated list of cluster node addresses.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -990,7 +1067,8 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Additional properties used to configure the client.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -1028,7 +1106,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.mongodb.gridfs.database",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1047,7 +1126,8 @@
       "defaultValue": "none",
       "deprecation": {
         "reason": "Automatic index creation is no longer supported.",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1056,7 +1136,8 @@
       "description": "Whether to enable embedded mode if the embedded driver is available.",
       "deprecation": {
         "reason": "Embedded mode is no longer supported, please use Testcontainers instead.",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1064,7 +1145,8 @@
       "type": "java.lang.Boolean",
       "description": "Register OpenSessionInViewInterceptor that binds a Neo4j Session to the thread for the entire processing of the request.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1073,7 +1155,8 @@
       "description": "Login password of the server.",
       "deprecation": {
         "replacement": "spring.neo4j.authentication.password",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1083,7 +1166,8 @@
       "defaultValue": true,
       "deprecation": {
         "replacement": "spring.data.neo4j.repositories.type",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1098,7 +1182,8 @@
       "description": "URI used by the driver. Auto-detected by default.",
       "deprecation": {
         "replacement": "spring.neo4j.uri",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1107,7 +1192,8 @@
       "description": "Whether to use Neo4j native types wherever possible.",
       "deprecation": {
         "reason": "Native type support is now built-in.",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1116,7 +1202,8 @@
       "description": "Login user of the server.",
       "deprecation": {
         "replacement": "spring.neo4j.authentication.username",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -1136,7 +1223,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.data.redis.ssl.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "3.1.0"
       }
     },
     {
@@ -1144,35 +1232,40 @@
       "type" : "java.lang.Boolean",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.continue-on-error"
+        "replacement": "spring.sql.init.continue-on-error",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.data",
       "type" : "java.util.List<java.lang.String>",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.data-locations"
+        "replacement": "spring.sql.init.data-locations",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.data-password",
       "type" : "java.lang.String",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.password"
+        "replacement": "spring.sql.init.password",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.data-username",
       "type" : "java.lang.String",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.username"
+        "replacement": "spring.sql.init.username",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.initialization-mode",
       "type" : "org.springframework.boot.jdbc.DataSourceInitializationMode",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.mode"
+        "replacement": "spring.sql.init.mode",
+        "since": "2.5.0"
       }
     }, {
       "name": "spring.datasource.jmx-enabled",
@@ -1181,56 +1274,64 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "replacement": "spring.datasource.tomcat.jmx-enabled"
+        "replacement": "spring.datasource.tomcat.jmx-enabled",
+        "since": "2.2.0"
       }
     }, {
       "name" : "spring.datasource.platform",
       "type" : "java.lang.String",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.platform"
+        "replacement": "spring.sql.init.platform",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.schema",
       "type" : "java.util.List<java.lang.String>",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.schema-locations"
+        "replacement": "spring.sql.init.schema-locations",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.schema-password",
       "type" : "java.lang.String",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.password"
+        "replacement": "spring.sql.init.password",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.schema-username",
       "type" : "java.lang.String",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.username"
+        "replacement": "spring.sql.init.username",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.separator",
       "type" : "java.lang.String",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.separator"
+        "replacement": "spring.sql.init.separator",
+        "since": "2.5.0"
       }
     }, {
       "name" : "spring.datasource.sql-script-encoding",
       "type" : "java.nio.charset.Charset",
       "deprecation" : {
         "level" : "error",
-        "replacement": "spring.sql.init.encoding"
+        "replacement": "spring.sql.init.encoding",
+        "since": "2.5.0"
       }
     }, {
       "name": "spring.elasticsearch.jest.connection-timeout",
       "type": "java.time.Duration",
       "description": "Connection timeout.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1238,7 +1339,8 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable connection requests from multiple execution threads.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1246,7 +1348,8 @@
       "type": "java.lang.String",
       "description": "Login password.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1254,7 +1357,8 @@
       "type": "java.lang.String",
       "description": "Proxy host the HTTP client should use.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1262,7 +1366,8 @@
       "type": "java.lang.Integer",
       "description": "Proxy port the HTTP client should use.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1270,7 +1375,8 @@
       "type": "java.time.Duration",
       "description": "Read timeout.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1278,7 +1384,8 @@
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated list of the Elasticsearch instances to use.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -1286,7 +1393,8 @@
       "type": "java.lang.String",
       "description": "Login username.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1301,7 +1409,8 @@
       "description": "Limit on the number of bytes that can be buffered whenever the input stream needs to be aggregated.",
       "deprecation": {
         "level": "error",
-        "reason": "Reactive Elasticsearch client no longer uses WebClient."
+        "reason": "Reactive Elasticsearch client no longer uses WebClient.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1310,7 +1419,8 @@
       "description": "Filename prefix for baseline migrations. Requires Flyway Teams.",
       "deprecation": {
         "level": "error",
-        "reason": "Removed in Flyway 9.0"
+        "reason": "Removed in Flyway 9.0",
+        "since": "3.0.0"
       }
     },
     {
@@ -1318,7 +1428,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.flyway.fail-on-missing-locations",
-        "level": "error"
+        "level": "error",
+        "since": "2.5.0"
       }
     },
     {
@@ -1326,7 +1437,8 @@
       "description": "Migrations that Flyway should consider when migrating or undoing. When empty all available migrations are considered. Requires Flyway Teams.",
       "deprecation": {
         "level": "error",
-        "reason": "Removed in Flyway 10"
+        "reason": "Removed in Flyway 10",
+        "since": "3.3.0"
       }
     },{
       "name": "spring.flyway.community-db-support-enabled",
@@ -1337,7 +1449,8 @@
       "type": "java.io.OutputStream",
       "deprecation": {
         "level": "error",
-        "reason": "Flyway Teams only."
+        "reason": "Flyway Teams only.",
+        "since": "2.0.0"
       }
     },
     {
@@ -1345,7 +1458,8 @@
       "type": "org.flywaydb.core.api.errorhandler.ErrorHandler[]",
       "deprecation": {
         "level": "error",
-        "reason": "Flyway Teams only."
+        "reason": "Flyway Teams only.",
+        "since": "2.0.0"
       }
     },
     {
@@ -1355,7 +1469,8 @@
       "deprecation": {
         "level": "error",
         "reason": "Removed in Flyway 9.0",
-        "replacement": "spring.flyway.ignore-migration-patterns"
+        "replacement": "spring.flyway.ignore-migration-patterns",
+        "since": "3.0.0"
       }
     },
     {
@@ -1365,7 +1480,8 @@
       "deprecation": {
         "level": "error",
         "reason": "Removed in Flyway 9.0",
-        "replacement": "spring.flyway.ignore-migration-patterns"
+        "replacement": "spring.flyway.ignore-migration-patterns",
+        "since": "3.0.0"
       }
     },
     {
@@ -1375,7 +1491,8 @@
       "deprecation": {
         "level": "error",
         "reason": "Removed in Flyway 9.0",
-        "replacement": "spring.flyway.ignore-migration-patterns"
+        "replacement": "spring.flyway.ignore-migration-patterns",
+        "since": "3.0.0"
       }
     },
     {
@@ -1385,7 +1502,8 @@
       "deprecation": {
         "level": "error",
         "reason": "Removed in Flyway 9.0",
-        "replacement": "spring.flyway.ignore-migration-patterns"
+        "replacement": "spring.flyway.ignore-migration-patterns",
+        "since": "3.0.0"
       }
     },
     {
@@ -1393,7 +1511,8 @@
       "description": "License key for Flyway Teams.",
       "deprecation": {
         "level": "error",
-        "reason": "Removed in Flyway 10"
+        "reason": "Removed in Flyway 10",
+        "since": "3.3.0"
       }
     },
     {
@@ -1408,7 +1527,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.flyway.kerberos-config-file",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1416,7 +1536,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.flyway.sql-migration-suffixes",
-        "level": "error"
+        "level": "error",
+        "since": "2.0.0"
       }
     },
     {
@@ -1431,7 +1552,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Removed in Flyway 10"
+        "reason": "Removed in Flyway 10",
+        "since": "3.3.0"
       }
     },
     {
@@ -1439,7 +1561,8 @@
       "type": "java.util.List<java.lang.String>",
       "deprecation": {
         "level": "error",
-        "reason": "Removed in the open source release of Flyway 7.12."
+        "reason": "Removed in the open source release of Flyway 7.12.",
+        "since": "2.6.0"
       }
     },
     {
@@ -1447,7 +1570,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Removed in the open source release of Flyway 7.12."
+        "reason": "Removed in the open source release of Flyway 7.12.",
+        "since": "2.6.0"
       }
     },
     {
@@ -1455,7 +1579,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Removed in the open source release of Flyway 7.12."
+        "reason": "Removed in the open source release of Flyway 7.12.",
+        "since": "2.6.0"
       }
     },
     {
@@ -1500,7 +1625,8 @@
       "description": "Resource reference to a generated git info properties file.",
       "deprecation": {
         "replacement": "spring.info.git.location",
-        "level": "error"
+        "level": "error",
+        "since": "1.4.0"
       }
     },
     {
@@ -1515,21 +1641,24 @@
       "name": "spring.groovy.template.configuration.auto-escape",
       "deprecation": {
         "replacement": "spring.groovy.template.auto-escape",
-        "level": "warning"
+        "level": "warning",
+        "since": "3.5.0"
       }
     },
     {
       "name": "spring.groovy.template.configuration.auto-indent",
       "deprecation": {
         "replacement": "spring.groovy.template.auto-indent",
-        "level": "warning"
+        "level": "warning",
+        "since": "3.5.0"
       }
     },
     {
       "name": "spring.groovy.template.configuration.auto-indent-string",
       "deprecation": {
         "replacement": "spring.groovy.template.auto-indent-string",
-        "level": "warning"
+        "level": "warning",
+        "since": "3.5.0"
       }
     },
     {
@@ -1624,7 +1753,8 @@
       "description": "Charset of HTTP requests and responses. Added to the Content-Type header if not set explicitly.",
       "deprecation": {
         "replacement": "server.servlet.encoding.charset",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1634,7 +1764,8 @@
       "defaultValue": true,
       "deprecation": {
         "replacement": "server.servlet.encoding.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1644,7 +1775,8 @@
       "defaultValue": false,
       "deprecation": {
         "replacement": "server.servlet.encoding.force",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1654,7 +1786,8 @@
       "defaultValue": true,
       "deprecation": {
         "replacement": "server.servlet.encoding.force-request",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1664,7 +1797,8 @@
       "defaultValue": false,
       "deprecation": {
         "replacement": "server.servlet.encoding.force-response",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1673,7 +1807,8 @@
       "description": "Locale in which to encode mapping.",
       "deprecation": {
         "replacement": "server.servlet.encoding.mapping",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -1683,28 +1818,32 @@
       "defaultValue": false,
       "deprecation": {
         "replacement": "spring.mvc.log-request-details",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
       "name": "spring.influx.password",
       "deprecation": {
         "level": "error",
-        "reason": "The new InfluxDb Java client provides Spring Boot integration."
+        "reason": "The new InfluxDb Java client provides Spring Boot integration.",
+        "since": "3.2.0"
       }
     },
     {
       "name": "spring.influx.url",
       "deprecation": {
         "level": "error",
-        "reason": "The new InfluxDb Java client provides Spring Boot integration."
+        "reason": "The new InfluxDb Java client provides Spring Boot integration.",
+        "since": "3.2.0"
       }
     },
     {
       "name": "spring.influx.user",
       "deprecation": {
         "level": "error",
-        "reason": "The new InfluxDb Java client provides Spring Boot integration."
+        "reason": "The new InfluxDb Java client provides Spring Boot integration.",
+        "since": "3.2.0"
       }
     },
     {
@@ -1728,7 +1867,8 @@
       "type": "java.lang.String",
       "description": "Joda date time format string. If not configured, \"date-format\" is used as a fallback if it is configured with a format string.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -1737,7 +1877,8 @@
       "description": "Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is actually a shortcut for the \"hibernate.id.new_generator_mappings\" property. When not specified will default to \"true\".",
       "deprecation": {
         "level": "error",
-        "reason": "Hibernate no longer supports disabling the use of new ID generator mappings."
+        "reason": "Hibernate no longer supports disabling the use of new ID generator mappings.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1757,7 +1898,8 @@
       "defaultValue": "60s",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1769,7 +1911,8 @@
       ],
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1778,7 +1921,8 @@
       "description": "Transaction object store directory.",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1788,7 +1932,8 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1798,7 +1943,8 @@
       "defaultValue": "120s",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1808,7 +1954,8 @@
       "defaultValue": "10s",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1817,7 +1964,8 @@
       "description": "Database password to be used by the recovery manager.",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1826,7 +1974,8 @@
       "description": "Database username to be used by the recovery manager.",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1835,7 +1984,8 @@
       "description": "JMS password to be used by the recovery manager.",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1844,7 +1994,8 @@
       "description": "JMS username to be used by the recovery manager.",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1853,7 +2004,8 @@
       "description": "Comma-separated list of recovery modules.",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1863,7 +2015,8 @@
       "defaultValue": "1",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1872,7 +2025,8 @@
       "description": "Comma-separated list of orphan filters.",
       "deprecation": {
         "level": "error",
-        "reason": "Narayana support has moved to third party starter."
+        "reason": "Narayana support has moved to third party starter.",
+        "since": "2.1.0"
       }
     },
     {
@@ -1881,7 +2035,8 @@
       "description": "Location of the key store file.",
       "deprecation": {
         "replacement": "spring.kafka.admin.ssl.key-store-location",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1890,7 +2045,8 @@
       "description": "Store password for the key store file.",
       "deprecation": {
         "replacement": "spring.kafka.admin.ssl.key-store-password",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1899,7 +2055,8 @@
       "description": "Location of the trust store file.",
       "deprecation": {
         "replacement": "spring.kafka.admin.ssl.trust-store-location",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1908,7 +2065,8 @@
       "description": "Store password for the trust store file.",
       "deprecation": {
         "replacement": "spring.kafka.admin.ssl.trust-store-password",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1917,7 +2075,8 @@
       "description": "Location of the key store file.",
       "deprecation": {
         "replacement": "spring.kafka.consumer.ssl.key-store-location",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1926,7 +2085,8 @@
       "description": "Store password for the key store file.",
       "deprecation": {
         "replacement": "spring.kafka.consumer.ssl.key-store-password",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1935,7 +2095,8 @@
       "description": "Location of the trust store file.",
       "deprecation": {
         "replacement": "spring.kafka.consumer.ssl.trust-store-location",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1944,7 +2105,8 @@
       "description": "Store password for the trust store file.",
       "deprecation": {
         "replacement": "spring.kafka.consumer.ssl.trust-store-password",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1954,7 +2116,8 @@
       "description": "Whether to suppress the entire record from being written to the log when retries are being attempted.",
       "deprecation": {
         "reason": "Use KafkaUtils#setConsumerRecordFormatter instead.",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1963,7 +2126,8 @@
       "description": "Location of the key store file.",
       "deprecation": {
         "replacement": "spring.kafka.producer.ssl.key-store-location",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1972,7 +2136,8 @@
       "description": "Store password for the key store file.",
       "deprecation": {
         "replacement": "spring.kafka.producer.ssl.key-store-password",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1981,7 +2146,8 @@
       "description": "Location of the trust store file.",
       "deprecation": {
         "replacement": "spring.kafka.producer.ssl.trust-store-location",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1990,7 +2156,8 @@
       "description": "Store password for the trust store file.",
       "deprecation": {
         "replacement": "spring.kafka.producer.ssl.trust-store-password",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -1999,7 +2166,8 @@
       "description": "Location of the key store file.",
       "deprecation": {
         "replacement": "spring.kafka.ssl.key-store-location",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -2008,7 +2176,8 @@
       "description": "Store password for the key store file.",
       "deprecation": {
         "replacement": "spring.kafka.ssl.key-store-password",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -2017,7 +2186,8 @@
       "description": "Location of the trust store file.",
       "deprecation": {
         "replacement": "spring.kafka.ssl.trust-store-location",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -2026,7 +2196,8 @@
       "description": "Store password for the trust store file.",
       "deprecation": {
         "replacement": "spring.kafka.ssl.trust-store-password",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -2034,7 +2205,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.kafka.streams.state-store-cache-max-size",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -2053,14 +2225,16 @@
       "defaultValue": true,
       "deprecation": {
         "reason": "Liquibase has its own check that checks if the change log location exists making this property redundant.",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.7"
       }
     },
     {
       "name": "spring.liquibase.labels",
       "deprecation": {
         "replacement": "spring.liquibase.label-filter",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2107,7 +2281,8 @@
       "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson', and 'jsonb'. When other json mapping libraries (such as kotlinx.serialization) are present, use a custom HttpMessageConverters bean to control the preferred mapper.",
       "deprecation": {
         "replacement": "spring.http.converters.preferred-json-mapper",
-        "level": "error"
+        "level": "error",
+        "since": "3.5.0"
       }
     },
     {
@@ -2115,7 +2290,8 @@
       "type": "java.lang.String",
       "description": "Date format to use, for example 'dd/MM/yyyy'.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2123,7 +2299,8 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable resolution of favicon.ico.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -2139,7 +2316,8 @@
       "defaultValue": true,
       "deprecation": {
         "replacement": "spring.mvc.formcontent.filter.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -2152,7 +2330,8 @@
       "name": "spring.mvc.ignore-default-model-on-redirect",
       "deprecation": {
         "reason": "Deprecated for removal in Spring MVC.",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2160,7 +2339,8 @@
       "type": "java.util.Locale",
       "deprecation": {
         "replacement": "spring.web.locale",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2168,14 +2348,16 @@
       "type": "org.springframework.boot.autoconfigure.web.WebProperties$LocaleResolver",
       "deprecation": {
         "replacement": "spring.web.locale-resolver",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
       "name": "spring.mvc.throw-exception-if-no-handler-found",
       "deprecation": {
-      	"reason": "DispatcherServlet property is deprecated for removal and should no longer need to be configured.",
-      	"level": "error"
+        "reason": "DispatcherServlet property is deprecated for removal and should no longer need to be configured.",
+        "level": "error",
+        "since": "3.2.0"
       }
     },
     {
@@ -2221,14 +2403,16 @@
       "name": "spring.rabbitmq.listener.simple.transaction-size",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "spring.rabbitmq.publisher-confirms",
       "type": "java.lang.Boolean",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -2236,7 +2420,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.rabbitmq.template.default-receive-queue",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -2244,7 +2429,8 @@
       "description": "Whether Reactor should collect stacktrace information at runtime.",
       "defaultValue": false,
       "deprecation": {
-        "replacement": "spring.reactor.debug-agent.enabled"
+        "replacement": "spring.reactor.debug-agent.enabled",
+        "since": "2.2.0"
       }
     },
     {
@@ -2252,7 +2438,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.redis.client-name",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2260,7 +2447,8 @@
       "type": "org.springframework.boot.autoconfigure.data.redis.RedisProperties$ClientType",
       "deprecation": {
         "replacement": "spring.data.redis.client-type",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2268,7 +2456,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.data.redis.cluster.max-redirects",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2276,7 +2465,8 @@
       "type": "java.util.List<java.lang.String>",
       "deprecation": {
         "replacement": "spring.data.redis.cluster.nodes",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2284,7 +2474,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.data.redis.connect-timeout",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2292,7 +2483,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.data.redis.database",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2300,49 +2492,56 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.redis.host",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.jedis.pool.enabled",
       "type": "java.lang.Boolean",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.jedis.pool.max-active",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.jedis.pool.max-idle",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.jedis.pool.max-wait",
       "type": "java.time.Duration",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.jedis.pool.min-idle",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.jedis.pool.time-between-eviction-runs",
       "type": "java.time.Duration",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2350,7 +2549,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.data.redis.lettuce.cluster.refresh.adaptive",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2358,7 +2558,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.data.redis.lettuce.cluster.refresh.dynamic-refresh-sources",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2366,49 +2567,56 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.data.redis.lettuce.cluster.refresh.period",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.lettuce.pool.enabled",
       "type": "java.lang.Boolean",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.lettuce.pool.max-active",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.lettuce.pool.max-idle",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.lettuce.pool.max-wait",
       "type": "java.time.Duration",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.lettuce.pool.min-idle",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.redis.lettuce.pool.time-between-eviction-runs",
       "type": "java.time.Duration",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2416,7 +2624,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.data.redis.lettuce.shutdown-timeout",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2424,7 +2633,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.redis.password",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2432,7 +2642,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "replacement": "spring.data.redis.port",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2440,7 +2651,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.redis.sentinel.master",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2448,7 +2660,8 @@
       "type": "java.util.List<java.lang.String>",
       "deprecation": {
         "replacement": "spring.data.redis.sentinel.nodes",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2456,7 +2669,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.redis.sentinel.password",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2464,7 +2678,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.redis.sentinel.username",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2472,7 +2687,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.data.redis.ssl",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2480,7 +2696,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.data.redis.timeout",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2488,7 +2705,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.redis.url",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2496,7 +2714,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.redis.username",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2504,7 +2723,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.add-mappings",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2512,7 +2732,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.cache-private",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2520,7 +2741,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.cache-public",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2528,7 +2750,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.max-age",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2536,7 +2759,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.must-revalidate",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2544,7 +2768,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.no-cache",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2552,7 +2777,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.no-store",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2560,7 +2786,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.no-transform",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2568,7 +2795,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.proxy-revalidate",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2576,7 +2804,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.s-max-age",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2584,7 +2813,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.stale-if-error",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2592,7 +2822,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.stale-while-revalidate",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2600,7 +2831,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.period",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2608,7 +2840,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.use-last-modified",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2616,7 +2849,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.cache",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2624,7 +2858,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.compressed",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2632,7 +2867,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2640,14 +2876,16 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.compressed",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
       "name": "spring.resources.chain.html-application-cache",
       "type": "java.lang.Boolean",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2655,7 +2893,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.content.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2663,7 +2902,8 @@
       "type": "java.lang.String[]",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.content.paths",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2671,7 +2911,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.fixed.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2679,7 +2920,8 @@
       "type": "java.lang.String[]",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.fixed.paths",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2687,7 +2929,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.fixed.version",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2695,7 +2938,8 @@
       "type": "java.lang.String[]",
       "deprecation": {
         "replacement": "spring.web.resources.static-locations",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -2803,7 +3047,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.security.oauth2.resourceserver.jwt.jws-algorithms",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -2825,7 +3070,8 @@
       "defaultValue": true,
       "deprecation": {
         "replacement": "spring.sql.init.mode",
-        "level": "warning"
+        "level": "warning",
+        "since": "2.5.1"
       }
     },
     {
@@ -2878,7 +3124,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "reason": "Replaced by the PartEventHttpMessageReader and the PartEvent API.",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {

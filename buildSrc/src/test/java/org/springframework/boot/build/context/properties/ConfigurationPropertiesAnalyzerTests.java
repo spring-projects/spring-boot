@@ -116,6 +116,32 @@ class ConfigurationPropertiesAnalyzerTests {
 	}
 
 	@Test
+	void analyzeDeprecatedPropertyWithMissingSince(@TempDir File tempDir) throws IOException {
+		File metadata = new File(tempDir, "metadata.json");
+		Files.writeString(metadata.toPath(), """
+				{ "properties": [
+				  {
+				    "name": "abc",
+				    "description": "This is abc.",
+				    "deprecation": { "reason": "abc reason", "since": "3.0.0" }
+				  },
+				  { "name": "def", "description": "This is def." },
+				  {
+				    "name": "xyz",
+				    "description": "This is xyz.",
+				    "deprecation": { "reason": "xyz reason" }
+				  }
+				  ]
+				}""");
+		Report report = new Report(tempDir);
+		ConfigurationPropertiesAnalyzer analyzer = new ConfigurationPropertiesAnalyzer(List.of(metadata));
+		analyzer.analyzeDeprecationSince(report);
+		assertThat(report.hasProblems()).isTrue();
+		assertThat(report.getAnalyses(metadata)).singleElement()
+			.satisfies(((analysis) -> assertThat(analysis.getItems()).containsExactly("xyz")));
+	}
+
+	@Test
 	void writeEmptyReport(@TempDir File tempDir) throws IOException {
 		assertThat(writeToFile(tempDir, new Report(tempDir))).hasContent("No problems found.");
 	}

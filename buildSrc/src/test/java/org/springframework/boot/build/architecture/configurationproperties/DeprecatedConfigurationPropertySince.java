@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.appendix.configurationmetadata.format.property;
+package org.springframework.boot.build.architecture.configurationproperties;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.boot.build.architecture.annotations.TestDeprecatedConfigurationProperty;
 
-@ConfigurationProperties("my.app")
-public class MyProperties {
+public class DeprecatedConfigurationPropertySince {
 
-	private String name;
+	private String property;
 
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	@TestDeprecatedConfigurationProperty(reason = "no longer used")
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "my.app.name", since = "1.2.0")
-	public String getTarget() {
-		return this.name;
+	public String getProperty() {
+		return this.property;
 	}
 
-	@Deprecated
-	public void setTarget(String target) {
-		this.name = target;
+	public void setProperty(String property) {
+		this.property = property;
 	}
 
 }
