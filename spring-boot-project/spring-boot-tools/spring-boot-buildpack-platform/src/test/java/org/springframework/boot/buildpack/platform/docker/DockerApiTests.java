@@ -506,6 +506,65 @@ class DockerApiTests {
 		}
 
 		@Test
+		void exportLayersExportsLayerTarsWithPlatformWhenSupportedVersion() throws Exception {
+			setVersion("1.48");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI exportUri = new URI("/v1.48/images/docker.io/paketobuildpacks/builder:base/get?platform="
+					+ ENCODED_LINUX_ARM64_PLATFORM_JSON);
+			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
+			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
+			this.api.exportLayers(reference, LINUX_ARM64_PLATFORM, (name, archive) -> {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				archive.writeTo(out);
+				try (TarArchiveInputStream in = new TarArchiveInputStream(
+						new ByteArrayInputStream(out.toByteArray()))) {
+					TarArchiveEntry entry = in.getNextEntry();
+					while (entry != null) {
+						contents.add(name, entry.getName());
+						entry = in.getNextEntry();
+					}
+				}
+			});
+			assertThat(contents).hasSize(3)
+				.containsKeys("70bb7a3115f3d5c01099852112c7e05bf593789e510468edb06b6a9a11fa3b73/layer.tar",
+						"74a9a50ece13c025cf10e9110d9ddc86c995079c34e2a22a28d1a3d523222c6e/layer.tar",
+						"a69532b5b92bb891fbd9fa1a6b3af9087ea7050255f59ba61a796f8555ecd783/layer.tar");
+			assertThat(contents.get("70bb7a3115f3d5c01099852112c7e05bf593789e510468edb06b6a9a11fa3b73/layer.tar"))
+				.containsExactly("/cnb/order.toml");
+			assertThat(contents.get("74a9a50ece13c025cf10e9110d9ddc86c995079c34e2a22a28d1a3d523222c6e/layer.tar"))
+				.containsExactly("/cnb/stack.toml");
+		}
+
+		@Test
+		void exportLayersExportsLayerTarsWithPlatformWhenOldVersionInspectImage() throws Exception {
+			setVersion("1.47");
+			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
+			URI exportUri = new URI("/v1.47/images/docker.io/paketobuildpacks/builder:base/get");
+			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
+			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
+			this.api.exportLayers(reference, LINUX_ARM64_PLATFORM, (name, archive) -> {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				archive.writeTo(out);
+				try (TarArchiveInputStream in = new TarArchiveInputStream(
+						new ByteArrayInputStream(out.toByteArray()))) {
+					TarArchiveEntry entry = in.getNextEntry();
+					while (entry != null) {
+						contents.add(name, entry.getName());
+						entry = in.getNextEntry();
+					}
+				}
+			});
+			assertThat(contents).hasSize(3)
+				.containsKeys("70bb7a3115f3d5c01099852112c7e05bf593789e510468edb06b6a9a11fa3b73/layer.tar",
+						"74a9a50ece13c025cf10e9110d9ddc86c995079c34e2a22a28d1a3d523222c6e/layer.tar",
+						"a69532b5b92bb891fbd9fa1a6b3af9087ea7050255f59ba61a796f8555ecd783/layer.tar");
+			assertThat(contents.get("70bb7a3115f3d5c01099852112c7e05bf593789e510468edb06b6a9a11fa3b73/layer.tar"))
+				.containsExactly("/cnb/order.toml");
+			assertThat(contents.get("74a9a50ece13c025cf10e9110d9ddc86c995079c34e2a22a28d1a3d523222c6e/layer.tar"))
+				.containsExactly("/cnb/stack.toml");
+		}
+
+		@Test
 		void exportLayersWithSymlinksExportsLayerTars() throws Exception {
 			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
 			URI exportUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/get");

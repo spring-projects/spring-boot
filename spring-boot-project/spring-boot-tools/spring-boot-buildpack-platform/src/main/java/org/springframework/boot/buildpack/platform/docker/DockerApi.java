@@ -122,6 +122,13 @@ public class DockerApi {
 		return this.jsonStream;
 	}
 
+	URI buildPlatformJsonUrl(Feature feature, ImagePlatform platform, String path) {
+		if (platform != null && getApiVersion().supports(feature.minimumVersion())) {
+			return buildUrl(feature, path, "platform", platform.toJson());
+		}
+		return buildUrl(path);
+	}
+
 	private URI buildUrl(String path, Collection<?> params) {
 		return buildUrl(Feature.BASELINE, path, (params != null) ? params.toArray() : null);
 	}
@@ -227,9 +234,8 @@ public class DockerApi {
 				UpdateListener<PullImageUpdateEvent> listener, String registryAuth) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(listener, "Listener must not be null");
-			URI createUri = (platform != null)
-					? buildUrl(Feature.PLATFORM, "/images/create", "fromImage", reference, "platform", platform)
-					: buildUrl("/images/create", "fromImage", reference);
+			URI createUri = (platform != null) ? buildUrl(Feature.PLATFORM_IMAGE_PULL, "/images/create", "fromImage",
+					reference, "platform", platform) : buildUrl("/images/create", "fromImage", reference);
 			DigestCaptureUpdateListener digestCapture = new DigestCaptureUpdateListener();
 			listener.onStart();
 			try {
@@ -336,9 +342,24 @@ public class DockerApi {
 		 */
 		public void exportLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
+			exportLayers(reference, null, exports);
+		}
+
+		/**
+		 * Export the layers of an image as {@link TarArchive TarArchives}.
+		 * @param reference the reference to export
+		 * @param platform the platform (os/architecture/variant) of the image to export.
+		 * Ignored on older versions of Docker.
+		 * @param exports a consumer to receive the layers (contents can only be accessed
+		 * during the callback)
+		 * @throws IOException on IO error
+		 * @since 3.4.12
+		 */
+		public void exportLayers(ImageReference reference, ImagePlatform platform,
+				IOBiConsumer<String, TarArchive> exports) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(exports, "Exports must not be null");
-			URI uri = buildUrl("/images/" + reference + "/get");
+			URI uri = buildPlatformJsonUrl(Feature.PLATFORM_IMAGE_EXPORT, platform, "/images/" + reference + "/get");
 			try (Response response = http().get(uri)) {
 				try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference, response.getContent())) {
 					exportedImageTar.exportLayers(exports);
@@ -382,18 +403,11 @@ public class DockerApi {
 			// The Docker documentation is incomplete but platform parameters
 			// are supported since 1.49 (see https://github.com/moby/moby/pull/49586)
 			Assert.notNull(reference, "Reference must not be null");
-			URI inspectUrl = inspectUrl(reference, platform);
+			URI inspectUrl = buildPlatformJsonUrl(Feature.PLATFORM_IMAGE_INSPECT, platform,
+					"/images/" + reference + "/json");
 			try (Response response = http().get(inspectUrl)) {
 				return Image.of(response.getContent());
 			}
-		}
-
-		private URI inspectUrl(ImageReference reference, ImagePlatform platform) {
-			String path = "/images/" + reference + "/json";
-			if (platform != null && getApiVersion().supports(Feature.PLATFORM_INSPECT.minimumVersion())) {
-				return buildUrl(Feature.PLATFORM_INSPECT, path, "platform", platform.toJson());
-			}
-			return buildUrl(path);
 		}
 
 		public void tag(ImageReference sourceReference, ImageReference targetReference) throws IOException {
@@ -437,7 +451,8 @@ public class DockerApi {
 		}
 
 		private ContainerReference createContainer(ContainerConfig config, ImagePlatform platform) throws IOException {
-			URI createUri = (platform != null) ? buildUrl(Feature.PLATFORM, "/containers/create", "platform", platform)
+			URI createUri = (platform != null)
+					? buildUrl(Feature.PLATFORM_CONTAINER_CREATE, "/containers/create", "platform", platform)
 					: buildUrl("/containers/create");
 			try (Response response = http().post(createUri, "application/json", config::writeTo)) {
 				return ContainerReference
@@ -639,9 +654,13 @@ public class DockerApi {
 
 		BASELINE(ApiVersion.of(1, 24)),
 
-		PLATFORM(ApiVersion.of(1, 41)),
+		PLATFORM_IMAGE_PULL(ApiVersion.of(1, 41)),
 
-		PLATFORM_INSPECT(ApiVersion.of(1, 49));
+		PLATFORM_CONTAINER_CREATE(ApiVersion.of(1, 41)),
+
+		PLATFORM_IMAGE_INSPECT(ApiVersion.of(1, 49)),
+
+		PLATFORM_IMAGE_EXPORT(ApiVersion.of(1, 48));
 
 		private final ApiVersion minimumVersion;
 
