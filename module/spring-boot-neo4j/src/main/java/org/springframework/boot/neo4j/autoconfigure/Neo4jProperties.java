@@ -153,7 +153,7 @@ public class Neo4jProperties {
 		/**
 		 * Whether to log leaked sessions.
 		 */
-		private boolean logLeakedSessions = false;
+		private boolean logLeakedSessions;
 
 		/**
 		 * Maximum amount of connections in the connection pool towards a single database.
@@ -225,7 +225,7 @@ public class Neo4jProperties {
 		/**
 		 * Whether the driver should use encrypted traffic.
 		 */
-		private boolean encrypted = false;
+		private boolean encrypted;
 
 		/**
 		 * Trust strategy to use.

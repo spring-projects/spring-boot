@@ -569,7 +569,7 @@ class PaketoBuilderTests {
 
 	private static class DigestCapturingCondition extends Condition<Object> {
 
-		private static String digest = null;
+		private static String digest;
 
 		DigestCapturingCondition() {
 			super(predicate(), "a value starting with 'sha256:'");

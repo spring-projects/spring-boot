@@ -33,12 +33,12 @@ public class JmxProperties {
 	/**
 	 * Expose Spring's management beans to the JMX domain.
 	 */
-	private boolean enabled = false;
+	private boolean enabled;
 
 	/**
 	 * Whether unique runtime object names should be ensured.
 	 */
-	private boolean uniqueNames = false;
+	private boolean uniqueNames;
 
 	/**
 	 * MBeanServer bean name.

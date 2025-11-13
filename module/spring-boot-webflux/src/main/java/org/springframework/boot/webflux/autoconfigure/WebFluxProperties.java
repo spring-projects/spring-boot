@@ -161,7 +161,7 @@ public class WebFluxProperties {
 		/**
 		 * Whether RFC 9457 Problem Details support should be enabled.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		public boolean isEnabled() {
 			return this.enabled;

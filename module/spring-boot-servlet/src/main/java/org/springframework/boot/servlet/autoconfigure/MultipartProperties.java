@@ -79,13 +79,13 @@ public class MultipartProperties {
 	 * Whether to resolve the multipart request lazily at the time of file or parameter
 	 * access.
 	 */
-	private boolean resolveLazily = false;
+	private boolean resolveLazily;
 
 	/**
 	 * Whether to resolve the multipart request strictly complying with the Servlet
 	 * specification, only to be used for "multipart/form-data" requests.
 	 */
-	private boolean strictServletCompliance = false;
+	private boolean strictServletCompliance;
 
 	public boolean isEnabled() {
 		return this.enabled;

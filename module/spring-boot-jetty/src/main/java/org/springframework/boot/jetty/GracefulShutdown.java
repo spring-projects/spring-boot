@@ -46,7 +46,7 @@ final class GracefulShutdown {
 
 	private final Supplier<Integer> activeRequests;
 
-	private volatile boolean aborted = false;
+	private volatile boolean aborted;
 
 	GracefulShutdown(Server server, Supplier<Integer> activeRequests) {
 		this.server = server;

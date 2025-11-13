@@ -113,7 +113,7 @@ public class JacksonProperties {
 	 * Whether to configure Jackson 3 with the same defaults as Spring Boot previously
 	 * used for Jackson 2.
 	 */
-	private boolean useJackson2Defaults = false;
+	private boolean useJackson2Defaults;
 
 	/**
 	 * Whether to find and add modules to the auto-configured JsonMapper.Builder using

@@ -1045,13 +1045,13 @@ public class KafkaProperties {
 		 * Whether the container should fail to start if at least one of the configured
 		 * topics are not present on the broker.
 		 */
-		private boolean missingTopicsFatal = false;
+		private boolean missingTopicsFatal;
 
 		/**
 		 * Whether the container stops after the current record is processed or after all
 		 * the records from the previous poll are processed.
 		 */
-		private boolean immediateStop = false;
+		private boolean immediateStop;
 
 		/**
 		 * Whether to auto start the container.
@@ -1664,12 +1664,12 @@ public class KafkaProperties {
 		/**
 		 * Cleanup the application’s local state directory on startup.
 		 */
-		private boolean onStartup = false;
+		private boolean onStartup;
 
 		/**
 		 * Cleanup the application’s local state directory on shutdown.
 		 */
-		private boolean onShutdown = false;
+		private boolean onShutdown;
 
 		public boolean isOnStartup() {
 			return this.onStartup;

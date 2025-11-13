@@ -76,13 +76,13 @@ public class MessageSourceProperties {
 	 * Whether to always apply the MessageFormat rules, parsing even messages without
 	 * arguments.
 	 */
-	private boolean alwaysUseMessageFormat = false;
+	private boolean alwaysUseMessageFormat;
 
 	/**
 	 * Whether to use the message code as the default message instead of throwing a
 	 * "NoSuchMessageException". Recommended during development only.
 	 */
-	private boolean useCodeAsDefaultMessage = false;
+	private boolean useCodeAsDefaultMessage;
 
 	public List<String> getBasename() {
 		return this.basename;

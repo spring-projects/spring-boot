@@ -153,7 +153,7 @@ public class MailProperties {
 		 * Whether to enable SSL support. If enabled, 'mail.(protocol).ssl.enable'
 		 * property is set to 'true'.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * SSL bundle name. If set, 'mail.(protocol).ssl.socketFactory' property is set to

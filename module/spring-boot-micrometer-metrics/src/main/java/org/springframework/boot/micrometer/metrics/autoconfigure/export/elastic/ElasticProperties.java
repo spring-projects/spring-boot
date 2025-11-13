@@ -85,7 +85,7 @@ public class ElasticProperties extends StepRegistryProperties {
 	 * Whether to enable _source in the default index template when auto-creating the
 	 * index.
 	 */
-	private boolean enableSource = false;
+	private boolean enableSource;
 
 	public String getHost() {
 		return this.host;

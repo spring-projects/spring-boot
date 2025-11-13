@@ -147,7 +147,7 @@ public class JettyServerProperties {
 		/**
 		 * Enable access log.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		/**
 		 * Log format.

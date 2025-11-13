@@ -54,7 +54,7 @@ public class WebMvcProperties {
 	/**
 	 * Whether to dispatch TRACE requests to the FrameworkServlet doService method.
 	 */
-	private boolean dispatchTraceRequest = false;
+	private boolean dispatchTraceRequest;
 
 	/**
 	 * Whether to dispatch OPTIONS requests to the FrameworkServlet doService method.
@@ -76,7 +76,7 @@ public class WebMvcProperties {
 	 * Whether to enable warn logging of exceptions resolved by a
 	 * "HandlerExceptionResolver", except for "DefaultHandlerExceptionResolver".
 	 */
-	private boolean logResolvedException = false;
+	private boolean logResolvedException;
 
 	/**
 	 * Path pattern used for static resources.
@@ -315,7 +315,7 @@ public class WebMvcProperties {
 		 * Whether a request parameter ("format" by default) should be used to determine
 		 * the requested media type.
 		 */
-		private boolean favorParameter = false;
+		private boolean favorParameter;
 
 		/**
 		 * Query parameter name to use when "favor-parameter" is enabled.
@@ -459,7 +459,7 @@ public class WebMvcProperties {
 		/**
 		 * Whether RFC 9457 Problem Details support should be enabled.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		public boolean isEnabled() {
 			return this.enabled;

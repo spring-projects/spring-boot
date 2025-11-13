@@ -140,7 +140,7 @@ public class R2dbcProperties {
 		/**
 		 * Minimal number of idle connections.
 		 */
-		private int minIdle = 0;
+		private int minIdle;
 
 		/**
 		 * Maximum amount of time that a connection is allowed to sit idle in the pool.

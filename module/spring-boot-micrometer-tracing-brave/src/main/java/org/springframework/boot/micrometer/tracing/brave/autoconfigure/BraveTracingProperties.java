@@ -31,7 +31,7 @@ public class BraveTracingProperties {
 	 * Whether the propagation type and tracing backend support sharing the span ID
 	 * between client and server spans. Requires B3 propagation and a compatible backend.
 	 */
-	private boolean spanJoiningSupported = false;
+	private boolean spanJoiningSupported;
 
 	public boolean isSpanJoiningSupported() {
 		return this.spanJoiningSupported;

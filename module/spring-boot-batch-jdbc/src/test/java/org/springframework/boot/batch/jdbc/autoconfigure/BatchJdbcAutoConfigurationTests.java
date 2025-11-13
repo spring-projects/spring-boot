@@ -637,7 +637,7 @@ class BatchJdbcAutoConfigurationTests {
 		Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteRegisteredJob") {
 
-				private static int count = 0;
+				private static int count;
 
 				@Override
 				public Collection<String> getStepNames() {

@@ -142,7 +142,7 @@ class PluginXmlParser {
 
 			return new Iterator<>() {
 
-				private int index = 0;
+				private int index;
 
 				@Override
 				public boolean hasNext() {

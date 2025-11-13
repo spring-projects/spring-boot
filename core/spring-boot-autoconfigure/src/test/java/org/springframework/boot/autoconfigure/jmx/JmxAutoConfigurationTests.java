@@ -130,7 +130,7 @@ class JmxAutoConfigurationTests {
 	@ManagedResource
 	public static class Counter {
 
-		private int counter = 0;
+		private int counter;
 
 		@ManagedAttribute
 		public int get() {

@@ -54,7 +54,7 @@ public class StackdriverProperties extends StepRegistryProperties {
 	 * published as the GAUGE MetricKind. When true, counter metrics are published as the
 	 * CUMULATIVE MetricKind.
 	 */
-	private boolean useSemanticMetricTypes = false;
+	private boolean useSemanticMetricTypes;
 
 	/**
 	 * Prefix for metric type. Valid prefixes are described in the Google Cloud

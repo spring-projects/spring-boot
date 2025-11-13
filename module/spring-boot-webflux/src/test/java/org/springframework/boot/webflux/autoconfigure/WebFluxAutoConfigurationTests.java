@@ -1095,7 +1095,7 @@ class WebFluxAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerAdapter {
 
-		private int handlerAdapters = 0;
+		private int handlerAdapters;
 
 		@Bean
 		WebFluxRegistrations webFluxRegistrationsHandlerAdapter() {
@@ -1126,7 +1126,7 @@ class WebFluxAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerMapping {
 
-		private int handlerMappings = 0;
+		private int handlerMappings;
 
 		@Bean
 		WebFluxRegistrations webFluxRegistrationsHandlerMapping() {

@@ -122,7 +122,7 @@ public class IntegrationProperties {
 		 * Whether to throw an exception when a reply is not expected anymore by a
 		 * gateway.
 		 */
-		private boolean throwExceptionOnLateReply = false;
+		private boolean throwExceptionOnLateReply;
 
 		/**
 		 * List of message header names that should not be populated into Message

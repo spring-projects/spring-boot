@@ -1332,7 +1332,7 @@ class WebMvcAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerAdapter {
 
-		private int handlerAdapters = 0;
+		private int handlerAdapters;
 
 		@Bean
 		WebMvcRegistrations webMvcRegistrationsHandlerAdapter() {
@@ -1356,7 +1356,7 @@ class WebMvcAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomExceptionHandlerExceptionResolver {
 
-		private int exceptionResolvers = 0;
+		private int exceptionResolvers;
 
 		@Bean
 		WebMvcRegistrations webMvcRegistrationsExceptionResolver() {

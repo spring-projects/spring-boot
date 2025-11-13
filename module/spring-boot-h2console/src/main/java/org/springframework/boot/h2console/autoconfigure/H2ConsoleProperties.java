@@ -40,7 +40,7 @@ public class H2ConsoleProperties {
 	/**
 	 * Whether to enable the console.
 	 */
-	private boolean enabled = false;
+	private boolean enabled;
 
 	private final Settings settings = new Settings();
 
@@ -72,12 +72,12 @@ public class H2ConsoleProperties {
 		/**
 		 * Whether to enable trace output.
 		 */
-		private boolean trace = false;
+		private boolean trace;
 
 		/**
 		 * Whether to enable remote access.
 		 */
-		private boolean webAllowOthers = false;
+		private boolean webAllowOthers;
 
 		/**
 		 * Password to access preferences and tools of H2 Console.

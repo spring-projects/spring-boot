@@ -114,7 +114,7 @@ public class Jackson2Properties {
 	 * Time zone used when formatting dates. For instance, "America/Los_Angeles" or
 	 * "GMT+10".
 	 */
-	private @Nullable TimeZone timeZone = null;
+	private @Nullable TimeZone timeZone;
 
 	/**
 	 * Locale used for formatting.

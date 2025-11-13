@@ -106,7 +106,7 @@ public class ThymeleafProperties {
 	 * Whether hidden form inputs acting as markers for checkboxes should be rendered
 	 * before the checkbox element itself.
 	 */
-	private boolean renderHiddenMarkersBeforeCheckboxes = false;
+	private boolean renderHiddenMarkersBeforeCheckboxes;
 
 	private final Servlet servlet = new Servlet();
 

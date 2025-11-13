@@ -56,7 +56,7 @@ import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
  */
 public class PluginClasspathGradleBuild extends GradleBuild {
 
-	private boolean kotlin = false;
+	private boolean kotlin;
 
 	public PluginClasspathGradleBuild(BuildOutput buildOutput) {
 		super(buildOutput);

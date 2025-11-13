@@ -193,7 +193,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private boolean parseArgs = true;
 
-	private @Nullable LogLevel springBootLogging = null;
+	private @Nullable LogLevel springBootLogging;
 
 	@Override
 	public boolean supportsEventType(ResolvableType resolvableType) {

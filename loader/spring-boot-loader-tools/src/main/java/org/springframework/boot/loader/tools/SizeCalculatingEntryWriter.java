@@ -89,7 +89,7 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 	 */
 	private static class SizeCalculatingOutputStream extends OutputStream {
 
-		private int size = 0;
+		private int size;
 
 		private @Nullable File tempFile;
 

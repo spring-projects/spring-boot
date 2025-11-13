@@ -16,6 +16,7 @@
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
 		<module name="io.spring.javaformat.checkstyle.check.SpringDeprecatedCheck" />
 		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check" />
+		<module name="ExplicitInitialization" />
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
 			<property name="regexp" value="true" />
