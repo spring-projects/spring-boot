@@ -11,8 +11,9 @@
       "name": "spring.webflux.multipart.streaming",
       "type": "java.lang.Boolean",
       "deprecation": {
+        "level": "error",
         "reason": "Replaced by the PartEventHttpMessageReader and the PartEvent API.",
-        "level": "error"
+        "since": "3.0.0"
       }
     }
   ],

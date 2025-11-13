@@ -5,49 +5,56 @@
       "name": "management.otlp.tracing.compression",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.compression",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.otlp.tracing.connect-timeout",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.connect-timeout",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.otlp.tracing.endpoint",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.endpoint",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.otlp.tracing.export.enabled",
       "deprecation": {
         "replacement": "management.tracing.export.otlp.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.otlp.tracing.headers",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.headers",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.otlp.tracing.timeout",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.timeout",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.otlp.tracing.transport",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.otlp.transport",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
@@ -60,35 +67,40 @@
       "name": "management.tracing.opentelemetry.export.include-unsampled",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.include-unsampled",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.tracing.opentelemetry.export.max-batch-size",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.max-batch-size",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.tracing.opentelemetry.export.max-queue-size",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.max-queue-size",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.tracing.opentelemetry.export.schedule-delay",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.schedule-delay",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
       "name": "management.tracing.opentelemetry.export.timeout",
       "deprecation": {
         "replacement": "management.opentelemetry.tracing.export.timeout",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     }
   ]

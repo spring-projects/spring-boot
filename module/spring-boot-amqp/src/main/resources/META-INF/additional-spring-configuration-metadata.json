@@ -17,14 +17,16 @@
       "name": "spring.rabbitmq.listener.simple.transaction-size",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
       "name": "spring.rabbitmq.publisher-confirms",
       "type": "java.lang.Boolean",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -32,7 +34,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.rabbitmq.template.default-receive-queue",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     }
   ]

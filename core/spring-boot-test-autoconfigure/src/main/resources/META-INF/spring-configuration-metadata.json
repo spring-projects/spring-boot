@@ -9,8 +9,9 @@
     {
       "name": "spring.test.observability.auto-configure",
       "deprecation": {
+        "level": "error",
         "reason": "Superseded by 'spring.test.metrics.export' and 'spring.test.tracing.export'.",
-        "level": "error"
+        "since": "4.0.0"
       }
     },
     {

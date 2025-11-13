@@ -12,7 +12,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "reason": "Use 'management.metrics.enable' to restrict certain metrics.",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {

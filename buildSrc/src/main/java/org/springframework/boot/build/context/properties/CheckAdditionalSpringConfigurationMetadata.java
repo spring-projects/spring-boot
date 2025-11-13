@@ -59,6 +59,7 @@ public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceT
 		ConfigurationPropertiesAnalyzer analyzer = new ConfigurationPropertiesAnalyzer(getSource().getFiles());
 		Report report = new Report(this.projectDir);
 		analyzer.analyzeSort(report);
+		analyzer.analyzeDeprecationSince(report);
 		File reportFile = getReportLocation().get().getAsFile();
 		report.write(reportFile);
 		if (report.hasProblems()) {

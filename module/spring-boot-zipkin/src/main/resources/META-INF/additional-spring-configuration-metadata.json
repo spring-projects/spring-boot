@@ -4,29 +4,33 @@
     {
       "name": "management.zipkin.tracing.connect-timeout",
       "deprecation": {
+        "level": "error",
         "replacement": "management.tracing.export.zipkin.connect-timeout",
-        "level": "error"
+        "since": "3.2.0"
       }
     },
     {
       "name": "management.zipkin.tracing.encoding",
       "deprecation": {
+        "level": "error",
         "replacement": "management.tracing.export.zipkin.encoding",
-        "level": "error"
+        "since": "3.2.0"
       }
     },
     {
       "name": "management.zipkin.tracing.endpoint",
       "deprecation": {
+        "level": "error",
         "replacement": "management.tracing.export.zipkin.endpoint",
-        "level": "error"
+        "since": "3.2.0"
       }
     },
     {
       "name": "management.zipkin.tracing.read-timeout",
       "deprecation": {
+        "level": "error",
         "replacement": "management.tracing.export.zipkin.read-timeout",
-        "level": "error"
+        "since": "3.2.0"
       }
     }
   ],

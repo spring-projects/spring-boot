@@ -5,7 +5,8 @@
       "name": "management.tracing.enabled",
       "deprecation": {
         "replacement": "management.tracing.export.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {

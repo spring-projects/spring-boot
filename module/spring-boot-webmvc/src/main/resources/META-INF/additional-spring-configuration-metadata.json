@@ -6,7 +6,8 @@
       "type": "java.lang.String",
       "description": "Date format to use, for example 'dd/MM/yyyy'.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -14,7 +15,8 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable resolution of favicon.ico.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -29,8 +31,9 @@
       "description": "Whether to enable Spring's HttpPutFormContentFilter.",
       "defaultValue": true,
       "deprecation": {
+        "level": "error",
         "replacement": "spring.mvc.formcontent.filter.enabled",
-        "level": "error"
+        "since": "2.1.0"
       }
     },
     {
@@ -42,31 +45,35 @@
     {
       "name": "spring.mvc.ignore-default-model-on-redirect",
       "deprecation": {
+        "level": "error",
         "reason": "Deprecated for removal in Spring MVC.",
-        "level": "error"
+        "since": "3.0.0"
       }
     },
     {
       "name": "spring.mvc.locale",
       "type": "java.util.Locale",
       "deprecation": {
+        "level": "error",
         "replacement": "spring.web.locale",
-        "level": "error"
+        "since": "2.4.0"
       }
     },
     {
       "name": "spring.mvc.locale-resolver",
       "type": "org.springframework.boot.autoconfigure.web.WebProperties$LocaleResolver",
       "deprecation": {
+        "level": "error",
         "replacement": "spring.web.locale-resolver",
-        "level": "error"
+        "since": "2.4.0"
       }
     },
     {
       "name": "spring.mvc.throw-exception-if-no-handler-found",
       "deprecation": {
-      	"reason": "DispatcherServlet property is deprecated for removal and should no longer need to be configured.",
-      	"level": "error"
+        "level": "error",
+        "reason": "DispatcherServlet property is deprecated for removal and should no longer need to be configured.",
+        "since": "3.2.0"
       }
     }
   ],

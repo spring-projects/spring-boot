@@ -5,7 +5,8 @@
       "name": "spring.data.couchbase.consistency",
       "type": "org.springframework.data.couchbase.core.query.Consistency",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {

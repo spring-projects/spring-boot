@@ -13,7 +13,8 @@
       "description": "Timeout for getting the Bucket information from the server.",
       "defaultValue": "1000ms",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.0.6"
       }
     },
     {
@@ -22,7 +23,8 @@
       "description": "Couchbase nodes (host or IP address) to bootstrap from.",
       "deprecation": {
         "replacement": "spring.couchbase.connection-string",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -31,7 +33,8 @@
       "description": "Name of the bucket to connect to.",
       "deprecation": {
         "reason": "A bucket is no longer auto-configured.",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -40,7 +43,8 @@
       "description": "Password of the bucket.",
       "deprecation": {
         "reason": "A bucket is no longer auto-configured.",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -48,7 +52,8 @@
       "type": "java.lang.Integer",
       "description": "Port for the HTTP bootstrap.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -56,7 +61,8 @@
       "type": "java.lang.Integer",
       "description": "Port for the HTTPS bootstrap.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -64,7 +70,8 @@
       "type": "java.lang.Integer",
       "description": "Number of sockets per node against the key/value service.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -72,7 +79,8 @@
       "type": "java.lang.Integer",
       "description": "Number of sockets per node against the query (N1QL) service.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -81,7 +89,8 @@
       "description": "Maximum number of sockets per node.",
       "deprecation": {
         "replacement": "spring.couchbase.env.io.max-endpoints",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -90,7 +99,8 @@
       "description": "Minimum number of sockets per node.",
       "deprecation": {
         "replacement": "spring.couchbase.env.io.min-endpoints",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -98,7 +108,8 @@
       "type": "java.lang.Integer",
       "description": "Number of sockets per node against the view service.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -107,7 +118,8 @@
       "description": "Maximum number of sockets per node.",
       "deprecation": {
         "replacement": "spring.couchbase.env.io.max-endpoints",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -116,7 +128,8 @@
       "description": "Minimum number of sockets per node.",
       "deprecation": {
         "replacement": "spring.couchbase.env.io.min-endpoints",
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -144,7 +157,8 @@
       "type": "java.time.Duration",
       "description": "Socket connect connections timeout.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     }
   ]

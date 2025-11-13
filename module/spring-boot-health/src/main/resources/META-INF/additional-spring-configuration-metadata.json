@@ -45,7 +45,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "InfluxDB support has been removed."
+        "reason": "InfluxDB support has been removed.",
+        "since": "3.2.0"
       }
     },
     {
@@ -67,7 +68,8 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "replacement": "management.endpoint.health.probes.enabled"
+        "replacement": "management.endpoint.health.probes.enabled",
+        "since": "2.3.2"
       }
     },
     {

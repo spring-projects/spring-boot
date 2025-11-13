@@ -7,7 +7,8 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Requests are timed automatically."
+        "reason": "Requests are timed automatically.",
+        "since": "3.0.0"
       }
     },
     {
@@ -15,7 +16,8 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles.",
+        "since": "3.0.0"
       }
     },
     {
@@ -24,7 +26,8 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram.",
+        "since": "3.0.0"
       }
     },
     {

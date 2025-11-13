@@ -19,7 +19,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.data.mongodb.gridfs.database",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {

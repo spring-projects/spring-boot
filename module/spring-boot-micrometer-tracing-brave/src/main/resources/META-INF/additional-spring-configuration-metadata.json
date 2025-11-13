@@ -5,7 +5,8 @@
       "name": "management.tracing.brave.span-joining-supported",
       "deprecation": {
         "replacement": "management.brave.tracing.span-joining-supported",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {
@@ -18,7 +19,8 @@
       "name": "management.zipkin.tracing.export.enabled",
       "deprecation": {
         "replacement": "management.tracing.export.zipkin.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     }
   ]

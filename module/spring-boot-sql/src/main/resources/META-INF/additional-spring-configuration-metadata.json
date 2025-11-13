@@ -6,8 +6,9 @@
       "description": "Whether basic script-based initialization of an SQL database is enabled.",
       "defaultValue": true,
       "deprecation": {
+        "level": "warning",
         "replacement": "spring.sql.init.mode",
-        "level": "warning"
+        "since": "2.5.1"
       }
     }
   ],

@@ -44,20 +44,10 @@
       }
     },
     {
-      "name": "management.endpoints.jackson.isolated-json-mapper",
-      "type": "java.lang.Boolean",
-      "description": "Whether to use an isolated JsonMapper to serialize endpoint JSON.",
-      "defaultValue": true
-    },
-    {
-      "name": "management.endpoints.jackson2.isolated-object-mapper",
+      "name": "management.endpoints.jackson.isolated-object-mapper",
       "type": "java.lang.Boolean",
       "description": "Whether to use an isolated object mapper to serialize endpoint JSON.",
-      "defaultValue": true,
-      "deprecation": {
-        "reason": "Jackson 3 is preferred.",
-        "since": "4.0.0"
-      }
+      "defaultValue": true
     },
     {
       "name": "management.endpoints.jmx.domain",
@@ -73,7 +63,8 @@
       "description": "Whether unique runtime object names should be ensured.",
       "deprecation": {
         "replacement": "spring.jmx.unique-names",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -161,28 +152,32 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "management.server.base-path",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.trace.http.enabled",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.trace.http.include",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.include",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.trace.include",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.include",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -190,7 +185,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -198,7 +194,8 @@
       "type": "org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties$TokenType",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -206,7 +203,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -214,7 +212,8 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -222,7 +221,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -230,7 +230,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -238,7 +239,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -246,7 +248,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -254,7 +257,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -262,7 +266,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -270,7 +275,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -278,7 +284,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -286,7 +293,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -294,7 +302,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -302,7 +311,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -310,7 +320,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -318,7 +329,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -326,7 +338,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -334,7 +347,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -342,7 +356,8 @@
       "type": "org.springframework.util.unit.DataSize",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -350,7 +365,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -358,7 +374,8 @@
       "type": "java.util.Set<java.lang.String>",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -366,7 +383,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     },
     {
@@ -374,7 +392,8 @@
       "type": "java.net.URI",
       "deprecation": {
         "level": "error",
-        "reason": "Wavefront is end-of-life."
+        "reason": "Wavefront is end-of-life.",
+        "since": "4.0.0"
       }
     }
   ],

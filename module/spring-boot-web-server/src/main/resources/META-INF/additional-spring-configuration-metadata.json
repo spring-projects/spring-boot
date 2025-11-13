@@ -4,8 +4,9 @@
       "name": "server.connection-timeout",
       "type": "java.time.Duration",
       "deprecation": {
+        "level": "error",
         "reason": "Each server behaves differently. Use server specific properties instead.",
-        "level": "error"
+        "since": "2.1.0"
       }
     },
     {
@@ -46,8 +47,9 @@
     {
       "name": "server.max-http-header-size",
       "deprecation": {
+        "level": "error",
         "replacement": "server.max-http-request-header-size",
-        "level": "error"
+        "since": "3.0.0"
       }
     },
     {
@@ -56,8 +58,9 @@
       "description": "Maximum size in bytes of the HTTP post content.",
       "defaultValue": 0,
       "deprecation": {
+        "level": "error",
         "reason": "Use dedicated property for each container.",
-        "level": "error"
+        "since": "3.0.0"
       }
     },
     {
@@ -101,8 +104,9 @@
       "type": "java.nio.charset.Charset",
       "description": "Charset of HTTP requests and responses. Added to the Content-Type header if not set explicitly.",
       "deprecation": {
+        "level": "error",
         "replacement": "spring.servlet.encoding.charset",
-        "level": "error"
+        "since": "4.0.0"
       }
     },
     {
@@ -111,8 +115,9 @@
       "description": "Whether to enable http encoding support.",
       "defaultValue": true,
       "deprecation": {
+        "level": "error",
         "replacement": "spring.servlet.encoding.enabled",
-        "level": "error"
+        "since": "4.0.0"
       }
     },
     {
@@ -121,8 +126,9 @@
       "description": "Whether to force the encoding to the configured charset on HTTP requests and responses.",
       "defaultValue": false,
       "deprecation": {
+        "level": "error",
         "replacement": "spring.servlet.encoding.force",
-        "level": "error"
+        "since": "4.0.0"
       }
     },
     {
@@ -131,8 +137,9 @@
       "description": "Whether to force the encoding to the configured charset on HTTP requests. Defaults to true when force has not been specified.",
       "defaultValue": true,
       "deprecation": {
+        "level": "error",
         "replacement": "spring.servlet.encoding.force-request",
-        "level": "error"
+        "since": "4.0.0"
       }
     },
     {
@@ -141,8 +148,9 @@
       "description": "Whether to force the encoding to the configured charset on HTTP responses.",
       "defaultValue": false,
       "deprecation": {
+        "level": "error",
         "replacement": "spring.servlet.encoding.force-response",
-        "level": "error"
+        "since": "4.0.0"
       }
     },
     {
@@ -160,15 +168,17 @@
       "description": "Path of the main dispatcher servlet.",
       "defaultValue": "/",
       "deprecation": {
+        "level": "error",
         "replacement": "spring.mvc.servlet.path",
-        "level": "error"
+        "since": "2.1.0"
       }
     },
     {
       "name": "server.servlet.session.cookie.comment",
       "description": "Comment for the cookie.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.1.0"
       }
     },
     {
@@ -208,9 +218,10 @@
       "name": "server.use-forward-headers",
       "type": "java.lang.Boolean",
       "deprecation": {
+        "level": "error",
         "reason": "Replaced to support additional strategies.",
         "replacement": "server.forward-headers-strategy",
-        "level": "error"
+        "since": "4.0.0"
       }
     }
   ]

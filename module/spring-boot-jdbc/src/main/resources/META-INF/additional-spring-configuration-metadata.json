@@ -11,7 +11,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.continue-on-error"
+        "replacement": "spring.sql.init.continue-on-error",
+        "since": "2.5.0"
       }
     },
     {
@@ -19,7 +20,8 @@
       "type": "java.util.List<java.lang.String>",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.data-locations"
+        "replacement": "spring.sql.init.data-locations",
+        "since": "2.5.0"
       }
     },
     {
@@ -27,7 +29,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.password"
+        "replacement": "spring.sql.init.password",
+        "since": "2.5.0"
       }
     },
     {
@@ -35,7 +38,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.username"
+        "replacement": "spring.sql.init.username",
+        "since": "2.5.0"
       }
     },
     {
@@ -43,7 +47,8 @@
       "type": "org.springframework.boot.jdbc.DataSourceInitializationMode",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.mode"
+        "replacement": "spring.sql.init.mode",
+        "since": "2.5.0"
       }
     },
     {
@@ -53,7 +58,8 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "replacement": "spring.datasource.tomcat.jmx-enabled"
+        "replacement": "spring.datasource.tomcat.jmx-enabled",
+        "since": "2.2.0"
       }
     },
     {
@@ -61,7 +67,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.platform"
+        "replacement": "spring.sql.init.platform",
+        "since": "2.5.0"
       }
     },
     {
@@ -69,7 +76,8 @@
       "type": "java.util.List<java.lang.String>",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.schema-locations"
+        "replacement": "spring.sql.init.schema-locations",
+        "since": "2.5.0"
       }
     },
     {
@@ -77,7 +85,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.password"
+        "replacement": "spring.sql.init.password",
+        "since": "2.5.0"
       }
     },
     {
@@ -85,7 +94,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.username"
+        "replacement": "spring.sql.init.username",
+        "since": "2.5.0"
       }
     },
     {
@@ -93,7 +103,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.separator"
+        "replacement": "spring.sql.init.separator",
+        "since": "2.5.0"
       }
     },
     {
@@ -101,7 +112,8 @@
       "type": "java.nio.charset.Charset",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.sql.init.encoding"
+        "replacement": "spring.sql.init.encoding",
+        "since": "2.5.0"
       }
     }
   ],

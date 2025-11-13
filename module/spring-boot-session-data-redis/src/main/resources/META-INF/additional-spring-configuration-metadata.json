@@ -9,7 +9,8 @@
       "description": "Cron expression for expired session cleanup job. Only supported when repository-type is set to indexed. Not supported with a reactive session repository.",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.session.data.redis.cleanup-cron"
+        "replacement": "spring.session.data.redis.cleanup-cron",
+        "since": "4.0.0"
       }
     },
     {
@@ -17,7 +18,8 @@
       "description": "The configure action to apply when no user-defined ConfigureRedisAction or ConfigureReactiveRedisAction bean is present.",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.session.data.redis.configure-action"
+        "replacement": "spring.session.data.redis.configure-action",
+        "since": "4.0.0"
       }
     },
     {
@@ -25,7 +27,8 @@
       "description": "Sessions flush mode. Determines when session changes are written to the session store. Not supported with a reactive session repository.",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.session.data.redis.flush-mode"
+        "replacement": "spring.session.data.redis.flush-mode",
+        "since": "4.0.0"
       }
     },
     {
@@ -33,7 +36,8 @@
       "description": "Namespace for keys used to store sessions.",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.session.data.redis.namespace"
+        "replacement": "spring.session.data.redis.namespace",
+        "since": "4.0.0"
       }
     },
     {
@@ -41,7 +45,8 @@
       "description": "Type of Redis session repository to configure.",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.session.data.redis.repository-type"
+        "replacement": "spring.session.data.redis.repository-type",
+        "since": "4.0.0"
       }
     },
     {
@@ -49,7 +54,8 @@
       "description": "Sessions save mode. Determines how session changes are tracked and saved to the session store.",
       "deprecation": {
         "level": "error",
-        "replacement": "spring.session.data.redis.save-mode"
+        "replacement": "spring.session.data.redis.save-mode",
+        "since": "4.0.0"
       }
     }
   ]

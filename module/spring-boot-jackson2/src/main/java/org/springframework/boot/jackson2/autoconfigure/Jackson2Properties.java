@@ -123,7 +123,7 @@ public class Jackson2Properties {
 
 	private final Datatype datatype = new Datatype();
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public @Nullable String getDateFormat() {
 		return this.dateFormat;
 	}
@@ -132,7 +132,7 @@ public class Jackson2Properties {
 		this.dateFormat = dateFormat;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public @Nullable String getPropertyNamingStrategy() {
 		return this.propertyNamingStrategy;
 	}
@@ -141,37 +141,37 @@ public class Jackson2Properties {
 		this.propertyNamingStrategy = propertyNamingStrategy;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public Map<PropertyAccessor, JsonAutoDetect.Visibility> getVisibility() {
 		return this.visibility;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public Map<SerializationFeature, Boolean> getSerialization() {
 		return this.serialization;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public Map<DeserializationFeature, Boolean> getDeserialization() {
 		return this.deserialization;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public Map<MapperFeature, Boolean> getMapper() {
 		return this.mapper;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public Map<JsonParser.Feature, Boolean> getParser() {
 		return this.parser;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public Map<JsonGenerator.Feature, Boolean> getGenerator() {
 		return this.generator;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public JsonInclude.@Nullable Include getDefaultPropertyInclusion() {
 		return this.defaultPropertyInclusion;
 	}
@@ -180,7 +180,7 @@ public class Jackson2Properties {
 		this.defaultPropertyInclusion = defaultPropertyInclusion;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public @Nullable Boolean getDefaultLeniency() {
 		return this.defaultLeniency;
 	}
@@ -189,7 +189,7 @@ public class Jackson2Properties {
 		this.defaultLeniency = defaultLeniency;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public @Nullable ConstructorDetectorStrategy getConstructorDetector() {
 		return this.constructorDetector;
 	}
@@ -198,7 +198,7 @@ public class Jackson2Properties {
 		this.constructorDetector = constructorDetector;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public @Nullable TimeZone getTimeZone() {
 		return this.timeZone;
 	}
@@ -207,7 +207,7 @@ public class Jackson2Properties {
 		this.timeZone = timeZone;
 	}
 
-	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+	@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 	public @Nullable Locale getLocale() {
 		return this.locale;
 	}
@@ -257,12 +257,12 @@ public class Jackson2Properties {
 		 */
 		private final Map<JsonNodeFeature, Boolean> jsonNode = new EnumMap<>(JsonNodeFeature.class);
 
-		@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+		@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 		public Map<EnumFeature, Boolean> getEnum() {
 			return this.enumFeatures;
 		}
 
-		@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3")
+		@DeprecatedConfigurationProperty(reason = "Deprecated in favor of Jackson 3", since = "4.0.0")
 		public Map<JsonNodeFeature, Boolean> getJsonNode() {
 			return this.jsonNode;
 		}

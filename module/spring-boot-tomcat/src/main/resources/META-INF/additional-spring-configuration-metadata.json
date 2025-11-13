@@ -5,14 +5,16 @@
       "name": "server.tomcat.max-http-post-size",
       "type": "org.springframework.util.unit.DataSize",
       "deprecation": {
+        "level": "error",
         "replacement": "server.tomcat.max-http-form-post-size",
-        "level": "error"
+        "since": "2.3.0"
       }
     },
     {
       "name": "server.tomcat.reject-illegal-header",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.7.12"
       }
     }
   ],

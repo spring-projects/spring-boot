@@ -36,7 +36,8 @@
       "description": "Resource reference to a generated git info properties file.",
       "deprecation": {
         "replacement": "spring.info.git.location",
-        "level": "error"
+        "level": "error",
+        "since": "1.4.0"
       }
     },
     {
@@ -58,7 +59,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.add-mappings",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -66,7 +68,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.cache-private",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -74,7 +77,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.cache-public",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -82,7 +86,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.max-age",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -90,7 +95,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.must-revalidate",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -98,7 +104,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.no-cache",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -106,7 +113,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.no-store",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -114,7 +122,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.no-transform",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -122,7 +131,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.proxy-revalidate",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -130,7 +140,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.s-max-age",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -138,7 +149,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.stale-if-error",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -146,7 +158,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.cachecontrol.stale-while-revalidate",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -154,7 +167,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "replacement": "spring.web.resources.cache.period",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -162,7 +176,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.cache.use-last-modified",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -170,7 +185,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.cache",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -178,7 +194,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.compressed",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -186,7 +203,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -194,14 +212,16 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.compressed",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
       "name": "spring.resources.chain.html-application-cache",
       "type": "java.lang.Boolean",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -209,7 +229,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.content.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -217,7 +238,8 @@
       "type": "java.lang.String[]",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.content.paths",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -225,7 +247,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.fixed.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -233,7 +256,8 @@
       "type": "java.lang.String[]",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.fixed.paths",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -241,7 +265,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "spring.web.resources.chain.strategy.fixed.version",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {
@@ -249,7 +274,8 @@
       "type": "java.lang.String[]",
       "deprecation": {
         "replacement": "spring.web.resources.static-locations",
-        "level": "error"
+        "level": "error",
+        "since": "2.4.0"
       }
     },
     {

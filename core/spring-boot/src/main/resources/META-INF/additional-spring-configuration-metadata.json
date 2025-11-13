@@ -48,7 +48,8 @@
       "description": "Log file name (for instance, `myapp.log`). Names can be an exact location or relative to the current directory.",
       "deprecation": {
         "replacement": "logging.file.name",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -58,7 +59,8 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": false,
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.clean-history-on-start"
+        "replacement": "logging.logback.rollingpolicy.clean-history-on-start",
+        "since": "2.4.0"
       }
     },
     {
@@ -68,7 +70,8 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": 7,
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.max-history"
+        "replacement": "logging.logback.rollingpolicy.max-history",
+        "since": "2.4.0"
       }
     },
     {
@@ -78,7 +81,8 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "10MB",
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.max-file-size"
+        "replacement": "logging.logback.rollingpolicy.max-file-size",
+        "since": "2.4.0"
       }
     },
     {
@@ -100,7 +104,8 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "0B",
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.total-size-cap"
+        "replacement": "logging.logback.rollingpolicy.total-size-cap",
+        "since": "2.4.0"
       }
     },
     {
@@ -175,7 +180,8 @@
       "description": "Location of the log file. For instance, `/var/log`.",
       "deprecation": {
         "replacement": "logging.file.path",
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -217,7 +223,8 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz",
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.file-name-pattern"
+        "replacement": "logging.logback.rollingpolicy.file-name-pattern",
+        "since": "2.4.0"
       }
     },
     {
@@ -355,7 +362,8 @@
       "description": "Application index.",
       "deprecation": {
         "level": "error",
-        "reason": "Application context ids are now unique by default."
+        "reason": "Application context ids are now unique by default.",
+        "since": "2.0.0"
       }
     },
     {
@@ -380,7 +388,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Support for image banners has been removed."
+        "reason": "Support for image banners has been removed.",
+        "since": "3.0.0"
       }
     },
     {
@@ -388,7 +397,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Support for image banners has been removed."
+        "reason": "Support for image banners has been removed.",
+        "since": "3.0.0"
       }
     },
     {
@@ -396,7 +406,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Support for image banners has been removed."
+        "reason": "Support for image banners has been removed.",
+        "since": "3.0.0"
       }
     },
     {
@@ -404,7 +415,8 @@
       "type": "org.springframework.core.io.Resource",
       "deprecation": {
         "level": "error",
-        "reason": "Support for image banners has been removed."
+        "reason": "Support for image banners has been removed.",
+        "since": "3.0.0"
       }
     },
     {
@@ -412,7 +424,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Support for image banners has been removed."
+        "reason": "Support for image banners has been removed.",
+        "since": "3.0.0"
       }
     },
     {
@@ -420,7 +433,8 @@
       "type": "org.springframework.boot.ImageBanner$PixelMode",
       "deprecation": {
         "level": "error",
-        "reason": "Support for image banners has been removed."
+        "reason": "Support for image banners has been removed.",
+        "since": "3.0.0"
       }
     },
     {
@@ -428,7 +442,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "Support for image banners has been removed."
+        "reason": "Support for image banners has been removed.",
+        "since": "3.0.0"
       }
     },
     {
@@ -547,7 +562,8 @@
       "description": "Display the banner when the application runs.",
       "defaultValue": true,
       "deprecation": {
-        "replacement": "spring.main.banner-mode"
+        "replacement": "spring.main.banner-mode",
+        "since": "1.3.0"
       }
     },
     {
@@ -568,7 +584,8 @@
       "sourceType": "org.springframework.boot.SpringApplication",
       "description": "Run the application in a web environment (auto-detected by default).",
       "deprecation": {
-        "replacement": "spring.main.web-application-type"
+        "replacement": "spring.main.web-application-type",
+        "since": "2.0.0"
       }
     },
     {

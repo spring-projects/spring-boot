@@ -14,7 +14,9 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Instead, filter 'process.files' metrics."
+        "replacement": "management.metrics.enable.process.files",
+        "reason": "Instead, filter 'process.files' metrics.",
+        "since": "2.1.0"
       }
     },
     {
@@ -24,7 +26,9 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Instead, disable JvmMetricsAutoConfiguration or filter 'jvm' metrics."
+        "replacement": "management.metrics.enable.jvm",
+        "reason": "Instead, disable JvmMetricsAutoConfiguration or filter 'jvm' metrics.",
+        "since": "2.1.0"
       }
     },
     {
@@ -34,7 +38,9 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Instead, disable LogbackMetricsAutoConfiguration or filter 'logback' metrics."
+        "replacement": "management.metrics.enable.logback",
+        "reason": "Instead, disable LogbackMetricsAutoConfiguration or filter 'logback' metrics.",
+        "since": "2.1.0"
       }
     },
     {
@@ -44,7 +50,8 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Instead, filter 'system.cpu' and 'process.cpu' metrics."
+        "reason": "Instead, filter 'system.cpu' and 'process.cpu' metrics.",
+        "since": "2.1.0"
       }
     },
     {
@@ -54,7 +61,8 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Instead, filter 'process.uptime' and 'process.start.time' metrics."
+        "reason": "Instead, filter 'process.uptime' and 'process.start.time' metrics.",
+        "since": "2.1.0"
       }
     },
         {
@@ -62,7 +70,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.api-token"
+        "replacement": "management.appoptics.metrics.export.api-token",
+        "since": "3.0.0"
       }
     },
     {
@@ -70,7 +79,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.batch-size"
+        "replacement": "management.appoptics.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -78,7 +88,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.connect-timeout"
+        "replacement": "management.appoptics.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -86,7 +97,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.enabled"
+        "replacement": "management.appoptics.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -94,7 +106,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.floor-times"
+        "replacement": "management.appoptics.metrics.export.floor-times",
+        "since": "3.0.0"
       }
     },
     {
@@ -102,14 +115,16 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.host-tag"
+        "replacement": "management.appoptics.metrics.export.host-tag",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.appoptics.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -117,7 +132,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.read-timeout"
+        "replacement": "management.appoptics.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -125,7 +141,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.step"
+        "replacement": "management.appoptics.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -133,7 +150,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.appoptics.metrics.export.uri"
+        "replacement": "management.appoptics.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -141,7 +159,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.batch-size"
+        "replacement": "management.atlas.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -149,7 +168,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.config-refresh-frequency"
+        "replacement": "management.atlas.metrics.export.config-refresh-frequency",
+        "since": "3.0.0"
       }
     },
     {
@@ -157,7 +177,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.config-time-to-live"
+        "replacement": "management.atlas.metrics.export.config-time-to-live",
+        "since": "3.0.0"
       }
     },
     {
@@ -165,7 +186,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.config-uri"
+        "replacement": "management.atlas.metrics.export.config-uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -173,7 +195,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.connect-timeout"
+        "replacement": "management.atlas.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -181,7 +204,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.enabled"
+        "replacement": "management.atlas.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -189,7 +213,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.eval-uri"
+        "replacement": "management.atlas.metrics.export.eval-uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -197,7 +222,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.lwc-enabled"
+        "replacement": "management.atlas.metrics.export.lwc-enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -205,14 +231,16 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.meter-time-to-live"
+        "replacement": "management.atlas.metrics.export.meter-time-to-live",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.atlas.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -220,7 +248,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.read-timeout"
+        "replacement": "management.atlas.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -228,7 +257,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.step"
+        "replacement": "management.atlas.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -236,7 +266,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.atlas.metrics.export.uri"
+        "replacement": "management.atlas.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -244,7 +275,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.api-key"
+        "replacement": "management.datadog.metrics.export.api-key",
+        "since": "3.0.0"
       }
     },
     {
@@ -252,7 +284,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.application-key"
+        "replacement": "management.datadog.metrics.export.application-key",
+        "since": "3.0.0"
       }
     },
     {
@@ -260,7 +293,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.batch-size"
+        "replacement": "management.datadog.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -268,7 +302,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.connect-timeout"
+        "replacement": "management.datadog.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -276,7 +311,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.descriptions"
+        "replacement": "management.datadog.metrics.export.descriptions",
+        "since": "3.0.0"
       }
     },
     {
@@ -284,7 +320,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.enabled"
+        "replacement": "management.datadog.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -292,14 +329,16 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.host-tag"
+        "replacement": "management.datadog.metrics.export.host-tag",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.datadog.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -307,7 +346,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.read-timeout"
+        "replacement": "management.datadog.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -315,7 +355,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.step"
+        "replacement": "management.datadog.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -323,7 +364,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.datadog.metrics.export.uri"
+        "replacement": "management.datadog.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -331,7 +373,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.defaults.metrics.export.enabled"
+        "replacement": "management.defaults.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -339,7 +382,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.api-token"
+        "replacement": "management.dynatrace.metrics.export.api-token",
+        "since": "3.0.0"
       }
     },
     {
@@ -347,7 +391,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.batch-size"
+        "replacement": "management.dynatrace.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -355,7 +400,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.connect-timeout"
+        "replacement": "management.dynatrace.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -363,7 +409,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v1.device-id"
+        "replacement": "management.dynatrace.metrics.export.device-id",
+        "since": "3.0.0"
       }
     },
     {
@@ -371,7 +418,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.enabled"
+        "replacement": "management.dynatrace.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -379,14 +427,16 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v1.group"
+        "replacement": "management.dynatrace.metrics.export.group",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.dynatrace.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -394,7 +444,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.read-timeout"
+        "replacement": "management.dynatrace.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -402,7 +453,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.step"
+        "replacement": "management.dynatrace.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -410,7 +462,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v1.technology-type"
+        "replacement": "management.dynatrace.metrics.export.technology-type",
+        "since": "3.0.0"
       }
     },
     {
@@ -418,7 +471,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.uri"
+        "replacement": "management.dynatrace.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -426,7 +480,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v1.device-id"
+        "replacement": "management.dynatrace.metrics.export.v1.device-id",
+        "since": "3.0.0"
       }
     },
     {
@@ -434,7 +489,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v1.group"
+        "replacement": "management.dynatrace.metrics.export.v1.group",
+        "since": "3.0.0"
       }
     },
     {
@@ -442,7 +498,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v1.technology-type"
+        "replacement": "management.dynatrace.metrics.export.v1.technology-type",
+        "since": "3.0.0"
       }
     },
     {
@@ -450,7 +507,8 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v2.default-dimensions"
+        "replacement": "management.dynatrace.metrics.export.v2.default-dimensions",
+        "since": "3.0.0"
       }
     },
     {
@@ -458,7 +516,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v2.enrich-with-dynatrace-metadata"
+        "replacement": "management.dynatrace.metrics.export.v2.enrich-with-dynatrace-metadata",
+        "since": "3.0.0"
       }
     },
     {
@@ -466,7 +525,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.dynatrace.metrics.export.v2.metric-key-prefix"
+        "replacement": "management.dynatrace.metrics.export.v2.metric-key-prefix",
+        "since": "3.0.0"
       }
     },
     {
@@ -474,7 +534,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.api-key-credentials"
+        "replacement": "management.elastic.metrics.export.api-key-credentials",
+        "since": "3.0.0"
       }
     },
     {
@@ -482,7 +543,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.auto-create-index"
+        "replacement": "management.elastic.metrics.export.auto-create-index",
+        "since": "3.0.0"
       }
     },
     {
@@ -490,7 +552,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.batch-size"
+        "replacement": "management.elastic.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -498,7 +561,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.connect-timeout"
+        "replacement": "management.elastic.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -506,7 +570,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.enabled"
+        "replacement": "management.elastic.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -514,7 +579,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.host"
+        "replacement": "management.elastic.metrics.export.host",
+        "since": "3.0.0"
       }
     },
     {
@@ -522,7 +588,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.index"
+        "replacement": "management.elastic.metrics.export.index",
+        "since": "3.0.0"
       }
     },
     {
@@ -530,7 +597,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.index-date-format"
+        "replacement": "management.elastic.metrics.export.index-date-format",
+        "since": "3.0.0"
       }
     },
     {
@@ -538,14 +606,16 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.index-date-separator"
+        "replacement": "management.elastic.metrics.export.index-date-separator",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.elastic.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -553,7 +623,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.password"
+        "replacement": "management.elastic.metrics.export.password",
+        "since": "3.0.0"
       }
     },
     {
@@ -561,7 +632,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.pipeline"
+        "replacement": "management.elastic.metrics.export.pipeline",
+        "since": "3.0.0"
       }
     },
     {
@@ -569,7 +641,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.read-timeout"
+        "replacement": "management.elastic.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -577,7 +650,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.step"
+        "replacement": "management.elastic.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -585,7 +659,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.timestamp-field-name"
+        "replacement": "management.elastic.metrics.export.timestamp-field-name",
+        "since": "3.0.0"
       }
     },
     {
@@ -593,7 +668,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.elastic.metrics.export.user-name"
+        "replacement": "management.elastic.metrics.export.user-name",
+        "since": "3.0.0"
       }
     },
     {
@@ -601,7 +677,8 @@
       "type": "info.ganglia.gmetric4j.gmetric.GMetric$UDPAddressingMode",
       "deprecation": {
         "level": "error",
-        "replacement": "management.ganglia.metrics.export.addressing-mode"
+        "replacement": "management.ganglia.metrics.export.addressing-mode",
+        "since": "3.0.0"
       }
     },
     {
@@ -609,7 +686,8 @@
       "type": "java.util.concurrent.TimeUnit",
       "deprecation": {
         "level": "error",
-        "replacement": "management.ganglia.metrics.export.duration-units"
+        "replacement": "management.ganglia.metrics.export.duration-units",
+        "since": "3.0.0"
       }
     },
     {
@@ -617,7 +695,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.ganglia.metrics.export.enabled"
+        "replacement": "management.ganglia.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -625,7 +704,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.ganglia.metrics.export.host"
+        "replacement": "management.ganglia.metrics.export.host",
+        "since": "3.0.0"
       }
     },
     {
@@ -633,14 +713,16 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.ganglia.metrics.export.port"
+        "replacement": "management.ganglia.metrics.export.port",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.ganglia.rate-units",
       "type": "java.util.concurrent.TimeUnit",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -648,7 +730,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.ganglia.metrics.export.step"
+        "replacement": "management.ganglia.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -656,7 +739,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.ganglia.metrics.export.time-to-live"
+        "replacement": "management.ganglia.metrics.export.time-to-live",
+        "since": "3.0.0"
       }
     },
     {
@@ -664,7 +748,8 @@
       "type": "java.util.concurrent.TimeUnit",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.duration-units"
+        "replacement": "management.graphite.metrics.export.duration-units",
+        "since": "3.0.0"
       }
     },
     {
@@ -672,7 +757,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.enabled"
+        "replacement": "management.graphite.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -680,7 +766,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.graphite-tags-enabled"
+        "replacement": "management.graphite.metrics.export.graphite-tags-enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -688,7 +775,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.host"
+        "replacement": "management.graphite.metrics.export.host",
+        "since": "3.0.0"
       }
     },
     {
@@ -696,7 +784,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.port"
+        "replacement": "management.graphite.metrics.export.port",
+        "since": "3.0.0"
       }
     },
     {
@@ -704,7 +793,8 @@
       "type": "io.micrometer.graphite.GraphiteProtocol",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.protocol"
+        "replacement": "management.graphite.metrics.export.protocol",
+        "since": "3.0.0"
       }
     },
     {
@@ -712,7 +802,8 @@
       "type": "java.util.concurrent.TimeUnit",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.rate-units"
+        "replacement": "management.graphite.metrics.export.rate-units",
+        "since": "3.0.0"
       }
     },
     {
@@ -720,7 +811,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.step"
+        "replacement": "management.graphite.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -728,7 +820,8 @@
       "type": "java.lang.String[]",
       "deprecation": {
         "level": "error",
-        "replacement": "management.graphite.metrics.export.tags-as-prefix"
+        "replacement": "management.graphite.metrics.export.tags-as-prefix",
+        "since": "3.0.0"
       }
     },
     {
@@ -736,7 +829,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.humio.metrics.export.api-token"
+        "replacement": "management.humio.metrics.export.api-token",
+        "since": "3.0.0"
       }
     },
     {
@@ -744,7 +838,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.humio.metrics.export.batch-size"
+        "replacement": "management.humio.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -752,7 +847,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.humio.metrics.export.connect-timeout"
+        "replacement": "management.humio.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -760,14 +856,16 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.humio.metrics.export.enabled"
+        "replacement": "management.humio.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.humio.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -775,13 +873,15 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.humio.metrics.export.read-timeout"
+        "replacement": "management.humio.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.humio.repository",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -789,7 +889,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.humio.metrics.export.step"
+        "replacement": "management.humio.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -797,7 +898,8 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "deprecation": {
         "level": "error",
-        "replacement": "management.humio.metrics.export.tags"
+        "replacement": "management.humio.metrics.export.tags",
+        "since": "3.0.0"
       }
     },
     {
@@ -805,7 +907,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.humio.metrics.export.uri"
+        "replacement": "management.humio.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -813,7 +916,8 @@
       "type": "io.micrometer.influx.InfluxApiVersion",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.api-version"
+        "replacement": "management.influx.metrics.export.api-version",
+        "since": "3.0.0"
       }
     },
     {
@@ -821,7 +925,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.auto-create-db"
+        "replacement": "management.influx.metrics.export.auto-create-db",
+        "since": "3.0.0"
       }
     },
     {
@@ -829,7 +934,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.batch-size"
+        "replacement": "management.influx.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -837,7 +943,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.bucket"
+        "replacement": "management.influx.metrics.export.bucket",
+        "since": "3.0.0"
       }
     },
     {
@@ -845,7 +952,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.compressed"
+        "replacement": "management.influx.metrics.export.compressed",
+        "since": "3.0.0"
       }
     },
     {
@@ -853,7 +961,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.connect-timeout"
+        "replacement": "management.influx.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -861,7 +970,8 @@
       "type": "io.micrometer.influx.InfluxConsistency",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.consistency"
+        "replacement": "management.influx.metrics.export.consistency",
+        "since": "3.0.0"
       }
     },
     {
@@ -869,7 +979,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.db"
+        "replacement": "management.influx.metrics.export.db",
+        "since": "3.0.0"
       }
     },
     {
@@ -877,14 +988,16 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.enabled"
+        "replacement": "management.influx.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.influx.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -892,7 +1005,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.org"
+        "replacement": "management.influx.metrics.export.org",
+        "since": "3.0.0"
       }
     },
     {
@@ -900,7 +1014,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.password"
+        "replacement": "management.influx.metrics.export.password",
+        "since": "3.0.0"
       }
     },
     {
@@ -908,7 +1023,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.read-timeout"
+        "replacement": "management.influx.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -916,7 +1032,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.retention-duration"
+        "replacement": "management.influx.metrics.export.retention-duration",
+        "since": "3.0.0"
       }
     },
     {
@@ -924,7 +1041,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.retention-policy"
+        "replacement": "management.influx.metrics.export.retention-policy",
+        "since": "3.0.0"
       }
     },
     {
@@ -932,7 +1050,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.retention-replication-factor"
+        "replacement": "management.influx.metrics.export.retention-replication-factor",
+        "since": "3.0.0"
       }
     },
     {
@@ -940,7 +1059,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.retention-shard-duration"
+        "replacement": "management.influx.metrics.export.retention-shard-duration",
+        "since": "3.0.0"
       }
     },
     {
@@ -948,7 +1068,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.step"
+        "replacement": "management.influx.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -956,7 +1077,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.token"
+        "replacement": "management.influx.metrics.export.token",
+        "since": "3.0.0"
       }
     },
     {
@@ -964,7 +1086,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.uri"
+        "replacement": "management.influx.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -972,7 +1095,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.influx.metrics.export.user-name"
+        "replacement": "management.influx.metrics.export.user-name",
+        "since": "3.0.0"
       }
     },
     {
@@ -980,7 +1104,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.jmx.metrics.export.domain"
+        "replacement": "management.jmx.metrics.export.domain",
+        "since": "3.0.0"
       }
     },
     {
@@ -988,7 +1113,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.jmx.metrics.export.enabled"
+        "replacement": "management.jmx.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -996,7 +1122,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.jmx.metrics.export.step"
+        "replacement": "management.jmx.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -1004,7 +1131,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.kairos.metrics.export.batch-size"
+        "replacement": "management.kairos.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -1012,7 +1140,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.kairos.metrics.export.connect-timeout"
+        "replacement": "management.kairos.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -1020,14 +1149,16 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.kairos.metrics.export.enabled"
+        "replacement": "management.kairos.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.kairos.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1035,7 +1166,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.kairos.metrics.export.password"
+        "replacement": "management.kairos.metrics.export.password",
+        "since": "3.0.0"
       }
     },
     {
@@ -1043,7 +1175,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.kairos.metrics.export.read-timeout"
+        "replacement": "management.kairos.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -1051,7 +1184,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.kairos.metrics.export.step"
+        "replacement": "management.kairos.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -1059,7 +1193,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.kairos.metrics.export.uri"
+        "replacement": "management.kairos.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -1067,7 +1202,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.kairos.metrics.export.user-name"
+        "replacement": "management.kairos.metrics.export.user-name",
+        "since": "3.0.0"
       }
     },
     {
@@ -1075,7 +1211,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.account-id"
+        "replacement": "management.newrelic.metrics.export.account-id",
+        "since": "3.0.0"
       }
     },
     {
@@ -1083,7 +1220,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.api-key"
+        "replacement": "management.newrelic.metrics.export.api-key",
+        "since": "3.0.0"
       }
     },
     {
@@ -1091,7 +1229,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.batch-size"
+        "replacement": "management.newrelic.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -1099,7 +1238,8 @@
       "type": "io.micrometer.newrelic.ClientProviderType",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.client-provider-type"
+        "replacement": "management.newrelic.metrics.export.client-provider-type",
+        "since": "3.0.0"
       }
     },
     {
@@ -1107,7 +1247,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.connect-timeout"
+        "replacement": "management.newrelic.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -1115,7 +1256,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.enabled"
+        "replacement": "management.newrelic.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -1123,7 +1265,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.event-type"
+        "replacement": "management.newrelic.metrics.export.event-type",
+        "since": "3.0.0"
       }
     },
     {
@@ -1131,14 +1274,16 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.meter-name-event-type-enabled"
+        "replacement": "management.newrelic.metrics.export.meter-name-event-type-enabled",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.newrelic.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1146,7 +1291,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.read-timeout"
+        "replacement": "management.newrelic.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -1154,7 +1300,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.step"
+        "replacement": "management.newrelic.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -1162,7 +1309,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.newrelic.metrics.export.uri"
+        "replacement": "management.newrelic.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -1170,7 +1318,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.descriptions"
+        "replacement": "management.prometheus.metrics.export.descriptions",
+        "since": "3.0.0"
       }
     },
     {
@@ -1178,7 +1327,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.enabled"
+        "replacement": "management.prometheus.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -1186,7 +1336,8 @@
       "type": "io.micrometer.prometheus.HistogramFlavor",
       "deprecation": {
         "level": "error",
-        "reason": "No longer supported by the Prometheus client."
+        "replacement": "management.prometheus.metrics.export.histogram-flavor",
+        "since": "3.0.0"
       }
     },
     {
@@ -1194,7 +1345,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.address"
+        "replacement": "management.prometheus.metrics.export.pushgateway.base-url",
+        "since": "3.0.0"
       }
     },
     {
@@ -1202,7 +1354,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.enabled"
+        "replacement": "management.prometheus.metrics.export.pushgateway.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -1210,7 +1363,8 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.grouping-key"
+        "replacement": "management.prometheus.metrics.export.pushgateway.grouping-key",
+        "since": "3.0.0"
       }
     },
     {
@@ -1218,7 +1372,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.job"
+        "replacement": "management.prometheus.metrics.export.pushgateway.job",
+        "since": "3.0.0"
       }
     },
     {
@@ -1226,7 +1381,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.password"
+        "replacement": "management.prometheus.metrics.export.pushgateway.password",
+        "since": "3.0.0"
       }
     },
     {
@@ -1234,7 +1390,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.push-rate"
+        "replacement": "management.prometheus.metrics.export.pushgateway.push-rate",
+        "since": "3.0.0"
       }
     },
     {
@@ -1242,7 +1399,8 @@
       "type": "org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager$ShutdownOperation",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.shutdown-operation"
+        "replacement": "management.prometheus.metrics.export.pushgateway.shutdown-operation",
+        "since": "3.0.0"
       }
     },
     {
@@ -1250,7 +1408,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.username"
+        "replacement": "management.prometheus.metrics.export.pushgateway.username",
+        "since": "3.0.0"
       }
     },
     {
@@ -1258,7 +1417,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.step"
+        "replacement": "management.prometheus.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -1266,7 +1426,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.access-token",
+        "since": "3.0.0"
       }
     },
     {
@@ -1274,7 +1435,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -1282,7 +1444,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -1290,7 +1453,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -1298,14 +1462,15 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.signalfx.published-histogram-type",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.published-histogram-type",
+        "since": "3.0.0"
       }
     },
     {
@@ -1313,7 +1478,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -1321,7 +1487,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.source",
+        "since": "3.0.0"
       }
     },
     {
@@ -1329,7 +1496,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -1337,7 +1505,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "SignalFX is no longer supported."
+        "replacement": "management.signalfx.metrics.export.uri",
+        "since": "3.0.0"
       }
     },
     {
@@ -1345,7 +1514,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.simple.metrics.export.enabled"
+        "replacement": "management.simple.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -1353,7 +1523,8 @@
       "type": "io.micrometer.core.instrument.simple.CountingMode",
       "deprecation": {
         "level": "error",
-        "replacement": "management.simple.metrics.export.mode"
+        "replacement": "management.simple.metrics.export.mode",
+        "since": "3.0.0"
       }
     },
     {
@@ -1361,7 +1532,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.simple.metrics.export.step"
+        "replacement": "management.simple.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -1369,7 +1541,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.batch-size"
+        "replacement": "management.stackdriver.metrics.export.batch-size",
+        "since": "3.0.0"
       }
     },
     {
@@ -1377,7 +1550,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.connect-timeout"
+        "replacement": "management.stackdriver.metrics.export.connect-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -1385,14 +1559,16 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.enabled"
+        "replacement": "management.stackdriver.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.stackdriver.num-threads",
       "type": "java.lang.Integer",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1400,7 +1576,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.project-id"
+        "replacement": "management.stackdriver.metrics.export.project-id",
+        "since": "3.0.0"
       }
     },
     {
@@ -1408,7 +1585,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.read-timeout"
+        "replacement": "management.stackdriver.metrics.export.read-timeout",
+        "since": "3.0.0"
       }
     },
     {
@@ -1416,7 +1594,8 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.resource-labels"
+        "replacement": "management.stackdriver.metrics.export.resource-labels",
+        "since": "3.0.0"
       }
     },
     {
@@ -1424,7 +1603,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.resource-type"
+        "replacement": "management.stackdriver.metrics.export.resource-type",
+        "since": "3.0.0"
       }
     },
     {
@@ -1432,7 +1612,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.step"
+        "replacement": "management.stackdriver.metrics.export.step",
+        "since": "3.0.0"
       }
     },
     {
@@ -1440,7 +1621,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.stackdriver.metrics.export.use-semantic-metric-types"
+        "replacement": "management.stackdriver.metrics.export.use-semantic-metric-types",
+        "since": "3.0.0"
       }
     },
     {
@@ -1448,7 +1630,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.statsd.metrics.export.enabled"
+        "replacement": "management.statsd.metrics.export.enabled",
+        "since": "3.0.0"
       }
     },
     {
@@ -1456,7 +1639,8 @@
       "type": "io.micrometer.statsd.StatsdFlavor",
       "deprecation": {
         "level": "error",
-        "replacement": "management.statsd.metrics.export.flavor"
+        "replacement": "management.statsd.metrics.export.flavor",
+        "since": "3.0.0"
       }
     },
     {
@@ -1464,7 +1648,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.statsd.metrics.export.host"
+        "replacement": "management.statsd.metrics.export.host",
+        "since": "3.0.0"
       }
     },
     {
@@ -1472,7 +1657,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.statsd.metrics.export.max-packet-length"
+        "replacement": "management.statsd.metrics.export.max-packet-length",
+        "since": "3.0.0"
       }
     },
     {
@@ -1480,7 +1666,8 @@
       "type": "java.time.Duration",
       "deprecation": {
         "level": "error",
-        "replacement": "management.statsd.metrics.export.polling-frequency"
+        "replacement": "management.statsd.metrics.export.polling-frequency",
+        "since": "3.0.0"
       }
     },
     {
@@ -1488,7 +1675,8 @@
       "type": "java.lang.Integer",
       "deprecation": {
         "level": "error",
-        "replacement": "management.statsd.metrics.export.port"
+        "replacement": "management.statsd.metrics.export.port",
+        "since": "3.0.0"
       }
     },
     {
@@ -1496,7 +1684,8 @@
       "type": "io.micrometer.statsd.StatsdProtocol",
       "deprecation": {
         "level": "error",
-        "replacement": "management.statsd.metrics.export.protocol"
+        "replacement": "management.statsd.metrics.export.protocol",
+        "since": "3.0.0"
       }
     },
     {
@@ -1504,13 +1693,15 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "replacement": "management.statsd.metrics.export.publish-unchanged-meters"
+        "replacement": "management.statsd.metrics.export.publish-unchanged-meters",
+        "since": "3.0.0"
       }
     },
     {
       "name": "management.metrics.export.statsd.queue-size",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1526,7 +1717,8 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Requests are timed automatically."
+        "reason": "Requests are timed automatically.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1534,7 +1726,8 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1543,7 +1736,8 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1551,7 +1745,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "management.observations.http.client.requests.name",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1559,7 +1754,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "management.observations.http.client.requests.name",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
         {
@@ -1567,7 +1763,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "management.metrics.web.server.request.autotime.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1576,7 +1773,8 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Requests are timed automatically."
+        "reason": "Requests are timed automatically.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1584,7 +1782,8 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1593,7 +1792,8 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1601,7 +1801,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "level": "error",
-        "reason": "Not needed anymore, direct instrumentation in Spring MVC."
+        "reason": "Not needed anymore, direct instrumentation in Spring MVC.",
+        "since": "3.0.0"
       }
     },
     {
@@ -1609,7 +1810,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "management.observations.http.server.requests.name",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1617,7 +1819,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "replacement": "management.observations.http.server.requests.name",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {
@@ -1625,7 +1828,8 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "replacement": "management.prometheus.metrics.export.pushgateway.address"
+        "replacement": "management.prometheus.metrics.export.pushgateway.address",
+        "since": "3.5.0"
       }
     }
   ]

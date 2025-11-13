@@ -5,7 +5,8 @@
       "type": "java.lang.Boolean",
       "deprecation": {
         "replacement": "spring.persistence.exceptiontranslation.enabled",
-        "level": "error"
+        "level": "error",
+        "since": "4.0.0"
       }
     },
     {

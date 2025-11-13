@@ -12,7 +12,8 @@
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated index names.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -20,7 +21,8 @@
       "type": "java.time.Duration",
       "description": "Time to wait for a response from the cluster.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.2.0"
       }
     },
     {
@@ -28,7 +30,8 @@
       "type": "java.time.Duration",
       "description": "Connection timeout.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -36,7 +39,8 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable connection requests from multiple execution threads.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -44,7 +48,8 @@
       "type": "java.lang.String",
       "description": "Login password.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -52,7 +57,8 @@
       "type": "java.lang.String",
       "description": "Proxy host the HTTP client should use.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -60,7 +66,8 @@
       "type": "java.lang.Integer",
       "description": "Proxy port the HTTP client should use.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -68,7 +75,8 @@
       "type": "java.time.Duration",
       "description": "Read timeout.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -76,7 +84,8 @@
       "type": "java.util.List<java.lang.String>",
       "description": "Comma-separated list of the Elasticsearch instances to use.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -84,7 +93,8 @@
       "type": "java.lang.String",
       "description": "Login username.",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "since": "2.3.0"
       }
     },
     {
@@ -99,7 +109,8 @@
       "description": "Limit on the number of bytes that can be buffered whenever the input stream needs to be aggregated.",
       "deprecation": {
         "level": "error",
-        "reason": "Reactive Elasticsearch client no longer uses WebClient."
+        "reason": "Reactive Elasticsearch client no longer uses WebClient.",
+        "since": "3.0.0"
       }
     }
   ]

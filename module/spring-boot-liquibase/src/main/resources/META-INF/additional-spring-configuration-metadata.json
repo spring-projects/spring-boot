@@ -7,14 +7,16 @@
       "defaultValue": true,
       "deprecation": {
         "reason": "Liquibase has its own check that checks if the change log location exists making this property redundant.",
-        "level": "error"
+        "level": "error",
+        "since": "2.1.7"
       }
     },
     {
       "name": "spring.liquibase.labels",
       "deprecation": {
         "replacement": "spring.liquibase.label-filter",
-        "level": "error"
+        "level": "error",
+        "since": "3.0.0"
       }
     },
     {

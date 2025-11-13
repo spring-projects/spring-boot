@@ -6,14 +6,6 @@
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of Micrometer annotations is enabled.",
       "defaultValue": false
-    },
-    {
-      "name": "management.observations.long-task-timer.enabled",
-      "type": "java.lang.Boolean",
-      "deprecation": {
-        "level": "error",
-        "replacement": "management.metrics.observations.ignored-meters"
-      }
     }
   ]
 }
