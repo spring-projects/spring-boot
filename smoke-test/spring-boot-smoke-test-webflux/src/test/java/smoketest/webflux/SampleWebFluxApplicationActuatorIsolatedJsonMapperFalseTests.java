@@ -14,43 +14,43 @@
  * limitations under the License.
  */
 
-package smoketest.actuator;
+package smoketest.webflux;
 
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Integration test for WebMVC actuator when using an isolated {@link ObjectMapper}.
+ * Integration test for WebFlux actuator when using an isolated {@link JsonMapper}.
  *
  * @author Phillip Webb
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.endpoints.jackson.isolated-object-mapper=false",
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "management.endpoints.jackson.isolated-json-mapper=false",
 				"spring.jackson.mapper.require-setters-for-getters=true" })
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
-@AutoConfigureTestRestTemplate
-class SampleActuatorApplicationIsolatedObjectMapperFalseTests {
+@AutoConfigureWebTestClient
+class SampleWebFluxApplicationActuatorIsolatedJsonMapperFalseTests {
 
 	@Autowired
-	private TestRestTemplate testRestTemplate;
+	private WebTestClient webClient;
 
 	@Test
 	void bodyIsEmptyDueToMainJsonMapperRequiringSettersForGetters() {
-		ResponseEntity<String> entity = this.testRestTemplate.withBasicAuth("user", "password")
-			.getForEntity("/actuator/startup", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).isEqualTo("{}");
+		this.webClient.get()
+			.uri("/actuator/startup")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.json("{}");
 	}
 
 }

@@ -50,13 +50,13 @@ class JacksonEndpointAutoConfigurationTests {
 
 	@Test
 	void endpointJsonMapperWhenPropertyTrue() {
-		this.runner.withPropertyValues("management.endpoints.jackson.isolated-object-mapper=true")
+		this.runner.withPropertyValues("management.endpoints.jackson.isolated-json-mapper=true")
 			.run((context) -> assertThat(context).hasSingleBean(EndpointJsonMapper.class));
 	}
 
 	@Test
 	void endpointJsonMapperWhenPropertyFalse() {
-		this.runner.withPropertyValues("management.endpoints.jackson.isolated-object-mapper=false")
+		this.runner.withPropertyValues("management.endpoints.jackson.isolated-json-mapper=false")
 			.run((context) -> assertThat(context).doesNotHaveBean(EndpointJsonMapper.class));
 	}
 

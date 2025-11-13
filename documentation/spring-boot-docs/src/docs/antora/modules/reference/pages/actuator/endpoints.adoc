@@ -389,7 +389,7 @@ TIP: See javadoc:org.springframework.boot.actuate.autoconfigure.endpoint.web.Cor
 When working with JSON, Jackson is used for serialization and deserialization.
 By default, an isolated javadoc:tools.jackson.databind.json.JsonMapper[] is used.
 This isolation means that it does not share the same configuration as the application's `JsonMapper` and it is not affected by `spring.jackson.*` properties.
-To disable this behavior and configure Actuator to use the application's `JsonMapper`, set configprop:management.endpoints.jackson.isolated-object-mapper[] to `false`.
+To disable this behavior and configure Actuator to use the application's `JsonMapper`, set configprop:management.endpoints.jackson.isolated-json-mapper[] to `false`.
 Alternatively, you can define your own javadoc:org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper[] bean that produces a `JsonMapper` that meets your needs.
 Actuator will then use it for JSON processing.
 

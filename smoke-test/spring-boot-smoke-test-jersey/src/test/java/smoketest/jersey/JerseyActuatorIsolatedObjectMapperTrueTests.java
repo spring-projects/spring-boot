@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @AutoConfigureTestRestTemplate
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "management.endpoints.jackson.isolated-object-mapper=true")
+		properties = "management.endpoints.jackson.isolated-json-mapper=true")
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
 class JerseyActuatorIsolatedObjectMapperTrueTests {
 

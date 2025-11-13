@@ -14,43 +14,53 @@
  * limitations under the License.
  */
 
-package smoketest.actuator;
+package smoketest.webflux;
+
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.resttestclient.TestRestTemplate;
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration test for WebMVC actuator when using an isolated {@link ObjectMapper}.
+ * Integration test for WebFlux actuator when not using an isolated {@link JsonMapper}.
  *
  * @author Phillip Webb
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "management.endpoints.jackson.isolated-object-mapper=true",
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "management.endpoints.jackson.isolated-json-mapper=true",
 				"spring.jackson.mapper.require-setters-for-getters=true" })
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
-@AutoConfigureTestRestTemplate
-class SampleActuatorApplicationIsolatedObjectMapperTrueTests {
+@AutoConfigureWebTestClient
+class SampleWebFluxApplicationActuatorIsolatedJsonMapperTrueTests {
 
 	@Autowired
-	private TestRestTemplate testRestTemplate;
+	private WebTestClient webClient;
 
 	@Test
 	void bodyIsPresentAsOnlyMainObjectMapperRequiresSettersForGetters() {
-		ResponseEntity<String> entity = this.testRestTemplate.withBasicAuth("user", "password")
-			.getForEntity("/actuator/startup", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"timeline\":");
+		this.webClient.get()
+			.uri("/actuator/startup")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.consumeWith(this::assertExpectedJson);
+	}
+
+	private void assertExpectedJson(EntityExchangeResult<byte[]> result) {
+		String body = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+		assertThat(body).contains("\"timeline\":");
 	}
 
 }

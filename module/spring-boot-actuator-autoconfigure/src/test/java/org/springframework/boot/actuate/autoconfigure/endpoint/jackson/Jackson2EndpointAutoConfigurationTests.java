@@ -64,7 +64,7 @@ class Jackson2EndpointAutoConfigurationTests {
 
 	@Test
 	void endpointObjectMapperWhenPropertyFalse() {
-		this.runner.withPropertyValues("management.endpoints.jackson.isolated-object-mapper=false")
+		this.runner.withPropertyValues("management.endpoints.jackson2.isolated-object-mapper=false")
 			.run((context) -> assertThat(context)
 				.doesNotHaveBean(org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper.class));
 	}

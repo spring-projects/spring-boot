@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Bean;
 public final class Jackson2EndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson2.isolated-object-mapper", matchIfMissing = true)
 	org.springframework.boot.actuate.endpoint.jackson.EndpointJackson2ObjectMapper jackson2EndpointJsonMapper() {
 		ObjectMapper objectMapper = org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json()
 			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,

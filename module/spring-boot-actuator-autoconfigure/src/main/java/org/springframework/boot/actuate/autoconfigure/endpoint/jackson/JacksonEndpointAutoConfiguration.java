@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Bean;
 public final class JacksonEndpointAutoConfiguration {
 
 	@Bean
-	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "management.endpoints.jackson.isolated-json-mapper", matchIfMissing = true)
 	EndpointJsonMapper endpointJsonMapper() {
 		JsonMapper jsonMapper = JsonMapper.builder()
 			.changeDefaultPropertyInclusion(
