@@ -152,7 +152,7 @@
       "name": "spring.kafka.retry.topic.max-delay",
       "type": "java.time.Duration",
       "deprecation": {
-        "replacement": "spring.kafka.retry.topic.backoff.maxDelay",
+        "replacement": "spring.kafka.retry.topic.backoff.max-delay",
         "since": "3.4.0"
       }
     },
