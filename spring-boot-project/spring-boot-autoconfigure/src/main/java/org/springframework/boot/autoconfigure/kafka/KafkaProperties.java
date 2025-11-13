@@ -1642,7 +1642,7 @@ public class KafkaProperties {
 				getBackoff().setMultiplier(multiplier);
 			}
 
-			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.maxDelay", since = "3.4.0")
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.max-delay", since = "3.4.0")
 			@Deprecated(since = "3.4.0", forRemoval = true)
 			public Duration getMaxDelay() {
 				return getBackoff().getMaxDelay();
