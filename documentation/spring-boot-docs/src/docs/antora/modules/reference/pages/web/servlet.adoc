@@ -589,6 +589,14 @@ The single `onStartup` method provides access to the javadoc:jakarta.servlet.Ser
 
 
 
+[[web.servlet.embedded-container.context-initializer.init-parameters]]
+==== Init Parameters
+
+Init parameters can be configured on the javadoc:jakarta.servlet.ServletContext[] using `server.servlet.context-parameters.*` properties.
+For example, the property `server.servlet.context-parameters.com.example.parameter=example` will configure a `ServletContext` init parameter named `com.example.parameter` with the value `example`.
+
+
+
 [[web.servlet.embedded-container.context-initializer.scanning]]
 ==== Scanning for Servlets, Filters, and listeners
 
