@@ -200,7 +200,7 @@ class RestarterTests {
 	@EnableScheduling
 	static class SampleApplication {
 
-		private int count = 0;
+		private int count;
 
 		private static final AtomicBoolean restart = new AtomicBoolean();
 
@@ -228,7 +228,7 @@ class RestarterTests {
 
 	static class CloseCountingApplicationListener implements ApplicationListener<ContextClosedEvent> {
 
-		static int closed = 0;
+		static int closed;
 
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {

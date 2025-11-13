@@ -47,9 +47,9 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 
 	private final URL url;
 
-	private JarFile archive = null;
+	private JarFile archive;
 
-	private long archiveUseCount = 0;
+	private long archiveUseCount;
 
 	private boolean useCaches;
 

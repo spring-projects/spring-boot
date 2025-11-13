@@ -82,7 +82,7 @@ public class DockerApi {
 
 	private final SystemApi system;
 
-	private volatile ApiVersion apiVersion = null;
+	private volatile ApiVersion apiVersion;
 
 	/**
 	 * Create a new {@link DockerApi} instance.

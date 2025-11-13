@@ -73,7 +73,7 @@ public class UndertowWebServer implements WebServer {
 
 	private Undertow undertow;
 
-	private volatile boolean started = false;
+	private volatile boolean started;
 
 	private volatile GracefulShutdownHandler gracefulShutdown;
 

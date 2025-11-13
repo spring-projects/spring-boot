@@ -323,7 +323,7 @@ class GraphQlAutoConfigurationTests {
 
 		public static class CustomRuntimeWiringConfigurer implements RuntimeWiringConfigurer {
 
-			public boolean applied = false;
+			public boolean applied;
 
 			@Override
 			public void configure(RuntimeWiring.Builder builder) {
@@ -343,7 +343,7 @@ class GraphQlAutoConfigurationTests {
 
 		public static class CustomGraphQlSourceBuilderCustomizer implements GraphQlSourceBuilderCustomizer {
 
-			public boolean applied = false;
+			public boolean applied;
 
 			@Override
 			public void customize(GraphQlSource.SchemaResourceBuilder builder) {

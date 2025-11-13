@@ -464,7 +464,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private String myTestProperty = "654321";
 
-		private String nullValue = null;
+		private String nullValue;
 
 		private Duration duration = Duration.ofSeconds(10);
 

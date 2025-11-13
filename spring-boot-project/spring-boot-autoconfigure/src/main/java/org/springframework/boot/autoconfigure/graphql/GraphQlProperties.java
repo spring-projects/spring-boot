@@ -166,7 +166,7 @@ public class GraphQlProperties {
 			 * Whether the endpoint that prints the schema is enabled. Schema is available
 			 * under spring.graphql.path + "/schema".
 			 */
-			private boolean enabled = false;
+			private boolean enabled;
 
 			public boolean isEnabled() {
 				return this.enabled;
@@ -190,7 +190,7 @@ public class GraphQlProperties {
 		/**
 		 * Whether the default GraphiQL UI is enabled.
 		 */
-		private boolean enabled = false;
+		private boolean enabled;
 
 		public String getPath() {
 			return this.path;

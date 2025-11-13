@@ -369,7 +369,7 @@ public class PulsarProperties {
 		 * Whether to throw an exception if any failure is encountered during server
 		 * shutdown while enforcing stop policy on functions.
 		 */
-		private boolean propagateStopFailures = false;
+		private boolean propagateStopFailures;
 
 		public boolean isFailFast() {
 			return this.failFast;
@@ -588,13 +588,13 @@ public class PulsarProperties {
 		/**
 		 * Priority level for shared subscription consumers.
 		 */
-		private int priorityLevel = 0;
+		private int priorityLevel;
 
 		/**
 		 * Whether to read messages from the compacted topic rather than the full message
 		 * backlog.
 		 */
-		private boolean readCompacted = false;
+		private boolean readCompacted;
 
 		/**
 		 * Dead letter policy to use.
@@ -610,7 +610,7 @@ public class PulsarProperties {
 		/**
 		 * Whether to auto retry messages.
 		 */
-		private boolean retryEnable = false;
+		private boolean retryEnable;
 
 		public String getName() {
 			return this.name;

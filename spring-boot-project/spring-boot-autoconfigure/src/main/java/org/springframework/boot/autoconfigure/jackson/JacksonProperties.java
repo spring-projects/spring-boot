@@ -110,7 +110,7 @@ public class JacksonProperties {
 	 * Time zone used when formatting dates. For instance, "America/Los_Angeles" or
 	 * "GMT+10".
 	 */
-	private TimeZone timeZone = null;
+	private TimeZone timeZone;
 
 	/**
 	 * Locale used for formatting.

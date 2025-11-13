@@ -45,7 +45,7 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 
 	private final SslBundles sslBundles;
 
-	private int order = 0;
+	private int order;
 
 	public StandardMongoClientSettingsBuilderCustomizer(ConnectionString connectionString,
 			UuidRepresentation uuidRepresentation, MongoProperties.Ssl ssl, SslBundles sslBundles) {

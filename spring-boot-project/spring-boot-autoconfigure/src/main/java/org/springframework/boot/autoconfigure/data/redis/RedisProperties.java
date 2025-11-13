@@ -39,7 +39,7 @@ public class RedisProperties {
 	/**
 	 * Database index used by the connection factory.
 	 */
-	private int database = 0;
+	private int database;
 
 	/**
 	 * Connection URL. Overrides host, port, username, and password. Example:
@@ -245,7 +245,7 @@ public class RedisProperties {
 		 * setting only has an effect if both it and time between eviction runs are
 		 * positive.
 		 */
-		private int minIdle = 0;
+		private int minIdle;
 
 		/**
 		 * Maximum number of connections that can be allocated by the pool at a given
