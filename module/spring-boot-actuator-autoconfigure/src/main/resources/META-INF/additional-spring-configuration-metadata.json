@@ -44,10 +44,20 @@
       }
     },
     {
-      "name": "management.endpoints.jackson.isolated-object-mapper",
+      "name": "management.endpoints.jackson.isolated-json-mapper",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use an isolated JsonMapper to serialize endpoint JSON.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.endpoints.jackson2.isolated-object-mapper",
       "type": "java.lang.Boolean",
       "description": "Whether to use an isolated object mapper to serialize endpoint JSON.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "reason": "Jackson 3 is preferred.",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "management.endpoints.jmx.domain",
