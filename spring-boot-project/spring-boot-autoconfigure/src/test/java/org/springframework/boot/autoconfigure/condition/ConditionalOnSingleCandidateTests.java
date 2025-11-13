@@ -195,6 +195,16 @@ class ConditionalOnSingleCandidateTests {
 			});
 	}
 
+	@Test
+	void singleCandidateDoesNotMatchWhenMultipleRegisteredAsSingletonCandidates() {
+		this.contextRunner.withInitializer((context) -> {
+			context.getBeanFactory().registerSingleton("alpha", "alpha");
+			context.getBeanFactory().registerSingleton("bravo", "bravo");
+		})
+			.withUserConfiguration(OnBeanSingleCandidateConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("consumer"));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(String.class)
 	static class OnBeanSingleCandidateConfiguration {

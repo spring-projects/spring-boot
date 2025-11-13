@@ -461,11 +461,19 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	}
 
 	private List<String> getPrimaryBeans(Map<String, BeanDefinition> beanDefinitions) {
-		return getMatchingBeans(beanDefinitions, BeanDefinition::isPrimary);
+		return getMatchingBeans(beanDefinitions, this::isPrimary);
+	}
+
+	private boolean isPrimary(BeanDefinition beanDefinition) {
+		return (beanDefinition != null) && beanDefinition.isPrimary();
 	}
 
 	private List<String> getNonFallbackBeans(Map<String, BeanDefinition> beanDefinitions) {
-		return getMatchingBeans(beanDefinitions, Predicate.not(BeanDefinition::isFallback));
+		return getMatchingBeans(beanDefinitions, this::isNotFallback);
+	}
+
+	private boolean isNotFallback(BeanDefinition beanDefinition) {
+		return (beanDefinition == null) || !beanDefinition.isFallback();
 	}
 
 	private List<String> getMatchingBeans(Map<String, BeanDefinition> beanDefinitions, Predicate<BeanDefinition> test) {
