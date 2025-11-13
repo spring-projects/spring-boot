@@ -391,7 +391,7 @@ public class Builder {
 		@Override
 		public void exportImageLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
-			Builder.this.docker.image().exportLayers(reference, exports);
+			Builder.this.docker.image().exportLayers(reference, this.platform, exports);
 		}
 
 	}
