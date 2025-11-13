@@ -71,7 +71,6 @@ final class ApiVersions {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-
 		ApiVersions other = (ApiVersions) obj;
 		return Arrays.equals(this.apiVersions, other.apiVersions);
 	}

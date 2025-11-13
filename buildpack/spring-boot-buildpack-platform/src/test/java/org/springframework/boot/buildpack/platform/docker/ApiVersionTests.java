@@ -111,6 +111,17 @@ class ApiVersionTests {
 		assertThat(v12a).isEqualTo(v12a).isEqualTo(v12b).isNotEqualTo(v13);
 	}
 
+	@Test
+	void compareTo() {
+		assertThat(ApiVersion.of(0, 0).compareTo(ApiVersion.of(0, 0))).isZero();
+		assertThat(ApiVersion.of(0, 1).compareTo(ApiVersion.of(0, 1))).isZero();
+		assertThat(ApiVersion.of(1, 0).compareTo(ApiVersion.of(1, 0))).isZero();
+		assertThat(ApiVersion.of(0, 0).compareTo(ApiVersion.of(0, 1))).isLessThan(0);
+		assertThat(ApiVersion.of(0, 1).compareTo(ApiVersion.of(0, 0))).isGreaterThan(0);
+		assertThat(ApiVersion.of(1, 0).compareTo(ApiVersion.of(0, 1))).isGreaterThan(0);
+		assertThat(ApiVersion.of(0, 1).compareTo(ApiVersion.of(1, 0))).isLessThan(0);
+	}
+
 	private boolean supports(String v1, String v2) {
 		return ApiVersion.parse(v1).supports(ApiVersion.parse(v2));
 	}

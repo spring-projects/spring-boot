@@ -43,6 +43,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi;
+import org.springframework.boot.buildpack.platform.docker.DockerApi.Feature;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.SystemApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
@@ -88,19 +89,13 @@ import static org.mockito.Mockito.times;
 @ExtendWith({ MockitoExtension.class, OutputCaptureExtension.class })
 class DockerApiTests {
 
-	private static final String API_URL = "/v" + DockerApi.API_VERSION;
+	private static final String API_URL = "/v" + DockerApi.PREFERRED_API_VERSION;
 
 	public static final String PING_URL = "/_ping";
 
 	private static final String IMAGES_URL = API_URL + "/images";
 
-	private static final String PLATFORM_IMAGES_URL = "/v" + DockerApi.PLATFORM_API_VERSION + "/images";
-
-	private static final String PLATFORM_INSPECT_IMAGES_URL = "/v" + DockerApi.PLATFORM_INSPECT_API_VERSION + "/images";
-
 	private static final String CONTAINERS_URL = API_URL + "/containers";
-
-	private static final String PLATFORM_CONTAINERS_URL = "/v" + DockerApi.PLATFORM_API_VERSION + "/containers";
 
 	private static final String VOLUMES_URL = API_URL + "/volumes";
 
@@ -173,6 +168,52 @@ class DockerApiTests {
 	void createDockerApi() {
 		DockerApi api = new DockerApi();
 		assertThat(api).isNotNull();
+	}
+
+	@Test
+	void buildUrlWhenUnknownVersionUsesPreferredVersion() throws Exception {
+		setVersion("0.0");
+		assertThat(this.dockerApi.buildUrl(Feature.BASELINE, "/test"))
+			.isEqualTo(URI.create("/v" + DockerApi.PREFERRED_API_VERSION + "/test"));
+	}
+
+	@Test
+	void buildUrlWhenVersionIsGreaterThanPreferredUsesPreferred() throws Exception {
+		setVersion("1000.0");
+		assertThat(this.dockerApi.buildUrl(Feature.BASELINE, "/test"))
+			.isEqualTo(URI.create("/v" + DockerApi.PREFERRED_API_VERSION + "/test"));
+	}
+
+	@Test
+	void buildUrlWhenVersionIsEqualToPreferredUsesPreferred() throws Exception {
+		setVersion(DockerApi.PREFERRED_API_VERSION.toString());
+		assertThat(this.dockerApi.buildUrl(Feature.BASELINE, "/test"))
+			.isEqualTo(URI.create("/v" + DockerApi.PREFERRED_API_VERSION + "/test"));
+	}
+
+	@Test
+	void buildUrlWhenVersionIsLessThanPreferredAndGreaterThanMinimumUsesVersionVersion() throws Exception {
+		setVersion("1.48");
+		assertThat(this.dockerApi.buildUrl(Feature.BASELINE, "/test")).isEqualTo(URI.create("/v1.48/test"));
+	}
+
+	@Test
+	void buildUrlWhenVersionIsLessThanPreferredAndEqualToMinimumUsesVersionVersion() throws Exception {
+		setVersion(Feature.BASELINE.minimumVersion().toString());
+		assertThat(this.dockerApi.buildUrl(Feature.BASELINE, "/test")).isEqualTo(URI.create("/v1.24/test"));
+	}
+
+	@Test
+	void buildUrlWhenVersionIsLessThanMinimumThrowsException() throws Exception {
+		setVersion("1.23");
+		assertThatIllegalStateException().isThrownBy(() -> this.dockerApi.buildUrl(Feature.BASELINE, "/test"))
+			.withMessage("Docker API version must be at least 1.24 "
+					+ "to support this feature, but current API version is 1.23");
+	}
+
+	private void setVersion(String version) throws IOException, URISyntaxException {
+		given(http().head(eq(new URI(PING_URL))))
+			.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, version)));
 	}
 
 	@Nested
@@ -249,12 +290,11 @@ class DockerApiTests {
 		@Test
 		void pullWithPlatformPullsImageAndProducesEvents() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI createUri = new URI(PLATFORM_IMAGES_URL
-					+ "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase&platform=linux%2Farm64%2Fv1");
-			URI imageUri = new URI(PLATFORM_INSPECT_IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json?platform="
+			URI createUri = new URI(
+					"/v1.49/images/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase&platform=linux%2Farm64%2Fv1");
+			URI imageUri = new URI("/v1.49/images/gcr.io/paketo-buildpacks/builder:base/json?platform="
 					+ ENCODED_LINUX_ARM64_PLATFORM_JSON);
-			given(http().head(eq(new URI(PING_URL))))
-				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.49")));
+			setVersion("1.49");
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, LINUX_ARM64_PLATFORM, this.pullListener);
@@ -269,8 +309,7 @@ class DockerApiTests {
 		void pullWithPlatformAndInsufficientApiVersionThrowsException() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			given(http().head(eq(new URI(PING_URL)))).willReturn(
-					responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.API_VERSION)));
+			setVersion("1.24");
 			assertThatIllegalStateException().isThrownBy(() -> this.api.pull(reference, platform, this.pullListener))
 				.withMessageContaining("must be at least 1.41")
 				.withMessageContaining("current API version is 1.24");
@@ -414,10 +453,9 @@ class DockerApiTests {
 		@Test
 		void inspectWithPlatformWhenSupportedVersionInspectImage() throws Exception {
 			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
-			URI imageUri = new URI(PLATFORM_INSPECT_IMAGES_URL
-					+ "/docker.io/paketobuildpacks/builder:base/json?platform=" + ENCODED_LINUX_ARM64_PLATFORM_JSON);
-			given(http().head(eq(new URI(PING_URL)))).willReturn(responseWithHeaders(
-					new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.PLATFORM_INSPECT_API_VERSION)));
+			URI imageUri = new URI("/v1.49/images/docker.io/paketobuildpacks/builder:base/json?platform="
+					+ ENCODED_LINUX_ARM64_PLATFORM_JSON);
+			setVersion("1.49");
 			given(http().get(imageUri)).willReturn(responseOf("type/image-platform.json"));
 			Image image = this.api.inspect(reference, LINUX_ARM64_PLATFORM);
 			assertThat(image.getArchitecture()).isEqualTo("arm64");
@@ -427,9 +465,8 @@ class DockerApiTests {
 		@Test
 		void inspectWithPlatformWhenOldVersionInspectImage() throws Exception {
 			ImageReference reference = ImageReference.of("docker.io/paketobuildpacks/builder:base");
-			URI imageUri = new URI(IMAGES_URL + "/docker.io/paketobuildpacks/builder:base/json");
-			given(http().head(eq(new URI(PING_URL)))).willReturn(responseWithHeaders(
-					new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.PLATFORM_API_VERSION)));
+			URI imageUri = new URI("/v1.48/images/docker.io/paketobuildpacks/builder:base/json");
+			setVersion("1.48");
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.inspect(reference, LINUX_ARM64_PLATFORM);
 			assertThat(image.getArchitecture()).isEqualTo("amd64");
@@ -597,7 +634,19 @@ class DockerApiTests {
 
 		@Test
 		void createWithPlatformCreatesContainer() throws Exception {
-			createWithPlatform("1.41");
+			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
+			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
+			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
+			setVersion("1.41");
+			URI createUri = new URI("/v1.41/containers/create?platform=linux%2Farm64%2Fv1");
+			given(http().post(eq(createUri), eq("application/json"), any()))
+				.willReturn(responseOf("create-container-response.json"));
+			ContainerReference containerReference = this.api.create(config, platform);
+			assertThat(containerReference).hasToString("e90e34656806");
+			then(http()).should().post(any(), any(), this.writer.capture());
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			this.writer.getValue().accept(out);
+			assertThat(out.toByteArray()).hasSize(config.toString().length());
 		}
 
 		@Test
@@ -609,11 +658,7 @@ class DockerApiTests {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			if (apiVersion != null) {
-				given(http().head(eq(new URI(PING_URL))))
-					.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, apiVersion)));
-			}
-			URI createUri = new URI(PLATFORM_CONTAINERS_URL + "/create?platform=linux%2Farm64%2Fv1");
+			URI createUri = new URI(CONTAINERS_URL + "/create?platform=linux%2Farm64%2Fv1");
 			given(http().post(eq(createUri), eq("application/json"), any()))
 				.willReturn(responseOf("create-container-response.json"));
 			ContainerReference containerReference = this.api.create(config, platform);
@@ -629,8 +674,7 @@ class DockerApiTests {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			given(http().head(eq(new URI(PING_URL))))
-				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.24")));
+			setVersion("1.24");
 			assertThatIllegalStateException().isThrownBy(() -> this.api.create(config, platform))
 				.withMessageContaining("must be at least 1.41")
 				.withMessageContaining("current API version is 1.24");

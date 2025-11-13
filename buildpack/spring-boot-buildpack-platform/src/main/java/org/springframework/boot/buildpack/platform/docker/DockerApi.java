@@ -62,13 +62,9 @@ public class DockerApi {
 
 	private static final List<String> FORCE_PARAMS = Collections.unmodifiableList(Arrays.asList("force", "1"));
 
-	static final ApiVersion API_VERSION = ApiVersion.of(1, 24);
-
-	static final ApiVersion PLATFORM_API_VERSION = ApiVersion.of(1, 41);
-
-	static final ApiVersion PLATFORM_INSPECT_API_VERSION = ApiVersion.of(1, 49);
-
 	static final ApiVersion UNKNOWN_API_VERSION = ApiVersion.of(0, 0);
+
+	static final ApiVersion PREFERRED_API_VERSION = ApiVersion.of(1, 50);
 
 	static final String API_VERSION_HEADER_NAME = "API-Version";
 
@@ -129,17 +125,30 @@ public class DockerApi {
 	}
 
 	private URI buildUrl(String path, @Nullable Collection<?> params) {
-		return buildUrl(API_VERSION, path, (params != null) ? params.toArray() : null);
+		return buildUrl(Feature.BASELINE, path, (params != null) ? params.toArray() : null);
 	}
 
 	private URI buildUrl(String path, Object... params) {
-		return buildUrl(API_VERSION, path, params);
+		return buildUrl(Feature.BASELINE, path, params);
 	}
 
-	private URI buildUrl(ApiVersion apiVersion, String path, Object @Nullable ... params) {
-		verifyApiVersion(apiVersion);
+	URI buildUrl(Feature feature, String path, Object @Nullable ... params) {
+		ApiVersion version = getApiVersion();
+		if (version.equals(UNKNOWN_API_VERSION) || (version.compareTo(PREFERRED_API_VERSION) >= 0
+				&& version.compareTo(feature.minimumVersion()) >= 0)) {
+			return buildVersionedUrl(PREFERRED_API_VERSION, path, params);
+		}
+		if (version.compareTo(feature.minimumVersion()) >= 0) {
+			return buildVersionedUrl(version, path, params);
+		}
+		throw new IllegalStateException(
+				"Docker API version must be at least %s to support this feature, but current API version is %s"
+					.formatted(feature.minimumVersion(), version));
+	}
+
+	private URI buildVersionedUrl(ApiVersion version, String path, Object @Nullable ... params) {
 		try {
-			URIBuilder builder = new URIBuilder("/v" + apiVersion + path);
+			URIBuilder builder = new URIBuilder("/v" + version + path);
 			if (params != null) {
 				int param = 0;
 				while (param < params.length) {
@@ -151,13 +160,6 @@ public class DockerApi {
 		catch (URISyntaxException ex) {
 			throw new IllegalStateException(ex);
 		}
-	}
-
-	private void verifyApiVersion(ApiVersion minimumVersion) {
-		ApiVersion actualVersion = getApiVersion();
-		Assert.state(actualVersion.equals(UNKNOWN_API_VERSION) || actualVersion.supports(minimumVersion),
-				() -> "Docker API version must be at least " + minimumVersion
-						+ " to support this feature, but current API version is " + actualVersion);
 	}
 
 	private ApiVersion getApiVersion() {
@@ -228,7 +230,7 @@ public class DockerApi {
 			Assert.notNull(reference, "'reference' must not be null");
 			Assert.notNull(listener, "'listener' must not be null");
 			URI createUri = (platform != null)
-					? buildUrl(PLATFORM_API_VERSION, "/images/create", "fromImage", reference, "platform", platform)
+					? buildUrl(Feature.PLATFORM, "/images/create", "fromImage", reference, "platform", platform)
 					: buildUrl("/images/create", "fromImage", reference);
 			DigestCaptureUpdateListener digestCapture = new DigestCaptureUpdateListener();
 			listener.onStart();
@@ -365,8 +367,8 @@ public class DockerApi {
 
 		private URI inspectUrl(ImageReference reference, @Nullable ImagePlatform platform) {
 			String path = "/images/" + reference + "/json";
-			if (platform != null && getApiVersion().supports(PLATFORM_INSPECT_API_VERSION)) {
-				return buildUrl(PLATFORM_INSPECT_API_VERSION, path, "platform", platform.toJson());
+			if (platform != null && getApiVersion().supports(Feature.PLATFORM_INSPECT.minimumVersion())) {
+				return buildUrl(Feature.PLATFORM_INSPECT, path, "platform", platform.toJson());
 			}
 			return buildUrl(path);
 		}
@@ -413,8 +415,7 @@ public class DockerApi {
 
 		private ContainerReference createContainer(ContainerConfig config, @Nullable ImagePlatform platform)
 				throws IOException {
-			URI createUri = (platform != null)
-					? buildUrl(PLATFORM_API_VERSION, "/containers/create", "platform", platform)
+			URI createUri = (platform != null) ? buildUrl(Feature.PLATFORM, "/containers/create", "platform", platform)
 					: buildUrl("/containers/create");
 			try (Response response = http().post(createUri, "application/json", config::writeTo)) {
 				return ContainerReference
@@ -615,6 +616,26 @@ public class DockerApi {
 				throw new IllegalStateException(
 						"Error response received when pushing image: " + errorDetail.getMessage());
 			}
+		}
+
+	}
+
+	enum Feature {
+
+		BASELINE(ApiVersion.of(1, 24)),
+
+		PLATFORM(ApiVersion.of(1, 41)),
+
+		PLATFORM_INSPECT(ApiVersion.of(1, 49));
+
+		private final ApiVersion minimumVersion;
+
+		Feature(ApiVersion minimumVersion) {
+			this.minimumVersion = minimumVersion;
+		}
+
+		ApiVersion minimumVersion() {
+			return this.minimumVersion;
 		}
 
 	}

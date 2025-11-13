@@ -16,6 +16,7 @@
 
 package org.springframework.boot.buildpack.platform.docker;
 
+import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,9 +31,12 @@ import org.springframework.util.Assert;
  * @author Scott Frederick
  * @since 4.0.0
  */
-public final class ApiVersion {
+public final class ApiVersion implements Comparable<ApiVersion> {
 
 	private static final Pattern PATTERN = Pattern.compile("^v?(\\d+)\\.(\\d*)$");
+
+	private static final Comparator<ApiVersion> COMPARATOR = Comparator.comparing(ApiVersion::getMajor)
+		.thenComparing(ApiVersion::getMinor);
 
 	private final int major;
 
@@ -136,6 +140,11 @@ public final class ApiVersion {
 
 	public static ApiVersion of(int major, int minor) {
 		return new ApiVersion(major, minor);
+	}
+
+	@Override
+	public int compareTo(ApiVersion other) {
+		return COMPARATOR.compare(this, other);
 	}
 
 }
