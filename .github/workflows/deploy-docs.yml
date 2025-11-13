@@ -50,7 +50,7 @@ jobs:
         run: node run.js --no-checkout
       - name: Sync OSS Documentation
         if: ${{ !vars.COMMERCIAL }}
-        uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.20
+        uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.21
         with:
           docs-username: ${{ secrets.DOCS_USERNAME }}
           docs-host: ${{ secrets.DOCS_HOST }}
@@ -73,7 +73,7 @@ jobs:
           destination: '${{ vars.COMMERCIAL_DOCS_HOST }}/spring-boot'
           parent: false
       - name: Bust Cloudflare Cache
-        uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.20
+        uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.21
         with:
           context-root: spring-boot
           context-path: /
