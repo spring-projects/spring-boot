@@ -47,7 +47,7 @@ class ClientHttpConnectorAutoConfigurationTests {
 
 	static class CustomReactorNettyHttpClientMapper {
 
-		static boolean called = false;
+		static boolean called;
 
 		@Bean
 		ReactorNettyHttpClientMapper clientMapper() {

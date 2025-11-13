@@ -64,7 +64,7 @@ public class MongoProperties {
 	/**
 	 * Mongo server port. Ignored if 'uri' is set.
 	 */
-	private Integer port = null;
+	private Integer port;
 
 	/**
 	 * Additional server hosts. Ignored if 'uri' is set or if 'host' is omitted.

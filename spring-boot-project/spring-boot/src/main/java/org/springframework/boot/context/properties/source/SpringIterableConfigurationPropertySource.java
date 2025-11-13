@@ -359,7 +359,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 		private final ConfigurationPropertyName[] names;
 
-		private int index = 0;
+		private int index;
 
 		ConfigurationPropertyNamesIterator(ConfigurationPropertyName[] names) {
 			this.names = names;

@@ -378,7 +378,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 		private final Runnable validator;
 
-		private int index = 0;
+		private int index;
 
 		private EntryIterator(Runnable validator) {
 			this.validator = validator;

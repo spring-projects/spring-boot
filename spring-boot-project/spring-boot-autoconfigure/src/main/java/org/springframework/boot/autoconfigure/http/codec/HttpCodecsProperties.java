@@ -37,7 +37,7 @@ public class HttpCodecsProperties {
 	private boolean logRequestDetails;
 
 	@Deprecated(since = "3.5.0", forRemoval = true)
-	private boolean logRequestDetailsBound = false;
+	private boolean logRequestDetailsBound;
 
 	/**
 	 * Limit on the number of bytes that can be buffered whenever the input stream needs
@@ -48,7 +48,7 @@ public class HttpCodecsProperties {
 	private DataSize maxInMemorySize;
 
 	@Deprecated(since = "3.5.0", forRemoval = true)
-	private boolean maxInMemorySizeBound = false;
+	private boolean maxInMemorySizeBound;
 
 	public boolean isLogRequestDetails() {
 		return this.logRequestDetails;

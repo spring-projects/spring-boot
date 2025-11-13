@@ -37,7 +37,7 @@ public class JmsProperties {
 	/**
 	 * Whether the default destination type is topic.
 	 */
-	private boolean pubSubDomain = false;
+	private boolean pubSubDomain;
 
 	/**
 	 * Connection factory JNDI name. When set, takes precedence to others connection
@@ -48,7 +48,7 @@ public class JmsProperties {
 	/**
 	 * Whether the subscription is durable.
 	 */
-	private boolean subscriptionDurable = false;
+	private boolean subscriptionDurable;
 
 	/**
 	 * Client id of the connection.
@@ -115,7 +115,7 @@ public class JmsProperties {
 		/**
 		 * Whether to cache message consumers.
 		 */
-		private boolean consumers = false;
+		private boolean consumers;
 
 		/**
 		 * Whether to cache message producers.
@@ -423,7 +423,7 @@ public class JmsProperties {
 			/**
 			 * Whether to use transacted sessions.
 			 */
-			private boolean transacted = false;
+			private boolean transacted;
 
 			public AcknowledgeMode getAcknowledgeMode() {
 				return this.acknowledgeMode;

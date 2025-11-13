@@ -181,7 +181,7 @@ class ResetMocksTestExecutionListenerTests {
 
 	static class NonSingletonFactoryBean implements FactoryBean<ExampleService> {
 
-		private int getObjectInvocations = 0;
+		private int getObjectInvocations;
 
 		@Override
 		public ExampleService getObject() {

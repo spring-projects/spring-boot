@@ -36,7 +36,7 @@ public class CacheSpec {
 
 	private final ObjectFactory objectFactory;
 
-	private Cache cache = null;
+	private Cache cache;
 
 	@Inject
 	public CacheSpec(ObjectFactory objectFactory) {

@@ -291,7 +291,7 @@ public class TracingProperties {
 		 * between client and server spans. Requires B3 propagation and a compatible
 		 * backend.
 		 */
-		private boolean spanJoiningSupported = false;
+		private boolean spanJoiningSupported;
 
 		public boolean isSpanJoiningSupported() {
 			return this.spanJoiningSupported;

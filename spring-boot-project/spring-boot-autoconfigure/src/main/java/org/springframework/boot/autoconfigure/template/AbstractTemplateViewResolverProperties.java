@@ -49,19 +49,19 @@ public abstract class AbstractTemplateViewResolverProperties extends AbstractVie
 	 * Whether all request attributes should be added to the model prior to merging with
 	 * the template.
 	 */
-	private boolean exposeRequestAttributes = false;
+	private boolean exposeRequestAttributes;
 
 	/**
 	 * Whether all HttpSession attributes should be added to the model prior to merging
 	 * with the template.
 	 */
-	private boolean exposeSessionAttributes = false;
+	private boolean exposeSessionAttributes;
 
 	/**
 	 * Whether HttpServletRequest attributes are allowed to override (hide) controller
 	 * generated model attributes of the same name.
 	 */
-	private boolean allowRequestOverride = false;
+	private boolean allowRequestOverride;
 
 	/**
 	 * Whether to expose a RequestContext for use by Spring's macro library, under the
@@ -73,7 +73,7 @@ public abstract class AbstractTemplateViewResolverProperties extends AbstractVie
 	 * Whether HttpSession attributes are allowed to override (hide) controller generated
 	 * model attributes of the same name.
 	 */
-	private boolean allowSessionOverride = false;
+	private boolean allowSessionOverride;
 
 	protected AbstractTemplateViewResolverProperties(String defaultPrefix, String defaultSuffix) {
 		this.prefix = defaultPrefix;

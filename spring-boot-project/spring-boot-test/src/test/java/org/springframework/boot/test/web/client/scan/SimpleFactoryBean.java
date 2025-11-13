@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 @SuppressWarnings("rawtypes")
 public class SimpleFactoryBean implements FactoryBean {
 
-	private static boolean isInitializedEarly = false;
+	private static boolean isInitializedEarly;
 
 	public SimpleFactoryBean() {
 		isInitializedEarly = true;

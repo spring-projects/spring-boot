@@ -63,7 +63,7 @@ class SpringApplicationShutdownHook implements Runnable {
 
 	private final AtomicBoolean shutdownHookAdded = new AtomicBoolean();
 
-	private volatile boolean shutdownHookAdditionEnabled = false;
+	private volatile boolean shutdownHookAdditionEnabled;
 
 	private boolean inProgress;
 

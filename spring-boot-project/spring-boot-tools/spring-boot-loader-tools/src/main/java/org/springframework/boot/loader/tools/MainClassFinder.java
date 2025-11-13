@@ -288,7 +288,7 @@ public abstract class MainClassFinder {
 
 		private boolean mainMethodFound;
 
-		private boolean java25OrLater = false;
+		private boolean java25OrLater;
 
 		ClassDescriptor() {
 			super(SpringAsmInfo.ASM_VERSION);

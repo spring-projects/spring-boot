@@ -40,7 +40,7 @@ public final class SnakeTimer {
 
 	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<>();
 
-	private static Timer gameTimer = null;
+	private static Timer gameTimer;
 
 	private SnakeTimer() {
 	}

@@ -143,7 +143,7 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class NullContainer {
 
-		static PostgreSQLContainer<?> container = null;
+		static PostgreSQLContainer<?> container;
 
 	}
 

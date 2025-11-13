@@ -34,7 +34,7 @@ class VirtualDataBlock implements DataBlock {
 
 	private long size;
 
-	private volatile int lastReadPart = 0;
+	private volatile int lastReadPart;
 
 	/**
 	 * Create a new {@link VirtualDataBlock} instance. The {@link #setParts(Collection)}

@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
  */
 class JpaRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
-	private BootstrapMode bootstrapMode = null;
+	private BootstrapMode bootstrapMode;
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {

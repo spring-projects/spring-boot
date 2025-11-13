@@ -31,7 +31,7 @@ class FileDescriptorTests {
 
 	private final int sourceHandle = 123;
 
-	private int closedHandle = 0;
+	private int closedHandle;
 
 	@Test
 	void acquireReturnsHandle() throws Exception {
