@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build.architecture.configurationproperties;
+package org.springframework.boot.build.architecture.configurationproperties.bindingnonstatic;
 
-import org.springframework.boot.build.architecture.annotations.TestDeprecatedConfigurationProperty;
+import java.util.List;
 
-public class DeprecatedConfigurationPropertySince {
+import org.springframework.boot.build.architecture.annotations.TestConfigurationPropertiesBinding;
+import org.springframework.context.annotation.Bean;
 
-	private String property;
+public class BindingMethodNonStatic {
 
-	@TestDeprecatedConfigurationProperty(reason = "no longer used")
-	@Deprecated
-	public String getProperty() {
-		return this.property;
-	}
-
-	public void setProperty(String property) {
-		this.property = property;
+	@Bean
+	@TestConfigurationPropertiesBinding
+	public List<String> binder() {
+		return List.of("hello", "world");
 	}
 
 }
