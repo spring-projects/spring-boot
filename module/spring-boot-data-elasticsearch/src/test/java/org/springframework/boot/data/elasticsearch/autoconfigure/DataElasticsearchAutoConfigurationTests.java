@@ -19,6 +19,8 @@ package org.springframework.boot.data.elasticsearch.autoconfigure;
 import java.math.BigDecimal;
 import java.util.Collections;
 
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -27,13 +29,13 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.data.elasticsearch.domain.city.City;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchClientAutoConfiguration;
-import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchReactiveClientAutoConfiguration;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions;
@@ -57,8 +59,7 @@ class DataElasticsearchAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
-				ElasticsearchClientAutoConfiguration.class, DataElasticsearchAutoConfiguration.class,
-				ElasticsearchReactiveClientAutoConfiguration.class));
+				ElasticsearchClientAutoConfiguration.class, DataElasticsearchAutoConfiguration.class));
 
 	@Test
 	void defaultRestBeansRegistered() {
@@ -111,6 +112,39 @@ class DataElasticsearchAutoConfigurationTests {
 			SimpleElasticsearchMappingContext mappingContext = context.getBean(SimpleElasticsearchMappingContext.class);
 			assertThat(mappingContext.hasPersistentEntityFor(City.class)).isTrue();
 		});
+	}
+
+	@Test
+	void configureWithRestClientShouldCreateTransportAndClient() {
+		this.contextRunner.withUserConfiguration(RestClientConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class));
+	}
+
+	@Test
+	void configureWhenCustomClientShouldBackOff() {
+		this.contextRunner.withUserConfiguration(RestClientConfiguration.class, CustomClientConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class)
+				.hasBean("customClient"));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RestClientConfiguration {
+
+		@Bean
+		Rest5Client restClient() {
+			return mock(Rest5Client.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomClientConfiguration {
+
+		@Bean
+		ReactiveElasticsearchClient customClient(ElasticsearchTransport transport) {
+			return new ReactiveElasticsearchClient(transport);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -28,7 +28,6 @@ import org.springframework.boot.data.elasticsearch.domain.city.City;
 import org.springframework.boot.data.elasticsearch.domain.city.ReactiveCityRepository;
 import org.springframework.boot.data.elasticsearch.domain.empty.EmptyDataPackage;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchClientAutoConfiguration;
-import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchReactiveClientAutoConfiguration;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -57,8 +56,7 @@ class DataElasticsearchReactiveRepositoriesAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ElasticsearchClientAutoConfiguration.class,
 				ElasticsearchRestClientAutoConfiguration.class,
-				DataElasticsearchReactiveRepositoriesAutoConfiguration.class, DataElasticsearchAutoConfiguration.class,
-				ElasticsearchReactiveClientAutoConfiguration.class))
+				DataElasticsearchReactiveRepositoriesAutoConfiguration.class, DataElasticsearchAutoConfiguration.class))
 		.withPropertyValues(
 				"spring.elasticsearch.uris=" + elasticsearch.getHost() + ":" + elasticsearch.getFirstMappedPort(),
 				"spring.elasticsearch.socket-timeout=30s");

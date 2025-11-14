@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.elasticsearch.autoconfigure;
+package org.springframework.boot.data.elasticsearch.autoconfigure;
 
 import java.util.Map;
 
@@ -27,7 +27,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchClientAutoConfiguration;
+import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
@@ -35,20 +36,20 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link ElasticsearchReactiveClientAutoConfiguration}.
+ * Integration tests for {@link DataElasticsearchAutoConfiguration}.
  *
  * @author Brian Clozel
  * @author Andy Wilkinson
  */
 @Testcontainers(disabledWithoutDocker = true)
-class ElasticsearchReactiveClientAutoConfigurationIntegrationTests {
+class DataElasticsearchAutoConfigurationIntegrationTests {
 
 	@Container
 	static final ElasticsearchContainer elasticsearch = TestImage.container(ElasticsearchContainer.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
-				ElasticsearchRestClientAutoConfiguration.class, ElasticsearchReactiveClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
+				ElasticsearchClientAutoConfiguration.class, DataElasticsearchAutoConfiguration.class));
 
 	@Test
 	void reactiveClientCanQueryElasticsearchNode() {

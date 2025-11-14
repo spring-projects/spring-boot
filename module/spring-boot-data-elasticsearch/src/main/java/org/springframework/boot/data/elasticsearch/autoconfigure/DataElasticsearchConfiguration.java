@@ -19,6 +19,8 @@ package org.springframework.boot.data.elasticsearch.autoconfigure;
 import java.util.Collections;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -94,11 +96,18 @@ abstract class DataElasticsearchConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(ElasticsearchTransport.class)
+	@ConditionalOnClass({ ReactiveElasticsearchClient.class, ElasticsearchTransport.class, Mono.class })
 	static class ReactiveRestClientConfiguration {
 
 		@Bean
+		@ConditionalOnMissingBean
+		ReactiveElasticsearchClient reactiveElasticsearchClient(ElasticsearchTransport transport) {
+			return new ReactiveElasticsearchClient(transport);
+		}
+
+		@Bean
 		@ConditionalOnMissingBean(value = ReactiveElasticsearchOperations.class, name = "reactiveElasticsearchTemplate")
-		@ConditionalOnBean(ReactiveElasticsearchClient.class)
 		ReactiveElasticsearchTemplate reactiveElasticsearchTemplate(ReactiveElasticsearchClient client,
 				ElasticsearchConverter converter) {
 			return new ReactiveElasticsearchTemplate(client, converter);

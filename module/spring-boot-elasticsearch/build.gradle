@@ -41,9 +41,6 @@ dependencies {
 
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("jakarta.json.bind:jakarta.json.bind-api")
-	optional("org.springframework.data:spring-data-elasticsearch") {
-		exclude group: "org.elasticsearch.client", module: "transport"
-	}
 	optional("org.testcontainers:testcontainers-elasticsearch")
 	optional("tools.jackson.core:jackson-databind")
 
