@@ -26,7 +26,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -60,6 +59,8 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
 
+import org.springframework.boot.build.architecture.ArchitectureCheckAnnotations.Annotation;
+
 /**
  * {@link Task} that checks for architecture problems.
  *
@@ -72,27 +73,26 @@ import org.gradle.api.tasks.VerificationException;
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
-	static final String CONDITIONAL_ON_CLASS = "ConditionalOnClass";
-
-	static final String DEPRECATED_CONFIGURATION_PROPERTY = "DeprecatedConfigurationProperty";
-
-	private static final String CONDITIONAL_ON_CLASS_ANNOTATION = "org.springframework.boot.autoconfigure.condition.ConditionalOnClass";
-
-	private static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.context.properties.DeprecatedConfigurationProperty";
-
 	private FileCollection classes;
 
 	public ArchitectureCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
-		getAnnotationClasses().convention(Map.of(CONDITIONAL_ON_CLASS, CONDITIONAL_ON_CLASS_ANNOTATION,
-				DEPRECATED_CONFIGURATION_PROPERTY, DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION));
+		getAnnotationClasses().convention(ArchitectureCheckAnnotations.asMap());
 		getRules().addAll(getProhibitObjectsRequireNonNull().convention(true)
 			.map(whenTrue(ArchitectureRules::noClassesShouldCallObjectsRequireNonNull)));
 		getRules().addAll(ArchitectureRules.standard());
-		getRules().addAll(whenMainSources(() -> ArchitectureRules
-			.beanMethods(annotationClassFor(CONDITIONAL_ON_CLASS, CONDITIONAL_ON_CLASS_ANNOTATION))));
-		getRules().addAll(whenMainSources(() -> ArchitectureRules.configurationProperties(
-				annotationClassFor(DEPRECATED_CONFIGURATION_PROPERTY, DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.beanMethods(
+				ArchitectureCheckAnnotations.classFor(getAnnotationClasses().get(), Annotation.CONDITIONAL_ON_CLASS))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.conditionalOnMissingBean(ArchitectureCheckAnnotations
+			.classFor(getAnnotationClasses().get(), Annotation.CONDITIONAL_ON_MISSING_BEAN))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.configurationProperties(ArchitectureCheckAnnotations
+			.classFor(getAnnotationClasses().get(), Annotation.CONFIGURATION_PROPERTIES))));
+		getRules()
+			.addAll(whenMainSources(() -> ArchitectureRules.configurationPropertiesBinding(ArchitectureCheckAnnotations
+				.classFor(getAnnotationClasses().get(), Annotation.CONFIGURATION_PROPERTIES_BINDING))));
+		getRules().addAll(
+				whenMainSources(() -> ArchitectureRules.configurationPropertiesDeprecation(ArchitectureCheckAnnotations
+					.classFor(getAnnotationClasses().get(), Annotation.DEPRECATED_CONFIGURATION_PROPERTY))));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
 	}
 
@@ -108,10 +108,6 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	private List<String> asDescriptions(List<ArchRule> rules) {
 		return rules.stream().map(ArchRule::getDescription).toList();
-	}
-
-	private String annotationClassFor(String name, String defaultValue) {
-		return getAnnotationClasses().get().getOrDefault(name, defaultValue);
 	}
 
 	@TaskAction
@@ -204,7 +200,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	@Input // Use descriptions as input since rules aren't serializable
 	abstract ListProperty<String> getRuleDescriptions();
 
-	@Input
+	@Internal
 	abstract MapProperty<String, String> getAnnotationClasses();
 
 }
