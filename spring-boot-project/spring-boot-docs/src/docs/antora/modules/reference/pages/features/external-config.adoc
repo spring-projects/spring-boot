@@ -795,12 +795,8 @@ NOTE: The properties that map to javadoc:org.springframework.boot.context.proper
 Such arrangement relies on a default empty constructor and getters and setters are usually mandatory, since binding is through standard Java Beans property descriptors, just like in Spring MVC.
 A setter may be omitted in the following cases:
 
-* Maps, as long as they are initialized, need a getter but not necessarily a setter, since they can be mutated by the binder.
-* Collections and arrays can be accessed either through an index (typically with YAML) or by using a single comma-separated value (properties).
-  In the latter case, a setter is mandatory.
-  We recommend to always add a setter for such types.
-  If you initialize a collection, make sure it is not immutable (as in the preceding example).
-* If nested POJO properties are initialized (like the `Security` field in the preceding example), a setter is not required.
+* Pre-initialized Maps and Collections, as long as they are initialized with a mutable implementation (like the `roles` field in the preceding example).
+* Pre-initialized nested POJOs (like the `Security` field in the preceding example).
   If you want the binder to create the instance on the fly by using its default constructor, you need a setter.
 
 Some people use Project Lombok to add getters and setters automatically.
