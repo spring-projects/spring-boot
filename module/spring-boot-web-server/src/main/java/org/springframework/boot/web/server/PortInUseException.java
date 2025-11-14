@@ -65,7 +65,7 @@ public class PortInUseException extends WebServerException {
 	 * Throw a {@link PortInUseException} if the given exception was caused by a "port in
 	 * use" {@link BindException}.
 	 * @param ex the source exception
-	 * @param port a suppler used to provide the port
+	 * @param port a supplier used to provide the port
 	 * @since 2.2.7
 	 */
 	public static void throwIfPortBindingException(Exception ex, IntSupplier port) {
