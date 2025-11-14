@@ -85,7 +85,7 @@ public final class CorrelationIdFormatter {
 	 * @return a formatted correlation id
 	 */
 	public String format(UnaryOperator<String> resolver) {
-		StringBuilder result = new StringBuilder();
+		StringBuilder result = new StringBuilder(this.blank.length());
 		formatTo(resolver, result);
 		return result.toString();
 	}
