@@ -35,9 +35,7 @@ dependencies {
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-jsonb"))
 	optional(project(":module:spring-boot-reactor"))
-	optional("co.elastic.clients:elasticsearch-java") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("co.elastic.clients:elasticsearch-java")
 
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("jakarta.json.bind:jakarta.json.bind-api")

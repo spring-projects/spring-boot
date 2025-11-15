@@ -44,9 +44,7 @@ dependencies {
 	optional("com.oracle.database.jdbc:ucp11")
 	optional("com.zaxxer:HikariCP")
 	optional("io.micrometer:micrometer-core")
-	optional("org.apache.commons:commons-dbcp2") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.postgresql:postgresql")
 	optional("org.testcontainers:testcontainers-jdbc")
