@@ -40,6 +40,7 @@ import org.skyscreamer.jsonassert.JSONCompareResult;
 import org.skyscreamer.jsonassert.comparator.JSONComparator;
 
 import org.springframework.core.io.Resource;
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.ThrowingFunction;
@@ -917,6 +918,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid
 	 */
+	@CheckReturnValue
 	public AbstractObjectAssert<?, Object> extractingJsonPathValue(CharSequence expression, Object... args) {
 		return Assertions.assertThat(new JsonPathValue(expression, args).getValue(false));
 	}
@@ -929,6 +931,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a string
 	 */
+	@CheckReturnValue
 	public AbstractCharSequenceAssert<?, String> extractingJsonPathStringValue(CharSequence expression,
 			Object... args) {
 		return Assertions.assertThat(extractingJsonPathValue(expression, args, String.class, "a string"));
@@ -942,6 +945,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a number
 	 */
+	@CheckReturnValue
 	public AbstractObjectAssert<?, Number> extractingJsonPathNumberValue(CharSequence expression, Object... args) {
 		return Assertions.assertThat(extractingJsonPathValue(expression, args, Number.class, "a number"));
 	}
@@ -954,6 +958,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @return a new assertion object whose object under test is the extracted item
 	 * @throws AssertionError if the path is not valid or does not result in a boolean
 	 */
+	@CheckReturnValue
 	public AbstractBooleanAssert<?> extractingJsonPathBooleanValue(CharSequence expression, Object... args) {
 		return Assertions.assertThat(extractingJsonPathValue(expression, args, Boolean.class, "a boolean"));
 	}
@@ -968,6 +973,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in an array
 	 */
 	@SuppressWarnings("unchecked")
+	@CheckReturnValue
 	public <E> ListAssert<E> extractingJsonPathArrayValue(CharSequence expression, Object... args) {
 		return Assertions.assertThat(extractingJsonPathValue(expression, args, List.class, "an array"));
 	}
@@ -983,6 +989,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 	 * @throws AssertionError if the path is not valid or does not result in a map
 	 */
 	@SuppressWarnings("unchecked")
+	@CheckReturnValue
 	public <K, V> MapAssert<K, V> extractingJsonPathMapValue(CharSequence expression, Object... args) {
 		return Assertions.assertThat(extractingJsonPathValue(expression, args, Map.class, "a map"));
 	}
