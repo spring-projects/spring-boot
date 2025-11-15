@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assert;
 
+import org.springframework.lang.CheckReturnValue;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -85,6 +86,7 @@ public final class ScheduledExecutorServiceAssert
 	 * @param actual the {@link ScheduledExecutorService}
 	 * @return the assertion instance
 	 */
+	@CheckReturnValue
 	public static ScheduledExecutorServiceAssert assertThat(ScheduledExecutorService actual) {
 		return new ScheduledExecutorServiceAssert(actual);
 	}
