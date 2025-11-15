@@ -361,7 +361,7 @@ To disable auto-configuration of the Sniffer, set configprop:spring.elasticsearc
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]
 ==== Connecting to Elasticsearch Using ElasticsearchClient
 
-If you have `co.elastic.clients:elasticsearch-java` on the classpath, Spring Boot will auto-configure and register an javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] bean.
+If you use the `spring-boot-starter-elasticsearch` or have added `co.elastic.clients:elasticsearch-java` to the classpath, Spring Boot will auto-configure and register an javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] bean.
 
 The javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[] uses a transport that depends upon the previously described javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5Client[].
 Therefore, the properties described previously can be used to configure the javadoc:co.elastic.clients.elasticsearch.ElasticsearchClient[].

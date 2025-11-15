@@ -24,4 +24,5 @@ dependencies {
 	api(project(":starter:spring-boot-starter"))
 
 	api(project(":module:spring-boot-elasticsearch"))
+	api("co.elastic.clients:elasticsearch-java")
 }
