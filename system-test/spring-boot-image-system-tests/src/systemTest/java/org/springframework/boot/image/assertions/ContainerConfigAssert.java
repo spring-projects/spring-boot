@@ -32,6 +32,7 @@ import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 
 import org.springframework.boot.test.json.JsonContentAssert;
+import org.springframework.lang.CheckReturnValue;
 
 /**
  * AssertJ {@link org.assertj.core.api.Assert} for Docker image container configuration.
@@ -99,10 +100,12 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 			super(jsonContentAssert, BuildMetadataAssert.class);
 		}
 
+		@CheckReturnValue
 		public ListAssert<Object> buildpacks() {
 			return this.actual.extractingJsonPathArrayValue("$.buildpacks[*].id");
 		}
 
+		@CheckReturnValue
 		public AbstractListAssert<?, List<? extends String>, String, ObjectAssert<String>> processOfType(String type) {
 			return this.actual.extractingJsonPathArrayValue("$.processes[?(@.type=='%s')]", type)
 				.singleElement()
@@ -132,14 +135,17 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 			super(jsonContentAssert, LifecycleMetadataAssert.class);
 		}
 
+		@CheckReturnValue
 		public ListAssert<Object> buildpackLayers(String buildpackId) {
 			return this.actual.extractingJsonPathArrayValue("$.buildpacks[?(@.key=='%s')].layers", buildpackId);
 		}
 
+		@CheckReturnValue
 		public AbstractListAssert<?, List<?>, Object, ObjectAssert<Object>> appLayerShas() {
 			return this.actual.extractingJsonPathArrayValue("$.app").extracting("sha");
 		}
 
+		@CheckReturnValue
 		public AbstractObjectAssert<?, Object> sbomLayerSha() {
 			return this.actual.extractingJsonPathValue("$.sbom.sha");
 		}
