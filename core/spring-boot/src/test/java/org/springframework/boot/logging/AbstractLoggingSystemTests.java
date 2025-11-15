@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.MDC;
 
+import org.springframework.boot.logging.log4j2.Log4j2RollingPolicySystemProperty;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.contentOf;
@@ -62,6 +63,9 @@ public abstract class AbstractLoggingSystemTests {
 	@AfterEach
 	void clear() {
 		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			System.getProperties().remove(property.getEnvironmentVariableName());
+		}
+		for (Log4j2RollingPolicySystemProperty property : Log4j2RollingPolicySystemProperty.values()) {
 			System.getProperties().remove(property.getEnvironmentVariableName());
 		}
 		MDC.clear();
