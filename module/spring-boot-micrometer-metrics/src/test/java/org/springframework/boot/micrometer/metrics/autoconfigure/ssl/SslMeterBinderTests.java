@@ -34,6 +34,12 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
+
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link SslMeterBinder}.
@@ -61,6 +67,41 @@ class SslMeterBinderTests {
 		assertThat(Duration
 			.ofSeconds(findExpiryGauge(meterRegistry, "not-yet-valid", "7df79335f274e2cfa7467fd5f9ce0192b3bcf4aa")))
 			.hasDays(36889);
+	}
+
+	@Test
+	void shouldWatchUpdatesForBundlesRegisteredAfterConstruction() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		SslInfo sslInfo = mock(SslInfo.class);
+		when(sslInfo.getBundles()).thenReturn(List.of());
+
+		SslInfo.BundleInfo bundleInfo = mock(SslInfo.BundleInfo.class);
+		SslInfo.CertificateChainInfo chainInfo = mock(SslInfo.CertificateChainInfo.class);
+		SslInfo.CertificateInfo certificateInfo = mock(SslInfo.CertificateInfo.class);
+		SslInfo.CertificateValidityInfo validityInfo = mock(SslInfo.CertificateValidityInfo.class);
+
+		when(sslInfo.getBundle("dynamic")).thenReturn(bundleInfo);
+		when(bundleInfo.getName()).thenReturn("dynamic");
+		when(bundleInfo.getCertificateChains()).thenReturn(List.of(chainInfo));
+		when(chainInfo.getAlias()).thenReturn("server");
+		when(chainInfo.getCertificates()).thenReturn(List.of(certificateInfo));
+		when(certificateInfo.getSerialNumber()).thenReturn("serial");
+
+		Instant expiry = CLOCK.instant().plus(Duration.ofDays(365));
+		when(certificateInfo.getValidityEnds()).thenReturn(expiry);
+		when(certificateInfo.getValidity()).thenReturn(validityInfo);
+		when(validityInfo.getStatus()).thenReturn(SslInfo.CertificateValidityInfo.Status.VALID);
+		when(validityInfo.getMessage()).thenReturn(null);
+
+		SslMeterBinder binder = new SslMeterBinder(sslInfo, sslBundleRegistry, CLOCK);
+		SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+		binder.bindTo(meterRegistry);
+
+		SslBundle bundle = mock(SslBundle.class);
+		sslBundleRegistry.registerBundle("dynamic", bundle);
+		sslBundleRegistry.updateBundle("dynamic", bundle);
+
+		verify(sslInfo, atLeast(2)).getBundle("dynamic");
 	}
 
 	private static long findExpiryGauge(MeterRegistry meterRegistry, String chain, String certificateSerialNumber) {
