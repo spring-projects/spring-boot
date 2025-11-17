@@ -36,16 +36,12 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(HttpClientsProperties.class)
 public final class HttpClientAutoConfiguration {
 
-	private final HttpClientSettingsPropertyMapper propertyMapper;
-
-	HttpClientAutoConfiguration(ObjectProvider<SslBundles> sslBundles) {
-		this.propertyMapper = new HttpClientSettingsPropertyMapper(sslBundles.getIfAvailable(), null);
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	HttpClientSettings httpClientSettings(HttpClientsProperties properties) {
-		return this.propertyMapper.map(properties);
+	HttpClientSettings httpClientSettings(ObjectProvider<SslBundles> sslBundles, HttpClientsProperties properties) {
+		HttpClientSettingsPropertyMapper propertyMapper = new HttpClientSettingsPropertyMapper(
+				sslBundles.getIfAvailable(), null);
+		return propertyMapper.map(properties);
 	}
 
 }

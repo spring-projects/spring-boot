@@ -57,7 +57,7 @@ public class HttpClientSettingsPropertyMapper {
 		return settings.orElse(this.settings);
 	}
 
-	private @Nullable SslBundle getSslBundle(String name) {
+	private SslBundle getSslBundle(String name) {
 		Assert.state(this.sslBundles != null, "No 'sslBundles' available");
 		return this.sslBundles.getBundle(name);
 	}

@@ -23,7 +23,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.ssl.SslBundle;
 
 /**
- * Settings that can be applied when creating a imperative or reactive HTTP client.
+ * Settings that can be applied when creating an imperative or reactive HTTP client.
  *
  * @param redirects the follow redirect strategy to use or null to redirect whenever the
  * underlying library allows it
@@ -37,14 +37,6 @@ public record HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Du
 		@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
 
 	private static final HttpClientSettings defaults = new HttpClientSettings(null, null, null, null);
-
-	public HttpClientSettings(@Nullable HttpRedirects redirects, @Nullable Duration connectTimeout,
-			@Nullable Duration readTimeout, @Nullable SslBundle sslBundle) {
-		this.redirects = redirects;
-		this.connectTimeout = connectTimeout;
-		this.readTimeout = readTimeout;
-		this.sslBundle = sslBundle;
-	}
 
 	/**
 	 * Return a new {@link HttpClientSettings} instance with an updated connect timeout
