@@ -66,7 +66,7 @@ public class EntityManagerFactoryBuilder {
 
 	private @Nullable AsyncTaskExecutor bootstrapExecutor;
 
-	private PersistenceUnitPostProcessor @Nullable [] persistenceUnitPostProcessors;
+	private @Nullable List<PersistenceUnitPostProcessor> persistenceUnitPostProcessors;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -129,25 +129,23 @@ public class EntityManagerFactoryBuilder {
 	 * @param persistenceUnitPostProcessors the persistence unit post processors to use
 	 */
 	public void setPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
-		this.persistenceUnitPostProcessors = persistenceUnitPostProcessors;
+		this.persistenceUnitPostProcessors = new ArrayList<>(Arrays.asList(persistenceUnitPostProcessors));
 	}
 
 	/**
-	 * Add some {@linkplain PersistenceUnitPostProcessor persistence unit post processors}
-	 * to be applied to the PersistenceUnitInfo used for creating the
+	 * Add {@linkplain PersistenceUnitPostProcessor persistence unit post processors} to
+	 * be applied to the PersistenceUnitInfo used for creating the
 	 * {@link LocalContainerEntityManagerFactoryBean}.
-	 * @param persistenceUnitPostProcessors the persistence unit post processors to use
+	 * @param persistenceUnitPostProcessors the persistence unit post processors to add
+	 * @since 4.1.0
 	 */
 	public void addPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
-		if (this.persistenceUnitPostProcessors == null) {
-			this.persistenceUnitPostProcessors = persistenceUnitPostProcessors;
-			return;
+		if (this.persistenceUnitPostProcessors != null) {
+			this.persistenceUnitPostProcessors.addAll(Arrays.asList(persistenceUnitPostProcessors));
 		}
-
-		var combined = new ArrayList<>(Arrays.asList(this.persistenceUnitPostProcessors));
-		combined.addAll(Arrays.asList(persistenceUnitPostProcessors));
-
-		this.persistenceUnitPostProcessors = combined.toArray(PersistenceUnitPostProcessor[]::new);
+		else {
+			setPersistenceUnitPostProcessors(persistenceUnitPostProcessors);
+		}
 	}
 
 	/**
@@ -301,7 +299,8 @@ public class EntityManagerFactoryBuilder {
 			}
 			if (EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors != null) {
 				entityManagerFactoryBean
-					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
+					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors
+						.toArray(PersistenceUnitPostProcessor[]::new));
 			}
 			return entityManagerFactoryBean;
 		}
