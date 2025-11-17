@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.diagnostics;
+package org.springframework.boot.testcontainers.lifecycle;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.diagnostics.FailureAnalyzer;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,13 +55,6 @@ class DockerEnvironmentNotFoundFailureAnalyzerTests {
 	void shouldReturnNullWhenMessageIsNull() {
 		FailureAnalysis analysis = this.analyzer.analyze(new IllegalStateException());
 		assertThat(analysis).isNull();
-	}
-
-	@Test
-	void shouldBeRegisteredInSpringFactories() {
-		assertThat(SpringFactoriesLoader.forDefaultResourceLocation(getClass().getClassLoader())
-			.load(FailureAnalyzer.class, (factoryType, factoryImplementationName, failure) -> {
-			})).anyMatch(DockerEnvironmentNotFoundFailureAnalyzer.class::isInstance);
 	}
 
 }

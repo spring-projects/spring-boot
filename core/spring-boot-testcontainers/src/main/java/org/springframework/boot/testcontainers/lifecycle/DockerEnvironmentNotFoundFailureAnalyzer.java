@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.diagnostics;
+package org.springframework.boot.testcontainers.lifecycle;
 
 import org.jspecify.annotations.Nullable;
 
@@ -23,9 +23,11 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.util.StringUtils;
 
 /**
- * Failure analyzer for the Docker environment wasn't found.
+ * A {@code FailureAnalyzer} that performs analysis of failures caused by Testcontainers
+ * not finding a valid Docker environment.
  *
  * @author Dmytro Nosan
+ * @author Stephane Nicoll
  */
 class DockerEnvironmentNotFoundFailureAnalyzer extends AbstractFailureAnalyzer<IllegalStateException> {
 
@@ -41,14 +43,10 @@ class DockerEnvironmentNotFoundFailureAnalyzer extends AbstractFailureAnalyzer<I
 
 	@Override
 	protected @Nullable FailureAnalysis analyze(Throwable rootFailure, IllegalStateException cause) {
-		if (isDockerEnvironmentNotFoundError(cause)) {
+		if (StringUtils.hasText(cause.getMessage()) && cause.getMessage().contains(EXPECTED_MESSAGE)) {
 			return new FailureAnalysis(DESCRIPTION, ACTION, cause);
 		}
 		return null;
-	}
-
-	private boolean isDockerEnvironmentNotFoundError(IllegalStateException cause) {
-		return StringUtils.hasText(cause.getMessage()) && cause.getMessage().contains(EXPECTED_MESSAGE);
 	}
 
 }

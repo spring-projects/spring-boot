@@ -8,4 +8,4 @@ org.springframework.boot.testcontainers.service.connection.ServiceConnectionCont
 
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.testcontainers.diagnostics.DockerEnvironmentNotFoundFailureAnalyzer
+org.springframework.boot.testcontainers.lifecycle.DockerEnvironmentNotFoundFailureAnalyzer
