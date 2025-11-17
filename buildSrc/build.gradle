@@ -28,16 +28,13 @@ if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_24)) {
 
 repositories {
 	mavenCentral()
+	spring.mavenRepositoriesFor("${springFrameworkVersion}")
 	gradlePluginPortal()
 }
 
 java {
 	sourceCompatibility = 17
 	targetCompatibility = 17
-}
-
-repositories {
-	spring.mavenRepositories("${springFrameworkVersion}".contains("-"))
 }
 
 checkstyle {
