@@ -27,7 +27,6 @@ import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.micrometer.metrics.system.DiskSpaceMetricsBinder;
@@ -36,6 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SystemMetricsAutoConfiguration}.
@@ -75,7 +75,7 @@ class SystemMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomJvmCpuMeterConventionsToBeUsed() {
-		JvmCpuMeterConventions jvmCpuMeterConventions = Mockito.mock(JvmCpuMeterConventions.class);
+		JvmCpuMeterConventions jvmCpuMeterConventions = mock(JvmCpuMeterConventions.class);
 		this.contextRunner.withBean(JvmCpuMeterConventions.class, () -> jvmCpuMeterConventions)
 			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
 				.getBean(ProcessorMetrics.class)

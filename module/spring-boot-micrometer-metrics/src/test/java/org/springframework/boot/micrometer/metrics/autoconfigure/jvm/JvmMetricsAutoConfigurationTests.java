@@ -32,7 +32,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
-import org.mockito.Mockito;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -48,6 +47,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JvmMetricsAutoConfiguration}.
@@ -88,7 +88,7 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	void allowCustomJvmMemoryMeterConventionsToBeUsed() {
-		JvmMemoryMeterConventions jvmMemoryMeterConventions = Mockito.mock(JvmMemoryMeterConventions.class);
+		JvmMemoryMeterConventions jvmMemoryMeterConventions = mock(JvmMemoryMeterConventions.class);
 		this.contextRunner.withBean(JvmMemoryMeterConventions.class, () -> jvmMemoryMeterConventions)
 			.run((context) -> assertThat(context).hasSingleBean(JvmMemoryMetrics.class)
 				.getBean(JvmMemoryMetrics.class)
@@ -103,7 +103,7 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	void allowCustomJvmThreadMeterConventionsToBeUsed() {
-		JvmThreadMeterConventions jvmThreadMeterConventions = Mockito.mock(JvmThreadMeterConventions.class);
+		JvmThreadMeterConventions jvmThreadMeterConventions = mock(JvmThreadMeterConventions.class);
 		this.contextRunner.withBean(JvmThreadMeterConventions.class, () -> jvmThreadMeterConventions)
 			.run((context) -> assertThat(context).hasSingleBean(JvmThreadMetrics.class)
 				.getBean(JvmThreadMetrics.class)
@@ -118,8 +118,7 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	void allowCustomJvmClassLoadingMeterConventionsToBeUsed() {
-		JvmClassLoadingMeterConventions jvmClassLoadingMeterConventions = Mockito
-			.mock(JvmClassLoadingMeterConventions.class);
+		JvmClassLoadingMeterConventions jvmClassLoadingMeterConventions = mock(JvmClassLoadingMeterConventions.class);
 		this.contextRunner.withBean(JvmClassLoadingMeterConventions.class, () -> jvmClassLoadingMeterConventions)
 			.run((context) -> assertThat(context).hasSingleBean(ClassLoaderMetrics.class)
 				.getBean(ClassLoaderMetrics.class)
