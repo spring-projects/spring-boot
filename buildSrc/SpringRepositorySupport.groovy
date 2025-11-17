@@ -87,8 +87,8 @@ class SpringRepositoriesExtension {
 		addRepositories { }
 	}
 
-	def mavenRepositories(condition) {
-		if (condition) addRepositories { }
+	def mavenRepositoriesFor(version) {
+		addRepositories(version) { }
 	}
 
 	def mavenRepositoriesExcludingBootGroup() {
@@ -100,12 +100,16 @@ class SpringRepositoriesExtension {
 	}
 
 	private void addRepositories(action) {
-		addCommercialRepository("release", false, "/spring-enterprise-maven-prod-local", action)
-		if (this.version.contains("-")) {
+		addRepositories(this.version, action)
+	}
+
+	private void addRepositories(version, action) {
+		addCommercialRepositoryIfNecessary("release", false, "/spring-enterprise-maven-prod-local", action)
+		if (version.contains("-")) {
 			addOssRepository("milestone", false, "/milestone", action)
 		}
-		if (this.version.endsWith("-SNAPSHOT")) {
-			addCommercialRepository("snapshot", true, "/spring-enterprise-maven-dev-local", action)
+		if (version.endsWith("-SNAPSHOT")) {
+			addCommercialRepositoryIfNecessary("snapshot", true, "/spring-enterprise-maven-dev-local", action)
 			addOssRepository("snapshot", true, "/snapshot", action)
 		}
 	}
@@ -116,7 +120,7 @@ class SpringRepositoriesExtension {
 		addRepository(name, snapshot, url, action)
 	}
 
-	private void addCommercialRepository(id, snapshot, path, action) {
+	private void addCommercialRepositoryIfNecessary(id, snapshot, path, action) {
 		if (!"commercial".equalsIgnoreCase(this.buildType)) return
 		def name = "spring-commercial-" + id
 		def url = fromEnv("COMMERCIAL_%SREPO_URL", id, "https://usw1.packages.broadcom.com" + path)
