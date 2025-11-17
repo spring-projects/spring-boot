@@ -24,16 +24,28 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.jms.autoconfigure.JmsProperties.Listener.Session;
 import org.springframework.jms.config.AbstractJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.util.Assert;
 
 /**
- * Configures {@link AbstractJmsListenerContainerFactory} with sensible defaults.
+ * Configure common {@link JmsListenerContainerFactory} settings with sensible defaults.
+ * <p>
+ * This includes:
+ * <li>A {@link DestinationResolver} is such a component is present.</li>
+ * <li>A {@link MessageConverter} is such a component is present.</li>
+ * <li>An {@link ExceptionListener} is such a component is present.</li>
+ * <li>An {@link ObservationRegistry} is such a component is present.</li>
+ * <li>Configuration properties of the {@code spring.jms} namespace that are common to all
+ * implementations.</li>
  *
  * @param <T> the connection factory type.
+ * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @author Vedran Pavic
- * @since 4.0.0
+ * @author Lasse Wulff
+ * @since 4.1.0
  */
 public abstract class AbstractJmsListenerContainerFactoryConfigurer<T extends AbstractJmsListenerContainerFactory<?>> {
 
@@ -91,6 +103,15 @@ public abstract class AbstractJmsListenerContainerFactoryConfigurer<T extends Ab
 	}
 
 	/**
+	 * Return the {@link JmsProperties}.
+	 * @return the jms properties
+	 */
+	protected JmsProperties getJmsProperties() {
+		Assert.state(this.jmsProperties != null, "'jmsProperties' must not be null");
+		return this.jmsProperties;
+	}
+
+	/**
 	 * Configure the specified jms listener container factory. The factory can be further
 	 * tuned and default settings can be overridden.
 	 * @param factory the {@link AbstractJmsListenerContainerFactory} instance to
@@ -100,14 +121,14 @@ public abstract class AbstractJmsListenerContainerFactoryConfigurer<T extends Ab
 	public void configure(T factory, ConnectionFactory connectionFactory) {
 		Assert.notNull(factory, "'factory' must not be null");
 		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
-		Assert.state(this.jmsProperties != null, "'jmsProperties' must not be null");
-		JmsProperties.Listener listenerProperties = this.jmsProperties.getListener();
+		JmsProperties properties = getJmsProperties();
+		JmsProperties.Listener listenerProperties = properties.getListener();
 		Session sessionProperties = listenerProperties.getSession();
 		factory.setConnectionFactory(connectionFactory);
 		PropertyMapper map = PropertyMapper.get();
-		map.from(this.jmsProperties::isPubSubDomain).to(factory::setPubSubDomain);
-		map.from(this.jmsProperties::isSubscriptionDurable).to(factory::setSubscriptionDurable);
-		map.from(this.jmsProperties::getClientId).to(factory::setClientId);
+		map.from(properties::isPubSubDomain).to(factory::setPubSubDomain);
+		map.from(properties::isSubscriptionDurable).to(factory::setSubscriptionDurable);
+		map.from(properties::getClientId).to(factory::setClientId);
 		map.from(this.destinationResolver).to(factory::setDestinationResolver);
 		map.from(this.messageConverter).to(factory::setMessageConverter);
 		map.from(this.exceptionListener).to(factory::setExceptionListener);
@@ -115,17 +136,6 @@ public abstract class AbstractJmsListenerContainerFactoryConfigurer<T extends Ab
 		map.from(this.observationRegistry).to(factory::setObservationRegistry);
 		map.from(sessionProperties::getTransacted).to(factory::setSessionTransacted);
 		map.from(listenerProperties::isAutoStartup).to(factory::setAutoStartup);
-		configure(factory, connectionFactory, this.jmsProperties);
 	}
-
-	/**
-	 * Configures the given {@code factory} using the given {@code connectionFactory} and
-	 * {@code jmsProperties}.
-	 * @param factory the {@link AbstractJmsListenerContainerFactory} instance to
-	 * configure
-	 * @param connectionFactory the {@link ConnectionFactory} to use
-	 * @param jmsProperties the {@link JmsProperties} to use
-	 */
-	protected abstract void configure(T factory, ConnectionFactory connectionFactory, JmsProperties jmsProperties);
 
 }

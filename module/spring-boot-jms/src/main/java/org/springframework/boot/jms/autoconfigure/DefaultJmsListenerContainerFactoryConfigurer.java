@@ -27,8 +27,8 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**
- * Configures {@link DefaultJmsListenerContainerFactory} with sensible defaults tuned
- * using configuration properties.
+ * Configure {@link DefaultJmsListenerContainerFactory} with sensible defaults tuned using
+ * configuration properties.
  * <p>
  * Can be injected into application code and used to define a custom
  * {@code DefaultJmsListenerContainerFactory} whose configuration is based upon that
@@ -39,6 +39,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Vedran Pavic
  * @author Lasse Wulff
  * @since 4.0.0
+ * @see SimpleJmsListenerContainerFactoryConfigurer
  */
 public final class DefaultJmsListenerContainerFactoryConfigurer
 		extends AbstractJmsListenerContainerFactoryConfigurer<DefaultJmsListenerContainerFactory> {
@@ -55,10 +56,10 @@ public final class DefaultJmsListenerContainerFactoryConfigurer
 	}
 
 	@Override
-	protected void configure(DefaultJmsListenerContainerFactory factory, ConnectionFactory connectionFactory,
-			JmsProperties jmsProperties) {
+	public void configure(DefaultJmsListenerContainerFactory factory, ConnectionFactory connectionFactory) {
+		super.configure(factory, connectionFactory);
 		PropertyMapper map = PropertyMapper.get();
-		JmsProperties.Listener listenerProperties = jmsProperties.getListener();
+		JmsProperties.Listener listenerProperties = getJmsProperties().getListener();
 		Session sessionProperties = listenerProperties.getSession();
 		map.from(this.transactionManager).to(factory::setTransactionManager);
 		if (this.transactionManager == null && sessionProperties.getTransacted() == null) {
