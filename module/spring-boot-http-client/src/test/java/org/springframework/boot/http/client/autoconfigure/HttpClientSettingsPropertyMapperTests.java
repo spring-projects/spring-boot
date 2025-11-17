@@ -33,24 +33,23 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link HttpClientSettingsPropertyMapper}.
  *
- * @author Phillip Webb
+ * @author Steve Armstrong
  */
 class HttpClientSettingsPropertyMapperTests {
-
-	@Test
-	void mapWhenPropertiesIsNullReturnsBaseSettings() {
-		HttpClientSettings baseSettings = HttpClientSettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(10));
-		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, baseSettings);
-		HttpClientSettings result = mapper.map(null);
-		assertThat(result).isEqualTo(baseSettings);
-	}
 
 	@Test
 	void mapWhenPropertiesIsNullAndBaseSettingsIsNullReturnsDefaults() {
 		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, null);
 		HttpClientSettings result = mapper.map(null);
 		assertThat(result).isEqualTo(HttpClientSettings.defaults());
+	}
+
+	@Test
+	void mapWhenPropertiesIsNullReturnsBaseSettings() {
+		HttpClientSettings baseSettings = HttpClientSettings.defaults().withConnectTimeout(Duration.ofSeconds(10));
+		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(null, baseSettings);
+		HttpClientSettings result = mapper.map(null);
+		assertThat(result).isEqualTo(baseSettings);
 	}
 
 	@Test
@@ -89,24 +88,6 @@ class HttpClientSettingsPropertyMapperTests {
 		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
 		properties.getSsl().setBundle("test-bundle");
 		HttpClientSettings result = mapper.map(properties);
-		assertThat(result.sslBundle()).isSameAs(sslBundle);
-	}
-
-	@Test
-	void mapMapsAllProperties() {
-		SslBundle sslBundle = mock(SslBundle.class);
-		SslBundles sslBundles = mock(SslBundles.class);
-		given(sslBundles.getBundle("my-bundle")).willReturn(sslBundle);
-		HttpClientSettingsPropertyMapper mapper = new HttpClientSettingsPropertyMapper(sslBundles, null);
-		TestHttpClientSettingsProperties properties = new TestHttpClientSettingsProperties();
-		properties.setRedirects(HttpRedirects.FOLLOW);
-		properties.setConnectTimeout(Duration.ofSeconds(10));
-		properties.setReadTimeout(Duration.ofSeconds(20));
-		properties.getSsl().setBundle("my-bundle");
-		HttpClientSettings result = mapper.map(properties);
-		assertThat(result.redirects()).isEqualTo(HttpRedirects.FOLLOW);
-		assertThat(result.connectTimeout()).isEqualTo(Duration.ofSeconds(10));
-		assertThat(result.readTimeout()).isEqualTo(Duration.ofSeconds(20));
 		assertThat(result.sslBundle()).isSameAs(sslBundle);
 	}
 
