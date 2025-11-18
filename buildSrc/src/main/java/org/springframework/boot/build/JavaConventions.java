@@ -32,6 +32,7 @@ import io.spring.gradle.nullability.NullabilityPluginExtension;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
+import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -53,6 +54,9 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.CoreJavadocOptions;
+import org.gradle.jvm.toolchain.JavaCompiler;
+import org.gradle.jvm.toolchain.JavaInstallationMetadata;
+import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
@@ -249,6 +253,20 @@ class JavaConventions {
 			}
 			args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
 					"-Xlint:varargs"));
+			compile.doFirst((task) -> {
+				JavaVersion version = compile.getJavaCompiler()
+					.map(JavaCompiler::getMetadata)
+					.map(JavaInstallationMetadata::getLanguageVersion)
+					.map(JavaLanguageVersion::asInt)
+					.map(JavaVersion::toVersion)
+					.orElse(JavaVersion.current())
+					.get();
+				if (!version.isCompatibleWith(JavaVersion.VERSION_24)) {
+					throw new GradleException("This build requires at least Java version 24 due to a JDK compiler bug"
+							+ " that breaks JSpecify nullability analysis. Your current Java version is %s."
+								.formatted(version));
+				}
+			});
 		});
 	}
 
