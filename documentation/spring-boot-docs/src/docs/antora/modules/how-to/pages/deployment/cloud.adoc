@@ -269,6 +269,9 @@ NOTE: Spring Boot applications can be packaged in Docker containers using techni
 
 In addition to the developer guide, AWS also provides a https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-container-image.html[topical guide] for deploying containerized Java services on Amazon ECS using AWS Fargate.
 
+TIP: Spring Boot auto-detects AWS ECS deployment environments by checking the environment for the `AWS_EXECUTION_ENV` variable.
+You can override this detection with the configprop:spring.main.cloud-platform[] configuration property.
+
 
 
 [[howto.deployment.cloud.aws.beanstalk]]
