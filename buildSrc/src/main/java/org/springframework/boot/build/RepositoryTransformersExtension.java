@@ -20,7 +20,9 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -36,6 +38,8 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
  * @author Phillip Webb
  */
 public class RepositoryTransformersExtension {
+
+	private static final String CREDENTIALS_MARKER = "{spring.mavenCredentials}";
 
 	private static final String REPOSITORIES_MARKER = "{spring.mavenRepositories}";
 
@@ -59,6 +63,19 @@ public class RepositoryTransformersExtension {
 				URI url = repository.getUrl();
 				return "%s<ibiblio name=\"%s\" m2compatible=\"true\" root=\"%s\" />".formatted(indent, name, url);
 			});
+		}
+		if (line.contains(CREDENTIALS_MARKER)) {
+			Map<String, MavenCredential> hostCredentials = new LinkedHashMap<>();
+			getSpringRepositories().forEach((repository) -> {
+				if (repository.getName().startsWith("spring-commercial-")) {
+					String host = repository.getUrl().getHost();
+					hostCredentials.put(host,
+							new MavenCredential("${env.COMMERCIAL_REPO_USERNAME}", "${env.COMMERCIAL_REPO_PASSWORD"));
+				}
+			});
+			return transform(line, hostCredentials.entrySet(), (entry,
+					indent) -> "%s<credentials host=\"%s\" realm=\"Artifactory Realm\" username=\"%s\" passwd=\"%s\" />%n"
+						.formatted(indent, entry.getKey(), entry.getValue().username(), entry.getValue().password()));
 		}
 		return line;
 	}
@@ -99,10 +116,14 @@ public class RepositoryTransformersExtension {
 	}
 
 	private String transform(String line, BiFunction<MavenArtifactRepository, String, String> generator) {
+		return transform(line, getSpringRepositories(), generator);
+	}
+
+	private <T> String transform(String line, Iterable<T> iterable, BiFunction<T, String, String> generator) {
 		StringBuilder result = new StringBuilder();
 		String indent = getIndent(line);
-		getSpringRepositories().forEach((repository) -> {
-			String fragment = generator.apply(repository, indent);
+		iterable.forEach((item) -> {
+			String fragment = generator.apply(item, indent);
 			if (fragment != null) {
 				result.append(!result.isEmpty() ? "\n" : "");
 				result.append(fragment);
@@ -134,6 +155,10 @@ public class RepositoryTransformersExtension {
 
 	static void apply(Project project) {
 		project.getExtensions().create("springRepositoryTransformers", RepositoryTransformersExtension.class, project);
+	}
+
+	record MavenCredential(String username, String password) {
+
 	}
 
 }
