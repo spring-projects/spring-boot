@@ -341,7 +341,7 @@ To take full control over the client's configuration, define a javadoc:co.elasti
 
 
 
-Additionally, a javadoc:co.elastic.clients.transport.rest5_client.low_level.sniffer.Sniffer[] is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5Client[] bean.
+Additionally, a javadoc:co.elastic.clients.transport.rest5_client.low_level.sniffer.Sniffer[] can be auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them on the javadoc:co.elastic.clients.transport.rest5_client.low_level.Rest5Client[] bean.
 You can further tune how javadoc:co.elastic.clients.transport.rest5_client.low_level.sniffer.Sniffer[] is configured, as shown in the following example:
 
 [configprops,yaml]
@@ -350,11 +350,10 @@ spring:
   elasticsearch:
     restclient:
       sniffer:
+        enabled: true
         interval: "10m"
         delay-after-failure: "30s"
 ----
-
-To disable auto-configuration of the Sniffer, set configprop:spring.elasticsearch.restclient.sniffer.enabled[] to `false`.
 
 
 

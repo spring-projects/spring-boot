@@ -139,7 +139,7 @@ class ElasticsearchRestClientConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Sniffer.class)
 	@ConditionalOnSingleCandidate(Rest5Client.class)
-	@ConditionalOnProperty(name = "spring.elasticsearch.restclient.sniffer.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.elasticsearch.restclient.sniffer.enabled")
 	static class RestClientSnifferConfiguration {
 
 		@Bean
