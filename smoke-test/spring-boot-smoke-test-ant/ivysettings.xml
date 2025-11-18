@@ -3,7 +3,6 @@
 	<caches defaultCacheDir="${projectDir}/build/ivy-cache"/>
 	<resolvers>
 		<chain name="chain" returnFirst="true">
-			<!-- NOTE: You should declare only repositories that you need here -->
 			<filesystem name="local" local="true" m2compatible="true">
 				<artifact pattern="${projectDir}/build/test-repository/[organisation]/[module]/[revision]/[module]-[revision].[ext]" />
 				<ivy pattern="${projectDir}/build/test-repository/[organisation]/[module]/[revision]/[module]-[revision].pom" />
@@ -12,4 +11,5 @@
 			<!-- {spring.mavenRepositories} -->
 		</chain>
 	</resolvers>
+	<!-- {spring.mavenCredentials} -->
 </ivysettings>

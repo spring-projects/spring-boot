@@ -2,7 +2,6 @@
 	<settings defaultResolver="chain" />
 	<resolvers>
 		<chain name="chain">
-			<!-- NOTE: You should declare only repositories that you need here -->
 			<filesystem name="local" local="true" m2compatible="true">
 				<artifact pattern="${user.home}/.m2/[organisation]/[module]/[revision]/[module]-[revision].[ext]" />
 				<ivy pattern="${user.home}/.m2/[organisation]/[module]/[revision]/[module]-[revision].pom" />
@@ -11,6 +10,5 @@
 			<!-- {spring.mavenRepositories} -->
 		</chain>
 	</resolvers>
-    <credentials host="${env.COMMERCIAL_RELEASE_REPO_URL}" username="${env.COMMERCIAL_REPO_USERNAME}" passwd="${env.COMMERCIAL_REPO_PASSWORD}"/>
-    <credentials host="${env.COMMERCIAL_SNAPSHOT_REPO_URL}" username="${env.COMMERCIAL_REPO_USERNAME}" passwd="${env.COMMERCIAL_REPO_PASSWORD}"/>
+	<!-- {spring.mavenCredentials} -->
 </ivysettings>
