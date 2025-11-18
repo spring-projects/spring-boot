@@ -142,14 +142,14 @@ class SpringRepositoriesExtensionTests {
 	@Test
 	void mavenRepositoriesWhenConditionMatches() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "oss");
-		extension.mavenRepositories(true);
+		extension.mavenRepositoriesFor("1.2.3-SNAPSHOT");
 		assertThat(this.repositories).hasSize(1);
 	}
 
 	@Test
 	void mavenRepositoriesWhenConditionDoesNotMatch() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "oss");
-		extension.mavenRepositories(false);
+		extension.mavenRepositoriesFor("1.2.3");
 		assertThat(this.repositories).isEmpty();
 	}
 
@@ -252,7 +252,7 @@ class SpringRepositoriesExtensionTests {
 
 		void mavenRepositories();
 
-		void mavenRepositories(boolean condition);
+		void mavenRepositoriesFor(Object version);
 
 		void mavenRepositoriesExcludingBootGroup();
 
