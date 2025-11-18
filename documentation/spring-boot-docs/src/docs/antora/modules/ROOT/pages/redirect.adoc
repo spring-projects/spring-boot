@@ -479,8 +479,6 @@
 * xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.aws.beanstalk.tomcat-platform[#deployment.cloud.aws.beanstalk.tomcat-platform]
 * xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.aws.beanstalk[#cloud-deployment-aws-beanstalk]
 * xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.aws.beanstalk[#deployment.cloud.aws.beanstalk]
-* xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.aws.summary[#cloud-deployment-aws-summary]
-* xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.aws.summary[#deployment.cloud.aws.summary]
 * xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.aws[#cloud-deployment-aws]
 * xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.aws[#deployment.cloud.aws]
 * xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.azure[#deployment.cloud.azure]
