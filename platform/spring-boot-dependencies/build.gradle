@@ -2205,6 +2205,8 @@ bom {
 				"spring-boot-starter-logging",
 				"spring-boot-starter-mail",
 				"spring-boot-starter-mail-test",
+				"spring-boot-starter-micrometer-metrics",
+				"spring-boot-starter-micrometer-metrics-test",
 				"spring-boot-starter-mongodb",
 				"spring-boot-starter-mongodb-test",
 				"spring-boot-starter-mustache",

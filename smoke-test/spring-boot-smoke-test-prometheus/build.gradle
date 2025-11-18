@@ -28,7 +28,7 @@ dependencies {
 
 	runtimeOnly('io.micrometer:micrometer-registry-prometheus')
 
-	testImplementation(project(":module:spring-boot-micrometer-metrics-test"))
+	testImplementation(project(":starter:spring-boot-starter-micrometer-metrics-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 }
 

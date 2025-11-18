@@ -23,6 +23,5 @@ description = "Starter for testing Spring Boot's Actuator which provides product
 dependencies {
 	api(project(":starter:spring-boot-starter-actuator"))
 	api(project(":starter:spring-boot-starter-test"))
-
-	api(project(":module:spring-boot-micrometer-metrics-test"))
+	api(project(":starter:spring-boot-starter-micrometer-metrics-test"))
 }
