@@ -67,7 +67,10 @@ class SslMeterBinder implements MeterBinder {
 	SslMeterBinder(SslInfo sslInfo, SslBundles sslBundles, Clock clock) {
 		this.clock = clock;
 		this.sslInfo = sslInfo;
-		sslBundles.addBundleRegisterHandler((bundleName, ignored) -> onBundleChange(bundleName));
+		sslBundles.addBundleRegisterHandler((bundleName, ignored) -> {
+			onBundleChange(bundleName);
+			sslBundles.addBundleUpdateHandler(bundleName, (ignoredBundle) -> onBundleChange(bundleName));
+		});
 		for (String bundleName : sslBundles.getBundleNames()) {
 			sslBundles.addBundleUpdateHandler(bundleName, (ignored) -> onBundleChange(bundleName));
 		}
