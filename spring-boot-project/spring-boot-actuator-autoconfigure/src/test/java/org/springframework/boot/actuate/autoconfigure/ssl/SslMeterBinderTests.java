@@ -88,6 +88,14 @@ class SslMeterBinderTests {
 			.hasDays(36889);
 	}
 
+	@Test
+	void shouldRegisterMetricsIfNoBundleExistsAtBindTime() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		MeterRegistry meterRegistry = bindToRegistry(sslBundleRegistry);
+		sslBundleRegistry.registerBundle("dummy", SslBundle.of(createSslStoreBundle("classpath:test.p12")));
+		assertThat(meterRegistry.getMeters()).isNotEmpty();
+	}
+
 	private long findExpiryGauge(MeterRegistry meterRegistry, String chain, String certificateSerialNumber) {
 		return (long) meterRegistry.get("ssl.chain.expiry")
 			.tag("bundle", "test-0")
