@@ -258,7 +258,9 @@ class ElasticsearchRestClientAutoConfigurationTests {
 
 	@Test
 	void configureShouldCreateSnifferUsingRest5Client() {
-		this.contextRunner.run((context) -> {
+		this.contextRunner
+			.withPropertyValues("spring.elasticsearch.restclient.sniffer.enabled=true")
+			.run((context) -> {
 			assertThat(context).hasSingleBean(Sniffer.class);
 			assertThat(context.getBean(Sniffer.class)).hasFieldOrPropertyWithValue("restClient",
 					context.getBean(Rest5Client.class));
@@ -270,10 +272,25 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	void snifferIsDisabledByDefault() {
+    	this.contextRunner.run(context ->
+        	assertThat(context).doesNotHaveBean(Sniffer.class)
+		);
+	}
+
+	@Test
+	void snifferIsEnabledWhenPropertyIsTrue() {
+    	this.contextRunner
+        	.withPropertyValues("spring.elasticsearch.restclient.sniffer.enabled=true")
+        	.run(context -> assertThat(context).hasSingleBean(Sniffer.class));
+	}
+
+	@Test
 	void configureWithCustomSnifferSettings() {
 		this.contextRunner
 			.withPropertyValues("spring.elasticsearch.restclient.sniffer.interval=180s",
-					"spring.elasticsearch.restclient.sniffer.delay-after-failure=30s")
+					"spring.elasticsearch.restclient.sniffer.delay-after-failure=30s",
+					"spring.elasticsearch.restclient.sniffer.enabled=true")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Sniffer.class);
 				Sniffer sniffer = context.getBean(Sniffer.class);
@@ -282,6 +299,16 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				assertThat(sniffer).hasFieldOrPropertyWithValue("sniffAfterFailureDelayMillis",
 						Duration.ofSeconds(30).toMillis());
 			});
+	}
+
+
+	@Test
+	void configureWithCustomSnifferSettingsWhenDisabled() {
+		this.contextRunner
+			.withPropertyValues("spring.elasticsearch.restclient.sniffer.interval=180s",
+					"spring.elasticsearch.restclient.sniffer.delay-after-failure=30s",
+					"spring.elasticsearch.restclient.sniffer.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(Sniffer.class));
 	}
 
 	@Test

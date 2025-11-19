@@ -163,7 +163,7 @@ public class ElasticsearchProperties {
 			/**
 			 * Whether the sniffer is enabled.
 			 */
-			private boolean enabled = true;
+			private boolean enabled = false;
 
 			/**
 			 * Interval between consecutive ordinary sniff executions.
