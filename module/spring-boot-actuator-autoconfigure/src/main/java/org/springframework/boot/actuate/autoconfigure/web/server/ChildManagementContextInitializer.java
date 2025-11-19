@@ -139,6 +139,10 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 		return false;
 	}
 
+	@Nullable ConfigurableApplicationContext getManagementContext() {
+		return this.managementContext;
+	}
+
 	private void registerBeans(ConfigurableApplicationContext managementContext) {
 		if (this.applicationContextInitializer != null) {
 			this.applicationContextInitializer.initialize(managementContext);

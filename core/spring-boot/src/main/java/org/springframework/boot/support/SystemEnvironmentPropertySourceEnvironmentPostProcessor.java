@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  * {@link SystemEnvironmentOrigin} for every system environment property.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  * @since 4.0.0
  */
 public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
@@ -53,10 +54,14 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+		postProcessEnvironment(environment, application.getEnvironmentPrefix());
+	}
+
+	private void postProcessEnvironment(ConfigurableEnvironment environment, @Nullable String environmentPrefix) {
 		String sourceName = StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
 		PropertySource<?> propertySource = environment.getPropertySources().get(sourceName);
 		if (propertySource != null) {
-			replacePropertySource(environment, sourceName, propertySource, application.getEnvironmentPrefix());
+			replacePropertySource(environment, sourceName, propertySource, environmentPrefix);
 		}
 	}
 
@@ -76,6 +81,23 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 
 	public void setOrder(int order) {
 		this.order = order;
+	}
+
+	/**
+	 * Post-process the given {@link ConfigurableEnvironment} by copying appropriate
+	 * settings from a parent {@link ConfigurableEnvironment}.
+	 * @param environment the environment to post-process
+	 * @param parentEnvironment the parent environment
+	 * @since 3.4.12
+	 */
+	public static void postProcessEnvironment(ConfigurableEnvironment environment,
+			ConfigurableEnvironment parentEnvironment) {
+		PropertySource<?> parentSystemEnvironmentPropertySource = parentEnvironment.getPropertySources()
+			.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		if (parentSystemEnvironmentPropertySource instanceof OriginAwareSystemEnvironmentPropertySource parentOriginAwareSystemEnvironmentPropertySource) {
+			new SystemEnvironmentPropertySourceEnvironmentPostProcessor().postProcessEnvironment(environment,
+					parentOriginAwareSystemEnvironmentPropertySource.getPrefix());
+		}
 	}
 
 	/**
