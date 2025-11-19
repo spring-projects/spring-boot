@@ -43,3 +43,13 @@ include-code::MyDatasourceConfiguration[]
 Having a single configuration class can be inefficient when beans from a certain domain need to be included in slice tests.
 Instead, structuring the application's configuration as multiple granular classes with beans for a specific domain can enable importing them only for specific slice tests.
 
+
+
+[[howto.testing.testcontainers-api-downgrade]]
+==  Downgrading Testcontainers Docker API Version
+
+Recent versions of Docker Desktop do not support the default API version used by the Testcontainers dependency managed by Spring Boot.
+To help prevent issues, Spring Boot ships with `docker-java.properties` files in the `spring-boot-testcontainers` and `spring-boot-test` jars that upgrade the API version that Testcontainers uses.
+
+If you don't want the API version to be changed, you should add a `docker-java.properties` file in your own projects classpath.
+An empty file will restore default behavior, or you can set a `api.version` property to whatever value you prefer.
