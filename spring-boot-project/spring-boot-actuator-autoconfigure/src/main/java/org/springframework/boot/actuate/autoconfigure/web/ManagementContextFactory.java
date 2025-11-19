@@ -24,6 +24,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor;
 import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -60,14 +61,21 @@ public final class ManagementContextFactory {
 		Environment parentEnvironment = parentContext.getEnvironment();
 		ConfigurableEnvironment childEnvironment = ApplicationContextFactory.DEFAULT
 			.createEnvironment(this.webApplicationType);
-		if (parentEnvironment instanceof ConfigurableEnvironment configurableEnvironment) {
-			childEnvironment.setConversionService((configurableEnvironment).getConversionService());
+		if (parentEnvironment instanceof ConfigurableEnvironment configurableParentEnvironment) {
+			postProcessChildEnvironment(childEnvironment, configurableParentEnvironment);
 		}
 		ConfigurableApplicationContext managementContext = ApplicationContextFactory.DEFAULT
 			.create(this.webApplicationType);
 		managementContext.setEnvironment(childEnvironment);
 		managementContext.setParent(parentContext);
 		return managementContext;
+	}
+
+	private void postProcessChildEnvironment(ConfigurableEnvironment childEnvironment,
+			ConfigurableEnvironment parentEnvironment) {
+		childEnvironment.setConversionService((parentEnvironment).getConversionService());
+		SystemEnvironmentPropertySourceEnvironmentPostProcessor.postProcessEnvironment(childEnvironment,
+				parentEnvironment);
 	}
 
 	public void registerWebServerFactoryBeans(ApplicationContext parentContext,

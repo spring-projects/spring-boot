@@ -16,21 +16,30 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,11 +104,38 @@ class ManagementContextAutoConfigurationTests {
 				.hasMessageStartingWith("Management-specific server address cannot be configured"));
 	}
 
+	@Test // gh-45858
+	void childEnvironmentShouldInheritPrefix() {
+		SpringApplication application = new SpringApplication(ChildEnvironmentConfiguration.class);
+		Map<String, Object> properties = new LinkedHashMap<>();
+		properties.put("server.port", "0");
+		properties.put("management.server.port", "0");
+		application.setDefaultProperties(properties);
+		application.setEnvironmentPrefix("my");
+		try (ConfigurableApplicationContext parentContext = application.run()) {
+			ChildManagementContextInitializer initializer = parentContext
+				.getBean(ChildManagementContextInitializer.class);
+			ConfigurableApplicationContext managementContext = initializer.getManagementContext();
+			PropertySource<?> systemEnvironmentPropertySource = managementContext.getEnvironment()
+				.getPropertySources()
+				.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+			assertThat(((OriginLookup<?>) systemEnvironmentPropertySource).getPrefix()).isEqualTo("my");
+		}
+	}
+
 	private <T extends CharSequence> Consumer<T> numberOfOccurrences(String substring, int expectedCount) {
 		return (charSequence) -> {
 			int count = StringUtils.countOccurrencesOf(charSequence.toString(), substring);
 			assertThat(count).isEqualTo(expectedCount);
 		};
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration({ ManagementContextAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
+			ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+			EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class })
+	static class ChildEnvironmentConfiguration {
+
 	}
 
 }

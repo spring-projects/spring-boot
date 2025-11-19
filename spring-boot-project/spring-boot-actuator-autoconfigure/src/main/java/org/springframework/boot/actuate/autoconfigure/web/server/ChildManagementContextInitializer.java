@@ -121,7 +121,7 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	@Override
 	public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
 		Assert.isInstanceOf(ConfigurableApplicationContext.class, this.parentContext);
-		BeanFactory parentBeanFactory = ((ConfigurableApplicationContext) this.parentContext).getBeanFactory();
+		BeanFactory parentBeanFactory = this.parentContext.getBeanFactory();
 		if (registeredBean.getBeanClass().equals(getClass())
 				&& registeredBean.getBeanFactory().equals(parentBeanFactory)) {
 			ConfigurableApplicationContext managementContext = createManagementContext();
@@ -134,6 +134,10 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	@Override
 	public boolean isBeanExcludedFromAotProcessing() {
 		return false;
+	}
+
+	ConfigurableApplicationContext getManagementContext() {
+		return this.managementContext;
 	}
 
 	private void registerBeans(ConfigurableApplicationContext managementContext) {

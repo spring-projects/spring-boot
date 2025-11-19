@@ -105,4 +105,18 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		assertThat(replaced.getPrefix()).isEqualTo("my");
 	}
 
+	@Test
+	void postProcessWithParentEnvironmentShouldApplyPrefix() {
+		SpringApplication application = new SpringApplication();
+		application.setEnvironmentPrefix("my");
+		new SystemEnvironmentPropertySourceEnvironmentPostProcessor().postProcessEnvironment(this.environment,
+				application);
+		StandardEnvironment child = new StandardEnvironment();
+		SystemEnvironmentPropertySourceEnvironmentPostProcessor.postProcessEnvironment(child, this.environment);
+		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) child
+			.getPropertySources()
+			.get("systemEnvironment");
+		assertThat(replaced.getPrefix()).isEqualTo("my");
+	}
+
 }
