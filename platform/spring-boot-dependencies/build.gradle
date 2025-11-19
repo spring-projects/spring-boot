@@ -1160,7 +1160,7 @@ bom {
 			releaseNotes("https://junit.org/junit5/docs/{version}/release-notes")
 		}
 	}
-	library("Kafka", "4.1.0") {
+	library("Kafka", "4.1.1") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect",
@@ -1177,7 +1177,6 @@ bom {
 				"kafka-clients" {
 					classifier = "test"
 				},
-				"kafka-log4j-appender",
 				"kafka-metadata",
 				"kafka-raft",
 				"kafka-server",
