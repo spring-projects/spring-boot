@@ -13,6 +13,6 @@
     "@springio/asciidoctor-extensions": "1.0.0-alpha.17"
   },
   "config": {
-    "ui-bundle-url": "https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.20/ui-bundle.zip"
+    "ui-bundle-url": "https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.21/ui-bundle.zip"
   }
 }
