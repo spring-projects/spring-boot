@@ -27,7 +27,7 @@ The `assemble` task is automatically configured to depend upon the `bootWar` tas
 === Packaging Executable and Deployable Wars
 
 A war file can be packaged such that it can be executed using `java -jar` and deployed to an external container.
-To do so, the embedded servlet runtime should be added to the `providedRuntime` configuration, for example:
+To do so, the embedded servlet container runtime should be added to the `providedRuntime` configuration, for example:
 
 [tabs]
 ======
@@ -45,7 +45,7 @@ include::example$packaging/war-container-dependency.gradle.kts[tags=dependencies
 ----
 ======
 
-This ensures that the runtime is packaged in the war file's `WEB-INF/lib-provided` directory from where it will not conflict with the external container's own classes.
+This ensures that the runtime jars are packaged in the war file's `WEB-INF/lib-provided` directory from where they will not conflict with the external container's own classes.
 
 NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other limitations, `compileOnly` dependencies are not on the test classpath so any web-based integration tests will fail.
 

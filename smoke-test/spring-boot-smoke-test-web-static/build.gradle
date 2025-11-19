@@ -29,7 +29,7 @@ configurations {
 dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	providedRuntime(project(":module:spring-boot-tomcat-runtime"))
+	providedRuntime( project(":starter:spring-boot-starter-tomcat-runtime"))
 
 	runtimeOnly("org.webjars:bootstrap:3.0.3")
 	runtimeOnly("org.webjars:jquery:2.0.3-1")

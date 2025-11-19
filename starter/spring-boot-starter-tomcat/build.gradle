@@ -18,10 +18,11 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for using Tomcat"
+description = "Starter for using Tomcat as the embedded servlet container"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
+	api(project(":starter:spring-boot-starter-tomcat-runtime"))
+
 	api(project(":module:spring-boot-tomcat"))
-	api("jakarta.annotation:jakarta.annotation-api")
 }

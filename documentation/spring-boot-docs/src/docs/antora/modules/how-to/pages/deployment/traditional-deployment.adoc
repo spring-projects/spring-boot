@@ -33,9 +33,9 @@ apply plugin: 'war'
 ----
 
 The final step in the process is to ensure that the embedded servlet container does not interfere with the servlet container to which the war file is deployed.
-To do so, you need to mark the embedded servlet runtime dependency as being provided.
 
-If you use Maven, the following example marks the servlet runtime (Tomcat, in this case) as being provided:
+For Maven, you need to mark the embedded servlet container dependency as being `provided`.
+For example:
 
 [source,xml]
 ----
@@ -43,20 +43,21 @@ If you use Maven, the following example marks the servlet runtime (Tomcat, in th
 	<!-- ... -->
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-tomcat-runtime</artifactId>
+		<artifactId>spring-boot-starter-tomcat</artifactId>
 		<scope>provided</scope>
 	</dependency>
 	<!-- ... -->
 </dependencies>
 ----
 
-If you use Gradle, the following example marks the servlet runtime (Tomcat, in this case) as being provided:
+If you use Gradle, you need to move only the runtime dependencies into the `providedRuntime` configuration.
+For example:
 
 [source,gradle]
 ----
 dependencies {
 	// ...
-	providedRuntime 'org.springframework.boot:spring-boot-tomcat-runtime'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat-runtime'
 	// ...
 }
 ----

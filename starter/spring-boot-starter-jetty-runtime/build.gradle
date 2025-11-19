@@ -15,34 +15,31 @@
  */
 
 plugins {
-	id "java-library"
-	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.starter"
 }
 
-description = "Spring Boot Jetty Runtime"
+description = "Starter for the Jetty runtime"
 
 dependencies {
+	api(project(":module:spring-boot-jetty")) {
+ 		transitive = false
+	}
+	api(project(":module:spring-boot-web-server")) {
+ 		transitive = false
+	}
+	api("jakarta.servlet:jakarta.servlet-api")
+	api("jakarta.websocket:jakarta.websocket-api")
+	api("jakarta.websocket:jakarta.websocket-client-api")
 	api("org.apache.tomcat.embed:tomcat-embed-el")
-	api("org.eclipse.jetty.compression:jetty-compression-gzip") {
-		exclude group: "org.slf4j",  module: "slf4j-api"
-	}
-	api("org.eclipse.jetty.compression:jetty-compression-server") {
-		exclude group: "org.slf4j",  module: "slf4j-api"
-	}
-	api("org.eclipse.jetty.ee11:jetty-ee11-servlets") {
-		exclude group: "org.slf4j",  module: "slf4j-api"
-	}
-	api("org.eclipse.jetty.ee11:jetty-ee11-webapp") {
-		exclude group: "org.slf4j",  module: "slf4j-api"
-	}
 	api("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jakarta-server") {
 		exclude group: "jakarta.el",  module: "jakarta.el-api"
 		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
-		exclude group: "org.slf4j",  module: "slf4j-api"
+		exclude group: "org.slf4j", module: "slf4j-api"
+		exclude group: "jakarta.annotation", module: "jakarta.annotation-api"
 	}
 	api("org.eclipse.jetty.ee11.websocket:jetty-ee11-websocket-jetty-server") {
 		exclude group: "jakarta.el",  module: "jakarta.el-api"
 		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
-		exclude group: "org.slf4j",  module: "slf4j-api"
+		exclude group: "org.slf4j", module: "slf4j-api"
 	}
 }

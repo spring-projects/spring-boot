@@ -22,5 +22,10 @@ description = "Starter for using Jetty as the embedded servlet container"
 
 dependencies {
 	api(project(":starter:spring-boot-starter"))
+	api(project(":starter:spring-boot-starter-jetty-runtime"))
+
 	api(project(":module:spring-boot-jetty"))
+
+	api("org.slf4j:slf4j-api")
+	api("jakarta.annotation:jakarta.annotation-api")
 }

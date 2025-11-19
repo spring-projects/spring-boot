@@ -15,13 +15,19 @@
  */
 
 plugins {
-	id "java-library"
-	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.starter"
 }
 
-description = "Spring Boot Tomcat Runtime"
+description = "Starter for the Tomcat runtime"
 
 dependencies {
+	api(project(":module:spring-boot-tomcat")) {
+ 		transitive = false
+	}
+	api(project(":module:spring-boot-web-server")) {
+ 		transitive = false
+	}
+	api("jakarta.annotation:jakarta.annotation-api")
 	api("org.apache.tomcat.embed:tomcat-embed-core") {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
 	}

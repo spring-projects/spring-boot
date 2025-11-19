@@ -23,7 +23,7 @@ apply plugin: 'io.spring.dependency-management'
 
 // tag::dependencies[]
 dependencies {
-	implementation('org.springframework.boot:spring-boot-starter-web')
-	providedRuntime('org.springframework.boot:spring-boot-tomcat-runtime')
+	implementation('org.springframework.boot:spring-boot-starter-webmvc')
+	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat-runtime')
 }
 // end::dependencies[]

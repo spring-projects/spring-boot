@@ -18,13 +18,18 @@ Many Spring Boot starters include default embedded containers.
 When switching to a different HTTP server, you need to swap the default dependencies for those that you need instead.
 To help with this process, Spring Boot provides a separate starter for each of the supported HTTP servers.
 
-The following Maven example shows how to exclude Tomcat and include Jetty for Spring MVC:
+The following example shows how to exclude Tomcat and include Jetty for Spring MVC:
 
+[tabs]
+======
+
+Maven::
++
 [source,xml]
 ----
 <dependency>
 	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-web</artifactId>
+	<artifactId>spring-boot-starter-webmvc</artifactId>
 	<exclusions>
 		<!-- Exclude the Tomcat dependency -->
 		<exclusion>
@@ -39,23 +44,70 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 	<artifactId>spring-boot-starter-jetty</artifactId>
 </dependency>
 ----
++
 
-The following Gradle example configures the necessary dependencies and a {url-gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Tomcat in place of Reactor Netty for Spring WebFlux:
-
+Gradle::
++
 [source,gradle]
 ----
 dependencies {
-	implementation "org.springframework.boot:spring-boot-starter-tomcat"
-	implementation "org.springframework.boot:spring-boot-starter-webflux"
-	modules {
-		module("org.springframework.boot:spring-boot-starter-reactor-netty") {
-			replacedBy("org.springframework.boot:spring-boot-starter-tomcat", "Use Tomcat instead of Reactor Netty")
-		}
+	implementation('org.springframework.boot:spring-boot-starter-webmvc') {
+		// Exclude the Tomcat dependency
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
 	}
+	// Use Jetty instead
+	implementation "org.springframework.boot:spring-boot-starter-jetty"
 }
 ----
++
+======
 
-NOTE: `spring-boot-starter-reactor-netty` is required to use the javadoc:org.springframework.web.reactive.function.client.WebClient[] class, so you may need to keep a dependency on Netty even when you need to include a different HTTP server.
+If you are creating a war file, you can use a similar approach, but you must indicate provided dependencies:
+
+
+[tabs]
+======
+
+Maven::
++
+[source,xml]
+----
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-webmvc</artifactId>
+	<exclusions>
+		<!-- Exclude the Tomcat dependency -->
+		<exclusion>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<!-- Use Jetty instead -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-jetty</artifactId>
+	<scope>provided</scope>
+</dependency>
+----
++
+
+Gradle::
++
+[source,gradle]
+----
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-webmvc') {
+		// Exclude the Tomcat dependency
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+	}
+	// Use Jetty instead
+	implementation "org.springframework.boot:spring-boot-starter-jetty"
+	providedRuntime "org.springframework.boot:spring-boot-starter-jetty-runtime"
+}
+----
++
+======
 
 
 
