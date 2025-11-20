@@ -53,7 +53,7 @@ import org.springframework.web.client.RestClient.Builder;
 @Documented
 @Inherited
 @ImportAutoConfiguration
-@PropertyMapping("spring.test.webclient.mockrestserviceserver")
+@PropertyMapping("spring.test.restclient.mockrestserviceserver")
 public @interface AutoConfigureMockRestServiceServer {
 
 	/**
