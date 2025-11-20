@@ -71,7 +71,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Scott Frederick
  */
-@SpringBootTest(properties = { "server.error.include-message=always", "debug=true" })
+@SpringBootTest(properties = { "spring.web.error.include-message=always", "debug=true" })
 @DirtiesContext
 class BasicErrorControllerMockMvcTests {
 

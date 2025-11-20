@@ -57,7 +57,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @see ErrorProperties
  */
 @Controller
-@RequestMapping("${server.error.path:${error.path:/error}}")
+@RequestMapping("${spring.web.error.path:${error.path:/error}}")
 public class BasicErrorController extends AbstractErrorController {
 
 	private final ErrorProperties errorProperties;

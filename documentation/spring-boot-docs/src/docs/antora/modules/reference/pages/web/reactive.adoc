@@ -325,7 +325,7 @@ Usually, you would define the properties in your `application.properties` or `ap
 Common server settings include:
 
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface address to bind to (`server.address`), and so on.
-* Error management: Location of the error page (`server.error.path`) and so on.
+* Error management: Location of the error page (configprop:spring.web.error.path[]) and so on.
 * xref:how-to:webserver.adoc#howto.webserver.configure-ssl[SSL]
 * xref:how-to:webserver.adoc#howto.webserver.enable-response-compression[HTTP compression]
 

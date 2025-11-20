@@ -286,8 +286,7 @@ class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ TomcatServletWebServerAutoConfiguration.class, LocalDevToolsAutoConfiguration.class,
-			WebProperties.class })
+	@Import({ TomcatServletWebServerAutoConfiguration.class, LocalDevToolsAutoConfiguration.class })
 	static class WebResourcesConfig {
 
 	}

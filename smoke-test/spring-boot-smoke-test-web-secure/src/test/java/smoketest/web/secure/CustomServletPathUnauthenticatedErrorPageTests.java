@@ -32,7 +32,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 		classes = { AbstractErrorPageTests.TestConfiguration.class,
 				CustomServletPathUnauthenticatedErrorPageTests.SecurityConfiguration.class,
 				SampleWebSecureApplication.class },
-		properties = { "server.error.include-message=always", "spring.security.user.name=username",
+		properties = { "spring.web.error.include-message=always", "spring.security.user.name=username",
 				"spring.security.user.password=password", "spring.mvc.servlet.path=/custom/servlet/path" })
 class CustomServletPathUnauthenticatedErrorPageTests extends AbstractUnauthenticatedErrorPageTests {
 

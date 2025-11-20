@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
@@ -50,6 +51,9 @@ public class WebProperties {
 
 	private final Resources resources = new Resources();
 
+	@NestedConfigurationProperty
+	private final ErrorProperties error = new ErrorProperties();
+
 	public @Nullable Locale getLocale() {
 		return this.locale;
 	}
@@ -64,6 +68,10 @@ public class WebProperties {
 
 	public void setLocaleResolver(LocaleResolver localeResolver) {
 		this.localeResolver = localeResolver;
+	}
+
+	public ErrorProperties getError() {
+		return this.error;
 	}
 
 	public Resources getResources() {

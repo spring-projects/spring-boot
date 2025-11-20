@@ -12,37 +12,72 @@
     {
       "name": "server.error.include-binding-errors",
       "description": "When to include \"errors\" attribute.",
-      "defaultValue": "never"
+      "defaultValue": "never",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.web.error.include-binding-errors",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "server.error.include-exception",
       "description": "Include the \"exception\" attribute.",
-      "defaultValue": false
+      "defaultValue": false,
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.web.error.include-exception",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "server.error.include-message",
       "description": "When to include the \"message\" attribute.",
-      "defaultValue": "never"
+      "defaultValue": "never",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.web.error.include-message",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "server.error.include-path",
       "description": "When to include the \"path\" attribute.",
-      "defaultValue": "always"
+      "defaultValue": "always",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.web.error.include-path",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "server.error.include-stacktrace",
       "description": "When to include the \"trace\" attribute.",
-      "defaultValue": "never"
+      "defaultValue": "never",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.web.error.include-stacktrace",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "server.error.path",
       "description": "Path of the error controller",
-      "defaultValue": "/error"
+      "defaultValue": "/error",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.web.error.path",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "server.error.whitelabel.enabled",
       "description": "Whether to enable the default error page displayed in browsers in case of a server error.",
-      "defaultValue": true 
+      "defaultValue": true ,
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.web.error.whitelabel.enabled",
+        "since": "4.0.0"
+      }
     },
     {
       "name": "server.max-http-header-size",

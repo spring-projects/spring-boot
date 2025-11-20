@@ -247,7 +247,7 @@ For more detail, see the following sections:
 
 Spring Boot installs a '`whitelabel`' error page that you see in a browser client if you encounter a server error (machine clients consuming JSON and other media types should see a sensible response with the right error code).
 
-NOTE: Set `server.error.whitelabel.enabled=false` to switch the default error page off.
+NOTE: Set configprop:spring.web.error.whitelabel.enabled[] to `false` to switch the default error page off.
 Doing so restores the default of the servlet container that you are using.
 Note that Spring Boot still tries to resolve the error view, so you should probably add your own error page rather than disabling it completely.
 

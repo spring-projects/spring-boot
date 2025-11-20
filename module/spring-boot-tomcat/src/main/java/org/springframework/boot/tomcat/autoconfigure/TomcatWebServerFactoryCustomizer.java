@@ -34,6 +34,7 @@ import org.apache.coyote.http2.Http2Protocol;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory;
@@ -77,11 +78,14 @@ public class TomcatWebServerFactoryCustomizer
 
 	private final TomcatServerProperties tomcatProperties;
 
+	private final WebProperties webProperties;
+
 	public TomcatWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
-			TomcatServerProperties tomcatProperties) {
+			TomcatServerProperties tomcatProperties, WebProperties webProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
 		this.tomcatProperties = tomcatProperties;
+		this.webProperties = webProperties;
 	}
 
 	@Override
@@ -161,7 +165,7 @@ public class TomcatWebServerFactoryCustomizer
 			.as((enable) -> !enable)
 			.to(factory::setDisableMBeanRegistry);
 		customizeStaticResources(factory);
-		customizeErrorReportValve(this.serverProperties.getError(), factory);
+		customizeErrorReportValve(this.webProperties.getError(), factory);
 		factory.setUseApr(getUseApr(this.tomcatProperties.getUseApr()));
 	}
 

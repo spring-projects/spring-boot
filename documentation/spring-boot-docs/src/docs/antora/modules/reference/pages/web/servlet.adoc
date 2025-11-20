@@ -636,7 +636,7 @@ Common server settings include:
 
 * Network settings: Listen port for incoming HTTP requests (`server.port`), interface address to bind to (`server.address`), and so on.
 * Session settings: Whether the session is persistent (`server.servlet.session.persistent`), session timeout (`server.servlet.session.timeout`), location of session data (`server.servlet.session.store-dir`), and session-cookie configuration (`server.servlet.session.cookie.*`).
-* Error management: Location of the error page (`server.error.path`) and so on.
+* Error management: Location of the error page (configprop:spring.web.error.path[]) and so on.
 * xref:how-to:webserver.adoc#howto.webserver.configure-ssl[SSL]
 * xref:how-to:webserver.adoc#howto.webserver.enable-response-compression[HTTP compression]
 

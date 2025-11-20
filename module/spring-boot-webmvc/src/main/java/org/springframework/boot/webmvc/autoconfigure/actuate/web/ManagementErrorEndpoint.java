@@ -55,7 +55,7 @@ public class ManagementErrorEndpoint {
 		this.errorProperties = errorProperties;
 	}
 
-	@RequestMapping("${server.error.path:${error.path:/error}}")
+	@RequestMapping("${spring.web.error.path:${error.path:/error}}")
 	@ResponseBody
 	public Map<String, @Nullable Object> invoke(ServletWebRequest request) {
 		return this.errorAttributes.getErrorAttributes(request, getErrorAttributeOptions(request));

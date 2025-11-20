@@ -33,7 +33,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "server.error.include-message=always" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "spring.web.error.include-message=always" })
 @AutoConfigureTestRestTemplate
 class SampleActuatorExtensionApplicationTests {
 

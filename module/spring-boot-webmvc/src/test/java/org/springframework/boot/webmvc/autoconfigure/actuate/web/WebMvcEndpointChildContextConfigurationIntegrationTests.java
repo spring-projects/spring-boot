@@ -79,8 +79,8 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 		.withUserConfiguration(SucceedingEndpoint.class, FailingEndpoint.class, FailingControllerEndpoint.class)
 		.withInitializer(new ServerPortInfoApplicationContextInitializer())
 		.withPropertyValues("server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*",
-				"server.error.include-exception=true", "server.error.include-message=always",
-				"server.error.include-binding-errors=always");
+				"spring.web.error.include-exception=true", "spring.web.error.include-message=always",
+				"spring.web.error.include-binding-errors=always");
 
 	@TempDir
 	@SuppressWarnings("NullAway.Init")
@@ -102,7 +102,8 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 
 	@Test
 	void errorPageAndErrorControllerIncludeDetails() {
-		this.runner.withPropertyValues("server.error.include-stacktrace=always", "server.error.include-message=always")
+		this.runner
+			.withPropertyValues("spring.web.error.include-stacktrace=always", "spring.web.error.include-message=always")
 			.run(withRestClient((client) -> {
 				Map<String, ?> body = client.get()
 					.uri("actuator/fail")

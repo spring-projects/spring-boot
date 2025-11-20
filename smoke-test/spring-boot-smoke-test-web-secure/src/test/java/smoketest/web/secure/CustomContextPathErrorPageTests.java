@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		classes = { AbstractErrorPageTests.TestConfiguration.class, ErrorPageTests.SecurityConfiguration.class,
 				SampleWebSecureApplication.class },
-		properties = { "server.error.include-message=always", "spring.security.user.name=username",
+		properties = { "spring.web.error.include-message=always", "spring.security.user.name=username",
 				"spring.security.user.password=password", "server.servlet.context-path=/example" })
 class CustomContextPathErrorPageTests extends AbstractErrorPageTests {
 

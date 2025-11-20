@@ -41,7 +41,6 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxAutoConfiguration;
 import org.springframework.boot.webflux.error.DefaultErrorAttributes;
@@ -181,7 +180,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void bindingResultErrorIncludeMessageAndErrors() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-message=on-param", "server.error.include-binding-errors=on-param")
+			.withPropertyValues("spring.web.error.include-message=on-param",
+					"spring.web.error.include-binding-errors=on-param")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.post()
@@ -212,7 +212,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void includeStackTraceOnParam() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=on-param")
+			.withPropertyValues("spring.web.error.include-exception=true",
+					"spring.web.error.include-stacktrace=on-param")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -237,7 +238,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void alwaysIncludeStackTrace() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=always")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-stacktrace=always")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -262,7 +263,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void neverIncludeStackTrace() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-stacktrace=never")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-stacktrace=never")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -287,7 +288,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void includeMessageOnParam() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-message=on-param")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-message=on-param")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -312,7 +313,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void alwaysIncludeMessage() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-message=always")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-message=always")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -337,7 +338,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void neverIncludeMessage() {
 		this.contextRunner
-			.withPropertyValues("server.error.include-exception=true", "server.error.include-message=never")
+			.withPropertyValues("spring.web.error.include-exception=true", "spring.web.error.include-message=never")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -361,7 +362,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 	@Test
 	void statusException() {
-		this.contextRunner.withPropertyValues("server.error.include-exception=true").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.web.error.include-exception=true").run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get()
 				.uri("/badRequest")
@@ -383,8 +384,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void defaultErrorView() {
 		this.contextRunner
-			.withPropertyValues("spring.mustache.prefix=classpath:/unknown/", "server.error.include-stacktrace=always",
-					"server.error.include-message=always")
+			.withPropertyValues("spring.mustache.prefix=classpath:/unknown/",
+					"spring.web.error.include-stacktrace=always", "spring.web.error.include-message=always")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				String body = client.get()
@@ -408,7 +409,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void escapeHtmlInDefaultErrorView() {
 		this.contextRunner
-			.withPropertyValues("spring.mustache.prefix=classpath:/unknown/", "server.error.include-message=always")
+			.withPropertyValues("spring.mustache.prefix=classpath:/unknown/", "spring.web.error.include-message=always")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				String body = client.get()
@@ -464,7 +465,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	@Test
 	void whitelabelDisabled() {
 		this.contextRunner
-			.withPropertyValues("server.error.whitelabel.enabled=false", "spring.mustache.prefix=classpath:/unknown/")
+			.withPropertyValues("spring.web.error.whitelabel.enabled=false",
+					"spring.mustache.prefix=classpath:/unknown/")
 			.run((context) -> {
 				WebTestClient client = getWebClient(context);
 				client.get()
@@ -667,12 +669,11 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 
 		@Bean
 		@Order(-1)
-		ErrorWebExceptionHandler errorWebExceptionHandler(ServerProperties serverProperties,
-				ErrorAttributes errorAttributes, WebProperties webProperties,
+		ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes, WebProperties webProperties,
 				ObjectProvider<ViewResolver> viewResolvers, ServerCodecConfigurer serverCodecConfigurer,
 				ApplicationContext applicationContext) {
 			DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
-					webProperties.getResources(), serverProperties.getError(), applicationContext) {
+					webProperties.getResources(), webProperties.getError(), applicationContext) {
 
 				@Override
 				protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {

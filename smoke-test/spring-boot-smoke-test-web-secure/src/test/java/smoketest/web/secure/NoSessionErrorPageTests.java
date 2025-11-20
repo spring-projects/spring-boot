@@ -33,7 +33,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		classes = { AbstractErrorPageTests.TestConfiguration.class, NoSessionErrorPageTests.SecurityConfiguration.class,
 				SampleWebSecureApplication.class },
-		properties = { "server.error.include-message=always", "spring.security.user.name=username",
+		properties = { "spring.web.error.include-message=always", "spring.security.user.name=username",
 				"spring.security.user.password=password" })
 class NoSessionErrorPageTests extends AbstractErrorPageTests {
 

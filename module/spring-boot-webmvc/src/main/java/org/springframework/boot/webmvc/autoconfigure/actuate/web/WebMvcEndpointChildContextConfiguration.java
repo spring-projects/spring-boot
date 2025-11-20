@@ -24,10 +24,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.boot.web.error.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletRegistrationBean;
@@ -61,14 +61,14 @@ class WebMvcEndpointChildContextConfiguration {
 	 */
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
-	ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes, ServerProperties serverProperties) {
-		return new ManagementErrorEndpoint(errorAttributes, serverProperties.getError());
+	ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes, WebProperties webProperties) {
+		return new ManagementErrorEndpoint(errorAttributes, webProperties.getError());
 	}
 
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
-	ManagementErrorPageCustomizer managementErrorPageCustomizer(ServerProperties serverProperties) {
-		return new ManagementErrorPageCustomizer(serverProperties);
+	ManagementErrorPageCustomizer managementErrorPageCustomizer(WebProperties webProperties) {
+		return new ManagementErrorPageCustomizer(webProperties);
 	}
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
@@ -115,9 +115,9 @@ class WebMvcEndpointChildContextConfiguration {
 	static class ManagementErrorPageCustomizer
 			implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
 
-		private final ServerProperties properties;
+		private final WebProperties properties;
 
-		ManagementErrorPageCustomizer(ServerProperties properties) {
+		ManagementErrorPageCustomizer(WebProperties properties) {
 			this.properties = properties;
 		}
 

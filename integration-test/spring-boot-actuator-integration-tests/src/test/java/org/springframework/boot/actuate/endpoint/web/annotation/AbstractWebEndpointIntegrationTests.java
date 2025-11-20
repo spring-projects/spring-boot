@@ -706,7 +706,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		contextCustomizer.accept(applicationContext);
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("endpointPath", endpointPath);
-		properties.put("server.error.include-message", "always");
+		properties.put("spring.web.error.include-message", "always");
 		applicationContext.getEnvironment().getPropertySources().addLast(new MapPropertySource("test", properties));
 		applicationContext.refresh();
 		try {

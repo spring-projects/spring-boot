@@ -41,12 +41,12 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.http.converter.autoconfigure.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.boot.webmvc.error.ErrorAttributes;
@@ -104,43 +104,43 @@ class BasicErrorControllerIntegrationTests {
 
 	@Test
 	void testErrorForMachineClientWithParamsTrue() {
-		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-param",
-				"--server.error.include-message=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-stacktrace=on-param",
+				"--spring.web.error.include-message=on-param");
 		exceptionWithStackTraceAndMessage("?trace=true&message=true");
 	}
 
 	@Test
 	void testErrorForMachineClientWithParamsFalse() {
-		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-param",
-				"--server.error.include-message=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-stacktrace=on-param",
+				"--spring.web.error.include-message=on-param");
 		exceptionWithoutStackTraceAndMessage("?trace=false&message=false");
 	}
 
 	@Test
 	void testErrorForMachineClientWithParamsAbsent() {
-		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-param",
-				"--server.error.include-message=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-stacktrace=on-param",
+				"--spring.web.error.include-message=on-param");
 		exceptionWithoutStackTraceAndMessage("");
 	}
 
 	@Test
 	void testErrorForMachineClientNeverParams() {
-		load("--server.error.include-exception=true", "--server.error.include-stacktrace=never",
-				"--server.error.include-message=never");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-stacktrace=never",
+				"--spring.web.error.include-message=never");
 		exceptionWithoutStackTraceAndMessage("?trace=true&message=true");
 	}
 
 	@Test
 	void testErrorForMachineClientAlwaysParams() {
-		load("--server.error.include-exception=true", "--server.error.include-stacktrace=always",
-				"--server.error.include-message=always");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-stacktrace=always",
+				"--spring.web.error.include-message=always");
 		exceptionWithStackTraceAndMessage("?trace=false&message=false");
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	void testErrorForMachineClientAlwaysParamsWithoutMessage() {
-		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/noMessage"), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
 				"No message available", "/noMessage");
@@ -164,7 +164,7 @@ class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedExceptionWithoutMessage() {
-		load("--server.error.include-exception=true");
+		load("--spring.web.error.include-exception=true");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
 		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
 				null, "/annotated");
@@ -173,7 +173,7 @@ class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedExceptionWithMessage() {
-		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
 		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
 				"Expected!", "/annotated");
@@ -182,7 +182,7 @@ class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedNoReasonExceptionWithoutMessage() {
-		load("--server.error.include-exception=true");
+		load("--spring.web.error.include-exception=true");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
 		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
 				TestConfiguration.Errors.NoReasonExpectedException.class, null, "/annotatedNoReason");
@@ -191,7 +191,7 @@ class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedNoReasonExceptionWithMessage() {
-		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
 		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
 				TestConfiguration.Errors.NoReasonExpectedException.class, "Expected message", "/annotatedNoReason");
@@ -200,7 +200,7 @@ class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings("rawtypes")
 	void testErrorForAnnotatedNoMessageExceptionWithMessage() {
-		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoMessage"), Map.class);
 		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
 				TestConfiguration.Errors.NoReasonExpectedException.class, "No message available",
@@ -209,61 +209,61 @@ class BasicErrorControllerIntegrationTests {
 
 	@Test
 	void testBindingExceptionForMachineClientWithErrorsParamTrue() {
-		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-binding-errors=on-param");
 		bindingExceptionWithErrors("?errors=true");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientWithErrorsParamFalse() {
-		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-binding-errors=on-param");
 		bindingExceptionWithoutErrors("?errors=false");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientWithErrorsParamAbsent() {
-		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-binding-errors=on-param");
 		bindingExceptionWithoutErrors("");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientAlwaysErrors() {
-		load("--server.error.include-exception=true", "--server.error.include-binding-errors=always");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-binding-errors=always");
 		bindingExceptionWithErrors("?errors=false");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientNeverErrors() {
-		load("--server.error.include-exception=true", "--server.error.include-binding-errors=never");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-binding-errors=never");
 		bindingExceptionWithoutErrors("?errors=true");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientWithMessageParamTrue() {
-		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=on-param");
 		bindingExceptionWithMessage("?message=true");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientWithMessageParamFalse() {
-		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=on-param");
 		bindingExceptionWithoutMessage("?message=false");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientWithMessageParamAbsent() {
-		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=on-param");
 		bindingExceptionWithoutMessage("");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientAlwaysMessage() {
-		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=always");
 		bindingExceptionWithMessage("?message=false");
 	}
 
 	@Test
 	void testBindingExceptionForMachineClientNeverMessage() {
-		load("--server.error.include-exception=true", "--server.error.include-message=never");
+		load("--spring.web.error.include-exception=true", "--spring.web.error.include-message=never");
 		bindingExceptionWithoutMessage("?message=true");
 	}
 
@@ -302,7 +302,7 @@ class BasicErrorControllerIntegrationTests {
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void testRequestBodyValidationForMachineClient() {
-		load("--server.error.include-exception=true");
+		load("--spring.web.error.include-exception=true");
 		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
 			.accept(MediaType.APPLICATION_JSON)
 			.contentType(MediaType.APPLICATION_JSON)
@@ -509,9 +509,9 @@ class BasicErrorControllerIntegrationTests {
 	static class CustomErrorControllerWithoutStatusConfiguration extends TestConfiguration {
 
 		@Bean
-		BasicErrorController basicErrorController(ServerProperties serverProperties, ErrorAttributes errorAttributes,
+		BasicErrorController basicErrorController(WebProperties webProperties, ErrorAttributes errorAttributes,
 				ObjectProvider<ErrorViewResolver> errorViewResolvers) {
-			return new BasicErrorController(errorAttributes, serverProperties.getError(),
+			return new BasicErrorController(errorAttributes, webProperties.getError(),
 					errorViewResolvers.orderedStream().toList()) {
 
 				@Override

@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "server.error.include-message=always")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "spring.web.error.include-message=always")
 @AutoConfigureWebTestClient
 class SampleWebFluxApplicationIntegrationTests {
 
