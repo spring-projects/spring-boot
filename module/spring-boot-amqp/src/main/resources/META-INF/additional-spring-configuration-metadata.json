@@ -14,6 +14,24 @@
       "defaultValue": true
     },
     {
+      "name": "spring.rabbitmq.listener.direct.retry.max-attempts",
+      "type": "java.lang.Long",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.rabbitmq.listener.direct.retry.max-retries",
+        "since": "4.0.0"
+      }
+    },
+    {
+      "name": "spring.rabbitmq.listener.simple.retry.max-attempts",
+      "type": "java.lang.Long",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.rabbitmq.listener.simple.retry.max-retries",
+        "since": "4.0.0"
+      }
+    },
+    {
       "name": "spring.rabbitmq.listener.simple.transaction-size",
       "type": "java.lang.Integer",
       "deprecation": {
@@ -36,6 +54,15 @@
         "replacement": "spring.rabbitmq.template.default-receive-queue",
         "level": "error",
         "since": "2.2.0"
+      }
+    },
+    {
+      "name": "spring.rabbitmq.template.retry.max-attempts",
+      "type": "java.lang.Long",
+      "deprecation": {
+        "level": "error",
+        "replacement": "spring.rabbitmq.template.retry.max-retries",
+        "since": "4.0.0"
       }
     }
   ]
