@@ -230,8 +230,16 @@ class JavaConventions {
 			CoreJavadocOptions options = (CoreJavadocOptions) javadoc.getOptions();
 			options.source("17");
 			options.encoding("UTF-8");
-			options.addStringOption("Xdoclint:none", "-quiet");
+			addValuelessOption(options, "Xdoclint:none");
+			addValuelessOption(options, "quiet");
+			if (!javadoc.getName().contains("aggregated")) {
+				addValuelessOption(options, "-no-fonts");
+			}
 		});
+	}
+
+	private void addValuelessOption(CoreJavadocOptions options, String option) {
+		options.addMultilineMultiValueOption(option).setValue(List.of(Collections.emptyList()));
 	}
 
 	private void configureJavaConventions(Project project) {
