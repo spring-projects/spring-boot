@@ -48,7 +48,7 @@ final class Jackson2TesterTestAutoConfiguration {
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnBean(ObjectMapper.class)
 	@ImportRuntimeHints(Jackson2TesterRuntimeHints.class)
-	FactoryBean<Jackson2Tester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
+	FactoryBean<Jackson2Tester<?>> jackson2TesterFactoryBean(ObjectMapper mapper) {
 		return new JsonTesterFactoryBean<>(Jackson2Tester.class, mapper);
 	}
 
