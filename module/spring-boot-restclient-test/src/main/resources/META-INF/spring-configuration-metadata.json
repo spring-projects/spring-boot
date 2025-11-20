@@ -5,12 +5,6 @@
       "type": "java.lang.Boolean",
       "description": "Whether a MockRestServiceServer should be auto-configured.",
       "defaultValue": true
-    },
-    {
-      "name": "spring.test.webclient.register-rest-template",
-      "type": "java.lang.Boolean",
-      "description": "Whether a RestTemplate bean should be registered.",
-      "defaultValue": false
     }
   ]
 }
