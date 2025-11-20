@@ -86,6 +86,8 @@ class WarPluginAction implements PluginApplicationAction {
 			.minus((developmentOnly.minus(productionRuntimeClasspath)))
 			.minus((testAndDevelopmentOnly.minus(productionRuntimeClasspath)))
 			.filter(new JarTypeFileSpec());
+		Callable<FileCollection> providedClasspath = () -> providedRuntimeConfiguration(project)
+			.filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveMainClassName = project.getTasks()
 			.named(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class);
 		TaskProvider<BootWar> bootWarProvider = project.getTasks()
@@ -93,7 +95,7 @@ class WarPluginAction implements PluginApplicationAction {
 				bootWar.setGroup(BasePlugin.BUILD_GROUP);
 				bootWar.setDescription("Assembles an executable war archive containing webapp"
 						+ " content, and the main classes and their dependencies.");
-				bootWar.providedClasspath(providedRuntimeConfiguration(project));
+				bootWar.providedClasspath(providedClasspath);
 				bootWar.setClasspath(classpath);
 				Provider<String> manifestStartClass = project
 					.provider(() -> (String) bootWar.getManifest().getAttributes().get("Start-Class"));
