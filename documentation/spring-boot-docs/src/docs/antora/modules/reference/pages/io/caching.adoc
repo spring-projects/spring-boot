@@ -142,10 +142,7 @@ spring:
 Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
 If a custom javadoc:org.infinispan.configuration.cache.ConfigurationBuilder[] bean is defined, it is used to customize the caches.
 
-To be compatible with Spring Boot's Jakarta EE 9 baseline, Infinispan's `-jakarta` modules must be used.
-For every module with a `-jakarta` variant, the variant must be used in place of the standard module.
-For example, `infinispan-core-jakarta` and `infinispan-commons-jakarta` must be used in place of `infinispan-core` and `infinispan-commons` respectively.
-
+For more details, see https://infinispan.org/docs/stable/titles/spring/spring.html[the documentation].
 
 
 [[io.caching.provider.couchbase]]
