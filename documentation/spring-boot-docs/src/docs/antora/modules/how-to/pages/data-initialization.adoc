@@ -207,41 +207,20 @@ This file will not be packaged in your uber jar or your container.
 [[howto.data-initialization.migration-tool.liquibase-tests]]
 === Use Liquibase for Test-only Migrations
 
-If you want to create Liquibase migrations which populate your test database, you have to create a test changelog which also includes the production changelog.
+If you want to create Liquibase migrations which populate your test database, you can leverage https://docs.liquibase.com/reference-guide/changelog-attributes/what-are-contexts[Liquibase contexts].
+See also the related https://www.liquibase.com/blog/contexts-vs-labels[blog post].
 
-First, you need to configure Liquibase to use a different changelog when running the tests.
-One way to do this is to create a Spring Boot `test` profile and put the Liquibase properties in there.
-For that, create a file named `src/test/resources/application-test.properties` and put the following property in there:
+In practical terms, this translates into adding a `context:@test` attribute to changesets containing test data, for example:
 
-[configprops,yaml]
+[source,sql]
 ----
-  spring:
-    liquibase:
-      change-log: "classpath:/db/changelog/db.changelog-test.yaml"
-----
+--liquibase formatted sql
 
-This configures Liquibase to use a different changelog when running in the `test` profile.
-
-Now create the changelog file at `src/test/resources/db/changelog/db.changelog-test.yaml`:
-
-[source,yaml]
-----
-databaseChangeLog:
-  - include:
-      file: classpath:/db/changelog/db.changelog-master.yaml
-  - changeSet:
-      runOrder: "last"
-      id: "test"
-      changes:
-        # Insert your changes here
+--changeset alice:1 context:@test
+insert into project (id, name) values (1, 'Spring Boot');
 ----
 
-This changelog will be used when the tests are run and it will not be packaged in your uber jar or your container.
-It includes the production changelog and then declares a new changeset, whose `runOrder: last` setting specifies that it runs after all the production changesets have been run.
-You can now use for example the https://docs.liquibase.com/change-types/insert.html[insert changeset] to insert data or the https://docs.liquibase.com/change-types/sql.html[sql changeset] to execute SQL directly.
-
-The last thing to do is to configure Spring Boot to activate the `test` profile when running tests.
-To do this, you can add the `@ActiveProfiles("test")` annotation to your javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotated test classes.
+And using `spring.liquibase.contexts=test` in environments where you would like changesets containing test data to be applied.
 
 
 
