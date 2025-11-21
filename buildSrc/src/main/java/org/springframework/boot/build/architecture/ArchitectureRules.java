@@ -421,6 +421,8 @@ final class ArchitectureRules {
 		return ArchRuleDefinition.members()
 			.that()
 			.areDeclaredInClassesThat(areRegularAutoConfiguration())
+			.and()
+			.areDeclaredInClassesThat(areNotKotlinClasses())
 			.and(areNotDefaultConstructors())
 			.and(areNotConstants())
 			.and(dontOverridePublicMethods())
@@ -440,13 +442,18 @@ final class ArchitectureRules {
 	}
 
 	static DescribedPredicate<JavaClass> areRegularAutoConfiguration() {
-		return DescribedPredicate.describe("Regular @AutoConfiguration",
+		return DescribedPredicate.describe("are regular @AutoConfiguration",
 				(javaClass) -> javaClass.isAnnotatedWith(AUTOCONFIGURATION_ANNOTATION)
 						&& !javaClass.getName().contains("TestAutoConfiguration") && !javaClass.isAnnotation());
 	}
 
+	static DescribedPredicate<JavaClass> areNotKotlinClasses() {
+		return DescribedPredicate.describe("are not Kotlin classes",
+				(javaClass) -> !javaClass.isAnnotatedWith("kotlin.Metadata"));
+	}
+
 	static DescribedPredicate<JavaClass> areTestAutoConfiguration() {
-		return DescribedPredicate.describe("Test @AutoConfiguration",
+		return DescribedPredicate.describe("are test @AutoConfiguration",
 				(javaClass) -> javaClass.isAnnotatedWith(AUTOCONFIGURATION_ANNOTATION)
 						&& javaClass.getName().contains("TestAutoConfiguration") && !javaClass.isAnnotation());
 	}

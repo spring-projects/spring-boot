@@ -30,11 +30,11 @@ public final class MyAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(SomeService.class)
-	public static class SomeServiceConfiguration {
+	static class SomeServiceConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public SomeService someService() {
+		SomeService someService() {
 			return new SomeService();
 		}
 

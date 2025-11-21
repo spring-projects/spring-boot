@@ -31,12 +31,16 @@ import org.springframework.util.ReflectionUtils;
 /**
  * Finds all configurations from auto-configurations (either nested configurations or
  * imported ones) and checks that these classes don't contain public members.
+ * <p>
+ * Kotlin classes are ignored as Kotlin does not have package-private visibility and
+ * {@code internal} isn't a good substitute.
  *
  * @author Moritz Halbritter
  */
 class AutoConfigurationChecker {
 
-	private final DescribedPredicate<JavaClass> isAutoConfiguration = ArchitectureRules.areRegularAutoConfiguration();
+	private final DescribedPredicate<JavaClass> isAutoConfiguration = ArchitectureRules.areRegularAutoConfiguration()
+		.and(ArchitectureRules.areNotKotlinClasses());
 
 	EvaluationResult check(JavaClasses javaClasses) {
 		AutoConfigurations autoConfigurations = new AutoConfigurations();
