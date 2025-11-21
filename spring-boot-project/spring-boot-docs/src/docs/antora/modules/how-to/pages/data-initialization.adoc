@@ -210,7 +210,7 @@ This file will not be packaged in your uber jar or your container.
 If you want to create Liquibase migrations which populate your test database, you can leverage https://docs.liquibase.com/reference-guide/changelog-attributes/what-are-contexts[Liquibase contexts].
 See also the related https://www.liquibase.com/blog/contexts-vs-labels[blog post].
 
-In practical terms, this translates into adding attribute `context:@test` to changesets containing test data, for example:
+In practical terms, this translates into adding a `context:@test` attribute to changesets containing test data, for example:
 
 [source,sql]
 ----
