@@ -17,6 +17,9 @@
 package org.springframework.boot.http.converter.autoconfigure;
 
 import java.util.Collection;
+import java.util.EnumSet;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 import org.jspecify.annotations.Nullable;
 
@@ -47,24 +50,32 @@ class DefaultClientHttpMessageConvertersCustomizer implements ClientHttpMessageC
 		}
 		else {
 			builder.registerDefaults();
-			this.converters.forEach((converter) -> {
-				if (converter instanceof StringHttpMessageConverter) {
-					builder.withStringConverter(converter);
-				}
-				else if (converter instanceof KotlinSerializationJsonHttpMessageConverter) {
-					builder.withKotlinSerializationJsonConverter(converter);
-				}
-				else if (supportsMediaType(converter, MediaType.APPLICATION_JSON)) {
-					builder.withJsonConverter(converter);
-				}
-				else if (supportsMediaType(converter, MediaType.APPLICATION_XML)) {
-					builder.withXmlConverter(converter);
+			EnumSet<ConverterType> registered = EnumSet.noneOf(ConverterType.class);
+			for (HttpMessageConverter<?> converter : this.converters) {
+				ConverterType type = findConverterType(converter);
+				if (type != null) {
+					if (!registered.contains(type)) {
+						type.registerWith(builder, converter);
+						registered.add(type);
+					}
+					else {
+						builder.addCustomConverter(converter);
+					}
 				}
 				else {
 					builder.addCustomConverter(converter);
 				}
-			});
+			}
 		}
+	}
+
+	private static @Nullable ConverterType findConverterType(HttpMessageConverter<?> converter) {
+		for (ConverterType type : ConverterType.values()) {
+			if (type.matches(converter)) {
+				return type;
+			}
+		}
+		return null;
 	}
 
 	private static boolean supportsMediaType(HttpMessageConverter<?> converter, MediaType mediaType) {
@@ -74,6 +85,38 @@ class DefaultClientHttpMessageConvertersCustomizer implements ClientHttpMessageC
 			}
 		}
 		return false;
+	}
+
+	private enum ConverterType {
+
+		STRING(StringHttpMessageConverter.class::isInstance, ClientBuilder::withStringConverter),
+
+		KOTLIN_SERIALIZATION_JSON(KotlinSerializationJsonHttpMessageConverter.class::isInstance,
+				ClientBuilder::withKotlinSerializationJsonConverter),
+
+		JSON(converter -> supportsMediaType(converter, MediaType.APPLICATION_JSON),
+				ClientBuilder::withJsonConverter),
+
+		XML(converter -> supportsMediaType(converter, MediaType.APPLICATION_XML), ClientBuilder::withXmlConverter);
+
+		private final Predicate<HttpMessageConverter<?>> matcher;
+
+		private final BiConsumer<ClientBuilder, HttpMessageConverter<?>> registrar;
+
+		ConverterType(Predicate<HttpMessageConverter<?>> matcher,
+				BiConsumer<ClientBuilder, HttpMessageConverter<?>> registrar) {
+			this.matcher = matcher;
+			this.registrar = registrar;
+		}
+
+		boolean matches(HttpMessageConverter<?> converter) {
+			return this.matcher.test(converter);
+		}
+
+		void registerWith(ClientBuilder builder, HttpMessageConverter<?> converter) {
+			this.registrar.accept(builder, converter);
+		}
+
 	}
 
 }
