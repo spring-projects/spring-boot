@@ -16,12 +16,13 @@
 
 package org.springframework.boot.docs.features.developingautoconfiguration.conditionannotations.classconditions
 
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 // Some conditions ...
 class MyAutoConfiguration {
 
