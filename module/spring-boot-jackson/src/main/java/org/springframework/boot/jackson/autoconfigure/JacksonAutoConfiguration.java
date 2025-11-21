@@ -66,6 +66,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.json.ProblemDetailJacksonMixin;
+import org.springframework.http.converter.json.ProblemDetailJacksonXmlMixin;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -282,7 +283,7 @@ public final class JacksonAutoConfiguration {
 
 				@Override
 				public void customize(XmlMapper.Builder builder) {
-					builder.addMixIn(ProblemDetail.class, ProblemDetailJacksonMixin.class);
+					builder.addMixIn(ProblemDetail.class, ProblemDetailJacksonXmlMixin.class);
 				}
 
 			}
