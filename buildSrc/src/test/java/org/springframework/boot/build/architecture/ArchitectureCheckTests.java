@@ -423,7 +423,7 @@ class ArchitectureCheckTests {
 
 		@Override
 		public String toString() {
-			return "checkArchitecture" + StringUtils.capitalize(this.sourceSetName);
+			return "checkArchitecture" + StringUtils.capitalize(this.sourceSetName) + "Java";
 		}
 
 	}

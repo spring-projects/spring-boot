@@ -32,7 +32,7 @@ dependencies {
 }
 
 tasks.configureEach {
-	if ("checkArchitectureMain".equals(it.name)) {
+	if ("checkArchitectureMainJava".equals(it.name)) {
 		prohibitObjectsRequireNonNull = false
 	}
 }
