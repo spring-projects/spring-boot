@@ -67,10 +67,8 @@ public final class ConfigurationMetadataRepositoryJsonBuilder {
 	 * @param inputStream the source input stream
 	 * @param charset the charset of the input
 	 * @return this builder
-	 * @throws IOException in case of I/O errors
 	 */
-	public ConfigurationMetadataRepositoryJsonBuilder withJsonResource(InputStream inputStream, Charset charset)
-			throws IOException {
+	public ConfigurationMetadataRepositoryJsonBuilder withJsonResource(InputStream inputStream, Charset charset) {
 		if (inputStream == null) {
 			throw new IllegalArgumentException("InputStream must not be null.");
 		}
