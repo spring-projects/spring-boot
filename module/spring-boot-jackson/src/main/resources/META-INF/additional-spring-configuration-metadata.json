@@ -12,7 +12,7 @@
       "name": "spring.jackson.generator",
       "deprecation": {
         "level": "error",
-        "reason": "Partially replaced by 'spring.jackson.json.read'.",
+        "reason": "Partially replaced by 'spring.jackson.json.write'.",
         "since": "4.0.0"
       }
     },
@@ -29,7 +29,7 @@
       "name": "spring.jackson.parser",
       "deprecation": {
         "level": "error",
-        "reason": "Partially replaced by 'spring.jackson.json.write'.",
+        "reason": "Partially replaced by 'spring.jackson.json.read'.",
         "since": "4.0.0"
       }
     },
