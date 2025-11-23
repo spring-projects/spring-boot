@@ -15,7 +15,7 @@ permissions: read-all
 jobs:
   build-and-deploy-docs:
     name: Build and Deploy Documentation
-    if: github.repository_owner == 'spring-projects'
+    #if: github.repository_owner == 'spring-projects'
     runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out
