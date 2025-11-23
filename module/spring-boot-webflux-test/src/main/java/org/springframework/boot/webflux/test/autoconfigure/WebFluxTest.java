@@ -78,9 +78,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  * you should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureWebTestClient @AutoConfigureWebTestClient} rather than this
  * annotation.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin

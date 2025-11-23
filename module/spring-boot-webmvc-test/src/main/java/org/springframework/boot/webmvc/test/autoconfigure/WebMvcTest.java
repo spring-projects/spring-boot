@@ -84,9 +84,6 @@ import org.springframework.test.web.servlet.MockMvc;
  * If you are looking to load your full application configuration and use MockMVC, you
  * should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} rather than this annotation.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin

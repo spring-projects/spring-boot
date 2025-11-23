@@ -59,9 +59,6 @@ import org.springframework.web.client.RestClient.Builder;
  * {@link MockRestServiceServer}. For more fine-grained control the
  * {@link AutoConfigureMockRestServiceServer @AutoConfigureMockRestServiceServer}
  * annotation can be used.
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb

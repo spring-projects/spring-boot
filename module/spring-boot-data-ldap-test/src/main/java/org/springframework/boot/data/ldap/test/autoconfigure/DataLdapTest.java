@@ -45,9 +45,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * <p>
  * By default, tests annotated with {@code @DataLdapTest} will use an embedded in-memory
  * LDAP process (if available).
- * <p>
- * When using JUnit 4, this annotation should be used in combination with
- * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Eddú Meléndez
  * @author Artsiom Yudovin
