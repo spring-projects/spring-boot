@@ -3,8 +3,6 @@
 
 Spring Boot offers several conveniences for working with {url-spring-batch-site}[Spring Batch], including running a Job on startup.
 
-If Spring Batch is available on your classpath, it is initialized through the javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation] annotation.
-
 When building a batch application, the following stores can be auto-configured:
 
 * In-memory
@@ -21,9 +19,18 @@ spring:
       table-prefix: "CUSTOM_"
 ----
 
-You can take control over Spring Batch's configuration using javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation].
-This will cause the auto-configuration to back off.
+To disable Spring Boot's auto-configuration and take complete control of Spring Batch's configuration, add javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation] to one of your javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes or extend javadoc:org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[].
+This will cause the auto-configuration to back off, including initialization of Spring Batch's database schema if you're using the JDBC-based store.
 Spring Batch can then be configured using the `@Enable*JobRepository` annotation's attributes rather than the previously described configuration properties.
+
+To learn more about manually configuring Spring Batch, see the API documentation of:
+
+* javadoc:org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[]
+* javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation]
+* javadoc:org.springframework.batch.core.configuration.annotation.EnableJdbcJobRepository[format=annotation]
+* javadoc:org.springframework.batch.core.configuration.annotation.EnableMongoJobRepository[format=annotation]
+
+For more information about Spring Batch, see the {url-spring-batch-site}[Spring Batch project page].
 
 
 
@@ -42,6 +49,5 @@ spring:
     job:
       enabled: false
 ----
-
 
 See {code-spring-boot-batch-src}/autoconfigure/BatchAutoConfiguration.java[`BatchAutoConfiguration`] and  {code-spring-boot-batch-jdbc-src}/autoconfigure/BatchJdbcAutoConfiguration.java[`BatchJdbcAutoConfiguration`] for more details.
