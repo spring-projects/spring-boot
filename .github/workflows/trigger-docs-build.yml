@@ -22,7 +22,7 @@ jobs:
       actions: write
     steps:
     - name: Check Out
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         ref: docs-build
     - name: Trigger Workflow

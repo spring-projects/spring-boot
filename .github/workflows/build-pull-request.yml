@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Build
         id: build
         uses: ./.github/actions/build

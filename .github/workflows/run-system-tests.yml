@@ -19,7 +19,7 @@ jobs:
             toolchain: true
     steps:
       - name: Check Out Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Prepare Gradle Build
         uses: ./.github/actions/prepare-gradle-build
         with:
