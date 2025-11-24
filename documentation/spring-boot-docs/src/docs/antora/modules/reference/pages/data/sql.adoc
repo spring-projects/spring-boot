@@ -346,6 +346,7 @@ The https://www.h2database.com[H2 database] provides a https://www.h2database.co
 The console is auto-configured when the following conditions are met:
 
 * You are developing a servlet-based web application.
+* `org.springframework.boot:spring-boot-h2console` added as dependency.
 * `com.h2database:h2` is on the classpath.
 * You are using xref:using/devtools.adoc[Spring Boot's developer tools].
 
