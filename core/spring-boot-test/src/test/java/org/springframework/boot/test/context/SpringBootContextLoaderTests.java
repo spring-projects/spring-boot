@@ -25,6 +25,8 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -199,10 +201,13 @@ class SpringBootContextLoaderTests {
 		assertThat(applicationContext.getEnvironment().getActiveProfiles()).isEmpty();
 	}
 
-	@Test
-	void whenUseMainMethodWhenAvailableAndMainMethod() {
-		TestContext testContext = new ExposedTestContextManager(UseMainMethodWhenAvailableAndMainMethod.class)
-			.getExposedTestContext();
+	@ParameterizedTest
+	@ValueSource(classes = { UsePublicMainMethodWhenAvailableAndMainMethod.class,
+			UsePublicParameterlessMainMethodWhenAvailableAndMainMethod.class,
+			UsePackagePrivateMainMethodWhenAvailableAndMainMethod.class,
+			UsePackagePrivateParameterlessMainMethodWhenAvailableAndMainMethod.class })
+	void whenUseMainMethodWhenAvailableAndMainMethod(Class<?> testClass) {
+		TestContext testContext = new ExposedTestContextManager(testClass).getExposedTestContext();
 		ApplicationContext applicationContext = testContext.getApplicationContext();
 		assertThat(applicationContext.getEnvironment().getActiveProfiles()).contains("frommain");
 	}
@@ -264,11 +269,11 @@ class SpringBootContextLoaderTests {
 	void whenMainMethodPresentRegisterReflectionHints() throws Exception {
 		SpringBootContextLoader contextLoader = new SpringBootContextLoader();
 		MergedContextConfiguration contextConfiguration = BootstrapUtils
-			.resolveTestContextBootstrapper(UseMainMethodWhenAvailableAndMainMethod.class)
+			.resolveTestContextBootstrapper(UsePublicMainMethodWhenAvailableAndMainMethod.class)
 			.buildMergedContextConfiguration();
 		RuntimeHints runtimeHints = new RuntimeHints();
 		contextLoader.loadContextForAotProcessing(contextConfiguration, runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(ConfigWithMain.class, "main"))
+		assertThat(RuntimeHintsPredicates.reflection().onMethodInvocation(ConfigWithPublicMain.class, "main"))
 			.accepts(runtimeHints);
 	}
 
@@ -371,12 +376,28 @@ class SpringBootContextLoaderTests {
 
 	}
 
-	@SpringBootTest(classes = ConfigWithMain.class, useMainMethod = UseMainMethod.WHEN_AVAILABLE)
-	static class UseMainMethodWhenAvailableAndMainMethod {
+	@SpringBootTest(classes = ConfigWithPublicMain.class, useMainMethod = UseMainMethod.WHEN_AVAILABLE)
+	static class UsePublicMainMethodWhenAvailableAndMainMethod {
 
 	}
 
-	@SpringBootTest(classes = ConfigWithMain.class, useMainMethod = UseMainMethod.NEVER)
+	@SpringBootTest(classes = ConfigWithPublicParameterlessMain.class, useMainMethod = UseMainMethod.WHEN_AVAILABLE)
+	static class UsePublicParameterlessMainMethodWhenAvailableAndMainMethod {
+
+	}
+
+	@SpringBootTest(classes = ConfigWithPackagePrivateMain.class, useMainMethod = UseMainMethod.WHEN_AVAILABLE)
+	static class UsePackagePrivateMainMethodWhenAvailableAndMainMethod {
+
+	}
+
+	@SpringBootTest(classes = ConfigWithPackagePrivateParameterlessMain.class,
+			useMainMethod = UseMainMethod.WHEN_AVAILABLE)
+	static class UsePackagePrivateParameterlessMainMethodWhenAvailableAndMainMethod {
+
+	}
+
+	@SpringBootTest(classes = ConfigWithPublicMain.class, useMainMethod = UseMainMethod.NEVER)
 	static class UseMainMethodNever {
 
 	}
@@ -392,7 +413,7 @@ class SpringBootContextLoaderTests {
 	}
 
 	@SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
-	@ContextHierarchy({ @ContextConfiguration(classes = ConfigWithMain.class),
+	@ContextHierarchy({ @ContextConfiguration(classes = ConfigWithPublicMain.class),
 			@ContextConfiguration(classes = AnotherConfigWithMain.class) })
 	static class UseMainMethodWithContextHierarchy {
 
@@ -423,10 +444,37 @@ class SpringBootContextLoaderTests {
 	}
 
 	@SpringBootConfiguration(proxyBeanMethods = false)
-	public static class ConfigWithMain {
+	public static class ConfigWithPublicMain {
 
 		public static void main(String[] args) {
-			new SpringApplication(ConfigWithMain.class).run("--spring.profiles.active=frommain");
+			new SpringApplication(ConfigWithPublicMain.class).run("--spring.profiles.active=frommain");
+		}
+
+	}
+
+	@SpringBootConfiguration(proxyBeanMethods = false)
+	public static class ConfigWithPublicParameterlessMain {
+
+		public static void main() {
+			new SpringApplication(ConfigWithPublicMain.class).run("--spring.profiles.active=frommain");
+		}
+
+	}
+
+	@SpringBootConfiguration(proxyBeanMethods = false)
+	public static class ConfigWithPackagePrivateMain {
+
+		static void main(String[] args) {
+			new SpringApplication(ConfigWithPublicMain.class).run("--spring.profiles.active=frommain");
+		}
+
+	}
+
+	@SpringBootConfiguration(proxyBeanMethods = false)
+	public static class ConfigWithPackagePrivateParameterlessMain {
+
+		static void main() {
+			new SpringApplication(ConfigWithPublicMain.class).run("--spring.profiles.active=frommain");
 		}
 
 	}
