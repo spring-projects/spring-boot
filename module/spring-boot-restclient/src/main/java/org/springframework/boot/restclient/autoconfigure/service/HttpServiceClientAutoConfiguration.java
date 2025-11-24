@@ -46,7 +46,7 @@ import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 @AutoConfiguration(after = { ImperativeHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class })
 @ConditionalOnClass(RestClientAdapter.class)
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
-@Conditional(NotReactiveWebApplicationCondition.class)
+@Conditional(NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition.class)
 @EnableConfigurationProperties(HttpServiceClientProperties.class)
 public final class HttpServiceClientAutoConfiguration {
 
