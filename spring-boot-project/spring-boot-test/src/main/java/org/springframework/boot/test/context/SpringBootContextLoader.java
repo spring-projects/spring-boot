@@ -17,6 +17,7 @@
 package org.springframework.boot.test.context;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -136,7 +137,14 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 			}
 			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer,
 					(application) -> configure(mergedConfig, application));
-			return hook.runMain(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
+			return hook.runMain(() -> {
+				if (mainMethod.getParameterCount() == 0) {
+					ReflectionUtils.invokeMethod(mainMethod, null);
+				}
+				else {
+					ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args });
+				}
+			});
 		}
 		SpringApplication application = getSpringApplication();
 		configure(mergedConfig, application);
@@ -172,7 +180,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	private static Method findMainMethod(Class<?> type) {
-		Method mainMethod = (type != null) ? ReflectionUtils.findMethod(type, "main", String[].class) : null;
+		Method mainMethod = (type != null) ? findMainJavaMethod(type) : null;
 		if (mainMethod == null && KotlinDetector.isKotlinPresent()) {
 			try {
 				Class<?> kotlinClass = ClassUtils.forName(type.getName() + "Kt", type.getClassLoader());
@@ -183,6 +191,30 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 			}
 		}
 		return mainMethod;
+	}
+
+	private static Method findMainJavaMethod(Class<?> type) {
+		try {
+			Method method = getMainMethod(type);
+			if (Modifier.isStatic(method.getModifiers())) {
+				method.setAccessible(true);
+				return method;
+			}
+		}
+		catch (Exception ex) {
+			// Ignore
+		}
+		return null;
+	}
+
+	private static Method getMainMethod(Class<?> type) throws NoSuchMethodException {
+		try {
+			return type.getDeclaredMethod("main", String[].class);
+		}
+		catch (NoSuchMethodException ex) {
+			return type.getDeclaredMethod("main");
+		}
+
 	}
 
 	private boolean isSpringBootConfiguration(Class<?> candidate) {
