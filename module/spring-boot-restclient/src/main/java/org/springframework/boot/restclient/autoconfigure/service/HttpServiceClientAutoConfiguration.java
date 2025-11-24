@@ -36,8 +36,7 @@ import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 
 /**
- * AutoConfiguration for Spring HTTP Service clients backed by
- * {@link RestClient}.
+ * AutoConfiguration for Spring HTTP Service clients backed by {@link RestClient}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Rossen Stoyanchev

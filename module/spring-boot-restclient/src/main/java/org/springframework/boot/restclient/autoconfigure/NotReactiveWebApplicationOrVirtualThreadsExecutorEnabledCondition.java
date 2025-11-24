@@ -28,6 +28,9 @@ import org.springframework.context.annotation.Conditional;
  * {@link SpringBootCondition} that applies when running in a non-reactive web application
  * or virtual threads are enabled.
  *
+ * Should be kept in sync with
+ * {@code org.springframework.boot.restclient.autoconfigure.service.NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition}.
+ *
  * @author Dmitry Sulman
  */
 class NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition extends AnyNestedCondition {
