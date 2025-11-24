@@ -38,13 +38,13 @@ jobs:
     runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Release Verification Tests
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: 'v0.0.14'
           repository: spring-projects/spring-boot-release-verification
           token: ${{ secrets.token }}
       - name: Check Out Send Notification Action
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: send-notification
           sparse-checkout: .github/actions/send-notification

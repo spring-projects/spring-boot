@@ -691,7 +691,7 @@ class JacksonAutoConfigurationTests {
 			problemDetail.setProperty("spring", "boot");
 			String xml = mapper.writeValueAsString(problemDetail);
 			assertThat(xml).isEqualTo(
-					"<ProblemDetail><status>404</status><title>Not Found</title><spring>boot</spring></ProblemDetail>");
+					"<problem xmlns=\"urn:ietf:rfc:7807\"><status>404</status><title>Not Found</title><spring>boot</spring></problem>");
 		});
 	}
 

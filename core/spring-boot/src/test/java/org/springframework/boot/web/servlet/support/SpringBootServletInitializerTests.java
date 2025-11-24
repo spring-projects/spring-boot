@@ -47,6 +47,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -174,6 +175,29 @@ class SpringBootServletInitializerTests {
 	void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured() {
 		try (ConfigurableApplicationContext context = new SpringApplication(ExecutableWar.class).run()) {
 			assertThat(context.getBeansOfType(ErrorPageFilter.class)).isEmpty();
+		}
+	}
+
+	@Test
+	void environmentIsConfiguredWithStandardServletEnvironment() {
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
+		given(servletContext.getInitParameterNames())
+			.willReturn(Collections.enumeration(Collections.singletonList("servlet.init.test")));
+		given(servletContext.getInitParameter("servlet.init.test")).willReturn("from-servlet-context");
+		given(servletContext.getAttributeNames())
+			.willReturn(Collections.enumeration(Collections.singletonList("servlet.attribute.test")));
+		given(servletContext.getAttribute("servlet.attribute.test")).willReturn("also-from-servlet-context");
+		try (ConfigurableApplicationContext context = (ConfigurableApplicationContext) new RegularSpringBootServletInitializer()
+			.createRootApplicationContext(servletContext)) {
+			assertThat(context).isNotNull();
+			ConfigurableEnvironment environment = context.getEnvironment();
+			assertThat(environment).isInstanceOf(StandardServletEnvironment.class);
+			assertThat(environment.getClass().getName()).endsWith("ApplicationServletEnvironment");
+			assertThat(environment.getPropertySources()).map(PropertySource::getName)
+				.contains(StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME,
+						StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME);
+			assertThat(environment.getProperty("servlet.init.test")).isEqualTo("from-servlet-context");
 		}
 	}
 
@@ -330,6 +354,15 @@ class SpringBootServletInitializerTests {
 		public SpringApplication build() {
 			this.built = true;
 			return super.build();
+		}
+
+	}
+
+	static class RegularSpringBootServletInitializer extends SpringBootServletInitializer {
+
+		@Override
+		protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+			return builder.sources(TestApp.class);
 		}
 
 	}

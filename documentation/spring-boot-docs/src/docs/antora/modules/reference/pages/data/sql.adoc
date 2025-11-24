@@ -331,6 +331,10 @@ Spring Boot will auto-configure Spring Data's JDBC repositories when the necessa
 They can be added to your project with a single dependency on `spring-boot-starter-data-jdbc`.
 If necessary, you can take control of Spring Data JDBC's configuration by adding the javadoc:org.springframework.data.jdbc.repository.config.EnableJdbcRepositories[format=annotation] annotation or an javadoc:org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration[] subclass to your application.
 
+If you're using Spring Data JDBC with xref:packaging/aot.adoc[ahead-of-time processing] (targetting either the JVM or a native image), some additional configuration is recommended.
+To prevent the need for a DB connection during AOT processing, define a `JdbcDialect` bean that's appropriate for your application's database.
+For example, if you're using Postgres, define a `JdbcPostgresDialect` bean.
+
 TIP: For complete details of Spring Data JDBC, see the {url-spring-data-jdbc-docs}[reference documentation].
 
 
