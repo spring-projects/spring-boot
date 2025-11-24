@@ -40,7 +40,7 @@ jobs:
           git config --global core.longPaths true
           Stop-Service -name Docker
       - name: Check Out Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Build
         id: build
         uses: ./.github/actions/build
