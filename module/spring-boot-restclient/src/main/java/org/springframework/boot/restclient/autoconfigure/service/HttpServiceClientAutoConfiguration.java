@@ -36,7 +36,8 @@ import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 
 /**
- * AutoConfiguration for Spring HTTP Service clients backed by {@link RestClient}.
+ * AutoConfiguration for Spring HTTP Service clients backed by
+ * {@link RestClient}.
  *
  * @author Olga Maciaszek-Sharma
  * @author Rossen Stoyanchev
@@ -46,7 +47,7 @@ import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 @AutoConfiguration(after = { ImperativeHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class })
 @ConditionalOnClass(RestClientAdapter.class)
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
-@Conditional(NotReactiveWebApplicationCondition.class)
+@Conditional(NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition.class)
 @EnableConfigurationProperties(HttpServiceClientProperties.class)
 public final class HttpServiceClientAutoConfiguration {
 

@@ -35,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 
 import org.springframework.aop.Advisor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
@@ -43,6 +44,7 @@ import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeH
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -54,10 +56,12 @@ import org.springframework.web.client.RestClient.Builder;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.registry.HttpServiceGroup;
+import org.springframework.web.service.registry.HttpServiceGroup.ClientType;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.ClientCallback;
 import org.springframework.web.service.registry.HttpServiceGroupConfigurer.Groups;
 import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 import org.springframework.web.service.registry.ImportHttpServices;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -217,6 +221,23 @@ class HttpServiceClientAutoConfigurationTests {
 			.run((context) -> assertThat(context).doesNotHaveBean(HttpServiceProxyRegistry.class));
 	}
 
+	@Test
+	void restClientServiceClientsApplyPropertiesWhenReactiveWithVirtualThreads() {
+		new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HttpServiceClientAutoConfiguration.class,
+					ImperativeHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class,
+					TaskExecutionAutoConfiguration.class))
+			.withPropertyValues("spring.threads.virtual.enabled=true",
+					"spring.http.serviceclient.echo.base-url=https://example.com")
+			.withUserConfiguration(ReactiveHttpClientConfiguration.class)
+			.run((context) -> {
+				RestClient restClient = getRestClient(context.getBean(ReactiveTestClient.class));
+				UriComponentsBuilder baseUri = (UriComponentsBuilder) Extractors.byName("uriBuilderFactory.baseUri")
+					.apply(restClient);
+				assertThat(baseUri.build().toUriString()).isEqualTo("https://example.com");
+			});
+	}
+
 	private HttpClient getJdkHttpClient(Object proxy) {
 		return (HttpClient) Extractors.byName("clientRequestFactory.httpClient").apply(getRestClient(proxy));
 	}
@@ -312,6 +333,19 @@ class HttpServiceClientAutoConfigurationTests {
 
 		@GetExchange("/there")
 		String there();
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ImportHttpServices(types = ReactiveTestClient.class, clientType = ClientType.REST_CLIENT, group = "echo")
+	static class ReactiveHttpClientConfiguration {
+
+	}
+
+	interface ReactiveTestClient {
+
+		@GetExchange("/echo")
+		String echo();
 
 	}
 
