@@ -24,6 +24,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }
 

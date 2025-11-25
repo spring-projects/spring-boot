@@ -24,6 +24,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-security-oauth2-authorization-server"))
 
 	testImplementation(project(":starter:spring-boot-starter-security-oauth2-authorization-server-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }
 

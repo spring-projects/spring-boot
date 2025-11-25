@@ -28,4 +28,5 @@ dependencies {
 	runtimeOnly("jakarta.xml.bind:jakarta.xml.bind-api")
 
 	testImplementation(project(":starter:spring-boot-starter-jersey-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 }

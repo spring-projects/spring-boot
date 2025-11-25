@@ -24,6 +24,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-hateoas"))
 
 	testImplementation(project(":starter:spring-boot-starter-hateoas-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 }
 
 tasks.named("compileTestJava") {

@@ -28,10 +28,10 @@ description = "Spring Boot RestTestClient"
 dependencies {
 	api(project(":core:spring-boot-test"))
 	api(project(":module:spring-boot-http-converter"))
-	api(project(":module:spring-boot-restclient"))
 	api("org.springframework:spring-web")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":module:spring-boot-restclient"))
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
 	optional("org.jetbrains.kotlin:kotlin-reflect")

@@ -23,8 +23,8 @@ description = "Spring Boot Tomcat smoke test"
 dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
-	testImplementation(project(":module:spring-boot-resttestclient"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 }
 
 tasks.named("compileTestJava") {

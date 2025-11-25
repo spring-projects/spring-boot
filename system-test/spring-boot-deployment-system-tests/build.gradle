@@ -41,6 +41,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-actuator"))
 
 	systemTestImplementation(enforcedPlatform(project(path: ":platform:spring-boot-internal-dependencies")))
+	systemTestImplementation(project(":module:spring-boot-restclient"))
 	systemTestImplementation(project(":module:spring-boot-resttestclient"))
 	systemTestImplementation(project(":starter:spring-boot-starter-test"))
 	systemTestImplementation(project(":test-support:spring-boot-test-support"))

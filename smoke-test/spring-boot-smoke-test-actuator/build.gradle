@@ -32,6 +32,7 @@ dependencies {
 
 	testImplementation(project(":starter:spring-boot-starter-actuator-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 
 	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }

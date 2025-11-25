@@ -30,6 +30,7 @@ dependencies {
 
 	testImplementation(project(":starter:spring-boot-starter-quartz-test"))
 	testImplementation(project(":starter:spring-boot-starter-webmvc-test"))
+	testImplementation(project(":module:spring-boot-restclient"))
 	testImplementation("org.awaitility:awaitility")
 }
 
