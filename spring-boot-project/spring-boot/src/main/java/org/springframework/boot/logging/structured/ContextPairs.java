@@ -52,12 +52,12 @@ public class ContextPairs {
 	/**
 	 * Add pairs using flat naming.
 	 * @param <T> the item type
-	 * @param delimeter the delimiter used if there is a prefix
+	 * @param delimiter the delimiter used if there is a prefix
 	 * @param pairs callback to add all the pairs
 	 * @return a {@link BiConsumer} for use with the {@link JsonWriter}
 	 */
-	public <T> BiConsumer<T, BiConsumer<String, Object>> flat(String delimeter, Consumer<Pairs<T>> pairs) {
-		return flat(joinWith(delimeter), pairs);
+	public <T> BiConsumer<T, BiConsumer<String, Object>> flat(String delimiter, Consumer<Pairs<T>> pairs) {
+		return flat(joinWith(delimiter), pairs);
 	}
 
 	/**
@@ -86,12 +86,12 @@ public class ContextPairs {
 		};
 	}
 
-	private BinaryOperator<String> joinWith(String delimeter) {
+	private BinaryOperator<String> joinWith(String delimiter) {
 		return (prefix, name) -> {
-			StringBuilder joined = new StringBuilder(prefix.length() + delimeter.length() + name.length());
+			StringBuilder joined = new StringBuilder(prefix.length() + delimiter.length() + name.length());
 			joined.append(prefix);
-			if (!prefix.isEmpty() && !prefix.endsWith(delimeter) && !name.startsWith(delimeter)) {
-				joined.append(delimeter);
+			if (!prefix.isEmpty() && !prefix.endsWith(delimiter) && !name.startsWith(delimiter)) {
+				joined.append(delimiter);
 			}
 			joined.append(name);
 			return joined.toString();
