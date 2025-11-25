@@ -28,6 +28,7 @@ dependencies {
 	implementation(project(":starter:spring-boot-starter-webmvc"))
 
 	dockerTestImplementation(project(":core:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":module:spring-boot-restclient"))
 	dockerTestImplementation(project(":starter:spring-boot-starter-session-data-redis-test"))
 	dockerTestImplementation(project(":starter:spring-boot-starter-webmvc-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
