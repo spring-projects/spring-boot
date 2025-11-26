@@ -25,7 +25,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.jackson.example.SomeResponseBody;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
+import org.springframework.boot.actuate.web.mappings.MappingsEndpoint.ApplicationMappingsDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -89,6 +92,23 @@ class JacksonEndpointAutoConfigurationTests {
 			String json = jsonMapper.writeValueAsString(map);
 			assertThat(json).isEqualTo("{}");
 		});
+	}
+
+	@Test
+	void endpointShouldDeserializeOperationResponseBodies() {
+		this.runner.run((context) -> {
+			JsonMapper jsonMapper = context.getBean(EndpointJsonMapper.class).get();
+			String json = """
+					{
+					"value1": "a",
+					"value2": "b",
+					}
+					""";
+			SomeResponseBody responseBody = jsonMapper.readValue(json, SomeResponseBody.class);
+			assertThat(responseBody.getValue1()).isEqualTo("a");
+			assertThat(responseBody.getValue2()).isEqualTo("b");
+		});
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

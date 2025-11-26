@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jackson;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -42,6 +43,7 @@ public final class JacksonEndpointAutoConfiguration {
 		JsonMapper jsonMapper = JsonMapper.builder()
 			.changeDefaultPropertyInclusion(
 					(value) -> value.withValueInclusion(Include.NON_NULL).withContentInclusion(Include.NON_NULL))
+			.changeDefaultVisibility(vc -> vc.withCreatorVisibility(Visibility.NON_PRIVATE))
 			.build();
 		return () -> jsonMapper;
 	}
