@@ -55,7 +55,7 @@ NOTE: To get the server to render XML instead of JSON, you might have to send an
 [[howto.spring-mvc.customize-jackson-jsonmapper]]
 == Customize the Jackson JsonMapper
 
-You can configure the javadoc:tools.jackson.databind.JsonMapper[] by using the environment.
+You can configure the javadoc:tools.jackson.databind.json.JsonMapper[] by using the environment.
 Jackson provides an extensive suite of on/off features that can be used to configure various aspects of its processing.
 These features are described in several enums (in Jackson) that map onto properties in the environment:
 
@@ -82,11 +82,11 @@ These features are described in several enums (in Jackson) that map onto propert
 | `spring.jackson.deserialization.<feature_name>`
 | `true`, `false`
 
-| javadoc:tools.jackson.core.JsonReadFeature[]
+| javadoc:tools.jackson.core.json.JsonReadFeature[]
 | `spring.jackson.json.read.<feature_name>`
 | `true`, `false`
 
-| javadoc:tools.jackson.core.JsonWriteFeature[]
+| javadoc:tools.jackson.core.json.JsonWriteFeature[]
 | `spring.jackson.json.write.<feature_name>`
 | `true`, `false`
 
@@ -102,19 +102,19 @@ These features are described in several enums (in Jackson) that map onto propert
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
 Note that, thanks to the use of xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding[relaxed binding], the case of `indent_output` does not have to match the case of the corresponding enum constant, which is `INDENT_OUTPUT`.
 
-This environment-based configuration is applied to the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[] bean and applies to any mappers created by using the builder, including the auto-configured javadoc:tools.jackson.databind.json.JsonMapper[] bean.
+This environment-based configuration is applied to the auto-configured javadoc:tools.jackson.databind.json.JsonMapper$Builder[] bean and applies to any mappers created by using the builder, including the auto-configured javadoc:tools.jackson.databind.json.JsonMapper[] bean.
 
 To ease the migration when working on an application that previously used Jackson 2, the auto-configured `JsonMapper` can be configured to use defaults that are as close as possible to those that Spring Boot used for Jackson 2. To enable these defaults, set configprop:spring.jackson.use-jackson2-defaults[] to `true`.
 
-The context's javadoc:tools.jackson.databind.json.JsonMapper.Builder[] can be customized by one or more javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
+The context's javadoc:tools.jackson.databind.json.JsonMapper$Builder[] can be customized by one or more javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
 Such customizer beans can be ordered (Boot's own customizer has an order of 0), letting additional customization be applied both before and after Boot's customization.
 
-Any beans of type javadoc:tools.jackson.databind.JacksonModule[] are automatically registered with the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[] and are applied to any javadoc:tools.jackson.databind.json.JsonMapper[] instances that it creates.
+Any beans of type javadoc:tools.jackson.databind.JacksonModule[] are automatically registered with the auto-configured javadoc:tools.jackson.databind.json.JsonMapper$Builder[] and are applied to any javadoc:tools.jackson.databind.json.JsonMapper[] instances that it creates.
 This provides an application-wide mechanism for contributing custom modules when you add new features to your application.
 
-Any modules that participate in the Java `ServiceLoader` mechanism are, by default, found and added to the auto-configured javadoc:tools.jackson.databind.json.JsonMapper.Builder[]. To disable this behavior, set configprop:spring.jackson.find-and-add-modules[] to `false`.
+Any modules that participate in the Java `ServiceLoader` mechanism are, by default, found and added to the auto-configured javadoc:tools.jackson.databind.json.JsonMapper$Builder[]. To disable this behavior, set configprop:spring.jackson.find-and-add-modules[] to `false`.
 
-If you want to replace the default javadoc:tools.jackson.databind.json.JsonMapper[] completely, either define a javadoc:org.springframework.context.annotation.Bean[format=annotation] of that type or, if you prefer the builder-based approach, define a javadoc:tools.jackson.databind.json.JsonMapper.Builder[] javadoc:org.springframework.context.annotation.Bean[format=annotation].
+If you want to replace the default javadoc:tools.jackson.databind.json.JsonMapper[] completely, either define a javadoc:org.springframework.context.annotation.Bean[format=annotation] of that type or, if you prefer the builder-based approach, define a javadoc:tools.jackson.databind.json.JsonMapper$Builder[] javadoc:org.springframework.context.annotation.Bean[format=annotation].
 When defining an javadoc:tools.jackson.databind.json.JsonMapper[] bean, marking it as javadoc:org.springframework.context.annotation.Primary[format=annotation] is recommended as the auto-configuration's javadoc:tools.jackson.databind.json.JsonMapper[] that it will replace is javadoc:org.springframework.context.annotation.Primary[format=annotation].
 Note that, in either case, doing so disables all auto-configuration of the javadoc:tools.jackson.databind.json.JsonMapper[].
 

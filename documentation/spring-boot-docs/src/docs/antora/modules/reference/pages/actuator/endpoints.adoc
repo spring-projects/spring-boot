@@ -245,7 +245,7 @@ A typical Spring Security configuration might look something like the following 
 include-code::typical/MySecurityConfiguration[]
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
-Several other matcher methods are also available on javadoc:org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest[].
+Several other matcher methods are also available on javadoc:org.springframework.boot.security.autoconfigure.actuate.web.servlet.EndpointRequest[].
 See the xref:api:rest/actuator/index.adoc[API documentation] for details.
 
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
@@ -594,17 +594,17 @@ You can configure the roles by using the configprop:management.endpoint.health.r
 
 NOTE: If you have secured your application and wish to use `always`, your security configuration must permit access to the health endpoint for both authenticated and unauthenticated users.
 
-Health information is collected from the content of a javadoc:org.springframework.boot.health.registry.HealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.actuate.health.HealthContributor[] instances defined in your javadoc:org.springframework.context.ApplicationContext[]).
-Spring Boot includes a number of auto-configured javadoc:org.springframework.boot.actuate.health.HealthContributor[] beans, and you can also write your own.
+Health information is collected from the content of a javadoc:org.springframework.boot.health.registry.HealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.health.contributor.HealthContributor[] instances defined in your javadoc:org.springframework.context.ApplicationContext[]).
+Spring Boot includes a number of auto-configured javadoc:org.springframework.boot.health.contributor.HealthContributor[] beans, and you can also write your own.
 
-A javadoc:org.springframework.boot.actuate.health.HealthContributor[] can be either a javadoc:org.springframework.boot.actuate.health.HealthIndicator[] or a javadoc:org.springframework.boot.actuate.health.CompositeHealthContributor[].
-A javadoc:org.springframework.boot.actuate.health.HealthIndicator[] provides actual health information, including a javadoc:org.springframework.boot.actuate.health.Status[].
-A javadoc:org.springframework.boot.actuate.health.CompositeHealthContributor[] provides a composite of other javadoc:org.springframework.boot.actuate.health.HealthContributor[] instances.
+A javadoc:org.springframework.boot.health.contributor.HealthContributor[] can be either a javadoc:org.springframework.boot.health.contributor.HealthIndicator[] or a javadoc:org.springframework.boot.health.contributor.CompositeHealthContributor[].
+A javadoc:org.springframework.boot.health.contributor.HealthIndicator[] provides actual health information, including a javadoc:org.springframework.boot.health.contributor.Status[].
+A javadoc:org.springframework.boot.health.contributor.CompositeHealthContributor[] provides a composite of other javadoc:org.springframework.boot.health.contributor.HealthContributor[] instances.
 Taken together, contributors form a tree structure to represent the overall system health.
 
-By default, the final system health is derived by a javadoc:org.springframework.boot.actuate.health.StatusAggregator[], which sorts the statuses from each javadoc:org.springframework.boot.actuate.health.HealthIndicator[] based on an ordered list of statuses.
+By default, the final system health is derived by a javadoc:org.springframework.boot.health.actuate.endpoint.StatusAggregator[], which sorts the statuses from each javadoc:org.springframework.boot.health.contributor.HealthIndicator[] based on an ordered list of statuses.
 The first status in the sorted list is used as the overall health status.
-If no javadoc:org.springframework.boot.actuate.health.HealthIndicator[] returns a status that is known to the javadoc:org.springframework.boot.actuate.health.StatusAggregator[], an `UNKNOWN` status is used.
+If no javadoc:org.springframework.boot.health.contributor.HealthIndicator[] returns a status that is known to the javadoc:org.springframework.boot.health.actuate.endpoint.StatusAggregator[], an `UNKNOWN` status is used.
 
 TIP: You can use the javadoc:org.springframework.boot.health.registry.HealthContributorRegistry[] to register and unregister health indicators at runtime.
 
@@ -613,7 +613,7 @@ TIP: You can use the javadoc:org.springframework.boot.health.registry.HealthCont
 [[actuator.endpoints.health.auto-configured-health-indicators]]
 === Auto-configured HealthIndicators
 
-When appropriate, Spring Boot auto-configures the javadoc:org.springframework.boot.actuate.health.HealthIndicator[] beans listed in the following table.
+When appropriate, Spring Boot auto-configures the javadoc:org.springframework.boot.health.contributor.HealthIndicator[] beans listed in the following table.
 You can also enable or disable selected indicators by configuring `management.health.key.enabled`,
 with the `key` listed in the following table:
 
@@ -622,47 +622,47 @@ with the `key` listed in the following table:
 | Key | Name | Description
 
 | `cassandra`
-| javadoc:org.springframework.boot.actuate.cassandra.CassandraDriverHealthIndicator[]
+| javadoc:org.springframework.boot.cassandra.health.CassandraDriverHealthIndicator[]
 | Checks that a Cassandra database is up.
 
 | `couchbase`
-| javadoc:org.springframework.boot.actuate.couchbase.CouchbaseHealthIndicator[]
+| javadoc:org.springframework.boot.couchbase.health.CouchbaseHealthIndicator[]
 | Checks that a Couchbase cluster is up.
 
 | `db`
-| javadoc:org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator[]
+| javadoc:org.springframework.boot.jdbc.health.DataSourceHealthIndicator[]
 | Checks that a connection to javadoc:javax.sql.DataSource[] can be obtained.
 
 | `diskspace`
-| javadoc:org.springframework.boot.health.info.DiskSpaceHealthIndicator[]
+| javadoc:org.springframework.boot.health.application.DiskSpaceHealthIndicator[]
 | Checks for low disk space.
 
 | `elasticsearch`
-| javadoc:org.springframework.boot.actuate.elasticsearch.ElasticsearchRestClientHealthIndicator[]
+| javadoc:org.springframework.boot.elasticsearch.health.ElasticsearchRestClientHealthIndicator[]
 | Checks that an Elasticsearch cluster is up.
 
 | `hazelcast`
-| javadoc:org.springframework.boot.actuate.hazelcast.HazelcastHealthIndicator[]
+| javadoc:org.springframework.boot.hazelcast.health.HazelcastHealthIndicator[]
 | Checks that a Hazelcast server is up.
 
 | `jms`
-| javadoc:org.springframework.boot.actuate.jms.JmsHealthIndicator[]
+| javadoc:org.springframework.boot.jms.health.JmsHealthIndicator[]
 | Checks that a JMS broker is up.
 
 | `ldap`
-| javadoc:org.springframework.boot.actuate.ldap.LdapHealthIndicator[]
+| javadoc:org.springframework.boot.ldap.health.LdapHealthIndicator[]
 | Checks that an LDAP server is up.
 
 | `mail`
-| javadoc:org.springframework.boot.actuate.mail.MailHealthIndicator[]
+| javadoc:org.springframework.boot.mail.health.MailHealthIndicator[]
 | Checks that a mail server is up.
 
 | `mongo`
-| javadoc:org.springframework.boot.actuate.data.mongo.MongoHealthIndicator[]
+| javadoc:org.springframework.boot.mongodb.health.MongoHealthIndicator[]
 | Checks that a Mongo database is up.
 
 | `neo4j`
-| javadoc:org.springframework.boot.actuate.neo4j.Neo4jHealthIndicator[]
+| javadoc:org.springframework.boot.neo4j.health.Neo4jHealthIndicator[]
 | Checks that a Neo4j database is up.
 
 | `ping`
@@ -670,25 +670,25 @@ with the `key` listed in the following table:
 | Always responds with `UP`.
 
 | `rabbit`
-| javadoc:org.springframework.boot.actuate.amqp.RabbitHealthIndicator[]
+| javadoc:org.springframework.boot.amqp.health.RabbitHealthIndicator[]
 | Checks that a Rabbit server is up.
 
 | `redis`
-| javadoc:org.springframework.boot.actuate.data.redis.RedisHealthIndicator[]
+| javadoc:org.springframework.boot.data.redis.health.DataRedisHealthIndicator[]
 | Checks that a Redis server is up.
 
 | `ssl`
-| javadoc:org.springframework.boot.health.info.SslHealthIndicator[]
+| javadoc:org.springframework.boot.health.application.SslHealthIndicator[]
 | Checks that SSL certificates are ok.
 |===
 
 TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.
 
-TIP: The `ssl` javadoc:org.springframework.boot.actuate.health.HealthIndicator[] has a "warning threshold" property named configprop:management.health.ssl.certificate-validity-warning-threshold[].
+TIP: The `ssl` javadoc:org.springframework.boot.health.contributor.HealthIndicator[] has a "warning threshold" property named configprop:management.health.ssl.certificate-validity-warning-threshold[].
 You can use this threshold to give yourself enough lead time to rotate the soon-to-be-expired certificate.
-If an SSL certificate will become invalid within the period defined by this threshold, the javadoc:org.springframework.boot.actuate.health.HealthIndicator[] will report this in the details section of its response where `details.validChains.certificates.[*].validity.status` will have the value `WILL_EXPIRE_SOON`.
+If an SSL certificate will become invalid within the period defined by this threshold, the javadoc:org.springframework.boot.health.contributor.HealthIndicator[] will report this in the details section of its response where `details.validChains.certificates.[*].validity.status` will have the value `WILL_EXPIRE_SOON`.
 
-Additional javadoc:org.springframework.boot.actuate.health.HealthIndicator[] beans are enabled by default:
+Additional javadoc:org.springframework.boot.health.contributor.HealthIndicator[] beans are enabled by default:
 
 [cols="3,4,6"]
 |===
@@ -710,24 +710,24 @@ These can be disabled by using the configprop:management.endpoint.health.probes.
 [[actuator.endpoints.health.writing-custom-health-indicators]]
 === Writing Custom HealthIndicators
 
-To provide custom health information, you can register Spring beans that implement the javadoc:org.springframework.boot.actuate.health.HealthIndicator[] interface.
-You need to provide an implementation of the `health()` method and return a javadoc:org.springframework.boot.actuate.health.Health[] response.
-The javadoc:org.springframework.boot.actuate.health.Health[] response should include a status and can optionally include additional details to be displayed.
-The following code shows a sample javadoc:org.springframework.boot.actuate.health.HealthIndicator[] implementation:
+To provide custom health information, you can register Spring beans that implement the javadoc:org.springframework.boot.health.contributor.HealthIndicator[] interface.
+You need to provide an implementation of the `health()` method and return a javadoc:org.springframework.boot.health.contributor.Health[] response.
+The javadoc:org.springframework.boot.health.contributor.Health[] response should include a status and can optionally include additional details to be displayed.
+The following code shows a sample javadoc:org.springframework.boot.health.contributor.HealthIndicator[] implementation:
 
 include-code::MyHealthIndicator[]
 
-NOTE: The identifier for a given javadoc:org.springframework.boot.actuate.health.HealthIndicator[] is the name of the bean without the javadoc:org.springframework.boot.actuate.health.HealthIndicator[] suffix, if it exists.
+NOTE: The identifier for a given javadoc:org.springframework.boot.health.contributor.HealthIndicator[] is the name of the bean without the javadoc:org.springframework.boot.health.contributor.HealthIndicator[] suffix, if it exists.
 In the preceding example, the health information is available in an entry named `my`.
 
 TIP: Health indicators are usually called over HTTP and need to respond before any connection timeouts.
 Spring Boot will log a warning message for any health indicator that takes longer than 10 seconds to respond.
 If you want to configure this threshold, you can use the configprop:management.endpoint.health.logging.slow-indicator-threshold[] property.
 
-In addition to Spring Boot's predefined javadoc:org.springframework.boot.actuate.health.Status[] types, javadoc:org.springframework.boot.actuate.health.Health[] can return a custom javadoc:org.springframework.boot.actuate.health.Status[] that represents a new system state.
-In such cases, you also need to provide a custom implementation of the javadoc:org.springframework.boot.actuate.health.StatusAggregator[] interface, or you must configure the default implementation by using the configprop:management.endpoint.health.status.order[] configuration property.
+In addition to Spring Boot's predefined javadoc:org.springframework.boot.health.contributor.Status[] types, javadoc:org.springframework.boot.health.contributor.Health[] can return a custom javadoc:org.springframework.boot.health.contributor.Status[] that represents a new system state.
+In such cases, you also need to provide a custom implementation of the javadoc:org.springframework.boot.health.actuate.endpoint.StatusAggregator[] interface, or you must configure the default implementation by using the configprop:management.endpoint.health.status.order[] configuration property.
 
-For example, assume a new javadoc:org.springframework.boot.actuate.health.Status[] with a code of `FATAL` is being used in one of your javadoc:org.springframework.boot.actuate.health.HealthIndicator[] implementations.
+For example, assume a new javadoc:org.springframework.boot.health.contributor.Status[] with a code of `FATAL` is being used in one of your javadoc:org.springframework.boot.health.contributor.HealthIndicator[] implementations.
 To configure the severity order, add the following property to your application properties:
 
 [configprops,yaml]
@@ -759,7 +759,7 @@ management:
           out-of-service: 503
 ----
 
-TIP: If you need more control, you can define your own javadoc:org.springframework.boot.actuate.health.HttpCodeStatusMapper[] bean.
+TIP: If you need more control, you can define your own javadoc:org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper[] bean.
 
 The following table shows the default status mappings for the built-in statuses:
 
@@ -785,58 +785,58 @@ The following table shows the default status mappings for the built-in statuses:
 [[actuator.endpoints.health.reactive-health-indicators]]
 === Reactive Health Indicators
 
-For reactive applications, such as those that use Spring WebFlux, javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributor[] provides a non-blocking contract for getting application health.
-Similar to a traditional javadoc:org.springframework.boot.actuate.health.HealthContributor[], health information is collected from the content of a javadoc:org.springframework.boot.health.registry.ReactiveHealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.actuate.health.HealthContributor[] and javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributor[] instances defined in your javadoc:org.springframework.context.ApplicationContext[]).
-Regular javadoc:org.springframework.boot.actuate.health.HealthContributor[] instances that do not check against a reactive API are executed on the elastic scheduler.
+For reactive applications, such as those that use Spring WebFlux, javadoc:org.springframework.boot.health.contributor.ReactiveHealthContributor[] provides a non-blocking contract for getting application health.
+Similar to a traditional javadoc:org.springframework.boot.health.contributor.HealthContributor[], health information is collected from the content of a javadoc:org.springframework.boot.health.registry.ReactiveHealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.health.contributor.HealthContributor[] and javadoc:org.springframework.boot.health.contributor.ReactiveHealthContributor[] instances defined in your javadoc:org.springframework.context.ApplicationContext[]).
+Regular javadoc:org.springframework.boot.health.contributor.HealthContributor[] instances that do not check against a reactive API are executed on the elastic scheduler.
 
 TIP: In a reactive application, you should use the javadoc:org.springframework.boot.health.registry.ReactiveHealthContributorRegistry[] to register and unregister health indicators at runtime.
-If you need to register a regular javadoc:org.springframework.boot.actuate.health.HealthContributor[], you should wrap it with `ReactiveHealthContributor#adapt`.
+If you need to register a regular javadoc:org.springframework.boot.health.contributor.HealthContributor[], you should wrap it with `ReactiveHealthContributor#adapt`.
 
-To provide custom health information from a reactive API, you can register Spring beans that implement the javadoc:org.springframework.boot.actuate.health.ReactiveHealthIndicator[] interface.
-The following code shows a sample javadoc:org.springframework.boot.actuate.health.ReactiveHealthIndicator[] implementation:
+To provide custom health information from a reactive API, you can register Spring beans that implement the javadoc:org.springframework.boot.health.contributor.ReactiveHealthIndicator[] interface.
+The following code shows a sample javadoc:org.springframework.boot.health.contributor.ReactiveHealthIndicator[] implementation:
 
 include-code::MyReactiveHealthIndicator[]
 
-TIP: To handle the error automatically, consider extending from javadoc:org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator[].
+TIP: To handle the error automatically, consider extending from javadoc:org.springframework.boot.health.contributor.AbstractReactiveHealthIndicator[].
 
 
 
 [[actuator.endpoints.health.auto-configured-reactive-health-indicators]]
 === Auto-configured ReactiveHealthIndicators
 
-When appropriate, Spring Boot auto-configures the following javadoc:org.springframework.boot.actuate.health.ReactiveHealthIndicator[] beans:
+When appropriate, Spring Boot auto-configures the following javadoc:org.springframework.boot.health.contributor.ReactiveHealthIndicator[] beans:
 
 [cols="2,4,6"]
 |===
 | Key | Name | Description
 
 | `cassandra`
-| javadoc:org.springframework.boot.actuate.cassandra.CassandraDriverReactiveHealthIndicator[]
+| javadoc:org.springframework.boot.cassandra.health.CassandraDriverReactiveHealthIndicator[]
 | Checks that a Cassandra database is up.
 
 | `couchbase`
-| javadoc:org.springframework.boot.actuate.couchbase.CouchbaseReactiveHealthIndicator[]
+| javadoc:org.springframework.boot.couchbase.health.CouchbaseReactiveHealthIndicator[]
 | Checks that a Couchbase cluster is up.
 
 | `elasticsearch`
-| javadoc:org.springframework.boot.actuate.data.elasticsearch.ElasticsearchReactiveHealthIndicator[]
+| javadoc:org.springframework.boot.data.elasticsearch.health.DataElasticsearchReactiveHealthIndicator[]
 | Checks that an Elasticsearch cluster is up.
 
 | `mongo`
-| javadoc:org.springframework.boot.actuate.data.mongo.MongoReactiveHealthIndicator[]
+| javadoc:org.springframework.boot.mongodb.health.MongoReactiveHealthIndicator[]
 | Checks that a Mongo database is up.
 
 | `neo4j`
-| javadoc:org.springframework.boot.actuate.neo4j.Neo4jReactiveHealthIndicator[]
+| javadoc:org.springframework.boot.neo4j.health.Neo4jReactiveHealthIndicator[]
 | Checks that a Neo4j database is up.
 
 | `redis`
-| javadoc:org.springframework.boot.actuate.data.redis.RedisReactiveHealthIndicator[]
+| javadoc:org.springframework.boot.data.redis.health.DataRedisReactiveHealthIndicator[]
 | Checks that a Redis server is up.
 |===
 
 TIP: If necessary, reactive indicators replace the regular ones.
-Also, any javadoc:org.springframework.boot.actuate.health.HealthIndicator[] that is not handled explicitly is wrapped automatically.
+Also, any javadoc:org.springframework.boot.health.contributor.HealthIndicator[] that is not handled explicitly is wrapped automatically.
 
 
 
@@ -875,7 +875,7 @@ management:
 By default, startup will fail if a health group includes or excludes a health indicator that does not exist.
 To disable this behavior set configprop:management.endpoint.health.validate-group-membership[] to `false`.
 
-By default, groups inherit the same javadoc:org.springframework.boot.actuate.health.StatusAggregator[] and javadoc:org.springframework.boot.actuate.health.HttpCodeStatusMapper[] settings as the system health.
+By default, groups inherit the same javadoc:org.springframework.boot.health.actuate.endpoint.StatusAggregator[] and javadoc:org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper[] settings as the system health.
 However, you can also define these on a per-group basis.
 You can also override the `show-details` and `roles` properties if required:
 
@@ -895,10 +895,10 @@ management:
               out-of-service: 500
 ----
 
-TIP: You can use `@Qualifier("groupname")` if you need to register custom javadoc:org.springframework.boot.actuate.health.StatusAggregator[] or javadoc:org.springframework.boot.actuate.health.HttpCodeStatusMapper[] beans for use with the group.
+TIP: You can use `@Qualifier("groupname")` if you need to register custom javadoc:org.springframework.boot.health.actuate.endpoint.StatusAggregator[] or javadoc:org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper[] beans for use with the group.
 
-A health group can also include/exclude a javadoc:org.springframework.boot.actuate.health.CompositeHealthContributor[].
-You can also include/exclude only a certain component of a javadoc:org.springframework.boot.actuate.health.CompositeHealthContributor[].
+A health group can also include/exclude a javadoc:org.springframework.boot.health.contributor.CompositeHealthContributor[].
+You can also include/exclude only a certain component of a javadoc:org.springframework.boot.health.contributor.CompositeHealthContributor[].
 This can be done using the fully qualified name of the component as follows:
 
 [source,properties]
@@ -907,8 +907,8 @@ management.endpoint.health.group.custom.include="test/primary"
 management.endpoint.health.group.custom.exclude="test/primary/b"
 ----
 
-In the example above, the `custom` group will include the javadoc:org.springframework.boot.actuate.health.HealthContributor[] with the name `primary` which is a component of the composite `test`.
-Here, `primary` itself is a composite and the javadoc:org.springframework.boot.actuate.health.HealthContributor[] with the name `b` will be excluded from the `custom` group.
+In the example above, the `custom` group will include the javadoc:org.springframework.boot.health.contributor.HealthContributor[] with the name `primary` which is a component of the composite `test`.
+Here, `primary` itself is a composite and the javadoc:org.springframework.boot.health.contributor.HealthContributor[] with the name `b` will be excluded from the `custom` group.
 
 
 Health groups can be made available at an additional path on either the main or management port.

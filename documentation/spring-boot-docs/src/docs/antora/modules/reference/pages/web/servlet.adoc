@@ -108,7 +108,7 @@ include-code::MyHttpMessageConvertersConfiguration[]
 === MessageCodesResolver
 
 Spring MVC has a strategy for generating error codes for rendering error messages from binding errors: javadoc:org.springframework.validation.MessageCodesResolver[].
-If you set the configprop:spring.mvc.message-codes-resolver-format[] property `PREFIX_ERROR_CODE` or `POSTFIX_ERROR_CODE`, Spring Boot creates one for you (see the enumeration in javadoc:org.springframework.validation.DefaultMessageCodesResolver#Format[]).
+If you set the configprop:spring.mvc.message-codes-resolver-format[] property `PREFIX_ERROR_CODE` or `POSTFIX_ERROR_CODE`, Spring Boot creates one for you (see the enumeration in javadoc:org.springframework.validation.DefaultMessageCodesResolver$Format[]).
 
 
 
@@ -342,9 +342,9 @@ For browser clients, there is a "`whitelabel`" error view that renders the same 
 There are a number of `server.error` properties that can be set if you want to customize the default error handling behavior.
 See the xref:appendix:application-properties/index.adoc#appendix.application-properties.server[Server Properties] section of the Appendix.
 
-To replace the default behavior completely, you can implement javadoc:org.springframework.boot.web.servlet.error.ErrorController[] and register a bean definition of that type or add a bean of type javadoc:org.springframework.boot.web.servlet.error.ErrorAttributes[] to use the existing mechanism but replace the contents.
+To replace the default behavior completely, you can implement javadoc:org.springframework.boot.webmvc.error.ErrorController[] and register a bean definition of that type or add a bean of type javadoc:org.springframework.boot.webmvc.error.ErrorAttributes[] to use the existing mechanism but replace the contents.
 
-TIP: The javadoc:org.springframework.boot.webmvc.autoconfigure.error.BasicErrorController[] can be used as a base class for a custom javadoc:org.springframework.boot.web.servlet.error.ErrorController[].
+TIP: The javadoc:org.springframework.boot.webmvc.autoconfigure.error.BasicErrorController[] can be used as a base class for a custom javadoc:org.springframework.boot.webmvc.error.ErrorController[].
 This is particularly useful if you want to add a handler for a new content type (the default is to handle `text/html` specifically and provide a fallback for everything else).
 To do so, extend javadoc:org.springframework.boot.webmvc.autoconfigure.error.BasicErrorController[], add a public method with a javadoc:org.springframework.web.bind.annotation.RequestMapping[format=annotation] that has a `produces` attribute, and create a bean of your new type.
 
@@ -368,7 +368,7 @@ You can also define a class annotated with javadoc:org.springframework.web.bind.
 
 include-code::MyControllerAdvice[]
 
-In the preceding example, if `MyException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `MyErrorBody` POJO is used instead of the javadoc:org.springframework.boot.web.servlet.error.ErrorAttributes[] representation.
+In the preceding example, if `MyException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `MyErrorBody` POJO is used instead of the javadoc:org.springframework.boot.webmvc.error.ErrorAttributes[] representation.
 
 In some cases, errors handled at the controller level are not recorded by web observations or the xref:actuator/metrics.adoc#actuator.metrics.supported.spring-mvc[metrics infrastructure].
 Applications can ensure that such exceptions are recorded with the observations by {url-spring-framework-docs}/integration/observability.html#observability.http-server.servlet[setting the handled exception on the observation context].
@@ -417,19 +417,19 @@ For more complex mappings, you can also add beans that implement the javadoc:org
 include-code::MyErrorViewResolver[]
 
 You can also use regular Spring MVC features such as {url-spring-framework-docs}/web/webmvc/mvc-servlet/exceptionhandlers.html[`@ExceptionHandler` methods] and {url-spring-framework-docs}/web/webmvc/mvc-controller/ann-advice.html[`@ControllerAdvice`].
-The javadoc:org.springframework.boot.web.servlet.error.ErrorController[] then picks up any unhandled exceptions.
+The javadoc:org.springframework.boot.webmvc.error.ErrorController[] then picks up any unhandled exceptions.
 
 
 
 [[web.servlet.spring-mvc.error-handling.error-pages-without-spring-mvc]]
 ==== Mapping Error Pages Outside of Spring MVC
 
-For applications that do not use Spring MVC, you can use the javadoc:org.springframework.boot.web.server.ErrorPageRegistrar[] interface to directly register javadoc:org.springframework.boot.web.server.ErrorPage[] instances.
+For applications that do not use Spring MVC, you can use the javadoc:org.springframework.boot.web.error.ErrorPageRegistrar[] interface to directly register javadoc:org.springframework.boot.web.error.ErrorPage[] instances.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC javadoc:org.springframework.web.servlet.DispatcherServlet[].
 
 include-code::MyErrorPagesConfiguration[]
 
-NOTE: If you register an javadoc:org.springframework.boot.web.server.ErrorPage[] with a path that ends up being handled by a javadoc:jakarta.servlet.Filter[] (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the javadoc:jakarta.servlet.Filter[] has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
+NOTE: If you register an javadoc:org.springframework.boot.web.error.ErrorPage[] with a path that ends up being handled by a javadoc:jakarta.servlet.Filter[] (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the javadoc:jakarta.servlet.Filter[] has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
 include-code::MyFilterConfiguration[]
 
@@ -511,7 +511,7 @@ WARNING: Jersey's support for scanning executable archives is rather limited.
 For example, it cannot scan for endpoints in a package found in a xref:how-to:deployment/installing.adoc[fully executable jar file] or in `WEB-INF/classes` when running an executable war file.
 To avoid this limitation, the `packages` method should not be used, and endpoints should be registered individually by using the `register` method, as shown in the preceding example.
 
-For more advanced customizations, you can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer[].
+For more advanced customizations, you can also register an arbitrary number of beans that implement javadoc:org.springframework.boot.jersey.autoconfigure.ResourceConfigCustomizer[].
 
 All the registered endpoints should be a javadoc:org.springframework.stereotype.Component[format=annotation] with HTTP resource annotations (`@GET` and others), as shown in the following example:
 
@@ -600,9 +600,9 @@ For example, the property `server.servlet.context-parameters.com.example.paramet
 [[web.servlet.embedded-container.context-initializer.scanning]]
 ==== Scanning for Servlets, Filters, and listeners
 
-When using an embedded container, automatic registration of classes annotated with javadoc:jakarta.servlet.annotation.WebServlet[format=annotation], javadoc:jakarta.servlet.annotation.WebFilter[format=annotation], and javadoc:jakarta.servlet.annotation.WebListener[format=annotation] can be enabled by using javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=annotation].
+When using an embedded container, automatic registration of classes annotated with javadoc:jakarta.servlet.annotation.WebServlet[format=annotation], javadoc:jakarta.servlet.annotation.WebFilter[format=annotation], and javadoc:jakarta.servlet.annotation.WebListener[format=annotation] can be enabled by using javadoc:org.springframework.boot.web.server.servlet.context.ServletComponentScan[format=annotation].
 
-TIP: javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=annotation] has no effect in a standalone container, where the container's built-in discovery mechanisms are used instead.
+TIP: javadoc:org.springframework.boot.web.server.servlet.context.ServletComponentScan[format=annotation] has no effect in a standalone container, where the container's built-in discovery mechanisms are used instead.
 
 
 
@@ -610,11 +610,11 @@ TIP: javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=an
 === The ServletWebServerApplicationContext
 
 Under the hood, Spring Boot uses a different type of javadoc:org.springframework.context.ApplicationContext[] for embedded servlet container support.
-The javadoc:org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext[] is a special type of javadoc:org.springframework.web.context.WebApplicationContext[] that bootstraps itself by searching for a single javadoc:org.springframework.boot.web.servlet.server.ServletWebServerFactory[] bean.
-Usually a javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], or javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[] has been auto-configured.
+The javadoc:org.springframework.boot.web.server.servlet.context.ServletWebServerApplicationContext[] is a special type of javadoc:org.springframework.web.context.WebApplicationContext[] that bootstraps itself by searching for a single javadoc:org.springframework.boot.web.server.servlet.ServletWebServerFactory[] bean.
+Usually a javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[], or javadoc:org.springframework.boot.jetty.servlet.JettyServletWebServerFactory[] has been auto-configured.
 
 NOTE: You usually do not need to be aware of these implementation classes.
-Most applications are auto-configured, and the appropriate javadoc:org.springframework.context.ApplicationContext[] and javadoc:org.springframework.boot.web.servlet.server.ServletWebServerFactory[] are created on your behalf.
+Most applications are auto-configured, and the appropriate javadoc:org.springframework.context.ApplicationContext[] and javadoc:org.springframework.boot.web.server.servlet.ServletWebServerFactory[] are created on your behalf.
 
 In an embedded container setup, the javadoc:jakarta.servlet.ServletContext[] is set as part of server startup which happens during application context initialization.
 Because of this beans in the javadoc:org.springframework.context.ApplicationContext[] cannot be reliably initialized with a javadoc:jakarta.servlet.ServletContext[].
@@ -669,8 +669,8 @@ server:
         same-site: "none"
 ----
 
-If you want to change the `SameSite` attribute on other cookies added to your javadoc:jakarta.servlet.http.HttpServletResponse[], you can use a javadoc:org.springframework.boot.web.servlet.server.CookieSameSiteSupplier[].
-The javadoc:org.springframework.boot.web.servlet.server.CookieSameSiteSupplier[] is passed a javadoc:jakarta.servlet.http.Cookie[] and may return a `SameSite` value, or `null`.
+If you want to change the `SameSite` attribute on other cookies added to your javadoc:jakarta.servlet.http.HttpServletResponse[], you can use a javadoc:org.springframework.boot.web.server.servlet.CookieSameSiteSupplier[].
+The javadoc:org.springframework.boot.web.server.servlet.CookieSameSiteSupplier[] is passed a javadoc:jakarta.servlet.http.Cookie[] and may return a `SameSite` value, or `null`.
 
 There are a number of convenience factory and filter methods that you can use to quickly match specific cookies.
 For example, adding the following bean will automatically apply a `SameSite` of `Lax` for all cookies with a name that matches the regular expression `myapp.*`.
@@ -706,13 +706,13 @@ This is equivalent to a `<locale-encoding-mapping-list>` entry in a `web.xml` fi
 ==== Programmatic Customization
 
 If you need to programmatically configure your embedded servlet container, you can register a Spring bean that implements the javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] interface.
-javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] provides access to the javadoc:org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory[], which includes numerous customization setter methods.
+javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] provides access to the javadoc:org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory[], which includes numerous customization setter methods.
 The following example shows programmatically setting the port:
 
 include-code::MyWebServerFactoryCustomizer[]
 
-javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], and javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[] are dedicated variants of javadoc:org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory[] that have additional customization setter methods for Tomcat, and Jetty respectively.
-The following example shows how to customize javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[] that provides access to Tomcat-specific configuration options:
+javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[], and javadoc:org.springframework.boot.jetty.servlet.JettyServletWebServerFactory[] are dedicated variants of javadoc:org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory[] that have additional customization setter methods for Tomcat, and Jetty respectively.
+The following example shows how to customize javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[] that provides access to Tomcat-specific configuration options:
 
 include-code::MyTomcatWebServerFactoryCustomizer[]
 
@@ -721,11 +721,11 @@ include-code::MyTomcatWebServerFactoryCustomizer[]
 [[web.servlet.embedded-container.customizing.direct]]
 ==== Customizing ConfigurableServletWebServerFactory Directly
 
-For more advanced use cases that require you to extend from javadoc:org.springframework.boot.web.servlet.server.ServletWebServerFactory[], you can expose a bean of such type yourself.
+For more advanced use cases that require you to extend from javadoc:org.springframework.boot.web.server.servlet.ServletWebServerFactory[], you can expose a bean of such type yourself.
 
 Setters are provided for many configuration options.
 Several protected method "`hooks`" are also provided should you need to do something more exotic.
-See the javadoc:org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory[] API documentation for details.
+See the javadoc:org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory[] API documentation for details.
 
 NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
 

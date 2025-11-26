@@ -88,10 +88,10 @@ Spring WebFlux uses the javadoc:org.springframework.http.codec.HttpMessageReader
 They are configured with javadoc:org.springframework.http.codec.CodecConfigurer[] to have sensible defaults by looking at the libraries available in your classpath.
 
 Spring Boot provides dedicated configuration properties for codecs, `+spring.http.codecs.*+`.
-It also applies further customization by using javadoc:org.springframework.boot.web.codec.CodecCustomizer[] instances.
+It also applies further customization by using javadoc:org.springframework.boot.http.codec.CodecCustomizer[] instances.
 For example, `+spring.jackson.*+` configuration keys are applied to the Jackson codec.
 
-If you need to add or customize codecs, you can create a custom javadoc:org.springframework.boot.web.codec.CodecCustomizer[] component, as shown in the following example:
+If you need to add or customize codecs, you can create a custom javadoc:org.springframework.boot.http.codec.CodecCustomizer[] component, as shown in the following example:
 
 include-code::MyCodecsConfiguration[]
 
@@ -199,10 +199,10 @@ This support can be enabled by setting configprop:spring.webflux.problemdetails.
 
 
 The first step to customizing this feature often involves using the existing mechanism but replacing or augmenting the error contents.
-For that, you can add a bean of type javadoc:org.springframework.boot.web.reactive.error.ErrorAttributes[].
+For that, you can add a bean of type javadoc:org.springframework.boot.webflux.error.ErrorAttributes[].
 
-To change the error handling behavior, you can implement javadoc:org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler[] and register a bean definition of that type.
-Because an javadoc:org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler[] is quite low-level, Spring Boot also provides a convenient javadoc:org.springframework.boot.webflux.autoconfigure.error.AbstractErrorWebExceptionHandler[] to let you handle errors in a WebFlux functional way, as shown in the following example:
+To change the error handling behavior, you can implement javadoc:org.springframework.boot.webflux.error.ErrorWebExceptionHandler[] and register a bean definition of that type.
+Because an javadoc:org.springframework.boot.webflux.error.ErrorWebExceptionHandler[] is quite low-level, Spring Boot also provides a convenient javadoc:org.springframework.boot.webflux.autoconfigure.error.AbstractErrorWebExceptionHandler[] to let you handle errors in a WebFlux functional way, as shown in the following example:
 
 include-code::MyErrorWebExceptionHandler[]
 
@@ -300,7 +300,7 @@ spring:
         header: X-Version
 ----
 
-For more complete control, you can also define javadoc:org.springframework.web.reactive.accept.ApiVersionResolver[], javadoc:org.springframework.web.reactive.accept.ApiVersionParser[] and javadoc:org.springframework.web.reactive.accept.ApiVersionDeprecationHandler[] beans which will be injected into the auto-configured Spring MVC configuration.
+For more complete control, you can also define javadoc:org.springframework.web.reactive.accept.ApiVersionResolver[], javadoc:org.springframework.web.accept.ApiVersionParser[] and javadoc:org.springframework.web.reactive.accept.ApiVersionDeprecationHandler[] beans which will be injected into the auto-configured Spring MVC configuration.
 
 TIP: API versioning is also supported on the client-side with both `WebClient` and `RestClient`.
 See xref:io/rest-client.adoc#io.rest-client.apiversioning[] for details.
@@ -340,13 +340,13 @@ TIP: See the javadoc:org.springframework.boot.web.server.autoconfigure.ServerPro
 ==== Programmatic Customization
 
 If you need to programmatically configure your reactive web server, you can register a Spring bean that implements the javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] interface.
-javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] provides access to the javadoc:org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory[], which includes numerous customization setter methods.
+javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[] provides access to the javadoc:org.springframework.boot.web.server.reactive.ConfigurableReactiveWebServerFactory[], which includes numerous customization setter methods.
 The following example shows programmatically setting the port:
 
 include-code::MyWebServerFactoryCustomizer[]
 
-javadoc:org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory[], javadoc:org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory[], and javadoc:org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory[] are dedicated variants of javadoc:org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory[] that have additional customization setter methods for Jetty, Reactor Netty, and Tomcat respectively.
-The following example shows how to customize javadoc:org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory[] that provides access to Reactor Netty-specific configuration options:
+javadoc:org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory[], javadoc:org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory[], and javadoc:org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory[] are dedicated variants of javadoc:org.springframework.boot.web.server.reactive.ConfigurableReactiveWebServerFactory[] that have additional customization setter methods for Jetty, Reactor Netty, and Tomcat respectively.
+The following example shows how to customize javadoc:org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory[] that provides access to Reactor Netty-specific configuration options:
 
 include-code::MyNettyWebServerFactoryCustomizer[]
 
@@ -355,11 +355,11 @@ include-code::MyNettyWebServerFactoryCustomizer[]
 [[web.reactive.reactive-server.customizing.direct]]
 ==== Customizing ConfigurableReactiveWebServerFactory Directly
 
-For more advanced use cases that require you to extend from javadoc:org.springframework.boot.web.reactive.server.ReactiveWebServerFactory[], you can expose a bean of such type yourself.
+For more advanced use cases that require you to extend from javadoc:org.springframework.boot.web.server.reactive.ReactiveWebServerFactory[], you can expose a bean of such type yourself.
 
 Setters are provided for many configuration options.
 Several protected method "`hooks`" are also provided should you need to do something more exotic.
-See the javadoc:org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory[] API documentation for details.
+See the javadoc:org.springframework.boot.web.server.reactive.ConfigurableReactiveWebServerFactory[] API documentation for details.
 
 NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
 

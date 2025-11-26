@@ -64,7 +64,7 @@ management:
     use-global-registry: false
 ----
 
-You can register any number of javadoc:org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer[] beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
+You can register any number of javadoc:org.springframework.boot.micrometer.metrics.autoconfigure.MeterRegistryCustomizer[] beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
 
 include-code::commontags/MyMeterRegistryConfiguration[]
 
@@ -562,11 +562,11 @@ To enable Prometheus Pushgateway support, add the following dependency to your p
 </dependency>
 ----
 
-When the Prometheus Pushgateway dependency is present on the classpath and the configprop:management.prometheus.metrics.export.pushgateway.enabled[] property is set to `true`, a javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] bean is auto-configured.
+When the Prometheus Pushgateway dependency is present on the classpath and the configprop:management.prometheus.metrics.export.pushgateway.enabled[] property is set to `true`, a javadoc:org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager[] bean is auto-configured.
 This manages the pushing of metrics to a Prometheus Pushgateway.
 
-You can tune the javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] by using properties under `management.prometheus.metrics.export.pushgateway`.
-For advanced configuration, you can also provide your own javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] bean.
+You can tune the javadoc:org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager[] by using properties under `management.prometheus.metrics.export.pushgateway`.
+For advanced configuration, you can also provide your own javadoc:org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager[] bean.
 
 
 
@@ -827,11 +827,11 @@ This metric is tagged with the following information:
 Spring Boot Actuator manages the instrumentation of javadoc:org.springframework.web.client.RestTemplate[], javadoc:org.springframework.web.reactive.function.client.WebClient[] and javadoc:org.springframework.web.client.RestClient[].
 For that, you have to inject the auto-configured builder and use it to create instances:
 
-* javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] for javadoc:org.springframework.web.client.RestTemplate[]
+* javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] for javadoc:org.springframework.web.client.RestTemplate[]
 * javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[] for javadoc:org.springframework.web.reactive.function.client.WebClient[]
 * javadoc:org.springframework.web.client.RestClient$Builder[] for javadoc:org.springframework.web.client.RestClient[]
 
-You can also manually apply the customizers responsible for this instrumentation, namely javadoc:org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer[], javadoc:org.springframework.boot.actuate.metrics.web.reactive.client.ObservationWebClientCustomizer[] and javadoc:org.springframework.boot.actuate.metrics.web.client.ObservationRestClientCustomizer[].
+You can also manually apply the customizers responsible for this instrumentation, namely javadoc:org.springframework.boot.restclient.observation.ObservationRestTemplateCustomizer[], javadoc:org.springframework.boot.webclient.observation.ObservationWebClientCustomizer[] and javadoc:org.springframework.boot.restclient.observation.ObservationRestClientCustomizer[].
 
 By default, metrics are generated with the name, `http.client.requests`.
 You can customize the name by setting the configprop:management.observations.http.client.requests.name[] property.
@@ -875,7 +875,7 @@ Metrics are tagged by the name of the cache and by the name of the javadoc:org.s
 
 NOTE: Only caches that are configured on startup are bound to the registry.
 For caches not defined in the cache’s configuration, such as caches created on the fly or programmatically after the startup phase, an explicit registration is required.
-A javadoc:org.springframework.boot.actuate.metrics.cache.CacheMetricsRegistrar[] bean is made available to make that process easier.
+A javadoc:org.springframework.boot.cache.metrics.CacheMetricsRegistrar[] bean is made available to make that process easier.
 
 
 
@@ -961,7 +961,7 @@ By default, repository invocation related metrics are tagged with the following 
 | The simple class name of any exception that was thrown from the invocation.
 |===
 
-To replace the default tags, provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:org.springframework.boot.actuate.metrics.data.RepositoryTagsProvider[].
+To replace the default tags, provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] that implements javadoc:org.springframework.boot.data.metrics.RepositoryTagsProvider[].
 
 
 
@@ -1159,7 +1159,7 @@ As the order of common tags cannot be guaranteed by using this approach, Graphit
 === Per-meter Properties
 
 In addition to javadoc:io.micrometer.core.instrument.config.MeterFilter[] beans, you can apply a limited set of customization on a per-meter basis using properties.
-Per-meter customizations are applied, using Spring Boot's javadoc:org.springframework.boot.actuate.autoconfigure.metrics.PropertiesMeterFilter[], to any meter IDs that start with the given name.
+Per-meter customizations are applied, using Spring Boot's javadoc:org.springframework.boot.micrometer.metrics.autoconfigure.PropertiesMeterFilter[], to any meter IDs that start with the given name.
 The following example filters out any meters that have an ID starting with `example.remote`.
 
 [configprops,yaml]

@@ -66,7 +66,7 @@ javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] can be instan
 include-code::MyTests[]
 
 Alternatively, if you use the javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotation with `WebEnvironment.RANDOM_PORT` or `WebEnvironment.DEFINED_PORT`, you can inject a fully configured javadoc:org.springframework.boot.resttestclient.TestRestTemplate[] by annotating the test class with javadoc:org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate[format=annotation].
-If necessary, additional customizations can be applied through the javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] bean.
+If necessary, additional customizations can be applied through the javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] bean.
 
 Any URLs that do not specify a host and port automatically connect to the embedded server, as shown in the following example:
 

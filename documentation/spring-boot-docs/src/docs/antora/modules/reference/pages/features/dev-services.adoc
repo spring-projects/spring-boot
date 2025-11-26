@@ -110,7 +110,7 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.neo4j.autoconfigure.Neo4jConnectionDetails[]
 | Containers named "neo4j"
 
-| javadoc:org.springframework.boot.opentelemetry.actuate.autoconfigure.logging.OpenTelemetryLoggingConnectionDetails[]
+| javadoc:org.springframework.boot.opentelemetry.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails[]
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
 | javadoc:org.springframework.boot.micrometer.metrics.autoconfigure.export.otlp.OtlpMetricsConnectionDetails[]
@@ -128,10 +128,10 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.amqp.autoconfigure.RabbitConnectionDetails[]
 | Containers named "rabbitmq"
 
-| javadoc:org.springframework.boot.data.redis.autoconfigure.RedisConnectionDetails[]
+| javadoc:org.springframework.boot.data.redis.autoconfigure.DataRedisConnectionDetails[]
 | Containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
 
-| javadoc:org.springframework.boot.micrometer.tracing.autoconfigure.zipkin.ZipkinConnectionDetails[]
+| javadoc:org.springframework.boot.zipkin.autoconfigure.ZipkinConnectionDetails[]
 | Containers named "openzipkin/zipkin".
 |===
 

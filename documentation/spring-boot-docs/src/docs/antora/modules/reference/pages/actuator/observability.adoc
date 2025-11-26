@@ -12,7 +12,7 @@ include-code::MyCustomObservation[]
 NOTE: Low cardinality tags will be added to metrics and traces, while high cardinality tags will only be added to traces.
 
 Beans of type javadoc:io.micrometer.observation.ObservationPredicate[], javadoc:io.micrometer.observation.GlobalObservationConvention[], javadoc:io.micrometer.observation.ObservationFilter[] and javadoc:io.micrometer.observation.ObservationHandler[] will be automatically registered on the javadoc:io.micrometer.observation.ObservationRegistry[].
-You can additionally register any number of javadoc:org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryCustomizer[] beans to further configure the registry.
+You can additionally register any number of javadoc:org.springframework.boot.micrometer.observation.autoconfigure.ObservationRegistryCustomizer[] beans to further configure the registry.
 
 TIP: Observability for JDBC can be configured using a separate project.
 The https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project] provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.

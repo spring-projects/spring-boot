@@ -59,10 +59,10 @@ This provides only one argument to the batch job: `someParameter=someValue`.
 [[howto.batch.restarting-a-failed-job]]
 == Restarting a Stopped or Failed Job
 
-To restart a failed javadoc:org.springframework.batch.core.Job[], all parameters (identifying and non-identifying) must be re-specified on the command line.
+To restart a failed javadoc:org.springframework.batch.core.job.Job[], all parameters (identifying and non-identifying) must be re-specified on the command line.
 Non-identifying parameters are *not* copied from the previous execution.
 This allows them to be modified or removed.
 
-NOTE: When you're using a custom javadoc:org.springframework.batch.core.JobParametersIncrementer[], you have to gather all parameters managed by the incrementer to restart a failed execution.
+NOTE: When you're using a custom javadoc:org.springframework.batch.core.job.parameters.JobParametersIncrementer[], you have to gather all parameters managed by the incrementer to restart a failed execution.
 
 

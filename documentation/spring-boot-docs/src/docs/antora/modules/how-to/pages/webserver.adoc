@@ -148,7 +148,7 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto.webserver.discover-port]]
 == Discover the HTTP Port at Runtime
 
-You can access the port the server is running on from log output or from the javadoc:org.springframework.boot.web.context.WebServerApplicationContext[] through its javadoc:org.springframework.boot.web.server.WebServer[].
+You can access the port the server is running on from log output or from the javadoc:org.springframework.boot.web.server.context.WebServerApplicationContext[] through its javadoc:org.springframework.boot.web.server.WebServer[].
 The best way to get that and be sure it has been initialized is to add a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type `ApplicationListener<WebServerInitializedEvent>` and pull the container out of the event when it is published.
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the javadoc:org.springframework.boot.test.web.server.LocalServerPort[format=annotation] annotation, as shown in the following example:
@@ -373,16 +373,16 @@ In addition Spring Boot provides:
 | Server | Servlet stack | Reactive stack
 
 | Tomcat
-| javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[]
-| javadoc:org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory[]
+| javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[]
+| javadoc:org.springframework.boot.tomcat.reactive.TomcatReactiveWebServerFactory[]
 
 | Jetty
-| javadoc:org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory[]
-| javadoc:org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory[]
+| javadoc:org.springframework.boot.jetty.servlet.JettyServletWebServerFactory[]
+| javadoc:org.springframework.boot.jetty.reactive.JettyReactiveWebServerFactory[]
 
 | Reactor
 | N/A
-| javadoc:org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory[]
+| javadoc:org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory[]
 |===
 
 As a last resort, you can also declare your own javadoc:org.springframework.boot.web.server.WebServerFactory[] bean, which will override the one provided by Spring Boot.
@@ -435,8 +435,8 @@ include-code::MyFilterConfiguration[]
 [[howto.webserver.add-servlet-filter-listener.using-scanning]]
 === Add Servlets, Filters, and Listeners by Using Classpath Scanning
 
-javadoc:jakarta.servlet.annotation.WebServlet[format=annotation], javadoc:jakarta.servlet.annotation.WebFilter[format=annotation], and javadoc:jakarta.servlet.annotation.WebListener[format=annotation] annotated classes can be automatically registered with an embedded servlet container by annotating a javadoc:org.springframework.context.annotation.Configuration[format=annotation] class with javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=annotation] and specifying the package(s) containing the components that you want to register.
-By default, javadoc:org.springframework.boot.web.servlet.ServletComponentScan[format=annotation] scans from the package of the annotated class.
+javadoc:jakarta.servlet.annotation.WebServlet[format=annotation], javadoc:jakarta.servlet.annotation.WebFilter[format=annotation], and javadoc:jakarta.servlet.annotation.WebListener[format=annotation] annotated classes can be automatically registered with an embedded servlet container by annotating a javadoc:org.springframework.context.annotation.Configuration[format=annotation] class with javadoc:org.springframework.boot.web.server.servlet.context.ServletComponentScan[format=annotation] and specifying the package(s) containing the components that you want to register.
+By default, javadoc:org.springframework.boot.web.server.servlet.context.ServletComponentScan[format=annotation] scans from the package of the annotated class.
 
 
 
@@ -537,7 +537,7 @@ You can take complete control of the configuration of Tomcat's javadoc:org.apach
 [[howto.webserver.enable-multiple-connectors-in-tomcat]]
 == Enable Multiple Connectors with Tomcat
 
-You can add an javadoc:org.apache.catalina.connector.Connector[] to the javadoc:org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory[], which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
+You can add an javadoc:org.apache.catalina.connector.Connector[] to the javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[], which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
 
 include-code::MyTomcatConfiguration[]
 

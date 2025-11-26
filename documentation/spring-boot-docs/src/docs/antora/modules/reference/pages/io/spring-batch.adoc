@@ -37,10 +37,10 @@ For more information about Spring Batch, see the {url-spring-batch-site}[Spring 
 [[io.spring-batch.running-jobs-on-startup]]
 == Running Spring Batch Jobs on Startup
 
-When Spring Boot auto-configures Spring Batch, and if a single javadoc:org.springframework.batch.core.Job[] bean is found in the application context, it is executed on startup (see javadoc:org.springframework.boot.batch.autoconfigure.JobLauncherApplicationRunner[] for details).
-If multiple javadoc:org.springframework.batch.core.Job[] beans are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
+When Spring Boot auto-configures Spring Batch, and if a single javadoc:org.springframework.batch.core.job.Job[] bean is found in the application context, it is executed on startup (see javadoc:org.springframework.boot.batch.autoconfigure.JobLauncherApplicationRunner[] for details).
+If multiple javadoc:org.springframework.batch.core.job.Job[] beans are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
 
-You can disable running a javadoc:org.springframework.batch.core.Job[] found in the application context, as shown in the following example:
+You can disable running a javadoc:org.springframework.batch.core.job.Job[] found in the application context, as shown in the following example:
 
 [configprops,yaml]
 ----

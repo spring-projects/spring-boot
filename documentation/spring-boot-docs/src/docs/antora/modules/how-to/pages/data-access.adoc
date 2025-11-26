@@ -229,7 +229,7 @@ For example, if you want to configure Hibernate's batch size you must use `+spri
 If you use other forms, such as `batchSize` or `batch-size`, Hibernate will not apply the setting.
 ====
 
-TIP: If you need to apply advanced customization to Hibernate properties, consider registering a javadoc:org.springframework.boot.jpa.autoconfigure.hibernate.HibernatePropertiesCustomizer[] bean that will be invoked prior to creating the javadoc:jakarta.persistence.EntityManagerFactory[].
+TIP: If you need to apply advanced customization to Hibernate properties, consider registering a javadoc:org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer[] bean that will be invoked prior to creating the javadoc:jakarta.persistence.EntityManagerFactory[].
 This takes precedence over anything that is applied by the auto-configuration.
 
 
@@ -275,7 +275,7 @@ Hibernate {url-hibernate-userguide}#caching[second-level cache] can be configure
 Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.
 
 To do this with JCache, first make sure that `org.hibernate.orm:hibernate-jcache` is available on the classpath.
-Then, add a javadoc:org.springframework.boot.jpa.autoconfigure.hibernate.HibernatePropertiesCustomizer[] bean as shown in the following example:
+Then, add a javadoc:org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer[] bean as shown in the following example:
 
 include-code::MyHibernateSecondLevelCacheConfiguration[]
 
@@ -290,7 +290,7 @@ For details, see {url-hibernate-userguide}#caching-provider-jcache[the Hibernate
 
 By default, Spring Boot registers a javadoc:org.hibernate.resource.beans.container.spi.BeanContainer[] implementation that uses the javadoc:org.springframework.beans.factory.BeanFactory[] so that converters and entity listeners can use regular dependency injection.
 
-You can disable or tune this behavior by registering a javadoc:org.springframework.boot.jpa.autoconfigure.hibernate.HibernatePropertiesCustomizer[] that removes or changes the `hibernate.resource.beans.container` property.
+You can disable or tune this behavior by registering a javadoc:org.springframework.boot.hibernate.autoconfigure.HibernatePropertiesCustomizer[] that removes or changes the `hibernate.resource.beans.container` property.
 
 
 

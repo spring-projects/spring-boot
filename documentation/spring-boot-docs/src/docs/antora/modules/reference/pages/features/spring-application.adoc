@@ -268,8 +268,8 @@ Application events are sent in the following order, as your application runs:
 The above list only includes ``SpringApplicationEvent``s that are tied to a javadoc:org.springframework.boot.SpringApplication[].
 In addition to these, the following events are also published after javadoc:org.springframework.boot.context.event.ApplicationPreparedEvent[] and before javadoc:org.springframework.boot.context.event.ApplicationStartedEvent[]:
 
-- A javadoc:org.springframework.boot.web.context.WebServerInitializedEvent[] is sent after the javadoc:org.springframework.boot.web.server.WebServer[] is ready.
-  javadoc:org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent[] and javadoc:org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent[] are the servlet and reactive variants respectively.
+- A javadoc:org.springframework.boot.web.server.context.WebServerInitializedEvent[] is sent after the javadoc:org.springframework.boot.web.server.WebServer[] is ready.
+  javadoc:org.springframework.boot.web.server.servlet.context.ServletWebServerInitializedEvent[] and javadoc:org.springframework.boot.web.server.reactive.context.ReactiveWebServerInitializedEvent[] are the servlet and reactive variants respectively.
 - A javadoc:org.springframework.context.event.ContextRefreshedEvent[] is sent when an javadoc:org.springframework.context.ApplicationContext[] is refreshed.
 
 TIP: You often need not use application events, but it can be handy to know that they exist.
@@ -293,8 +293,8 @@ The context can be injected by implementing javadoc:org.springframework.context.
 A javadoc:org.springframework.boot.SpringApplication[] attempts to create the right type of javadoc:org.springframework.context.ApplicationContext[] on your behalf.
 The algorithm used to determine a javadoc:org.springframework.boot.WebApplicationType[] is the following:
 
-* If Spring MVC is present, an javadoc:org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext[] is used
-* If Spring MVC is not present and Spring WebFlux is present, an javadoc:org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext[] is used
+* If Spring MVC is present, an javadoc:org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext[] is used
+* If Spring MVC is not present and Spring WebFlux is present, an javadoc:org.springframework.boot.web.server.reactive.context.AnnotationConfigReactiveWebServerApplicationContext[] is used
 * Otherwise, javadoc:org.springframework.context.annotation.AnnotationConfigApplicationContext[] is used
 
 This means that if you are using Spring MVC and the new javadoc:org.springframework.web.reactive.function.client.WebClient[] from Spring WebFlux in the same application, Spring MVC will be used by default.

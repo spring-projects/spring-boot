@@ -37,13 +37,17 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
+import org.springframework.boot.build.antora.CheckJavadocMacros;
 import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.ResolvedBom;
@@ -95,6 +99,27 @@ public class AntoraConventions {
 				(antoraTask) -> configureAntoraTask(project, antoraTask, npmInstallTask, generateAntoraPlaybookTask));
 		project.getExtensions()
 			.configure(NodeExtension.class, (nodeExtension) -> configureNodeExtension(project, nodeExtension));
+		TaskProvider<CheckJavadocMacros> checkAntoraJavadocMacros = tasks.register("checkAntoraJavadocMacros",
+				CheckJavadocMacros.class, (task) -> {
+					task.setSource(project.files(ANTORA_SOURCE_DIR));
+					task.getOutputDirectory().set(project.getLayout().getBuildDirectory().dir(task.getName()));
+				});
+		project.getPlugins().withType(JavaPlugin.class, (java) -> {
+			String runtimeClasspathConfigurationName = project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getSourceSets()
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+				.getRuntimeClasspathConfigurationName();
+			Configuration javadocMacros = project.getConfigurations().create("javadocMacros", (configuration) -> {
+				configuration.extendsFrom(project.getConfigurations().getByName(runtimeClasspathConfigurationName));
+				configuration.setDescription(
+						"Dependencies referenced in javadoc macros. Extends from " + runtimeClasspathConfigurationName);
+				configuration.setCanBeResolved(true);
+				configuration.setCanBeDeclared(true);
+				configuration.setCanBeConsumed(false);
+			});
+			checkAntoraJavadocMacros.configure((macrosTask) -> macrosTask.setClasspath(javadocMacros));
+		});
 	}
 
 	private void configureGenerateAntoraPlaybookTask(Project project,
