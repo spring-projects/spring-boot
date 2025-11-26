@@ -168,7 +168,7 @@ Refer to documentation of the builder being used to determine the image OS and a
 
 | `name` +
 (`spring-boot.build-image.imageName`)
-| javadoc:org.springframework.boot.buildpack.platform.docker.type.ImageName#of-java.lang.String-[Image name] for the generated image.
+| javadoc:org.springframework.boot.buildpack.platform.docker.type.ImageName#of(java.lang.String)[Image name] for the generated image.
 | `docker.io/library/` +
 `${project.artifactId}:${project.version}`
 
