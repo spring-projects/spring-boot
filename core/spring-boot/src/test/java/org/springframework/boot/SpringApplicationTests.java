@@ -59,7 +59,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.Banner.Mode;
-import org.springframework.boot.SpringApplication.NativeImageRequirementsNotMetException;
+import org.springframework.boot.SpringApplication.NativeImageRequirementsException;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
@@ -77,6 +77,7 @@ import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.env.DefaultPropertiesPropertySource;
+import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -753,9 +754,10 @@ class SpringApplicationTests {
 		try {
 			SpringApplication application = new SpringApplication();
 			application.setWebApplicationType(WebApplicationType.NONE);
-			assertThatExceptionOfType(NativeImageRequirementsNotMetException.class).isThrownBy(application::run)
-				.withMessage(
-						"Native Image requirements not met, please upgrade it. Native Image must support at least Java 25");
+			assertThatExceptionOfType(NativeImageRequirementsException.class).isThrownBy(application::run)
+				.withMessage("Native Image requirements not met. "
+						+ "Native Image must support at least Java 25 but Java %s was detected"
+							.formatted(JavaVersion.getJavaVersion()));
 		}
 		finally {
 			System.clearProperty("org.graalvm.nativeimage.imagecode");

@@ -420,7 +420,7 @@ public class SpringApplication {
 
 	private void addAotGeneratedInitializerIfNecessary(List<ApplicationContextInitializer<?>> initializers) {
 		if (NativeDetector.inNativeImage()) {
-			checkNativeImageVersion();
+			NativeImageRequirementsException.throwIfNotMet();
 		}
 		if (AotDetector.useGeneratedArtifacts()) {
 			List<ApplicationContextInitializer<?>> aotInitializers = new ArrayList<>(
@@ -435,15 +435,6 @@ public class SpringApplication {
 			}
 			initializers.removeAll(aotInitializers);
 			initializers.addAll(0, aotInitializers);
-		}
-	}
-
-	private void checkNativeImageVersion() {
-		JavaVersion minRequiredJavaVersion = JavaVersion.TWENTY_FIVE;
-		if (JavaVersion.getJavaVersion().isOlderThan(minRequiredJavaVersion)) {
-			throw new NativeImageRequirementsNotMetException(
-					"Native Image requirements not met, please upgrade it. Native Image must support at least Java %s"
-						.formatted(minRequiredJavaVersion));
 		}
 	}
 
@@ -1661,14 +1652,22 @@ public class SpringApplication {
 	/**
 	 * Exception which is thrown if GraalVM's native-image requirements aren't met.
 	 */
-	static final class NativeImageRequirementsNotMetException extends RuntimeException {
+	static final class NativeImageRequirementsException extends RuntimeException {
 
-		/**
-		 * Creates a new {@link NativeImageRequirementsNotMetException} instance.
-		 * @param message the message
-		 */
-		NativeImageRequirementsNotMetException(String message) {
+		private static final JavaVersion MINIMUM_REQUIRED_JAVA_VERSION = JavaVersion.TWENTY_FIVE;
+
+		private static final JavaVersion CURRENT_JAVA_VERSION = JavaVersion.getJavaVersion();
+
+		NativeImageRequirementsException(String message) {
 			super(message);
+		}
+
+		static void throwIfNotMet() {
+			if (CURRENT_JAVA_VERSION.isOlderThan(MINIMUM_REQUIRED_JAVA_VERSION)) {
+				throw new NativeImageRequirementsException("Native Image requirements not met. "
+						+ "Native Image must support at least Java %s but Java %s was detected"
+							.formatted(MINIMUM_REQUIRED_JAVA_VERSION, CURRENT_JAVA_VERSION));
+			}
 		}
 
 	}
