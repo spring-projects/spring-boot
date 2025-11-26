@@ -64,10 +64,13 @@ class PropertiesRestClientHttpServiceGroupConfigurer implements RestClientHttpSe
 			.getIfAvailable(() -> ClientHttpRequestFactoryBuilder.detect(classLoader));
 	}
 
-	@Override
-	public int getOrder() {
-		return Ordered.HIGHEST_PRECEDENCE;
-	}
+	@@
+     @Override
+     public int getOrder() {
+-        return Ordered.HIGHEST_PRECEDENCE;
++        return Ordered.HIGHEST_PRECEDENCE + 10;
+     }
+
 
 	@Override
 	public void configureGroups(Groups<RestClient.Builder> groups) {
