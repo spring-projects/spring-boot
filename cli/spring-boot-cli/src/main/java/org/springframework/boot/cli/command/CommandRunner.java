@@ -244,7 +244,7 @@ public class CommandRunner implements Iterable<Command> {
 		if (ex instanceof CommandException commandException) {
 			options = commandException.getOptions();
 			if (options.contains(CommandException.Option.RETHROW)) {
-				throw (CommandException) ex;
+				throw commandException;
 			}
 		}
 		boolean couldNotShowMessage = false;

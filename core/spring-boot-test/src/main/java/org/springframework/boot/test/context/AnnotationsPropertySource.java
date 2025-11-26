@@ -138,7 +138,7 @@ class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>> {
 		}
 		else if (value instanceof MergedAnnotation<?> annotation) {
 			for (Method attribute : annotation.getType().getDeclaredMethods()) {
-				collectProperties(name, defaultSkip, (MergedAnnotation<?>) value, attribute, properties);
+				collectProperties(name, defaultSkip, annotation, attribute, properties);
 			}
 		}
 		else {
