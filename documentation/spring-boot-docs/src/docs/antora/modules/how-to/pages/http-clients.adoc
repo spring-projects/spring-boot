@@ -9,7 +9,7 @@ This section answers questions related to using them.
 [[howto.http-clients.rest-template-proxy-configuration]]
 == Configure RestTemplate to Use a Proxy
 
-As described in xref:reference:io/rest-client.adoc#io.rest-client.resttemplate.customization[RestTemplate Customization], you can use a javadoc:org.springframework.boot.web.client.RestTemplateCustomizer[] with javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] to build a customized javadoc:org.springframework.web.client.RestTemplate[].
+As described in xref:reference:io/rest-client.adoc#io.rest-client.resttemplate.customization[RestTemplate Customization], you can use a javadoc:org.springframework.boot.restclient.RestTemplateCustomizer[] with javadoc:org.springframework.boot.restclient.RestTemplateBuilder[] to build a customized javadoc:org.springframework.web.client.RestTemplate[].
 This is the recommended approach for creating a javadoc:org.springframework.web.client.RestTemplate[] configured to use a proxy.
 
 The exact details of the proxy configuration depend on the underlying client request factory that is being used.
