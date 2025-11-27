@@ -32,7 +32,6 @@ import org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageCo
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
@@ -57,7 +56,6 @@ import org.springframework.web.client.RestClient.Builder;
 @AutoConfiguration(after = { ImperativeHttpClientAutoConfiguration.class, TaskExecutionAutoConfiguration.class,
 		SslAutoConfiguration.class })
 @ConditionalOnClass(RestClient.class)
-@Conditional(NotReactiveWebApplicationOrVirtualThreadsExecutorEnabledCondition.class)
 public final class RestClientAutoConfiguration {
 
 	@Bean
