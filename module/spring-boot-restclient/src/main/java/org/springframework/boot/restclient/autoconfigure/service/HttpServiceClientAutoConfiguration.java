@@ -29,7 +29,6 @@ import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
@@ -46,7 +45,6 @@ import org.springframework.web.service.registry.HttpServiceProxyRegistry;
 @AutoConfiguration(after = { ImperativeHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class })
 @ConditionalOnClass(RestClientAdapter.class)
 @ConditionalOnBean(HttpServiceProxyRegistry.class)
-@Conditional(NotReactiveWebApplicationCondition.class)
 @EnableConfigurationProperties(HttpServiceClientProperties.class)
 public final class HttpServiceClientAutoConfiguration {
 
