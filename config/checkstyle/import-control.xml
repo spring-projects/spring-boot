@@ -62,7 +62,7 @@
 	<subpackage name=".*\.metrics" regex="true">
 		<allow pkg="io.micrometer" />
 	</subpackage>
-	<subpackage name=".*\.autoconfigure" regex="true">
+	<subpackage name="(.*\.autoconfigure|autoconfigure)(\..*)?" regex="true">
 		<allow pkg="io.micrometer" />
 	</subpackage>
 	<subpackage name="docs">

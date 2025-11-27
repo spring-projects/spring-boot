@@ -45,6 +45,11 @@ public class TaskExecutionProperties {
 	private Mode mode = Mode.AUTO;
 
 	/**
+	 * Whether to propagate the current context to task executions.
+	 */
+	private boolean propagateContext;
+
+	/**
 	 * Prefix to use for the names of newly created threads.
 	 */
 	private String threadNamePrefix = "task-";
@@ -67,6 +72,14 @@ public class TaskExecutionProperties {
 
 	public void setMode(Mode mode) {
 		this.mode = mode;
+	}
+
+	public boolean getPropagateContext() {
+		return this.propagateContext;
+	}
+
+	public void setPropagateContext(boolean propagateContext) {
+		this.propagateContext = propagateContext;
 	}
 
 	public String getThreadNamePrefix() {

@@ -29,8 +29,9 @@ Observability support relies on the https://github.com/micrometer-metrics/contex
 By default, javadoc:java.lang.ThreadLocal[] values are not automatically reinstated in reactive operators.
 This behavior is controlled with the configprop:spring.reactor.context-propagation[] property, which can be set to `auto` to enable automatic propagation.
 
-If you're working with javadoc:org.springframework.scheduling.annotation.Async[format=annotation] methods or use an javadoc:org.springframework.core.task.AsyncTaskExecutor[], you have to register the javadoc:org.springframework.core.task.support.ContextPropagatingTaskDecorator[] on the executor, otherwise the observability context is lost when switching threads.
-This can be done using this configuration:
+If you're working with javadoc:org.springframework.scheduling.annotation.Async[format=annotation] methods and the javadoc:org.springframework.core.task.AsyncTaskExecutor[] is auto-configured, you have to opt-in for context propagation using the configprop:spring.task.execution.propagate-context[] property.
+
+If you are configuring the javadoc:org.springframework.core.task.AsyncTaskExecutor[] yourself, then you need to register a javadoc:org.springframework.core.task.support.ContextPropagatingTaskDecorator[] bean, as shown in the following example:
 
 include-code::ContextPropagationConfiguration[]
 

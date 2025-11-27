@@ -30,6 +30,7 @@ dependencies {
 
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("org.aspectj:aspectjweaver")
+	optional("io.micrometer:context-propagation")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("javax.money:money-api")
 	optional("org.springframework:spring-web")
