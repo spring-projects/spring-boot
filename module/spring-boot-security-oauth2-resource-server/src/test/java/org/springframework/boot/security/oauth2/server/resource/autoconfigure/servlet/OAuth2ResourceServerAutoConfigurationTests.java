@@ -70,10 +70,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.FactorGrantedAuthority;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.JoseHeaderNames;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.jwt.JwtTypeValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
@@ -745,6 +747,59 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	void customTypeValidatorCanReplaceDefaultWhenUsingIssuerUri() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		String issuerUri = "http://" + this.server.getHostName() + ":" + this.server.getPort() + "/" + path;
+		this.contextRunner.withPropertyValues("spring.security.oauth2.resourceserver.jwt.issuer-uri=" + issuerUri)
+			.withUserConfiguration(CustomJwtTypeValidatorConfig.class)
+			.run((context) -> {
+				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
+				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
+					.getField(supplierJwtDecoderBean, "delegate");
+				assertThat(jwtDecoderSupplier).isNotNull();
+				JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
+				assertThat(context).hasBean("customJwtTypeValidator");
+				OAuth2TokenValidator<Jwt> customValidator = (OAuth2TokenValidator<Jwt>) context
+					.getBean("customJwtTypeValidator");
+				validate(jwt().claim("iss", URI.create(issuerUri).toURL()).header(JoseHeaderNames.TYP, "custom-type"),
+						jwtDecoder,
+						(validators) -> assertThat(validators).contains(customValidator)
+							.satisfiesOnlyOnce(
+									(validator) -> assertThat(validator).isInstanceOf(JwtTypeValidator.class)));
+			});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void customTypeValidatorCanReplaceDefaultWhenUsingJwkSetUri() throws Exception {
+		this.server = new MockWebServer();
+		this.server.start();
+		String path = "test";
+		String issuer = this.server.url(path).toString();
+		String cleanIssuerPath = cleanIssuerPath(issuer);
+		setupMockResponse(cleanIssuerPath);
+		this.contextRunner
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+			.withUserConfiguration(CustomJwtTypeValidatorConfig.class)
+			.run((context) -> {
+				JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
+				assertThat(context).hasBean("customJwtTypeValidator");
+				OAuth2TokenValidator<Jwt> customValidator = (OAuth2TokenValidator<Jwt>) context
+					.getBean("customJwtTypeValidator");
+				validate(jwt().header(JoseHeaderNames.TYP, "custom-type"), jwtDecoder,
+						(validators) -> assertThat(validators).contains(customValidator)
+							.satisfiesOnlyOnce(
+									(validator) -> assertThat(validator).isInstanceOf(JwtTypeValidator.class)));
+			});
+	}
+
 	private @Nullable Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
 		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
@@ -814,7 +869,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
 			.getField(jwtDecoder, "jwtValidator");
 		assertThat(jwtValidator).isNotNull();
-		assertThat(jwtValidator.validate(builder.build()).hasErrors()).isFalse();
+		assertThat(jwtValidator.validate(builder.build()).getErrors()).isEmpty();
 		validatorsConsumer.accept(extractValidators(jwtValidator));
 	}
 
@@ -900,6 +955,16 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		@Bean
 		JwtClaimValidator<String> customJwtClaimValidator() {
 			return new JwtClaimValidator<>("custom_claim", "custom_claim_value"::equals);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomJwtTypeValidatorConfig {
+
+		@Bean
+		JwtTypeValidator customJwtTypeValidator() {
+			return new JwtTypeValidator("custom-type");
 		}
 
 	}

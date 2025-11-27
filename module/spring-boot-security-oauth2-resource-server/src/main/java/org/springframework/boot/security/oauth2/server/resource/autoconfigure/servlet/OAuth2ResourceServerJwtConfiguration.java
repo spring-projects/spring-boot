@@ -41,13 +41,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder.JwkSetUriJwtDecoderBuilder;
@@ -97,9 +97,13 @@ class OAuth2ResourceServerJwtConfiguration {
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			NimbusJwtDecoder nimbusJwtDecoder = builder.build();
 			String issuerUri = this.properties.getIssuerUri();
-			OAuth2TokenValidator<Jwt> defaultValidator = (issuerUri != null)
-					? JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators.createDefault();
-			nimbusJwtDecoder.setJwtValidator(getValidators(defaultValidator));
+			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
+			if (issuerUri != null) {
+				validators.add(new JwtIssuerValidator(issuerUri));
+			}
+			validators.addAll(getValidators());
+			nimbusJwtDecoder.setJwtValidator(validators.isEmpty() ? JwtValidators.createDefault()
+					: JwtValidators.createDefaultWithValidators(validators));
 			return nimbusJwtDecoder;
 		}
 
@@ -109,18 +113,17 @@ class OAuth2ResourceServerJwtConfiguration {
 			}
 		}
 
-		private OAuth2TokenValidator<Jwt> getValidators(OAuth2TokenValidator<Jwt> defaultValidator) {
+		private List<OAuth2TokenValidator<Jwt>> getValidators() {
 			List<String> audiences = this.properties.getAudiences();
 			if (CollectionUtils.isEmpty(audiences) && this.additionalValidators.isEmpty()) {
-				return defaultValidator;
+				return Collections.emptyList();
 			}
 			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
-			validators.add(defaultValidator);
 			if (!CollectionUtils.isEmpty(audiences)) {
 				validators.add(audValidator(audiences));
 			}
 			validators.addAll(this.additionalValidators);
-			return new DelegatingOAuth2TokenValidator<>(validators);
+			return validators;
 		}
 
 		private JwtClaimValidator<List<String>> audValidator(List<String> audiences) {
@@ -139,7 +142,9 @@ class OAuth2ResourceServerJwtConfiguration {
 			NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(publicKey)
 				.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm()))
 				.build();
-			jwtDecoder.setJwtValidator(getValidators(JwtValidators.createDefault()));
+			List<OAuth2TokenValidator<Jwt>> validators = getValidators();
+			jwtDecoder.setJwtValidator(validators.isEmpty() ? JwtValidators.createDefault()
+					: JwtValidators.createDefaultWithValidators(validators));
 			return jwtDecoder;
 		}
 
@@ -168,7 +173,10 @@ class OAuth2ResourceServerJwtConfiguration {
 				JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder.withIssuerLocation(issuerUri);
 				customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 				NimbusJwtDecoder jwtDecoder = builder.build();
-				jwtDecoder.setJwtValidator(getValidators(JwtValidators.createDefaultWithIssuer(issuerUri)));
+				List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
+				validators.add(new JwtIssuerValidator(issuerUri));
+				validators.addAll(getValidators());
+				jwtDecoder.setJwtValidator(JwtValidators.createDefaultWithValidators(validators));
 				return jwtDecoder;
 			});
 		}
