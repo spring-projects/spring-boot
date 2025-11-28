@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -42,6 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Michael Berry
  */
 class MetricsAutoConfigurationTests {
 
@@ -83,6 +85,20 @@ class MetricsAutoConfigurationTests {
 	void meterRegistryCloserShouldCloseRegistryOnShutdown() {
 		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class).run((context) -> {
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			assertThat(meterRegistry.isClosed()).isFalse();
+			context.close();
+			assertThat(meterRegistry.isClosed()).isTrue();
+		});
+	}
+
+	@Test
+	void meterRegistryCloserShouldNotCloseOnNonRootContextClosing() {
+		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class).run((context) -> {
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			GenericApplicationContext childContext = new GenericApplicationContext();
+			childContext.setParent(context);
+			childContext.refresh();
+			childContext.close();
 			assertThat(meterRegistry.isClosed()).isFalse();
 			context.close();
 			assertThat(meterRegistry.isClosed()).isTrue();
