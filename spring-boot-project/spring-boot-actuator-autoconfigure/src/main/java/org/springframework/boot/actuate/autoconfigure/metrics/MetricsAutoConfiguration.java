@@ -70,8 +70,8 @@ public class MetricsAutoConfiguration {
 	}
 
 	@Bean
-	MeterRegistryCloser meterRegistryCloser() {
-		return new MeterRegistryCloser();
+	MeterRegistryCloser meterRegistryCloser(ApplicationContext context) {
+		return new MeterRegistryCloser(context);
 	}
 
 	/**
@@ -80,12 +80,19 @@ public class MetricsAutoConfiguration {
 	 */
 	static class MeterRegistryCloser implements ApplicationListener<ContextClosedEvent> {
 
+		private final ApplicationContext context;
+
+		private final Iterable<MeterRegistry> meterRegistries;
+
+		MeterRegistryCloser(ApplicationContext context) {
+			this.meterRegistries = context.getBeansOfType(MeterRegistry.class).values();
+			this.context = context;
+		}
+
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
-			if (event.getApplicationContext().getParent() == null) {
-				for (MeterRegistry meterRegistry : event.getApplicationContext()
-					.getBeansOfType(MeterRegistry.class)
-					.values()) {
+			if (this.context.equals(event.getApplicationContext())) {
+				for (MeterRegistry meterRegistry : this.meterRegistries) {
 					if (!meterRegistry.isClosed()) {
 						meterRegistry.close();
 					}

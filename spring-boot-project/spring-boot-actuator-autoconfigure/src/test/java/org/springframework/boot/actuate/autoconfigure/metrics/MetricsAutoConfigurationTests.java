@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -92,17 +91,21 @@ class MetricsAutoConfigurationTests {
 	}
 
 	@Test
-	void meterRegistryCloserShouldNotCloseOnNonRootContextClosing() {
-		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class).run((context) -> {
-			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			GenericApplicationContext childContext = new GenericApplicationContext();
-			childContext.setParent(context);
-			childContext.refresh();
-			childContext.close();
-			assertThat(meterRegistry.isClosed()).isFalse();
-			context.close();
-			assertThat(meterRegistry.isClosed()).isTrue();
+	void meterRegistryCloserShouldOnlyCloseRegistriesBelongingToContextBeingClosed() {
+		MeterRegistry parentMeterRegistry = new SimpleMeterRegistry();
+		MeterRegistry childMeterRegistry = new SimpleMeterRegistry();
+		this.contextRunner.withBean(MeterRegistry.class, () -> parentMeterRegistry).run((parent) -> {
+			this.contextRunner.withBean(MeterRegistry.class, () -> childMeterRegistry)
+				.withParent(parent)
+				.run((child) -> {
+					assertThat(childMeterRegistry.isClosed()).isFalse();
+					assertThat(parentMeterRegistry.isClosed()).isFalse();
+				});
+			assertThat(childMeterRegistry.isClosed()).isTrue();
+			assertThat(parentMeterRegistry.isClosed()).isFalse();
 		});
+		assertThat(childMeterRegistry.isClosed()).isTrue();
+		assertThat(parentMeterRegistry.isClosed()).isTrue();
 	}
 
 	@Configuration(proxyBeanMethods = false)
