@@ -71,6 +71,7 @@ import org.gradle.api.tasks.VerificationException;
  * @author Phillip Webb
  * @author Dmytro Nosan
  * @author Moritz Halbritter
+ * @author Stefano Cordio
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -95,6 +96,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.beanMethods(annotationClassFor(CONDITIONAL_ON_CLASS, CONDITIONAL_ON_CLASS_ANNOTATION))));
 		getRules().addAll(whenMainSources(() -> ArchitectureRules.configurationProperties(
 				annotationClassFor(DEPRECATED_CONFIGURATION_PROPERTY, DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION))));
+		getRules().addAll(whenMainSources(() -> Collections.singletonList(
+				ArchitectureRules.allCustomAssertionMethodsNotReturningSelfShouldBeAnnotatedWithCheckReturnValue())));
 		getRules().addAll(and(getNullMarkedEnabled(), isMainSourceSet()).map(whenTrue(() -> Collections.singletonList(
 				ArchitectureRules.packagesShouldBeAnnotatedWithNullMarked(getNullMarkedIgnoredPackages().get())))));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
