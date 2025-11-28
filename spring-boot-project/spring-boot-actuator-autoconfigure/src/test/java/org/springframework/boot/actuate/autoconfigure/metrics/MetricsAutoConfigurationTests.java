@@ -42,6 +42,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Michael Berry
  */
 class MetricsAutoConfigurationTests {
 
@@ -87,6 +88,24 @@ class MetricsAutoConfigurationTests {
 			context.close();
 			assertThat(meterRegistry.isClosed()).isTrue();
 		});
+	}
+
+	@Test
+	void meterRegistryCloserShouldOnlyCloseRegistriesBelongingToContextBeingClosed() {
+		MeterRegistry parentMeterRegistry = new SimpleMeterRegistry();
+		MeterRegistry childMeterRegistry = new SimpleMeterRegistry();
+		this.contextRunner.withBean(MeterRegistry.class, () -> parentMeterRegistry).run((parent) -> {
+			this.contextRunner.withBean(MeterRegistry.class, () -> childMeterRegistry)
+				.withParent(parent)
+				.run((child) -> {
+					assertThat(childMeterRegistry.isClosed()).isFalse();
+					assertThat(parentMeterRegistry.isClosed()).isFalse();
+				});
+			assertThat(childMeterRegistry.isClosed()).isTrue();
+			assertThat(parentMeterRegistry.isClosed()).isFalse();
+		});
+		assertThat(childMeterRegistry.isClosed()).isTrue();
+		assertThat(parentMeterRegistry.isClosed()).isTrue();
 	}
 
 	@Configuration(proxyBeanMethods = false)
