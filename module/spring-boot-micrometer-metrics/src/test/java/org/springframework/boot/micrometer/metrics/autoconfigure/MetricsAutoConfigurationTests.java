@@ -31,9 +31,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration.MeterRegistryCloser;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationHandlerGroup;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -47,6 +50,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Michael Berry
  */
 class MetricsAutoConfigurationTests {
 
@@ -94,6 +98,21 @@ class MetricsAutoConfigurationTests {
 			assertThat(meterRegistry.isClosed()).isTrue();
 		});
 	}
+
+	@Test
+	void meterRegistryCloserShouldNotCloseOnNonRootContextClosing() {
+		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class).run((context) -> {
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			GenericApplicationContext childContext = new GenericApplicationContext();
+			childContext.setParent(context);
+			childContext.refresh();
+			childContext.close();
+			assertThat(meterRegistry.isClosed()).isFalse();
+			context.close();
+			assertThat(meterRegistry.isClosed()).isTrue();
+		});
+	}
+
 
 	@Test
 	void supplyHandlerAndGroup() {

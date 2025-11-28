@@ -48,6 +48,7 @@ import org.springframework.core.annotation.Order;
  * @author Stephane Nicoll
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Michael Berry
  * @since 4.0.0
  */
 @AutoConfiguration(before = CompositeMeterRegistryAutoConfiguration.class)
@@ -108,9 +109,11 @@ public final class MetricsAutoConfiguration {
 
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
-			for (MeterRegistry meterRegistry : this.meterRegistries) {
-				if (!meterRegistry.isClosed()) {
-					meterRegistry.close();
+			if(event.getApplicationContext().getParent() == null) {
+				for (MeterRegistry meterRegistry : this.meterRegistries) {
+					if (!meterRegistry.isClosed()) {
+						meterRegistry.close();
+					}
 				}
 			}
 		}
