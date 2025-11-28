@@ -25,6 +25,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
+import org.springframework.http.HttpStatus
 import java.time.Duration
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -32,8 +33,9 @@ class MySpringBootTests(@Autowired val template: TestRestTemplate) {
 
 	@Test
 	fun testRequest() {
-		val headers = template.getForEntity("/example", String::class.java).headers
-		assertThat(headers.location).hasHost("other.example.com")
+		val response = template.getForEntity("/example", String::class.java)
+		assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+		// Other assertions to verify the response
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
