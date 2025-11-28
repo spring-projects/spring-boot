@@ -1,0 +1,26 @@
+# Redis configuration properties
+# Uncomment and modify these properties to enable Redis auto-configuration
+
+# Enable Redis auto-configuration
+# spring.redis.enabled=true
+
+# Redis server host
+# spring.redis.host=localhost
+
+# Redis server port
+# spring.redis.port=6379
+
+# Redis connection timeout in milliseconds
+# spring.redis.timeout=2000
+
+# Redis username (for Redis 6+ with ACLs)
+# spring.redis.username=default
+
+# Redis password
+# spring.redis.password=yourpassword
+
+# Redis pool configuration
+# spring.redis.max-total=8
+# spring.redis.max-idle=8
+# spring.redis.min-idle=0
+# spring.redis.max-wait-millis=-1
