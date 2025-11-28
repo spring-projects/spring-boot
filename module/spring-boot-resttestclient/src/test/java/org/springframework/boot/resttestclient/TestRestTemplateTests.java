@@ -121,6 +121,14 @@ class TestRestTemplateTests {
 	}
 
 	@Test
+	void getRootUriRootUriSetViaLocalTestWebServer() {
+		LocalTestWebServer localTestWebServer = LocalTestWebServer.of(Scheme.HTTPS, 7070);
+		RestTemplateBuilder delegate = new RestTemplateBuilder()
+			.uriTemplateHandler(localTestWebServer.uriBuilderFactory());
+		assertThat(new TestRestTemplate(delegate).getRootUri()).isEqualTo("https://localhost:7070");
+	}
+
+	@Test
 	void getRootUriRootUriNotSet() {
 		assertThat(new TestRestTemplate().getRootUri()).isEmpty();
 	}

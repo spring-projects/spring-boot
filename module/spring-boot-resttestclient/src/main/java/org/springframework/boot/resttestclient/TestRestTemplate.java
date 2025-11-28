@@ -193,7 +193,7 @@ public class TestRestTemplate {
 		if (uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) {
 			return rootHandler.getRootUri();
 		}
-		return "";
+		return uriTemplateHandler.expand("").toString();
 	}
 
 	/**
