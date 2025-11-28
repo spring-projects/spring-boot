@@ -63,6 +63,19 @@ class RedisHealthIndicatorTests {
 	}
 
 	@Test
+	void redisIsUpWithMissingVersion() {
+		Properties info = new Properties();
+		RedisConnection redisConnection = mock(RedisConnection.class);
+		RedisServerCommands serverCommands = mock(RedisServerCommands.class);
+		given(redisConnection.serverCommands()).willReturn(serverCommands);
+		given(serverCommands.info()).willReturn(info);
+		DataRedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("version", "unknown");
+	}
+
+	@Test
 	void redisIsDown() {
 		RedisConnection redisConnection = mock(RedisConnection.class);
 		RedisServerCommands serverCommands = mock(RedisServerCommands.class);

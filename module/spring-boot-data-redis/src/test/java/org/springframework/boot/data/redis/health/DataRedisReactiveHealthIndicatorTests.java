@@ -69,6 +69,23 @@ class DataRedisReactiveHealthIndicatorTests {
 	}
 
 	@Test
+	void redisIsUpWithMissingVersion() {
+		Properties info = new Properties();
+		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
+		given(redisConnection.closeLater()).willReturn(Mono.empty());
+		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
+		given(commands.info("server")).willReturn(Mono.just(info));
+		DataRedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
+		Mono<Health> health = healthIndicator.health();
+		StepVerifier.create(health).consumeNextWith((h) -> {
+			assertThat(h.getStatus()).isEqualTo(Status.UP);
+			assertThat(h.getDetails()).containsOnlyKeys("version");
+			assertThat(h.getDetails()).containsEntry("version", "unknown");
+		}).expectComplete().verify(Duration.ofSeconds(30));
+		then(redisConnection).should().closeLater();
+	}
+
+	@Test
 	void healthWhenClusterStateIsAbsentShouldBeUp() {
 		ReactiveRedisConnectionFactory redisConnectionFactory = createClusterConnectionFactory(null);
 		DataRedisReactiveHealthIndicator healthIndicator = new DataRedisReactiveHealthIndicator(redisConnectionFactory);
