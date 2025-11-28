@@ -33,7 +33,9 @@ final class DataRedisHealth {
 	}
 
 	static Health.Builder up(Health.Builder builder, Properties info) {
-		builder.withDetail("version", info.getProperty("redis_version"));
+		info.forEach((key, value) -> {
+			builder.withDetail(String.valueOf(key), value);
+		});
 		return builder.up();
 	}
 
