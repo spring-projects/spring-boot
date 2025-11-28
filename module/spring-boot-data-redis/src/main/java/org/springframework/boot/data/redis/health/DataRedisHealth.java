@@ -33,7 +33,7 @@ final class DataRedisHealth {
 	}
 
 	static Health.Builder up(Health.Builder builder, Properties info) {
-		builder.withDetail("version", info.getProperty("redis_version"));
+		builder.withDetail("version", info.getProperty("redis_version", "unknown"));
 		return builder.up();
 	}
 
