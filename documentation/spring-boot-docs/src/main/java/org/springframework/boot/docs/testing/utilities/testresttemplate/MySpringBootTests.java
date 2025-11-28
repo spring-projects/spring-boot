@@ -28,7 +28,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,8 +42,9 @@ class MySpringBootTests {
 
 	@Test
 	void testRequest() {
-		HttpHeaders headers = this.template.getForEntity("/example", String.class).getHeaders();
-		assertThat(headers.getLocation()).hasHost("other.example.com");
+		ResponseEntity<String> response = this.template.getForEntity("/example", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		// Other assertions to verify the response
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
