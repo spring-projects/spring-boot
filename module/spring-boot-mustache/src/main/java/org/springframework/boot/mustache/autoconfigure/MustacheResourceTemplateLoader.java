@@ -18,6 +18,8 @@ package org.springframework.boot.mustache.autoconfigure;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Compiler;
@@ -45,7 +47,7 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 
 	private String suffix = "";
 
-	private String charSet = "UTF-8";
+	private Charset charSet = StandardCharsets.UTF_8;
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader(null);
 
@@ -61,7 +63,7 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 	 * Set the charset.
 	 * @param charSet the charset
 	 */
-	public void setCharset(String charSet) {
+	public void setCharset(Charset charSet) {
 		this.charSet = charSet;
 	}
 
