@@ -147,7 +147,7 @@ class BootArchiveSupport {
 	}
 
 	private @Nullable Integer asUnixNumeric(Property<ConfigurableFilePermissions> permissions) {
-		return permissions.isPresent() ? permissions.get().toUnixNumeric() : null;
+		return permissions.map(ConfigurableFilePermissions::toUnixNumeric).getOrNull();
 	}
 
 	private @Nullable Integer getDirMode(CopySpec copySpec) {
