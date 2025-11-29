@@ -124,6 +124,12 @@ public class MustacheProperties {
 		return this.charset;
 	}
 
+	/**
+	 * Get the charset name.
+	 * @return the charset name
+	 * @deprecated since 4.1.0 in favor of {@link #getCharset()}
+	 */
+	@Deprecated(since = "4.1.0")
 	public String getCharsetName() {
 		return this.charset.name();
 	}
