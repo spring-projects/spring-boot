@@ -405,6 +405,24 @@
         "reason": "Wavefront is end-of-life.",
         "since": "4.0.0"
       }
+    },
+    {
+      "name": "management.endpoint.app-overview.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable the app-overview endpoint.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.endpoint.app-overview.show-profiles",
+      "type": "java.lang.Boolean",
+      "description": "Whether to show active profiles in the app-overview endpoint.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.endpoint.app-overview.show-version",
+      "type": "java.lang.Boolean",
+      "description": "Whether to show app version in the app-overview endpoint.",
+      "defaultValue": true
     }
   ],
   "hints": [
