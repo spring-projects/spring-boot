@@ -62,6 +62,17 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 	/**
 	 * Set the charset.
 	 * @param charSet the charset
+	 * @deprecated since 4.1.0 in favor of {@link #setCharset(Charset)}
+	 */
+	@Deprecated(since = "4.1.0")
+	public void setCharset(String charSet) {
+		this.charSet = Charset.forName(charSet);
+	}
+
+	/**
+	 * Set the charset.
+	 * @param charSet the charset
+	 * @since 4.1.0
 	 */
 	public void setCharset(Charset charSet) {
 		this.charSet = charSet;
