@@ -44,6 +44,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.boot.build.architecture.annotations.TestConditionalOnClass;
+import org.springframework.boot.build.architecture.annotations.TestConditionalOnMissingBean;
+import org.springframework.boot.build.architecture.annotations.TestConfigurationProperties;
+import org.springframework.boot.build.architecture.annotations.TestConfigurationPropertiesBinding;
 import org.springframework.boot.build.architecture.annotations.TestDeprecatedConfigurationProperty;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -207,6 +210,29 @@ class ArchitectureCheckTests {
 
 	@ParameterizedTest(name = "{0}")
 	@EnumSource(Task.class)
+	void whenClassCallsCollectorsToListShouldFailAndWriteReport(Task task) throws IOException {
+		prepareTask(task, "collectors/toList");
+		buildAndFail(this.gradleBuild, task, "because java.util.stream.Stream.toList() should be used instead");
+	}
+
+	@ParameterizedTest(name = "{0}")
+	@EnumSource(Task.class)
+	void whenClassCallsUrlEncoderWithStringEncodingShouldFailAndWriteReport(Task task) throws IOException {
+		prepareTask(task, "url/encode");
+		buildAndFail(this.gradleBuild, task,
+				"because java.net.URLEncoder.encode(String s, Charset charset) should be used instead");
+	}
+
+	@ParameterizedTest(name = "{0}")
+	@EnumSource(Task.class)
+	void whenClassCallsUrlDecoderWithStringEncodingShouldFailAndWriteReport(Task task) throws IOException {
+		prepareTask(task, "url/decode");
+		buildAndFail(this.gradleBuild, task,
+				"because java.net.URLDecoder.decode(String s, Charset charset) should be used instead");
+	}
+
+	@ParameterizedTest(name = "{0}")
+	@EnumSource(Task.class)
 	void whenClassCallsStringToUpperCaseWithoutLocaleShouldFailAndWriteReport(Task task) throws IOException {
 		prepareTask(task, "string/toUpperCase");
 		buildAndFail(this.gradleBuild, task, "because String.toUpperCase(Locale.ROOT) should be used instead");
@@ -231,6 +257,81 @@ class ArchitectureCheckTests {
 	void whenClassCallsStringToUpperCaseWithLocaleShouldSucceedAndWriteEmptyReport(Task task) throws IOException {
 		prepareTask(task, "string/toUpperCaseWithLocale");
 		build(this.gradleBuild, task);
+	}
+
+	@Test
+	void whenConditionalOnMissingBeanWithTypeSameAsMethodReturnTypeShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "conditionalonmissingbean/valueonly", "annotations");
+		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConditionalOnMissingBeanAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN,
+				"should not specify only a value that is the same as the method's return type");
+	}
+
+	@ParameterizedTest(name = "{0}")
+	@EnumSource(Task.class)
+	void whenConditionalOnMissingBeanWithTypeAttributeShouldSucceedAndWriteEmptyReport(Task task) throws IOException {
+		prepareTask(task, "conditionalonmissingbean/withtype", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT), task);
+	}
+
+	@ParameterizedTest(name = "{0}")
+	@EnumSource(Task.class)
+	void whenConditionalOnMissingBeanWithNameAttributeShouldSucceedAndWriteEmptyReport(Task task) throws IOException {
+		prepareTask(task, "conditionalonmissingbean/withname", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT), task);
+	}
+
+	@Test
+	void whenClassLevelConfigurationPropertiesContainsOnlyPrefixShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/classprefixonly", "annotations");
+		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN,
+				"should specify implicit 'value' attribute other than explicit 'prefix' attribute");
+	}
+
+	@Test
+	void whenClassLevelConfigurationPropertiesContainsPrefixAndIgnoreShouldSucceedAndWriteEmptyReport()
+			throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/classprefixandignore", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenClassLevelConfigurationPropertiesContainsOnlyValueShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/classvalueonly", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenMethodLevelConfigurationPropertiesContainsOnlyPrefixShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/methodprefixonly", "annotations");
+		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN,
+				"should specify implicit 'value' attribute other than explicit 'prefix' attribute");
+	}
+
+	@Test
+	void whenMethodLevelConfigurationPropertiesContainsPrefixAndIgnoreShouldSucceedAndWriteEmptyReport()
+			throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/methodprefixandignore", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenMethodLevelConfigurationPropertiesContainsOnlyValueShouldSucceedAndWriteEmptyReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/methodvalueonly", "annotations");
+		build(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenConfigurationPropertiesBindingBeanMethodIsNotStaticShouldFailAndWriteReport() throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/bindingnonstatic", "annotations");
+		buildAndFail(this.gradleBuild.withDependencies(SPRING_CONTEXT).withConfigurationPropertiesBindingAnnotation(),
+				Task.CHECK_ARCHITECTURE_MAIN, "does not have modifier STATIC");
 	}
 
 	@ParameterizedTest(name = "{0}")
@@ -327,8 +428,7 @@ class ArchitectureCheckTests {
 	@Test
 	void whenConditionalOnClassUsedOnBeanMethodsWithMainSourcesShouldFailAndWriteReport() throws IOException {
 		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "conditionalonclass", "annotations");
-		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT)
-			.withConditionalOnClassAnnotation(TestConditionalOnClass.class.getName());
+		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT).withConditionalOnClassAnnotation();
 		buildAndFail(gradleBuild, Task.CHECK_ARCHITECTURE_MAIN,
 				"because @ConditionalOnClass on @Bean methods is ineffective - it doesn't prevent"
 						+ " the method signature from being loaded. Such condition need to be placed"
@@ -338,16 +438,15 @@ class ArchitectureCheckTests {
 	@Test
 	void whenConditionalOnClassUsedOnBeanMethodsWithTestSourcesShouldSucceedAndWriteEmptyReport() throws IOException {
 		prepareTask(Task.CHECK_ARCHITECTURE_TEST, "conditionalonclass", "annotations");
-		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT)
-			.withConditionalOnClassAnnotation(TestConditionalOnClass.class.getName());
+		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT).withConditionalOnClassAnnotation();
 		build(gradleBuild, Task.CHECK_ARCHITECTURE_TEST);
 	}
 
 	@Test
 	void whenDeprecatedConfigurationPropertyIsMissingSinceShouldFailAndWriteReport() throws IOException {
-		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties", "annotations");
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "configurationproperties/deprecatedsince", "annotations");
 		GradleBuild gradleBuild = this.gradleBuild.withDependencies(SPRING_CONTEXT)
-			.withDeprecatedConfigurationPropertyAnnotation(TestDeprecatedConfigurationProperty.class.getName());
+			.withDeprecatedConfigurationPropertyAnnotation();
 		buildAndFail(gradleBuild, Task.CHECK_ARCHITECTURE_MAIN,
 				"should include a non-empty 'since' attribute of @DeprecatedConfigurationProperty",
 				"DeprecatedConfigurationPropertySince.getProperty");
@@ -454,19 +553,33 @@ class ArchitectureCheckTests {
 			return this;
 		}
 
-		GradleBuild withConditionalOnClassAnnotation(String annotationClass) {
-			for (Task task : Task.values()) {
-				configureTask(task, (configuration) -> configuration
-					.withAnnotation(ArchitectureCheck.CONDITIONAL_ON_CLASS, annotationClass));
-			}
+		GradleBuild withConditionalOnClassAnnotation() {
+			configureTasks(ArchitectureCheckAnnotation.CONDITIONAL_ON_CLASS.name(),
+					TestConditionalOnClass.class.getName());
 			return this;
 		}
 
-		GradleBuild withDeprecatedConfigurationPropertyAnnotation(String annotationClass) {
-			for (Task task : Task.values()) {
-				configureTask(task, (configuration) -> configuration
-					.withAnnotation(ArchitectureCheck.DEPRECATED_CONFIGURATION_PROPERTY, annotationClass));
-			}
+		GradleBuild withConditionalOnMissingBeanAnnotation() {
+			configureTasks(ArchitectureCheckAnnotation.CONDITIONAL_ON_MISSING_BEAN.name(),
+					TestConditionalOnMissingBean.class.getName());
+			return this;
+		}
+
+		GradleBuild withConfigurationPropertiesAnnotation() {
+			configureTasks(ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES.name(),
+					TestConfigurationProperties.class.getName());
+			return this;
+		}
+
+		GradleBuild withConfigurationPropertiesBindingAnnotation() {
+			configureTasks(ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES_BINDING.name(),
+					TestConfigurationPropertiesBinding.class.getName());
+			return this;
+		}
+
+		GradleBuild withDeprecatedConfigurationPropertyAnnotation() {
+			configureTasks(ArchitectureCheckAnnotation.DEPRECATED_CONFIGURATION_PROPERTY.name(),
+					TestDeprecatedConfigurationProperty.class.getName());
 			return this;
 		}
 
@@ -478,6 +591,12 @@ class ArchitectureCheckTests {
 		GradleBuild withNullMarkedIgnoredPackages(String... ignorePackages) {
 			configureNullMarkedExtension((nullMarked) -> nullMarked.withIgnoredPackages(ignorePackages));
 			return this;
+		}
+
+		private void configureTasks(String annotationName, String annotationClass) {
+			for (Task task : Task.values()) {
+				configureTask(task, (configuration) -> configuration.withAnnotation(annotationName, annotationClass));
+			}
 		}
 
 		private void configureTask(Task task, UnaryOperator<TaskConfiguration> configurer) {

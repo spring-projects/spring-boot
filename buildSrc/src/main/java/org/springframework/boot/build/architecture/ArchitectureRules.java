@@ -104,25 +104,35 @@ final class ArchitectureRules {
 		rules.add(noClassesShouldLoadResourcesUsingResourceUtils());
 		rules.add(noClassesShouldCallStringToUpperCaseWithoutLocale());
 		rules.add(noClassesShouldCallStringToLowerCaseWithoutLocale());
-		rules.add(conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
 		rules.add(enumSourceShouldNotHaveValueThatIsTheSameAsTypeOfMethodsFirstParameter());
-		rules.add(classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
-		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(conditionsShouldNotBePublic());
-		rules.add(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic());
 		rules.add(autoConfigurationClassesShouldBePublicAndFinal());
 		rules.add(autoConfigurationClassesShouldHaveNoPublicMembers());
 		rules.add(testAutoConfigurationClassesShouldBePackagePrivateAndFinal());
 		return List.copyOf(rules);
 	}
 
-	static List<ArchRule> beanMethods(String annotationName) {
+	static List<ArchRule> beanMethods(String annotationClass) {
 		return List.of(allBeanMethodsShouldReturnNonPrivateType(),
-				allBeanMethodsShouldNotHaveConditionalOnClassAnnotation(annotationName));
+				allBeanMethodsShouldNotHaveConditionalOnClassAnnotation(annotationClass));
 	}
 
-	static List<ArchRule> configurationProperties(String annotationName) {
-		return List.of(allDeprecatedConfigurationPropertiesShouldIncludeSince(annotationName));
+	static List<ArchRule> conditionalOnMissingBean(String annotationClass) {
+		return List
+			.of(conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType(annotationClass));
+	}
+
+	static List<ArchRule> configurationProperties(String annotationClass) {
+		return List.of(classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute(annotationClass),
+				methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute(annotationClass));
+	}
+
+	static List<ArchRule> configurationPropertiesBinding(String annotationClass) {
+		return List.of(allConfigurationPropertiesBindingBeanMethodsShouldBeStatic(annotationClass));
+	}
+
+	static List<ArchRule> configurationPropertiesDeprecation(String annotationClass) {
+		return List.of(allDeprecatedConfigurationPropertiesShouldIncludeSince(annotationClass));
 	}
 
 	private static ArchRule allBeanMethodsShouldReturnNonPrivateType() {
@@ -267,9 +277,10 @@ final class ArchitectureRules {
 			.because(shouldUse("String.toLowerCase(Locale.ROOT)"));
 	}
 
-	private static ArchRule conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType() {
-		return methodsThatAreAnnotatedWith("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean")
-			.should(notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType())
+	private static ArchRule conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType(
+			String annotation) {
+		return methodsThatAreAnnotatedWith(annotation)
+			.should(notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType(annotation))
 			.allowEmptyShould(true);
 	}
 
@@ -279,10 +290,10 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
-	private static ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType() {
+	private static ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType(
+			String annotation) {
 		return check("not specify only a type that is the same as the method's return type", (item, events) -> {
-			JavaAnnotation<JavaMethod> conditionalAnnotation = item
-				.getAnnotationOfType("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean");
+			JavaAnnotation<JavaMethod> conditionalAnnotation = item.getAnnotationOfType(annotation);
 			Map<String, Object> properties = conditionalAnnotation.getProperties();
 			if (!hasProperty("type", properties) && !hasProperty("name", properties)) {
 				conditionalAnnotation.get("value").ifPresent((value) -> {
@@ -300,7 +311,7 @@ final class ArchitectureRules {
 		if (property == null) {
 			return false;
 		}
-		return !property.getClass().isArray() || ((Object[]) property).length > 0;
+		return (property.getClass().isArray()) ? ((Object[]) property).length > 0 : !property.toString().isEmpty();
 	}
 
 	private static ArchRule enumSourceShouldNotHaveValueThatIsTheSameAsTypeOfMethodsFirstParameter() {
@@ -329,33 +340,37 @@ final class ArchitectureRules {
 		});
 	}
 
-	private static ArchRule classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute() {
+	private static ArchRule classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute(
+			String annotationClass) {
 		return ArchRuleDefinition.classes()
 			.that()
-			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationProperties")
-			.should(notSpecifyOnlyPrefixAttributeOfConfigurationProperties())
+			.areAnnotatedWith(annotationClass)
+			.should(notSpecifyOnlyPrefixAttributeOfConfigurationProperties(annotationClass))
 			.allowEmptyShould(true);
 	}
 
-	private static ArchRule methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute() {
+	private static ArchRule methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute(
+			String annotationClass) {
 		return ArchRuleDefinition.methods()
 			.that()
-			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationProperties")
-			.should(notSpecifyOnlyPrefixAttributeOfConfigurationProperties())
+			.areAnnotatedWith(annotationClass)
+			.should(notSpecifyOnlyPrefixAttributeOfConfigurationProperties(annotationClass))
 			.allowEmptyShould(true);
 	}
 
-	private static ArchCondition<? super HasAnnotations<?>> notSpecifyOnlyPrefixAttributeOfConfigurationProperties() {
-		return check("not specify only prefix attribute of @ConfigurationProperties",
-				ArchitectureRules::notSpecifyOnlyPrefixAttributeOfConfigurationProperties);
+	private static ArchCondition<? super HasAnnotations<?>> notSpecifyOnlyPrefixAttributeOfConfigurationProperties(
+			String annotationClass) {
+		return check("not specify only prefix attribute of @ConfigurationProperties", (item,
+				events) -> notSpecifyOnlyPrefixAttributeOfConfigurationProperties(annotationClass, item, events));
 	}
 
-	private static void notSpecifyOnlyPrefixAttributeOfConfigurationProperties(HasAnnotations<?> item,
-			ConditionEvents events) {
-		JavaAnnotation<?> configurationPropertiesAnnotation = item
-			.getAnnotationOfType("org.springframework.boot.context.properties.ConfigurationProperties");
+	private static void notSpecifyOnlyPrefixAttributeOfConfigurationProperties(String annotationClass,
+			HasAnnotations<?> item, ConditionEvents events) {
+		JavaAnnotation<?> configurationPropertiesAnnotation = item.getAnnotationOfType(annotationClass);
 		Map<String, Object> properties = configurationPropertiesAnnotation.getProperties();
-		if (properties.size() == 1 && properties.containsKey("prefix")) {
+		if (hasProperty("prefix", properties) && !hasProperty("value", properties)
+				&& properties.get("ignoreInvalidFields").equals(false)
+				&& properties.get("ignoreUnknownFields").equals(true)) {
 			addViolation(events, item, configurationPropertiesAnnotation.getDescription()
 					+ " should specify implicit 'value' attribute other than explicit 'prefix' attribute");
 		}
@@ -375,9 +390,9 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
-	private static ArchRule allConfigurationPropertiesBindingBeanMethodsShouldBeStatic() {
+	private static ArchRule allConfigurationPropertiesBindingBeanMethodsShouldBeStatic(String annotationClass) {
 		return methodsThatAreAnnotatedWith("org.springframework.context.annotation.Bean").and()
-			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationPropertiesBinding")
+			.areAnnotatedWith(annotationClass)
 			.should()
 			.beStatic()
 			.allowEmptyShould(true);
