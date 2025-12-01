@@ -19,6 +19,7 @@ package org.springframework.boot.restclient;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.web.util.UriBuilder;
@@ -36,20 +37,28 @@ import static org.mockito.Mockito.mock;
  */
 class RootUriBuilderFactoryTests {
 
+	private String rootUri;
+
+	private UriBuilderFactory builderFactory;
+
+	@BeforeEach
+	void setUp() {
+		this.rootUri = "https://example.com";
+		this.builderFactory = new RootUriBuilderFactory(this.rootUri, mock(UriTemplateHandler.class));
+	}
+
 	@Test
 	void uriStringPrefixesRoot() throws URISyntaxException {
-		UriBuilderFactory builderFactory = new RootUriBuilderFactory("https://example.com",
-				mock(UriTemplateHandler.class));
-		UriBuilder builder = builderFactory.uriString("/hello");
+		UriBuilder builder = this.builderFactory.uriString("/hello");
 		assertThat(builder.build()).isEqualTo(new URI("https://example.com/hello"));
 	}
 
 	@Test
 	void uriStringWhenEmptyShouldReturnRoot() throws URISyntaxException {
-		UriBuilderFactory builderFactory = new RootUriBuilderFactory("https://example.com",
-				mock(UriTemplateHandler.class));
-		UriBuilder builder = builderFactory.uriString("");
-		assertThat(builder.build()).isEqualTo(new URI("https://example.com"));
+		UriBuilder builder = this.builderFactory.uriString("");
+
+		URI builtUri = builder.build();
+		assertThat(builtUri).isEqualTo(new URI(this.rootUri));
 	}
 
 }
