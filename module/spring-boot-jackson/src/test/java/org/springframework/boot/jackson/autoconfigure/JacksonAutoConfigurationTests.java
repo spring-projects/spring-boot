@@ -436,9 +436,11 @@ class JacksonAutoConfigurationTests {
 
 	@EnumSource
 	@ParameterizedTest
-	void defaultSerializationInclusion(MapperType mapperType) {
+	void defaultPropertyInclusion(MapperType mapperType) {
 		this.contextRunner.run((context) -> {
 			ObjectMapper mapper = mapperType.getMapper(context);
+			assertThat(mapper.serializationConfig().getDefaultPropertyInclusion().getContentInclusion())
+				.isEqualTo(JsonInclude.Include.USE_DEFAULTS);
 			assertThat(mapper.serializationConfig().getDefaultPropertyInclusion().getValueInclusion())
 				.isEqualTo(JsonInclude.Include.USE_DEFAULTS);
 		});
@@ -446,9 +448,11 @@ class JacksonAutoConfigurationTests {
 
 	@EnumSource
 	@ParameterizedTest
-	void customSerializationInclusion(MapperType mapperType) {
+	void customPropertyInclusion(MapperType mapperType) {
 		this.contextRunner.withPropertyValues("spring.jackson.default-property-inclusion:non_null").run((context) -> {
 			ObjectMapper mapper = mapperType.getMapper(context);
+			assertThat(mapper.serializationConfig().getDefaultPropertyInclusion().getContentInclusion())
+				.isEqualTo(JsonInclude.Include.NON_NULL);
 			assertThat(mapper.serializationConfig().getDefaultPropertyInclusion().getValueInclusion())
 				.isEqualTo(JsonInclude.Include.NON_NULL);
 		});
