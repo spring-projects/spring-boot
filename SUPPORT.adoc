@@ -24,15 +24,6 @@ https://stackoverflow.com/help/how-to-ask[advice on how to ask a good question].
 
 
 
-== Gitter
+== VMware Tanzu Enterprise Support
 
-If you want to discuss something or have a question that isn't suited to Stack Overflow,
-the Spring Boot community chat in the
-https://gitter.im/spring-projects/spring-boot[#spring-boot room on Gitter].
-
-
-
-== VMware Open Source Software Support
-
-If you are interested in more dedicated support, VMware provides
-https://spring.io/support[premium support] for Spring Boot.
+If you are interested in more dedicated support, VMware Tanzu provides https://enterprise.spring.io/[enterprise support] for Spring Boot.
