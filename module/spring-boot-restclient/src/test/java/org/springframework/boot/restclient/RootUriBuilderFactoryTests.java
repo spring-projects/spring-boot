@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link RootUriBuilderFactory}.
  *
  * @author Scott Frederick
+ * @author Hyunwoo Gu
  */
 class RootUriBuilderFactoryTests {
 
@@ -41,6 +42,14 @@ class RootUriBuilderFactoryTests {
 				mock(UriTemplateHandler.class));
 		UriBuilder builder = builderFactory.uriString("/hello");
 		assertThat(builder.build()).isEqualTo(new URI("https://example.com/hello"));
+	}
+
+	@Test
+	void uriStringWhenEmptyShouldReturnRoot() throws URISyntaxException {
+		UriBuilderFactory builderFactory = new RootUriBuilderFactory("https://example.com",
+				mock(UriTemplateHandler.class));
+		UriBuilder builder = builderFactory.uriString("");
+		assertThat(builder.build()).isEqualTo(new URI("https://example.com"));
 	}
 
 }
