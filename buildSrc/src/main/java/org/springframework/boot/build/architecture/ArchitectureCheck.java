@@ -59,8 +59,6 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.VerificationException;
 
-import org.springframework.boot.build.architecture.ArchitectureCheckAnnotations.Annotation;
-
 /**
  * {@link Task} that checks for architecture problems.
  *
@@ -77,22 +75,22 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	public ArchitectureCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
-		getAnnotationClasses().convention(ArchitectureCheckAnnotations.asMap());
+		getAnnotationClasses().convention(ArchitectureCheckAnnotation.asMap());
 		getRules().addAll(getProhibitObjectsRequireNonNull().convention(true)
 			.map(whenTrue(ArchitectureRules::noClassesShouldCallObjectsRequireNonNull)));
 		getRules().addAll(ArchitectureRules.standard());
-		getRules().addAll(whenMainSources(() -> ArchitectureRules.beanMethods(
-				ArchitectureCheckAnnotations.classFor(getAnnotationClasses().get(), Annotation.CONDITIONAL_ON_CLASS))));
-		getRules().addAll(whenMainSources(() -> ArchitectureRules.conditionalOnMissingBean(ArchitectureCheckAnnotations
-			.classFor(getAnnotationClasses().get(), Annotation.CONDITIONAL_ON_MISSING_BEAN))));
-		getRules().addAll(whenMainSources(() -> ArchitectureRules.configurationProperties(ArchitectureCheckAnnotations
-			.classFor(getAnnotationClasses().get(), Annotation.CONFIGURATION_PROPERTIES))));
-		getRules()
-			.addAll(whenMainSources(() -> ArchitectureRules.configurationPropertiesBinding(ArchitectureCheckAnnotations
-				.classFor(getAnnotationClasses().get(), Annotation.CONFIGURATION_PROPERTIES_BINDING))));
-		getRules().addAll(
-				whenMainSources(() -> ArchitectureRules.configurationPropertiesDeprecation(ArchitectureCheckAnnotations
-					.classFor(getAnnotationClasses().get(), Annotation.DEPRECATED_CONFIGURATION_PROPERTY))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.beanMethods(ArchitectureCheckAnnotation
+			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONDITIONAL_ON_CLASS))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.conditionalOnMissingBean(ArchitectureCheckAnnotation
+			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONDITIONAL_ON_MISSING_BEAN))));
+		getRules().addAll(whenMainSources(() -> ArchitectureRules.configurationProperties(ArchitectureCheckAnnotation
+			.classFor(getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES))));
+		getRules().addAll(whenMainSources(
+				() -> ArchitectureRules.configurationPropertiesBinding(ArchitectureCheckAnnotation.classFor(
+						getAnnotationClasses().get(), ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES_BINDING))));
+		getRules().addAll(whenMainSources(
+				() -> ArchitectureRules.configurationPropertiesDeprecation(ArchitectureCheckAnnotation.classFor(
+						getAnnotationClasses().get(), ArchitectureCheckAnnotation.DEPRECATED_CONFIGURATION_PROPERTY))));
 		getRuleDescriptions().set(getRules().map(this::asDescriptions));
 	}
 

@@ -43,7 +43,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import org.springframework.boot.build.architecture.ArchitectureCheckAnnotations.Annotation;
 import org.springframework.boot.build.architecture.annotations.TestConditionalOnClass;
 import org.springframework.boot.build.architecture.annotations.TestConditionalOnMissingBean;
 import org.springframework.boot.build.architecture.annotations.TestConfigurationProperties;
@@ -530,28 +529,31 @@ class ArchitectureCheckTests {
 		}
 
 		GradleBuild withConditionalOnClassAnnotation() {
-			configureTasks(Annotation.CONDITIONAL_ON_CLASS.name(), TestConditionalOnClass.class.getName());
+			configureTasks(ArchitectureCheckAnnotation.CONDITIONAL_ON_CLASS.name(),
+					TestConditionalOnClass.class.getName());
 			return this;
 		}
 
 		GradleBuild withConditionalOnMissingBeanAnnotation() {
-			configureTasks(Annotation.CONDITIONAL_ON_MISSING_BEAN.name(), TestConditionalOnMissingBean.class.getName());
+			configureTasks(ArchitectureCheckAnnotation.CONDITIONAL_ON_MISSING_BEAN.name(),
+					TestConditionalOnMissingBean.class.getName());
 			return this;
 		}
 
 		GradleBuild withConfigurationPropertiesAnnotation() {
-			configureTasks(Annotation.CONFIGURATION_PROPERTIES.name(), TestConfigurationProperties.class.getName());
+			configureTasks(ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES.name(),
+					TestConfigurationProperties.class.getName());
 			return this;
 		}
 
 		GradleBuild withConfigurationPropertiesBindingAnnotation() {
-			configureTasks(Annotation.CONFIGURATION_PROPERTIES_BINDING.name(),
+			configureTasks(ArchitectureCheckAnnotation.CONFIGURATION_PROPERTIES_BINDING.name(),
 					TestConfigurationPropertiesBinding.class.getName());
 			return this;
 		}
 
 		GradleBuild withDeprecatedConfigurationPropertyAnnotation() {
-			configureTasks(Annotation.DEPRECATED_CONFIGURATION_PROPERTY.name(),
+			configureTasks(ArchitectureCheckAnnotation.DEPRECATED_CONFIGURATION_PROPERTY.name(),
 					TestDeprecatedConfigurationProperty.class.getName());
 			return this;
 		}

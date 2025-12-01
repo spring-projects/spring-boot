@@ -23,35 +23,49 @@ import java.util.Map;
  * tests.
  *
  * @author Scott Frederick
+ * @author Stephane Nicoll
  */
-public final class ArchitectureCheckAnnotations {
+public enum ArchitectureCheckAnnotation {
 
-	enum Annotation {
+	/**
+	 * Condition on class check.
+	 */
+	CONDITIONAL_ON_CLASS,
 
-		CONDITIONAL_ON_CLASS, CONDITIONAL_ON_MISSING_BEAN, CONFIGURATION_PROPERTIES, DEPRECATED_CONFIGURATION_PROPERTY,
-		CONFIGURATION_PROPERTIES_BINDING
+	/**
+	 * Condition on missing bean check.
+	 */
+	CONDITIONAL_ON_MISSING_BEAN,
 
-	}
+	/**
+	 * Configuration properties bean.
+	 */
+	CONFIGURATION_PROPERTIES,
 
-	private ArchitectureCheckAnnotations() {
-	}
+	/**
+	 * Deprecated configuration property.
+	 */
+	DEPRECATED_CONFIGURATION_PROPERTY,
 
-	private static final Map<String, String> annotationNameToClassName = Map.of(Annotation.CONDITIONAL_ON_CLASS.name(),
-			"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
-			Annotation.CONDITIONAL_ON_MISSING_BEAN.name(),
+	/**
+	 * Custom implementation to bind configuration properties.
+	 */
+	CONFIGURATION_PROPERTIES_BINDING;
+
+	private static final Map<String, String> annotationNameToClassName = Map.of(CONDITIONAL_ON_CLASS.name(),
+			"org.springframework.boot.autoconfigure.condition.ConditionalOnClass", CONDITIONAL_ON_MISSING_BEAN.name(),
 			"org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean",
-			Annotation.CONFIGURATION_PROPERTIES.name(),
-			"org.springframework.boot.context.properties.ConfigurationProperties",
-			Annotation.DEPRECATED_CONFIGURATION_PROPERTY.name(),
+			CONFIGURATION_PROPERTIES.name(), "org.springframework.boot.context.properties.ConfigurationProperties",
+			DEPRECATED_CONFIGURATION_PROPERTY.name(),
 			"org.springframework.boot.context.properties.DeprecatedConfigurationProperty",
-			Annotation.CONFIGURATION_PROPERTIES_BINDING.name(),
+			CONFIGURATION_PROPERTIES_BINDING.name(),
 			"org.springframework.boot.context.properties.ConfigurationPropertiesBinding");
 
 	static Map<String, String> asMap() {
 		return annotationNameToClassName;
 	}
 
-	static String classFor(Map<String, String> annotationProperty, Annotation annotation) {
+	static String classFor(Map<String, String> annotationProperty, ArchitectureCheckAnnotation annotation) {
 		String name = annotation.name();
 		return annotationProperty.getOrDefault(name, asMap().get(name));
 	}
