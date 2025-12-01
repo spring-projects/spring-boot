@@ -16,9 +16,9 @@
 
 package org.springframework.boot.docs.appendix.configurationmetadata.annotationprocessor.automaticmetadatageneration.source
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.boot.context.properties.ConfigurationPropertiesSource
 
-@ConfigurationPropertiesScan
+@ConfigurationPropertiesSource
 class Host {
 
 	/**
