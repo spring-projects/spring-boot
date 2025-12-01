@@ -47,7 +47,7 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 
 	private String suffix = "";
 
-	private Charset charSet = StandardCharsets.UTF_8;
+	private Charset charset = StandardCharsets.UTF_8;
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader(null);
 
@@ -60,22 +60,23 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 	}
 
 	/**
-	 * Set the charset.
-	 * @param charSet the charset
-	 * @deprecated since 4.1.0 in favor of {@link #setCharset(Charset)}
+	 * Set the {@link Charset} to use.
+	 * @param charset the charset
+	 * @since 4.1.0
 	 */
-	@Deprecated(since = "4.1.0")
-	public void setCharset(String charSet) {
-		this.charSet = Charset.forName(charSet);
+	public void setCharset(Charset charset) {
+		this.charset = charset;
 	}
 
 	/**
-	 * Set the charset.
-	 * @param charSet the charset
-	 * @since 4.1.0
+	 * Set the name of the charset to use.
+	 * @param charset the charset
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #setCharset(Charset)}
 	 */
-	public void setCharset(Charset charSet) {
-		this.charSet = charSet;
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	public void setCharset(String charset) {
+		this.charset = Charset.forName(charset);
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class MustacheResourceTemplateLoader implements TemplateLoader, ResourceL
 	@Override
 	public Reader getTemplate(String name) throws Exception {
 		return new InputStreamReader(this.resourceLoader.getResource(this.prefix + name + this.suffix).getInputStream(),
-				this.charSet);
+				this.charset);
 	}
 
 }

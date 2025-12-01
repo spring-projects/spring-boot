@@ -19,6 +19,7 @@ package org.springframework.boot.mustache.servlet.view;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class MustacheView extends AbstractTemplateView {
 
 	private @Nullable Compiler compiler;
 
-	private @Nullable String charset;
+	private @Nullable Charset charset;
 
 	/**
 	 * Set the Mustache compiler to be used by this view.
@@ -61,11 +62,23 @@ public class MustacheView extends AbstractTemplateView {
 	}
 
 	/**
-	 * Set the charset used for reading Mustache template files.
-	 * @param charset the charset to use for reading template files
+	 * Set the {@link Charset} used for reading Mustache template files.
+	 * @param charset the charset
+	 * @since 4.1.0
 	 */
-	public void setCharset(@Nullable String charset) {
+	public void setCharset(@Nullable Charset charset) {
 		this.charset = charset;
+	}
+
+	/**
+	 * Set the name of the charset used for reading Mustache template files.
+	 * @param charset the charset
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #setCharset(Charset)}
+	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	public void setCharset(@Nullable String charset) {
+		setCharset((charset != null) ? Charset.forName(charset) : null);
 	}
 
 	@Override
