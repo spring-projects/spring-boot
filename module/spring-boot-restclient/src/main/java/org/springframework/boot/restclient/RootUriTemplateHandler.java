@@ -30,6 +30,7 @@ import org.springframework.web.util.UriTemplateHandler;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Hyunwoo Gu
  * @since 4.0.0
  */
 public class RootUriTemplateHandler implements UriTemplateHandler {
@@ -64,7 +65,9 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	String apply(String uriTemplate) {
 		String rootUri = getRootUri();
 		if (rootUri != null && StringUtils.startsWithIgnoreCase(uriTemplate, "/")) {
-			return getRootUri() + uriTemplate;
+			return rootUri + uriTemplate;
+		} else if (rootUri != null && uriTemplate.isBlank()) {
+			return rootUri;
 		}
 		return uriTemplate;
 	}
