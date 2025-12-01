@@ -20,10 +20,8 @@ import java.util.Collection;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.KotlinSerializationJsonHttpMessageConverter;
 
 @SuppressWarnings("deprecation")
@@ -48,32 +46,14 @@ class DefaultServerHttpMessageConvertersCustomizer implements ServerHttpMessageC
 		else {
 			builder.registerDefaults();
 			this.converters.forEach((converter) -> {
-				if (converter instanceof StringHttpMessageConverter) {
-					builder.withStringConverter(converter);
-				}
-				else if (converter instanceof KotlinSerializationJsonHttpMessageConverter) {
+				if (converter instanceof KotlinSerializationJsonHttpMessageConverter) {
 					builder.withKotlinSerializationJsonConverter(converter);
-				}
-				else if (supportsMediaType(converter, MediaType.APPLICATION_JSON)) {
-					builder.withJsonConverter(converter);
-				}
-				else if (supportsMediaType(converter, MediaType.APPLICATION_XML)) {
-					builder.withXmlConverter(converter);
 				}
 				else {
 					builder.addCustomConverter(converter);
 				}
 			});
 		}
-	}
-
-	private static boolean supportsMediaType(HttpMessageConverter<?> converter, MediaType mediaType) {
-		for (MediaType supportedMediaType : converter.getSupportedMediaTypes()) {
-			if (supportedMediaType.equalsTypeAndSubtype(mediaType)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

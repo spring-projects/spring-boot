@@ -40,6 +40,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.graphql.autoconfigure.GraphQlAutoConfiguration;
 import org.springframework.boot.graphql.autoconfigure.GraphQlCorsProperties;
 import org.springframework.boot.graphql.autoconfigure.GraphQlProperties;
+import org.springframework.boot.http.converter.autoconfigure.ServerHttpMessageConvertersCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -60,6 +61,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
@@ -183,17 +186,21 @@ public final class GraphQlWebMvcAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
-				GraphQlProperties properties, ObjectProvider<HttpMessageConverter<?>> converters) {
-			return new GraphQlWebSocketHandler(webGraphQlHandler, getJsonConverter(converters),
+				GraphQlProperties properties, ObjectProvider<ServerHttpMessageConvertersCustomizer> customizers) {
+			return new GraphQlWebSocketHandler(webGraphQlHandler, getJsonConverter(customizers),
 					properties.getWebsocket().getConnectionInitTimeout(), properties.getWebsocket().getKeepAlive());
 		}
 
-		private HttpMessageConverter<Object> getJsonConverter(ObjectProvider<HttpMessageConverter<?>> converters) {
-			return converters.orderedStream()
-				.filter(this::canReadJsonMap)
-				.findFirst()
-				.map(this::asObjectHttpMessageConverter)
-				.orElseThrow(() -> new IllegalStateException("No JSON converter"));
+		private HttpMessageConverter<Object> getJsonConverter(
+				ObjectProvider<ServerHttpMessageConvertersCustomizer> customizers) {
+			ServerBuilder serverBuilder = HttpMessageConverters.forServer().registerDefaults();
+			customizers.forEach((customizer) -> customizer.customize(serverBuilder));
+			for (HttpMessageConverter<?> converter : serverBuilder.build()) {
+				if (canReadJsonMap(converter)) {
+					return asObjectHttpMessageConverter(converter);
+				}
+			}
+			throw new IllegalStateException("No JSON converter");
 		}
 
 		private boolean canReadJsonMap(HttpMessageConverter<?> candidate) {

@@ -32,6 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.StringHttpMessageConverter;
 
 /**
@@ -86,17 +88,36 @@ public final class HttpMessageConvertersAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(StringHttpMessageConverter.class)
 	@EnableConfigurationProperties(HttpMessageConvertersProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		StringHttpMessageConverter stringHttpMessageConverter(HttpMessageConvertersProperties properties) {
-			StringHttpMessageConverter converter = new StringHttpMessageConverter(
-					properties.getStringEncodingCharset());
-			converter.setWriteAcceptCharset(false);
-			return converter;
+		@ConditionalOnMissingBean(StringHttpMessageConverter.class)
+		StringHttpMessageConvertersCustomizer stringHttpMessageConvertersCustomizer(
+				HttpMessageConvertersProperties properties) {
+			return new StringHttpMessageConvertersCustomizer(properties);
+		}
+
+	}
+
+	static class StringHttpMessageConvertersCustomizer
+			implements ClientHttpMessageConvertersCustomizer, ServerHttpMessageConvertersCustomizer {
+
+		StringHttpMessageConverter converter;
+
+		StringHttpMessageConvertersCustomizer(HttpMessageConvertersProperties properties) {
+			this.converter = new StringHttpMessageConverter(properties.getStringEncodingCharset());
+			this.converter.setWriteAcceptCharset(false);
+		}
+
+		@Override
+		public void customize(ClientBuilder builder) {
+			builder.withStringConverter(this.converter);
+		}
+
+		@Override
+		public void customize(ServerBuilder builder) {
+			builder.withStringConverter(this.converter);
 		}
 
 	}

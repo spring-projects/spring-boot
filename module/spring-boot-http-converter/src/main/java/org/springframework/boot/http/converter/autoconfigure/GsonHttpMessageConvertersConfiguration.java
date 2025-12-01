@@ -27,14 +27,16 @@ import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 
 /**
  * Configuration for HTTP Message converters that use Gson.
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Brian Clozel
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Gson.class)
@@ -46,11 +48,30 @@ class GsonHttpMessageConvertersConfiguration {
 	static class GsonHttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		GsonHttpMessageConverter gsonHttpMessageConverter(Gson gson) {
-			GsonHttpMessageConverter converter = new GsonHttpMessageConverter();
-			converter.setGson(gson);
-			return converter;
+		@ConditionalOnMissingBean(GsonHttpMessageConverter.class)
+		GsonHttpConvertersCustomizer gsonHttpMessageConvertersCustomizer(Gson gson) {
+			return new GsonHttpConvertersCustomizer(gson);
+		}
+
+	}
+
+	static class GsonHttpConvertersCustomizer
+			implements ClientHttpMessageConvertersCustomizer, ServerHttpMessageConvertersCustomizer {
+
+		private final GsonHttpMessageConverter converter;
+
+		GsonHttpConvertersCustomizer(Gson gson) {
+			this.converter = new GsonHttpMessageConverter(gson);
+		}
+
+		@Override
+		public void customize(ClientBuilder builder) {
+			builder.withJsonConverter(this.converter);
+		}
+
+		@Override
+		public void customize(ServerBuilder builder) {
+			builder.withJsonConverter(this.converter);
 		}
 
 	}
@@ -80,13 +101,13 @@ class GsonHttpMessageConvertersConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnBean(JacksonJsonHttpMessageConverter.class)
+		@ConditionalOnBean(JacksonHttpMessageConvertersConfiguration.JacksonJsonHttpMessageConvertersCustomizer.class)
 		static class JacksonAvailable {
 
 		}
 
 		@SuppressWarnings("removal")
-		@ConditionalOnBean(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class)
+		@ConditionalOnBean(Jackson2HttpMessageConvertersConfiguration.Jackson2JsonMessageConvertersCustomizer.class)
 		static class Jackson2Available {
 
 		}

@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.http.converter.xml.JacksonXmlHttpMessageConverter;
 
@@ -32,6 +34,7 @@ import org.springframework.http.converter.xml.JacksonXmlHttpMessageConverter;
  * Configuration for HTTP message converters that use Jackson.
  *
  * @author Andy Wilkinson
+ * @author Brian Clozel
  */
 @Configuration(proxyBeanMethods = false)
 class JacksonHttpMessageConvertersConfiguration {
@@ -44,11 +47,11 @@ class JacksonHttpMessageConvertersConfiguration {
 	static class JacksonJsonHttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(
+		@ConditionalOnMissingBean(value = JacksonJsonHttpMessageConverter.class,
 				ignoredType = { "org.springframework.hateoas.server.mvc.TypeConstrainedJacksonJsonHttpMessageConverter",
 						"org.springframework.data.rest.webmvc.alps.AlpsJacksonJsonHttpMessageConverter" })
-		JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter(JsonMapper jsonMapper) {
-			return new JacksonJsonHttpMessageConverter(jsonMapper);
+		JacksonJsonHttpMessageConvertersCustomizer jacksonJsonHttpMessageConvertersCustomizer(JsonMapper jsonMapper) {
+			return new JacksonJsonHttpMessageConvertersCustomizer(jsonMapper);
 		}
 
 	}
@@ -59,9 +62,51 @@ class JacksonHttpMessageConvertersConfiguration {
 	protected static class JacksonXmlHttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public JacksonXmlHttpMessageConverter jacksonXmlHttpMessageConverter(XmlMapper xmlMapper) {
-			return new JacksonXmlHttpMessageConverter(xmlMapper);
+		@ConditionalOnMissingBean(JacksonXmlHttpMessageConverter.class)
+		JacksonXmlHttpMessageConvertersCustomizer jacksonXmlHttpMessageConvertersCustomizer(XmlMapper xmlMapper) {
+			return new JacksonXmlHttpMessageConvertersCustomizer(xmlMapper);
+		}
+
+	}
+
+	static class JacksonJsonHttpMessageConvertersCustomizer
+			implements ClientHttpMessageConvertersCustomizer, ServerHttpMessageConvertersCustomizer {
+
+		private final JsonMapper jsonMapper;
+
+		JacksonJsonHttpMessageConvertersCustomizer(JsonMapper jsonMapper) {
+			this.jsonMapper = jsonMapper;
+		}
+
+		@Override
+		public void customize(ClientBuilder builder) {
+			builder.withJsonConverter(new JacksonJsonHttpMessageConverter(this.jsonMapper));
+		}
+
+		@Override
+		public void customize(ServerBuilder builder) {
+			builder.withJsonConverter(new JacksonJsonHttpMessageConverter(this.jsonMapper));
+		}
+
+	}
+
+	static class JacksonXmlHttpMessageConvertersCustomizer
+			implements ClientHttpMessageConvertersCustomizer, ServerHttpMessageConvertersCustomizer {
+
+		private final XmlMapper xmlMapper;
+
+		JacksonXmlHttpMessageConvertersCustomizer(XmlMapper xmlMapper) {
+			this.xmlMapper = xmlMapper;
+		}
+
+		@Override
+		public void customize(ClientBuilder builder) {
+			builder.withXmlConverter(new JacksonXmlHttpMessageConverter(this.xmlMapper));
+		}
+
+		@Override
+		public void customize(ServerBuilder builder) {
+			builder.withXmlConverter(new JacksonXmlHttpMessageConverter(this.xmlMapper));
 		}
 
 	}

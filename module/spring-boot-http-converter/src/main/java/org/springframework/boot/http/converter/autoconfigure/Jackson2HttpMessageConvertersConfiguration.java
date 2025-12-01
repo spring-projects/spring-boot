@@ -24,22 +24,24 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.http.converter.autoconfigure.JacksonHttpMessageConvertersConfiguration.JacksonJsonHttpMessageConvertersCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
-import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
 /**
  * Configuration for HTTP message converters that use Jackson 2.
  *
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @deprecated since 4.0.0 for removal in 4.2.0 in favor of Jackson 3.
  */
 @Configuration(proxyBeanMethods = false)
 @Deprecated(since = "4.0.0", forRemoval = true)
-@SuppressWarnings({ "deprecation", "removal" })
+@SuppressWarnings("removal")
 class Jackson2HttpMessageConvertersConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -49,10 +51,9 @@ class Jackson2HttpMessageConvertersConfiguration {
 	static class MappingJackson2HttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		org.springframework.http.converter.json.MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
-				ObjectMapper objectMapper) {
-			return new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(objectMapper);
+		@ConditionalOnMissingBean(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class)
+		Jackson2JsonMessageConvertersCustomizer jackson2HttpMessageConvertersCustomizer(ObjectMapper objectMapper) {
+			return new Jackson2JsonMessageConvertersCustomizer(objectMapper);
 		}
 
 	}
@@ -63,10 +64,56 @@ class Jackson2HttpMessageConvertersConfiguration {
 	protected static class MappingJackson2XmlHttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		public MappingJackson2XmlHttpMessageConverter mappingJackson2XmlHttpMessageConverter(
+		@ConditionalOnMissingBean(org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter.class)
+		Jackson2XmlMessageConvertersCustomizer mappingJackson2XmlHttpMessageConverter(
 				Jackson2ObjectMapperBuilder builder) {
-			return new MappingJackson2XmlHttpMessageConverter(builder.createXmlMapper(true).build());
+			return new Jackson2XmlMessageConvertersCustomizer(builder.createXmlMapper(true).build());
+		}
+
+	}
+
+	static class Jackson2JsonMessageConvertersCustomizer
+			implements ClientHttpMessageConvertersCustomizer, ServerHttpMessageConvertersCustomizer {
+
+		private final ObjectMapper objectMapper;
+
+		Jackson2JsonMessageConvertersCustomizer(ObjectMapper objectMapper) {
+			this.objectMapper = objectMapper;
+		}
+
+		@Override
+		public void customize(ClientBuilder builder) {
+			builder.withJsonConverter(
+					new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(this.objectMapper));
+		}
+
+		@Override
+		public void customize(ServerBuilder builder) {
+			builder.withJsonConverter(
+					new org.springframework.http.converter.json.MappingJackson2HttpMessageConverter(this.objectMapper));
+		}
+
+	}
+
+	static class Jackson2XmlMessageConvertersCustomizer
+			implements ClientHttpMessageConvertersCustomizer, ServerHttpMessageConvertersCustomizer {
+
+		private final ObjectMapper objectMapper;
+
+		Jackson2XmlMessageConvertersCustomizer(ObjectMapper objectMapper) {
+			this.objectMapper = objectMapper;
+		}
+
+		@Override
+		public void customize(ClientBuilder builder) {
+			builder.withXmlConverter(new org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter(
+					this.objectMapper));
+		}
+
+		@Override
+		public void customize(ServerBuilder builder) {
+			builder.withXmlConverter(new org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter(
+					this.objectMapper));
 		}
 
 	}
@@ -83,7 +130,7 @@ class Jackson2HttpMessageConvertersConfiguration {
 
 		}
 
-		@ConditionalOnMissingBean(JacksonJsonHttpMessageConverter.class)
+		@ConditionalOnMissingBean(JacksonJsonHttpMessageConvertersCustomizer.class)
 		static class JacksonUnavailable {
 
 		}
