@@ -26,7 +26,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Rest Build Reference to SHA
-        if: ${{ github.event.inputs.build-refname != '' && github.event.inputs.build-refsha != '' }}
+        if: ${{ github.event.inputs.build-refname != '' && github.event.inputs.build-sha != '' }}
         run: git update-ref refs/remotes/origin/${{ github.event.inputs.build-refname }} {{ github.event.inputs.build-sha }}
       - name: Fetch Main Branch
         run: git fetch origin ${{ github.event.repository.default_branch }}:main
