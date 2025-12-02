@@ -147,27 +147,6 @@
       "defaultValue": false
     },
     {
-      "name": "logging.log4j2.rollingpolicy.strategy",
-      "type": "java.lang.String",
-      "description": "Rolling policy strategy. Supported values are 'size', 'time', 'size-and-time', and 'cron'.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "size"
-    },
-    {
-      "name": "logging.log4j2.rollingpolicy.time-based.interval",
-      "type": "java.lang.Integer",
-      "description": "Time based triggering interval when the strategy is 'time' or 'size-and-time'.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": 1
-    },
-    {
-      "name": "logging.log4j2.rollingpolicy.time-based.modulate",
-      "type": "java.lang.Boolean",
-      "description": "Whether to align the next rollover time to occur at the top of the interval when the strategy is time based.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": false
-    },
-    {
       "name": "logging.log4j2.rollingpolicy.cron.schedule",
       "type": "java.lang.String",
       "description": "Cron expression used when the strategy is 'cron'.",
@@ -193,6 +172,27 @@
       "description": "Maximum number of archive log files to keep.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": 7
+    },
+    {
+      "name": "logging.log4j2.rollingpolicy.strategy",
+      "type": "java.lang.String",
+      "description": "Rolling policy strategy. Supported values are 'size', 'time', 'size-and-time', and 'cron'.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "size"
+    },
+    {
+      "name": "logging.log4j2.rollingpolicy.time-based.interval",
+      "type": "java.lang.Integer",
+      "description": "Time based triggering interval when the strategy is 'time' or 'size-and-time'.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": 1
+    },
+    {
+      "name": "logging.log4j2.rollingpolicy.time-based.modulate",
+      "type": "java.lang.Boolean",
+      "description": "Whether to align the next rollover time to occur at the top of the interval when the strategy is time based.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": false
     },
     {
       "name": "logging.log4j2.rollingpolicy.total-size-cap",
