@@ -897,7 +897,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		return policy;
 	}
 
-	private SpringBootTriggeringPolicy findSpringBootTriggeringPolicy(TriggeringPolicy policy) {
+	private @Nullable SpringBootTriggeringPolicy findSpringBootTriggeringPolicy(TriggeringPolicy policy) {
 		if (policy instanceof SpringBootTriggeringPolicy springBoot) {
 			return springBoot;
 		}
