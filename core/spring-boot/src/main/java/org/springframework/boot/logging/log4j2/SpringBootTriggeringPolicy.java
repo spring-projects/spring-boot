@@ -45,7 +45,8 @@ import org.springframework.util.Assert;
  * supported strategies are {@code size}, {@code time}, {@code size-and-time}, and
  * {@code cron}.
  *
- * @author hojooo
+ * @author HoJoo Moon
+ * @since 4.0.0
  */
 @Plugin(name = "SpringBootTriggeringPolicy", category = Node.CATEGORY, elementType = "TriggeringPolicy",
 		deferChildren = true, printObject = true)

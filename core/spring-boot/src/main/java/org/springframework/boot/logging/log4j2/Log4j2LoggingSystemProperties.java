@@ -32,7 +32,8 @@ import org.springframework.util.unit.DataSize;
 /**
  * {@link LoggingSystemProperties} for Log4j2.
  *
- * @author hojooo
+ * @author HoJoo Moon
+ * @since 4.0.0
  * @see Log4j2RollingPolicySystemProperty
  */
 public class Log4j2LoggingSystemProperties extends LoggingSystemProperties {

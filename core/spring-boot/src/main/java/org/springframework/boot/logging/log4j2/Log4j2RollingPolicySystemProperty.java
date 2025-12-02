@@ -22,7 +22,8 @@ import org.jspecify.annotations.Nullable;
  * Log4j2 rolling policy system properties that can later be used by log configuration
  * files.
  *
- * @author hojooo
+ * @author HoJoo Moon
+ * @since 4.0.0
  * @see Log4j2LoggingSystemProperties
  */
 public enum Log4j2RollingPolicySystemProperty {
