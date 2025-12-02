@@ -820,10 +820,9 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void rollingPolicyTimeStrategyIsApplied() {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "time");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "2");
-		SpringBootTriggeringPolicy policy = getTriggeringPolicy();
-		TriggeringPolicy delegate = policy.getDelegate();
-		assertThat(delegate).isInstanceOf(TimeBasedTriggeringPolicy.class);
-		TimeBasedTriggeringPolicy timePolicy = (TimeBasedTriggeringPolicy) delegate;
+		TriggeringPolicy policy = getTriggeringPolicy();
+		TimeBasedTriggeringPolicy timePolicy = findPolicy(policy, TimeBasedTriggeringPolicy.class);
+		assertThat(timePolicy).isNotNull();
 		assertThat(timePolicy.getInterval()).isEqualTo(2);
 	}
 
@@ -832,49 +831,42 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "size-and-time");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "5MB");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "3");
-		SpringBootTriggeringPolicy policy = getTriggeringPolicy();
-		TriggeringPolicy delegate = policy.getDelegate();
-		assertThat(delegate).isInstanceOf(CompositeTriggeringPolicy.class);
-		CompositeTriggeringPolicy composite = (CompositeTriggeringPolicy) delegate;
-		TriggeringPolicy[] policies = composite.getTriggeringPolicies();
-		assertThat(policies).anyMatch(TimeBasedTriggeringPolicy.class::isInstance);
-		assertThat(policies).anyMatch(SizeBasedTriggeringPolicy.class::isInstance);
+		TriggeringPolicy policy = getTriggeringPolicy();
+		assertThat(findPolicy(policy, TimeBasedTriggeringPolicy.class)).isNotNull();
+		assertThat(findPolicy(policy, SizeBasedTriggeringPolicy.class)).isNotNull();
 	}
 
 	@Test
 	void rollingPolicyCronStrategyIsApplied() {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "cron");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.cron.schedule", "0 0 0 * * ?");
-		SpringBootTriggeringPolicy policy = getTriggeringPolicy();
-		TriggeringPolicy delegate = policy.getDelegate();
-		assertThat(delegate).isInstanceOf(CronTriggeringPolicy.class);
-		CronTriggeringPolicy cronPolicy = (CronTriggeringPolicy) delegate;
+		TriggeringPolicy policy = getTriggeringPolicy();
+		CronTriggeringPolicy cronPolicy = findPolicy(policy, CronTriggeringPolicy.class);
+		assertThat(cronPolicy).isNotNull();
 		assertThat(cronPolicy.getCronExpression().getCronExpression()).isEqualTo("0 0 0 * * ?");
 	}
 
-	private SpringBootTriggeringPolicy getTriggeringPolicy() {
+	private TriggeringPolicy getTriggeringPolicy() {
 		File file = new File(tmpDir(), "target-file.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:org/springframework/boot/logging/log4j2/log4j2-file.xml", logFile);
-		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		LoggerContext loggerContext = this.loggingSystem.getLoggerContext();
 		Configuration configuration = loggerContext.getConfiguration();
 		RollingFileAppender appender = (RollingFileAppender) configuration.getAppenders().get("File");
 		assertThat(appender).isNotNull();
-		TriggeringPolicy topPolicy = appender.getManager().getTriggeringPolicy();
-		SpringBootTriggeringPolicy policy = findSpringBootTriggeringPolicy(topPolicy);
-		assertThat(policy).isNotNull();
-		return policy;
+		return appender.getManager().getTriggeringPolicy();
 	}
 
-	private @Nullable SpringBootTriggeringPolicy findSpringBootTriggeringPolicy(TriggeringPolicy policy) {
-		if (policy instanceof SpringBootTriggeringPolicy springBoot) {
-			return springBoot;
+	@SuppressWarnings("unchecked")
+	private <T extends TriggeringPolicy> @Nullable T findPolicy(TriggeringPolicy policy, Class<T> type) {
+		if (type.isInstance(policy)) {
+			return (T) policy;
 		}
 		if (policy instanceof CompositeTriggeringPolicy composite) {
 			for (TriggeringPolicy child : composite.getTriggeringPolicies()) {
-				SpringBootTriggeringPolicy found = findSpringBootTriggeringPolicy(child);
+				T found = findPolicy(child, type);
 				if (found != null) {
 					return found;
 				}

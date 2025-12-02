@@ -16,12 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.util.concurrent.TimeUnit;
-
-import org.apache.logging.log4j.core.LifeCycle;
-import org.apache.logging.log4j.core.LifeCycle2;
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.appender.rolling.AbstractTriggeringPolicy;
 import org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy;
 import org.apache.logging.log4j.core.appender.rolling.CronTriggeringPolicy;
 import org.apache.logging.log4j.core.appender.rolling.RollingFileManager;
@@ -34,78 +29,34 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
-import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.util.Builder;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.Assert;
 
 /**
- * {@link TriggeringPolicy} that selects one of several standard Log4j2
- * {@link TriggeringPolicy TriggeringPolicies} based on configuration attributes. The
- * supported strategies are {@code size}, {@code time}, {@code size-and-time}, and
- * {@code cron}.
+ * Factory for creating a standard Log4j2 {@link TriggeringPolicy} based on configuration
+ * attributes. The supported strategies are {@code size}, {@code time},
+ * {@code size-and-time}, and {@code cron}.
  *
  * @author HoJoo Moon
  * @since 4.0.0
  */
 @Plugin(name = "SpringBootTriggeringPolicy", category = Node.CATEGORY, elementType = "TriggeringPolicy",
 		deferChildren = true, printObject = true)
-public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
+public abstract class SpringBootTriggeringPolicy implements TriggeringPolicy {
 
-	private final TriggeringPolicy delegate;
-
-	private SpringBootTriggeringPolicy(TriggeringPolicy delegate) {
-		this.delegate = delegate;
-	}
-
-	TriggeringPolicy getDelegate() {
-		return this.delegate;
+	private SpringBootTriggeringPolicy() {
 	}
 
 	@Override
 	public void initialize(RollingFileManager manager) {
-		this.delegate.initialize(manager);
+		throw new UnsupportedOperationException("This class should not be instantiated");
 	}
 
 	@Override
-	public boolean isTriggeringEvent(LogEvent event) {
-		return this.delegate.isTriggeringEvent(event);
-	}
-
-	@Override
-	public void start() {
-		super.start();
-		if (this.delegate instanceof LifeCycle lifecycle) {
-			lifecycle.start();
-		}
-	}
-
-	@Override
-	public boolean stop(long timeout, TimeUnit timeUnit) {
-		setStopping();
-		boolean result = true;
-		if (this.delegate instanceof LifeCycle2 lifecycle2) {
-			result = lifecycle2.stop(timeout, timeUnit);
-		}
-		else if (this.delegate instanceof LifeCycle lifecycle) {
-			lifecycle.stop();
-		}
-		setStopped();
-		return result;
-	}
-
-	@Override
-	public boolean isStarted() {
-		if (this.delegate instanceof LifeCycle lifecycle) {
-			return lifecycle.isStarted();
-		}
-		return super.isStarted();
-	}
-
-	@Override
-	public String toString() {
-		return "SpringBootTriggeringPolicy{" + this.delegate + "}";
+	public boolean isTriggeringEvent(LogEvent logEvent) {
+		throw new UnsupportedOperationException("This class should not be instantiated");
 	}
 
 	@PluginBuilderFactory
@@ -113,26 +64,10 @@ public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
 		return new SpringBootTriggeringPolicyBuilder();
 	}
 
-	@PluginFactory
-	public static SpringBootTriggeringPolicy createPolicy(@PluginAttribute("strategy") @Nullable String strategy,
-			@PluginAttribute("maxFileSize") @Nullable String maxFileSize,
-			@PluginAttribute("timeInterval") @Nullable Integer timeInterval,
-			@PluginAttribute("timeModulate") @Nullable Boolean timeModulate,
-			@PluginAttribute("cronExpression") @Nullable String cronExpression,
-			@PluginConfiguration Configuration configuration) {
-		return newBuilder().setStrategy(strategy)
-			.setMaxFileSize(maxFileSize)
-			.setTimeInterval(timeInterval)
-			.setTimeModulate(timeModulate)
-			.setCronExpression(cronExpression)
-			.setConfiguration(configuration)
-			.build();
-	}
-
 	/**
-	 * Builder for {@link SpringBootTriggeringPolicy}.
+	 * Builder for creating a {@link TriggeringPolicy}.
 	 */
-	public static class SpringBootTriggeringPolicyBuilder implements Builder<SpringBootTriggeringPolicy> {
+	public static class SpringBootTriggeringPolicyBuilder implements Builder<TriggeringPolicy> {
 
 		private static final String DEFAULT_STRATEGY = "size";
 
@@ -161,13 +96,13 @@ public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
 		private @Nullable Configuration configuration;
 
 		@Override
-		public SpringBootTriggeringPolicy build() {
+		public TriggeringPolicy build() {
 			// Read strategy from system properties first, then from attributes
 			String resolvedStrategy = System.getProperty("LOG4J2_ROLLINGPOLICY_STRATEGY");
 			if (resolvedStrategy == null) {
 				resolvedStrategy = (this.strategy != null) ? this.strategy : DEFAULT_STRATEGY;
 			}
-			TriggeringPolicy policy = switch (resolvedStrategy) {
+			return switch (resolvedStrategy) {
 				case "time" -> createTimePolicy();
 				case "size-and-time" -> CompositeTriggeringPolicy.createPolicy(createSizePolicy(), createTimePolicy());
 				case "cron" -> createCronPolicy();
@@ -175,7 +110,6 @@ public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
 				default -> throw new IllegalArgumentException(
 						"Unsupported rolling policy strategy '%s'".formatted(resolvedStrategy));
 			};
-			return new SpringBootTriggeringPolicy(policy);
 		}
 
 		private TriggeringPolicy createSizePolicy() {
