@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
+import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.BindResult;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.LDAPConnection;
@@ -36,7 +37,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
-import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -71,26 +71,95 @@ class EmbeddedLdapAutoConfigurationTests {
 	}
 
 	@Test
-	void testLdapsVersion() {
+	void testServerDefaultNoSsl() {
+		this.contextRunner
+			.withPropertyValues("spring.ldap.embedded.port:1234", "spring.ldap.embedded.base-dn:dc=spring,dc=org")
+			.run((context) -> {
+				InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+				assertThat(server.getConfig().getListenerConfigs().size()).isEqualTo(1);
+				InMemoryListenerConfig config = server.getConfig().getListenerConfigs().get(0);
+				assertThat(config.getListenerName()).isEqualTo("LDAP");
+			});
+	}
+
+	 @Test
+	 void testServerWithSslBundle() {
+		 List<String> propertyValues = new ArrayList<>();
+		 String location = "classpath:org/springframework/boot/ldap/autoconfigure/embedded/";
+		 propertyValues.add("spring.ssl.bundle.jks.test.keystore.password=secret");
+		 propertyValues.add("spring.ssl.bundle.jks.test.keystore.location=" + location + "test.jks");
+		 propertyValues.add("spring.ssl.bundle.jks.test.truststore.location=" + location + "test.jks");
+		 propertyValues.add("spring.ldap.embedded.port:1234");
+		 propertyValues.add("spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		 propertyValues.add("spring.ldap.embedded.ssl.enabled:true");
+		 propertyValues.add("spring.ldap.embedded.ssl.bundle:test");
+		 this.contextRunner
+			 .withPropertyValues(propertyValues.toArray(String[]::new))
+			 .run((context) -> {
+				 InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+				 assertThat(server.getConfig().getListenerConfigs().size()).isEqualTo(1);
+				 InMemoryListenerConfig config = server.getConfig().getListenerConfigs().get(0);
+				 assertThat(config.getListenerName()).isEqualTo("LDAPS");
+				 assertThat(config.getListenPort()).isEqualTo(1234);
+				 assertThat(server.getListenPort()).isEqualTo(1234);
+				 assertThat(server.getConnection("LDAPS").getSSLSession()).isNotNull();
+		 });
+	 }
+
+	@Test
+	void testServerWithInvalidSslBundleShouldFail() {
 		List<String> propertyValues = new ArrayList<>();
 		String location = "classpath:org/springframework/boot/ldap/autoconfigure/embedded/";
-		propertyValues.add("spring.ssl.bundle.pem.test.key.alias=alias1");
-		propertyValues.add("spring.ssl.bundle.pem.test.key.password=secret1");
-		propertyValues.add("spring.ssl.bundle.pem.test.keystore.certificate=" + location + "rsa-cert.pem");
-		propertyValues.add("spring.ssl.bundle.pem.test.keystore.keystore.private-key=" + location + "rsa-key.pem");
-		propertyValues.add("spring.ssl.bundle.pem.test.truststore.certificate=" + location + "rsa-cert.pem");
+		propertyValues.add("spring.ssl.bundle.jks.test.keystore.password=secret");
+		propertyValues.add("spring.ssl.bundle.jks.test.keystore.location=" + location + "test.jks");
 		propertyValues.add("spring.ldap.embedded.port:1234");
 		propertyValues.add("spring.ldap.embedded.base-dn:dc=spring,dc=org");
-		propertyValues.add("spring.ldap.embedded.ldaps:true");
-		propertyValues.add("spring.ldap.embedded.sslBundleName:test");
-		propertyValues.add("spring.ldap.embedded.credential.username:uid=root");
-		propertyValues.add("spring.ldap.embedded.credential.password:boot");
+		propertyValues.add("spring.ldap.embedded.ssl.enabled:true");
+		propertyValues.add("spring.ldap.embedded.ssl.bundle:foo");
 		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
-			context.getBean(SslBundles.class);
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().hasMessageContaining("foo");
+			assertThat(context).getFailure().hasMessageContaining("cannot be found");
+		});
+	}
+
+	@Test
+	void testServerWithSsl() {
+		List<String> propertyValues = new ArrayList<>();
+		String location = "classpath:org/springframework/boot/ldap/autoconfigure/embedded/";
+		propertyValues.add("spring.ldap.embedded.port:1234");
+		propertyValues.add("spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		propertyValues.add("spring.ldap.embedded.ssl.enabled:true");
+		propertyValues.add("spring.ldap.embedded.ssl.keyStorePassword=secret");
+		propertyValues.add("spring.ldap.embedded.ssl.keyStore=" + location + "test.jks");
+		propertyValues.add("spring.ldap.embedded.ssl.trustStorePassword=secret");
+		propertyValues.add("spring.ldap.embedded.ssl.trustStore=" + location + "test.jks");
+		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
 			InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
+			assertThat(server.getConfig().getListenerConfigs().size()).isEqualTo(1);
+			InMemoryListenerConfig config = server.getConfig().getListenerConfigs().get(0);
+			assertThat(config.getListenerName()).isEqualTo("LDAPS");
+			assertThat(config.getListenPort()).isEqualTo(1234);
 			assertThat(server.getListenPort()).isEqualTo(1234);
-			BindResult result = server.bind("uid=root", "boot");
-			assertThat(result).isNotNull();
+			assertThat(server.getConnection("LDAPS").getSSLSession()).isNotNull();
+		});
+	}
+
+	@Test
+	void testServerWithInvalidSslShouldFail() {
+		List<String> propertyValues = new ArrayList<>();
+		String location = "classpath:org/springframework/boot/ldap/autoconfigure/embedded/";
+		propertyValues.add("spring.ldap.embedded.port:1234");
+		propertyValues.add("spring.ldap.embedded.base-dn:dc=spring,dc=org");
+		propertyValues.add("spring.ldap.embedded.ssl.enabled:true");
+		propertyValues.add("spring.ldap.embedded.ssl.keyStorePassword=secret");
+		propertyValues.add("spring.ldap.embedded.ssl.keyStore=" + location + "foo");
+		propertyValues.add("spring.ldap.embedded.ssl.trustStorePassword=secret");
+		propertyValues.add("spring.ldap.embedded.ssl.trustStore=" + location + "foo");
+		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().hasMessageContaining("foo");
+			assertThat(context).getFailure().hasMessageContaining("does not exist");
 		});
 	}
 
