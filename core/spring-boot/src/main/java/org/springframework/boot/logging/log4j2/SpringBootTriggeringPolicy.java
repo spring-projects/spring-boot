@@ -41,8 +41,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * {@link TriggeringPolicy} that selects one of several standard Log4j2
- * {@link TriggeringPolicy TriggeringPolicies} based on configuration attributes.
- * The supported strategies are {@code size}, {@code time}, {@code size-and-time}, and {@code cron}.
+ * {@link TriggeringPolicy TriggeringPolicies} based on configuration attributes. The
+ * supported strategies are {@code size}, {@code time}, {@code size-and-time}, and
+ * {@code cron}.
  *
  * @author hojooo
  */
@@ -111,8 +112,7 @@ public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
 	}
 
 	@PluginFactory
-	public static SpringBootTriggeringPolicy createPolicy(
-			@PluginAttribute("strategy") @Nullable String strategy,
+	public static SpringBootTriggeringPolicy createPolicy(@PluginAttribute("strategy") @Nullable String strategy,
 			@PluginAttribute("maxFileSize") @Nullable String maxFileSize,
 			@PluginAttribute("timeInterval") @Nullable Integer timeInterval,
 			@PluginAttribute("timeModulate") @Nullable Boolean timeModulate,
@@ -130,8 +130,7 @@ public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
 	/**
 	 * Builder for {@link SpringBootTriggeringPolicy}.
 	 */
-	public static class SpringBootTriggeringPolicyBuilder
-			implements Builder<SpringBootTriggeringPolicy> {
+	public static class SpringBootTriggeringPolicyBuilder implements Builder<SpringBootTriggeringPolicy> {
 
 		private static final String DEFAULT_STRATEGY = "size";
 

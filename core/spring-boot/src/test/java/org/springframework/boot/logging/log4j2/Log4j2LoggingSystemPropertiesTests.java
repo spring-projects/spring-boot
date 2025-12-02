@@ -119,8 +119,8 @@ class Log4j2LoggingSystemPropertiesTests {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "25MB");
 		LogFile logFile = LogFile.get(this.environment);
 		new Log4j2LoggingSystemProperties(this.environment).apply(logFile);
-		assertThat(System.getProperties())
-			.containsEntry("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE", String.valueOf(DataSize.ofMegabytes(25).toBytes()));
+		assertThat(System.getProperties()).containsEntry("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE",
+				String.valueOf(DataSize.ofMegabytes(25).toBytes()));
 	}
 
 }

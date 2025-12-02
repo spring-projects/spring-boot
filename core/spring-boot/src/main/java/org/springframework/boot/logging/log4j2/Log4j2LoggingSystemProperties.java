@@ -107,7 +107,8 @@ public class Log4j2LoggingSystemProperties extends LoggingSystemProperties {
 			if (type != DataSize.class) {
 				throw ex;
 			}
-			// Fallback for Log4j2 compatibility - try parsing as string if DataSize conversion fails
+			// Fallback for Log4j2 compatibility - try parsing as string if DataSize
+			// conversion fails
 			String value = resolver.getProperty(key);
 			if (value != null) {
 				try {

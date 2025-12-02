@@ -78,7 +78,8 @@ public enum Log4j2RollingPolicySystemProperty {
 
 	private final @Nullable String deprecatedApplicationPropertyName;
 
-	Log4j2RollingPolicySystemProperty(String applicationPropertyName, @Nullable String deprecatedApplicationPropertyName) {
+	Log4j2RollingPolicySystemProperty(String applicationPropertyName,
+			@Nullable String deprecatedApplicationPropertyName) {
 		this.environmentVariableName = "LOG4J2_ROLLINGPOLICY_" + name();
 		this.applicationPropertyName = "logging.log4j2.rollingpolicy." + applicationPropertyName;
 		this.deprecatedApplicationPropertyName = deprecatedApplicationPropertyName;

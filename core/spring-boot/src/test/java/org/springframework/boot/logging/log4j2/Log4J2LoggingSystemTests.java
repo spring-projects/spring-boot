@@ -885,7 +885,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		File file = new File(tmpDir(), "target-file.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, "classpath:org/springframework/boot/logging/log4j2/log4j2-file.xml", logFile);
+		this.loggingSystem.initialize(this.initializationContext,
+				"classpath:org/springframework/boot/logging/log4j2/log4j2-file.xml", logFile);
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		Configuration configuration = loggerContext.getConfiguration();
 		RollingFileAppender appender = (RollingFileAppender) configuration.getAppenders().get("File");
