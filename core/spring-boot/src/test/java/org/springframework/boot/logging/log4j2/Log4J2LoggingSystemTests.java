@@ -67,7 +67,6 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.LoggingSystemProperty;
-import org.springframework.boot.logging.log4j2.Log4j2RollingPolicySystemProperty;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
