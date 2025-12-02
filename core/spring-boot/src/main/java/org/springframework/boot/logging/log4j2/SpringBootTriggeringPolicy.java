@@ -16,7 +16,6 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.core.LifeCycle;
@@ -38,6 +37,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.util.Builder;
 import org.jspecify.annotations.Nullable;
+import org.springframework.util.Assert;
 
 /**
  * {@link TriggeringPolicy} that selects one of several standard Log4j2
@@ -199,7 +199,8 @@ public final class SpringBootTriggeringPolicy extends AbstractTriggeringPolicy {
 		}
 
 		private TriggeringPolicy createCronPolicy() {
-			Configuration configuration = Objects.requireNonNull(this.configuration, "configuration must not be null");
+			Assert.notNull(this.configuration, "configuration must not be null");
+			Configuration configuration = this.configuration;
 
 			// Read from system properties first, then from attributes
 			String schedule = System.getProperty("LOG4J2_ROLLINGPOLICY_CRON_SCHEDULE");
