@@ -771,42 +771,6 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		return defaultPath;
 	}
 
-	/**
-	 * Used for testing that loggers in nested classes are returned by
-	 * {@link Log4J2LoggingSystem#getLoggerConfigurations()} .
-	 */
-	static class Nested {
-
-		@SuppressWarnings("unused")
-		private static final Log logger = LogFactory.getLog(Nested.class);
-
-	}
-
-	@Target(ElementType.METHOD)
-	@Retention(RetentionPolicy.RUNTIME)
-	@WithResource(name = "nondefault.xml",
-			content = """
-					<Configuration status="WARN" monitorInterval="30">
-						<Properties>
-							<Property name="PID">????</Property>
-							<Property name="LOG_PATTERN">${sys:LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
-						</Properties>
-						<Appenders>
-							<Console name="Console" target="SYSTEM_OUT" follow="true">
-								<PatternLayout pattern="${LOG_PATTERN}"/>
-							</Console>
-						</Appenders>
-						<Loggers>
-							<Root level="info">
-								<AppenderRef ref="Console"/>
-							</Root>
-						</Loggers>
-					</Configuration>
-					""")
-	private @interface WithNonDefaultXmlResource {
-
-	}
-
 	@Test
 	void rollingPolicySystemPropertiesAreApplied() {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "50MB");
@@ -948,6 +912,42 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 					</Configuration>
 					""")
 	private @interface WithSpringXmlResource {
+
+	}
+
+	/**
+	 * Used for testing that loggers in nested classes are returned by
+	 * {@link Log4J2LoggingSystem#getLoggerConfigurations()} .
+	 */
+	static class Nested {
+
+		@SuppressWarnings("unused")
+		private static final Log logger = LogFactory.getLog(Nested.class);
+
+	}
+
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
+	@WithResource(name = "nondefault.xml",
+			content = """
+					<Configuration status="WARN" monitorInterval="30">
+						<Properties>
+							<Property name="PID">????</Property>
+							<Property name="LOG_PATTERN">${sys:LOG_FILE} %d{yyyy-MM-dd HH:mm:ss.SSS}] service%X{context} - ${sys:PID} %5p [%t] --- %c{1}: %m%n</Property>
+						</Properties>
+						<Appenders>
+							<Console name="Console" target="SYSTEM_OUT" follow="true">
+								<PatternLayout pattern="${LOG_PATTERN}"/>
+							</Console>
+						</Appenders>
+						<Loggers>
+							<Root level="info">
+								<AppenderRef ref="Console"/>
+							</Root>
+						</Loggers>
+					</Configuration>
+					""")
+	private @interface WithNonDefaultXmlResource {
 
 	}
 
