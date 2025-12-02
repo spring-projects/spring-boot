@@ -37,6 +37,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.util.Builder;
 import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.Assert;
 
 /**
