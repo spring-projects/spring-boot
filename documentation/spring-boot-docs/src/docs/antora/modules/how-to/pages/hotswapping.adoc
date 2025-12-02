@@ -73,5 +73,5 @@ For more details, see the xref:reference:using/devtools.adoc[] section.
 [[howto.hotswapping.reload-java-classes-without-restarting]]
 == Reload Java Classes without Restarting the Container
 
-Many modern IDEs (Eclipse, IDEA, and others) support hot swapping of bytecode.
+Many modern IDEs (Eclipse, IntelliJ IDEA, and others) support hot swapping of bytecode.
 Consequently, if you make a change that does not affect class or method signatures, it should reload cleanly with no side effects.
