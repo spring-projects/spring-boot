@@ -67,6 +67,7 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.LoggingSystemProperty;
+import org.springframework.boot.logging.log4j2.Log4j2RollingPolicySystemProperty;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
@@ -123,6 +124,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.getConfiguration().stop();
 		this.loggingSystem.cleanUp();
 		PluginRegistry.getInstance().clear();
+		clearRollingPolicySystemProperties();
 	}
 
 	@Test
@@ -135,6 +137,12 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
 		assertThat(configuration.getConfigurationSource().getFile()).isNotNull();
+	}
+
+	private void clearRollingPolicySystemProperties() {
+		for (Log4j2RollingPolicySystemProperty property : Log4j2RollingPolicySystemProperty.values()) {
+			System.clearProperty(property.getEnvironmentVariableName());
+		}
 	}
 
 	@Test
