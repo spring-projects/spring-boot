@@ -2,6 +2,24 @@
   "groups": [],
   "properties": [
     {
+      "name": "spring.config-snapshot.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable configuration snapshot logging.",
+      "defaultValue": false
+    },
+    {
+      "name": "spring.config-snapshot.log-to",
+      "type": "org.springframework.boot.autoconfigure.context.ConfigurationSnapshotProperties.LogTo",
+      "description": "Where to log the configuration snapshot.",
+      "defaultValue": "CONSOLE"
+    },
+    {
+      "name": "spring.config-snapshot.include",
+      "type": "java.util.List<java.lang.String>",
+      "description": "List of properties to include in the snapshot.",
+      "defaultValue": []
+    },
+    {
       "name": "spring.aop.auto",
       "type": "java.lang.Boolean",
       "description": "Add @EnableAspectJAutoProxy.",

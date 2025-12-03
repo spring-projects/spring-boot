@@ -26,3 +26,7 @@ org.springframework.boot.autoconfigure.preinitialize.ConversionServiceBackground
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.autoconfigure.ssl.BundleContentNotWatchableFailureAnalyzer
+
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.boot.autoconfigure.context.ConfigurationSnapshotAutoConfiguration
