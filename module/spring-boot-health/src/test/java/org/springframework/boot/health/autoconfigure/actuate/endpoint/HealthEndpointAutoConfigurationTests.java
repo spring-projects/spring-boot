@@ -44,6 +44,7 @@ import org.springframework.boot.health.autoconfigure.actuate.endpoint.HealthEndp
 import org.springframework.boot.health.autoconfigure.contributor.HealthContributorAutoConfiguration;
 import org.springframework.boot.health.autoconfigure.registry.HealthContributorRegistryAutoConfiguration;
 import org.springframework.boot.health.contributor.CompositeHealthContributor;
+import org.springframework.boot.health.contributor.CompositeReactiveHealthContributor;
 import org.springframework.boot.health.contributor.Health;
 import org.springframework.boot.health.contributor.HealthContributors;
 import org.springframework.boot.health.contributor.HealthIndicator;
@@ -143,6 +144,20 @@ class HealthEndpointAutoConfigurationTests {
 			assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
 			assertThat(groups.getNames()).containsOnly("ready");
 		});
+	}
+
+	@Test
+	void runDoesNotFailWhenHealthEndpointGroupIncludesContributorThatExists() {
+		this.contextRunner.withUserConfiguration(CompositeHealthIndicatorConfiguration.class)
+			.withPropertyValues("management.endpoint.health.group.ready.include=composite/b/c")
+			.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test // gh-48387
+	void runDoesNotFailWhenHealthEndpointGroupIncludesReactiveContributorThatExists() {
+		this.contextRunner.withUserConfiguration(CompositeReactiveHealthIndicatorConfiguration.class)
+			.withPropertyValues("management.endpoint.health.group.ready.include=composite/b/c")
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
@@ -377,8 +392,27 @@ class HealthEndpointAutoConfigurationTests {
 
 		@Bean
 		CompositeHealthContributor compositeHealthIndicator() {
-			return CompositeHealthContributor.fromMap(Map.of("a", (HealthIndicator) () -> Health.up().build(), "b",
-					CompositeHealthContributor.fromMap(Map.of("c", (HealthIndicator) () -> Health.up().build()))));
+			return CompositeHealthContributor.fromMap(Map.of("a", createHealthIndicator(), "b",
+					CompositeHealthContributor.fromMap(Map.of("c", createHealthIndicator()))));
+		}
+
+		private HealthIndicator createHealthIndicator() {
+			return () -> Health.up().build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CompositeReactiveHealthIndicatorConfiguration {
+
+		@Bean
+		CompositeReactiveHealthContributor compositeHealthIndicator() {
+			return CompositeReactiveHealthContributor.fromMap(Map.of("a", createHealthIndicator(), "b",
+					CompositeReactiveHealthContributor.fromMap(Map.of("c", createHealthIndicator()))));
+		}
+
+		private ReactiveHealthIndicator createHealthIndicator() {
+			return () -> Mono.just(Health.up().build());
 		}
 
 	}
