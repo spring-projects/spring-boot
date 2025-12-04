@@ -24,7 +24,6 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
 import org.springframework.boot.security.autoconfigure.web.StaticResourceLocation;
 import org.springframework.boot.security.web.servlet.ApplicationContextRequestMatcher;
-import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -76,7 +75,7 @@ public final class PathRequest {
 
 		@Override
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
-			return WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
+			return hasServerNamespace(applicationContext, "management");
 		}
 
 		@Override

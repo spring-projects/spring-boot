@@ -22,14 +22,19 @@ import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.h2console.autoconfigure.H2ConsoleProperties;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link PathRequest}.
@@ -59,14 +64,31 @@ class PathRequestTests {
 		assertMatcher(matcher, "management").doesNotMatch("/js/file.js");
 	}
 
+	@Test
+	@ClassPathExclusions(packages = "org.springframework.boot.web.server.context")
+	void toH2ConsoleWhenNoWebServerContextClassPresent() {
+		assertThatExceptionOfType(NoClassDefFoundError.class)
+			.isThrownBy(() -> WebServerApplicationContext.class.getName());
+		RequestMatcher matcher = PathRequest.toH2Console();
+		StaticWebApplicationContext context = new StaticWebApplicationContext();
+		assertMatcher(matcher, context).matches("/h2-console");
+		assertMatcher(matcher, context).matches("/h2-console/subpath");
+		assertMatcher(matcher, context).doesNotMatch("/js/file.js");
+	}
+
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
-		return assertMatcher(matcher, null);
+		return assertMatcher(matcher, (String) null);
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, @Nullable String serverNamespace) {
-		TestWebApplicationContext context = new TestWebApplicationContext(serverNamespace);
-		context.registerBean(ServerProperties.class);
-		context.registerBean(H2ConsoleProperties.class);
+		StaticWebApplicationContext context = new TestWebApplicationContext(serverNamespace);
+		return assertMatcher(matcher, context);
+	}
+
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, WebApplicationContext context) {
+		GenericApplicationContext genericContext = (GenericApplicationContext) context;
+		genericContext.registerBean(ServerProperties.class);
+		genericContext.registerBean(H2ConsoleProperties.class);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 

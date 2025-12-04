@@ -22,9 +22,11 @@ import org.jspecify.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
@@ -40,6 +42,8 @@ import org.springframework.web.server.ServerWebExchange;
  * @since 4.0.0
  */
 public abstract class ApplicationContextServerWebExchangeMatcher<C> implements ServerWebExchangeMatcher {
+
+	private static final String WEB_SERVER_CONTEXT_CLASS = "org.springframework.boot.web.server.context.WebServerApplicationContext";
 
 	private final Class<? extends C> contextClass;
 
@@ -109,6 +113,36 @@ public abstract class ApplicationContextServerWebExchangeMatcher<C> implements S
 			return () -> (C) context;
 		}
 		return () -> context.getBean(this.contextClass);
+	}
+
+	/**
+	 * Returns {@code true} if the specified context is a
+	 * {@link WebServerApplicationContext} with a matching server namespace.
+	 * @param context the context to check
+	 * @param serverNamespace the server namespace to match against
+	 * @return {@code true} if the server namespace of the context matches
+	 * @since 4.0.1
+	 */
+	protected final boolean hasServerNamespace(@Nullable ApplicationContext context, String serverNamespace) {
+		if (!ClassUtils.isPresent(WEB_SERVER_CONTEXT_CLASS, null)) {
+			return false;
+		}
+		return WebServerApplicationContext.hasServerNamespace(context, serverNamespace);
+	}
+
+	/**
+	 * Returns the server namespace if the specified context is a
+	 * {@link WebServerApplicationContext}.
+	 * @param context the context
+	 * @return the server namespace or {@code null} if the context is not a
+	 * {@link WebServerApplicationContext}
+	 * @since 4.0.1
+	 */
+	protected final @Nullable String getServerNamespace(@Nullable ApplicationContext context) {
+		if (!ClassUtils.isPresent(WEB_SERVER_CONTEXT_CLASS, null)) {
+			return null;
+		}
+		return WebServerApplicationContext.getServerNamespace(context);
 	}
 
 }

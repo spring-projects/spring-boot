@@ -27,6 +27,7 @@ description = "Spring Boot Actuator"
 dependencies {
 	api(project(":core:spring-boot"))
 
+	optional(project(":module:spring-boot-web-server"))
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.github.ben-manes.caffeine:caffeine")

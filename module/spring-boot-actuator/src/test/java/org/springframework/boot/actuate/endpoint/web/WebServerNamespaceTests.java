@@ -35,7 +35,7 @@ class WebServerNamespaceTests {
 
 	@Test
 	void fromWhenValueIsNull() {
-		assertThat(WebServerNamespace.from(null)).isEqualTo(WebServerNamespace.SERVER);
+		assertThat(WebServerNamespace.from((String) null)).isEqualTo(WebServerNamespace.SERVER);
 	}
 
 	@Test
