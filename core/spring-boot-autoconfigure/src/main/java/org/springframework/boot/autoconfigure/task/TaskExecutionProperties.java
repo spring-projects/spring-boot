@@ -45,7 +45,7 @@ public class TaskExecutionProperties {
 	private Mode mode = Mode.AUTO;
 
 	/**
-	 * Indicates whether to register ContextPropagatingTaskDecorator bean
+	 * Whether to propagate the current context to task executions.
 	 */
 	private boolean propagateContext = false;
 

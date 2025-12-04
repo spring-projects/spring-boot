@@ -75,36 +75,19 @@ class TaskExecutorConfigurations {
 
 		@Bean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
 		@ConditionalOnThreading(Threading.VIRTUAL)
-		SimpleAsyncTaskExecutor applicationTaskExecutorVirtualThreads(SimpleAsyncTaskExecutorBuilder builder,
-																	  ObjectProvider<TaskDecorator> decorators) {
-			TaskDecorator decorator = decorators.getIfAvailable();
-			SimpleAsyncTaskExecutor executor = builder.build();
-			if (decorator != null) {
-				executor.setTaskDecorator(decorator);
-			}
-			return executor;
+		SimpleAsyncTaskExecutor applicationTaskExecutorVirtualThreads(SimpleAsyncTaskExecutorBuilder builder) {
+			return builder.build();
 		}
 
 		@Bean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
 		@Lazy
 		@ConditionalOnThreading(Threading.PLATFORM)
-		ThreadPoolTaskExecutor applicationTaskExecutor( ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder,
-			    										ObjectProvider<TaskDecorator> decorators ) {
-			TaskDecorator decorator = decorators.getIfAvailable();
-			ThreadPoolTaskExecutor executor = builder.build();
-			if (decorator != null) {
-				executor.setTaskDecorator(decorator);
-			}
-			return executor;
+		ThreadPoolTaskExecutor applicationTaskExecutor(ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder) {
+			return threadPoolTaskExecutorBuilder.build();
 		}
 
 		@Bean
-		@ConditionalOnProperty(
-				prefix = "spring.task.execution",
-				name = "propagate-context",
-				havingValue = "true",
-				matchIfMissing = false
-		)
+		@ConditionalOnProperty(prefix = "spring.task.execution.propagate-context", havingValue = "true")
 		TaskDecorator contextPropagatingTaskDecorator() {
 			return new ContextPropagatingTaskDecorator();
 		}
