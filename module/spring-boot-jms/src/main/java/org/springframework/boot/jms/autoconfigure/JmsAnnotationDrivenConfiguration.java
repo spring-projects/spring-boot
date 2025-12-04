@@ -42,6 +42,7 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Vedran Pavic
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableJms.class)
@@ -73,11 +74,22 @@ class JmsAnnotationDrivenConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@SuppressWarnings("removal")
-	DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
+	DefaultJmsListenerContainerFactoryConfigurer defaultJmsListenerContainerFactoryConfigurer() {
 		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
 		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
 		configurer.setTransactionManager(this.transactionManager.getIfUnique());
+		configurer.setMessageConverter(this.messageConverter.getIfUnique());
+		configurer.setExceptionListener(this.exceptionListener.getIfUnique());
+		configurer.setObservationRegistry(this.observationRegistry.getIfUnique());
+		configurer.setJmsProperties(this.properties);
+		return configurer;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	SimpleJmsListenerContainerFactoryConfigurer simpleJmsListenerContainerFactoryConfigurer() {
+		SimpleJmsListenerContainerFactoryConfigurer configurer = new SimpleJmsListenerContainerFactoryConfigurer();
+		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setExceptionListener(this.exceptionListener.getIfUnique());
 		configurer.setObservationRegistry(this.observationRegistry.getIfUnique());
