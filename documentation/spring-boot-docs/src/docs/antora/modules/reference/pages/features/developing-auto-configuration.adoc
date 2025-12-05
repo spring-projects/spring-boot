@@ -18,7 +18,8 @@ Additional javadoc:org.springframework.context.annotation.Conditional[format=ann
 Usually, auto-configuration classes use javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnClass[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean[format=annotation] annotations.
 This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own javadoc:org.springframework.context.annotation.Configuration[format=annotation].
 
-You can browse the source code of {code-spring-boot-autoconfigure-src}[`spring-boot-autoconfigure`] to see the javadoc:org.springframework.boot.autoconfigure.AutoConfiguration[format=annotation] classes that Spring provides (see the {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
+You can browse the source code of {code-spring-boot-autoconfigure-src}[`spring-boot-autoconfigure`] to see the core javadoc:org.springframework.boot.autoconfigure.AutoConfiguration[format=annotation] classes that Spring provides (see the {code-spring-boot}/core/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
+You can also look at the equivalent file in other modules to see the auto-configurations that they provide.
 
 
 

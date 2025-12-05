@@ -416,9 +416,9 @@ If you use Logback, the following properties are also transferred:
 All the supported logging systems can consult System properties when parsing their configuration files.
 See the default configurations in `spring-boot.jar` for examples:
 
-* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/defaults.xml[Logback]
-* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j 2]
-* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/java/logging-file.properties[Java Util logging]
+* {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/logback/defaults.xml[Logback]
+* {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j 2]
+* {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/java/logging-file.properties[Java Util logging]
 
 [TIP]
 ====
@@ -469,8 +469,8 @@ Logback::
 +
 You can also refer to the default configurations included in Spring Boot:
 +
-* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/structured-console-appender.xml[Logback Structured Console Appender]
-* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/logback/structured-file-appender.xml[Logback Structured File Appender]
+* {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/logback/structured-console-appender.xml[Logback Structured Console Appender]
+* {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/logback/structured-file-appender.xml[Logback Structured File Appender]
 Log4j2::
 +
 [source,xml]
@@ -481,8 +481,8 @@ Log4j2::
 +
 You can also refer to the default configurations included in Spring Boot:
 +
-* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j2 Console Appender]
-* {code-spring-boot}/spring-boot-project/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2-file.xml[Log4j2 Console and File Appender]
+* {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2.xml[Log4j2 Console Appender]
+* {code-spring-boot}/core/spring-boot/src/main/resources/org/springframework/boot/logging/log4j2/log4j2-file.xml[Log4j2 Console and File Appender]
 ======
 
 
