@@ -86,6 +86,11 @@ class TaskExecutorConfigurations {
 			return threadPoolTaskExecutorBuilder.build();
 		}
 
+		@Bean
+		@ConditionalOnProperty(prefix = "spring.task.execution.propagate-context", havingValue = "true")
+		TaskDecorator contextPropagatingTaskDecorator() {
+			return new ContextPropagatingTaskDecorator();
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
