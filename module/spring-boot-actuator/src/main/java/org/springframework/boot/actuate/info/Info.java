@@ -105,7 +105,7 @@ public final class Info {
 		 * @param value the detail value
 		 * @return this {@link Builder} instance
 		 */
-		public Builder withDetail(String key, Object value) {
+		public Builder withDetail(String key, @Nullable Object value) {
 			this.content.put(key, value);
 			return this;
 		}
