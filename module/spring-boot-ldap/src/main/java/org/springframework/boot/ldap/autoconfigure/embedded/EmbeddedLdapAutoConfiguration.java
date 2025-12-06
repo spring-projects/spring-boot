@@ -22,10 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.ResultCode;
 import com.unboundid.ldap.sdk.schema.Schema;
 import com.unboundid.ldif.LDIFReader;
 import org.jspecify.annotations.Nullable;
@@ -38,6 +43,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
@@ -47,6 +53,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.boot.ldap.autoconfigure.LdapProperties;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -100,9 +107,13 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 			config.addAdditionalBindCredentials(username, password);
 		}
 		setSchema(config);
-		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig.createLDAPConfig("LDAP",
-				this.embeddedProperties.getPort());
-		config.setListenerConfigs(listenerConfig);
+		if (this.embeddedProperties.isLdaps()) {
+			this.setLdapsListener(applicationContext, config);
+		}
+		else {
+			config
+				.setListenerConfigs(InMemoryListenerConfig.createLDAPConfig("LDAP", this.embeddedProperties.getPort()));
+		}
 		this.server = new InMemoryDirectoryServer(config);
 		importLdif(this.server, applicationContext);
 		this.server.startListening();
@@ -134,6 +145,22 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to load schema " + resource.getDescription(), ex);
+		}
+	}
+
+	@ConditionalOnBean(SslBundles.class)
+	private void setLdapsListener(ApplicationContext applicationContext, InMemoryDirectoryServerConfig config)
+			throws LDAPException {
+		if (StringUtils.hasText(this.embeddedProperties.getSslBundleName())) {
+			SslBundles sslBundles = applicationContext.getBean(SslBundles.class);
+			SSLContext sslContext = sslBundles.getBundle(this.embeddedProperties.getSslBundleName()).createSslContext();
+			SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
+			SSLSocketFactory clientSocketFactory = sslContext.getSocketFactory();
+			config.setListenerConfigs(InMemoryListenerConfig.createLDAPSConfig("LDAPS", null,
+					this.embeddedProperties.getPort(), serverSocketFactory, clientSocketFactory));
+		}
+		else {
+			throw new LDAPException(ResultCode.PARAM_ERROR, "SslBundleName property not specified");
 		}
 	}
 
