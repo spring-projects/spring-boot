@@ -18,6 +18,8 @@ package org.springframework.boot.webmvc.test.autoconfigure.mockmvc;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -45,8 +47,8 @@ public class ExampleWebMvcConfigurer implements WebMvcConfigurer {
 			}
 
 			@Override
-			public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-					NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+			public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
+					NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
 				return new ExampleArgument("hello");
 			}
 

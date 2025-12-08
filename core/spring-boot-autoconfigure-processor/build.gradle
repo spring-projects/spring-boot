@@ -27,8 +27,6 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 }
 
-architectureCheck {
-	nullMarked {
-		enabled = false
-	}
+nullability {
+	requireExplicitNullMarking = false
 }

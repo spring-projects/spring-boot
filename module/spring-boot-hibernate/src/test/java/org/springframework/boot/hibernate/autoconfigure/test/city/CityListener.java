@@ -17,13 +17,14 @@
 package org.springframework.boot.hibernate.autoconfigure.test.city;
 
 import jakarta.persistence.PostLoad;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 public class CityListener {
 
-	private ConfigurableBeanFactory beanFactory;
+	private @Nullable ConfigurableBeanFactory beanFactory;
 
 	public CityListener() {
 	}

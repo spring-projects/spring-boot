@@ -17,4 +17,7 @@
 /**
  * Sample config for tests
  */
+@NullMarked
 package org.springframework.boot.sampleconfig;
+
+import org.jspecify.annotations.NullMarked;

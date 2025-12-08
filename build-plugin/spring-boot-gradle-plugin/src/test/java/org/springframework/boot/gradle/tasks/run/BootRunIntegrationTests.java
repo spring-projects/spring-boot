@@ -160,7 +160,7 @@ class BootRunIntegrationTests {
 	void classesFromASecondarySourceSetCanBeOnTheClasspath() throws IOException {
 		File output = new File(this.gradleBuild.getProjectDir(), "src/secondary/java/com/example/bootrun/main");
 		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/bootrun/main"), output);
+		FileSystemUtils.copyRecursively(new File("src/test/resources/com/example/bootrun/main"), output);
 		BuildResult result = this.gradleBuild.build("bootRun");
 		BuildTask task = result.task(":bootRun");
 		assertThat(task).isNotNull();
@@ -203,7 +203,7 @@ class BootRunIntegrationTests {
 	private void copyApplication(String name) throws IOException {
 		File output = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example/bootrun/" + name);
 		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/bootrun/" + name), output);
+		FileSystemUtils.copyRecursively(new File("src/test/resources/com/example/bootrun/" + name), output);
 	}
 
 	private String canonicalPathOf(String path) throws IOException {

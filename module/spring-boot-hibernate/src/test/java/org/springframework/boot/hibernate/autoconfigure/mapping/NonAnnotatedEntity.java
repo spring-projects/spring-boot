@@ -23,8 +23,10 @@ package org.springframework.boot.hibernate.autoconfigure.mapping;
  */
 public class NonAnnotatedEntity {
 
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
+	@SuppressWarnings("NullAway.Init")
 	private String item;
 
 	protected NonAnnotatedEntity() {

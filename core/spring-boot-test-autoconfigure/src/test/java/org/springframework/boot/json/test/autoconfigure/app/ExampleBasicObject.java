@@ -16,6 +16,10 @@
 
 package org.springframework.boot.json.test.autoconfigure.app;
 
+import java.util.Objects;
+
+import org.jspecify.annotations.Nullable;
+
 /**
  * Example object to read/write as JSON.
  *
@@ -23,9 +27,9 @@ package org.springframework.boot.json.test.autoconfigure.app;
  */
 public class ExampleBasicObject {
 
-	private String value;
+	private @Nullable String value;
 
-	public String getValue() {
+	public @Nullable String getValue() {
 		return this.value;
 	}
 
@@ -36,14 +40,14 @@ public class ExampleBasicObject {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && obj.getClass() == getClass()) {
-			return this.value.equals(((ExampleBasicObject) obj).value);
+			return Objects.equals(this.value, ((ExampleBasicObject) obj).value);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return this.value.hashCode();
+		return Objects.hashCode(this.value);
 	}
 
 }

@@ -51,8 +51,6 @@ dependencies {
 	optional("com.redis:testcontainers-redis")
 }
 
-architectureCheck {
-	nullMarked {
-		enabled = false
-	}
+nullability {
+	requireExplicitNullMarking = false
 }

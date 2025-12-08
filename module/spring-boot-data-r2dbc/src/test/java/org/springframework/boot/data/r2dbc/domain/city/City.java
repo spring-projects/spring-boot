@@ -23,14 +23,19 @@ import org.springframework.data.relational.core.mapping.Table;
 public class City {
 
 	@Id
+	@SuppressWarnings("NullAway.Init")
 	private Long id;
 
+	@SuppressWarnings("NullAway.Init")
 	private String name;
 
+	@SuppressWarnings("NullAway.Init")
 	private String state;
 
+	@SuppressWarnings("NullAway.Init")
 	private String country;
 
+	@SuppressWarnings("NullAway.Init")
 	private String map;
 
 	protected City() {

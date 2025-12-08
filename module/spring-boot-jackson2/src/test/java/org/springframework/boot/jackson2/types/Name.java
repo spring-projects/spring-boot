@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jackson2.types;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Sample object used for tests.
  *
@@ -25,13 +27,13 @@ package org.springframework.boot.jackson2.types;
 @Deprecated(since = "4.0.0", forRemoval = true)
 public class Name {
 
-	protected final String name;
+	protected final @Nullable String name;
 
-	public Name(String name) {
+	public Name(@Nullable String name) {
 		this.name = name;
 	}
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 

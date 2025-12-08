@@ -125,10 +125,10 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
 	void deleteAController(ApplicationLauncher applicationLauncher) throws Exception {
-		launchApplication(applicationLauncher);
+		LaunchedApplication launchedApplication = launchApplication(applicationLauncher);
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
-		assertThat(new File(this.launchedApplication.getClassesDirectory(), "com/example/ControllerOne.class").delete())
+		assertThat(new File(launchedApplication.getClassesDirectory(), "com/example/ControllerOne.class").delete())
 			.isTrue();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForEntity(urlBase + "/one", String.class).getStatusCode())
@@ -139,7 +139,7 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")
 	void createAControllerAndThenDeleteIt(ApplicationLauncher applicationLauncher) throws Exception {
-		launchApplication(applicationLauncher);
+		LaunchedApplication launchedApplication = launchApplication(applicationLauncher);
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
@@ -148,7 +148,7 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
-		assertThat(new File(this.launchedApplication.getClassesDirectory(), "com/example/ControllerTwo.class").delete())
+		assertThat(new File(launchedApplication.getClassesDirectory(), "com/example/ControllerTwo.class").delete())
 			.isTrue();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())

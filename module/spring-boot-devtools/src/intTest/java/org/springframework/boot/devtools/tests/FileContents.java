@@ -21,6 +21,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -36,11 +38,11 @@ class FileContents {
 		this.file = file;
 	}
 
-	String get() {
+	@Nullable String get() {
 		return get(Function.identity());
 	}
 
-	<T> T get(Function<String, T> transformer) {
+	<T> @Nullable T get(Function<String, T> transformer) {
 		if ((!this.file.exists()) || this.file.length() == 0) {
 			return null;
 		}
@@ -53,7 +55,7 @@ class FileContents {
 	}
 
 	@Override
-	public String toString() {
+	public @Nullable String toString() {
 		return get();
 	}
 

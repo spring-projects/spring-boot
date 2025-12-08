@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jackson2.types;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -31,7 +33,7 @@ public final class NameAndAge extends Name {
 
 	private final int age;
 
-	public NameAndAge(String name, int age) {
+	public NameAndAge(@Nullable String name, int age) {
 		super(name);
 		this.age = age;
 	}

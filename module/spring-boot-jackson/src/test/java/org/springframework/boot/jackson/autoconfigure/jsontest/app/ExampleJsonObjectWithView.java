@@ -17,6 +17,7 @@
 package org.springframework.boot.jackson.autoconfigure.jsontest.app;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.util.ObjectUtils;
 
@@ -28,11 +29,11 @@ import org.springframework.util.ObjectUtils;
 public class ExampleJsonObjectWithView {
 
 	@JsonView(TestView.class)
-	private String value;
+	private @Nullable String value;
 
 	private int id;
 
-	public String getValue() {
+	public @Nullable String getValue() {
 		return this.value;
 	}
 

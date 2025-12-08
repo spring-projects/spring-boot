@@ -70,10 +70,8 @@ tasks.named('compileKotlin', KotlinCompilationTask.class) {
     javaSources.from = []
 }
 
-architectureCheck {
-	nullMarked {
-		enabled = false
-	}
+nullability {
+	requireExplicitNullMarking = false
 }
 
 plugins.withType(EclipsePlugin) {
