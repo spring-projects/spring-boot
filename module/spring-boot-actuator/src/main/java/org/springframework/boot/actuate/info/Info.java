@@ -116,7 +116,7 @@ public final class Info {
 		 * @return this {@link Builder} instance
 		 * @see #withDetail(String, Object)
 		 */
-		public Builder withDetails(Map<String, Object> details) {
+		public Builder withDetails(Map<String, @Nullable ? extends Object> details) {
 			this.content.putAll(details);
 			return this;
 		}
