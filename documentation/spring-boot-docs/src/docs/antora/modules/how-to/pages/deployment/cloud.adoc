@@ -157,10 +157,50 @@ NOTE: The container needs to have a shell for this to work.
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and xref:reference:web/graceful-shutdown.adoc[graceful shutdown] will begin, allowing any remaining in-flight requests to complete.
 
-NOTE: When Kubernetes sends a SIGTERM signal to the pod, it waits for a specified time called the termination grace period (the default for which is 30 seconds).
-If the containers are still running after the grace period, they are sent the SIGKILL signal and forcibly removed.
-If the pod takes longer than 30 seconds to shut down, which could be because you have increased configprop:spring.lifecycle.timeout-per-shutdown-phase[], make sure to increase the termination grace period by setting the `terminationGracePeriodSeconds` option in the Pod YAML.
+Let’s look at the shutdown flow, which is a sequence of nested timers and events, starting from the outside (Kubernetes) and moving to the inside (Spring Boot application).
 
+==== Layer 1: Kubernetes Node (Kubelet)
+
+* `terminationGracePeriodSeconds` (e.g., 45s): This is the *master clock*. It is the total time budget the kubelet gives the pod to shut down completely. When this timer expires, a `SIGKILL` is sent, and the container is forcefully terminated, no matter what it's doing.
+
+==== Layer 2: Kubernetes Pod `preStop` Hook
+
+* `preStop: sleep: seconds: 10`: When shutdown begins, the kubelet first executes this hook. It waits for 10 seconds.
+
+** *Time Remaining in Master Clock*: `45s - 10s = 35s`.
+
+** During this sleep, Kubernetes Services and Ingress controllers remove the pod from the load balancer’s endpoint list. The application continues running and serving any in-flight requests, but no new requests should arrive.
+
+==== Layer 3: The Application (Spring Boot)
+
+* After the `preStop` hook's `sleep` finishes, the kubelet sends a `SIGTERM` signal to the Spring Boot application.
+
+* Spring Boot catches `SIGTERM` and starts its graceful shutdown procedure. It starts shutting down its  `SmartLifecycle` beans, phase by phase (from highest to lowest).
+
+* `spring.lifecycle.timeout-per-shutdown-phase` (e.g., 30s): This timer now governs the *internal* shutdown.
+
+** Let's say Spring Boot has 3 shutdown phases. In the *worst case*, the application's internal shutdown could take up to `3 phases * 30s = 90s`.
+
+==== The Critical Calculation
+
+The configuration is only safe if the total time required is less than the master clock.
+
+*Total Application Shutdown Time < Time Remaining in Master Clock*
+
+(Sum of all timeout-per-shutdown-phase durations) <
+(terminationGracePeriodSeconds - preStop sleep duration)
+
+Using our example values:
+
+* `terminationGracePeriodSeconds`: 45s
+* `preStop` sleep: 10s
+* `timeout-per-shutdown-phase`: 30s
+* Number of phases: 3 (hypothetically)
+
+1. Time remaining for app shutdown: `45s - 10s = *35s*`.
+2. Maximum time the app _might_ take: `3 phases * 30s/phase = *90s*`.
+
+*Conclusion*: This configuration is unsafe. The 90s potentially needed by Spring Boot is far greater than the 35s allowed by Kubernetes. The application will almost certainly be killed forcefully by `SIGKILL` before it can shut down gracefully.
 
 
 [[howto.deployment.cloud.heroku]]
