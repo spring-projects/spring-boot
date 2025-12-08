@@ -554,7 +554,7 @@ bom {
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
-	library("Hibernate", "6.6.36.Final") {
+	library("Hibernate", "6.6.38.Final") {
 		prohibit {
 			versionRange "[7.0.0.Alpha1,)"
 			because "it exceeds our Jakarta EE 10 baseline"
