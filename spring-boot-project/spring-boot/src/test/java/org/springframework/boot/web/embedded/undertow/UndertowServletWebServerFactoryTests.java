@@ -54,6 +54,7 @@ import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -64,6 +65,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -318,6 +320,16 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 			.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
 					new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" }))
 			.isInstanceOfAny(SSLException.class, SocketException.class);
+	}
+
+	@Test
+	void multipleCallsToDestroyAreTolerated() {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.setPort(0);
+		WebServer webServer = factory.getWebServer();
+		webServer.start();
+		webServer.destroy();
+		assertThatNoException().isThrownBy(webServer::destroy);
 	}
 
 	@Override

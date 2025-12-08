@@ -22,6 +22,7 @@ import java.io.IOException;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.DeploymentManager.State;
 import jakarta.servlet.ServletException;
 
 import org.springframework.util.Assert;
@@ -76,12 +77,14 @@ class DeploymentManagerHttpHandlerFactory implements HttpHandlerFactory {
 
 		@Override
 		public void close() throws IOException {
-			try {
-				this.deploymentManager.stop();
-				this.deploymentManager.undeploy();
-			}
-			catch (ServletException ex) {
-				throw new RuntimeException(ex);
+			if (this.deploymentManager.getState() != State.UNDEPLOYED) {
+				try {
+					this.deploymentManager.stop();
+					this.deploymentManager.undeploy();
+				}
+				catch (ServletException ex) {
+					throw new RuntimeException(ex);
+				}
 			}
 		}
 
