@@ -1839,7 +1839,7 @@ bom {
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
 		}
 	}
-	library("Pulsar", "4.0.7") {
+	library("Pulsar", "4.0.8") {
 		group("org.apache.pulsar") {
 			bom("pulsar-bom")
 		}
