@@ -62,9 +62,7 @@ class Log4j2LoggingSystemPropertiesTests {
 	@Test
 	void appliesLog4j2RollingPolicyProperties() {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "50MB");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.clean-history-on-start", "true");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-history", "30");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.total-size-cap", "10GB");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.file-name-pattern", "test.%d{yyyy-MM-dd}.%i.log");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "time");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "2");
@@ -75,9 +73,7 @@ class Log4j2LoggingSystemPropertiesTests {
 
 		assertThat(System.getProperties())
 			.containsEntry("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE", String.valueOf(DataSize.ofMegabytes(50).toBytes()))
-			.containsEntry("LOG4J2_ROLLINGPOLICY_CLEAN_HISTORY_ON_START", "true")
 			.containsEntry("LOG4J2_ROLLINGPOLICY_MAX_HISTORY", "30")
-			.containsEntry("LOG4J2_ROLLINGPOLICY_TOTAL_SIZE_CAP", String.valueOf(DataSize.ofGigabytes(10).toBytes()))
 			.containsEntry("LOG4J2_ROLLINGPOLICY_FILE_NAME_PATTERN", "test.%d{yyyy-MM-dd}.%i.log")
 			.containsEntry("LOG4J2_ROLLINGPOLICY_STRATEGY", "time")
 			.containsEntry("LOG4J2_ROLLINGPOLICY_TIME_INTERVAL", "2")

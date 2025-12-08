@@ -34,19 +34,9 @@ public enum Log4j2RollingPolicySystemProperty {
 	FILE_NAME_PATTERN("file-name-pattern", "logging.pattern.rolling-file-name"),
 
 	/**
-	 * Logging system property for the clean history on start flag.
-	 */
-	CLEAN_HISTORY_ON_START("clean-history-on-start", "logging.file.clean-history-on-start"),
-
-	/**
 	 * Logging system property for the file log max size.
 	 */
 	MAX_FILE_SIZE("max-file-size", "logging.file.max-size"),
-
-	/**
-	 * Logging system property for the file total size cap.
-	 */
-	TOTAL_SIZE_CAP("total-size-cap", "logging.file.total-size-cap"),
 
 	/**
 	 * Logging system property for the file log max history.

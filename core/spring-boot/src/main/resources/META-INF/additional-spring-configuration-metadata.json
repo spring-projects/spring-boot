@@ -140,13 +140,6 @@
       "description": "Overriding configuration files used to create a composite configuration. Can be prefixed with 'optional:' to only load the override if it exists."
     },
     {
-      "name": "logging.log4j2.rollingpolicy.clean-history-on-start",
-      "type": "java.lang.Boolean",
-      "description": "Whether to clean the archive log files on startup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": false
-    },
-    {
       "name": "logging.log4j2.rollingpolicy.cron.schedule",
       "type": "java.lang.String",
       "description": "Cron expression used when the strategy is 'cron'.",
@@ -193,13 +186,6 @@
       "description": "Whether to align the next rollover time to occur at the top of the interval when the strategy is time based.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": false
-    },
-    {
-      "name": "logging.log4j2.rollingpolicy.total-size-cap",
-      "type": "org.springframework.util.unit.DataSize",
-      "description": "Total size of log backups to be kept.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "0B"
     },
     {
       "name": "logging.logback.rollingpolicy.clean-history-on-start",

@@ -77,9 +77,7 @@ public class Log4j2LoggingSystemProperties extends LoggingSystemProperties {
 		applyRollingPolicy(Log4j2RollingPolicySystemProperty.TIME_MODULATE, resolver, Boolean.class);
 		applyRollingPolicy(Log4j2RollingPolicySystemProperty.CRON_SCHEDULE, resolver);
 		applyRollingPolicy(Log4j2RollingPolicySystemProperty.FILE_NAME_PATTERN, resolver);
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.CLEAN_HISTORY_ON_START, resolver);
 		applyRollingPolicy(Log4j2RollingPolicySystemProperty.MAX_FILE_SIZE, resolver, DataSize.class);
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.TOTAL_SIZE_CAP, resolver, DataSize.class);
 		applyRollingPolicy(Log4j2RollingPolicySystemProperty.MAX_HISTORY, resolver);
 	}
 

@@ -76,7 +76,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -782,8 +781,6 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void rollingPolicySystemPropertiesAreApplied() {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "50MB");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-history", "30");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.clean-history-on-start", "true");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.total-size-cap", "5GB");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.file-name-pattern",
 				"${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
 		File file = new File(tmpDir(), "log4j2-test.log");
@@ -792,13 +789,9 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		String maxFileSize = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
 		String maxHistory = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_HISTORY");
-		String cleanHistoryOnStart = System.getProperty("LOG4J2_ROLLINGPOLICY_CLEAN_HISTORY_ON_START");
-		String totalSizeCap = System.getProperty("LOG4J2_ROLLINGPOLICY_TOTAL_SIZE_CAP");
 		String fileNamePattern = System.getProperty("LOG4J2_ROLLINGPOLICY_FILE_NAME_PATTERN");
 		assertThat(maxFileSize).isEqualTo(String.valueOf(50 * 1024 * 1024));
 		assertThat(maxHistory).isEqualTo("30");
-		assertThat(cleanHistoryOnStart).isEqualTo("true");
-		assertThat(totalSizeCap).isEqualTo(String.valueOf(DataSize.ofGigabytes(5).toBytes()));
 		assertThat(fileNamePattern).isEqualTo("${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
 	}
 
