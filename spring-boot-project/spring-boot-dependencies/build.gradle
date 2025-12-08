@@ -2599,7 +2599,7 @@ bom {
 			releaseNotes(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/changelog.html".formatted(version.major(), version.minor()))
 		}
 	}
-	library("UnboundID LDAPSDK", "7.0.3") {
+	library("UnboundID LDAPSDK", "7.0.4") {
 		group("com.unboundid") {
 			modules = [
 				"unboundid-ldapsdk"
