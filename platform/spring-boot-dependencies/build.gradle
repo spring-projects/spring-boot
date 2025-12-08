@@ -1805,7 +1805,7 @@ bom {
 			releaseNotes("https://pulsar.apache.org/release-notes/versioned/pulsar-{version}")
 		}
 	}
-	library("Quartz", "2.5.1") {
+	library("Quartz", "2.5.2") {
 		group("org.quartz-scheduler") {
 			modules = [
 				"quartz",
