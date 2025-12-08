@@ -398,7 +398,7 @@ class DataMongoAutoConfigurationTests {
 
 	}
 
-	static class MyConverter implements Converter<MongoClient, Boolean> {
+	static class MyConverter implements Converter<MongoClient, @Nullable Boolean> {
 
 		@Override
 		public @Nullable Boolean convert(MongoClient source) {

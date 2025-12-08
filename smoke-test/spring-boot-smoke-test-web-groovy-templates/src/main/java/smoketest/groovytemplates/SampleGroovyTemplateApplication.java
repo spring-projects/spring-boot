@@ -32,8 +32,8 @@ public class SampleGroovyTemplateApplication {
 	}
 
 	@Bean
-	public Converter<String, Message> messageConverter() {
-		return new Converter<>() {
+	public Converter<String, @Nullable Message> messageConverter() {
+		return new Converter<String, @Nullable Message>() {
 			@Override
 			public @Nullable Message convert(String id) {
 				return messageRepository().findMessage(Long.valueOf(id));

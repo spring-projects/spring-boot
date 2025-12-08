@@ -32,13 +32,8 @@ public class SampleWebUiApplication {
 	}
 
 	@Bean
-	public Converter<String, Message> messageConverter() {
-		return new Converter<>() {
-			@Override
-			public @Nullable Message convert(String id) {
-				return messageRepository().findMessage(Long.valueOf(id));
-			}
-		};
+	public Converter<String, @Nullable Message> messageConverter() {
+		return (id) -> messageRepository().findMessage(Long.valueOf(id));
 	}
 
 	public static void main(String[] args) {

@@ -142,7 +142,7 @@ class DataCassandraAutoConfigurationTests {
 
 	}
 
-	static class MyConverter implements Converter<Person, String> {
+	static class MyConverter implements Converter<Person, @Nullable String> {
 
 		@Override
 		public @Nullable String convert(Person o) {

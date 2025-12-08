@@ -340,7 +340,7 @@ class ApplicationConversionServiceTests {
 
 	}
 
-	static class ExampleConverter implements Converter<String, Integer> {
+	static class ExampleConverter implements Converter<String, @Nullable Integer> {
 
 		@Override
 		public @Nullable Integer convert(String source) {

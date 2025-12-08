@@ -183,7 +183,7 @@ class DataElasticsearchAutoConfigurationTests {
 
 	}
 
-	static class MyConverter implements Converter<ElasticsearchTemplate, Boolean> {
+	static class MyConverter implements Converter<ElasticsearchTemplate, @Nullable Boolean> {
 
 		@Override
 		public @Nullable Boolean convert(ElasticsearchTemplate source) {
