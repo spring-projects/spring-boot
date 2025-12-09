@@ -42,6 +42,7 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
@@ -225,7 +226,7 @@ class EnvironmentPostProcessorApplicationListenerTests {
 				.processAheadOfTime(applicationContext.getBeanFactory());
 			assertThat(aotContribution).isNotNull();
 			GenerationContext generationContext = new TestGenerationContext();
-			aotContribution.applyTo(generationContext, null);
+			aotContribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
 			assertThat(RuntimeHintsPredicates.reflection()
 				.onType(TypeReference.of(TestGenerationContext.TEST_TARGET + "__"
 						+ EnvironmentPostProcessorApplicationListener.AOT_FEATURE_NAME))
