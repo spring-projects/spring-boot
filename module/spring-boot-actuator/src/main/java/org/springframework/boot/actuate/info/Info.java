@@ -93,7 +93,7 @@ public final class Info {
 	 */
 	public static class Builder {
 
-		private final Map<String, Object> content;
+		private final Map<String, @Nullable Object> content;
 
 		public Builder() {
 			this.content = new LinkedHashMap<>();
@@ -116,7 +116,7 @@ public final class Info {
 		 * @return this {@link Builder} instance
 		 * @see #withDetail(String, Object)
 		 */
-		public Builder withDetails(Map<String, @Nullable ? extends Object> details) {
+		public Builder withDetails(Map<String, @Nullable Object> details) {
 			this.content.putAll(details);
 			return this;
 		}
