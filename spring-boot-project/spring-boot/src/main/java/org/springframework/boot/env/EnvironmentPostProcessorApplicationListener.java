@@ -24,7 +24,9 @@ import javax.lang.model.element.Modifier;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.aot.generate.GeneratedClass;
+import org.springframework.aot.generate.GeneratedTypeReference;
 import org.springframework.aot.generate.GenerationContext;
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
@@ -59,7 +61,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class EnvironmentPostProcessorApplicationListener implements SmartApplicationListener, Ordered {
 
-	private static final String AOT_FEATURE_NAME = "EnvironmentPostProcessor";
+	static final String AOT_FEATURE_NAME = "EnvironmentPostProcessor";
 
 	/**
 	 * The default order for the processor.
@@ -234,6 +236,10 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 				method.addParameter(SpringApplication.class, "application");
 				method.addCode(generateActiveProfilesInitializeCode());
 			});
+			generationContext.getRuntimeHints()
+				.reflection()
+				.registerType(GeneratedTypeReference.of(generatedClass.getName()),
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 		}
 
 		private CodeBlock generateActiveProfilesInitializeCode() {
