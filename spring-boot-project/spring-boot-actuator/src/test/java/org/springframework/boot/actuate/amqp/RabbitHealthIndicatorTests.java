@@ -68,14 +68,6 @@ class RabbitHealthIndicatorTests {
 	}
 
 	@Test
-	void healthWhenConnectionFailsShouldReturnDown() {
-		givenTemplateExecutionWillInvokeCallback();
-		given(this.channel.getConnection()).willThrow(new RuntimeException());
-		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-	}
-
-	@Test
 	void healthWhenVersionIsMissingShouldReturnUpWithUnknownVersion() {
 		givenTemplateExecutionWillInvokeCallback();
 		Connection connection = mock(Connection.class);
@@ -84,6 +76,14 @@ class RabbitHealthIndicatorTests {
 		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("version", "unknown");
+	}
+
+	@Test
+	void healthWhenConnectionFailsShouldReturnDown() {
+		givenTemplateExecutionWillInvokeCallback();
+		given(this.channel.getConnection()).willThrow(new RuntimeException());
+		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
 	private void givenTemplateExecutionWillInvokeCallback() {
