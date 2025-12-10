@@ -44,6 +44,7 @@
 	<suppress files="SpringBootJoranConfiguratorTests\.java" checks="IllegalImport" />
 	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
+	<suppress files="SampleLog4j2Application\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
 	<suppress files="MockBeanWithSpringMethodRuleRepeatJUnit4IntegrationTests" checks="SpringJUnit5" />
