@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.info;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A simple {@link InfoContributor} that exposes a map.
  *
@@ -27,7 +29,7 @@ import java.util.Map;
  */
 public class MapInfoContributor implements InfoContributor {
 
-	private final Map<String, Object> info;
+	private final Map<String, @Nullable Object> info;
 
 	public MapInfoContributor(Map<String, Object> info) {
 		this.info = new LinkedHashMap<>(info);

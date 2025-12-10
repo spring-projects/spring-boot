@@ -52,6 +52,7 @@ import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicat
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.webflux.actuate.endpoint.web.AbstractWebFluxEndpointHandlerMapping.AbstractWebFluxEndpointHandlerMappingRuntimeHints;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -372,17 +373,30 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange, @Nullable Map<String, String> body) {
-			Map<String, Object> arguments = getArguments(exchange, body);
-			OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
-				.of(WebServerNamespace.class, () -> WebServerNamespace
-					.from(WebServerApplicationContext.getServerNamespace(exchange.getApplicationContext())));
 			return this.securityContextSupplier.get()
-				.map((securityContext) -> new InvocationContext(securityContext, arguments,
-						serverNamespaceArgumentResolver,
-						new ProducibleOperationArgumentResolver(
-								() -> exchange.getRequest().getHeaders().get("Accept"))))
-				.flatMap((invocationContext) -> handleResult((Publisher<?>) this.invoker.invoke(invocationContext),
+				.map((securityContext) -> getInvocationContext(securityContext, exchange, body))
+				.flatMap((invocationContext) -> handleResult(invoke(invocationContext),
 						exchange.getRequest().getMethod()));
+		}
+
+		private InvocationContext getInvocationContext(SecurityContext securityContext, ServerWebExchange exchange,
+				@Nullable Map<String, String> body) {
+			Map<String, Object> arguments = getArguments(exchange, body);
+			OperationArgumentResolver serverNamespaceResolver = OperationArgumentResolver.of(WebServerNamespace.class,
+					() -> getServerNamespace(exchange));
+			OperationArgumentResolver producibleOperationResolver = new ProducibleOperationArgumentResolver(
+					() -> exchange.getRequest().getHeaders().get("Accept"));
+			return new InvocationContext(securityContext, arguments, serverNamespaceResolver,
+					producibleOperationResolver);
+		}
+
+		private WebServerNamespace getServerNamespace(ServerWebExchange exchange) {
+			ApplicationContext context = exchange.getApplicationContext();
+			return WebServerNamespace.from(WebServerApplicationContext.getServerNamespace(context));
+		}
+
+		private @Nullable Publisher<?> invoke(InvocationContext invocationContext) {
+			return (@Nullable Publisher<?>) this.invoker.invoke(invocationContext);
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange, @Nullable Map<String, String> body) {

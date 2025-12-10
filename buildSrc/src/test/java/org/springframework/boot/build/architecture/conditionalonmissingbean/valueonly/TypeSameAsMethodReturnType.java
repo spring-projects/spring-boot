@@ -1,7 +1,7 @@
 /*
  * Copyright 2012-present the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the License);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-plugins {
-	id "org.springframework.boot.starter"
-}
+package org.springframework.boot.build.architecture.conditionalonmissingbean.valueonly;
 
-description = "Starter for testing Kotlin Serialization"
+import org.springframework.boot.build.architecture.annotations.TestConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 
-dependencies {
-	api(project(":starter:spring-boot-starter-kotlin-serialization"))
-	api(project(":starter:spring-boot-starter-test"))
+class TypeSameAsMethodReturnType {
+
+	@Bean
+	@TestConditionalOnMissingBean(String.class)
+	String helloWorld() {
+		return "Hello World";
+	}
+
 }

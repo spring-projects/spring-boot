@@ -90,7 +90,8 @@ The preceding example will prevent all observations whose name contains "denied"
 [[actuator.observability.annotations]]
 == Micrometer Observation Annotations support
 
-To enable scanning of observability annotations like javadoc:io.micrometer.observation.annotation.Observed[format=annotation], javadoc:io.micrometer.core.annotation.Timed[format=annotation], javadoc:io.micrometer.core.annotation.Counted[format=annotation], javadoc:io.micrometer.core.aop.MeterTag[format=annotation] and javadoc:io.micrometer.tracing.annotation.NewSpan[format=annotation], you need to set the configprop:management.observations.annotations.enabled[] property to `true`.
+To enable scanning of observability annotations like javadoc:io.micrometer.observation.annotation.Observed[format=annotation], javadoc:io.micrometer.core.annotation.Timed[format=annotation], javadoc:io.micrometer.core.annotation.Counted[format=annotation], javadoc:io.micrometer.core.aop.MeterTag[format=annotation] and javadoc:io.micrometer.tracing.annotation.NewSpan[format=annotation], set the configprop:management.observations.annotations.enabled[] property to `true`.
+A dependency on `org.aspectj:aspectjweaver`, which is part of `spring-boot-starter-aspectj`, is also required.
 This feature is supported by Micrometer directly.
 Please refer to the {url-micrometer-docs-concepts}/timers.html#_the_timed_annotation[Micrometer], {url-micrometer-docs-observation}/components.html#micrometer-observation-annotations[Micrometer Observation] and {url-micrometer-tracing-docs}/api.html#_aspect_oriented_programming[Micrometer Tracing] reference docs.
 

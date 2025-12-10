@@ -19,6 +19,7 @@ package org.springframework.boot.docs.testing.utilities.testresttemplate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.resttestclient.TestRestTemplate
+import org.springframework.http.HttpStatus
 
 class MyTests {
 
@@ -26,8 +27,9 @@ class MyTests {
 
 	@Test
 	fun testRequest() {
-		val headers = template.getForEntity("https://myhost.example.com/example", String::class.java)
-		assertThat(headers.headers.location).hasHost("other.example.com")
+		val response = template.getForEntity("https://myhost.example.com/example", String::class.java)
+		assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+		// Other assertions to verify the response
 	}
 
 }

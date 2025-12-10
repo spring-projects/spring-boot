@@ -23,7 +23,7 @@ Most IDEs can import Maven projects directly.
 For example, Eclipse users can select `Import...` -> `Existing Maven Projects` from the `File` menu.
 
 If you cannot directly import your project into your IDE, you may be able to generate IDE metadata by using a build plugin.
-Maven includes plugins for https://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and https://maven.apache.org/plugins/maven-idea-plugin/[IDEA].
+Maven includes plugins for https://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and https://maven.apache.org/plugins/maven-idea-plugin/[IntelliJ IDEA].
 Gradle offers plugins for {url-gradle-docs}/userguide.html[various IDEs].
 
 TIP: If you accidentally run a web application twice, you see a "`Port already in use`" error.

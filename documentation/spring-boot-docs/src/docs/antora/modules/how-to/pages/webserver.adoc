@@ -165,6 +165,19 @@ Contrary to a test, application code callbacks are processed early (before the v
 
 
 
+[[howto.webserver.build-uri-test-web-server]]
+== Build URI Against the Test Web Server
+
+Tests that start a javadoc:org.springframework.boot.web.server.WebServer[] such as  `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can get information about
+the running server using javadoc:org.springframework.boot.test.http.server.LocalTestWebServer[], as shown in the following example:
+
+include-code::MyWebIntegrationTests[]
+
+javadoc:org.springframework.boot.test.http.server.LocalTestWebServer[] provides access to a suitable javadoc:org.springframework.web.util.UriBuilderFactory[].
+It can also be customized to build such an instance on a sub-path of your application.
+
+
+
 [[howto.webserver.enable-response-compression]]
 == Enable HTTP Response Compression
 

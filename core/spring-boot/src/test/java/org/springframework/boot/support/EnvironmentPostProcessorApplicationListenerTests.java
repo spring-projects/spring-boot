@@ -36,8 +36,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.aot.AotDetector;
+import org.springframework.aot.generate.GenerationContext;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.TypeReference;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
@@ -209,6 +214,24 @@ class EnvironmentPostProcessorApplicationListenerTests {
 				environmentPostProcessor.postProcessEnvironment(freshEnvironment, new SpringApplication());
 				assertThat(freshEnvironment.getActiveProfiles()).containsExactly("one", "two");
 			});
+		}
+
+		@Test
+		void aotContributionRegistersReflectionHints() {
+			GenericApplicationContext applicationContext = new GenericApplicationContext();
+			ConfigurableEnvironment environment = new StandardEnvironment();
+			environment.setActiveProfiles("one", "two");
+			applicationContext.getBeanFactory().registerSingleton("environment", environment);
+			BeanFactoryInitializationAotContribution aotContribution = new EnvironmentBeanFactoryInitializationAotProcessor()
+				.processAheadOfTime(applicationContext.getBeanFactory());
+			assertThat(aotContribution).isNotNull();
+			GenerationContext generationContext = new TestGenerationContext();
+			aotContribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
+			assertThat(RuntimeHintsPredicates.reflection()
+				.onType(TypeReference.of(TestGenerationContext.TEST_TARGET + "__"
+						+ EnvironmentPostProcessorApplicationListener.AOT_FEATURE_NAME))
+				.withMemberCategory(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS))
+				.accepts(generationContext.getRuntimeHints());
 		}
 
 		@Test

@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.security.autoconfigure.web.StaticResourceLocation;
 import org.springframework.boot.security.web.servlet.ApplicationContextRequestMatcher;
-import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -148,7 +147,7 @@ public final class StaticResourceRequest {
 
 		@Override
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
-			return WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
+			return hasServerNamespace(applicationContext, "management");
 		}
 
 		@Override

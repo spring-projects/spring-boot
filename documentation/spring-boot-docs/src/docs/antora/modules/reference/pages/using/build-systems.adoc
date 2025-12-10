@@ -148,4 +148,4 @@ include::ROOT:partial$starters/technical-starters.adoc[]
 
 To learn how to swap technical facets, please see the how-to documentation for xref:how-to:webserver.adoc#howto.webserver.use-another[swapping web server] and xref:how-to:logging.adoc#howto.logging.log4j[logging system].
 
-TIP: For a list of additional community contributed starters, see the {code-spring-boot-latest}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.
+TIP: For a list of additional community contributed starters, see the {code-spring-boot-latest}/starter/README.adoc[README file] in the `spring-boot-starters` module on GitHub.

@@ -23,11 +23,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.http.converter.autoconfigure.GsonHttpMessageConvertersConfiguration.GsonHttpConvertersCustomizer;
+import org.springframework.boot.http.converter.autoconfigure.JacksonHttpMessageConvertersConfiguration.JacksonJsonHttpMessageConvertersCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
+import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.json.JsonbHttpMessageConverter;
 
 /**
@@ -45,11 +47,30 @@ class JsonbHttpMessageConvertersConfiguration {
 	static class JsonbHttpMessageConverterConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		JsonbHttpMessageConverter jsonbHttpMessageConverter(Jsonb jsonb) {
-			JsonbHttpMessageConverter converter = new JsonbHttpMessageConverter();
-			converter.setJsonb(jsonb);
-			return converter;
+		@ConditionalOnMissingBean(JsonbHttpMessageConverter.class)
+		JsonbHttpMessageConvertersCustomizer jsonbHttpMessageConvertersCustomizer(Jsonb jsonb) {
+			return new JsonbHttpMessageConvertersCustomizer(jsonb);
+		}
+
+	}
+
+	static class JsonbHttpMessageConvertersCustomizer
+			implements ClientHttpMessageConvertersCustomizer, ServerHttpMessageConvertersCustomizer {
+
+		private final JsonbHttpMessageConverter converter;
+
+		JsonbHttpMessageConvertersCustomizer(Jsonb jsonb) {
+			this.converter = new JsonbHttpMessageConverter(jsonb);
+		}
+
+		@Override
+		public void customize(ClientBuilder builder) {
+			builder.withJsonConverter(this.converter);
+		}
+
+		@Override
+		public void customize(ServerBuilder builder) {
+			builder.withJsonConverter(this.converter);
 		}
 
 	}
@@ -67,9 +88,9 @@ class JsonbHttpMessageConvertersConfiguration {
 		}
 
 		@SuppressWarnings("removal")
-		@ConditionalOnMissingBean({ JacksonJsonHttpMessageConverter.class,
-				org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class,
-				GsonHttpMessageConverter.class })
+		@ConditionalOnMissingBean({ JacksonJsonHttpMessageConvertersCustomizer.class,
+				Jackson2HttpMessageConvertersConfiguration.Jackson2JsonMessageConvertersCustomizer.class,
+				GsonHttpConvertersCustomizer.class })
 		static class JacksonAndGsonMissing {
 
 		}

@@ -18,7 +18,8 @@ Additional javadoc:org.springframework.context.annotation.Conditional[format=ann
 Usually, auto-configuration classes use javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnClass[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean[format=annotation] annotations.
 This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own javadoc:org.springframework.context.annotation.Configuration[format=annotation].
 
-You can browse the source code of {code-spring-boot-autoconfigure-src}[`spring-boot-autoconfigure`] to see the javadoc:org.springframework.boot.autoconfigure.AutoConfiguration[format=annotation] classes that Spring provides (see the {code-spring-boot}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
+You can browse the source code of {code-spring-boot-autoconfigure-src}[`spring-boot-autoconfigure`] to see the core javadoc:org.springframework.boot.autoconfigure.AutoConfiguration[format=annotation] classes that Spring provides (see the {code-spring-boot}/core/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
+You can also look at the equivalent file in other modules to see the auto-configurations that they provide.
 
 
 
@@ -238,16 +239,18 @@ Finally, a single "starter" dependency is provided to help users get started as 
 
 Concretely, a custom starter can contain the following:
 
-* The `autoconfigure` module that contains the auto-configuration code for "acme".
-* The `starter` module that provides a dependency to the `autoconfigure` module as well as "acme" and any additional dependencies that are typically useful.
+* The `acme-spring-boot` module that contains the auto-configuration code for "acme" as well as any API to use the feature.
+* The `acme-spring-boot-starter` module that provides a dependency to the other starters required by "acme", `acme-spring-boot`, and potentially additional dependencies that are typically useful.
 In a nutshell, adding the starter should provide everything needed to start using that library.
 
 This separation in two modules is in no way necessary.
 If "acme" has several flavors, options or optional features, then it is better to separate the auto-configuration as you can clearly express the fact some features are optional.
 Besides, you have the ability to craft a starter that provides an opinion about those optional dependencies.
-At the same time, others can rely only on the `autoconfigure` module and craft their own starter with different opinions.
+At the same time, others can rely only on `acme-spring-boot` and craft their own starter with different opinions.
 
 If the auto-configuration is relatively straightforward and does not have optional features, merging the two modules in the starter is definitely an option.
+
+If "acme" has a basic set of dependencies that are required to work, but you want to express a more opinionated view, then having a separate starter is a good option.
 
 
 

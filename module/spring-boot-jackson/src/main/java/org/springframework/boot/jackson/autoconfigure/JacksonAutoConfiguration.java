@@ -29,6 +29,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JacksonModule;
@@ -371,9 +372,10 @@ public final class JacksonAutoConfiguration {
 			if (this.jacksonProperties.isFindAndAddModules()) {
 				builder.findAndAddModules(getClass().getClassLoader());
 			}
-			if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
-				builder.changeDefaultPropertyInclusion(
-						(handler) -> handler.withValueInclusion(this.jacksonProperties.getDefaultPropertyInclusion()));
+			Include propertyInclusion = this.jacksonProperties.getDefaultPropertyInclusion();
+			if (propertyInclusion != null) {
+				builder.changeDefaultPropertyInclusion((handler) -> handler.withValueInclusion(propertyInclusion)
+					.withContentInclusion(propertyInclusion));
 			}
 			if (this.jacksonProperties.getTimeZone() != null) {
 				builder.defaultTimeZone(this.jacksonProperties.getTimeZone());

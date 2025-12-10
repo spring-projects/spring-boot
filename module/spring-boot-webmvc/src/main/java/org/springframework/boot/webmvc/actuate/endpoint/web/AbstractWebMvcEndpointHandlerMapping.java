@@ -51,7 +51,6 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.boot.webmvc.actuate.endpoint.web.AbstractWebMvcEndpointHandlerMapping.AbstractWebMvcEndpointHandlerMappingRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.HttpHeaders;
@@ -323,13 +322,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		public @Nullable Object handle(HttpServletRequest request,
 				@RequestBody(required = false) @Nullable Map<String, String> body) {
 			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
-			Map<String, Object> arguments = getArguments(request, body);
 			try {
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
-				ProducibleOperationArgumentResolver producibleOperationArgumentResolver = new ProducibleOperationArgumentResolver(
-						() -> headers.get("Accept"));
-				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
-						serverNamespaceArgumentResolver(request), producibleOperationArgumentResolver);
+				InvocationContext invocationContext = getInvocationContext(request, body, headers, securityContext);
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.valueOf(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
@@ -337,15 +332,21 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			}
 		}
 
-		private OperationArgumentResolver serverNamespaceArgumentResolver(HttpServletRequest request) {
-			if (ClassUtils.isPresent("org.springframework.boot.web.server.context.WebServerApplicationContext", null)) {
-				return OperationArgumentResolver.of(WebServerNamespace.class, () -> {
-					WebApplicationContext applicationContext = WebApplicationContextUtils
-						.getRequiredWebApplicationContext(request.getServletContext());
-					return WebServerNamespace.from(WebServerApplicationContext.getServerNamespace(applicationContext));
-				});
-			}
-			return OperationArgumentResolver.of(WebServerNamespace.class, () -> null);
+		private InvocationContext getInvocationContext(HttpServletRequest request, @Nullable Map<String, String> body,
+				HttpHeaders headers, ServletSecurityContext securityContext) {
+			Map<String, Object> arguments = getArguments(request, body);
+			OperationArgumentResolver serverNamespaceResolver = OperationArgumentResolver.of(WebServerNamespace.class,
+					() -> getServerNamespace(request));
+			ProducibleOperationArgumentResolver producibleOperationResolver = new ProducibleOperationArgumentResolver(
+					() -> headers.get("Accept"));
+			return new InvocationContext(securityContext, arguments, serverNamespaceResolver,
+					producibleOperationResolver);
+		}
+
+		private @Nullable WebServerNamespace getServerNamespace(HttpServletRequest request) {
+			WebApplicationContext context = WebApplicationContextUtils
+				.getRequiredWebApplicationContext(request.getServletContext());
+			return WebServerNamespace.from(context);
 		}
 
 		@Override

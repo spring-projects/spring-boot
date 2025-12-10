@@ -17,6 +17,7 @@
 package org.springframework.boot.health.autoconfigure.actuate.endpoint;
 
 import java.util.Set;
+import java.util.function.BiFunction;
 
 import org.jspecify.annotations.Nullable;
 
@@ -34,6 +35,7 @@ import org.springframework.boot.health.actuate.endpoint.SimpleHttpCodeStatusMapp
 import org.springframework.boot.health.actuate.endpoint.SimpleStatusAggregator;
 import org.springframework.boot.health.actuate.endpoint.StatusAggregator;
 import org.springframework.boot.health.contributor.HealthContributors;
+import org.springframework.boot.health.contributor.ReactiveHealthContributors;
 import org.springframework.boot.health.registry.HealthContributorRegistry;
 import org.springframework.boot.health.registry.ReactiveHealthContributorRegistry;
 import org.springframework.context.ApplicationContext;
@@ -78,8 +80,10 @@ class HealthEndpointConfiguration {
 	@Bean
 	@ConditionalOnBooleanProperty(name = "management.endpoint.health.validate-group-membership", matchIfMissing = true)
 	HealthEndpointGroupMembershipValidator healthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
-			HealthContributorRegistry healthContributorRegistry) {
-		return new HealthEndpointGroupMembershipValidator(properties, healthContributorRegistry);
+			HealthContributorRegistry healthContributorRegistry,
+			ObjectProvider<ReactiveHealthContributorRegistry> reactiveHealthContributorRegistry) {
+		return new HealthEndpointGroupMembershipValidator(properties, healthContributorRegistry,
+				reactiveHealthContributorRegistry.getIfAvailable());
 	}
 
 	@Bean
@@ -138,10 +142,13 @@ class HealthEndpointConfiguration {
 
 		private final HealthContributorRegistry registry;
 
-		HealthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
-				HealthContributorRegistry registry) {
+		@Nullable ReactiveHealthContributorRegistry fallbackRegistry;
+
+		HealthEndpointGroupMembershipValidator(HealthEndpointProperties properties, HealthContributorRegistry registry,
+				@Nullable ReactiveHealthContributorRegistry fallbackRegistry) {
 			this.properties = properties;
 			this.registry = registry;
+			this.fallbackRegistry = fallbackRegistry;
 		}
 
 		@Override
@@ -172,13 +179,28 @@ class HealthEndpointConfiguration {
 		}
 
 		private boolean contributorExists(String[] path) {
+			return contributorExistsInMainRegistry(path) || contributorExistsInFallbackRegistry(path);
+		}
+
+		private boolean contributorExistsInMainRegistry(String[] path) {
+			return contributorExists(path, this.registry, HealthContributors.class, HealthContributors::getContributor);
+		}
+
+		private boolean contributorExistsInFallbackRegistry(String[] path) {
+			return contributorExists(path, this.fallbackRegistry, ReactiveHealthContributors.class,
+					ReactiveHealthContributors::getContributor);
+		}
+
+		@SuppressWarnings("unchecked")
+		private <C> boolean contributorExists(String[] path, @Nullable Object registry, Class<C> collectionType,
+				BiFunction<C, String, Object> getFromCollection) {
 			int pathOffset = 0;
-			Object contributor = this.registry;
+			Object contributor = registry;
 			while (pathOffset < path.length) {
-				if (!(contributor instanceof HealthContributors)) {
+				if (contributor == null || !collectionType.isInstance(contributor)) {
 					return false;
 				}
-				contributor = ((HealthContributors) contributor).getContributor(path[pathOffset]);
+				contributor = getFromCollection.apply((C) contributor, path[pathOffset]);
 				pathOffset++;
 			}
 			return (contributor != null);

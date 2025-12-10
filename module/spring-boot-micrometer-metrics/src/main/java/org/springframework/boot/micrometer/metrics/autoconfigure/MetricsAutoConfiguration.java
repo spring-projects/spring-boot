@@ -16,8 +16,6 @@
 
 package org.springframework.boot.micrometer.metrics.autoconfigure;
 
-import java.util.List;
-
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -47,6 +45,7 @@ import org.springframework.core.annotation.Order;
  * @author Jon Schneider
  * @author Stephane Nicoll
  * @author Moritz Halbritter
+ * @author Michael Berry
  * @author Phillip Webb
  * @since 4.0.0
  */
@@ -77,8 +76,8 @@ public final class MetricsAutoConfiguration {
 	}
 
 	@Bean
-	MeterRegistryCloser meterRegistryCloser(ObjectProvider<MeterRegistry> meterRegistries) {
-		return new MeterRegistryCloser(meterRegistries.orderedStream().toList());
+	MeterRegistryCloser meterRegistryCloser(ApplicationContext context) {
+		return new MeterRegistryCloser(context);
 	}
 
 	@Bean
@@ -100,17 +99,22 @@ public final class MetricsAutoConfiguration {
 	 */
 	static class MeterRegistryCloser implements ApplicationListener<ContextClosedEvent> {
 
-		private final List<MeterRegistry> meterRegistries;
+		private final ApplicationContext context;
 
-		MeterRegistryCloser(List<MeterRegistry> meterRegistries) {
-			this.meterRegistries = meterRegistries;
+		private final Iterable<MeterRegistry> meterRegistries;
+
+		MeterRegistryCloser(ApplicationContext context) {
+			this.meterRegistries = context.getBeansOfType(MeterRegistry.class).values();
+			this.context = context;
 		}
 
 		@Override
 		public void onApplicationEvent(ContextClosedEvent event) {
-			for (MeterRegistry meterRegistry : this.meterRegistries) {
-				if (!meterRegistry.isClosed()) {
-					meterRegistry.close();
+			if (this.context.equals(event.getApplicationContext())) {
+				for (MeterRegistry meterRegistry : this.meterRegistries) {
+					if (!meterRegistry.isClosed()) {
+						meterRegistry.close();
+					}
 				}
 			}
 		}

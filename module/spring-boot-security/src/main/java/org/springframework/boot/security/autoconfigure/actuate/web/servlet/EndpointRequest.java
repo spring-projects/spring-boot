@@ -38,7 +38,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.security.web.servlet.ApplicationContextRequestMatcher;
-import org.springframework.boot.web.server.context.WebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -183,15 +182,14 @@ public final class EndpointRequest {
 
 		protected final boolean hasWebServerNamespace(ApplicationContext applicationContext,
 				WebServerNamespace webServerNamespace) {
-			return WebServerApplicationContext.hasServerNamespace(applicationContext, webServerNamespace.getValue())
+			return hasServerNamespace(applicationContext, webServerNamespace.getValue())
 					|| hasImplicitServerNamespace(applicationContext, webServerNamespace);
 		}
 
 		private boolean hasImplicitServerNamespace(ApplicationContext applicationContext,
 				WebServerNamespace webServerNamespace) {
 			return WebServerNamespace.SERVER.equals(webServerNamespace)
-					&& WebServerApplicationContext.getServerNamespace(applicationContext) == null
-					&& applicationContext.getParent() == null;
+					&& getServerNamespace(applicationContext) == null && applicationContext.getParent() == null;
 		}
 
 		@Override

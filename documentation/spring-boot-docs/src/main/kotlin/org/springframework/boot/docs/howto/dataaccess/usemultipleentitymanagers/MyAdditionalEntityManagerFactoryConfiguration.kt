@@ -40,7 +40,7 @@ class MyAdditionalEntityManagerFactoryConfiguration {
 
 	@Qualifier("second")
 	@Bean(defaultCandidate = false)
-	fun firstEntityManagerFactory(
+	fun secondEntityManagerFactory(
 		@Qualifier("second") dataSource: DataSource,
 		@Qualifier("second") jpaProperties: JpaProperties
 	): LocalContainerEntityManagerFactoryBean {

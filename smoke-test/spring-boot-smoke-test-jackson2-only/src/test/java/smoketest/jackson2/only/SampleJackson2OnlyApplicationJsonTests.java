@@ -28,7 +28,7 @@ import org.springframework.boot.test.json.ObjectContent;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@SampleJackson2OnlyApplication} using {@link JsonTest @JsonTest}.
+ * Tests for {@link SampleJackson2OnlyApplication} using {@link JsonTest @JsonTest}.
  *
  * @author Andy Wilkinson
  */

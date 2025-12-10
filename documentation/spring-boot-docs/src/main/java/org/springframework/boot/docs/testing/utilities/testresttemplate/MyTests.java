@@ -19,6 +19,7 @@ package org.springframework.boot.docs.testing.utilities.testresttemplate;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +30,10 @@ class MyTests {
 
 	@Test
 	void testRequest() {
-		ResponseEntity<String> headers = this.template.getForEntity("https://myhost.example.com/example", String.class);
-		assertThat(headers.getHeaders().getLocation()).hasHost("other.example.com");
+		ResponseEntity<String> response = this.template.getForEntity("https://myhost.example.com/example",
+				String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		// Other assertions to verify the response
 	}
 
 }
