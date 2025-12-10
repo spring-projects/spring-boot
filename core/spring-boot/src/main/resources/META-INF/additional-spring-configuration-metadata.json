@@ -55,10 +55,8 @@
     {
       "name": "logging.file.clean-history-on-start",
       "type": "java.lang.Boolean",
-      "description": "Whether to clean the archive log files on startup. Only supported with the default logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": false,
       "deprecation": {
+        "level": "error",
         "replacement": "logging.logback.rollingpolicy.clean-history-on-start",
         "since": "2.4.0"
       }
@@ -66,10 +64,8 @@
     {
       "name": "logging.file.max-history",
       "type": "java.lang.Integer",
-      "description": "Maximum number of archive log files to keep. Only supported with the default logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": 7,
       "deprecation": {
+        "level": "error",
         "replacement": "logging.logback.rollingpolicy.max-history",
         "since": "2.4.0"
       }
@@ -77,10 +73,8 @@
     {
       "name": "logging.file.max-size",
       "type": "org.springframework.util.unit.DataSize",
-      "description": "Maximum log file size. Only supported with the default logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "10MB",
       "deprecation": {
+        "level": "error",
         "replacement": "logging.logback.rollingpolicy.max-file-size",
         "since": "2.4.0"
       }
@@ -100,10 +94,8 @@
     {
       "name": "logging.file.total-size-cap",
       "type": "org.springframework.util.unit.DataSize",
-      "description": "Total size of log backups to be kept. Only supported with the default logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "0B",
       "deprecation": {
+        "level": "error",
         "replacement": "logging.logback.rollingpolicy.total-size-cap",
         "since": "2.4.0"
       }
@@ -219,10 +211,8 @@
     {
       "name": "logging.pattern.rolling-file-name",
       "type": "java.lang.String",
-      "description": "Pattern for rolled-over log file names. Supported only with the default Logback setup.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz",
       "deprecation": {
+        "level": "error",
         "replacement": "logging.logback.rollingpolicy.file-name-pattern",
         "since": "2.4.0"
       }

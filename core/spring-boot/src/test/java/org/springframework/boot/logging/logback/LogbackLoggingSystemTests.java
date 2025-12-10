@@ -398,7 +398,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void testCleanHistoryOnStartProperty() {
-		this.environment.setProperty("logging.file.clean-history-on-start", "true");
+		this.environment.setProperty("logging.logback.rollingpolicy.clean-history-on-start", "true");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -411,7 +411,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	@WithIncludeBaseXmlResource
 	void testCleanHistoryOnStartPropertyWithXmlConfiguration() {
-		this.environment.setProperty("logging.file.clean-history-on-start", "true");
+		this.environment.setProperty("logging.logback.rollingpolicy.clean-history-on-start", "true");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -437,7 +437,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	private void testMaxFileSizeProperty(String sizeValue, String expectedFileSize) {
-		this.environment.setProperty("logging.file.max-size", sizeValue);
+		this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", sizeValue);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -450,7 +450,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	@WithIncludeBaseXmlResource
 	void testMaxFileSizePropertyWithXmlConfiguration() {
-		this.environment.setProperty("logging.file.max-size", "100MB");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", "100MB");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -462,7 +462,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void testMaxHistoryProperty() {
-		this.environment.setProperty("logging.file.max-history", "30");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-history", "30");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -475,7 +475,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	@WithIncludeBaseXmlResource
 	void testMaxHistoryPropertyWithXmlConfiguration() {
-		this.environment.setProperty("logging.file.max-history", "30");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-history", "30");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -501,7 +501,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	private void testTotalSizeCapProperty(String sizeValue, String expectedFileSize) {
-		this.environment.setProperty("logging.file.total-size-cap", sizeValue);
+		this.environment.setProperty("logging.logback.rollingpolicy.total-size-cap", sizeValue);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -515,7 +515,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@WithIncludeBaseXmlResource
 	void testTotalSizeCapPropertyWithXmlConfiguration() {
 		String expectedSize = "101 MB";
-		this.environment.setProperty("logging.file.total-size-cap", expectedSize);
+		this.environment.setProperty("logging.logback.rollingpolicy.total-size-cap", expectedSize);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
@@ -773,9 +773,9 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void testRollingFileNameProperty() {
+	void testRollingFileNamePatternProperty() {
 		String rollingFile = "my.log.%d{yyyyMMdd}.%i.gz";
-		this.environment.setProperty("logging.pattern.rolling-file-name", rollingFile);
+		this.environment.setProperty("logging.logback.rollingpolicy.file-name-pattern", rollingFile);
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		File file = new File(tmpDir(), "my.log");
 		LogFile logFile = getLogFile(file.getPath(), null);

@@ -29,38 +29,35 @@ public enum RollingPolicySystemProperty {
 	/**
 	 * Logging system property for the rolled-over log file name pattern.
 	 */
-	FILE_NAME_PATTERN("file-name-pattern", "logging.pattern.rolling-file-name"),
+	FILE_NAME_PATTERN("file-name-pattern"),
 
 	/**
 	 * Logging system property for the clean history on start flag.
 	 */
-	CLEAN_HISTORY_ON_START("clean-history-on-start", "logging.file.clean-history-on-start"),
+	CLEAN_HISTORY_ON_START("clean-history-on-start"),
 
 	/**
 	 * Logging system property for the file log max size.
 	 */
-	MAX_FILE_SIZE("max-file-size", "logging.file.max-size"),
+	MAX_FILE_SIZE("max-file-size"),
 
 	/**
 	 * Logging system property for the file total size cap.
 	 */
-	TOTAL_SIZE_CAP("total-size-cap", "logging.file.total-size-cap"),
+	TOTAL_SIZE_CAP("total-size-cap"),
 
 	/**
 	 * Logging system property for the file log max history.
 	 */
-	MAX_HISTORY("max-history", "logging.file.max-history");
+	MAX_HISTORY("max-history");
 
 	private final String environmentVariableName;
 
 	private final String applicationPropertyName;
 
-	private final String deprecatedApplicationPropertyName;
-
-	RollingPolicySystemProperty(String applicationPropertyName, String deprecatedApplicationPropertyName) {
+	RollingPolicySystemProperty(String applicationPropertyName) {
 		this.environmentVariableName = "LOGBACK_ROLLINGPOLICY_" + name();
 		this.applicationPropertyName = "logging.logback.rollingpolicy." + applicationPropertyName;
-		this.deprecatedApplicationPropertyName = deprecatedApplicationPropertyName;
 	}
 
 	/**
@@ -73,10 +70,6 @@ public enum RollingPolicySystemProperty {
 
 	String getApplicationPropertyName() {
 		return this.applicationPropertyName;
-	}
-
-	String getDeprecatedApplicationPropertyName() {
-		return this.deprecatedApplicationPropertyName;
 	}
 
 }
