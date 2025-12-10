@@ -52,7 +52,7 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 
 	private @Nullable String getVersion() {
 		return this.rabbitTemplate.execute((channel) -> {
-			Object version = channel.getConnection().getServerProperties().get("version");
+			Object version = channel.getConnection().getServerProperties().getOrDefault("version", "unknown");
 			Assert.state(version != null, "'version' must not be null");
 			return version.toString();
 		});

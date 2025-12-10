@@ -71,6 +71,17 @@ class RabbitHealthIndicatorTests {
 	}
 
 	@Test
+	void healthWhenVersionIsMissingShouldReturnUpWithUnknownVersion() {
+		givenTemplateExecutionWillInvokeCallback();
+		Connection connection = mock(Connection.class);
+		given(this.channel.getConnection()).willReturn(connection);
+		given(connection.getServerProperties()).willReturn(Collections.emptyMap());
+		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsEntry("version", "unknown");
+	}
+
+	@Test
 	void healthWhenConnectionFailsShouldReturnDown() {
 		givenTemplateExecutionWillInvokeCallback();
 		given(this.channel.getConnection()).willThrow(new RuntimeException());
