@@ -19,8 +19,7 @@ package org.springframework.boot.opentelemetry.autoconfigure.logging.otlp;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
- * Details required for actuator to establish a connection to an OpenTelemetry logging
- * service.
+ * Details required to establish a connection to an OpenTelemetry logging service.
  *
  * @author Toshiaki Maki
  * @since 4.0.0

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging;
+package org.springframework.boot.opentelemetry.autoconfigure.logging;
 
 import java.util.Collections;
 import java.util.Map;

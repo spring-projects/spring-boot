@@ -33,7 +33,6 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":core:spring-boot-docker-compose"))
 	optional(project(":core:spring-boot-testcontainers"))
-	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional("io.opentelemetry:opentelemetry-exporter-otlp")
 	optional("org.testcontainers:testcontainers-grafana")
 
