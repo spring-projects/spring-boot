@@ -1577,7 +1577,7 @@ bom {
 			releaseNotes("https://github.com/mockito/mockito/releases/tag/v{version}")
 		}
 	}
-	library("MongoDB", "5.6.1") {
+	library("MongoDB", "5.6.2") {
 		alignWith {
 			version {
 				of "org.mongodb:mongodb-driver-core"
