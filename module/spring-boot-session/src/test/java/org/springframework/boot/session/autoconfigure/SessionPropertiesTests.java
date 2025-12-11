@@ -38,7 +38,8 @@ class SessionPropertiesTests {
 	private final SessionProperties properties = new SessionProperties();
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "removal" })
+	@Deprecated(since = "4.0.1", forRemoval = true)
 	void determineTimeoutWithTimeoutIgnoreFallback() {
 		this.properties.setTimeout(Duration.ofMinutes(1));
 		Supplier<Duration> fallback = mock(Supplier.class);
@@ -47,6 +48,8 @@ class SessionPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "4.0.1", forRemoval = true)
 	void determineTimeoutWithNoTimeoutUseFallback() {
 		this.properties.setTimeout(null);
 		Duration fallback = Duration.ofMinutes(2);

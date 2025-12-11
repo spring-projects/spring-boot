@@ -30,7 +30,6 @@ dependencies {
 	api("org.springframework.session:spring-session-jdbc")
 
 	implementation(project(":module:spring-boot-jdbc"))
-	implementation(project(":module:spring-boot-web-server"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 
@@ -38,6 +37,7 @@ dependencies {
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(project(":module:spring-boot-flyway"))
 	testImplementation(project(":module:spring-boot-liquibase"))
+	testImplementation(project(":module:spring-boot-web-server"))
 	testImplementation(testFixtures(project(":module:spring-boot-session")))
 	testImplementation(testFixtures(project(":module:spring-boot-sql")))
 	testImplementation("jakarta.servlet:jakarta.servlet-api")

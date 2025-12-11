@@ -22,6 +22,7 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.SessionCookieConfig;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -34,6 +35,7 @@ import org.springframework.boot.web.servlet.AbstractFilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.session.MapSessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
 import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
@@ -60,6 +62,7 @@ import static org.mockito.Mockito.mock;
 class SessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+		.withInitializer((context) -> context.setServletContext(null)) // not a war
 		.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
@@ -125,6 +128,33 @@ class SessionAutoConfigurationTests {
 					"server.servlet.session.cookie.path=/test", "server.servlet.session.cookie.httpOnly=false",
 					"server.servlet.session.cookie.secure=false", "server.servlet.session.cookie.maxAge=10s",
 					"server.servlet.session.cookie.sameSite=strict", "server.servlet.session.cookie.partitioned=true")
+			.run((context) -> {
+				DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName", "sid");
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("domainName", "spring");
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookiePath", "/test");
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("useHttpOnlyCookie", false);
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("useSecureCookie", false);
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieMaxAge", 10);
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("sameSite", "Strict");
+				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("partitioned", true);
+			});
+	}
+
+	@Test
+	void sessionCookieConfigIsAppliedToAutoConfiguredCookieSerializerInAWarDeployment() {
+		MockServletContext servletContext = new MockServletContext();
+		SessionCookieConfig cookie = servletContext.getSessionCookieConfig();
+		cookie.setName("sid");
+		cookie.setDomain("spring");
+		cookie.setPath("/test");
+		cookie.setHttpOnly(false);
+		cookie.setSecure(false);
+		cookie.setMaxAge(10);
+		cookie.setAttribute("SameSite", "Strict");
+		cookie.setAttribute("Partitioned", "true");
+		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
+			.withInitializer((context) -> context.setServletContext(servletContext)) // war
 			.run((context) -> {
 				DefaultCookieSerializer cookieSerializer = context.getBean(DefaultCookieSerializer.class);
 				assertThat(cookieSerializer).hasFieldOrPropertyWithValue("cookieName", "sid");

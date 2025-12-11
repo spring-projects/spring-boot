@@ -29,10 +29,9 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api("org.springframework.session:spring-session-core")
 
-	implementation(project(":module:spring-boot-web-server"))
-
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
+	optional(project(":module:spring-boot-web-server"))
 	optional("io.projectreactor:reactor-core")
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("org.springframework.security:spring-security-web")

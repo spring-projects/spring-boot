@@ -17,6 +17,11 @@
 package org.springframework.boot.session.autoconfigure;
 
 import java.time.Duration;
+import java.util.function.Supplier;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.SessionCookieConfig;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -25,6 +30,8 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -43,6 +50,8 @@ import org.springframework.session.web.http.CookieHttpSessionIdResolver;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.util.Assert;
+import org.springframework.web.context.ServletContextAware;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Session.
@@ -58,32 +67,18 @@ import org.springframework.session.web.http.HttpSessionIdResolver;
 @AutoConfiguration
 @ConditionalOnClass(Session.class)
 @ConditionalOnWebApplication
-@EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
+@EnableConfigurationProperties(SessionProperties.class)
 public final class SessionAutoConfiguration {
+
+	private static Duration determineTimeout(SessionProperties sessionProperties, Supplier<Duration> fallbackTimeout) {
+		Duration timeout = sessionProperties.getTimeout();
+		return (timeout != null) ? timeout : fallbackTimeout.get();
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
 	@Import(SessionRepositoryFilterConfiguration.class)
 	static class ServletSessionConfiguration {
-
-		@Bean
-		@Conditional(DefaultCookieSerializerCondition.class)
-		DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties,
-				ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers) {
-			Cookie cookie = serverProperties.getServlet().getSession().getCookie();
-			DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-			PropertyMapper map = PropertyMapper.get();
-			map.from(cookie::getName).to(cookieSerializer::setCookieName);
-			map.from(cookie::getDomain).to(cookieSerializer::setDomainName);
-			map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
-			map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
-			map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
-			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
-			map.from(cookie::getSameSite).as(SameSite::attributeValue).always().to(cookieSerializer::setSameSite);
-			map.from(cookie::getPartitioned).to(cookieSerializer::setPartitioned);
-			cookieSerializerCustomizers.orderedStream().forEach((customizer) -> customizer.customize(cookieSerializer));
-			return cookieSerializer;
-		}
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnClass(RememberMeServices.class)
@@ -95,6 +90,90 @@ public final class SessionAutoConfiguration {
 					.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 			}
 
+		}
+
+		@ConditionalOnNotWarDeployment
+		@EnableConfigurationProperties(ServerProperties.class)
+		static class EmbeddedWebServerConfiguration {
+
+			@Bean
+			SessionTimeout embeddedWebServerSessionTimeout(SessionProperties sessionProperties,
+					ServerProperties serverProperties) {
+				return () -> determineTimeout(sessionProperties,
+						serverProperties.getServlet().getSession()::getTimeout);
+			}
+
+			@Bean
+			@Conditional(DefaultCookieSerializerCondition.class)
+			DefaultCookieSerializer cookieSerializer(ServerProperties serverProperties,
+					ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers) {
+				Cookie cookie = serverProperties.getServlet().getSession().getCookie();
+				DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
+				PropertyMapper map = PropertyMapper.get();
+				map.from(cookie::getName).to(cookieSerializer::setCookieName);
+				map.from(cookie::getDomain).to(cookieSerializer::setDomainName);
+				map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
+				map.from(cookie::getHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
+				map.from(cookie::getSecure).to(cookieSerializer::setUseSecureCookie);
+				map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(cookieSerializer::setCookieMaxAge);
+				map.from(cookie::getSameSite).as(SameSite::attributeValue).always().to(cookieSerializer::setSameSite);
+				map.from(cookie::getPartitioned).to(cookieSerializer::setPartitioned);
+				cookieSerializerCustomizers.orderedStream()
+					.forEach((customizer) -> customizer.customize(cookieSerializer));
+				return cookieSerializer;
+			}
+
+		}
+
+		@ConditionalOnWarDeployment
+		static class WarDepoymentConfiguration implements ServletContextAware {
+
+			private @Nullable ServletContext servletContext;
+
+			@Override
+			public void setServletContext(ServletContext servletContext) {
+				this.servletContext = servletContext;
+			}
+
+			@Bean
+			SessionTimeout warDeplomentSessionTimeout(SessionProperties sessionProperties) {
+				return sessionProperties::getTimeout;
+			}
+
+			@Bean
+			@Conditional(DefaultCookieSerializerCondition.class)
+			DefaultCookieSerializer cookieSerializer(
+					ObjectProvider<DefaultCookieSerializerCustomizer> cookieSerializerCustomizers) {
+				DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
+				PropertyMapper map = PropertyMapper.get();
+				Assert.notNull(this.servletContext,
+						"ServletContext is required for session configuration in a war deployment");
+				SessionCookieConfig cookie = this.servletContext.getSessionCookieConfig();
+				map.from(cookie::getName).to(cookieSerializer::setCookieName);
+				map.from(cookie::getDomain).to(cookieSerializer::setDomainName);
+				map.from(cookie::getPath).to(cookieSerializer::setCookiePath);
+				map.from(cookie::isHttpOnly).to(cookieSerializer::setUseHttpOnlyCookie);
+				map.from(cookie::isSecure).to(cookieSerializer::setUseSecureCookie);
+				map.from(cookie::getMaxAge).to(cookieSerializer::setCookieMaxAge);
+				map.from(cookie.getAttribute("SameSite")).always().to(cookieSerializer::setSameSite);
+				map.from(cookie.getAttribute("Partitioned")).as(Boolean::valueOf).to(cookieSerializer::setPartitioned);
+				cookieSerializerCustomizers.orderedStream()
+					.forEach((customizer) -> customizer.customize(cookieSerializer));
+				return cookieSerializer;
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	static class ReactiveSessionConfiguration {
+
+		@Bean
+		SessionTimeout embeddedWebServerSessionTimeout(SessionProperties sessionProperties,
+				ServerProperties serverProperties) {
+			return () -> determineTimeout(sessionProperties, serverProperties.getReactive().getSession()::getTimeout);
 		}
 
 	}

@@ -31,7 +31,6 @@ dependencies {
 	api("org.springframework.session:spring-session-data-redis")
 
 	implementation(project(":module:spring-boot-data-redis"))
-	implementation(project(":module:spring-boot-web-server"))
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-webflux"))

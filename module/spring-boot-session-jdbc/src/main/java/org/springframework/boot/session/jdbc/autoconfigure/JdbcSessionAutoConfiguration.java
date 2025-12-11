@@ -29,10 +29,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
-import org.springframework.boot.session.autoconfigure.SessionProperties;
+import org.springframework.boot.session.autoconfigure.SessionTimeout;
 import org.springframework.boot.sql.autoconfigure.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
-import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
@@ -59,7 +58,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
 @ConditionalOnClass({ Session.class, JdbcTemplate.class, JdbcIndexedSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(DataSource.class)
-@EnableConfigurationProperties({ JdbcSessionProperties.class, SessionProperties.class })
+@EnableConfigurationProperties(JdbcSessionProperties.class)
 @Import({ DatabaseInitializationDependencyConfigurer.class, JdbcHttpSessionConfiguration.class })
 public final class JdbcSessionAutoConfiguration {
 
@@ -76,12 +75,10 @@ public final class JdbcSessionAutoConfiguration {
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SessionRepositoryCustomizer<JdbcIndexedSessionRepository> springBootSessionRepositoryCustomizer(
-			SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties,
-			ServerProperties serverProperties) {
+			JdbcSessionProperties jdbcSessionProperties, SessionTimeout sessionTimeout) {
 		return (sessionRepository) -> {
 			PropertyMapper map = PropertyMapper.get();
-			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-				.to(sessionRepository::setDefaultMaxInactiveInterval);
+			map.from(sessionTimeout::getTimeout).to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(jdbcSessionProperties::getTableName).to(sessionRepository::setTableName);
 			map.from(jdbcSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
 			map.from(jdbcSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
