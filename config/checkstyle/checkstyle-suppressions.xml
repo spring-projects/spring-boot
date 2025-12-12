@@ -46,6 +46,7 @@
 	<suppress files="SpringBootJoranConfiguratorTests\.java" checks="IllegalImport" />
 	<suppress files="LogbackMetricsAutoConfiguration\.java" checks="IllegalImport" />
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
+	<suppress files="SampleLog4j2Application\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
 	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]smoke-test[\\/]" checks="SpringJavadoc" message="\@since" />
