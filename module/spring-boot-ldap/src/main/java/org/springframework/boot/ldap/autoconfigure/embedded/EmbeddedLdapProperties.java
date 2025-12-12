@@ -58,6 +58,16 @@ public class EmbeddedLdapProperties {
 	private String ldif = "classpath:schema.ldif";
 
 	/**
+	 * Listener type.
+	 */
+	private boolean ldaps;
+
+	/**
+	 * Embedded LDAPS client SSL bundle name.
+	 */
+	@Nullable private String sslBundleName;
+
+	/**
 	 * Schema validation.
 	 */
 	private final Validation validation = new Validation();
@@ -92,6 +102,22 @@ public class EmbeddedLdapProperties {
 
 	public void setLdif(String ldif) {
 		this.ldif = ldif;
+	}
+
+	public boolean isLdaps() {
+		return this.ldaps;
+	}
+
+	public void setLdaps(boolean bool) {
+		this.ldaps = bool;
+	}
+
+	public @Nullable String getSslBundleName() {
+		return this.sslBundleName;
+	}
+
+	public void setSslBundleName(@Nullable String sslBundleName) {
+		this.sslBundleName = sslBundleName;
 	}
 
 	public Validation getValidation() {
