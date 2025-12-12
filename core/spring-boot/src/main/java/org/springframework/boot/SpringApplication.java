@@ -322,7 +322,8 @@ public class SpringApplication {
 			afterRefresh(context, applicationArguments);
 			Duration timeTakenToStarted = startup.started();
 			if (this.properties.isLogStartupInfo()) {
-				new StartupInfoLogger(this.mainApplicationClass, environment).logStarted(getApplicationLog(), startup);
+				new StartupInfoLogger(this.mainApplicationClass, environment, this.properties.getLogStartupTimeFormat())
+					.logStarted(getApplicationLog(), startup);
 			}
 			listeners.started(context, timeTakenToStarted);
 			callRunners(context, applicationArguments);

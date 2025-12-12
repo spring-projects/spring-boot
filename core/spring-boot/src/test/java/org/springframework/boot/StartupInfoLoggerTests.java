@@ -109,7 +109,7 @@ class StartupInfoLoggerTests {
 		new StartupInfoLogger(getClass(), this.environment).logStarted(this.log, new TestStartup(1345L, "Started"));
 		then(this.log).should()
 			.info(assertArg((message) -> assertThat(message.toString()).matches("Started " + getClass().getSimpleName()
-					+ " in \\d+\\.\\d{1,3} seconds \\(process running for 1.345\\)")));
+					+ " in \\d+\\.\\d{1,3} seconds \\(process running for 1\\.345 seconds\\)")));
 	}
 
 	@Test
@@ -130,17 +130,79 @@ class StartupInfoLoggerTests {
 				.matches("Restored " + getClass().getSimpleName() + " in \\d+\\.\\d{1,3} seconds")));
 	}
 
+	@Test
+	void startedFormatWithHumanMinutes() {
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment, StartupTimeFormat.HUMAN).logStarted(this.log,
+				new TestStartup(90000L, "Started", 90000L));
+		then(this.log).should()
+			.info(assertArg(
+					(message) -> assertThat(message.toString()).isEqualTo("Started " + getClass().getSimpleName()
+							+ " in 1 minute 30 seconds (process running for 1 minute 30 seconds)")));
+	}
+
+	@Test
+	void startedFormatWithHumanHours() {
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment, StartupTimeFormat.HUMAN).logStarted(this.log,
+				new TestStartup(4500000L, "Started", 4500000L));
+		then(this.log).should()
+			.info(assertArg((message) -> assertThat(message.toString()).isEqualTo("Started "
+					+ getClass().getSimpleName() + " in 1 hour 15 minutes (process running for 1 hour 15 minutes)")));
+	}
+
+	@Test
+	void startedFormatWithHumanSingularUnits() {
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment, StartupTimeFormat.HUMAN).logStarted(this.log,
+				new TestStartup(61000L, "Started", 61000L));
+		then(this.log).should()
+			.info(assertArg((message) -> assertThat(message.toString()).isEqualTo("Started "
+					+ getClass().getSimpleName() + " in 1 minute 1 second (process running for 1 minute 1 second)")));
+	}
+
+	@Test
+	void startedFormatWithHumanZeroSeconds() {
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment, StartupTimeFormat.HUMAN).logStarted(this.log,
+				new TestStartup(300000L, "Started", 300000L));
+		then(this.log).should()
+			.info(assertArg(
+					(message) -> assertThat(message.toString()).isEqualTo("Started " + getClass().getSimpleName()
+							+ " in 5 minutes 0 seconds (process running for 5 minutes 0 seconds)")));
+	}
+
+	@Test
+	void startedFormatWithDefaultDecimalFormat() {
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment).logStarted(this.log,
+				new TestStartup(90000L, "Started", 90000L));
+		then(this.log).should()
+			.info(assertArg((message) -> assertThat(message.toString()).matches("Started " + getClass().getSimpleName()
+					+ " in \\d+\\.\\d{1,3} seconds \\(process running for \\d+\\.\\d{1,3} seconds\\)")));
+	}
+
 	static class TestStartup extends Startup {
 
-		private final long startTime = System.currentTimeMillis();
+		private long startTime;
 
 		private final @Nullable Long uptime;
 
 		private final String action;
 
 		TestStartup(@Nullable Long uptime, String action) {
+			this(uptime, action, null);
+		}
+
+		TestStartup(@Nullable Long uptime, String action, @Nullable Long timeTaken) {
 			this.uptime = uptime;
 			this.action = action;
+			if (timeTaken != null) {
+				this.startTime = System.currentTimeMillis() - timeTaken;
+			}
+			else {
+				this.startTime = System.currentTimeMillis();
+			}
 			started();
 		}
 

@@ -44,9 +44,16 @@ class StartupInfoLogger {
 
 	private final Environment environment;
 
+	private final StartupTimeFormat startupTimeFormat;
+
 	StartupInfoLogger(@Nullable Class<?> sourceClass, Environment environment) {
+		this(sourceClass, environment, StartupTimeFormat.DEFAULT);
+	}
+
+	StartupInfoLogger(@Nullable Class<?> sourceClass, Environment environment, StartupTimeFormat startupTimeFormat) {
 		this.sourceClass = sourceClass;
 		this.environment = environment;
+		this.startupTimeFormat = startupTimeFormat;
 	}
 
 	void logStarting(Log applicationLog) {
@@ -87,14 +94,16 @@ class StartupInfoLogger {
 		message.append(startup.action());
 		appendApplicationName(message);
 		message.append(" in ");
-		message.append(startup.timeTakenToStarted().toMillis() / 1000.0);
-		message.append(" seconds");
+		message.append(formatDuration(startup.timeTakenToStarted().toMillis()));
 		Long uptimeMs = startup.processUptime();
 		if (uptimeMs != null) {
-			double uptime = uptimeMs / 1000.0;
-			message.append(" (process running for ").append(uptime).append(")");
+			message.append(" (process running for ").append(formatDuration(uptimeMs)).append(")");
 		}
 		return message;
+	}
+
+	private String formatDuration(long millis) {
+		return this.startupTimeFormat.format(millis);
 	}
 
 	private void appendAotMode(StringBuilder message) {
