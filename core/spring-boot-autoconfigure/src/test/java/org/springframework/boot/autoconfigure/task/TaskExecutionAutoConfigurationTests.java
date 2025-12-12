@@ -92,13 +92,15 @@ class TaskExecutionAutoConfigurationTests {
 					"spring.task.execution.simple.reject-tasks-when-limit-reached=true",
 					"spring.task.execution.simple.concurrency-limit=1",
 					"spring.task.execution.shutdown.await-termination=true",
-					"spring.task.execution.shutdown.await-termination-period=30s")
+					"spring.task.execution.shutdown.await-termination-period=30s",
+					"spring.task.execution.propagate-context=true")
 			.run(assertSimpleAsyncTaskExecutor((taskExecutor) -> {
 				assertThat(taskExecutor).hasFieldOrPropertyWithValue("cancelRemainingTasksOnClose", true);
 				assertThat(taskExecutor).hasFieldOrPropertyWithValue("rejectTasksWhenLimitReached", true);
 				assertThat(taskExecutor.getConcurrencyLimit()).isEqualTo(1);
 				assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
 				assertThat(taskExecutor).hasFieldOrPropertyWithValue("taskTerminationTimeout", 30000L);
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("propagateContext", true);
 			}));
 	}
 
@@ -251,6 +253,16 @@ class TaskExecutionAutoConfigurationTests {
 			SimpleAsyncTaskExecutorBuilder builder = context.getBean(SimpleAsyncTaskExecutorBuilder.class);
 			assertThat(builder).hasFieldOrPropertyWithValue("virtualThreads", true);
 		});
+	}
+
+	@Test
+	void asyncTaskExecutorShouldApplyContextPropagatingDecoratorWhenEnabled() {
+		this.contextRunner.withPropertyValues("spring.task.execution.propagate-context=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ContextPropagatingTaskDecorator.class);
+				assertThat(context.getBean(ContextPropagatingTaskDecorator.class))
+					.isSameAs(context.getBean("contextPropagatingTaskDecorator"));
+			});
 	}
 
 	@Test
