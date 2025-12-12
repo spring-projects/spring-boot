@@ -69,6 +69,11 @@ class ApplicationProperties {
 	private boolean logStartupInfo = true;
 
 	/**
+	 * Format used to display application startup time in logs.
+	 */
+	private StartupTimeFormat logStartupTimeFormat = StartupTimeFormat.DEFAULT;
+
+	/**
 	 * Whether the application should have a shutdown hook registered.
 	 */
 	private boolean registerShutdownHook = true;
@@ -137,6 +142,14 @@ class ApplicationProperties {
 
 	void setLogStartupInfo(boolean logStartupInfo) {
 		this.logStartupInfo = logStartupInfo;
+	}
+
+	StartupTimeFormat getLogStartupTimeFormat() {
+		return this.logStartupTimeFormat;
+	}
+
+	void setLogStartupTimeFormat(StartupTimeFormat logStartupTimeFormat) {
+		this.logStartupTimeFormat = logStartupTimeFormat;
 	}
 
 	boolean isRegisterShutdownHook() {
