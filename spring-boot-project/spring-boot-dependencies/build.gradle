@@ -1714,6 +1714,10 @@ bom {
 	}
 	library("Netty", "4.1.128.Final") {
 		prohibit {
+			versionRange "[4.1.129.Final]"
+			because "it contains a regression https://github.com/netty/netty/issues/16020"
+		}
+		prohibit {
 			contains ".Alpha"
 			contains ".Beta"
 			contains ".RC"
