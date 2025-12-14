@@ -2,7 +2,7 @@
 = SpringApplication
 
 The javadoc:org.springframework.boot.SpringApplication[] class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
-In many situations, you can delegate to the static javadoc:org.springframework.boot.SpringApplication#run(java.lang.Class,java.lang.String...)[] method, as shown in the following example:
+In many situations, you can delegate to the static javadoc:org.springframework.boot.SpringApplication#run(java.lang.Class,java.lang.String...)[] method (for example, `SpringApplication.run(Application.class, args)`), as shown in the following example:
 
 include-code::MyApplication[]
 
