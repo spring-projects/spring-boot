@@ -24,7 +24,6 @@ Since https://discuss.kotlinlang.org/t/classes-final-by-default/166[Kotlin class
 
 https://github.com/FasterXML/jackson-module-kotlin[Jackson's Kotlin module] is required for serializing / deserializing JSON data in Kotlin.
 It is automatically registered when found on the classpath.
-A warning message is logged if Jackson and Kotlin are present but the Jackson Kotlin module is not.
 
 TIP: These dependencies and plugins are provided by default if one bootstraps a Kotlin project on https://start.spring.io/#!language=kotlin[start.spring.io].
 
