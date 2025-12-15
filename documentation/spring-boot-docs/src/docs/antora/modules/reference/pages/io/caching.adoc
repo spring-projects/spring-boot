@@ -4,11 +4,14 @@
 The Spring Framework provides support for transparently adding caching to an application.
 At its core, the abstraction applies caching to methods, thus reducing the number of executions based on the information available in the cache.
 The caching logic is applied transparently, without any interference to the invoker.
+For more details, check the {url-spring-framework-docs}/integration/cache.html[relevant section] of the Spring Framework reference documentation.
+
 Spring Boot auto-configures the cache infrastructure as long as caching support is enabled by using the javadoc:org.springframework.cache.annotation.EnableCaching[format=annotation] annotation.
 
-NOTE: Check the {url-spring-framework-docs}/integration/cache.html[relevant section] of the Spring Framework reference for more details.
+TIP: Avoid adding javadoc:org.springframework.cache.annotation.EnableCaching[format=annotation] to the main method's application class.
+Doing so makes caching a mandatory feature, including xref:io/caching.adoc#io.caching.testing[when running a test suite].
 
-In a nutshell, to add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
+To add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
 
 include-code::MyMathService[]
 
@@ -48,10 +51,7 @@ If you have not defined a bean of type javadoc:org.springframework.cache.CacheMa
 . xref:io/caching.adoc#io.caching.provider.cache2k[]
 . xref:io/caching.adoc#io.caching.provider.simple[]
 
-Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
-
 TIP: If the javadoc:org.springframework.cache.CacheManager[] is auto-configured by Spring Boot, it is possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
-Use this property if you need to xref:io/caching.adoc#io.caching.provider.none[use no-op caches] in certain environments (such as tests).
 
 TIP: Use the `spring-boot-starter-cache` starter to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.
@@ -262,11 +262,34 @@ This is similar to the way the "real" cache providers behave if you use an undec
 [[io.caching.provider.none]]
 === None
 
-When javadoc:org.springframework.cache.annotation.EnableCaching[format=annotation] is present in your configuration, a suitable cache configuration is expected as well.
-If you have a custom ` org.springframework.cache.CacheManager`, consider defining it in a separate javadoc:org.springframework.context.annotation.Configuration[format=annotation] class so that you can override it if necessary.
-None uses a no-op implementation that is useful in tests, and slice tests use that by default through javadoc:org.springframework.boot.cache.test.autoconfigure.AutoConfigureCache[format=annotation] when the `spring-boot-cache-test` module is present.
-
 If you need to use a no-op cache rather than the auto-configured cache manager in a certain environment, set the cache type to `none`, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  cache:
+    type: "none"
+----
+
+
+
+[[io.caching.testing]]
+== Testing
+
+It is generally useful to use a no-op implementation when running a test suite.
+This section lists a number of strategies that are useful for tests.
+
+When a custom javadoc:org.springframework.cache.CacheManager[] is defined, the best option is to make sure that caching configuration is defined in an isolated javadoc:org.springframework.context.annotation.Configuration[format=annotation] class.
+Doing so makes sure that caching is not required by slice tests.
+For tests that enable a full context, such as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation], an explicit configuration overriding the regular configuration is required.
+
+If caching is auto-configured, more options are available.
+Slice tests are annotated with javadoc:org.springframework.boot.test.autoconfigure.core.AutoConfigureCache[format=annotation], which replaces the auto-configured javadoc:org.springframework.cache.CacheManager[] by a no-op implementation.
+Integration tests can also benefit from this feature by annotate the relevant test class as follows:
+
+include-code::MyIntegrationTests[]
+
+Another option is to force a no-op implementation for the auto-configured javadoc:org.springframework.cache.CacheManager[]:
 
 [configprops,yaml]
 ----

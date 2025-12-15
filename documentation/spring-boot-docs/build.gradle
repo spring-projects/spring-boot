@@ -98,6 +98,7 @@ dependencies {
 	implementation(project(path: ":module:spring-boot-actuator-autoconfigure"))
 	implementation(project(path: ":module:spring-boot-amqp"))
 	implementation(project(path: ":module:spring-boot-cache"))
+	implementation(project(path: ":module:spring-boot-cache-test"))
 	implementation(project(path: ":module:spring-boot-data-cassandra"))
 	implementation(project(path: ":module:spring-boot-data-cassandra-test"))
 	implementation(project(path: ":module:spring-boot-data-couchbase-test"))
