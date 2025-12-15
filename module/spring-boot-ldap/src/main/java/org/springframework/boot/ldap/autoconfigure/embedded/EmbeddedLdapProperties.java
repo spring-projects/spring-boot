@@ -161,7 +161,7 @@ public class EmbeddedLdapProperties {
 					}
 				}
 			}
-			catch (NoSuchAlgorithmException e) {
+			catch (NoSuchAlgorithmException ex) {
 				// nothing
 			}
 			DEFAULT_PROTOCOL = protocol;
@@ -306,7 +306,7 @@ public class EmbeddedLdapProperties {
 			return this.algorithm;
 		}
 
-		public void setAlgorithm( String sslAlgorithm) {
+		public void setAlgorithm(String sslAlgorithm) {
 			this.algorithm = sslAlgorithm;
 		}
 

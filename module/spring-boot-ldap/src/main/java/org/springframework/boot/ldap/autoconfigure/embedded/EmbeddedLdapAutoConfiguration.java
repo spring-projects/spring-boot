@@ -115,8 +115,8 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 	}
 
 	@Bean
-	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext, ObjectProvider<SslBundles> sslBundles)
-			throws LDAPException, KeyStoreException, IOException,
+	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext,
+			ObjectProvider<SslBundles> sslBundles) throws LDAPException, KeyStoreException, IOException,
 			NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException, KeyManagementException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
@@ -226,7 +226,6 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 		}
 		else {
-			Assert.notNull(ssl.getAlgorithm(), "SSL algorithm must be specified");
 			SSLContext sslContext = SSLContext.getInstance(ssl.getAlgorithm());
 			KeyManager[] keyManagers = configureKeyManagers(ssl);
 			TrustManager[] trustManagers = configureTrustManagers(ssl);
