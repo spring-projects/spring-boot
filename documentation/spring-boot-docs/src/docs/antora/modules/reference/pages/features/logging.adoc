@@ -168,6 +168,7 @@ The following table shows how the `logging.*` properties can be used together:
 |===
 
 Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged by default.
+Note that Log4J2 requires `logging.file.path` to be set with such configuration.
 
 TIP: Logging properties are independent of the actual logging infrastructure.
 As a result, specific configuration keys (such as `logback.configurationFile` for Logback) are not managed by spring Boot.
