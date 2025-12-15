@@ -284,8 +284,7 @@ Doing so makes sure that caching is not required by slice tests.
 For tests that enable a full context, such as javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation], an explicit configuration overriding the regular configuration is required.
 
 If caching is auto-configured, more options are available.
-Slice tests are annotated with javadoc:org.springframework.boot.test.autoconfigure.core.AutoConfigureCache[format=annotation], which replaces the auto-configured javadoc:org.springframework.cache.CacheManager[] by a no-op implementation.
-Integration tests can also benefit from this feature by annotate the relevant test class as follows:
+Tests can be annotated with javadoc:org.springframework.boot.test.autoconfigure.core.AutoConfigureCache[format=annotation] to replace the auto-configured javadoc:org.springframework.cache.CacheManager[] by a no-op implementation.
 
 include-code::MyIntegrationTests[]
 
