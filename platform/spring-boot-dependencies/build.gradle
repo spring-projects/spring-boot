@@ -1275,7 +1275,7 @@ bom {
 			releaseNotes("https://github.com/liquibase/liquibase/releases/tag/v{version}")
 		}
 	}
-	library("Log4j2", "2.25.2") {
+	library("Log4j2", "2.25.3") {
 		prohibit {
 			contains "-alpha"
 			contains "-beta"
