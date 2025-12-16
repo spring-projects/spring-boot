@@ -76,6 +76,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -94,6 +95,7 @@ import static org.mockito.Mockito.times;
  * @author Ben Hale
  * @author Madhura Bhave
  * @author Piotr P. Karwasz
+ * @author Stephane Nicoll
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
@@ -110,6 +112,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@BeforeEach
 	void setup(TestInfo testInfo) {
+		clearRollingPolicySystemProperties();
 		PluginRegistry.getInstance().clear();
 		this.loggingSystem = new TestLog4J2LoggingSystem(testInfo.getDisplayName());
 		this.environment = new MockEnvironment();
@@ -125,6 +128,12 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		clearRollingPolicySystemProperties();
 	}
 
+	private void clearRollingPolicySystemProperties() {
+		for (RollingPolicySystemProperty property : RollingPolicySystemProperty.values()) {
+			System.clearProperty(property.getEnvironmentVariableName());
+		}
+	}
+
 	@Test
 	void noFile(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
@@ -135,12 +144,6 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
 		assertThat(configuration.getConfigurationSource().getFile()).isNotNull();
-	}
-
-	private void clearRollingPolicySystemProperties() {
-		for (Log4j2RollingPolicySystemProperty property : Log4j2RollingPolicySystemProperty.values()) {
-			System.clearProperty(property.getEnvironmentVariableName());
-		}
 	}
 
 	@Test
@@ -785,6 +788,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 				"${LOG_FILE}.%d{yyyy-MM-dd}.%i.log");
 		File file = new File(tmpDir(), "log4j2-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.getSystemProperties(this.environment).apply(logFile);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		String maxFileSize = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
@@ -796,52 +800,83 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void rollingPolicyDeprecatedPropertiesAreApplied() {
-		this.environment.setProperty("logging.file.max-size", "20MB");
-		this.environment.setProperty("logging.file.max-history", "15");
-		File file = new File(tmpDir(), "log4j2-test.log");
-		LogFile logFile = getLogFile(file.getPath(), null);
-		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, null, logFile);
-		String maxFileSize = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
-		String maxHistory = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_HISTORY");
-		assertThat(maxFileSize).isEqualTo(String.valueOf(20 * 1024 * 1024));
-		assertThat(maxHistory).isEqualTo("15");
+	void rollingPolicyAppliesDefaults() {
+		TriggeringPolicy policy = getTriggeringPolicy();
+		SizeBasedTriggeringPolicy sizePolicy = findPolicy(policy, SizeBasedTriggeringPolicy.class);
+		assertThat(sizePolicy).isNotNull();
+		assertThat(sizePolicy.getMaxFileSize()).isEqualTo(DataSize.ofMegabytes(10).toBytes());
+	}
+
+	@Test
+	void rollingPolicySizeStrategyIsApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "size");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "50MB");
+		TriggeringPolicy policy = getTriggeringPolicy();
+		SizeBasedTriggeringPolicy sizePolicy = findPolicy(policy, SizeBasedTriggeringPolicy.class);
+		assertThat(sizePolicy).isNotNull();
+		assertThat(sizePolicy.getMaxFileSize()).isEqualTo(DataSize.ofMegabytes(50).toBytes());
+	}
+
+	@Test
+	void rollingPolicyTimeStrategyAppliesDefaults() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "time");
+		TriggeringPolicy policy = getTriggeringPolicy();
+		TimeBasedTriggeringPolicy timePolicy = findPolicy(policy, TimeBasedTriggeringPolicy.class);
+		assertThat(timePolicy).isNotNull();
+		assertThat(timePolicy.getInterval()).isEqualTo(1);
+		assertThat(timePolicy).hasFieldOrPropertyWithValue("modulate", false);
 	}
 
 	@Test
 	void rollingPolicyTimeStrategyIsApplied() {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "time");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "2");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-interval", "2");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-modulate", "true");
 		TriggeringPolicy policy = getTriggeringPolicy();
 		TimeBasedTriggeringPolicy timePolicy = findPolicy(policy, TimeBasedTriggeringPolicy.class);
 		assertThat(timePolicy).isNotNull();
 		assertThat(timePolicy.getInterval()).isEqualTo(2);
+		assertThat(timePolicy).hasFieldOrPropertyWithValue("modulate", true);
 	}
 
 	@Test
 	void rollingPolicySizeAndTimeStrategyIsApplied() {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "size-and-time");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "5MB");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "3");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-interval", "3");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-modulate", "true");
 		TriggeringPolicy policy = getTriggeringPolicy();
-		assertThat(findPolicy(policy, TimeBasedTriggeringPolicy.class)).isNotNull();
-		assertThat(findPolicy(policy, SizeBasedTriggeringPolicy.class)).isNotNull();
+		assertThat(findPolicy(policy, TimeBasedTriggeringPolicy.class)).satisfies((timePolicy) -> {
+			assertThat(timePolicy.getInterval()).isEqualTo(3);
+			assertThat(timePolicy).hasFieldOrPropertyWithValue("modulate", true);
+		});
+		assertThat(findPolicy(policy, SizeBasedTriggeringPolicy.class)).satisfies(
+				(sizePolicy) -> assertThat(sizePolicy.getMaxFileSize()).isEqualTo(DataSize.ofMegabytes(5).toBytes()));
 	}
 
 	@Test
-	void rollingPolicyCronStrategyIsApplied() {
+	void rollingPolicyCronStrategyAppliesDefault() {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "cron");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.cron.schedule", "0 0 0 * * ?");
 		TriggeringPolicy policy = getTriggeringPolicy();
 		CronTriggeringPolicy cronPolicy = findPolicy(policy, CronTriggeringPolicy.class);
 		assertThat(cronPolicy).isNotNull();
 		assertThat(cronPolicy.getCronExpression().getCronExpression()).isEqualTo("0 0 0 * * ?");
 	}
 
+	@Test
+	void rollingPolicyCronStrategyIsApplied() {
+		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "cron");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.cron", "0 0 1 * * ?");
+		TriggeringPolicy policy = getTriggeringPolicy();
+		CronTriggeringPolicy cronPolicy = findPolicy(policy, CronTriggeringPolicy.class);
+		assertThat(cronPolicy).isNotNull();
+		assertThat(cronPolicy.getCronExpression().getCronExpression()).isEqualTo("0 0 1 * * ?");
+	}
+
 	private TriggeringPolicy getTriggeringPolicy() {
 		File file = new File(tmpDir(), "target-file.log");
 		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.getSystemProperties(this.environment).apply(logFile);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext,
 				"classpath:org/springframework/boot/logging/log4j2/log4j2-file.xml", logFile);

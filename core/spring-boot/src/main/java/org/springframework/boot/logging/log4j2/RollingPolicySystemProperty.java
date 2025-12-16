@@ -16,64 +16,60 @@
 
 package org.springframework.boot.logging.log4j2;
 
-import org.jspecify.annotations.Nullable;
-
 /**
  * Log4j2 rolling policy system properties that can later be used by log configuration
  * files.
  *
  * @author HoJoo Moon
- * @since 4.0.0
+ * @author Stephane Nicoll
+ * @since 4.1.0
  * @see Log4j2LoggingSystemProperties
  */
-public enum Log4j2RollingPolicySystemProperty {
+public enum RollingPolicySystemProperty {
 
 	/**
 	 * Logging system property for the rolled-over log file name pattern.
 	 */
-	FILE_NAME_PATTERN("file-name-pattern", "logging.pattern.rolling-file-name"),
+	FILE_NAME_PATTERN("file-name-pattern"),
 
 	/**
 	 * Logging system property for the file log max size.
 	 */
-	MAX_FILE_SIZE("max-file-size", "logging.file.max-size"),
+	MAX_FILE_SIZE("max-file-size"),
 
 	/**
 	 * Logging system property for the file log max history.
 	 */
-	MAX_HISTORY("max-history", "logging.file.max-history"),
+	MAX_HISTORY("max-history"),
 
 	/**
-	 * Logging system property for the rolling policy strategy.
+	 * Logging system property for the {@linkplain RollingPolicyStrategy rolling policy
+	 * strategy}.
 	 */
-	STRATEGY("strategy", null),
+	STRATEGY("strategy"),
 
 	/**
 	 * Logging system property for the rolling policy time interval.
 	 */
-	TIME_INTERVAL("time-based.interval", null),
+	TIME_INTERVAL("time-interval"),
 
 	/**
 	 * Logging system property for the rolling policy time modulate flag.
 	 */
-	TIME_MODULATE("time-based.modulate", null),
+	TIME_MODULATE("time-modulate"),
 
 	/**
 	 * Logging system property for the cron based schedule.
 	 */
-	CRON_SCHEDULE("cron.schedule", null);
+	CRON("cron");
 
 	private final String environmentVariableName;
 
 	private final String applicationPropertyName;
 
-	private final @Nullable String deprecatedApplicationPropertyName;
-
-	Log4j2RollingPolicySystemProperty(String applicationPropertyName,
-			@Nullable String deprecatedApplicationPropertyName) {
+	RollingPolicySystemProperty(String applicationPropertyName) {
 		this.environmentVariableName = "LOG4J2_ROLLINGPOLICY_" + name();
 		this.applicationPropertyName = "logging.log4j2.rollingpolicy." + applicationPropertyName;
-		this.deprecatedApplicationPropertyName = deprecatedApplicationPropertyName;
 	}
 
 	/**
@@ -86,10 +82,6 @@ public enum Log4j2RollingPolicySystemProperty {
 
 	String getApplicationPropertyName() {
 		return this.applicationPropertyName;
-	}
-
-	@Nullable String getDeprecatedApplicationPropertyName() {
-		return this.deprecatedApplicationPropertyName;
 	}
 
 }

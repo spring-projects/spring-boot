@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.Objects;
+
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy;
 import org.apache.logging.log4j.core.appender.rolling.CronTriggeringPolicy;
@@ -32,6 +34,8 @@ import org.apache.logging.log4j.core.config.plugins.PluginConfiguration;
 import org.apache.logging.log4j.core.util.Builder;
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.util.Assert;
 
 /**
@@ -40,7 +44,8 @@ import org.springframework.util.Assert;
  * {@code size-and-time}, and {@code cron}.
  *
  * @author HoJoo Moon
- * @since 4.0.0
+ * @author Stephane Nicoll
+ * @since 4.1.0
  */
 @Plugin(name = "SpringBootTriggeringPolicy", category = Node.CATEGORY, elementType = "TriggeringPolicy",
 		deferChildren = true, printObject = true)
@@ -51,12 +56,12 @@ public abstract class SpringBootTriggeringPolicy implements TriggeringPolicy {
 
 	@Override
 	public void initialize(RollingFileManager manager) {
-		throw new UnsupportedOperationException("This class should not be instantiated");
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public boolean isTriggeringEvent(LogEvent logEvent) {
-		throw new UnsupportedOperationException("This class should not be instantiated");
+		throw new UnsupportedOperationException();
 	}
 
 	@PluginBuilderFactory
@@ -73,7 +78,7 @@ public abstract class SpringBootTriggeringPolicy implements TriggeringPolicy {
 
 		private static final String DEFAULT_MAX_FILE_SIZE = "10MB";
 
-		private static final int DEFAULT_TIME_INTERVAL = 1;
+		private static final String DEFAULT_TIME_INTERVAL = "1";
 
 		private static final String DEFAULT_CRON_EXPRESSION = "0 0 0 * * ?";
 
@@ -97,40 +102,37 @@ public abstract class SpringBootTriggeringPolicy implements TriggeringPolicy {
 
 		@Override
 		public TriggeringPolicy build() {
-			// Read strategy from system properties first, then from attributes
-			String resolvedStrategy = System.getProperty("LOG4J2_ROLLINGPOLICY_STRATEGY");
-			if (resolvedStrategy == null) {
-				resolvedStrategy = (this.strategy != null) ? this.strategy : DEFAULT_STRATEGY;
-			}
+			RollingPolicyStrategy resolvedStrategy = getRollingPolicyStrategy();
 			return switch (resolvedStrategy) {
-				case "time" -> createTimePolicy();
-				case "size-and-time" -> CompositeTriggeringPolicy.createPolicy(createSizePolicy(), createTimePolicy());
-				case "cron" -> createCronPolicy();
-				case "size" -> createSizePolicy();
-				default -> throw new IllegalArgumentException(
-						"Unsupported rolling policy strategy '%s'".formatted(resolvedStrategy));
+				case TIME -> createTimePolicy();
+				case SIZE_AND_TIME -> CompositeTriggeringPolicy.createPolicy(createSizePolicy(), createTimePolicy());
+				case CRON -> createCronPolicy();
+				case SIZE -> createSizePolicy();
 			};
 		}
 
-		private TriggeringPolicy createSizePolicy() {
-			// Read from system properties first, then from attributes
-			String size = System.getProperty("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE");
-			if (size == null) {
-				size = (this.maxFileSize != null) ? this.maxFileSize : DEFAULT_MAX_FILE_SIZE;
+		private static RollingPolicyStrategy getRollingPolicyStrategy() {
+			String resolvedStrategy = getSystemProperty(RollingPolicySystemProperty.STRATEGY, DEFAULT_STRATEGY);
+			try {
+				return Objects.requireNonNull(ApplicationConversionService.getSharedInstance()
+					.convert(resolvedStrategy, RollingPolicyStrategy.class));
 			}
+			catch (ConversionException ex) {
+				throw new IllegalArgumentException(
+						"Unsupported rolling policy strategy '%s'".formatted(resolvedStrategy));
+			}
+		}
+
+		private TriggeringPolicy createSizePolicy() {
+			String size = getSystemProperty(RollingPolicySystemProperty.MAX_FILE_SIZE, DEFAULT_MAX_FILE_SIZE);
 			return SizeBasedTriggeringPolicy.createPolicy(size);
 		}
 
 		private TriggeringPolicy createTimePolicy() {
-			// Read from system properties first, then from attributes
-			String intervalStr = System.getProperty("LOG4J2_ROLLINGPOLICY_TIME_INTERVAL");
-			int interval = (intervalStr != null) ? Integer.parseInt(intervalStr)
-					: (this.timeInterval != null) ? this.timeInterval : DEFAULT_TIME_INTERVAL;
-
-			String modulateStr = System.getProperty("LOG4J2_ROLLINGPOLICY_TIME_MODULATE");
-			boolean modulate = (modulateStr != null) ? Boolean.parseBoolean(modulateStr)
-					: (this.timeModulate != null) ? this.timeModulate : false;
-
+			int interval = Integer
+				.parseInt(getSystemProperty(RollingPolicySystemProperty.TIME_INTERVAL, DEFAULT_TIME_INTERVAL));
+			boolean modulate = Boolean
+				.parseBoolean(getSystemProperty(RollingPolicySystemProperty.TIME_MODULATE, Boolean.FALSE.toString()));
 			return TimeBasedTriggeringPolicy.newBuilder().withInterval(interval).withModulate(modulate).build();
 		}
 
@@ -138,38 +140,13 @@ public abstract class SpringBootTriggeringPolicy implements TriggeringPolicy {
 			Assert.notNull(this.configuration, "configuration must not be null");
 			Configuration configuration = this.configuration;
 
-			// Read from system properties first, then from attributes
-			String schedule = System.getProperty("LOG4J2_ROLLINGPOLICY_CRON_SCHEDULE");
-			if (schedule == null) {
-				schedule = (this.cronExpression != null) ? this.cronExpression : DEFAULT_CRON_EXPRESSION;
-			}
-
+			String schedule = getSystemProperty(RollingPolicySystemProperty.CRON, DEFAULT_CRON_EXPRESSION);
 			return CronTriggeringPolicy.createPolicy(configuration, null, schedule);
 		}
 
-		SpringBootTriggeringPolicyBuilder setStrategy(@Nullable String strategy) {
-			this.strategy = strategy;
-			return this;
-		}
-
-		SpringBootTriggeringPolicyBuilder setMaxFileSize(@Nullable String maxFileSize) {
-			this.maxFileSize = maxFileSize;
-			return this;
-		}
-
-		SpringBootTriggeringPolicyBuilder setTimeInterval(@Nullable Integer timeInterval) {
-			this.timeInterval = timeInterval;
-			return this;
-		}
-
-		SpringBootTriggeringPolicyBuilder setTimeModulate(@Nullable Boolean timeModulate) {
-			this.timeModulate = timeModulate;
-			return this;
-		}
-
-		SpringBootTriggeringPolicyBuilder setCronExpression(@Nullable String cronExpression) {
-			this.cronExpression = cronExpression;
-			return this;
+		private static String getSystemProperty(RollingPolicySystemProperty property, String fallback) {
+			String value = System.getProperty(property.getEnvironmentVariableName());
+			return (value != null) ? value : fallback;
 		}
 
 		SpringBootTriggeringPolicyBuilder setConfiguration(Configuration configuration) {

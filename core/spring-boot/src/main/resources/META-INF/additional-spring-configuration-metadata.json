@@ -132,10 +132,11 @@
       "description": "Overriding configuration files used to create a composite configuration. Can be prefixed with 'optional:' to only load the override if it exists."
     },
     {
-      "name": "logging.log4j2.rollingpolicy.cron.schedule",
+      "name": "logging.log4j2.rollingpolicy.cron",
       "type": "java.lang.String",
       "description": "Cron expression used when the strategy is 'cron'.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": "0 0 0 * * ?"
     },
     {
       "name": "logging.log4j2.rollingpolicy.file-name-pattern",
@@ -160,20 +161,20 @@
     },
     {
       "name": "logging.log4j2.rollingpolicy.strategy",
-      "type": "java.lang.String",
-      "description": "Rolling policy strategy. Supported values are 'size', 'time', 'size-and-time', and 'cron'.",
+      "type": "org.springframework.boot.logging.log4j2.RollingPolicyStrategy",
+      "description": "Rolling policy strategy.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "size"
     },
     {
-      "name": "logging.log4j2.rollingpolicy.time-based.interval",
+      "name": "logging.log4j2.rollingpolicy.time-interval",
       "type": "java.lang.Integer",
       "description": "Time based triggering interval when the strategy is 'time' or 'size-and-time'.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": 1
     },
     {
-      "name": "logging.log4j2.rollingpolicy.time-based.modulate",
+      "name": "logging.log4j2.rollingpolicy.time-modulate",
       "type": "java.lang.Boolean",
       "description": "Whether to align the next rollover time to occur at the top of the interval when the strategy is time based.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",

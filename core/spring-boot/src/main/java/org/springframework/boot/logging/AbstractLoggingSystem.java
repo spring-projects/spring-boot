@@ -26,7 +26,6 @@ import java.util.function.Function;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
@@ -181,10 +180,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	}
 
 	protected final void applySystemProperties(Environment environment, @Nullable LogFile logFile) {
-		LoggingSystemProperties systemProperties = (environment instanceof ConfigurableEnvironment configurableEnvironment)
-				? getSystemProperties(configurableEnvironment)
-				: new LoggingSystemProperties(environment, getDefaultValueResolver(environment), null);
-		systemProperties.apply(logFile);
+		new LoggingSystemProperties(environment, getDefaultValueResolver(environment), null).apply(logFile);
 	}
 
 	/**

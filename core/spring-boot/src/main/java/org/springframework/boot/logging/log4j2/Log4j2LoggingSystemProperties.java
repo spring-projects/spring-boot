@@ -33,23 +33,13 @@ import org.springframework.util.unit.DataSize;
  * {@link LoggingSystemProperties} for Log4j2.
  *
  * @author HoJoo Moon
- * @since 4.0.0
- * @see Log4j2RollingPolicySystemProperty
+ * @since 4.1.0
+ * @see RollingPolicySystemProperty
  */
 public class Log4j2LoggingSystemProperties extends LoggingSystemProperties {
 
 	public Log4j2LoggingSystemProperties(Environment environment) {
 		super(environment);
-	}
-
-	/**
-	 * Create a new {@link Log4j2LoggingSystemProperties} instance.
-	 * @param environment the source environment
-	 * @param setter setter used to apply the property
-	 */
-	public Log4j2LoggingSystemProperties(Environment environment,
-			@Nullable BiConsumer<String, @Nullable String> setter) {
-		super(environment, setter);
 	}
 
 	/**
@@ -72,25 +62,22 @@ public class Log4j2LoggingSystemProperties extends LoggingSystemProperties {
 	}
 
 	private void applyRollingPolicyProperties(PropertyResolver resolver) {
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.STRATEGY, resolver);
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.TIME_INTERVAL, resolver, Integer.class);
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.TIME_MODULATE, resolver, Boolean.class);
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.CRON_SCHEDULE, resolver);
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.FILE_NAME_PATTERN, resolver);
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.MAX_FILE_SIZE, resolver, DataSize.class);
-		applyRollingPolicy(Log4j2RollingPolicySystemProperty.MAX_HISTORY, resolver);
+		applyRollingPolicy(RollingPolicySystemProperty.FILE_NAME_PATTERN, resolver);
+		applyRollingPolicy(RollingPolicySystemProperty.MAX_FILE_SIZE, resolver, DataSize.class);
+		applyRollingPolicy(RollingPolicySystemProperty.MAX_HISTORY, resolver);
+		applyRollingPolicy(RollingPolicySystemProperty.STRATEGY, resolver);
+		applyRollingPolicy(RollingPolicySystemProperty.TIME_INTERVAL, resolver, Integer.class);
+		applyRollingPolicy(RollingPolicySystemProperty.TIME_MODULATE, resolver, Boolean.class);
+		applyRollingPolicy(RollingPolicySystemProperty.CRON, resolver);
 	}
 
-	private void applyRollingPolicy(Log4j2RollingPolicySystemProperty property, PropertyResolver resolver) {
+	private void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver) {
 		applyRollingPolicy(property, resolver, String.class);
 	}
 
-	private <T> void applyRollingPolicy(Log4j2RollingPolicySystemProperty property, PropertyResolver resolver,
+	private <T> void applyRollingPolicy(RollingPolicySystemProperty property, PropertyResolver resolver,
 			Class<T> type) {
 		T value = getProperty(resolver, property.getApplicationPropertyName(), type);
-		if (value == null && property.getDeprecatedApplicationPropertyName() != null) {
-			value = getProperty(resolver, property.getDeprecatedApplicationPropertyName(), type);
-		}
 		if (value != null) {
 			String stringValue = String.valueOf((value instanceof DataSize dataSize) ? dataSize.toBytes() : value);
 			setSystemProperty(property.getEnvironmentVariableName(), stringValue);
@@ -106,19 +93,8 @@ public class Log4j2LoggingSystemProperties extends LoggingSystemProperties {
 			if (type != DataSize.class) {
 				throw ex;
 			}
-			// Fallback for Log4j2 compatibility - try parsing as string if DataSize
-			// conversion fails
 			String value = resolver.getProperty(key);
-			if (value != null) {
-				try {
-					return (T) DataSize.parse(value);
-				}
-				catch (Exception parseEx) {
-					ex.addSuppressed(parseEx);
-					throw ex;
-				}
-			}
-			return null;
+			return (value != null) ? (T) DataSize.parse(value) : null;
 		}
 	}
 

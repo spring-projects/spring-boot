@@ -65,9 +65,9 @@ class Log4j2LoggingSystemPropertiesTests {
 		this.environment.setProperty("logging.log4j2.rollingpolicy.max-history", "30");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.file-name-pattern", "test.%d{yyyy-MM-dd}.%i.log");
 		this.environment.setProperty("logging.log4j2.rollingpolicy.strategy", "time");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.interval", "2");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.time-based.modulate", "true");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.cron.schedule", "0 0 0 * * ?");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-interval", "2");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.time-modulate", "true");
+		this.environment.setProperty("logging.log4j2.rollingpolicy.cron", "0 0 1 * * ?");
 
 		new Log4j2LoggingSystemProperties(this.environment).apply(null);
 
@@ -78,7 +78,7 @@ class Log4j2LoggingSystemPropertiesTests {
 			.containsEntry("LOG4J2_ROLLINGPOLICY_STRATEGY", "time")
 			.containsEntry("LOG4J2_ROLLINGPOLICY_TIME_INTERVAL", "2")
 			.containsEntry("LOG4J2_ROLLINGPOLICY_TIME_MODULATE", "true")
-			.containsEntry("LOG4J2_ROLLINGPOLICY_CRON_SCHEDULE", "0 0 0 * * ?");
+			.containsEntry("LOG4J2_ROLLINGPOLICY_CRON", "0 0 1 * * ?");
 	}
 
 	@Test
@@ -86,28 +86,6 @@ class Log4j2LoggingSystemPropertiesTests {
 		new Log4j2LoggingSystemProperties(this.environment).apply(null);
 		assertThat(System.getProperties().keySet())
 			.noneMatch((key) -> ((String) key).startsWith("LOG4J2_ROLLINGPOLICY"));
-	}
-
-	@Test
-	void appliesDeprecatedProperties() {
-		this.environment.setProperty("logging.file.max-size", "20MB");
-		this.environment.setProperty("logging.file.max-history", "15");
-		new Log4j2LoggingSystemProperties(this.environment).apply(null);
-		assertThat(System.getProperties())
-			.containsEntry("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE", String.valueOf(DataSize.ofMegabytes(20).toBytes()))
-			.containsEntry("LOG4J2_ROLLINGPOLICY_MAX_HISTORY", "15");
-	}
-
-	@Test
-	void newPropertiesOverrideDeprecatedProperties() {
-		this.environment.setProperty("logging.log4j2.rollingpolicy.max-file-size", "100MB");
-		this.environment.setProperty("logging.file.max-size", "20MB");
-		this.environment.setProperty("logging.log4j2.rollingpolicy.max-history", "50");
-		this.environment.setProperty("logging.file.max-history", "15");
-		new Log4j2LoggingSystemProperties(this.environment).apply(null);
-		assertThat(System.getProperties())
-			.containsEntry("LOG4J2_ROLLINGPOLICY_MAX_FILE_SIZE", String.valueOf(DataSize.ofMegabytes(100).toBytes()))
-			.containsEntry("LOG4J2_ROLLINGPOLICY_MAX_HISTORY", "50");
 	}
 
 	@Test
