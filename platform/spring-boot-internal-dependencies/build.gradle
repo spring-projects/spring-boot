@@ -235,6 +235,13 @@ bom {
 			]
 		}
 	}
+	library("Spock Framework", "2.4-groovy-5.0") {
+		group("org.spockframework") {
+			modules = [
+				"spock-core"
+			]
+		}
+	}
 	library("TestNG", "6.14.3") {
 		group("org.testng") {
 			modules = [

@@ -25,6 +25,9 @@ import kotlin.Metadata;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.spockframework.runtime.model.SpecMetadata;
+import spock.lang.Issue;
+import spock.lang.Stepwise;
 
 import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.annotation.Configuration;
@@ -59,6 +62,18 @@ class ImportsContextCustomizerTests {
 	void customizersForTestClassesWithDifferentKotlinMetadataAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstKotlinAnnotatedTestClass.class))
 			.isEqualTo(new ImportsContextCustomizer(SecondKotlinAnnotatedTestClass.class));
+	}
+
+	@Test
+	void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
+			.isEqualTo(new ImportsContextCustomizer(SecondSpockFrameworkAnnotatedTestClass.class));
+	}
+
+	@Test
+	void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstSpockLangAnnotatedTestClass.class))
+			.isEqualTo(new ImportsContextCustomizer(SecondSpockLangAnnotatedTestClass.class));
 	}
 
 	@Test
@@ -124,6 +139,30 @@ class ImportsContextCustomizerTests {
 	@Metadata(d2 = "bar")
 	@Import(TestImportSelector.class)
 	static class SecondKotlinAnnotatedTestClass {
+
+	}
+
+	@SpecMetadata(filename = "foo", line = 10)
+	@Import(TestImportSelector.class)
+	static class FirstSpockFrameworkAnnotatedTestClass {
+
+	}
+
+	@SpecMetadata(filename = "bar", line = 10)
+	@Import(TestImportSelector.class)
+	static class SecondSpockFrameworkAnnotatedTestClass {
+
+	}
+
+	@Stepwise
+	@Import(TestImportSelector.class)
+	static class FirstSpockLangAnnotatedTestClass {
+
+	}
+
+	@Issue("1234")
+	@Import(TestImportSelector.class)
+	static class SecondSpockLangAnnotatedTestClass {
 
 	}
 
