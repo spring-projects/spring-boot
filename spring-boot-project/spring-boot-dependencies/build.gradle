@@ -2222,7 +2222,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
-	library("Spring Authorization Server", "1.5.4-SNAPSHOT") {
+	library("Spring Authorization Server", "1.5.5") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			modules = [
