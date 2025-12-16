@@ -31,7 +31,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  */
-@Order(10) // Ordered after WebFlux
+@Order(10) // Ordered before WebFlux
 class WebMvcWebApplicationTypeDeducer implements WebApplicationType.Deducer {
 
 	private static final String[] INDICATOR_CLASSES = { "jakarta.servlet.Servlet",
