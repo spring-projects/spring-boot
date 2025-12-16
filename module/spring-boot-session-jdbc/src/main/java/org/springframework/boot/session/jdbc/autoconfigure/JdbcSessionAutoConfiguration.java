@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.SessionAutoConfiguration;
 import org.springframework.boot.session.autoconfigure.SessionTimeout;
 import org.springframework.boot.sql.autoconfigure.init.OnDatabaseInitializationCondition;
@@ -53,7 +54,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
  * @author Vedran Pavic
  * @since 4.0.0
  */
-@AutoConfiguration(before = SessionAutoConfiguration.class)
+@AutoConfiguration(before = SessionAutoConfiguration.class, after = DataSourceAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ Session.class, JdbcTemplate.class, JdbcIndexedSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
