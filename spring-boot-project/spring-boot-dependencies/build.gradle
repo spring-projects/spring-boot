@@ -1712,11 +1712,7 @@ bom {
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
-	library("Netty", "4.1.128.Final") {
-		prohibit {
-			versionRange "[4.1.129.Final]"
-			because "it contains a regression https://github.com/netty/netty/issues/16020"
-		}
+	library("Netty", "4.1.130.Final") {
 		prohibit {
 			contains ".Alpha"
 			contains ".Beta"
