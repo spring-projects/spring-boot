@@ -1606,10 +1606,6 @@ bom {
 		}
 	}
 	library("Netty", "4.1.130.Final") {
-		prohibit {
-			versionRange "[4.1.129.Final]"
-			because "it contains a regression https://github.com/netty/netty/issues/16020"
-		}
 		group("io.netty") {
 			bom("netty-bom")
 		}
@@ -2103,7 +2099,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
-	library("Spring Authorization Server", "1.4.7-SNAPSHOT") {
+	library("Spring Authorization Server", "1.4.8") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			modules = [
