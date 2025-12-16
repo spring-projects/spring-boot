@@ -71,6 +71,7 @@ import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration;
 import org.springframework.boot.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.hibernate.SpringJtaPlatform;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfigurationTests.JpaUsingApplicationListenerConfiguration.EventCapturingApplicationListener;
+import org.springframework.boot.hibernate.autoconfigure.HibernateJpaConfiguration.Hibernate72RuntimeHints;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
@@ -874,6 +875,24 @@ class HibernateJpaAutoConfigurationTests {
 				.onType(noJtaPlatformClass)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(hints);
 		}
+	}
+
+	@Test
+	void registersHintsForHibernate72() {
+		RuntimeHints hints = new RuntimeHints();
+		new Hibernate72RuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(TypeReference.of("org.hibernate.action.internal.ActionLogging_$logger"))
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS))
+			.accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(TypeReference.of("org.hibernate.event.spi.PreFlushEventListener"))
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS))
+			.accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(TypeReference.of("org.hibernate.boot.models.annotations.internal.EmbeddedTableAnnotation"))
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_METHODS))
+			.accepts(hints);
 	}
 
 	@Test
