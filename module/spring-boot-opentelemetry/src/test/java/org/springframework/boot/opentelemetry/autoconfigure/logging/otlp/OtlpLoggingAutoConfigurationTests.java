@@ -43,6 +43,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link OtlpLoggingAutoConfiguration}.
@@ -86,6 +88,21 @@ class OtlpLoggingAutoConfigurationTests {
 				assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/logs");
 				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class);
 				assertThat(context).hasSingleBean(LogRecordExporter.class);
+			});
+	}
+
+	@Test
+	void customConnectionDetailsReplacePropertyBasedConnectionDetails() {
+		OtlpLoggingConnectionDetails details = mock(OtlpLoggingConnectionDetails.class);
+		given(details.getUrl(Transport.HTTP)).willReturn("http://localhost:4318/v1/logs");
+		this.contextRunner
+			.withPropertyValues("management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4319/v1/logs")
+			.withBean("customOtlpLoggingConnectionDetails", OtlpLoggingConnectionDetails.class, () -> details)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
+				assertThat(context).hasBean("customOtlpLoggingConnectionDetails");
+				assertThat(context.getBean(OtlpLoggingConnectionDetails.class).getUrl(Transport.HTTP))
+					.isEqualTo("http://localhost:4318/v1/logs");
 			});
 	}
 

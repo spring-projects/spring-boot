@@ -46,7 +46,7 @@ final class OtlpLoggingConfigurations {
 	static class ConnectionDetails {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(OtlpLoggingConnectionDetails.class)
 		@ConditionalOnProperty("management.opentelemetry.logging.export.otlp.endpoint")
 		PropertiesOtlpLoggingConnectionDetails openTelemetryLoggingConnectionDetails(OtlpLoggingProperties properties) {
 			return new PropertiesOtlpLoggingConnectionDetails(properties);
