@@ -307,7 +307,10 @@ class EnvironmentPostProcessorApplicationListenerTests {
 			TestGenerationContext generationContext = new TestGenerationContext(TEST_APP);
 			new ApplicationContextAotGenerator().processAheadOfTime(context, generationContext);
 			generationContext.writeGeneratedContent();
-			TestCompiler.forSystem().with(generationContext).compile(compiled);
+			TestCompiler.forSystem()
+				.withCompilerOptions("-Xlint:deprecation", "-Werror")
+				.with(generationContext)
+				.compile(compiled);
 		}
 
 		private ClassLoader createClassLoaderWithAdditionalSpringFactories(Path tempDir, Properties properties) {

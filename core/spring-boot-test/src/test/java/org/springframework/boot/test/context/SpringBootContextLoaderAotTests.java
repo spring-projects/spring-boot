@@ -60,6 +60,7 @@ class SpringBootContextLoaderAotTests {
 		Class<?> testClass = ExampleTest.class;
 		generator.processAheadOfTime(Stream.of(testClass));
 		TestCompiler.forSystem()
+			.withCompilerOptions("-Xlint:deprecation", "-Werror")
 			.with(CompilerFiles.from(generatedFiles))
 			.compile(ThrowingConsumer.of((compiled) -> assertCompiledTest(testClass)));
 	}

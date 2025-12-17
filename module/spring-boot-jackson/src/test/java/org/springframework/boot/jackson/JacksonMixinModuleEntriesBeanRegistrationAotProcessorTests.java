@@ -106,14 +106,17 @@ class JacksonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 	@SuppressWarnings("unchecked")
 	private void compile(BiConsumer<GenericApplicationContext, Compiled> result) {
 		ClassName className = processAheadOfTime();
-		TestCompiler.forSystem().with(this.generationContext).compile((compiled) -> {
-			GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
-			ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
-				.getInstance(ApplicationContextInitializer.class, className.toString());
-			initializer.initialize(freshApplicationContext);
-			freshApplicationContext.refresh();
-			result.accept(freshApplicationContext, compiled);
-		});
+		TestCompiler.forSystem()
+			.withCompilerOptions("-Xlint:deprecation", "-Werror")
+			.with(this.generationContext)
+			.compile((compiled) -> {
+				GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
+				ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
+					.getInstance(ApplicationContextInitializer.class, className.toString());
+				initializer.initialize(freshApplicationContext);
+				freshApplicationContext.refresh();
+				result.accept(freshApplicationContext, compiled);
+			});
 	}
 
 	private void registerEntries(Class<?>... basePackageClasses) {

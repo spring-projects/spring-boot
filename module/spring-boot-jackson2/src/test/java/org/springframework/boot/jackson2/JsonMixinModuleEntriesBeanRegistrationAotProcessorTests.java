@@ -110,7 +110,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 	private void compile(BiConsumer<GenericApplicationContext, Compiled> result) {
 		ClassName className = processAheadOfTime();
 		TestCompiler.forSystem()
-			.withCompilerOptions("-Xlint:all", "-Werror")
+			.withCompilerOptions("-Xlint:deprecation", "-Werror")
 			.with(this.generationContext)
 			.compile((compiled) -> {
 				GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
