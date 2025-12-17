@@ -94,6 +94,7 @@ class MissingParameterNamesFailureAnalyzerTests {
 		MockResolver resolver = new MockResolver();
 		Method method = getClass().getDeclaredMethod("example", String.class);
 		MethodParameter parameter = new MethodParameter(method, 0);
+		parameter.initParameterNameDiscovery(null);
 		try {
 			resolver.resolveArgument(parameter, null, mock(NativeWebRequest.class), null);
 		}
