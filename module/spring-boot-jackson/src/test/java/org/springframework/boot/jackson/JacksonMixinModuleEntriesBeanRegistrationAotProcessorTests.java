@@ -107,7 +107,7 @@ class JacksonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 	private void compile(BiConsumer<GenericApplicationContext, Compiled> result) {
 		ClassName className = processAheadOfTime();
 		TestCompiler.forSystem()
-			.withCompilerOptions("-Xlint:deprecation", "-Werror")
+			.withCompilerOptions("-Xlint:deprecation,removal", "-Werror")
 			.with(this.generationContext)
 			.compile((compiled) -> {
 				GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
