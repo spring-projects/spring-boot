@@ -34,7 +34,6 @@ import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.data.repository.Repository;
 
 /**
  * Indicates a {@link Configuration configuration} class that declares one or more
@@ -60,6 +59,12 @@ public @interface SpringBootApplication {
 
 	/**
 	 * Exclude specific auto-configuration classes such that they will never be applied.
+	 * <p>
+	 * Since this annotation is parsed by loading class bytecode, it is safe to specify
+	 * classes here that may ultimately not be on the classpath, only if this annotation
+	 * is directly on the affected component and <b>not</b> if this annotation is used as
+	 * a composed, meta-annotation. In order to use this annotation as a meta-annotation,
+	 * only use the {@link #excludeName} attribute.
 	 * @return the classes to exclude
 	 */
 	@AliasFor(annotation = EnableAutoConfiguration.class)
