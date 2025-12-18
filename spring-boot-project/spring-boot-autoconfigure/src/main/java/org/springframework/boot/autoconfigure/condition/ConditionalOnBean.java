@@ -74,10 +74,10 @@ public @interface ConditionalOnBean {
 	 * not autowire candidates or that are not default candidates are ignored.
 	 * <p>
 	 * Since this annotation is parsed by loading class bytecode, it is safe to specify
-	 * classes here that may ultimately not be on the classpath, only if this annotation
-	 * is directly on the affected component and <b>not</b> if this annotation is used as
-	 * a composed, meta-annotation. In order to use this annotation as a meta-annotation,
-	 * only use the {@link #type} attribute.
+	 * classes here that may ultimately not be on the classpath, but only if this
+	 * annotation is directly on the affected component and <b>not</b> if this annotation
+	 * is used as a composed, meta-annotation. In order to use this annotation as a
+	 * meta-annotation, only use the {@link #type} attribute.
 	 * @return the class types of beans to check
 	 * @see Bean#autowireCandidate()
 	 * @see BeanDefinition#isAutowireCandidate
@@ -105,9 +105,9 @@ public @interface ConditionalOnBean {
 	 * ignored.
 	 * <p>
 	 * Since this annotation is parsed by loading class bytecode, it is safe to specify
-	 * classes here that may ultimately not be on the classpath, only if this annotation
-	 * is directly on the affected component and <b>not</b> if this annotation is used as
-	 * a composed, meta-annotation.
+	 * classes here that may ultimately not be on the classpath, but only if this
+	 * annotation is directly on the affected component and <b>not</b> if this annotation
+	 * is used as a composed, meta-annotation.
 	 * @return the class-level annotation types to check
 	 * @see Bean#autowireCandidate()
 	 * @see BeanDefinition#isAutowireCandidate
@@ -137,9 +137,9 @@ public @interface ConditionalOnBean {
 	 * {@code Name} and {@code NameRegistration<Name>}.
 	 * <p>
 	 * Since this annotation is parsed by loading class bytecode, it is safe to specify
-	 * classes here that may ultimately not be on the classpath, only if this annotation
-	 * is directly on the affected component and <b>not</b> if this annotation is used as
-	 * a composed, meta-annotation.
+	 * classes here that may ultimately not be on the classpath, but only if this
+	 * annotation is directly on the affected component and <b>not</b> if this annotation
+	 * is used as a composed, meta-annotation.
 	 * @return the container types
 	 * @since 2.1.0
 	 */
