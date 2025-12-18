@@ -3,6 +3,8 @@
 
 Spring Boot Actuator provides dependency management and auto-configuration for {url-micrometer-tracing-docs}[Micrometer Tracing], a facade for popular tracer libraries.
 
+NOTE: Spring Boot provides modular tracing support. Having `spring-boot-starter-actuator` on the classpath enables tracing infrastructure, but tracing auto-configuration is only activated when a supported tracing bridge and tracer implementation are also present.
+
 TIP: To learn more about Micrometer Tracing capabilities, see its {url-micrometer-tracing-docs}[reference documentation].
 
 
@@ -29,6 +31,9 @@ To recap, our main application code looks like this:
 include-code::MyApplication[]
 
 NOTE: There's an added logger statement in the `home()` method, which will be important later.
+
+NOTE: Tracing is not enabled by adding `spring-boot-starter-actuator` alone. The following dependencies provide the tracing bridge and tracer implementation required for tracing auto-configuration.
+
 
 Now we have to add the following dependencies:
 
@@ -112,7 +117,7 @@ WARNING: If you create the javadoc:org.springframework.web.client.RestTemplate[]
 
 As Micrometer Tracer supports multiple tracer implementations, there are multiple dependency combinations possible with Spring Boot.
 
-All tracer implementations need the `org.springframework.boot:spring-boot-starter-actuator` dependency.
+All tracer implementations need the `org.springframework.boot:spring-boot-starter-actuator` dependency. In addition, a tracing bridge and tracer implementation must be present on the classpath for tracing auto-configuration to be activated.
 
 
 
