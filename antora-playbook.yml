@@ -31,11 +31,10 @@ content:
   sources:
   - url: .
     branches:
-    - '3.4.x'
     - '3.5.x'
     tags:
     - 'v3.3.13'
-    - 'v3.4.*'
+    - 'v3.4.13'
     - 'v3.5.*'
     start_paths:
     - spring-boot-project/spring-boot-docs/src/docs/antora
