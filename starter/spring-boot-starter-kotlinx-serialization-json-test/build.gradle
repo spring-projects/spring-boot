@@ -18,9 +18,9 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for testing Kotlin Serialization"
+description = "Starter for testing Kotlinx Serialization JSON"
 
 dependencies {
-	api(project(":starter:spring-boot-starter-kotlin-serialization-json"))
+	api(project(":starter:spring-boot-starter-kotlinx-serialization-json"))
 	api(project(":starter:spring-boot-starter-test"))
 }
