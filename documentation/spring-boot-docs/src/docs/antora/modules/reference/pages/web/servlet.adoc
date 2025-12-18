@@ -98,7 +98,10 @@ Any javadoc:org.springframework.http.converter.HttpMessageConverter[] bean that 
 You can also override default converters in the same way.
 
 If you need to add or customize converters, you can declare one or more javadoc:org.springframework.boot.http.converter.autoconfigure.ClientHttpMessageConvertersCustomizer[] or
-javadoc:org.springframework.boot.http.converter.autoconfigure.ServerHttpMessageConvertersCustomizer[] as beans, as shown in the following listing:
+javadoc:org.springframework.boot.http.converter.autoconfigure.ServerHttpMessageConvertersCustomizer[] as beans. There, you can choose whether converter instances should be added
+before default ones (`addCustomConverter`) or if they should override a specific default converter (like `withJsonConverter`).
+
+See the following listing for an example:
 
 include-code::MyHttpMessageConvertersConfiguration[]
 
