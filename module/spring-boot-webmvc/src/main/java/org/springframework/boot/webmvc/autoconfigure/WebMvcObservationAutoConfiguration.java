@@ -58,9 +58,9 @@ import org.springframework.web.servlet.DispatcherServlet;
 		"org.springframework.boot.micrometer.metrics.autoconfigure.export.simple.SimpleMetricsExportAutoConfiguration",
 		"org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration" })
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({ DispatcherServlet.class, Observation.class })
+@ConditionalOnClass({ DispatcherServlet.class, Observation.class, ObservationProperties.class })
 @ConditionalOnBean(ObservationRegistry.class)
-@EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
+@EnableConfigurationProperties(ObservationProperties.class)
 public final class WebMvcObservationAutoConfiguration {
 
 	@Bean
@@ -79,8 +79,9 @@ public final class WebMvcObservationAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MeterRegistry.class)
+	@ConditionalOnClass({ MeterRegistry.class, MetricsProperties.class })
 	@ConditionalOnBean(MeterRegistry.class)
+	@EnableConfigurationProperties(MetricsProperties.class)
 	static class MeterFilterConfiguration {
 
 		@Bean
