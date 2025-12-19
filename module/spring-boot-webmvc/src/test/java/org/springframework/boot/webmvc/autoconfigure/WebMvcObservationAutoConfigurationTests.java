@@ -31,8 +31,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.micrometer.metrics.MaximumAllowableTagsMeterFilter;
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
+import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsProperties;
 import org.springframework.boot.micrometer.observation.autoconfigure.ObservationAutoConfiguration;
+import org.springframework.boot.micrometer.observation.autoconfigure.ObservationProperties;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -71,6 +75,12 @@ class WebMvcObservationAutoConfigurationTests {
 	void backsOffWhenObservationRegistryIsMissing() {
 		new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebMvcObservationAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
+	}
+
+	@Test
+	void backsOffWhenObservationPropertiesIsMissing() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ObservationProperties.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
 	}
 
@@ -169,6 +179,12 @@ class WebMvcObservationAutoConfigurationTests {
 				assertThat(output)
 					.doesNotContain("Reached the maximum number of 'uri' tags for 'http.server.requests'");
 			});
+	}
+
+	@Test
+	void shouldBackOffIfMetricsPropertiesIsNotPresent() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(MetricsProperties.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(MaximumAllowableTagsMeterFilter.class));
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) {
