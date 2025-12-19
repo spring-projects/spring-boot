@@ -61,6 +61,7 @@ class DatabaseDriverTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void databaseProductNameLookups() {
 		assertThat(DatabaseDriver.fromProductName("newone")).isEqualTo(DatabaseDriver.UNKNOWN);
 		assertThat(DatabaseDriver.fromProductName("Apache Derby")).isEqualTo(DatabaseDriver.DERBY);
@@ -88,6 +89,7 @@ class DatabaseDriverTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void databaseJdbcUrlLookups() {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:newone://localhost")).isEqualTo(DatabaseDriver.UNKNOWN);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:derby:sample")).isEqualTo(DatabaseDriver.DERBY);

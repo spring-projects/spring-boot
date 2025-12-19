@@ -51,6 +51,7 @@ class EmbeddedDatabaseConnectionTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void derbyCustomDatabaseName() {
 		assertThat(EmbeddedDatabaseConnection.DERBY.getUrl("myderbydb"))
 			.isEqualTo("jdbc:derby:memory:myderbydb;create=true");
@@ -80,6 +81,7 @@ class EmbeddedDatabaseConnectionTests {
 		assertThat(EmbeddedDatabaseConnection.isEmbedded(driverClassName, url)).isEqualTo(embedded);
 	}
 
+	@SuppressWarnings("removal")
 	static Object[] embeddedDriverAndUrlParameters() {
 		return new Object[] {
 				new Object[] { EmbeddedDatabaseConnection.H2.getDriverClassName(), "jdbc:h2:~/test", false },
