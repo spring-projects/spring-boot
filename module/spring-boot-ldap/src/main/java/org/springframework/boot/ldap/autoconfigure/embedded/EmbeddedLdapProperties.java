@@ -16,11 +16,8 @@
 
 package org.springframework.boot.ldap.autoconfigure.embedded;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.net.ssl.SSLContext;
 
 import org.jspecify.annotations.Nullable;
 
@@ -146,87 +143,22 @@ public class EmbeddedLdapProperties {
 
 	public static class Ssl {
 
-		private static final String SUN_X509 = "SunX509";
-
-		private static final String DEFAULT_PROTOCOL;
-
-		static {
-			String protocol = "TLSv1.1";
-			try {
-				String[] protocols = SSLContext.getDefault().getSupportedSSLParameters().getProtocols();
-				for (String prot : protocols) {
-					if ("TLSv1.2".equals(prot)) {
-						protocol = "TLSv1.2";
-						break;
-					}
-				}
-			}
-			catch (NoSuchAlgorithmException ex) {
-				// nothing
-			}
-			DEFAULT_PROTOCOL = protocol;
-		}
-
 		/**
-		 * Whether to enable SSL support.
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
 		 */
-		private Boolean enabled = false;
+		private @Nullable Boolean enabled;
 
 		/**
 		 * SSL bundle name.
 		 */
 		private @Nullable String bundle;
 
-		/**
-		 * Path to the key store that holds the SSL certificate.
-		 */
-		private @Nullable String keyStore;
-
-		/**
-		 * Key store type.
-		 */
-		private String keyStoreType = "PKCS12";
-
-		/**
-		 * Password used to access the key store.
-		 */
-		private @Nullable String keyStorePassword;
-
-		/**
-		 * Key store algorithm.
-		 */
-		private String keyStoreAlgorithm = SUN_X509;
-
-		/**
-		 * Trust store that holds SSL certificates.
-		 */
-		private @Nullable String trustStore;
-
-		/**
-		 * Trust store type.
-		 */
-		private String trustStoreType = "JKS";
-
-		/**
-		 * Password used to access the trust store.
-		 */
-		private @Nullable String trustStorePassword;
-
-		/**
-		 * Trust store algorithm.
-		 */
-		private String trustStoreAlgorithm = SUN_X509;
-
-		/**
-		 * SSL algorithm to use.
-		 */
-		private String algorithm = DEFAULT_PROTOCOL;
-
-		public Boolean isEnabled() {
-			return this.enabled;
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
 		}
 
-		public void setEnabled(Boolean enabled) {
+		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
 
@@ -236,78 +168,6 @@ public class EmbeddedLdapProperties {
 
 		public void setBundle(@Nullable String bundle) {
 			this.bundle = bundle;
-		}
-
-		public @Nullable String getKeyStore() {
-			return this.keyStore;
-		}
-
-		public void setKeyStore(@Nullable String keyStore) {
-			this.keyStore = keyStore;
-		}
-
-		public String getKeyStoreType() {
-			return this.keyStoreType;
-		}
-
-		public void setKeyStoreType(String keyStoreType) {
-			this.keyStoreType = keyStoreType;
-		}
-
-		public @Nullable String getKeyStorePassword() {
-			return this.keyStorePassword;
-		}
-
-		public void setKeyStorePassword(@Nullable String keyStorePassword) {
-			this.keyStorePassword = keyStorePassword;
-		}
-
-		public String getKeyStoreAlgorithm() {
-			return this.keyStoreAlgorithm;
-		}
-
-		public void setKeyStoreAlgorithm(String keyStoreAlgorithm) {
-			this.keyStoreAlgorithm = keyStoreAlgorithm;
-		}
-
-		public @Nullable String getTrustStore() {
-			return this.trustStore;
-		}
-
-		public void setTrustStore(@Nullable String trustStore) {
-			this.trustStore = trustStore;
-		}
-
-		public String getTrustStoreType() {
-			return this.trustStoreType;
-		}
-
-		public void setTrustStoreType(String trustStoreType) {
-			this.trustStoreType = trustStoreType;
-		}
-
-		public @Nullable String getTrustStorePassword() {
-			return this.trustStorePassword;
-		}
-
-		public void setTrustStorePassword(@Nullable String trustStorePassword) {
-			this.trustStorePassword = trustStorePassword;
-		}
-
-		public String getTrustStoreAlgorithm() {
-			return this.trustStoreAlgorithm;
-		}
-
-		public void setTrustStoreAlgorithm(String trustStoreAlgorithm) {
-			this.trustStoreAlgorithm = trustStoreAlgorithm;
-		}
-
-		public String getAlgorithm() {
-			return this.algorithm;
-		}
-
-		public void setAlgorithm(String sslAlgorithm) {
-			this.algorithm = sslAlgorithm;
 		}
 
 	}

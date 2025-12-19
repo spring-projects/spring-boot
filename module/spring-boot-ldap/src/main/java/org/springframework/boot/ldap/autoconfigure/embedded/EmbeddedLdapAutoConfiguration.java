@@ -16,27 +16,15 @@
 
 package org.springframework.boot.ldap.autoconfigure.embedded;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
@@ -64,6 +52,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.boot.ldap.autoconfigure.LdapProperties;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
+import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapProperties.Ssl;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
@@ -79,8 +68,6 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -106,8 +93,6 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	private final EmbeddedLdapProperties embeddedProperties;
 
-	private final ResourceLoader resourceLoader = new PathMatchingResourcePatternResolver();
-
 	private @Nullable InMemoryDirectoryServer server;
 
 	EmbeddedLdapAutoConfiguration(EmbeddedLdapProperties embeddedProperties) {
@@ -116,8 +101,7 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 
 	@Bean
 	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext,
-			ObjectProvider<SslBundles> sslBundles) throws LDAPException, KeyStoreException, IOException,
-			NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException, KeyManagementException {
+			ObjectProvider<SslBundles> sslBundles) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
 		String username = this.embeddedProperties.getCredential().getUsername();
@@ -125,24 +109,34 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			config.addAdditionalBindCredentials(username, password);
 		}
+		config.setListenerConfigs(createListenerConfig(sslBundles));
 		setSchema(config);
-		if (this.embeddedProperties.getSsl().isEnabled()) {
-			EmbeddedLdapProperties.Ssl ssl = this.embeddedProperties.getSsl();
-			SSLContext sslContext = getSslContext(ssl, sslBundles.getIfAvailable());
-			SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
-			SSLSocketFactory clientSocketFactory = sslContext.getSocketFactory();
-			config.setListenerConfigs(InMemoryListenerConfig.createLDAPSConfig("LDAPS", null,
-					this.embeddedProperties.getPort(), serverSocketFactory, clientSocketFactory));
-		}
-		else {
-			config
-				.setListenerConfigs(InMemoryListenerConfig.createLDAPConfig("LDAP", this.embeddedProperties.getPort()));
-		}
 		this.server = new InMemoryDirectoryServer(config);
 		importLdif(this.server, applicationContext);
 		this.server.startListening();
 		setPortProperty(applicationContext, this.server.getListenPort());
 		return this.server;
+	}
+
+	private InMemoryListenerConfig createListenerConfig(ObjectProvider<SslBundles> sslBundles) throws LDAPException {
+		SslBundle sslBundle = getSslBundle(sslBundles.getIfAvailable());
+		if (sslBundle != null) {
+			SSLContext sslContext = sslBundle.createSslContext();
+			SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
+			SSLSocketFactory clientSocketFactory = sslContext.getSocketFactory();
+			return InMemoryListenerConfig.createLDAPSConfig("LDAPS", null, this.embeddedProperties.getPort(),
+					serverSocketFactory, clientSocketFactory);
+		}
+		return InMemoryListenerConfig.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
+	}
+
+	private @Nullable SslBundle getSslBundle(@Nullable SslBundles sslBundles) {
+		Ssl ssl = this.embeddedProperties.getSsl();
+		if (ssl.isEnabled() && StringUtils.hasLength(ssl.getBundle())) {
+			Assert.notNull(sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return sslBundles.getBundle(ssl.getBundle());
+		}
+		return null;
 	}
 
 	private void setSchema(InMemoryDirectoryServerConfig config) {
@@ -214,70 +208,6 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		if (this.server != null) {
 			this.server.shutDown(true);
 		}
-	}
-
-	private SSLContext getSslContext(EmbeddedLdapProperties.Ssl ssl, @Nullable SslBundles sslBundles)
-			throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException,
-			UnrecoverableKeyException, KeyManagementException {
-		if (sslBundles != null && StringUtils.hasText(ssl.getBundle())) {
-			SslBundle sslBundle = sslBundles.getBundle(ssl.getBundle());
-			Assert.notNull(sslBundle, "SSL bundle name has been set but no SSL bundles found in context");
-			return sslBundle.createSslContext();
-
-		}
-		else {
-			SSLContext sslContext = SSLContext.getInstance(ssl.getAlgorithm());
-			KeyManager[] keyManagers = configureKeyManagers(ssl);
-			TrustManager[] trustManagers = configureTrustManagers(ssl);
-			sslContext.init(keyManagers, trustManagers, new SecureRandom());
-			return sslContext;
-		}
-	}
-
-	private KeyManager @Nullable [] configureKeyManagers(EmbeddedLdapProperties.Ssl ssl) throws KeyStoreException,
-			IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException {
-		String keyStoreName = ssl.getKeyStore();
-		String keyStorePassword = ssl.getKeyStorePassword();
-		String storeType = ssl.getKeyStoreType();
-		char[] keyPassphrase = null;
-		if (keyStorePassword != null) {
-			keyPassphrase = keyStorePassword.toCharArray();
-		}
-		KeyManager[] keyManagers = null;
-		if (StringUtils.hasText(keyStoreName)) {
-			Resource resource = this.resourceLoader.getResource(keyStoreName);
-			KeyStore ks = KeyStore.getInstance(storeType);
-			try (InputStream inputStream = resource.getInputStream()) {
-				ks.load(inputStream, keyPassphrase);
-			}
-			KeyManagerFactory kmf = KeyManagerFactory.getInstance(ssl.getKeyStoreAlgorithm());
-			kmf.init(ks, keyPassphrase);
-			keyManagers = kmf.getKeyManagers();
-		}
-		return keyManagers;
-	}
-
-	private TrustManager @Nullable [] configureTrustManagers(EmbeddedLdapProperties.Ssl ssl)
-			throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-		String trustStoreName = ssl.getTrustStore();
-		String trustStorePassword = ssl.getTrustStorePassword();
-		String storeType = ssl.getTrustStoreType();
-		char[] trustPassphrase = null;
-		if (trustStorePassword != null) {
-			trustPassphrase = trustStorePassword.toCharArray();
-		}
-		TrustManager[] trustManagers = null;
-		if (StringUtils.hasText(trustStoreName)) {
-			Resource resource = this.resourceLoader.getResource(trustStoreName);
-			KeyStore tks = KeyStore.getInstance(storeType);
-			try (InputStream inputStream = resource.getInputStream()) {
-				tks.load(inputStream, trustPassphrase);
-			}
-			TrustManagerFactory tmf = TrustManagerFactory.getInstance(ssl.getTrustStoreAlgorithm());
-			tmf.init(tks);
-			trustManagers = tmf.getTrustManagers();
-		}
-		return trustManagers;
 	}
 
 	/**
