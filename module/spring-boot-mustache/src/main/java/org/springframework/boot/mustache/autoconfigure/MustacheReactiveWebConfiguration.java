@@ -40,7 +40,7 @@ class MustacheReactiveWebConfiguration {
 		map.from(mustache::getSuffix).to(resolver::setSuffix);
 		map.from(mustache::getViewNames).to(resolver::setViewNames);
 		map.from(mustache::getRequestContextAttribute).to(resolver::setRequestContextAttribute);
-		map.from(mustache::getCharsetName).to(resolver::setCharset);
+		map.from(mustache::getCharset).to(resolver::setCharset);
 		map.from(mustache.getReactive()::getMediaTypes).to(resolver::setSupportedMediaTypes);
 		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 		return resolver;

@@ -47,7 +47,7 @@ class MustacheViewTests {
 		MustacheView view = new MustacheView();
 		view.setCompiler(Mustache.compiler());
 		view.setUrl("classpath:template.html");
-		view.setCharset(StandardCharsets.UTF_8.displayName());
+		view.setCharset(StandardCharsets.UTF_8);
 		view.setApplicationContext(this.context);
 		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML, exchange)
 			.block(Duration.ofSeconds(30));

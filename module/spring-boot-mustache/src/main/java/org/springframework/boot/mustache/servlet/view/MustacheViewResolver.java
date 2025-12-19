@@ -16,6 +16,8 @@
 
 package org.springframework.boot.mustache.servlet.view;
 
+import java.nio.charset.Charset;
+
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Compiler;
 import org.jspecify.annotations.Nullable;
@@ -34,7 +36,7 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 
 	private final Mustache.Compiler compiler;
 
-	private @Nullable String charset;
+	private @Nullable Charset charset;
 
 	/**
 	 * Create a {@code MustacheViewResolver} backed by a default instance of a
@@ -61,11 +63,23 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 	}
 
 	/**
-	 * Set the charset.
+	 * Set the {@link Charset} to use.
 	 * @param charset the charset
+	 * @since 4.1.0
 	 */
-	public void setCharset(@Nullable String charset) {
+	public void setCharset(@Nullable Charset charset) {
 		this.charset = charset;
+	}
+
+	/**
+	 * Set the name of the charset to use.
+	 * @param charset the charset
+	 * @deprecated since 4.1.0 for removal in 4.3.0 in favor of
+	 * {@link #setCharset(Charset)}
+	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
+	public void setCharset(@Nullable String charset) {
+		setCharset((charset != null) ? Charset.forName(charset) : null);
 	}
 
 	@Override

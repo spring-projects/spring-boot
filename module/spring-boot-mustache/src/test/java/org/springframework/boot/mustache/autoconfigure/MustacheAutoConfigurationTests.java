@@ -16,6 +16,7 @@
 
 package org.springframework.boot.mustache.autoconfigure;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
@@ -96,7 +97,7 @@ class MustacheAutoConfigurationTests {
 			assertThat(viewResolver).extracting("allowRequestOverride", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("allowSessionOverride", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("cache", InstanceOfAssertFactories.BOOLEAN).isFalse();
-			assertThat(viewResolver).extracting("charset").isEqualTo("UTF-8");
+			assertThat(viewResolver).extracting("charset").isEqualTo(StandardCharsets.UTF_8);
 			assertThat(viewResolver).extracting("contentType").isEqualTo("text/html;charset=UTF-8");
 			assertThat(viewResolver).extracting("exposeRequestAttributes", InstanceOfAssertFactories.BOOLEAN).isFalse();
 			assertThat(viewResolver).extracting("exposeSessionAttributes", InstanceOfAssertFactories.BOOLEAN).isFalse();
@@ -112,7 +113,7 @@ class MustacheAutoConfigurationTests {
 		configure(new ReactiveWebApplicationContextRunner()).run((context) -> {
 			org.springframework.boot.mustache.reactive.view.MustacheViewResolver viewResolver = context
 				.getBean(org.springframework.boot.mustache.reactive.view.MustacheViewResolver.class);
-			assertThat(viewResolver).extracting("charset").isEqualTo("UTF-8");
+			assertThat(viewResolver).extracting("charset").isEqualTo(StandardCharsets.UTF_8);
 			assertThat(viewResolver).extracting("prefix").isEqualTo("classpath:/templates/");
 			assertThat(viewResolver).extracting("requestContextAttribute").isNull();
 			assertThat(viewResolver).extracting("suffix").isEqualTo(".mustache");
@@ -141,7 +142,7 @@ class MustacheAutoConfigurationTests {
 	@ParameterizedTest
 	@EnumSource
 	void charsetCanBeCustomizedOnViewResolver(ViewResolverKind kind) {
-		assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "charset", "UTF-16");
+		assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "charset", StandardCharsets.UTF_16);
 		if (kind == ViewResolverKind.SERVLET) {
 			assertViewResolverProperty(kind, "spring.mustache.charset=UTF-16", "contentType",
 					"text/html;charset=UTF-16");
