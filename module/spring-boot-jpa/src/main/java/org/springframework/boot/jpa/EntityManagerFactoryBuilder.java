@@ -17,9 +17,12 @@
 package org.springframework.boot.jpa;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -63,7 +66,7 @@ public class EntityManagerFactoryBuilder {
 
 	private @Nullable AsyncTaskExecutor bootstrapExecutor;
 
-	private PersistenceUnitPostProcessor @Nullable [] persistenceUnitPostProcessors;
+	private @Nullable List<PersistenceUnitPostProcessor> persistenceUnitPostProcessors;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -126,7 +129,23 @@ public class EntityManagerFactoryBuilder {
 	 * @param persistenceUnitPostProcessors the persistence unit post processors to use
 	 */
 	public void setPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
-		this.persistenceUnitPostProcessors = persistenceUnitPostProcessors;
+		this.persistenceUnitPostProcessors = new ArrayList<>(Arrays.asList(persistenceUnitPostProcessors));
+	}
+
+	/**
+	 * Add {@linkplain PersistenceUnitPostProcessor persistence unit post processors} to
+	 * be applied to the PersistenceUnitInfo used for creating the
+	 * {@link LocalContainerEntityManagerFactoryBean}.
+	 * @param persistenceUnitPostProcessors the persistence unit post processors to add
+	 * @since 4.1.0
+	 */
+	public void addPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
+		if (this.persistenceUnitPostProcessors != null) {
+			this.persistenceUnitPostProcessors.addAll(Arrays.asList(persistenceUnitPostProcessors));
+		}
+		else {
+			setPersistenceUnitPostProcessors(persistenceUnitPostProcessors);
+		}
 	}
 
 	/**
@@ -280,7 +299,8 @@ public class EntityManagerFactoryBuilder {
 			}
 			if (EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors != null) {
 				entityManagerFactoryBean
-					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
+					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors
+						.toArray(PersistenceUnitPostProcessor[]::new));
 			}
 			return entityManagerFactoryBean;
 		}

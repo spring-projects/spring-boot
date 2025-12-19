@@ -36,7 +36,6 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
-	testImplementation("org.springframework:spring-context-support")
 }
 
 tasks.named("compileTestJava") {
