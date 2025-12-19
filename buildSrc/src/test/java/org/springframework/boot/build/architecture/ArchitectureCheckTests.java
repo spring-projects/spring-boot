@@ -70,9 +70,9 @@ class ArchitectureCheckTests {
 
 	private static final String JUNIT_JUPITER = "org.junit.jupiter:junit-jupiter:5.12.0";
 
-	private static final String SPRING_CONTEXT = "org.springframework:spring-context:6.2.9";
+	private static final String SPRING_CONTEXT = "org.springframework:spring-context:6.2.15";
 
-	private static final String SPRING_CORE = "org.springframework:spring-core:6.2.9";
+	private static final String SPRING_CORE = "org.springframework:spring-core:6.2.15";
 
 	private static final String SPRING_INTEGRATION_JMX = "org.springframework.integration:spring-integration-jmx:6.5.1";
 
