@@ -2,7 +2,7 @@ name: Run System Tests
 on:
   push:
     branches:
-      - 'main'
+      - '4.0.x'
 permissions:
   contents: read
 jobs:
