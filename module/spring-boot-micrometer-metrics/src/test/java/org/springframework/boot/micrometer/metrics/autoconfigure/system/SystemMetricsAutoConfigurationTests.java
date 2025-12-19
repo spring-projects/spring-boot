@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.jvm.convention.JvmCpuMeterConventions;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SystemMetricsAutoConfiguration}.
@@ -69,6 +71,15 @@ class SystemMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
 				.hasBean("customProcessorMetrics"));
+	}
+
+	@Test
+	void allowsCustomJvmCpuMeterConventionsToBeUsed() {
+		JvmCpuMeterConventions jvmCpuMeterConventions = mock(JvmCpuMeterConventions.class);
+		this.contextRunner.withBean(JvmCpuMeterConventions.class, () -> jvmCpuMeterConventions)
+			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
+				.getBean(ProcessorMetrics.class)
+				.hasFieldOrPropertyWithValue("conventions", jvmCpuMeterConventions));
 	}
 
 	@Test
