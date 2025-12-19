@@ -130,7 +130,6 @@ The customizers take precedence over anything applied by the auto-configuration.
 
 Tracing with OpenTelemetry and reporting to Zipkin requires the following dependencies:
 
-* `org.springframework.boot:spring-boot-opentelemetry` - Spring Boot's OpenTelemetry support.
 * `org.springframework.boot:spring-boot-micrometer-tracing-opentelemetry` - Spring Boot's support for Micrometer Tracing over OpenTelemetry.
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
 * `org.springframework.boot:spring-boot-zipkin` - Spring Boot's support for Zipkin.
