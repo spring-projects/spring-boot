@@ -22,6 +22,8 @@ import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Assert;
 import org.assertj.core.api.InstanceOfAssertFactories;
 
+import org.springframework.lang.CheckReturnValue;
+
 /**
  * AssertJ {@link Assert} for {@link ObjectContent}.
  *
@@ -41,6 +43,7 @@ public class ObjectContentAssert<A> extends AbstractObjectAssert<ObjectContentAs
 	 * allow chaining of array-specific assertions from this call.
 	 * @return an array assertion object
 	 */
+	@CheckReturnValue
 	public AbstractObjectArrayAssert<?, Object> asArray() {
 		return asInstanceOf(InstanceOfAssertFactories.ARRAY);
 	}
@@ -50,6 +53,7 @@ public class ObjectContentAssert<A> extends AbstractObjectAssert<ObjectContentAs
 	 * chaining of map-specific assertions from this call.
 	 * @return a map assertion object
 	 */
+	@CheckReturnValue
 	public AbstractMapAssert<?, ?, Object, Object> asMap() {
 		return asInstanceOf(InstanceOfAssertFactories.MAP);
 	}

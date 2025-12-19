@@ -62,12 +62,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  * @author Ivan Malutin
  * @author Dmytro Nosan
+ * @author Stefano Cordio
  */
 class ArchitectureCheckTests {
 
-	private static final String SPRING_CONTEXT = "org.springframework:spring-context:6.2.9";
+	private static final String ASSERTJ_CORE = "org.assertj:assertj-core:3.27.4";
 
 	private static final String JUNIT_JUPITER = "org.junit.jupiter:junit-jupiter:5.12.0";
+
+	private static final String SPRING_CONTEXT = "org.springframework:spring-context:6.2.15";
+
+	private static final String SPRING_CORE = "org.springframework:spring-core:6.2.15";
 
 	private static final String SPRING_INTEGRATION_JMX = "org.springframework.integration:spring-integration-jmx:6.5.1";
 
@@ -450,6 +455,23 @@ class ArchitectureCheckTests {
 		buildAndFail(gradleBuild, Task.CHECK_ARCHITECTURE_MAIN,
 				"should include a non-empty 'since' attribute of @DeprecatedConfigurationProperty",
 				"DeprecatedConfigurationPropertySince.getProperty");
+	}
+
+	@Test
+	void whenCustomAssertionMethodNotReturningSelfIsAnnotatedWithCheckReturnValueShouldSucceedAndWriteEmptyReport()
+			throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "assertj/checkReturnValue");
+		build(this.gradleBuild.withDependencies(ASSERTJ_CORE, SPRING_CORE), Task.CHECK_ARCHITECTURE_MAIN);
+	}
+
+	@Test
+	void whenCustomAssertionMethodNotReturningSelfIsNotAnnotatedWithCheckReturnValueShouldFailAndWriteReport()
+			throws IOException {
+		prepareTask(Task.CHECK_ARCHITECTURE_MAIN, "assertj/noCheckReturnValue");
+		buildAndFail(this.gradleBuild.withDependencies(ASSERTJ_CORE), Task.CHECK_ARCHITECTURE_MAIN,
+				"methods that are declared in classes that implement org.assertj.core.api.Assert and "
+						+ "are public and do not have modifier BRIDGE and do not return self type should be annotated "
+						+ "with @CheckReturnValue");
 	}
 
 	private void prepareTask(Task task, String... sourceDirectories) throws IOException {
