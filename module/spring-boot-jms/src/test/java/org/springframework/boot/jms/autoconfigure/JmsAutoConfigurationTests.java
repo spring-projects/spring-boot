@@ -45,6 +45,7 @@ import org.springframework.jms.core.JmsClient;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
@@ -75,6 +76,7 @@ class JmsAutoConfigurationTests {
 				.doesNotHaveBean(JmsMessagingTemplate.class)
 				.doesNotHaveBean(JmsClient.class)
 				.doesNotHaveBean(DefaultJmsListenerContainerFactoryConfigurer.class)
+				.doesNotHaveBean(SimpleJmsListenerContainerFactoryConfigurer.class)
 				.doesNotHaveBean(DefaultJmsListenerContainerFactory.class));
 	}
 
@@ -167,20 +169,38 @@ class JmsAutoConfigurationTests {
 					"spring.jms.listener.receiveTimeout=2s", "spring.jms.listener.maxConcurrency=10",
 					"spring.jms.subscription-durable=true", "spring.jms.client-id=exampleId",
 					"spring.jms.listener.max-messages-per-task=5")
-			.run(this::testJmsListenerContainerFactoryWithCustomSettings);
+			.run((context) -> {
+				DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
+				assertThat(container.isAutoStartup()).isFalse();
+				assertThat(container.getSessionAcknowledgeMode()).isEqualTo(Session.CLIENT_ACKNOWLEDGE);
+				assertThat(container.isSessionTransacted()).isFalse();
+				assertThat(container.getConcurrentConsumers()).isEqualTo(2);
+				assertThat(container.getMaxConcurrentConsumers()).isEqualTo(10);
+				assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 2000L);
+				assertThat(container).hasFieldOrPropertyWithValue("maxMessagesPerTask", 5);
+				assertThat(container.isSubscriptionDurable()).isTrue();
+				assertThat(container.getClientId()).isEqualTo("exampleId");
+			});
 	}
 
-	private void testJmsListenerContainerFactoryWithCustomSettings(AssertableApplicationContext loaded) {
-		DefaultMessageListenerContainer container = getContainer(loaded, "jmsListenerContainerFactory");
-		assertThat(container.isAutoStartup()).isFalse();
-		assertThat(container.getSessionAcknowledgeMode()).isEqualTo(Session.CLIENT_ACKNOWLEDGE);
-		assertThat(container.isSessionTransacted()).isFalse();
-		assertThat(container.getConcurrentConsumers()).isEqualTo(2);
-		assertThat(container.getMaxConcurrentConsumers()).isEqualTo(10);
-		assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 2000L);
-		assertThat(container).hasFieldOrPropertyWithValue("maxMessagesPerTask", 5);
-		assertThat(container.isSubscriptionDurable()).isTrue();
-		assertThat(container.getClientId()).isEqualTo("exampleId");
+	@Test
+	void testManualJmsListenerContainerFactoryWithCustomSettings() {
+		this.contextRunner.withUserConfiguration(TestConfiguration6.class, EnableJmsConfiguration.class)
+			.withPropertyValues("spring.jms.listener.autoStartup=false",
+					"spring.jms.listener.session.acknowledgeMode=client",
+					"spring.jms.listener.session.transacted=false", "spring.jms.subscription-durable=true",
+					"spring.jms.client-id=exampleId")
+			.run((context) -> {
+				SimpleJmsListenerContainerFactory containerFactory = context.getBean("jmsListenerContainerFactory",
+						SimpleJmsListenerContainerFactory.class);
+				SimpleMessageListenerContainer container = containerFactory
+					.createListenerContainer(mock(JmsListenerEndpoint.class));
+				assertThat(container.isAutoStartup()).isFalse();
+				assertThat(container.getSessionAcknowledgeMode()).isEqualTo(Session.CLIENT_ACKNOWLEDGE);
+				assertThat(container.isSessionTransacted()).isFalse();
+				assertThat(container.isSubscriptionDurable()).isTrue();
+				assertThat(container.getClientId()).isEqualTo("exampleId");
+			});
 	}
 
 	@Test
@@ -495,9 +515,10 @@ class JmsAutoConfigurationTests {
 	static class TestConfiguration6 {
 
 		@Bean
-		JmsListenerContainerFactory<?> jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+		JmsListenerContainerFactory<?> jmsListenerContainerFactory(
+				SimpleJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 			SimpleJmsListenerContainerFactory factory = new SimpleJmsListenerContainerFactory();
-			factory.setConnectionFactory(connectionFactory);
+			configurer.configure(factory, connectionFactory);
 			return factory;
 		}
 
