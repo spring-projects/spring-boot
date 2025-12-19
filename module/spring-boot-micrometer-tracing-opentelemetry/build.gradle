@@ -29,6 +29,7 @@ dependencies {
 	api(project(":core:spring-boot"))
 	api(project(":module:spring-boot-micrometer-observation"))
 	api(project(":module:spring-boot-micrometer-tracing"))
+	api(project(":module:spring-boot-opentelemetry"))
 	api("io.micrometer:micrometer-tracing") {
 		exclude(group: "aopalliance", module: "aopalliance")
 	}
@@ -49,7 +50,6 @@ dependencies {
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation(project(":module:spring-boot-opentelemetry"))
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("io.opentelemetry:opentelemetry-exporter-common")
