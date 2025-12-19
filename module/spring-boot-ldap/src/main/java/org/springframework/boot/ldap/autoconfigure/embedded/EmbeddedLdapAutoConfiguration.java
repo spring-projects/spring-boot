@@ -22,6 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
+
 import com.unboundid.ldap.listener.InMemoryDirectoryServer;
 import com.unboundid.ldap.listener.InMemoryDirectoryServerConfig;
 import com.unboundid.ldap.listener.InMemoryListenerConfig;
@@ -33,6 +37,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -47,6 +52,9 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.boot.ldap.autoconfigure.LdapProperties;
 import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapAutoConfiguration.EmbeddedLdapAutoConfigurationRuntimeHints;
+import org.springframework.boot.ldap.autoconfigure.embedded.EmbeddedLdapProperties.Ssl;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -63,6 +71,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -91,7 +100,8 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 	}
 
 	@Bean
-	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
+	InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext,
+			ObjectProvider<SslBundles> sslBundles) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
 		String username = this.embeddedProperties.getCredential().getUsername();
@@ -99,15 +109,34 @@ public final class EmbeddedLdapAutoConfiguration implements DisposableBean {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 			config.addAdditionalBindCredentials(username, password);
 		}
+		config.setListenerConfigs(createListenerConfig(sslBundles));
 		setSchema(config);
-		InMemoryListenerConfig listenerConfig = InMemoryListenerConfig.createLDAPConfig("LDAP",
-				this.embeddedProperties.getPort());
-		config.setListenerConfigs(listenerConfig);
 		this.server = new InMemoryDirectoryServer(config);
 		importLdif(this.server, applicationContext);
 		this.server.startListening();
 		setPortProperty(applicationContext, this.server.getListenPort());
 		return this.server;
+	}
+
+	private InMemoryListenerConfig createListenerConfig(ObjectProvider<SslBundles> sslBundles) throws LDAPException {
+		SslBundle sslBundle = getSslBundle(sslBundles.getIfAvailable());
+		if (sslBundle != null) {
+			SSLContext sslContext = sslBundle.createSslContext();
+			SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
+			SSLSocketFactory clientSocketFactory = sslContext.getSocketFactory();
+			return InMemoryListenerConfig.createLDAPSConfig("LDAPS", null, this.embeddedProperties.getPort(),
+					serverSocketFactory, clientSocketFactory);
+		}
+		return InMemoryListenerConfig.createLDAPConfig("LDAP", this.embeddedProperties.getPort());
+	}
+
+	private @Nullable SslBundle getSslBundle(@Nullable SslBundles sslBundles) {
+		Ssl ssl = this.embeddedProperties.getSsl();
+		if (ssl.isEnabled() && StringUtils.hasLength(ssl.getBundle())) {
+			Assert.notNull(sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return sslBundles.getBundle(ssl.getBundle());
+		}
+		return null;
 	}
 
 	private void setSchema(InMemoryDirectoryServerConfig config) {
