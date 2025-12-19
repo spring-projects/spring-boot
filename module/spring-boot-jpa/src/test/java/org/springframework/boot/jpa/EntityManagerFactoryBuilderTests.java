@@ -57,8 +57,8 @@ class EntityManagerFactoryBuilderTests {
 		PersistenceUnitPostProcessor postProcessor2 = mock();
 		builder.addPersistenceUnitPostProcessors(postProcessor, postProcessor2);
 		assertThat(builder).extracting("persistenceUnitPostProcessors")
-				.asInstanceOf(InstanceOfAssertFactories.LIST)
-				.containsExactly(postProcessor, postProcessor2);
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
+			.containsExactly(postProcessor, postProcessor2);
 	}
 
 	@Test
@@ -70,8 +70,8 @@ class EntityManagerFactoryBuilderTests {
 		PersistenceUnitPostProcessor postProcessor3 = mock();
 		builder.setPersistenceUnitPostProcessors(postProcessor2, postProcessor3);
 		assertThat(builder).extracting("persistenceUnitPostProcessors")
-				.asInstanceOf(InstanceOfAssertFactories.LIST)
-				.containsExactly(postProcessor2, postProcessor3);
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
+			.containsExactly(postProcessor2, postProcessor3);
 	}
 
 	@Test
@@ -82,13 +82,12 @@ class EntityManagerFactoryBuilderTests {
 		PersistenceUnitPostProcessor postProcessor2 = mock();
 		builder.addPersistenceUnitPostProcessors(postProcessor2);
 		assertThat(builder).extracting("persistenceUnitPostProcessors")
-				.asInstanceOf(InstanceOfAssertFactories.LIST)
-				.containsExactly(postProcessor, postProcessor2);
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
+			.containsExactly(postProcessor, postProcessor2);
 	}
 
 	private EntityManagerFactoryBuilder createEmptyBuilder() {
-		Function<DataSource, Map<String, ?>> jpaPropertiesFactory = (dataSource) -> Collections
-				.emptyMap();
+		Function<DataSource, Map<String, ?>> jpaPropertiesFactory = (dataSource) -> Collections.emptyMap();
 		return new EntityManagerFactoryBuilder(new TestJpaVendorAdapter(), jpaPropertiesFactory, null);
 	}
 

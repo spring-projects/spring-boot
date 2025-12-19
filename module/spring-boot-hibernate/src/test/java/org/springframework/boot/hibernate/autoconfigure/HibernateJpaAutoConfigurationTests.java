@@ -360,7 +360,8 @@ class HibernateJpaAutoConfigurationTests {
 				PersistenceUnitInfo persistenceUnitInfo = entityManagerFactoryBean.getPersistenceUnitInfo();
 				assertThat(persistenceUnitInfo).isNotNull();
 				assertThat(persistenceUnitInfo.getManagedClassNames()).contains(
-						"customized.attribute.converter.class.name", "customized.attribute.converter.class.anotherName");
+						"customized.attribute.converter.class.name",
+						"customized.attribute.converter.class.anotherName");
 			});
 	}
 
