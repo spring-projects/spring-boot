@@ -1220,7 +1220,7 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 In addition to durations, Spring Boot can also work with javadoc:java.time.Period[] type.
 The following formats can be used in application properties:
 
-* An regular `int` representation (using days as the default unit unless a javadoc:org.springframework.boot.convert.PeriodUnit[format=annotation] has been specified)
+* A regular `int` representation (using days as the default unit unless a javadoc:org.springframework.boot.convert.PeriodUnit[format=annotation] has been specified)
 * The standard ISO-8601 format {apiref-openjdk}/java.base/java/time/Period.html#parse(java.lang.CharSequence)[used by javadoc:java.time.Period[]]
 * A simpler format where the value and the unit pairs are coupled (`1y3d` means 1 year and 3 days)
 

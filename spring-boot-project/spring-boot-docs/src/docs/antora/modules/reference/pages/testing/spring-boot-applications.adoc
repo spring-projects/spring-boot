@@ -180,7 +180,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 include-code::MyRandomPortWebTestClientTests[]
 
-TIP: javadoc:org.springframework.test.web.reactive.server.WebTestClient[] can also used with a xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[mock environment], removing the need for a running server, by annotating your test class with javadoc:org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient[format=annotation].
+TIP: javadoc:org.springframework.test.web.reactive.server.WebTestClient[] can also be used with a xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-mock-environment[mock environment], removing the need for a running server, by annotating your test class with javadoc:org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient[format=annotation].
 
 This setup requires `spring-webflux` on the classpath.
 If you can not or will not add webflux, Spring Boot also provides a javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] facility:
