@@ -333,9 +333,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
-		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
+		String toolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
+			assertThat(jarFile.getEntry(toolsJar)).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
@@ -360,7 +360,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		expectedDependencies.add(this.libPath + "spring-boot-starter-logging-2.2.0.RELEASE.jar");
 		Set<String> expectedSnapshotDependencies = new TreeSet<>();
 		expectedSnapshotDependencies.add(this.libPath + "library-1.0-SNAPSHOT.jar");
-		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
+		(toolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(toolsJar);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("spring-boot-loader")).containsExactly("org/");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
@@ -390,9 +390,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
-		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
+		String toolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
+			assertThat(jarFile.getEntry(toolsJar)).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "alpha-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "bravo-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "charlie-1.2.3.jar")).isNotNull();
@@ -413,7 +413,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		expectedDependencies.add(this.libPath + "spring-jcl-5.2.5.RELEASE.jar");
 		Set<String> expectedSnapshotDependencies = new TreeSet<>();
 		expectedSnapshotDependencies.add(this.libPath + "library-1.0-SNAPSHOT.jar");
-		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
+		(toolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(toolsJar);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("spring-boot-loader")).containsExactly("org/");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
@@ -442,9 +442,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
-		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
+		String toolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
+			assertThat(jarFile.getEntry(toolsJar)).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
@@ -462,7 +462,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		expectedDependencies.add(this.libPath + "spring-jcl-5.2.5.RELEASE.jar");
 		List<String> expectedSnapshotDependencies = new ArrayList<>();
 		expectedSnapshotDependencies.add(this.libPath + "library-1.0-SNAPSHOT.jar");
-		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
+		(toolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(toolsJar);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
 		assertThat(indexedLayers.get("commons-dependencies")).containsExactly(this.libPath + "commons-lang3-3.9.jar");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
@@ -495,9 +495,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(task).isNotNull();
 		assertThat(task.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
-		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
+		String toolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
-			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
+			assertThat(jarFile.getEntry(toolsJar)).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "alpha-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "bravo-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "charlie-1.2.3.jar")).isNotNull();
@@ -522,7 +522,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		expectedDependencies.add(this.libPath + "spring-jcl-5.2.5.RELEASE.jar");
 		List<String> expectedSnapshotDependencies = new ArrayList<>();
 		expectedSnapshotDependencies.add(this.libPath + "library-1.0-SNAPSHOT.jar");
-		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
+		(toolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(toolsJar);
 		assertThat(indexedLayers.get("subproject-dependencies"))
 			.containsExactlyElementsOf(expectedSubprojectDependencies);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);

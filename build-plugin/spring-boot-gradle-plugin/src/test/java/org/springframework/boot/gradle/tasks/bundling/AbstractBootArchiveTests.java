@@ -488,22 +488,22 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			List<String> index = entryLines(jarFile, this.indexPath + "layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("dependencies", "spring-boot-loader",
 					"snapshot-dependencies", "application");
-			String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
+			String toolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 			List<String> expected = new ArrayList<>();
 			expected.add("- \"dependencies\":");
 			expected.add("  - \"" + this.libPath + "first-library.jar\"");
 			expected.add("  - \"" + this.libPath + "first-project-library.jar\"");
 			expected.add("  - \"" + this.libPath + "fourth-library.jar\"");
 			expected.add("  - \"" + this.libPath + "second-library.jar\"");
-			if (!layerToolsJar.contains("SNAPSHOT")) {
-				expected.add("  - \"" + layerToolsJar + "\"");
+			if (!toolsJar.contains("SNAPSHOT")) {
+				expected.add("  - \"" + toolsJar + "\"");
 			}
 			expected.add("- \"spring-boot-loader\":");
 			expected.add("  - \"org/\"");
 			expected.add("- \"snapshot-dependencies\":");
 			expected.add("  - \"" + this.libPath + "second-project-library-SNAPSHOT.jar\"");
-			if (layerToolsJar.contains("SNAPSHOT")) {
-				expected.add("  - \"" + layerToolsJar + "\"");
+			if (toolsJar.contains("SNAPSHOT")) {
+				expected.add("  - \"" + toolsJar + "\"");
 			}
 			expected.add("  - \"" + this.libPath + "third-library-SNAPSHOT.jar\"");
 			expected.add("- \"application\":");
@@ -542,10 +542,10 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			List<String> index = entryLines(jarFile, this.indexPath + "layers.idx");
 			assertThat(getLayerNames(index)).containsExactly("my-deps", "my-internal-deps", "my-snapshot-deps",
 					"resources", "application");
-			String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
+			String toolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 			List<String> expected = new ArrayList<>();
 			expected.add("- \"my-deps\":");
-			expected.add("  - \"" + layerToolsJar + "\"");
+			expected.add("  - \"" + toolsJar + "\"");
 			expected.add("- \"my-internal-deps\":");
 			expected.add("  - \"" + this.libPath + "first-library.jar\"");
 			expected.add("  - \"" + this.libPath + "first-project-library.jar\"");
@@ -570,7 +570,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	}
 
 	@Test
-	void whenArchiveIsLayeredThenLayerToolsAreAddedToTheJar() throws IOException {
+	void whenArchiveIsLayeredThenToolsJarIsIncluded() throws IOException {
 		List<String> entryNames = getEntryNames(createLayeredJar());
 		assertThat(entryNames).contains(this.libPath + JarModeLibrary.TOOLS.getName());
 	}
