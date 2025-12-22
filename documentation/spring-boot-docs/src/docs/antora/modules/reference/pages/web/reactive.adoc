@@ -283,7 +283,7 @@ The same `@Controller` path can be mapped multiple times to support different ve
 
 For more details see {url-spring-framework-docs}/web/webflux/controller/ann-requestmapping.html#webflux-ann-requestmapping-version[Spring Framework's reference documentation].
 
-One mappings have been added, you additionally need to configure Spring WebFlux so that it is able to use any version information sent with a request.
+Once mappings have been added, you additionally need to configure Spring WebFlux so that it is able to use any version information sent with a request.
 Typically, versions are sent as HTTP headers, query parameters or as part of the path.
 
 To configure Spring WebFlux, you can either use a javadoc:org.springframework.web.reactive.config.WebFluxConfigurer[] bean and override the `configureApiVersioning(...)` method, or you can use properties.
