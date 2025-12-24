@@ -2,8 +2,8 @@ name: Release Milestone
 on:
   push:
     tags:
-      - v4.0.0-M[0-9]
-      - v4.0.0-RC[0-9]
+      - v4.1.0-M[0-9]
+      - v4.1.0-RC[0-9]
 permissions:
   contents: read
 concurrency:

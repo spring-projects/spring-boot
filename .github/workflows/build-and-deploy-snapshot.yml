@@ -30,7 +30,7 @@ jobs:
       - name: Deploy
         uses: spring-io/artifactory-deploy-action@926d7f7cc810569395346bf3a4d91b380b3e355b # v0.0.4
         with:
-          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '4.0.x') || format('spring-boot-{0}', '4.0.x') }}
+          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '4.1.x') || format('spring-boot-{0}', '4.1.x') }}
           folder: 'deployment-repository'
           password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
           project: ${{ vars.COMMERCIAL && 'spring' }}
