@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoPropertiesTests {
 
 	@Test
-	void defaultUUidRepresentationIsAlignedWithSpringData() {
+	void defaultUuidRepresentationIsAlignedWithSpringData() {
 		UuidRepresentation springDataDefault = springDataDefaultUuidRepresentation();
 		UuidRepresentation springBootDefault = new MongoProperties().getUuidRepresentation();
 		assertThat(springBootDefault).isEqualTo(springDataDefault);
