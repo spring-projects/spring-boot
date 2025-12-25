@@ -41,10 +41,10 @@ class CacheCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Assert.isInstanceOf(AnnotationMetadata.class, metadata);
-		return extracted(context, (AnnotationMetadata) metadata);
+		return getOutcome(context, (AnnotationMetadata) metadata);
 	}
 
-	private ConditionOutcome extracted(ConditionContext context, AnnotationMetadata metadata) {
+	private ConditionOutcome getOutcome(ConditionContext context, AnnotationMetadata metadata) {
 		String sourceClass = metadata.getClassName();
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Cache", sourceClass);
 		Environment environment = context.getEnvironment();
@@ -53,7 +53,7 @@ class CacheCondition extends SpringBootCondition {
 			if (!specified.isBound()) {
 				return ConditionOutcome.match(message.because("automatic cache type"));
 			}
-			CacheType required = CacheConfigurations.getType(metadata.getClassName());
+			CacheType required = CacheConfigurations.getType(sourceClass);
 			if (specified.get() == required) {
 				return ConditionOutcome.match(message.because(specified.get() + " cache type"));
 			}

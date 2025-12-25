@@ -1,2 +1,2 @@
-Some kind of procy auth problem!
+Some kind of proxy auth problem!
 
