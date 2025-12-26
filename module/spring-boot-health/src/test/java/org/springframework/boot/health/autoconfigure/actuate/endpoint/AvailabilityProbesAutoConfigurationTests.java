@@ -60,7 +60,7 @@ class AvailabilityProbesAutoConfigurationTests {
 	}
 
 	@Test
-	void probesWhenPropertyDisabledAddsNotBeans() {
+	void probesWhenPropertyDisabledDoesNotAddBeans() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.probes.enabled=false")
 			.run(this::doesNotHaveProbeBeans);
 	}

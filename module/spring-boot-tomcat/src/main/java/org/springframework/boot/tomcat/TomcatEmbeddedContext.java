@@ -118,7 +118,7 @@ public class TomcatEmbeddedContext extends StandardContext {
 	}
 
 	/**
-	 * Set the a strategy used to capture and rethrow deferred startup exceptions.
+	 * Set a strategy used to capture and rethrow deferred startup exceptions.
 	 * @param deferredStartupExceptions the strategy to use
 	 */
 	public void setDeferredStartupExceptions(DeferredStartupExceptions deferredStartupExceptions) {

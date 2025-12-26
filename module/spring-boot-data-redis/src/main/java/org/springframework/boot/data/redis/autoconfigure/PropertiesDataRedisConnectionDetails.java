@@ -102,14 +102,14 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 		return DataRedisUrl.of(this.properties.getUrl());
 	}
 
-	private List<Node> asNodes(@Nullable List<String> nodes) {
+	private static List<Node> asNodes(@Nullable List<String> nodes) {
 		if (nodes == null) {
 			return Collections.emptyList();
 		}
-		return nodes.stream().map(this::asNode).toList();
+		return nodes.stream().map(PropertiesDataRedisConnectionDetails::asNode).toList();
 	}
 
-	private Node asNode(String node) {
+	private static Node asNode(String node) {
 		int portSeparatorIndex = node.lastIndexOf(':');
 		String host = node.substring(0, portSeparatorIndex);
 		int port = Integer.parseInt(node.substring(portSeparatorIndex + 1));
@@ -119,7 +119,7 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	/**
 	 * {@link Cluster} implementation backed by properties.
 	 */
-	private class PropertiesCluster implements Cluster {
+	private static class PropertiesCluster implements Cluster {
 
 		private final List<Node> nodes;
 
@@ -137,7 +137,7 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	/**
 	 * {@link MasterReplica} implementation backed by properties.
 	 */
-	private class PropertiesMasterReplica implements MasterReplica {
+	private static class PropertiesMasterReplica implements MasterReplica {
 
 		private final List<Node> nodes;
 
@@ -155,7 +155,7 @@ class PropertiesDataRedisConnectionDetails implements DataRedisConnectionDetails
 	/**
 	 * {@link Sentinel} implementation backed by properties.
 	 */
-	private class PropertiesSentinel implements Sentinel {
+	private static class PropertiesSentinel implements Sentinel {
 
 		private final int database;
 
