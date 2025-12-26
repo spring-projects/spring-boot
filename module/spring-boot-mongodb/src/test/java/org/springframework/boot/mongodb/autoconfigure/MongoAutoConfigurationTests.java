@@ -233,7 +233,7 @@ class MongoAutoConfigurationTests {
 	}
 
 	@Test
-	void configureUUidRepresentation() {
+	void configureUuidRepresentation() {
 		this.contextRunner.withPropertyValues("spring.mongodb.representation.uuid=standard")
 			.run((context) -> assertThat(getSettings(context).getUuidRepresentation())
 				.isEqualTo(UuidRepresentation.STANDARD));

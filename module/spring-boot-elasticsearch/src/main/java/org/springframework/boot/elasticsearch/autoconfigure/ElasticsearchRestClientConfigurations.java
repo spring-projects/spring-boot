@@ -105,7 +105,7 @@ class ElasticsearchRestClientConfigurations {
 				.toArray(HttpHost[]::new));
 			if (connectionDetails.getApiKey() != null) {
 				builder.setDefaultHeaders(
-						new Header[] { new BasicHeader("Authorization", "ApiKey " + connectionDetails.getApiKey()), });
+						new Header[] { new BasicHeader("Authorization", "ApiKey " + connectionDetails.getApiKey()) });
 			}
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> builderCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(httpClientBuilder)));

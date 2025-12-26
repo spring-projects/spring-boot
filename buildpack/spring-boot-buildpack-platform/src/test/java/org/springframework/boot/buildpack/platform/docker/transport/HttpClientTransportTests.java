@@ -332,7 +332,7 @@ class HttpClientTransportTests {
 	}
 
 	@Test
-	void shouldReturnErrorsAndConentIfProxyAuthError() throws IOException {
+	void shouldReturnContentIfProxyAuthError() throws IOException {
 		givenClientWillReturnResponse();
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("proxy-error.txt"));
 		given(this.response.getCode()).willReturn(HttpStatus.SC_PROXY_AUTHENTICATION_REQUIRED);
@@ -340,7 +340,7 @@ class HttpClientTransportTests {
 			.satisfies((ex) -> {
 				assertThat(ex.getErrors()).isNull();
 				assertThat(ex.getResponseMessage()).isNull();
-				assertThat(ex.getMessage()).contains("Some kind of procy auth problem!");
+				assertThat(ex.getMessage()).contains("Some kind of proxy auth problem!");
 			});
 	}
 
