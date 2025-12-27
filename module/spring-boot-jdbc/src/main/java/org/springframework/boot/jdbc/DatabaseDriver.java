@@ -44,7 +44,9 @@ public enum DatabaseDriver {
 
 	/**
 	 * Apache Derby.
+	 * @deprecated Derby is retired, use HSQLDB or H2
 	 */
+	@Deprecated(forRemoval = true, since = "4.1")
 	DERBY("Apache Derby", "org.apache.derby.jdbc.EmbeddedDriver", "org.apache.derby.jdbc.EmbeddedXADataSource",
 			"SELECT 1 FROM SYSIBM.SYSDUMMY1"),
 

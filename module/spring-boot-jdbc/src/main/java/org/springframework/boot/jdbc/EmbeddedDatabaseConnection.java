@@ -57,7 +57,9 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * Derby Database Connection.
+	 * @deprecated Derby is retired, use HSQLDB or H2
 	 */
+	@Deprecated(forRemoval = true, since = "4.1")
 	DERBY("jdbc:derby:memory:%s;create=true"),
 
 	/**
@@ -83,6 +85,7 @@ public enum EmbeddedDatabaseConnection {
 	 * Returns the driver class name.
 	 * @return the driver class name
 	 */
+	@SuppressWarnings("removal")
 	public @Nullable String getDriverClassName() {
 		// See https://github.com/spring-projects/spring-boot/issues/32865
 		return switch (this) {
@@ -97,6 +100,7 @@ public enum EmbeddedDatabaseConnection {
 	 * Returns the {@link EmbeddedDatabaseType} for the connection.
 	 * @return the database type
 	 */
+	@SuppressWarnings("removal")
 	public @Nullable EmbeddedDatabaseType getType() {
 		// See https://github.com/spring-projects/spring-boot/issues/32865
 		return switch (this) {
@@ -117,6 +121,7 @@ public enum EmbeddedDatabaseConnection {
 		return (this.url != null) ? String.format(this.url, databaseName) : null;
 	}
 
+	@SuppressWarnings("removal")
 	boolean isEmbeddedUrl(String url) {
 		// See https://github.com/spring-projects/spring-boot/issues/32865
 		return switch (this) {
@@ -151,6 +156,7 @@ public enum EmbeddedDatabaseConnection {
 		return (url == null || connection.isEmbeddedUrl(url));
 	}
 
+	@SuppressWarnings("removal")
 	private static EmbeddedDatabaseConnection getEmbeddedDatabaseConnection(String driverClass) {
 		return Stream.of(H2, HSQLDB, DERBY)
 			.filter((connection) -> connection.isDriverCompatible(driverClass))
