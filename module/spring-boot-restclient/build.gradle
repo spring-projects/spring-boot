@@ -36,10 +36,9 @@ dependencies {
 	optional("org.eclipse.jetty:jetty-client")
 
 	testImplementation(project(":core:spring-boot-test"))
-	testImplementation(project(":module:spring-boot-micrometer-metrics"))
+	testImplementation(project(":module:spring-boot-micrometer-metrics-test"))
 	testImplementation(project(":module:spring-boot-tomcat"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
-	testImplementation("io.micrometer:micrometer-observation-test")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("jakarta.servlet:jakarta.servlet-api")

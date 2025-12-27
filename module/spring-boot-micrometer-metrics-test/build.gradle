@@ -27,6 +27,7 @@ description = "Spring Boot Micrometer Metrics Test"
 dependencies {
 	api(project(":core:spring-boot-test-autoconfigure"))
 	api(project(":module:spring-boot-micrometer-metrics"))
+	api("io.micrometer:micrometer-observation-test")
 
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional("org.junit.jupiter:junit-jupiter-api")
