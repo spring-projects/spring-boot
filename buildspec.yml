@@ -1,0 +1,39 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: us-east-1
+    IMAGE_REPO_NAME: springboot-app
+    IMAGE_TAG: latest
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION |
+        docker login --username AWS --password-stdin \
+        509850510373.dkr.ecr.$AWS_REGION.amazonaws.com
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - chmod +x gradlew
+      - ./gradlew build -x test
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG \
+        509850510373.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Pushing Docker image to ECR...
+      - docker push \
+        509850510373.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - echo Writing imagedefinitions.json...
+      - printf '[{"name":"springboot","imageUri":"%s"}]' \
+        509850510373.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG \
+        > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
+
