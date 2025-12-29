@@ -63,7 +63,7 @@ dependencies {
 
 architectureCheck {
 	nullMarked {
-		enabled  = false
+		enabled  = true
 		ignoredPackages = ['org.springframework.boot.cli.json']
 	}
 }
