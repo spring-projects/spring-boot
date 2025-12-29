@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.json.JsonFactory;
 import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.PropertyNamingStrategies;
@@ -97,8 +98,9 @@ public final class JacksonAutoConfiguration {
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
-	JsonMapper.Builder jsonMapperBuilder(List<JsonMapperBuilderCustomizer> customizers) {
-		JsonMapper.Builder builder = JsonMapper.builder();
+	JsonMapper.Builder jsonMapperBuilder(ObjectProvider<JsonFactory> jsonFactory,
+			List<JsonMapperBuilderCustomizer> customizers) {
+		JsonMapper.Builder builder = JsonMapper.builder(jsonFactory.getIfAvailable(JsonFactory::new));
 		customize(builder, customizers);
 		return builder;
 	}

@@ -106,7 +106,8 @@ This environment-based configuration is applied to the auto-configured javadoc:t
 
 To ease the migration when working on an application that previously used Jackson 2, the auto-configured `JsonMapper` can be configured to use defaults that are as close as possible to those that Spring Boot used for Jackson 2. To enable these defaults, set configprop:spring.jackson.use-jackson2-defaults[] to `true`.
 
-The context's javadoc:tools.jackson.databind.json.JsonMapper$Builder[] can be customized by one or more javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
+If a javadoc:tools.jackson.core.json.JsonFactory[] bean is present, it is used by the context's javadoc:tools.jackson.databind.json.JsonMapper$Builder[].
+The builder can also be customized by one or more javadoc:org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer[] beans.
 Such customizer beans can be ordered (Boot's own customizer has an order of 0), letting additional customization be applied both before and after Boot's customization.
 
 Any beans of type javadoc:tools.jackson.databind.JacksonModule[] are automatically registered with the auto-configured javadoc:tools.jackson.databind.json.JsonMapper$Builder[] and are applied to any javadoc:tools.jackson.databind.json.JsonMapper[] instances that it creates.
