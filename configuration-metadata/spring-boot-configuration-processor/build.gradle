@@ -33,7 +33,6 @@ sourceSets {
 architectureCheck {
 	nullMarked {
 		enabled  = false
-		ignoredPackages = ["org.springframework.boot.configurationprocessor.json"]
 	}
 }
 
