@@ -28,6 +28,7 @@ import org.springframework.boot.http.converter.autoconfigure.JacksonHttpMessageC
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
 import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -51,6 +52,7 @@ class Jackson2HttpMessageConvertersConfiguration {
 	static class MappingJackson2HttpMessageConverterConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnMissingBean(org.springframework.http.converter.json.MappingJackson2HttpMessageConverter.class)
 		Jackson2JsonMessageConvertersCustomizer jackson2HttpMessageConvertersCustomizer(ObjectMapper objectMapper) {
 			return new Jackson2JsonMessageConvertersCustomizer(objectMapper);
@@ -64,6 +66,7 @@ class Jackson2HttpMessageConvertersConfiguration {
 	protected static class MappingJackson2XmlHttpMessageConverterConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnMissingBean(org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter.class)
 		Jackson2XmlMessageConvertersCustomizer mappingJackson2XmlHttpMessageConverter(
 				Jackson2ObjectMapperBuilder builder) {
