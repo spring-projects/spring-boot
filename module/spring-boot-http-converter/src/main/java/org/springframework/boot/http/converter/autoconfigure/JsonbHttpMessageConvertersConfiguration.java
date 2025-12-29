@@ -28,6 +28,7 @@ import org.springframework.boot.http.converter.autoconfigure.JacksonHttpMessageC
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
 import org.springframework.http.converter.HttpMessageConverters.ServerBuilder;
 import org.springframework.http.converter.json.JsonbHttpMessageConverter;
@@ -47,6 +48,7 @@ class JsonbHttpMessageConvertersConfiguration {
 	static class JsonbHttpMessageConverterConfiguration {
 
 		@Bean
+		@Order(0)
 		@ConditionalOnMissingBean(JsonbHttpMessageConverter.class)
 		JsonbHttpMessageConvertersCustomizer jsonbHttpMessageConvertersCustomizer(Jsonb jsonb) {
 			return new JsonbHttpMessageConvertersCustomizer(jsonb);
