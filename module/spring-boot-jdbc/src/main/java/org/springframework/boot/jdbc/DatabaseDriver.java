@@ -44,7 +44,9 @@ public enum DatabaseDriver {
 
 	/**
 	 * Apache Derby.
+	 * @deprecated since 4.1.0 for removal in 4.3.0 as Derby is EOL.
 	 */
+	@Deprecated(since = "4.1.0", forRemoval = true)
 	DERBY("Apache Derby", "org.apache.derby.jdbc.EmbeddedDriver", "org.apache.derby.jdbc.EmbeddedXADataSource",
 			"SELECT 1 FROM SYSIBM.SYSDUMMY1"),
 
