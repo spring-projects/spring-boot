@@ -21,8 +21,8 @@ jobs:
         uses: ./.github/actions/build
         with:
           commercial-release-repository-url: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
-          commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
-          commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
+          commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
+          commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
           commercial-snapshot-repository-url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
           develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           gradle-cache-read-only: false
@@ -66,8 +66,8 @@ jobs:
     needs: build-and-deploy-snapshot
     uses: ./.github/workflows/verify.yml
     secrets:
-      commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
-      commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
+      commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}
+      commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}
       google-chat-webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
       opensource-repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
       opensource-repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
