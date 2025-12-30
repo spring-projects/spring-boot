@@ -89,11 +89,11 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		private static final Lookup<@Nullable TlsSocketStrategy> NO_TLS_SOCKET = (name) -> null;
 
 		LocalConnectionManager(ResolvedDockerHost dockerHost) {
-			super(createhttpClientConnectionOperator(dockerHost), null);
+			super(createHttpClientConnectionOperator(dockerHost), null);
 			setConnectionConfig(CONNECTION_CONFIG);
 		}
 
-		private static DefaultHttpClientConnectionOperator createhttpClientConnectionOperator(
+		private static DefaultHttpClientConnectionOperator createHttpClientConnectionOperator(
 				ResolvedDockerHost dockerHost) {
 			LocalDetachedSocketFactory detachedSocketFactory = new LocalDetachedSocketFactory(dockerHost);
 			LocalDnsResolver dnsResolver = new LocalDnsResolver();
