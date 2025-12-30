@@ -23,6 +23,8 @@ In the rest of this section, `build-image` is used to refer to either the `build
 TIP: While the buildpack runs from an xref:packaging.adoc[executable archive], it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
 When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, that is dependencies can be excluded using one of the exclude options.
 The `spring-boot-devtools` and `spring-boot-docker-compose` modules are automatically excluded by default (you can control this using the `excludeDevtools` and `excludeDockerCompose` properties).
+Pay also attention that optional dependencies are not included by default.
+If you have defined those modules as optional, you also need to set the `includeOptional` property to `true`.
 
 
 

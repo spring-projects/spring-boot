@@ -39,7 +39,8 @@ TIP: Flagging the dependency as optional in Maven or using the `developmentOnly`
 
 TIP: Repackaged archives do not contain devtools by default.
 If you want to use a xref:using/devtools.adoc#using.devtools.remote-applications[certain remote devtools feature], you need to include it.
-When using the Maven plugin, set the `excludeDevtools` property to `false`.
+When using the Maven plugin, opt-in for optional dependencies by setting the `includeOptional` property to `true`.
+You also need to set the `excludeDevtools` property to `false`.
 When using the Gradle plugin, xref:gradle-plugin:packaging.adoc#packaging-executable.configuring.including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
 
 
@@ -376,12 +377,15 @@ To enable it, you need to make sure that `devtools` is included in the repackage
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-maven-plugin</artifactId>
 			<configuration>
+				<includeOptional>true</includeOptional>
 				<excludeDevtools>false</excludeDevtools>
 			</configuration>
 		</plugin>
 	</plugins>
 </build>
 ----
+
+NOTE: Optional dependencies are not included by default, which explains why `includeOptional` is also present.
 
 Then you need to set the configprop:spring.devtools.remote.secret[] property.
 Like any important password or secret, the value should be unique and strong such that it cannot be guessed or brute-forced.
