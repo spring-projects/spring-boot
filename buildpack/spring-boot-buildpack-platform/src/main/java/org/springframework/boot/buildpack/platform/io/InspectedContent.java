@@ -141,7 +141,7 @@ public class InspectedContent implements Content {
 
 		private @Nullable File tempFile;
 
-		private final byte[] singleByteBuffer = new byte[0];
+		private final byte[] singleByteBuffer = new byte[1];
 
 		private InspectingOutputStream(Inspector[] inspectors) {
 			this.inspectors = inspectors;

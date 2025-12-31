@@ -93,6 +93,17 @@ class InspectedContentTests {
 					0xa3, 0xbf, 0x4f, 0x1b, 0x2b, 0x0b, 0x82, 0x2c, 0xd1, 0x5d, 0x6c, 0x15, 0xb0, 0xf0, 0x0a, 0x08);
 	}
 
+	@Test
+	void ofWritingSingleBytesShouldWork() throws Exception {
+		InspectedContent content = InspectedContent.of((outputStream) -> {
+			outputStream.write('A');
+			outputStream.write('B');
+			outputStream.write('C');
+		});
+		assertThat(content.size()).isEqualTo(3);
+		assertThat(readBytes(content)).containsExactly('A', 'B', 'C');
+	}
+
 	private byte[] readBytes(InspectedContent content) throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		content.writeTo(outputStream);
