@@ -95,9 +95,7 @@ class InspectedContentTests {
 
 	@Test
 	void ofWritingSingleByteShouldWork() throws Exception {
-		InspectedContent content = InspectedContent.of((outputStream) -> {
-			outputStream.write('A');
-		});
+		InspectedContent content = InspectedContent.of((outputStream) -> outputStream.write('A'));
 		assertThat(content.size()).isEqualTo(1);
 		assertThat(readBytes(content)).containsExactly('A');
 	}
