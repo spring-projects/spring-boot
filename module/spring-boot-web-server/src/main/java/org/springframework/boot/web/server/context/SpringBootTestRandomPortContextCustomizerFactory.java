@@ -20,15 +20,13 @@ import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
-import org.springframework.test.context.MergedContextConfiguration;
 
 /**
- * {@link ContextCustomizerFactory} apply
- * {@link SpringBootTestRandomPortApplicationListener} to tests.
+ * {@link ContextCustomizerFactory} implementation to apply
+ * {@link SpringBootTestRandomPortContextCustomizer} to tests.
  *
  * @author Phillip Webb
  */
@@ -37,26 +35,7 @@ class SpringBootTestRandomPortContextCustomizerFactory implements ContextCustomi
 	@Override
 	public @Nullable ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		return new Customizer();
-	}
-
-	static class Customizer implements ContextCustomizer {
-
-		@Override
-		public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
-			context.addApplicationListener(new SpringBootTestRandomPortApplicationListener());
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return (obj != null) && (obj.getClass() == getClass());
-		}
-
-		@Override
-		public int hashCode() {
-			return getClass().hashCode();
-		}
-
+		return new SpringBootTestRandomPortContextCustomizer();
 	}
 
 }

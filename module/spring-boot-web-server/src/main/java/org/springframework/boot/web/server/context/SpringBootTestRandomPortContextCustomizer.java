@@ -20,10 +20,8 @@ import java.util.Objects;
 
 import org.jspecify.annotations.Nullable;
 
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.SmartApplicationListener;
-import org.springframework.core.Ordered;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -33,6 +31,8 @@ import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.lang.Contract;
+import org.springframework.test.context.ContextCustomizer;
+import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.ClassUtils;
 
@@ -45,25 +45,13 @@ import org.springframework.util.ClassUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class SpringBootTestRandomPortApplicationListener implements SmartApplicationListener, Ordered {
+class SpringBootTestRandomPortContextCustomizer implements ContextCustomizer {
 
 	private static final String TEST_SOURCE_NAME = TestPropertySourceUtils.INLINED_PROPERTIES_PROPERTY_SOURCE_NAME;
 
 	@Override
-	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE;
-	}
-
-	@Override
-	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-		return ApplicationEnvironmentPreparedEvent.class.isAssignableFrom(eventType);
-	}
-
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
-			postProcessEnvironment(environmentPreparedEvent.getEnvironment());
-		}
+	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
+		postProcessEnvironment(context.getEnvironment());
 	}
 
 	void postProcessEnvironment(ConfigurableEnvironment environment) {
@@ -90,6 +78,16 @@ class SpringBootTestRandomPortApplicationListener implements SmartApplicationLis
 		}
 		Integer serverPort = ports.get(nonTestSources, Port.SERVER, 8080);
 		return (!managementPort.equals(serverPort)) ? "0" : "";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return (obj != null) && (obj.getClass() == getClass());
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 
 	private enum Port {
