@@ -28,7 +28,6 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletContext;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import nz.net.ultraq.thymeleaf.layoutdialect.decorators.strategies.GroupingStrategy;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -358,7 +357,7 @@ class ThymeleafServletAutoConfigurationTests {
 	@Test
 	void cachingCanBeDisabled() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.cache:false").run((context) -> {
-			Assertions.assertThat(context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
+			assertThat(context.getBean(ThymeleafViewResolver.class).isCache()).isFalse();
 			SpringResourceTemplateResolver templateResolver = context.getBean(SpringResourceTemplateResolver.class);
 			assertThat(templateResolver.isCacheable()).isFalse();
 		});

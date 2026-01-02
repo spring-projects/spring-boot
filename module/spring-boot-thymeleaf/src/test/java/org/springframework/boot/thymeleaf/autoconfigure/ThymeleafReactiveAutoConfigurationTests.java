@@ -25,7 +25,6 @@ import java.util.Locale;
 
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import nz.net.ultraq.thymeleaf.layoutdialect.decorators.strategies.GroupingStrategy;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -90,27 +89,26 @@ class ThymeleafReactiveAutoConfigurationTests {
 			assertThat(resolver).isInstanceOf(SpringResourceTemplateResolver.class);
 			assertThat(((SpringResourceTemplateResolver) resolver).getCharacterEncoding()).isEqualTo("UTF-16");
 			ThymeleafReactiveViewResolver views = context.getBean(ThymeleafReactiveViewResolver.class);
-			Assertions.assertThat(views.getDefaultCharset().name()).isEqualTo("UTF-16");
+			assertThat(views.getDefaultCharset().name()).isEqualTo("UTF-16");
 		});
 	}
 
 	@Test
 	void defaultMediaTypes() {
-		this.contextRunner.run((context) -> Assertions
-			.assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
-			.containsExactly(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_XML,
-					MediaType.TEXT_XML, MediaType.APPLICATION_RSS_XML, MediaType.APPLICATION_ATOM_XML,
-					new MediaType("application", "javascript"), new MediaType("application", "ecmascript"),
-					new MediaType("text", "javascript"), new MediaType("text", "ecmascript"),
-					MediaType.APPLICATION_JSON, new MediaType("text", "css"), MediaType.TEXT_PLAIN,
-					MediaType.TEXT_EVENT_STREAM));
+		this.contextRunner
+			.run((context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
+				.containsExactly(MediaType.TEXT_HTML, MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_XML,
+						MediaType.TEXT_XML, MediaType.APPLICATION_RSS_XML, MediaType.APPLICATION_ATOM_XML,
+						new MediaType("application", "javascript"), new MediaType("application", "ecmascript"),
+						new MediaType("text", "javascript"), new MediaType("text", "ecmascript"),
+						MediaType.APPLICATION_JSON, new MediaType("text", "css"), MediaType.TEXT_PLAIN,
+						MediaType.TEXT_EVENT_STREAM));
 	}
 
 	@Test
 	void overrideMediaTypes() {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.reactive.media-types:text/html,text/plain")
-			.run((context) -> Assertions
-				.assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
+			.run((context) -> assertThat(context.getBean(ThymeleafReactiveViewResolver.class).getSupportedMediaTypes())
 				.containsExactly(MediaType.TEXT_HTML, MediaType.TEXT_PLAIN));
 	}
 

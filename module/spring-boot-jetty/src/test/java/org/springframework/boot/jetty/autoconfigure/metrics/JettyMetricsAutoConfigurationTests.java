@@ -19,7 +19,6 @@ package org.springframework.boot.jetty.autoconfigure.metrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
@@ -63,7 +62,7 @@ class JettyMetricsAutoConfigurationTests {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class);
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-				Assertions.assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
+				assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
 			});
 	}
 
@@ -76,7 +75,7 @@ class JettyMetricsAutoConfigurationTests {
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-				Assertions.assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
+				assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
 			});
 	}
 
@@ -98,7 +97,7 @@ class JettyMetricsAutoConfigurationTests {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class);
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-				Assertions.assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
+				assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
 			});
 	}
 
@@ -111,7 +110,7 @@ class JettyMetricsAutoConfigurationTests {
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-				Assertions.assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
+				assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
 			});
 	}
 
@@ -127,11 +126,9 @@ class JettyMetricsAutoConfigurationTests {
 				assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class)
 					.hasBean("customJettyConnectionMetricsBinder");
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-				Assertions
-					.assertThat(registry.find("jetty.connections.messages.in")
-						.tag("custom-tag-name", "custom-tag-value")
-						.meter())
-					.isNotNull();
+				assertThat(registry.find("jetty.connections.messages.in")
+					.tag("custom-tag-name", "custom-tag-value")
+					.meter()).isNotNull();
 			});
 	}
 
@@ -148,7 +145,7 @@ class JettyMetricsAutoConfigurationTests {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class);
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-				Assertions.assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
+				assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
 			});
 	}
 
@@ -164,7 +161,7 @@ class JettyMetricsAutoConfigurationTests {
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-				Assertions.assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
+				assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
 			});
 	}
 
@@ -183,9 +180,7 @@ class JettyMetricsAutoConfigurationTests {
 				assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
 					.hasBean("customJettySslHandshakeMetricsBinder");
 				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-				Assertions
-					.assertThat(
-							registry.find("jetty.ssl.handshakes").tag("custom-tag-name", "custom-tag-value").meter())
+				assertThat(registry.find("jetty.ssl.handshakes").tag("custom-tag-name", "custom-tag-value").meter())
 					.isNotNull();
 			});
 
