@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.hazelcast;
 import com.hazelcast.config.Config;
 
 /**
- * Callback interface that can be implemented by beans wishing to customize the Hazelcast
- * server {@link Config configuration}.
+ * Callback interface that can be implemented by beans wishing to customize the
+ * auto-configured Hazelcast server {@link Config configuration}.
  *
  * @author Jaromir Hamala
  * @author Stephane Nicoll

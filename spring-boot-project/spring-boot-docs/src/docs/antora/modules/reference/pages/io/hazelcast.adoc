@@ -12,7 +12,7 @@ Spring Boot first attempts to create a client by checking the following configur
 * A `hazelcast-client.yaml` (or `hazelcast-client.yml`) in the working directory or at the root of the classpath.
 
 If a client can not be created, Spring Boot attempts to configure an embedded server.
-If you define a javadoc:com.hazelcast.config.Config[] bean, Spring Boot uses that.
+If you define a javadoc:com.hazelcast.config.Config[] bean, Spring Boot uses it at is.
 If your configuration defines an instance name, Spring Boot tries to locate an existing instance rather than creating a new one.
 
 You could also specify the Hazelcast configuration file to use through configuration, as shown in the following example:
