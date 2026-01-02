@@ -202,6 +202,16 @@ class AotTests {
 	}
 
 	@TestTemplate
+	void whenTestAotRunsWithTestSkipItIsAlsoSkipped(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-test-skip").goals("test").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");
+			assertThat(aotDirectory).doesNotExist();
+			Path testClassesDirectory = project.toPath().resolve("target/test-classes");
+			assertThat(testClassesDirectory.resolve("META-INF").resolve("native-image")).doesNotExist();
+		});
+	}
+
+	@TestTemplate
 	void whenTestAotRunsWithDevtoolsInClasspathItIsExcluded(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-test-exclude-devtools").goals("process-test-classes").execute((project) -> {
 			Path aotDirectory = project.toPath().resolve("target/spring-aot/test");

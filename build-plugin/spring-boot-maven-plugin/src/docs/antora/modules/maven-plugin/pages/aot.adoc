@@ -92,6 +92,8 @@ include::partial$goals/process-aot.adoc[leveloffset=+1]
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
 Those tests are processed by the AOT engine and are then executed in a native image.
 
+NOTE: Tests are not processed when the regular tests are skipped using the `maven.test.skip` property.
+
 Just like <<aot.processing-applications.using-the-native-profile,for production code>>, the `spring-boot-starter-parent` defines a `nativeTest` profile that can be used to streamline the steps required to execute your tests in a native image.
 
 The `nativeTest` profile configures the following:
