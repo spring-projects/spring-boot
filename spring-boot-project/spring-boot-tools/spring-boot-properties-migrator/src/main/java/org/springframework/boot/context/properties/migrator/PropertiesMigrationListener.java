@@ -28,6 +28,7 @@ import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.Resource;
@@ -39,6 +40,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
  * keys that have a matching replacement and logs a report of what was discovered.
  *
  * @author Stephane Nicoll
+ * @author Akshay Dubey
  */
 class PropertiesMigrationListener implements ApplicationListener<SpringApplicationEvent> {
 
@@ -59,10 +61,11 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+		ConfigurableEnvironment environment = event.getApplicationContext().getEnvironment();
 		ConfigurationMetadataRepository repository = loadRepository();
-		PropertiesMigrationReporter reporter = new PropertiesMigrationReporter(repository,
-				event.getApplicationContext().getEnvironment());
+		PropertiesMigrationReporter reporter = new PropertiesMigrationReporter(repository, environment);
 		this.report = reporter.getReport();
+		failIfNecessary(environment);
 	}
 
 	private ConfigurationMetadataRepository loadRepository() {
@@ -84,6 +87,24 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 			}
 		}
 		return builder.build();
+	}
+
+	private void failIfNecessary(ConfigurableEnvironment environment) {
+		if (this.report == null) {
+			return;
+		}
+		PropertiesMigratorProperties properties = Binder.get(environment)
+			.bind("spring.tools.properties-migrator", PropertiesMigratorProperties.class)
+			.orElseGet(PropertiesMigratorProperties::new);
+		FailureLevel failOn = properties.getFailOn();
+		if (failOn == FailureLevel.WARNING && this.report.hasWarnings()) {
+			throw new PropertiesMigrationException("Configuration property migration warnings detected. "
+					+ "Please update your configuration to use the new keys.");
+		}
+		if ((failOn == FailureLevel.WARNING || failOn == FailureLevel.ERROR) && this.report.hasErrors()) {
+			throw new PropertiesMigrationException("Configuration property migration errors detected. "
+					+ "Properties are no longer supported and must be removed or replaced.");
+		}
 	}
 
 	private void logLegacyPropertiesReport() {

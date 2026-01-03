@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
+ * @author Akshay Dubey
  */
 class PropertiesMigrationReport {
 
@@ -97,6 +98,22 @@ class PropertiesMigrationReport {
 			});
 			report.append(String.format("%n"));
 		});
+	}
+
+	/**
+	 * Return whether this report has warnings.
+	 * @return {@code true} if at least one warning was detected
+	 */
+	boolean hasWarnings() {
+		return !getContent(LegacyProperties::getRenamed).isEmpty();
+	}
+
+	/**
+	 * Return whether this report has errors.
+	 * @return {@code true} if at least one error was detected
+	 */
+	boolean hasErrors() {
+		return !getContent(LegacyProperties::getUnsupported).isEmpty();
 	}
 
 	/**

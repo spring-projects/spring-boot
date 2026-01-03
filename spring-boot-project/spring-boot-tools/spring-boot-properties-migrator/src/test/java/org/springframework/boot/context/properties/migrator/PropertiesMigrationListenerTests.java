@@ -27,11 +27,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link PropertiesMigrationListener}.
  *
  * @author Stephane Nicoll
+ * @author Akshay Dubey
  */
 @ExtendWith(OutputCaptureExtension.class)
 class PropertiesMigrationListenerTests {
@@ -52,6 +54,45 @@ class PropertiesMigrationListenerTests {
 			.contains("logging.file.name")
 			.contains("Each configuration key has been temporarily mapped")
 			.doesNotContain("Please refer to the release notes");
+	}
+
+	@Test
+	void sampleReportWithFailOnWarning() {
+		assertThatExceptionOfType(PropertiesMigrationException.class)
+			.isThrownBy(() -> createSampleApplication().run("--logging.file=test.log",
+					"--spring.tools.properties-migrator.fail-on=warning"))
+			.withMessageContaining("Configuration property migration warnings detected");
+	}
+
+	@Test
+	void sampleReportWithFailOnError() {
+		// logging.file is a renamed property, not an error, so this should succeed
+		this.context = createSampleApplication().run("--logging.file=test.log",
+				"--spring.tools.properties-migrator.fail-on=error");
+		assertThat(this.context).isNotNull();
+	}
+
+	@Test
+	void unsupportedPropertyWithFailOnError() {
+		assertThatExceptionOfType(PropertiesMigrationException.class)
+			.isThrownBy(() -> createSampleApplication().run("--spring.main.web-environment=true",
+					"--spring.tools.properties-migrator.fail-on=error"))
+			.withMessageContaining("Configuration property migration errors detected");
+	}
+
+	@Test
+	void unsupportedPropertyWithFailOnWarning() {
+		assertThatExceptionOfType(PropertiesMigrationException.class)
+			.isThrownBy(() -> createSampleApplication().run("--spring.main.web-environment=true",
+					"--spring.tools.properties-migrator.fail-on=warning"))
+			.withMessageContaining("Configuration property migration errors detected");
+	}
+
+	@Test
+	void unsupportedPropertyWithFailOnNone(CapturedOutput output) {
+		this.context = createSampleApplication().run("--spring.main.web-environment=true");
+		assertThat(output).contains("spring.main.web-environment")
+			.contains("Please refer to the release notes");
 	}
 
 	private SpringApplication createSampleApplication() {
