@@ -215,6 +215,23 @@ class TaskExecutionAutoConfigurationTests {
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
+	void whenVirtualThreadsEnabledThenPoolPropertiesAreIgnored() {
+		this.contextRunner
+			.withPropertyValues("spring.threads.virtual.enabled=true",
+					"spring.task.execution.pool.core-size=100",
+					"spring.task.execution.pool.max-size=200",
+					"spring.task.execution.pool.queue-capacity=50",
+					"spring.task.execution.pool.allow-core-thread-timeout=false",
+					"spring.task.execution.pool.keep-alive=120s")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Executor.class);
+				assertThat(context.getBean("applicationTaskExecutor")).isInstanceOf(SimpleAsyncTaskExecutor.class);
+				assertThat(context).doesNotHaveBean(ThreadPoolTaskExecutor.class);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
 	void whenTaskDecoratorIsDefinedThenSimpleAsyncTaskExecutorWithVirtualThreadsUsesIt() {
 		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
 			.withBean(TaskDecorator.class, OrderedTaskDecorator::new)
