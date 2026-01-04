@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.io.restclient.clienthttprequestfactory.configuration
+package org.springframework.boot.docs.io.restclient.webclient.configuration
 
-import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.net.ProxySelector
