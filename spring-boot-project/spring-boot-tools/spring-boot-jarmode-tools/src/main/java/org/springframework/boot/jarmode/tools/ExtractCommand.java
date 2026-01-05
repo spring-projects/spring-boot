@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -287,6 +288,26 @@ class ExtractCommand extends Command {
 		}
 	}
 
+	private static void mkdirs(File file) throws IOException {
+		if (!file.exists() && !file.mkdirs()) {
+			throw new IOException("Unable to create directory " + file);
+		}
+	}
+
+	private static JarEntry createJarEntry(String location, JarEntry originalEntry) {
+		JarEntry entry = new JarEntry(location);
+		copyFileTime(getLastModifiedTime(originalEntry), entry::setLastModifiedTime);
+		copyFileTime(getLastAccessTime(originalEntry), entry::setLastAccessTime);
+		copyFileTime(getCreationTime(originalEntry), entry::setCreationTime);
+		return entry;
+	}
+
+	private static void copyFileTime(FileTime fileTime, Consumer<FileTime> setter) {
+		if (fileTime != null) {
+			setter.accept(fileTime);
+		}
+	}
+
 	private static FileTime getCreationTime(JarEntry entry) {
 		return (entry.getCreationTime() != null) ? entry.getCreationTime() : entry.getLastModifiedTime();
 	}
@@ -297,29 +318,6 @@ class ExtractCommand extends Command {
 
 	private static FileTime getLastModifiedTime(JarEntry entry) {
 		return (entry.getLastModifiedTime() != null) ? entry.getLastModifiedTime() : entry.getCreationTime();
-	}
-
-	private static void mkdirs(File file) throws IOException {
-		if (!file.exists() && !file.mkdirs()) {
-			throw new IOException("Unable to create directory " + file);
-		}
-	}
-
-	private static JarEntry createJarEntry(String location, JarEntry originalEntry) {
-		JarEntry jarEntry = new JarEntry(location);
-		FileTime lastModifiedTime = getLastModifiedTime(originalEntry);
-		if (lastModifiedTime != null) {
-			jarEntry.setLastModifiedTime(lastModifiedTime);
-		}
-		FileTime lastAccessTime = getLastAccessTime(originalEntry);
-		if (lastAccessTime != null) {
-			jarEntry.setLastAccessTime(lastAccessTime);
-		}
-		FileTime creationTime = getCreationTime(originalEntry);
-		if (creationTime != null) {
-			jarEntry.setCreationTime(creationTime);
-		}
-		return jarEntry;
 	}
 
 	private static void withJarEntries(File file, ThrowingConsumer callback) throws IOException {
