@@ -16,6 +16,7 @@
 
 package org.springframework.boot.jarmode.tools;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,6 +27,7 @@ import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.EnumSet;
 import java.util.Enumeration;
@@ -240,10 +242,17 @@ class ExtractCommand extends Command {
 		String librariesDirectory = getLibrariesDirectory(options);
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
 		mkdirs(file.getParentFile());
-		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file), manifest)) {
+		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
+			ManfiestWriter manfiestWriter = (sourceJarFile) -> {
+				JarEntry entry = createJarEntry(JarFile.MANIFEST_NAME,
+						sourceJarFile.getJarEntry(JarFile.MANIFEST_NAME));
+				output.putNextEntry(entry);
+				manifest.write(new BufferedOutputStream(output));
+				output.closeEntry();
+			};
 			EnumSet<Type> allowedTypes = EnumSet.of(Type.APPLICATION_CLASS_OR_RESOURCE, Type.META_INF);
 			Set<String> writtenEntries = new HashSet<>();
-			withJarEntries(this.context.getArchiveFile(), ((stream, jarEntry) -> {
+			withJarEntries(this.context.getArchiveFile(), manfiestWriter, ((stream, jarEntry) -> {
 				Entry entry = jarStructure.resolve(jarEntry);
 				if (entry != null && allowedTypes.contains(entry.type()) && StringUtils.hasLength(entry.location())) {
 					JarEntry newJarEntry = createJarEntry(entry.location(), jarEntry);
@@ -261,6 +270,15 @@ class ExtractCommand extends Command {
 				}
 			}));
 		}
+		copyTimestamps(this.context.getArchiveFile(), file);
+	}
+
+	private void copyTimestamps(File source, File destination) throws IOException {
+		BasicFileAttributes sourceAttributes = Files.getFileAttributeView(source.toPath(), BasicFileAttributeView.class)
+			.readAttributes();
+		Files.getFileAttributeView(destination.toPath(), BasicFileAttributeView.class)
+			.setTimes(sourceAttributes.lastModifiedTime(), sourceAttributes.lastAccessTime(),
+					sourceAttributes.creationTime());
 	}
 
 	private String getApplicationFilename(Map<Option, String> options) {
@@ -296,9 +314,11 @@ class ExtractCommand extends Command {
 
 	private static JarEntry createJarEntry(String location, JarEntry originalEntry) {
 		JarEntry entry = new JarEntry(location);
-		copyFileTime(getLastModifiedTime(originalEntry), entry::setLastModifiedTime);
-		copyFileTime(getLastAccessTime(originalEntry), entry::setLastAccessTime);
-		copyFileTime(getCreationTime(originalEntry), entry::setCreationTime);
+		if (originalEntry != null) {
+			copyFileTime(getLastModifiedTime(originalEntry), entry::setLastModifiedTime);
+			copyFileTime(getLastAccessTime(originalEntry), entry::setLastAccessTime);
+			copyFileTime(getCreationTime(originalEntry), entry::setCreationTime);
+		}
 		return entry;
 	}
 
@@ -321,7 +341,15 @@ class ExtractCommand extends Command {
 	}
 
 	private static void withJarEntries(File file, ThrowingConsumer callback) throws IOException {
+		withJarEntries(file, null, callback);
+	}
+
+	private static void withJarEntries(File file, ManfiestWriter manfiestWriter, ThrowingConsumer callback)
+			throws IOException {
 		try (JarFile jarFile = new JarFile(file)) {
+			if (manfiestWriter != null) {
+				manfiestWriter.writeManifest(jarFile);
+			}
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
@@ -347,6 +375,13 @@ class ExtractCommand extends Command {
 	private interface EntryNameTransformer {
 
 		String getName(JarEntry entry);
+
+	}
+
+	@FunctionalInterface
+	private interface ManfiestWriter {
+
+		void writeManifest(JarFile sourceJarFile) throws IOException;
 
 	}
 

@@ -24,9 +24,12 @@ import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -77,20 +80,6 @@ class ExtractCommandTests extends AbstractJarModeTests {
 
 	private TestPrintStream run(File archive, String... args) {
 		return runCommand(ExtractCommand::new, archive, args);
-	}
-
-	private void timeAttributes(File file) {
-		try {
-			BasicFileAttributes basicAttributes = Files
-				.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
-				.readAttributes();
-			assertThat(basicAttributes.lastModifiedTime().toInstant().truncatedTo(ChronoUnit.SECONDS))
-				.as("last modified time")
-				.isEqualTo(LAST_MODIFIED_TIME.truncatedTo(ChronoUnit.SECONDS));
-		}
-		catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 	@Nested
@@ -155,10 +144,48 @@ class ExtractCommandTests extends AbstractJarModeTests {
 		@Test
 		void appliesFileTimes() {
 			run(ExtractCommandTests.this.archive);
-			assertThat(file("test/lib/dependency-1.jar")).exists().satisfies(ExtractCommandTests.this::timeAttributes);
-			assertThat(file("test/lib/dependency-2.jar")).exists().satisfies(ExtractCommandTests.this::timeAttributes);
-			assertThat(file("test/lib/dependency-3-SNAPSHOT.jar")).exists()
-				.satisfies(ExtractCommandTests.this::timeAttributes);
+			assertThat(file("test/lib/dependency-1.jar")).exists().satisfies(this::fileTimeAttributes);
+			assertThat(file("test/lib/dependency-2.jar")).exists().satisfies(this::fileTimeAttributes);
+			assertThat(file("test/lib/dependency-3-SNAPSHOT.jar")).exists().satisfies(this::fileTimeAttributes);
+			assertThat(file("test/test.jar")).exists()
+				.satisfies(this::fileTimeAttributes)
+				.satisfies(this::entryTimeAttributes);
+		}
+
+		private void fileTimeAttributes(File file) {
+			try {
+				BasicFileAttributes basicAttributes = Files
+					.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
+					.readAttributes();
+				assertThat(basicAttributes.lastModifiedTime().toInstant().truncatedTo(ChronoUnit.SECONDS))
+					.as("last modified time")
+					.isEqualTo(LAST_MODIFIED_TIME.truncatedTo(ChronoUnit.SECONDS));
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		private void entryTimeAttributes(File file) {
+			try {
+				try (ZipFile archiveZipFile = new ZipFile(ExtractCommandTests.this.archive)) {
+					try (ZipFile zipFile = new ZipFile(file)) {
+						Enumeration<? extends ZipEntry> entries = zipFile.entries();
+						while (entries.hasMoreElements()) {
+							ZipEntry entry = entries.nextElement();
+							ZipEntry archiveEntry = archiveZipFile.getEntry(entry.getName());
+							if (archiveEntry != null) {
+								assertThat(entry.getLastModifiedTime()).isEqualTo(archiveEntry.getLastModifiedTime());
+								assertThat(entry.getLastAccessTime()).isEqualTo(archiveEntry.getLastAccessTime());
+								assertThat(entry.getCreationTime()).isEqualTo(archiveEntry.getCreationTime());
+							}
+						}
+					}
+				}
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 
 		@Test
