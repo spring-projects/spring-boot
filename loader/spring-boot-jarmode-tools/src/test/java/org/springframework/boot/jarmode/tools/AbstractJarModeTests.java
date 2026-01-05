@@ -16,12 +16,14 @@
 
 package org.springframework.boot.jarmode.tools;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.ArrayDeque;
@@ -80,18 +82,13 @@ abstract class AbstractJarModeTests {
 			@Nullable Instant lastAccessTime, String... entries) throws IOException {
 		Assert.state(entries.length % 2 == 0, "Entries must be key value pairs");
 		File file = new File(this.tempDir, "test.jar");
-		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file), manifest)) {
+		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
+			ZipEntry manifestEntry = createEntry(JarFile.MANIFEST_NAME, creationTime, lastModifiedTime, lastAccessTime);
+			jar.putNextEntry(manifestEntry);
+			manifest.write(new BufferedOutputStream(jar));
+			jar.closeEntry();
 			for (int i = 0; i < entries.length; i += 2) {
-				ZipEntry entry = new ZipEntry(entries[i]);
-				if (creationTime != null) {
-					entry.setCreationTime(FileTime.from(creationTime));
-				}
-				if (lastModifiedTime != null) {
-					entry.setLastModifiedTime(FileTime.from(lastModifiedTime));
-				}
-				if (lastAccessTime != null) {
-					entry.setLastAccessTime(FileTime.from(lastAccessTime));
-				}
+				ZipEntry entry = createEntry(entries[i], creationTime, lastModifiedTime, lastAccessTime);
 				jar.putNextEntry(entry);
 				String resource = entries[i + 1];
 				if (resource != null) {
@@ -103,7 +100,28 @@ abstract class AbstractJarModeTests {
 				jar.closeEntry();
 			}
 		}
+		Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
+			.setTimes(asFileTime(lastModifiedTime), asFileTime(lastAccessTime), asFileTime(creationTime));
 		return file;
+	}
+
+	private @Nullable FileTime asFileTime(@Nullable Instant instant) {
+		return (instant != null) ? FileTime.from(instant) : null;
+	}
+
+	private ZipEntry createEntry(String name, @Nullable Instant creationTime, @Nullable Instant lastModifiedTime,
+			@Nullable Instant lastAccessTime) {
+		ZipEntry entry = new ZipEntry(name);
+		if (creationTime != null) {
+			entry.setCreationTime(FileTime.from(creationTime));
+		}
+		if (lastModifiedTime != null) {
+			entry.setLastModifiedTime(FileTime.from(lastModifiedTime));
+		}
+		if (lastAccessTime != null) {
+			entry.setLastAccessTime(FileTime.from(lastAccessTime));
+		}
+		return entry;
 	}
 
 	TestPrintStream runCommand(CommandFactory<?> commandFactory, File archive, String... arguments) {
