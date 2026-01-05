@@ -43,6 +43,8 @@ import org.springframework.boot.loader.launch.Archive.Entry;
 import org.springframework.boot.loader.log.DebugLogger;
 import org.springframework.boot.loader.net.protocol.jar.JarUrl;
 
+import static java.util.Collections.emptySet;
+
 /**
  * {@link Launcher} for archives with user-configured classpath and main class through a
  * properties file.
@@ -507,7 +509,7 @@ public class PropertiesLauncher extends Launcher {
 		boolean isJustArchive = isArchive(path);
 		if (!path.equals("/") && path.startsWith("/")
 				|| (this.archive.isExploded() && this.archive.getRootDirectory().equals(this.homeDirectory))) {
-			return Collections.emptySet();
+			return emptySet();
 		}
 		File file = null;
 		if (isJustArchive) {

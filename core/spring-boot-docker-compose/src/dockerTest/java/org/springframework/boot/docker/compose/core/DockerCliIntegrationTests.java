@@ -45,6 +45,7 @@ import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -74,7 +75,7 @@ class DockerCliIntegrationTests {
 		File composeFile = createComposeFile("redis-compose.yaml");
 		String projectName = UUID.randomUUID().toString();
 		DockerCli cli = new DockerCli(null, new DockerComposeOptions(DockerComposeFile.of(composeFile),
-				Collections.emptySet(), List.of("--project-name=" + projectName)));
+				emptySet(), List.of("--project-name=" + projectName)));
 		try {
 			// Verify that no services are running (this is a fresh compose project)
 			List<DockerCliComposePsResponse> ps = cli.run(new ComposePs());

@@ -23,7 +23,6 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Collections;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -32,6 +31,7 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -86,7 +86,7 @@ class FilePermissionsTests {
 
 	@Test
 	void posixPermissionsToUmaskWithEmptyPermissions() {
-		Set<PosixFilePermission> permissions = Collections.emptySet();
+		Set<PosixFilePermission> permissions = emptySet();
 		assertThat(FilePermissions.posixPermissionsToUmask(permissions)).isZero();
 	}
 

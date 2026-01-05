@@ -43,6 +43,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Provides access to environment profiles that have either been set directly on the
  * {@link Environment} or will be set based on configuration data property values.
@@ -103,7 +105,7 @@ public class Profiles implements Iterable<String> {
 			Type type) {
 		String environmentPropertyValue = environment.getProperty(type.getName());
 		Set<String> environmentPropertyProfiles = (!StringUtils.hasLength(environmentPropertyValue))
-				? Collections.emptySet()
+				? emptySet()
 				: StringUtils.commaDelimitedListToSet(StringUtils.trimAllWhitespace(environmentPropertyValue));
 		validator.validate(environmentPropertyProfiles,
 				() -> "Invalid profile property value found in Environment under '%s'".formatted(type.getName()));
@@ -227,7 +229,7 @@ public class Profiles implements Iterable<String> {
 	private enum Type {
 
 		ACTIVE(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, Environment::getActiveProfiles, true,
-				Collections.emptySet()),
+				emptySet()),
 
 		DEFAULT(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, Environment::getDefaultProfiles, false,
 				Collections.singleton("default"));

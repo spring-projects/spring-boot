@@ -17,7 +17,6 @@
 package org.springframework.boot.batch.autoconfigure;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +37,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -146,7 +146,7 @@ class BatchJobLauncherAutoConfigurationTests {
 
 				@Override
 				public Collection<String> getStepNames() {
-					return Collections.emptySet();
+					return emptySet();
 				}
 
 				@Override
@@ -183,7 +183,7 @@ class BatchJobLauncherAutoConfigurationTests {
 
 				@Override
 				public Collection<String> getStepNames() {
-					return Collections.emptySet();
+					return emptySet();
 				}
 
 				@Override
@@ -214,7 +214,7 @@ class BatchJobLauncherAutoConfigurationTests {
 
 				@Override
 				public Collection<String> getStepNames() {
-					return Collections.emptySet();
+					return emptySet();
 				}
 
 				@Override
@@ -260,7 +260,7 @@ class BatchJobLauncherAutoConfigurationTests {
 
 				@Override
 				public Collection<String> getStepNames() {
-					return Collections.emptySet();
+					return emptySet();
 				}
 
 				@Override

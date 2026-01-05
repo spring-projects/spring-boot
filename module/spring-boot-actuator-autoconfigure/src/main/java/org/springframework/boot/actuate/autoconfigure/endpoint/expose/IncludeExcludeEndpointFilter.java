@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.expose;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +32,8 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+
+import static java.util.Collections.emptySet;
 
 /**
  * {@link EndpointFilter} that will filter endpoints based on {@code include} and
@@ -156,7 +157,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		}
 
 		EndpointPatterns(@Nullable Collection<String> patterns) {
-			patterns = (patterns != null) ? patterns : Collections.emptySet();
+			patterns = (patterns != null) ? patterns : emptySet();
 			boolean matchesAll = false;
 			Set<EndpointId> endpointIds = new LinkedHashSet<>();
 			for (String pattern : patterns) {

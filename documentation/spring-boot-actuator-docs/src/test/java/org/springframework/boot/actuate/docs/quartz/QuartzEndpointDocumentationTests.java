@@ -67,6 +67,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -515,7 +516,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 		@Bean
 		QuartzEndpointWebExtension endpointWebExtension(QuartzEndpoint endpoint) {
-			return new QuartzEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
+			return new QuartzEndpointWebExtension(endpoint, Show.ALWAYS, emptySet());
 		}
 
 	}

@@ -37,6 +37,8 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.jspecify.annotations.Nullable;
 
+import static java.util.Collections.emptySet;
+
 /**
  * The properties that are written into the {@code build-info.properties} file.
  *
@@ -148,7 +150,7 @@ public abstract class BuildInfoProperties implements Serializable {
 	}
 
 	private <T> @Nullable T getIfNotExcluded(Property<T> property, String name, Supplier<@Nullable T> defaultValue) {
-		if (this.excludes.getOrElse(Collections.emptySet()).contains(name)) {
+		if (this.excludes.getOrElse(emptySet()).contains(name)) {
 			return null;
 		}
 		if (property.isPresent()) {
@@ -172,7 +174,7 @@ public abstract class BuildInfoProperties implements Serializable {
 
 	private Map<String, Object> applyExclusions(Map<String, Object> input) {
 		Map<String, Object> output = new HashMap<>();
-		Set<String> exclusions = this.excludes.getOrElse(Collections.emptySet());
+		Set<String> exclusions = this.excludes.getOrElse(emptySet());
 		input.forEach((key, value) -> {
 			boolean isExcluded = exclusions.contains(key);
 			if (!isExcluded) {

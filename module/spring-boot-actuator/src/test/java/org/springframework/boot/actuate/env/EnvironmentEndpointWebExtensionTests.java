@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -50,7 +51,7 @@ class EnvironmentEndpointWebExtensionTests {
 
 	@Test
 	void whenShowValuesIsNever() {
-		this.webExtension = new EnvironmentEndpointWebExtension(this.delegate, Show.NEVER, Collections.emptySet());
+		this.webExtension = new EnvironmentEndpointWebExtension(this.delegate, Show.NEVER, emptySet());
 		this.webExtension.environment(SecurityContext.NONE, null);
 		then(this.delegate).should().getEnvironmentDescriptor(null, false);
 		verifyPrefixed(SecurityContext.NONE, false);
@@ -58,7 +59,7 @@ class EnvironmentEndpointWebExtensionTests {
 
 	@Test
 	void whenShowValuesIsAlways() {
-		this.webExtension = new EnvironmentEndpointWebExtension(this.delegate, Show.ALWAYS, Collections.emptySet());
+		this.webExtension = new EnvironmentEndpointWebExtension(this.delegate, Show.ALWAYS, emptySet());
 		this.webExtension.environment(SecurityContext.NONE, null);
 		then(this.delegate).should().getEnvironmentDescriptor(null, true);
 		verifyPrefixed(SecurityContext.NONE, true);
@@ -69,7 +70,7 @@ class EnvironmentEndpointWebExtensionTests {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
 		this.webExtension = new EnvironmentEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED,
-				Collections.emptySet());
+				emptySet());
 		this.webExtension.environment(securityContext, null);
 		then(this.delegate).should().getEnvironmentDescriptor(null, true);
 		verifyPrefixed(securityContext, true);
@@ -80,7 +81,7 @@ class EnvironmentEndpointWebExtensionTests {
 	void whenShowValuesIsWhenAuthorizedAndSecurityContextIsNotAuthorized() {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		this.webExtension = new EnvironmentEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED,
-				Collections.emptySet());
+				emptySet());
 		this.webExtension.environment(securityContext, null);
 		then(this.delegate).should().getEnvironmentDescriptor(null, false);
 		verifyPrefixed(securityContext, false);

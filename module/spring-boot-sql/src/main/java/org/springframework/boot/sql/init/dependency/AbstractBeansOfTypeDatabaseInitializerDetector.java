@@ -16,10 +16,11 @@
 
 package org.springframework.boot.sql.init.dependency;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
+import static java.util.Collections.emptySet;
 
 /**
  * Base class for {@link DatabaseInitializerDetector DatabaseInitializerDetectors} that
@@ -37,7 +38,7 @@ public abstract class AbstractBeansOfTypeDatabaseInitializerDetector implements 
 			return new BeansOfTypeDetector(types).detect(beanFactory);
 		}
 		catch (Throwable ex) {
-			return Collections.emptySet();
+			return emptySet();
 		}
 	}
 

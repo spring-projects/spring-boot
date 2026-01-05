@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.context.properties.ConfigurationProperti
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -51,7 +52,7 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 	@Test
 	void whenShowValuesIsNever() {
 		this.webExtension = new ConfigurationPropertiesReportEndpointWebExtension(this.delegate, Show.NEVER,
-				Collections.emptySet());
+				emptySet());
 		this.webExtension.configurationProperties(SecurityContext.NONE);
 		then(this.delegate).should().getConfigurationProperties(false);
 		verifyPrefixed(SecurityContext.NONE, false);
@@ -60,7 +61,7 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 	@Test
 	void whenShowValuesIsAlways() {
 		this.webExtension = new ConfigurationPropertiesReportEndpointWebExtension(this.delegate, Show.ALWAYS,
-				Collections.emptySet());
+				emptySet());
 		this.webExtension.configurationProperties(SecurityContext.NONE);
 		then(this.delegate).should().getConfigurationProperties(true);
 		verifyPrefixed(SecurityContext.NONE, true);
@@ -71,7 +72,7 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
 		this.webExtension = new ConfigurationPropertiesReportEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED,
-				Collections.emptySet());
+				emptySet());
 		this.webExtension.configurationProperties(securityContext);
 		then(this.delegate).should().getConfigurationProperties(true);
 		verifyPrefixed(securityContext, true);
@@ -82,7 +83,7 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 	void whenShowValuesIsWhenAuthorizedAndSecurityContextIsNotAuthorized() {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		this.webExtension = new ConfigurationPropertiesReportEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED,
-				Collections.emptySet());
+				emptySet());
 		this.webExtension.configurationProperties(securityContext);
 		then(this.delegate).should().getConfigurationProperties(false);
 		verifyPrefixed(securityContext, false);

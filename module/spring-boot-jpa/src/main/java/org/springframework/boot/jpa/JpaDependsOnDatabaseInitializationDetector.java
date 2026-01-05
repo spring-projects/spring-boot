@@ -17,7 +17,6 @@
 package org.springframework.boot.jpa;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +26,8 @@ import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDependsOn
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+
+import static java.util.Collections.emptySet;
 
 /**
  * {@link DependsOnDatabaseInitializationDetector} for JPA.
@@ -45,7 +46,7 @@ class JpaDependsOnDatabaseInitializationDetector extends AbstractBeansOfTypeDepe
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		boolean postpone = this.environment.getProperty("spring.jpa.defer-datasource-initialization", boolean.class,
 				false);
-		return postpone ? Collections.emptySet()
+		return postpone ? emptySet()
 				: new HashSet<>(Arrays.asList(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class));
 	}
 

@@ -30,6 +30,8 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * A {@link DatabaseInitializerDetector} for JPA.
  *
@@ -47,7 +49,7 @@ class JpaDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitiali
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		boolean deferred = this.environment.getProperty("spring.jpa.defer-datasource-initialization", boolean.class,
 				false);
-		return deferred ? Collections.singleton(EntityManagerFactory.class) : Collections.emptySet();
+		return deferred ? Collections.singleton(EntityManagerFactory.class) : emptySet();
 	}
 
 	@Override

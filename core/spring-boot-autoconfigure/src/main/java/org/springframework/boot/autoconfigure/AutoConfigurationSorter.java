@@ -37,6 +37,8 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Sort {@link EnableAutoConfiguration auto-configuration} classes into priority order by
  * reading {@link AutoConfigureOrder @AutoConfigureOrder},
@@ -226,7 +228,7 @@ class AutoConfigurationSorter {
 
 		private Set<String> getSet(String metadataKey) {
 			Assert.state(this.autoConfigurationMetadata != null, "'autoConfigurationMetadata' must not be null");
-			return this.autoConfigurationMetadata.getSet(this.className, metadataKey, Collections.emptySet());
+			return this.autoConfigurationMetadata.getSet(this.className, metadataKey, emptySet());
 		}
 
 		private Set<String> applyReplacements(Set<String> values) {
@@ -265,7 +267,7 @@ class AutoConfigurationSorter {
 			Map<String, @Nullable Object> attributes = getAnnotationMetadata()
 				.getAnnotationAttributes(annotation.getName(), true);
 			if (attributes == null) {
-				return Collections.emptySet();
+				return emptySet();
 			}
 			Set<String> result = new LinkedHashSet<>();
 			String[] value = (String[]) attributes.get("value");

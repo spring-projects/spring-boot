@@ -72,6 +72,7 @@ import org.springframework.scheduling.quartz.DelegatingJob;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.Assertions.within;
@@ -196,7 +197,7 @@ class QuartzEndpointTests {
 	@Test
 	void quartzJobGroupSummaryWithEmptyGroup() throws SchedulerException {
 		given(this.scheduler.getJobGroupNames()).willReturn(Collections.singletonList("samples"));
-		given(this.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("samples"))).willReturn(Collections.emptySet());
+		given(this.scheduler.getJobKeys(GroupMatcher.jobGroupEquals("samples"))).willReturn(emptySet());
 		QuartzJobGroupSummaryDescriptor summary = this.endpoint.quartzJobGroupSummary("samples");
 		assertThat(summary).isNotNull();
 		assertThat(summary.getGroup()).isEqualTo("samples");
@@ -230,7 +231,7 @@ class QuartzEndpointTests {
 	void quartzTriggerGroupSummaryWithEmptyGroup() throws SchedulerException {
 		given(this.scheduler.getTriggerGroupNames()).willReturn(Collections.singletonList("samples"));
 		given(this.scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals("samples")))
-			.willReturn(Collections.emptySet());
+			.willReturn(emptySet());
 		QuartzTriggerGroupSummaryDescriptor summary = this.endpoint.quartzTriggerGroupSummary("samples");
 		assertThat(summary).isNotNull();
 		assertThat(summary.getGroup()).isEqualTo("samples");

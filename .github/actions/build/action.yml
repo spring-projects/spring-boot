@@ -69,6 +69,16 @@ runs:
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
       run: ./gradlew build
+    - name: Sanity Check
+      id: sanity
+      if: ${{ inputs.publish == 'false' }}
+      shell: bash
+      env:
+        COMMERCIAL_RELEASE_REPO_URL: ${{ inputs.commercial-release-repository-url }}
+        COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
+        COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
+        COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
+      run: ./gradlew rewriteDryRun -Dorg.gradle.jvmargs=-Xmx12G
     - name: Publish
       id: publish
       if: ${{ inputs.publish == 'true' }}

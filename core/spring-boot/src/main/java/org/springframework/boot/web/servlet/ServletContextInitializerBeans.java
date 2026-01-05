@@ -51,6 +51,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * A collection {@link ServletContextInitializer}s obtained from a
  * {@link ListableBeanFactory}. Includes all {@link ServletContextInitializer} beans and
@@ -426,10 +428,10 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			// If it has been directly seen, or the implemented ServletContextInitializer
 			// has been seen already
 			if (type != ServletContextInitializer.class
-					&& this.seen.getOrDefault(type, Collections.emptySet()).contains(object)) {
+					&& this.seen.getOrDefault(type, emptySet()).contains(object)) {
 				return true;
 			}
-			return this.seen.getOrDefault(ServletContextInitializer.class, Collections.emptySet()).contains(object);
+			return this.seen.getOrDefault(ServletContextInitializer.class, emptySet()).contains(object);
 		}
 
 		static Seen empty() {

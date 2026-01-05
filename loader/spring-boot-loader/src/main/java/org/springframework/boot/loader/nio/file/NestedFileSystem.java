@@ -35,6 +35,8 @@ import java.util.Set;
 
 import org.springframework.boot.loader.net.protocol.nested.NestedLocation;
 
+import static java.util.Collections.emptySet;
+
 /**
  * {@link FileSystem} implementation for {@link NestedLocation nested} jar files.
  *
@@ -158,13 +160,13 @@ class NestedFileSystem extends FileSystem {
 	@Override
 	public Iterable<Path> getRootDirectories() {
 		assertNotClosed();
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 	@Override
 	public Iterable<FileStore> getFileStores() {
 		assertNotClosed();
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 	@Override

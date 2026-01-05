@@ -17,7 +17,6 @@
 package org.springframework.boot.persistence.autoconfigure;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +29,8 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+
+import static java.util.Collections.emptySet;
 
 /**
  * An entity scanner that searches the classpath from an {@link EntityScan @EntityScan}
@@ -61,7 +62,7 @@ public class EntityScanner {
 	public final Set<Class<?>> scan(Class<? extends Annotation>... annotationTypes) throws ClassNotFoundException {
 		List<String> packages = getPackages();
 		if (packages.isEmpty()) {
-			return Collections.emptySet();
+			return emptySet();
 		}
 		ClassPathScanningCandidateComponentProvider scanner = createClassPathScanningCandidateComponentProvider(
 				this.context);

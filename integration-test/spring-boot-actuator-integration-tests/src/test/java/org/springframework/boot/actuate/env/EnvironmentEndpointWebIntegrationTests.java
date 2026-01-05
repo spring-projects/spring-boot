@@ -32,6 +32,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static java.util.Collections.emptySet;
+
 class EnvironmentEndpointWebIntegrationTests {
 
 	private ConfigurableApplicationContext context;
@@ -147,7 +149,7 @@ class EnvironmentEndpointWebIntegrationTests {
 
 		@Bean
 		EnvironmentEndpointWebExtension environmentEndpointWebExtension(EnvironmentEndpoint endpoint) {
-			return new EnvironmentEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
+			return new EnvironmentEndpointWebExtension(endpoint, Show.ALWAYS, emptySet());
 		}
 
 	}

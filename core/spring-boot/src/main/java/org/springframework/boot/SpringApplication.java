@@ -108,6 +108,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.function.ThrowingConsumer;
 import org.springframework.util.function.ThrowingSupplier;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Class that can be used to bootstrap and launch a Spring application from a Java main
  * method. By default class will perform the following steps to bootstrap your
@@ -234,7 +236,7 @@ public class SpringApplication {
 
 	private final List<BootstrapRegistryInitializer> bootstrapRegistryInitializers;
 
-	private Set<String> additionalProfiles = Collections.emptySet();
+	private Set<String> additionalProfiles = emptySet();
 
 	private boolean isCustomEnvironment;
 
@@ -1431,7 +1433,7 @@ public class SpringApplication {
 	 */
 	public static SpringApplication.Augmented from(ThrowingConsumer<String[]> main) {
 		Assert.notNull(main, "'main' must not be null");
-		return new Augmented(main, Collections.emptySet(), Collections.emptySet());
+		return new Augmented(main, emptySet(), emptySet());
 	}
 
 	/**

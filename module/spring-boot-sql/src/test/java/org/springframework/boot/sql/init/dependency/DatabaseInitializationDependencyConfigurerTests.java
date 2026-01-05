@@ -51,6 +51,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -243,7 +244,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
-			return Collections.emptySet();
+			return emptySet();
 		}
 
 	}

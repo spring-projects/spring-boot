@@ -16,12 +16,13 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.IntFunction;
 
 import org.springframework.boot.loader.zip.ZipContent;
+
+import static java.util.Collections.emptySet;
 
 /**
  * Info obtained from a {@link ZipContent} instance relating to the directories listed
@@ -31,7 +32,7 @@ import org.springframework.boot.loader.zip.ZipContent;
  */
 final class MetaInfVersionsInfo {
 
-	static final MetaInfVersionsInfo NONE = new MetaInfVersionsInfo(Collections.emptySet());
+	static final MetaInfVersionsInfo NONE = new MetaInfVersionsInfo(emptySet());
 
 	private static final String META_INF_VERSIONS = NestedJarFile.META_INF_VERSIONS;
 

@@ -35,6 +35,8 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.CollectionUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Wrapper around {@code docker} and {@code docker-compose} command line tools.
  *
@@ -212,7 +214,7 @@ class DockerCli {
 		DockerComposeOptions(@Nullable DockerComposeFile composeFile, @Nullable Set<String> activeProfiles,
 				@Nullable List<String> arguments) {
 			this.composeFile = composeFile;
-			this.activeProfiles = (activeProfiles != null) ? activeProfiles : Collections.emptySet();
+			this.activeProfiles = (activeProfiles != null) ? activeProfiles : emptySet();
 			this.arguments = (arguments != null) ? arguments : Collections.emptyList();
 		}
 

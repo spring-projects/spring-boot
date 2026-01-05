@@ -16,10 +16,11 @@
 
 package org.springframework.boot.configurationprocessor.fieldvalues.javac;
 
-import java.util.Collections;
 import java.util.Set;
 
 import javax.lang.model.element.Modifier;
+
+import static java.util.Collections.emptySet;
 
 /**
  * Reflection based access to {@code com.sun.source.tree.VariableTree}.
@@ -49,7 +50,7 @@ class VariableTree extends ReflectionWrapper {
 	Set<Modifier> getModifierFlags() throws Exception {
 		Object modifiers = findMethod("getModifiers").invoke(getInstance());
 		if (modifiers == null) {
-			return Collections.emptySet();
+			return emptySet();
 		}
 		return (Set<Modifier>) findMethod(findClass("com.sun.source.tree.ModifiersTree"), "getFlags").invoke(modifiers);
 	}

@@ -53,6 +53,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static java.util.Collections.emptySet;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -311,7 +312,7 @@ class QuartzEndpointWebIntegrationTests {
 
 		@Bean
 		QuartzEndpointWebExtension quartzEndpointWebExtension(QuartzEndpoint endpoint) {
-			return new QuartzEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
+			return new QuartzEndpointWebExtension(endpoint, Show.ALWAYS, emptySet());
 		}
 
 		private void mockJobs(Scheduler scheduler, JobDetail... jobs) throws SchedulerException {

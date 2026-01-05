@@ -48,6 +48,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * {@link ConfigDataLocationResolver} for standard locations.
  *
@@ -228,7 +230,7 @@ public class StandardConfigDataLocationResolver
 			}
 		}
 		if (configDataLocation.isOptional()) {
-			return Collections.emptySet();
+			return emptySet();
 		}
 		if (configDataLocation.hasPrefix(PREFIX) || configDataLocation.hasPrefix(ResourceUtils.FILE_URL_PREFIX)
 				|| configDataLocation.hasPrefix(ResourceUtils.CLASSPATH_URL_PREFIX)
@@ -289,7 +291,7 @@ public class StandardConfigDataLocationResolver
 		String directory = reference.getDirectory();
 		Assert.state(directory != null, "'directory' must not be null");
 		Resource resource = this.resourceLoader.getResource(directory);
-		return (resource instanceof ClassPathResource || !resource.exists()) ? Collections.emptySet()
+		return (resource instanceof ClassPathResource || !resource.exists()) ? emptySet()
 				: Collections.singleton(new StandardConfigDataResource(reference, resource, true));
 	}
 

@@ -1,0 +1,19 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: org.springframework.boot.openrewrite.SanityCheck
+displayName: Apply all common best practices
+description: Comprehensive code quality recipe combining modernization, security, and best practices.
+recipeList:
+  - org.openrewrite.java.testing.assertj.StaticImports # https://github.com/spring-projects/spring-boot/pull/48630 https://github.com/openrewrite/rewrite-testing-frameworks/issues/885
+  - org.openrewrite.java.testing.junit5.StaticImports
+  - org.springframework.boot.openrewrite.UseStaticImport
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: org.springframework.boot.openrewrite.UseStaticImport
+displayName: Use static import
+recipeList:
+  - org.openrewrite.java.UseStaticImport:
+      methodPattern: org.assertj.core.api.Assertions *(..)
+  - org.openrewrite.java.UseStaticImport:
+      methodPattern: java.util.Collections emptySet()
+---

@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -115,7 +116,7 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 		@Bean
 		ConfigurationPropertiesReportEndpointWebExtension endpointWebExtension(
 				ConfigurationPropertiesReportEndpoint endpoint) {
-			return new ConfigurationPropertiesReportEndpointWebExtension(endpoint, Show.ALWAYS, Collections.emptySet());
+			return new ConfigurationPropertiesReportEndpointWebExtension(endpoint, Show.ALWAYS, emptySet());
 		}
 
 		@Bean

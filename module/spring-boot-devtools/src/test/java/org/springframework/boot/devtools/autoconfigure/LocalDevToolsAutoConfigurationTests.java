@@ -57,6 +57,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
@@ -130,7 +131,7 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(ConfigWithMockLiveReload.class, properties));
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
-		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), false);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, emptySet(), false);
 		this.context.publishEvent(event);
 		then(server).should().triggerReload();
 	}
@@ -142,7 +143,7 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(ConfigWithMockLiveReload.class, properties));
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		reset(server);
-		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), true);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, emptySet(), true);
 		this.context.publishEvent(event);
 		then(server).should(never()).triggerReload();
 	}
@@ -159,7 +160,7 @@ class LocalDevToolsAutoConfigurationTests {
 	@Test
 	void restartTriggeredOnClassPathChangeWithRestart(Restarter restarter) throws Exception {
 		this.context = getContext(() -> initializeAndRun(Config.class));
-		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), true);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, emptySet(), true);
 		this.context.publishEvent(event);
 		then(restarter).should().restart(any(FailureHandler.class));
 	}
@@ -167,7 +168,7 @@ class LocalDevToolsAutoConfigurationTests {
 	@Test
 	void restartNotTriggeredOnClassPathChangeWithRestart(Restarter restarter) throws Exception {
 		this.context = getContext(() -> initializeAndRun(Config.class));
-		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, Collections.emptySet(), false);
+		ClassPathChangedEvent event = new ClassPathChangedEvent(this.context, emptySet(), false);
 		this.context.publishEvent(event);
 		then(restarter).should(never()).restart();
 	}

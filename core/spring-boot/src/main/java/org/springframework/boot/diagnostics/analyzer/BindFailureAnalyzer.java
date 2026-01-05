@@ -17,7 +17,6 @@
 package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,6 +31,8 @@ import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.util.StringUtils;
+
+import static java.util.Collections.emptySet;
 
 /**
  * An {@link AbstractFailureAnalyzer} that performs analysis of failures caused by a
@@ -127,7 +128,7 @@ class BindFailureAnalyzer extends AbstractFailureAnalyzer<BindException> {
 				return Stream.of(enumConstants).map(Object::toString).collect(Collectors.toCollection(TreeSet::new));
 			}
 		}
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 }

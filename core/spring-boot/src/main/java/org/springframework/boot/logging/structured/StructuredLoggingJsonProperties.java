@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.structured;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,6 +39,8 @@ import org.springframework.boot.logging.StandardStackTracePrinter;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+
+import static java.util.Collections.emptySet;
 
 /**
  * Properties that can be used to customize structured logging JSON.
@@ -68,7 +69,7 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		this.add = add;
 		this.stackTrace = stackTrace;
 		this.context = context;
-		this.customizer = (customizer != null) ? customizer : Collections.emptySet();
+		this.customizer = (customizer != null) ? customizer : emptySet();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

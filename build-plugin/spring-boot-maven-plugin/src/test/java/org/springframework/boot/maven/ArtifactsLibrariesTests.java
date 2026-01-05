@@ -41,6 +41,7 @@ import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
 import org.springframework.boot.loader.tools.LibraryScope;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
@@ -200,7 +201,7 @@ class ArtifactsLibrariesTests {
 		MavenProject mavenProject = mock(MavenProject.class);
 		given(mavenProject.getArtifact()).willReturn(artifact);
 		this.artifacts = Collections.singleton(artifact);
-		new ArtifactsLibraries(this.artifacts, Collections.emptySet(), Collections.singleton(mavenProject), null,
+		new ArtifactsLibraries(this.artifacts, emptySet(), Collections.singleton(mavenProject), null,
 				mock(Log.class))
 			.doWithLibraries((library) -> assertThat(library.isIncluded()).isFalse());
 	}

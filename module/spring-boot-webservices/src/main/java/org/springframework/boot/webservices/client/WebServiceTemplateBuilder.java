@@ -40,6 +40,8 @@ import org.springframework.ws.client.support.destination.DestinationProvider;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.transport.WebServiceMessageSender;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Builder that can be used to configure and create a {@link WebServiceTemplate}. Provides
  * convenience methods to register {@link #messageSenders(WebServiceMessageSender...)
@@ -530,7 +532,7 @@ public class WebServiceTemplateBuilder {
 	}
 
 	private static <T> Set<T> append(@Nullable Set<T> set, @Nullable Collection<? extends T> additions) {
-		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
+		Set<T> result = new LinkedHashSet<>((set != null) ? set : emptySet());
 		result.addAll((additions != null) ? additions : Collections.emptyList());
 		return Collections.unmodifiableSet(result);
 	}

@@ -49,6 +49,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
@@ -824,7 +825,7 @@ class MapBinderTests {
 
 			@Override
 			public Set<Entry<String, Object>> entrySet() {
-				return Collections.emptySet();
+				return emptySet();
 			}
 
 			String getSource() {

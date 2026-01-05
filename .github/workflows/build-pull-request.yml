@@ -13,6 +13,9 @@ jobs:
       - name: Build
         id: build
         uses: ./.github/actions/build
+      - name: Sanity
+        id: sanity
+        uses: ./.github/actions/build
       - name: Print JVM Thread Dumps When Cancelled
         if: cancelled()
         uses: ./.github/actions/print-jvm-thread-dumps

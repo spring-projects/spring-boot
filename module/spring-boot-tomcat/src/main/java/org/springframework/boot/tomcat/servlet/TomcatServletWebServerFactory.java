@@ -27,7 +27,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -92,6 +91,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * {@link ConfigurableServletWebServerFactory} that can be used to create
  * {@link TomcatWebServer}s. Can be initialized using Spring's
@@ -122,7 +123,7 @@ public class TomcatServletWebServerFactory extends TomcatWebServerFactory
 
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
-	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
+	private static final Set<Class<?>> NO_CLASSES = emptySet();
 
 	private final ServletWebServerSettings settings = new ServletWebServerSettings();
 

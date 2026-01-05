@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurationImportEvent;
 import org.springframework.boot.autoconfigure.AutoConfigurationImportListener;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -61,7 +62,7 @@ class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	@Test
 	void onAutoConfigurationImportEventShouldRecordCandidates() {
 		List<String> candidateConfigurations = Collections.singletonList("Test");
-		Set<String> exclusions = Collections.emptySet();
+		Set<String> exclusions = emptySet();
 		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, candidateConfigurations,
 				exclusions);
 		this.listener.onAutoConfigurationImportEvent(event);
@@ -83,7 +84,7 @@ class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 	@Test
 	void onAutoConfigurationImportEventShouldApplyExclusionsGlobally() {
 		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, Arrays.asList("First", "Second"),
-				Collections.emptySet());
+				emptySet());
 		this.listener.onAutoConfigurationImportEvent(event);
 		AutoConfigurationImportEvent anotherEvent = new AutoConfigurationImportEvent(this, Collections.emptyList(),
 				Collections.singleton("First"));
@@ -99,7 +100,7 @@ class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 				Collections.singleton("First"));
 		this.listener.onAutoConfigurationImportEvent(excludeEvent);
 		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, Arrays.asList("First", "Second"),
-				Collections.emptySet());
+				emptySet());
 		this.listener.onAutoConfigurationImportEvent(event);
 		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);
 		assertThat(report.getUnconditionalClasses()).containsExactly("Second");

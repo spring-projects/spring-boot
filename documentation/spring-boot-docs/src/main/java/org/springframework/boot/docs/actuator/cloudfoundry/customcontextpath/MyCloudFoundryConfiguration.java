@@ -17,7 +17,6 @@
 package org.springframework.boot.docs.actuator.cloudfoundry.customcontextpath;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import jakarta.servlet.GenericServlet;
 import jakarta.servlet.Servlet;
@@ -35,6 +34,8 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static java.util.Collections.emptySet;
+
 @Configuration(proxyBeanMethods = false)
 public class MyCloudFoundryConfiguration {
 
@@ -49,7 +50,7 @@ public class MyCloudFoundryConfiguration {
 				child.addLifecycleListener(new Tomcat.FixContextListener());
 				child.setPath("/cloudfoundryapplication");
 				ServletContainerInitializer initializer = getServletContextInitializer(getContextPath());
-				child.addServletContainerInitializer(initializer, Collections.emptySet());
+				child.addServletContainerInitializer(initializer, emptySet());
 				child.setCrossContext(true);
 				host.addChild(child);
 			}

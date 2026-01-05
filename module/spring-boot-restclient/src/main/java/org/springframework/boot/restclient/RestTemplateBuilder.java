@@ -47,6 +47,8 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Builder that can be used to configure and create a {@link RestTemplate}. Provides
  * convenience methods to register {@link #messageConverters(HttpMessageConverter...)
@@ -114,7 +116,7 @@ public class RestTemplateBuilder {
 		this.basicAuthentication = null;
 		this.defaultHeaders = Collections.emptyMap();
 		this.customizers = copiedSetOf(customizers);
-		this.requestCustomizers = Collections.emptySet();
+		this.requestCustomizers = emptySet();
 	}
 
 	private RestTemplateBuilder(HttpClientSettings clientSettings, boolean detectRequestFactory,
@@ -713,7 +715,7 @@ public class RestTemplateBuilder {
 
 	private static <T> Set<T> append(@Nullable Collection<? extends T> collection,
 			@Nullable Collection<? extends T> additions) {
-		Set<T> result = new LinkedHashSet<>((collection != null) ? collection : Collections.emptySet());
+		Set<T> result = new LinkedHashSet<>((collection != null) ? collection : emptySet());
 		if (additions != null) {
 			result.addAll(additions);
 		}

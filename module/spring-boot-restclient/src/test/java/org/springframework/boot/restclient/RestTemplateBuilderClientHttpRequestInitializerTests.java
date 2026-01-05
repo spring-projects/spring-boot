@@ -31,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -49,7 +50,7 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 	@Test
 	void createRequestWhenHasBasicAuthAndNoAuthHeaderAddsHeader() {
 		new RestTemplateBuilderClientHttpRequestInitializer(new BasicAuthentication("spring", "boot", null),
-				Collections.emptyMap(), Collections.emptySet())
+				Collections.emptyMap(), emptySet())
 			.initialize(this.request);
 		assertThat(this.request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic c3ByaW5nOmJvb3Q=");
 	}
@@ -58,7 +59,7 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 	void createRequestWhenHasBasicAuthAndExistingAuthHeaderDoesNotAddHeader() {
 		this.request.getHeaders().setBasicAuth("boot", "spring");
 		new RestTemplateBuilderClientHttpRequestInitializer(new BasicAuthentication("spring", "boot", null),
-				Collections.emptyMap(), Collections.emptySet())
+				Collections.emptyMap(), emptySet())
 			.initialize(this.request);
 		assertThat(this.request.getHeaders().get(HttpHeaders.AUTHORIZATION)).doesNotContain("Basic c3ByaW5nOmJvb3Q=");
 	}
@@ -70,7 +71,7 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 		defaultHeaders.put("one", Collections.singletonList("1"));
 		defaultHeaders.put("two", Arrays.asList("2", "3"));
 		defaultHeaders.put("three", Collections.singletonList("4"));
-		new RestTemplateBuilderClientHttpRequestInitializer(null, defaultHeaders, Collections.emptySet())
+		new RestTemplateBuilderClientHttpRequestInitializer(null, defaultHeaders, emptySet())
 			.initialize(this.request);
 		assertThat(this.request.getHeaders().get("one")).containsExactly("existing");
 		assertThat(this.request.getHeaders().get("two")).containsExactly("2", "3");

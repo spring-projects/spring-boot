@@ -30,6 +30,7 @@ import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.JsonWriter.NameProcessor;
 import org.springframework.boot.util.Instantiator;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
@@ -48,7 +49,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 
 	@Test
 	void customizeWhenHasExcludeFiltersMember() {
-		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(emptySet(),
 				Set.of("a"), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties, false);
@@ -58,7 +59,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	@Test
 	void customizeWhenHasIncludeFiltersOtherMembers() {
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("a"),
-				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
+				emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties, false);
 		assertThat(writeSampleJson(customizer)).contains("a")
@@ -81,8 +82,8 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 
 	@Test
 	void customizeWhenHasRenameRenamesMember() {
-		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Map.of("a", "z"), Collections.emptyMap(), null, null, null);
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(emptySet(),
+				emptySet(), Map.of("a", "z"), Collections.emptyMap(), null, null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties, false);
 		assertThat(writeSampleJson(customizer)).contains("\"z\":\"a\"");
@@ -90,8 +91,8 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 
 	@Test
 	void customizeWhenHasAddAddsMember() {
-		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Map.of("z", "z"), null, null, null);
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(emptySet(),
+				emptySet(), Collections.emptyMap(), Map.of("z", "z"), null, null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties, false);
 		assertThat(writeSampleJson(customizer)).contains("\"z\":\"z\"");
@@ -99,8 +100,8 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 
 	@Test
 	void customizeWhenHasNestedAddAddsMember() {
-		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Map.of("y.z", "yz"), null, null, null);
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(emptySet(),
+				emptySet(), Collections.emptyMap(), Map.of("y.z", "yz"), null, null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties, true);
 		assertThat(writeSampleJson(customizer)).contains("\"y\":{\"z\":\"yz\"}");
@@ -112,8 +113,8 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 		StructuredLoggingJsonMembersCustomizer<?> uppercaseCustomizer = (members) -> members
 			.applyingNameProcessor(NameProcessor.of(String::toUpperCase));
 		given(this.instantiator.instantiateType(TestCustomizer.class)).willReturn(uppercaseCustomizer);
-		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null,
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(emptySet(),
+				emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null,
 				Set.of(TestCustomizer.class));
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties, false);
@@ -125,8 +126,8 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	void customizeWhenHasCustomizersCustomizesMember() {
 		given(this.instantiator.instantiateType(FooCustomizer.class)).willReturn(new FooCustomizer());
 		given(this.instantiator.instantiateType(BarCustomizer.class)).willReturn(new BarCustomizer());
-		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null,
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(emptySet(),
+				emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null,
 				Set.of(FooCustomizer.class, BarCustomizer.class));
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties, false);

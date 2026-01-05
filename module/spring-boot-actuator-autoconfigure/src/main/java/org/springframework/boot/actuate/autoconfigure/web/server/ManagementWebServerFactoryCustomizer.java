@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.jspecify.annotations.Nullable;
@@ -33,6 +32,8 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
+
+import static java.util.Collections.emptySet;
 
 /**
  * {@link WebServerFactoryCustomizer} that customizes the {@link WebServerFactory} used to
@@ -75,7 +76,7 @@ public class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServe
 			customizeSameAsParentContext(factory);
 		}
 		// Then reset the error pages
-		factory.setErrorPages(Collections.emptySet());
+		factory.setErrorPages(emptySet());
 		// and add the management-specific bits
 		ServerProperties serverProperties = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
 				ServerProperties.class);

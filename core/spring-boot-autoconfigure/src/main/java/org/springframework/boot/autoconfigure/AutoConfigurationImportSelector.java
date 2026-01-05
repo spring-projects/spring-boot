@@ -61,6 +61,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
  * auto-configuration}. This class can also be subclassed if a custom variant of
@@ -546,7 +548,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		private AutoConfigurationEntry() {
 			this.configurations = Collections.emptyList();
-			this.exclusions = Collections.emptySet();
+			this.exclusions = emptySet();
 		}
 
 		/**

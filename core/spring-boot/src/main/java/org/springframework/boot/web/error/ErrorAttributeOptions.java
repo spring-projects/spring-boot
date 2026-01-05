@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Options controlling the contents of {@code ErrorAttributes}.
  *
@@ -125,7 +127,7 @@ public final class ErrorAttributeOptions {
 	 */
 	public static ErrorAttributeOptions of(Collection<Include> includes) {
 		return new ErrorAttributeOptions(
-				(includes.isEmpty()) ? Collections.emptySet() : Collections.unmodifiableSet(EnumSet.copyOf(includes)));
+				(includes.isEmpty()) ? emptySet() : Collections.unmodifiableSet(EnumSet.copyOf(includes)));
 	}
 
 	/**

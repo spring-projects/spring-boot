@@ -17,7 +17,6 @@
 package org.springframework.boot.test.context.filter.annotation;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -28,6 +27,8 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
+
+import static java.util.Collections.emptySet;
 
 /**
  * {@link AnnotationCustomizableTypeExcludeFilter} that can be used to any test annotation
@@ -87,12 +88,12 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 	}
 
 	protected Set<Class<?>> getKnownIncludes() {
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return Collections.emptySet();
+		return emptySet();
 	}
 
 	@SuppressWarnings("unchecked")

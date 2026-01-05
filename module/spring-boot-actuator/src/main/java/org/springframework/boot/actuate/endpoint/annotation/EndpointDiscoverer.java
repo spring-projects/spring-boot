@@ -59,6 +59,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * A Base for {@link EndpointsSupplier} implementations that discover
  * {@link Endpoint @Endpoint} beans and {@link EndpointExtension @EndpointExtension} beans
@@ -376,7 +378,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private E getFilterEndpoint(EndpointBean endpointBean) {
 		return this.filterEndpoints.computeIfAbsent(endpointBean, (key) -> createEndpoint(endpointBean.getBean(),
-				endpointBean.getId(), endpointBean.getDefaultAccess(), Collections.emptySet()));
+				endpointBean.getId(), endpointBean.getDefaultAccess(), emptySet()));
 	}
 
 	@SuppressWarnings("unchecked")

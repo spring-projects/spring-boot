@@ -47,6 +47,8 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Configures beans that depend upon SQL database initialization with
  * {@link BeanDefinition#getDependsOn() dependencies} upon beans that perform database
@@ -125,7 +127,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			if (CollectionUtils.isEmpty(additional)) {
 				return source;
 			}
-			Set<String> result = new LinkedHashSet<>((source != null) ? Arrays.asList(source) : Collections.emptySet());
+			Set<String> result = new LinkedHashSet<>((source != null) ? Arrays.asList(source) : emptySet());
 			result.addAll(additional);
 			return StringUtils.toStringArray(result);
 		}

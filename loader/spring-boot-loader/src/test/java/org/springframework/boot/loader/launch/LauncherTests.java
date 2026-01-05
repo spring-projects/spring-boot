@@ -17,7 +17,6 @@
 package org.springframework.boot.loader.launch;
 
 import java.net.URL;
-import java.util.Collections;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +29,7 @@ import org.springframework.boot.loader.zip.AssertFileChannelDataBlocksClosed;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -99,7 +99,7 @@ class LauncherTests {
 
 			@Override
 			protected Set<URL> getClassPathUrls() throws Exception {
-				return Collections.emptySet();
+				return emptySet();
 			}
 
 		}
@@ -215,7 +215,7 @@ class LauncherTests {
 
 			@Override
 			protected Set<URL> getClassPathUrls() throws Exception {
-				return Collections.emptySet();
+				return emptySet();
 			}
 
 			@Override

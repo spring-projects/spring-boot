@@ -16,7 +16,6 @@
 
 package org.springframework.boot.persistence.autoconfigure;
 
-import java.util.Collections;
 import java.util.Set;
 
 import jakarta.persistence.Embeddable;
@@ -36,6 +35,7 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.assertArg;
@@ -107,7 +107,7 @@ class EntityScannerTests {
 				ClassPathScanningCandidateComponentProvider.class);
 		given(candidateComponentProvider
 			.findCandidateComponents("org.springframework.boot.persistence.autoconfigure.scan"))
-			.willReturn(Collections.emptySet());
+			.willReturn(emptySet());
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
 		TestEntityScanner scanner = new TestEntityScanner(context, candidateComponentProvider);
 		scanner.scan(Entity.class);

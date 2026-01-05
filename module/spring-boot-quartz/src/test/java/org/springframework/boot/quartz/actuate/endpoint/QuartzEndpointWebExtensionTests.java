@@ -17,7 +17,6 @@
 package org.springframework.boot.quartz.actuate.endpoint;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +33,7 @@ import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpoint.QuartzJob
 import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpoint.QuartzTriggerGroupSummaryDescriptor;
 import org.springframework.boot.quartz.actuate.endpoint.QuartzEndpointWebExtension.QuartzEndpointWebExtensionRuntimeHints;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -57,7 +57,7 @@ class QuartzEndpointWebExtensionTests {
 	@Test
 	void whenShowValuesIsNever() throws Exception {
 		QuartzEndpointWebExtension webExtension = new QuartzEndpointWebExtension(this.delegate, Show.NEVER,
-				Collections.emptySet());
+				emptySet());
 		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "jobs", "a", "b");
 		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "triggers", "a", "b");
 		then(this.delegate).should().quartzJob("a", "b", false);
@@ -67,7 +67,7 @@ class QuartzEndpointWebExtensionTests {
 	@Test
 	void whenShowValuesIsAlways() throws Exception {
 		QuartzEndpointWebExtension webExtension = new QuartzEndpointWebExtension(this.delegate, Show.ALWAYS,
-				Collections.emptySet());
+				emptySet());
 		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "a", "b", "c");
 		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "jobs", "a", "b");
 		webExtension.quartzJobOrTrigger(SecurityContext.NONE, "triggers", "a", "b");
@@ -80,7 +80,7 @@ class QuartzEndpointWebExtensionTests {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
 		QuartzEndpointWebExtension webExtension = new QuartzEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED,
-				Collections.emptySet());
+				emptySet());
 		webExtension.quartzJobOrTrigger(securityContext, "jobs", "a", "b");
 		webExtension.quartzJobOrTrigger(securityContext, "triggers", "a", "b");
 		then(this.delegate).should().quartzJob("a", "b", true);
@@ -91,7 +91,7 @@ class QuartzEndpointWebExtensionTests {
 	void whenShowValuesIsWhenAuthorizedAndSecurityContextIsNotAuthorized() throws Exception {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		QuartzEndpointWebExtension webExtension = new QuartzEndpointWebExtension(this.delegate, Show.WHEN_AUTHORIZED,
-				Collections.emptySet());
+				emptySet());
 		webExtension.quartzJobOrTrigger(securityContext, "jobs", "a", "b");
 		webExtension.quartzJobOrTrigger(securityContext, "triggers", "a", "b");
 		then(this.delegate).should().quartzJob("a", "b", false);

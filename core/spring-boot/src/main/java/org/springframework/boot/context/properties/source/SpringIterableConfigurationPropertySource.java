@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +41,8 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
+
+import static java.util.Collections.emptySet;
 
 /**
  * {@link ConfigurationPropertySource} backed by an {@link EnumerablePropertySource}.
@@ -321,7 +322,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		Set<String> getMapped(ConfigurationPropertyName configurationPropertyName) {
 			Data data = this.data;
 			Assert.state(data != null, "'data' must not be null");
-			return data.mappings().getOrDefault(configurationPropertyName, Collections.emptySet());
+			return data.mappings().getOrDefault(configurationPropertyName, emptySet());
 		}
 
 		@Nullable ConfigurationPropertyName[] getConfigurationPropertyNames(String[] propertyNames) {

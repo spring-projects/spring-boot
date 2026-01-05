@@ -72,6 +72,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * {@link Condition} that checks for the presence or absence of specific beans.
  *
@@ -315,7 +317,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 				.keySet();
 			result = addAll(result, ignoredNames);
 		}
-		return (result != null) ? result : Collections.emptySet();
+		return (result != null) ? result : emptySet();
 	}
 
 	private Map<String, @Nullable BeanDefinition> getBeanDefinitionsForType(ListableBeanFactory beanFactory,
@@ -607,7 +609,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		private Set<String> extract(@Nullable MultiValueMap<String, @Nullable Object> attributes,
 				String... attributeNames) {
 			if (CollectionUtils.isEmpty(attributes)) {
-				return Collections.emptySet();
+				return emptySet();
 			}
 			Set<String> result = new LinkedHashSet<>();
 			for (String attributeName : attributeNames) {
@@ -621,7 +623,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 					}
 				}
 			}
-			return result.isEmpty() ? Collections.emptySet() : result;
+			return result.isEmpty() ? emptySet() : result;
 		}
 
 		private void merge(Set<String> result, String... additional) {

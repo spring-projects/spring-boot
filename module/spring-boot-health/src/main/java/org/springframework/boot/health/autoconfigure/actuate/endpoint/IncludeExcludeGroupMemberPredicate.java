@@ -26,6 +26,8 @@ import org.jspecify.annotations.Nullable;
 
 import org.springframework.lang.Contract;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Member predicate that matches based on {@code include} and {@code exclude} sets.
  *
@@ -81,7 +83,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 
 	private Set<String> clean(@Nullable Set<String> names) {
 		if (names == null) {
-			return Collections.emptySet();
+			return emptySet();
 		}
 		Set<String> cleaned = names.stream().map(this::clean).collect(Collectors.toCollection(LinkedHashSet::new));
 		return Collections.unmodifiableSet(cleaned);

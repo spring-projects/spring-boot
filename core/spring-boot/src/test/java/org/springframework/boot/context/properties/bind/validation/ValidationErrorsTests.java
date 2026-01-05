@@ -31,6 +31,7 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -48,7 +49,7 @@ class ValidationErrorsTests {
 	@SuppressWarnings("NullAway") // Test null check
 	void createWhenNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new ValidationErrors(null, Collections.emptySet(), Collections.emptyList()))
+			.isThrownBy(() -> new ValidationErrors(null, emptySet(), Collections.emptyList()))
 			.withMessageContaining("'name' must not be null");
 	}
 
@@ -62,14 +63,14 @@ class ValidationErrorsTests {
 	@Test
 	@SuppressWarnings("NullAway") // Test null check
 	void createWhenErrorsIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, Collections.emptySet(), null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ValidationErrors(NAME, emptySet(), null))
 			.withMessageContaining("'errors' must not be null");
 	}
 
 	@Test
 	void getNameShouldReturnName() {
 		ConfigurationPropertyName name = NAME;
-		ValidationErrors errors = new ValidationErrors(name, Collections.emptySet(), Collections.emptyList());
+		ValidationErrors errors = new ValidationErrors(name, emptySet(), Collections.emptyList());
 		assertThat((Object) errors.getName()).isEqualTo(name);
 	}
 
@@ -85,7 +86,7 @@ class ValidationErrorsTests {
 	void getErrorsShouldReturnErrors() {
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new ObjectError("foo", "bar"));
-		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(), allErrors);
+		ValidationErrors errors = new ValidationErrors(NAME, emptySet(), allErrors);
 		assertThat(errors.getAllErrors()).isEqualTo(allErrors);
 	}
 
@@ -93,7 +94,7 @@ class ValidationErrorsTests {
 	void iteratorShouldIterateErrors() {
 		List<ObjectError> allErrors = new ArrayList<>();
 		allErrors.add(new ObjectError("foo", "bar"));
-		ValidationErrors errors = new ValidationErrors(NAME, Collections.emptySet(), allErrors);
+		ValidationErrors errors = new ValidationErrors(NAME, emptySet(), allErrors);
 		assertThat(errors.iterator()).toIterable().containsExactlyElementsOf(allErrors);
 	}
 

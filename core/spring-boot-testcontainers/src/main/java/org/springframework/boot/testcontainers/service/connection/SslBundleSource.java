@@ -17,7 +17,6 @@
 package org.springframework.boot.testcontainers.service.connection;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -36,6 +35,8 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import static java.util.Collections.emptySet;
 
 /**
  * {@link SslBundle} source created from annotations. Used as a cache key and as a
@@ -141,7 +142,7 @@ record SslBundleSource(@Nullable Ssl ssl, @Nullable PemKeyStore pemKeyStore, @Nu
 	private static <A extends Annotation> @Nullable A getAnnotation(@Nullable ListableBeanFactory beanFactory,
 			@Nullable String beanName, @Nullable MergedAnnotations annotations, Class<A> annotationType) {
 		Set<A> found = (beanFactory != null && beanName != null)
-				? beanFactory.findAllAnnotationsOnBean(beanName, annotationType, false) : Collections.emptySet();
+				? beanFactory.findAllAnnotationsOnBean(beanName, annotationType, false) : emptySet();
 		if (annotations != null) {
 			found = new LinkedHashSet<>(found);
 			annotations.stream(annotationType).map(MergedAnnotation::synthesize).forEach(found::add);

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -37,14 +38,14 @@ class ShowTests {
 
 	@Test
 	void isShownWhenNever() {
-		assertThat(Show.NEVER.isShown(SecurityContext.NONE, Collections.emptySet())).isFalse();
+		assertThat(Show.NEVER.isShown(SecurityContext.NONE, emptySet())).isFalse();
 		assertThat(Show.NEVER.isShown(true)).isFalse();
 		assertThat(Show.NEVER.isShown(false)).isFalse();
 	}
 
 	@Test
 	void isShownWhenAlways() {
-		assertThat(Show.ALWAYS.isShown(SecurityContext.NONE, Collections.emptySet())).isTrue();
+		assertThat(Show.ALWAYS.isShown(SecurityContext.NONE, emptySet())).isTrue();
 		assertThat(Show.ALWAYS.isShown(true)).isTrue();
 		assertThat(Show.ALWAYS.isShown(true)).isTrue();
 	}
@@ -82,7 +83,7 @@ class ShowTests {
 	void isShownWhenRolesEmpty() {
 		SecurityContext securityContext = mock(SecurityContext.class);
 		given(securityContext.getPrincipal()).willReturn(mock(Principal.class));
-		assertThat(Show.WHEN_AUTHORIZED.isShown(securityContext, Collections.emptySet())).isTrue();
+		assertThat(Show.WHEN_AUTHORIZED.isShown(securityContext, emptySet())).isTrue();
 	}
 
 	@Test

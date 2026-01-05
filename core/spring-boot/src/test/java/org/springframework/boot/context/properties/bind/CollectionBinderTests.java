@@ -39,6 +39,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -332,7 +333,7 @@ class CollectionBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values", "a,b,c");
 		this.sources.add(source);
-		Set<String> result = this.binder.bind("foo.values", STRING_SET.withExistingValue(Collections.emptySet())).get();
+		Set<String> result = this.binder.bind("foo.values", STRING_SET.withExistingValue(emptySet())).get();
 		assertThat(result).hasSize(3);
 	}
 

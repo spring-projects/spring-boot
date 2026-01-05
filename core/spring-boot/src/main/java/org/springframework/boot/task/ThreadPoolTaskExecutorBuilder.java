@@ -31,6 +31,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Builder that can be used to configure and create a {@link ThreadPoolTaskExecutor}.
  * Provides convenience methods to set common {@link ThreadPoolTaskExecutor} settings and
@@ -342,7 +344,7 @@ public class ThreadPoolTaskExecutorBuilder {
 	}
 
 	private <T> Set<T> append(@Nullable Set<T> set, Iterable<? extends T> additions) {
-		Set<T> result = new LinkedHashSet<>((set != null) ? set : Collections.emptySet());
+		Set<T> result = new LinkedHashSet<>((set != null) ? set : emptySet());
 		additions.forEach(result::add);
 		return Collections.unmodifiableSet(result);
 	}

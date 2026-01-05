@@ -31,6 +31,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
+import static java.util.Collections.emptySet;
+
 /**
  * Configuration data that has been loaded from a {@link ConfigDataResource} and may
  * ultimately contribute {@link PropertySource property sources} to Spring's
@@ -51,7 +53,7 @@ public final class ConfigData {
 	/**
 	 * A {@link ConfigData} instance that contains no data.
 	 */
-	public static final ConfigData EMPTY = new ConfigData(Collections.emptySet());
+	public static final ConfigData EMPTY = new ConfigData(emptySet());
 
 	/**
 	 * Create a new {@link ConfigData} instance with the same options applied to each
@@ -177,7 +179,7 @@ public final class ConfigData {
 		/**
 		 * No options.
 		 */
-		public static final Options NONE = new Options(Collections.emptySet());
+		public static final Options NONE = new Options(emptySet());
 
 		private final Set<Option> options;
 

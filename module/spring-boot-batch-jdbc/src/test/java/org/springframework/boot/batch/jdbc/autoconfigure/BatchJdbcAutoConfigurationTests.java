@@ -92,6 +92,7 @@ import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -641,7 +642,7 @@ class BatchJdbcAutoConfigurationTests {
 
 				@Override
 				public Collection<String> getStepNames() {
-					return Collections.emptySet();
+					return emptySet();
 				}
 
 				@Override
@@ -678,7 +679,7 @@ class BatchJdbcAutoConfigurationTests {
 
 				@Override
 				public Collection<String> getStepNames() {
-					return Collections.emptySet();
+					return emptySet();
 				}
 
 				@Override
@@ -709,7 +710,7 @@ class BatchJdbcAutoConfigurationTests {
 
 				@Override
 				public Collection<String> getStepNames() {
-					return Collections.emptySet();
+					return emptySet();
 				}
 
 				@Override
@@ -755,7 +756,7 @@ class BatchJdbcAutoConfigurationTests {
 
 				@Override
 				public Collection<String> getStepNames() {
-					return Collections.emptySet();
+					return emptySet();
 				}
 
 				@Override
