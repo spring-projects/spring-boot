@@ -1058,11 +1058,7 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.19.29") {
-		prohibit {
-			versionRange "[3.20.0,)"
-			because "it requires Java 21"
-		}
+	library("jOOQ", "3.20.10") {
 		group("org.jooq") {
 			bom("jooq-bom")
 			plugins = [
