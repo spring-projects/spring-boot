@@ -80,6 +80,14 @@
 					  value="Please use Collections.emptyList()/emptyMap()/emptySet() for creating empty lists/maps/sets." />
 			<property name="ignoreComments" value="true" />
 		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="id" value="staticAssertJ"/>
+			<property name="maximum" value="0"/>
+			<property name="format" value="import org\.assertj\.core\.api\.Assertions;" />
+			<property name="message"
+				value="Please use static AssertJ imports." />
+			<property name="ignoreComments" value="true" />
+		</module>
 		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">
 			<property name="publicOnlySinceTags" value="true" />
 			<property name="requireSinceTag" value="true" />

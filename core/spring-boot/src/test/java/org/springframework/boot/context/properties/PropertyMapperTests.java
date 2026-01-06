@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.assertj.core.api.Assertions;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,6 +30,7 @@ import org.springframework.boot.context.properties.PropertyMapper.Source.Always;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link PropertyMapper}.
@@ -124,7 +124,7 @@ class PropertyMapperTests {
 
 	@Test
 	void whenTrueWhenValueIsFalseShouldNotMap() {
-		this.map.from(false).whenTrue().toCall(Assertions::fail);
+		this.map.from(false).whenTrue().toCall(this::failure);
 	}
 
 	@Test
@@ -135,17 +135,17 @@ class PropertyMapperTests {
 
 	@Test
 	void whenFalseWhenValueIsTrueShouldNotMap() {
-		this.map.from(true).whenFalse().toCall(Assertions::fail);
+		this.map.from(true).whenFalse().toCall(this::failure);
 	}
 
 	@Test
 	void whenHasTextWhenValueIsNullShouldNotMap() {
-		this.map.from(() -> null).whenHasText().toCall(Assertions::fail);
+		this.map.from(() -> null).whenHasText().toCall(this::failure);
 	}
 
 	@Test
 	void whenHasTextWhenValueIsEmptyShouldNotMap() {
-		this.map.from("").whenHasText().toCall(Assertions::fail);
+		this.map.from("").whenHasText().toCall(this::failure);
 	}
 
 	@Test
@@ -162,7 +162,7 @@ class PropertyMapperTests {
 
 	@Test
 	void whenEqualToWhenValueIsNotEqualShouldNotMatch() {
-		this.map.from("123").whenEqualTo("321").toCall(Assertions::fail);
+		this.map.from("123").whenEqualTo("321").toCall(this::failure);
 	}
 
 	@Test
@@ -174,7 +174,7 @@ class PropertyMapperTests {
 	@Test
 	void whenInstanceOfWhenValueIsNotTargetTypeShouldNotMatch() {
 		Supplier<Number> supplier = () -> 123L;
-		this.map.from(supplier).whenInstanceOf(Double.class).toCall(Assertions::fail);
+		this.map.from(supplier).whenInstanceOf(Double.class).toCall(this::failure);
 	}
 
 	@Test
@@ -185,7 +185,7 @@ class PropertyMapperTests {
 
 	@Test
 	void whenWhenValueDoesNotMatchShouldNotMap() {
-		this.map.from("123").when("321"::equals).toCall(Assertions::fail);
+		this.map.from("123").when("321"::equals).toCall(this::failure);
 	}
 
 	@Test
@@ -203,7 +203,7 @@ class PropertyMapperTests {
 
 	@Test
 	void whenWhenValueNotMatchesShouldSupportChainedCalls() {
-		this.map.from("123").when("456"::equals).when("123"::equals).toCall(Assertions::fail);
+		this.map.from("123").when("456"::equals).when("123"::equals).toCall(this::failure);
 	}
 
 	@Test
@@ -254,6 +254,10 @@ class PropertyMapperTests {
 		Runnable call = () -> called.set(true);
 		this.map.from((String) null).toCall(call);
 		assertThat(called).isFalse();
+	}
+
+	private void failure() {
+		fail();
 	}
 
 	/**

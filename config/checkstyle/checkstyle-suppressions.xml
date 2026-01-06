@@ -71,6 +71,9 @@
 	<suppress files="ConfigurationPropertyCaching\.java" checks="SpringJavadoc" message="\@since"/>
 	<suppress files="StructuredLoggingJsonMembersCustomizer\.java" checks="SpringJavadoc" message="\@since"/>
 	<suppress files="FieldValues\.java" checks="SimplifyBooleanExpression" />
+	<suppress files="TestPrintStream\.java" id="staticAssertJ"/>
+	<suppress files="ItemMetadataAssert\.java" id="staticAssertJ"/>
+	<suppress files="SpringApplicationShutdownHookInstance\.java" id="staticAssertJ"/>
 	<!-- jspecify: https://github.com/spring-io/spring-javaformat/issues/454 -->
 	<suppress files="PemPrivateKeyParser\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
 	<suppress files="Bindable\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>

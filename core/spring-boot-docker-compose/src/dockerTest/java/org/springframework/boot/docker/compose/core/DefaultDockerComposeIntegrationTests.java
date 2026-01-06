@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.assertj.core.api.Assertions;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -39,6 +38,7 @@ import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link DefaultDockerCompose}.
@@ -100,13 +100,13 @@ class DefaultDockerComposeIntegrationTests {
 
 	private void assertThatDoesNotContainService(List<RunningService> runningServices, String service) {
 		if (findService(runningServices, service) != null) {
-			Assertions.fail("Did not expect service '%s', but found it in [%s]", service, runningServices);
+			fail("Did not expect service '%s', but found it in [%s]", service, runningServices);
 		}
 	}
 
 	private void assertThatContainsService(List<RunningService> runningServices, String service) {
 		if (findService(runningServices, service) == null) {
-			Assertions.fail("Expected service '%s', but hasn't been found in [%s]", service, runningServices);
+			fail("Expected service '%s', but hasn't been found in [%s]", service, runningServices);
 		}
 	}
 

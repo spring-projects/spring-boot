@@ -46,7 +46,6 @@ import io.micrometer.tracing.brave.bridge.W3CPropagation;
 import io.micrometer.tracing.exporter.SpanExportingPredicate;
 import io.micrometer.tracing.exporter.SpanFilter;
 import io.micrometer.tracing.exporter.SpanReporter;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
@@ -63,6 +62,7 @@ import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -401,7 +401,7 @@ class BraveAutoConfigurationTests {
 		if (factory instanceof CompositePropagationFactory compositePropagationFactory) {
 			return compositePropagationFactory.getInjectors().toList();
 		}
-		Assertions.fail("Expected CompositePropagationFactory, found %s".formatted(factory.getClass()));
+		fail("Expected CompositePropagationFactory, found %s".formatted(factory.getClass()));
 		throw new AssertionError("Unreachable");
 	}
 

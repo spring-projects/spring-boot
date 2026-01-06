@@ -36,7 +36,6 @@ import jakarta.validation.ValidatorFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -133,6 +132,7 @@ import org.springframework.web.util.pattern.PathPattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.setExtractBareNamePropertyMethods;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -488,7 +488,7 @@ class WebFluxAutoConfigurationTests {
 
 	@Test
 	void cachePeriod() {
-		Assertions.setExtractBareNamePropertyMethods(false);
+		setExtractBareNamePropertyMethods(false);
 		this.contextRunner.withPropertyValues("spring.web.resources.cache.period:5").run((context) -> {
 			Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 			assertThat(handlerMap).hasSize(2);
@@ -499,12 +499,12 @@ class WebFluxAutoConfigurationTests {
 				}
 			}
 		});
-		Assertions.setExtractBareNamePropertyMethods(true);
+		setExtractBareNamePropertyMethods(true);
 	}
 
 	@Test
 	void cacheControl() {
-		Assertions.setExtractBareNamePropertyMethods(false);
+		setExtractBareNamePropertyMethods(false);
 		this.contextRunner
 			.withPropertyValues("spring.web.resources.cache.cachecontrol.max-age:5",
 					"spring.web.resources.cache.cachecontrol.proxy-revalidate:true")
@@ -518,7 +518,7 @@ class WebFluxAutoConfigurationTests {
 					}
 				}
 			});
-		Assertions.setExtractBareNamePropertyMethods(true);
+		setExtractBareNamePropertyMethods(true);
 	}
 
 	@Test
