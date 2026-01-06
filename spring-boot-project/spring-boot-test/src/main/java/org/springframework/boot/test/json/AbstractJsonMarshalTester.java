@@ -26,8 +26,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 
-import org.assertj.core.api.Assertions;
-
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ByteArrayResource;
@@ -41,8 +39,8 @@ import org.springframework.util.ReflectionUtils;
 /**
  * Base class for AssertJ based JSON marshal testers. Exposes specific Asserts following a
  * {@code read}, {@code write} or {@code parse} of JSON content. Typically used in
- * combination with an AssertJ {@link Assertions#assertThat(Object) assertThat} call. For
- * example: <pre class="code">
+ * combination with an AssertJ {@link org.assertj.core.api.Assertions#assertThat(Object)
+ * assertThat} call. For example: <pre class="code">
  * public class ExampleObjectJsonTests {
  *
  *     private AbstractJsonTester&lt;ExampleObject&gt; json = //...

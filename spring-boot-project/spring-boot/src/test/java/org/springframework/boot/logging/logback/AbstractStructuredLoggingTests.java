@@ -29,7 +29,6 @@ import ch.qos.logback.classic.spi.ThrowableProxy;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +42,7 @@ import org.springframework.boot.logging.structured.MockStructuredLoggingJsonMemb
 import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Abstract base class for structured formatting tests.
@@ -127,7 +127,7 @@ abstract class AbstractStructuredLoggingTests {
 			});
 		}
 		catch (JsonProcessingException ex) {
-			Assertions.fail("Failed to deserialize JSON: " + json, ex);
+			fail("Failed to deserialize JSON: " + json, ex);
 			return null;
 		}
 	}
