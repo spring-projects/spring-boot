@@ -19,12 +19,12 @@ package org.springframework.boot.session.autoconfigure;
 import java.time.Duration;
 import java.util.function.Supplier;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.Ordered;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -58,8 +58,7 @@ class SessionPropertiesTests {
 
 	@Test
 	void defaultFilterOrderIsCloseToHighestPrecedence() {
-		assertThat(this.properties.getServlet().getFilterOrder()).isCloseTo(Ordered.HIGHEST_PRECEDENCE,
-				Assertions.within(50));
+		assertThat(this.properties.getServlet().getFilterOrder()).isCloseTo(Ordered.HIGHEST_PRECEDENCE, within(50));
 	}
 
 }
