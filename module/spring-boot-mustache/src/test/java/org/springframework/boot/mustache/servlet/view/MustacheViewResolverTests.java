@@ -18,7 +18,6 @@ package org.springframework.boot.mustache.servlet.view;
 
 import java.util.Locale;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +65,7 @@ class MustacheViewResolverTests {
 		this.resolver.setContentType("application/octet-stream");
 		View view = this.resolver.resolveViewName("template", Locale.ROOT);
 		assertThat(view).isNotNull();
-		Assertions.assertThat(view.getContentType()).isEqualTo("application/octet-stream");
+		assertThat(view.getContentType()).isEqualTo("application/octet-stream");
 
 	}
 

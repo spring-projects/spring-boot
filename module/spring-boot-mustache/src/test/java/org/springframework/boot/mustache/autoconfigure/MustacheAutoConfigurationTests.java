@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 import com.samskivert.mustache.Mustache;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -61,7 +60,7 @@ class MustacheAutoConfigurationTests {
 				assertThat(context).hasSingleBean(Mustache.Compiler.class);
 				assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
 				assertThat(context).hasSingleBean(MustacheViewResolver.class);
-				Assertions.assertThat(context.getBean(Mustache.Compiler.class).standardsMode).isTrue();
+				assertThat(context.getBean(Mustache.Compiler.class).standardsMode).isTrue();
 			});
 	}
 
@@ -85,7 +84,7 @@ class MustacheAutoConfigurationTests {
 				assertThat(context).doesNotHaveBean(MustacheViewResolver.class);
 				assertThat(context)
 					.hasSingleBean(org.springframework.boot.mustache.reactive.view.MustacheViewResolver.class);
-				Assertions.assertThat(context.getBean(Mustache.Compiler.class).standardsMode).isTrue();
+				assertThat(context.getBean(Mustache.Compiler.class).standardsMode).isTrue();
 			});
 	}
 
@@ -116,7 +115,7 @@ class MustacheAutoConfigurationTests {
 			assertThat(viewResolver).extracting("prefix").isEqualTo("classpath:/templates/");
 			assertThat(viewResolver).extracting("requestContextAttribute").isNull();
 			assertThat(viewResolver).extracting("suffix").isEqualTo(".mustache");
-			Assertions.assertThat(viewResolver.getSupportedMediaTypes())
+			assertThat(viewResolver.getSupportedMediaTypes())
 				.containsExactly(MediaType.parseMediaType("text/html;charset=UTF-8"));
 		});
 	}
