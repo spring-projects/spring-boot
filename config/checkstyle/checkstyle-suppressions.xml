@@ -75,13 +75,14 @@
 	<suppress files="ItemMetadataAssert\.java" id="staticAssertJ"/>
 	<suppress files="SpringApplicationShutdownHookInstance\.java" id="staticAssertJ"/>
 	<!-- jspecify: https://github.com/spring-io/spring-javaformat/issues/454 -->
-	<suppress files="PemPrivateKeyParser\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
-	<suppress files="Bindable\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
-	<suppress files="LambdaSafe\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
-	<suppress files="ConditionMessage\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
-	<suppress files="EntityManagerFactoryBuilder\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
-	<suppress files="DockerApi\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
-	<suppress files="InvocationContext\.java" checks="NoWhitespaceBefore" message="'...' is preceded with whitespace"/>
+	<!-- We can't use full "'...' is preceded with whitespace" as it fails on other locales -->
+	<suppress files="PemPrivateKeyParser\.java" checks="NoWhitespaceBefore" message="'...'"/>
+	<suppress files="Bindable\.java" checks="NoWhitespaceBefore" message="'...'"/>
+	<suppress files="LambdaSafe\.java" checks="NoWhitespaceBefore" message="'...'"/>
+	<suppress files="ConditionMessage\.java" checks="NoWhitespaceBefore" message="'...'"/>
+	<suppress files="EntityManagerFactoryBuilder\.java" checks="NoWhitespaceBefore" message="'...'"/>
+	<suppress files="DockerApi\.java" checks="NoWhitespaceBefore" message="'...'"/>
+	<suppress files="InvocationContext\.java" checks="NoWhitespaceBefore" message="'...'"/>
 	<!-- https://github.com/apache/logging-log4j2/issues/2769#issuecomment-3049020222 -->
 	<suppress files="SpringProfileArbiter\.java" checks="SpringMethodVisibility"/>
 	<suppress files="StructuredLogLayout\.java" checks="SpringMethodVisibility"/>
