@@ -19,7 +19,6 @@ package org.springframework.boot.mustache.autoconfigure;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration Tests for {@link MustacheAutoConfiguration} outside of a web application.
@@ -44,8 +45,7 @@ class MustacheStandaloneIntegrationTests {
 
 	@Test
 	void directCompilation() {
-		Assertions
-			.assertThat(this.compiler.compile("Hello: {{world}}").execute(Collections.singletonMap("world", "World")))
+		assertThat(this.compiler.compile("Hello: {{world}}").execute(Collections.singletonMap("world", "World")))
 			.isEqualTo("Hello: World");
 	}
 
