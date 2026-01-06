@@ -32,7 +32,6 @@ import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -375,7 +374,7 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	private HttpClient createHttpClient() {
-		Assertions.assertThat(this.server).isNotNull();
+		assertThat(this.server).isNotNull();
 		InetSocketAddress address = this.server.address();
 		return HttpClient.create().host(address.getHostName()).port(address.getPort());
 	}
@@ -389,7 +388,7 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	private TcpClient createTcpClient() {
-		Assertions.assertThat(this.server).isNotNull();
+		assertThat(this.server).isNotNull();
 		InetSocketAddress address = this.server.address();
 		return TcpClient.create().host(address.getHostName()).port(address.getPort());
 	}
