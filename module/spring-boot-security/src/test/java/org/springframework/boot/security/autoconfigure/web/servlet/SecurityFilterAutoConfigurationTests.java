@@ -16,7 +16,6 @@
 
 package org.springframework.boot.security.autoconfigure.web.servlet;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -38,6 +37,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 /**
  * Tests for {@link SecurityFilterAutoConfiguration}.
@@ -65,7 +65,7 @@ class SecurityFilterAutoConfigurationTests {
 			int securityFilterOrder = context.getBean(DelegatingFilterProxyRegistrationBean.class).getOrder();
 			int requestContextFilterOrder = new OrderedRequestContextFilter().getOrder();
 			assertThat(securityFilterOrder).isGreaterThan(requestContextFilterOrder)
-				.isCloseTo(requestContextFilterOrder, Assertions.within(5));
+				.isCloseTo(requestContextFilterOrder, within(5));
 		}
 	}
 
