@@ -28,10 +28,9 @@ dependencies {
 	api(project(":module:spring-boot-actuator"))
 	api(project(":module:spring-boot-actuator-autoconfigure"))
 
-	implementation(project(":module:spring-boot-security"))
-
 	optional(project(":module:spring-boot-health"))
 	optional(project(":module:spring-boot-restclient"))
+	optional(project(":module:spring-boot-security"))
 	optional(project(":module:spring-boot-webclient"))
 	optional(project(":module:spring-boot-webflux"))
 	optional(project(":module:spring-boot-webmvc"))
