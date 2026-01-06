@@ -745,3 +745,5 @@ JSPs are not supported when using an executable jar.
 
 * Creating a custom `error.jsp` page does not override the default view for xref:web/servlet.adoc#web.servlet.spring-mvc.error-handling[error handling].
   xref:web/servlet.adoc#web.servlet.spring-mvc.error-handling.error-pages[Custom error pages] should be used instead.
+
+* If you run your application using `mvn spring-boot:run` or `gradle bootRun` and you deviate from the standard `src/main/webbapp` directory structure you may need to set a `WAR_SOURCE_DIRECTORY` environment variable so that Spring Boot can find your JSPs.

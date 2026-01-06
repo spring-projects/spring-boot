@@ -17,6 +17,9 @@
 package org.springframework.boot.webmvc.autoconfigure;
 
 import java.io.File;
+import java.util.function.Function;
+
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.env.Environment;
@@ -34,6 +37,23 @@ import org.springframework.util.ClassUtils;
  */
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
+	private static final String WAR_SOURCE_DIRECTORY_ENVIRONMENT_VARIABLE = "WAR_SOURCE_DIRECTORY";
+
+	private final File warSourceDirectory;
+
+	public JspTemplateAvailabilityProvider() {
+		this(new File("."), System::getenv);
+	}
+
+	JspTemplateAvailabilityProvider(File rootDirectory, Function<String, @Nullable String> systemEnvironment) {
+		this.warSourceDirectory = new File(rootDirectory, getWarSourceDirectory(systemEnvironment));
+	}
+
+	private static String getWarSourceDirectory(Function<String, @Nullable String> systemEnvironment) {
+		String name = systemEnvironment.apply(WAR_SOURCE_DIRECTORY_ENVIRONMENT_VARIABLE);
+		return (name != null) ? name : "src/main/webapp";
+	}
+
 	@Override
 	public boolean isTemplateAvailable(String view, Environment environment, ClassLoader classLoader,
 			ResourceLoader resourceLoader) {
@@ -42,7 +62,7 @@ public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProv
 			if (resourceLoader.getResource(resourceName).exists()) {
 				return true;
 			}
-			return new File("src/main/webapp", resourceName).exists();
+			return new File(this.warSourceDirectory, resourceName).exists();
 		}
 		return false;
 	}

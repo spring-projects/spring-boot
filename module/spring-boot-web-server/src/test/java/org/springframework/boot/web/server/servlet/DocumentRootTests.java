@@ -20,7 +20,10 @@ import java.io.File;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.cert.Certificate;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -34,11 +37,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DocumentRootTests {
 
+	private static final Log logger = LogFactory.getLog(DocumentRootTests.class);
+
 	@TempDir
 	@SuppressWarnings("NullAway.Init")
 	File tempDir;
 
-	private final DocumentRoot documentRoot = new DocumentRoot(LogFactory.getLog(getClass()));
+	private final DocumentRoot documentRoot = new DocumentRoot(logger);
 
 	@Test
 	void explodedWarFileDocumentRootWhenRunningFromExplodedWar() throws Exception {
@@ -68,6 +73,25 @@ class DocumentRootTests {
 		CodeSource codeSource = new CodeSource(new URL("file", "", "/test/path/with%20space/"), (Certificate[]) null);
 		File codeSourceArchive = this.documentRoot.getCodeSourceArchive(codeSource);
 		assertThat(codeSourceArchive).isEqualTo(new File("/test/path/with space/"));
+	}
+
+	@Test
+	void getValidDirectoryWhenHasSrcMainWebApp() {
+		Map<String, String> systemEnvironment = new HashMap<>();
+		File directory = new File(this.tempDir, "src/main/webapp");
+		directory.mkdirs();
+		DocumentRoot documentRoot = new DocumentRoot(logger, this.tempDir, systemEnvironment::get);
+		assertThat(documentRoot.getValidDirectory()).isEqualTo(directory);
+	}
+
+	@Test
+	void getValidDirectoryWhenHasCustomSrcMainWebApp() {
+		Map<String, String> systemEnvironment = new HashMap<>();
+		systemEnvironment.put("WAR_SOURCE_DIRECTORY", "src/main/unusual");
+		File directory = new File(this.tempDir, "src/main/unusual");
+		directory.mkdirs();
+		DocumentRoot documentRoot = new DocumentRoot(logger, this.tempDir, systemEnvironment::get);
+		assertThat(documentRoot.getValidDirectory()).isEqualTo(directory);
 	}
 
 }
