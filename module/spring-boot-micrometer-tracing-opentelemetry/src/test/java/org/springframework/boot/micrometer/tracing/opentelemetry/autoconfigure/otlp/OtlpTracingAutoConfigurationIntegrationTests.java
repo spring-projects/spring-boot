@@ -32,7 +32,6 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 import okio.GzipSource;
-import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.io.Content;
@@ -99,13 +98,13 @@ class OtlpTracingAutoConfigurationIntegrationTests {
 				assertThat(context.getBean(OtlpHttpSpanExporter.class).flush())
 					.isSameAs(CompletableResultCode.ofSuccess());
 				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
-				Assertions.assertThat(request).isNotNull();
-				Assertions.assertThat(request.getRequestLine()).contains("/v1/traces");
-				Assertions.assertThat(request.getHeader("Content-Type")).isEqualTo("application/x-protobuf");
-				Assertions.assertThat(request.getHeader("custom")).isEqualTo("42");
-				Assertions.assertThat(request.getBodySize()).isPositive();
+				assertThat(request).isNotNull();
+				assertThat(request.getRequestLine()).contains("/v1/traces");
+				assertThat(request.getHeader("Content-Type")).isEqualTo("application/x-protobuf");
+				assertThat(request.getHeader("custom")).isEqualTo("42");
+				assertThat(request.getBodySize()).isPositive();
 				try (Buffer body = request.getBody()) {
-					Assertions.assertThat(body.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
+					assertThat(body.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
 				}
 			});
 	}
@@ -123,15 +122,14 @@ class OtlpTracingAutoConfigurationIntegrationTests {
 				assertThat(context.getBean(OtlpHttpSpanExporter.class).flush())
 					.isSameAs(CompletableResultCode.ofSuccess());
 				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
-				Assertions.assertThat(request).isNotNull();
-				Assertions.assertThat(request.getRequestLine()).contains("/test");
-				Assertions.assertThat(request.getHeader("Content-Type")).isEqualTo("application/x-protobuf");
-				Assertions.assertThat(request.getHeader("Content-Encoding")).isEqualTo("gzip");
-				Assertions.assertThat(request.getBodySize()).isPositive();
+				assertThat(request).isNotNull();
+				assertThat(request.getRequestLine()).contains("/test");
+				assertThat(request.getHeader("Content-Type")).isEqualTo("application/x-protobuf");
+				assertThat(request.getHeader("Content-Encoding")).isEqualTo("gzip");
+				assertThat(request.getBodySize()).isPositive();
 				try (Buffer uncompressed = new Buffer(); Buffer body = request.getBody()) {
 					uncompressed.writeAll(new GzipSource(body));
-					Assertions.assertThat(uncompressed.readString(StandardCharsets.UTF_8))
-						.contains("org.springframework.boot");
+					assertThat(uncompressed.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
 				}
 			});
 	}
@@ -150,8 +148,8 @@ class OtlpTracingAutoConfigurationIntegrationTests {
 					.isSameAs(CompletableResultCode.ofSuccess());
 				RecordedGrpcRequest request = this.mockGrpcServer.takeRequest(10, TimeUnit.SECONDS);
 				assertThat(request).isNotNull();
-				Assertions.assertThat(request.headers().get("Content-Type")).isEqualTo("application/grpc");
-				Assertions.assertThat(request.headers().get("custom")).isEqualTo("42");
+				assertThat(request.headers().get("Content-Type")).isEqualTo("application/grpc");
+				assertThat(request.headers().get("custom")).isEqualTo("42");
 				assertThat(request.bodyAsString()).contains("org.springframework.boot");
 			});
 	}

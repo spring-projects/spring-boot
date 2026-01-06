@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.Collections;
 
 import com.samskivert.mustache.Mustache;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
@@ -30,6 +29,8 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link MustacheView}.
@@ -52,7 +53,7 @@ class MustacheViewTests {
 		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML, exchange)
 			.block(Duration.ofSeconds(30));
 		StepVerifier.create(exchange.getResponse().getBodyAsString())
-			.assertNext((body) -> Assertions.assertThat(body).isEqualToIgnoringWhitespace("Hello Spring"))
+			.assertNext((body) -> assertThat(body).isEqualToIgnoringWhitespace("Hello Spring"))
 			.expectComplete()
 			.verify(Duration.ofSeconds(30));
 	}

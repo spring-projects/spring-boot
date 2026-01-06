@@ -22,7 +22,6 @@ import java.util.Map;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -75,7 +74,7 @@ class MustacheAutoConfigurationServletIntegrationTests {
 		Template tmpl = Mustache.compiler().compile(source);
 		Map<String, String> context = new HashMap<>();
 		context.put("arg", "world");
-		Assertions.assertThat(tmpl.execute(context)).isEqualTo("Hello world!");
+		assertThat(tmpl.execute(context)).isEqualTo("Hello world!");
 	}
 
 	@Test

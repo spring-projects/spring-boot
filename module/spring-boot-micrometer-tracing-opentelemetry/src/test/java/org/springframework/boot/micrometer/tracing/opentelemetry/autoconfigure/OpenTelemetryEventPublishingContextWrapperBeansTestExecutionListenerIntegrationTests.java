@@ -21,12 +21,13 @@ import java.util.List;
 import java.util.function.Function;
 
 import io.opentelemetry.context.ContextStorage;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import org.springframework.boot.micrometer.tracing.opentelemetry.autoconfigure.OpenTelemetryEventPublisherBeansApplicationListener.Wrapper.Storage;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link OpenTelemetryEventPublisherBeansTestExecutionListener}.
@@ -45,7 +46,7 @@ class OpenTelemetryEventPublishingContextWrapperBeansTestExecutionListenerIntegr
 		Method getWrappersMethod = wrappersClass.getDeclaredMethod("getWrappers");
 		getWrappersMethod.setAccessible(true);
 		List<Function> wrappers = (List<Function>) getWrappersMethod.invoke(null);
-		Assertions.assertThat(wrappers).anyMatch((function) -> function.apply(this.parent) instanceof Storage);
+		assertThat(wrappers).anyMatch((function) -> function.apply(this.parent) instanceof Storage);
 	}
 
 }

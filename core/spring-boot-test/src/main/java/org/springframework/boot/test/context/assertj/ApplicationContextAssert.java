@@ -500,7 +500,6 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		 * Limited to the current context.
 		 */
 		NO_ANCESTORS {
-
 			@Override
 			String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type) {
 				return applicationContext.getBeanNamesForType(type);
@@ -517,7 +516,6 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		 * Consider the ancestor contexts as well as the current context.
 		 */
 		INCLUDE_ANCESTORS {
-
 			@Override
 			String[] getBeanNamesForType(ApplicationContext applicationContext, Class<?> type) {
 				return BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, type);
