@@ -22,7 +22,7 @@ import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Locale;
@@ -49,7 +49,7 @@ class Context {
 	 * Create a new {@link Context} instance.
 	 */
 	Context() {
-		this(getSourceArchiveFile(), Paths.get(".").toAbsolutePath().normalize().toFile());
+		this(getSourceArchiveFile(), Path.of(".").toAbsolutePath().normalize().toFile());
 	}
 
 	/**

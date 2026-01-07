@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -455,8 +454,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					.contains("Successfully built image");
 				removeImage("build-image-bind-caches", "0.0.1.BUILD-SNAPSHOT");
 				String tempDir = System.getProperty("java.io.tmpdir");
-				Path buildCachePath = Paths.get(tempDir, "junit-image-cache-" + testBuildId + "-build");
-				Path launchCachePath = Paths.get(tempDir, "junit-image-cache-" + testBuildId + "-launch");
+				Path buildCachePath = Path.of(tempDir, "junit-image-cache-" + testBuildId + "-build");
+				Path launchCachePath = Path.of(tempDir, "junit-image-cache-" + testBuildId + "-launch");
 				assertThat(buildCachePath).exists().isDirectory();
 				assertThat(launchCachePath).exists().isDirectory();
 				cleanupCache(buildCachePath);
@@ -627,7 +626,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 		StringBuilder name = new StringBuilder();
 		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
 		try {
-			Path path = project.toPath().resolve(Paths.get("src", "main", "resources", name.toString()));
+			Path path = project.toPath().resolve(Path.of("src", "main", "resources", name.toString()));
 			Files.createDirectories(path.getParent());
 			Files.createFile(path);
 		}

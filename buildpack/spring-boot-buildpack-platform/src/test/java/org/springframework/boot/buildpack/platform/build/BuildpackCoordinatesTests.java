@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class BuildpackCoordinatesTests extends AbstractJsonTests {
 
-	private final Path archive = Paths.get("/buildpack/path");
+	private final Path archive = Path.of("/buildpack/path");
 
 	@Test
 	void fromToml() throws IOException {

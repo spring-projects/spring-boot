@@ -27,7 +27,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +67,7 @@ public final class CommandLineInvoker {
 	private Process runCliProcess(String... args) throws IOException {
 		Path m2 = this.temp.toPath().resolve(".m2");
 		Files.createDirectories(m2);
-		Files.copy(Paths.get("src", "intTest", "resources", "settings.xml"), m2.resolve("settings.xml"),
+		Files.copy(Path.of("src", "intTest", "resources", "settings.xml"), m2.resolve("settings.xml"),
 				StandardCopyOption.REPLACE_EXISTING);
 		List<String> command = new ArrayList<>();
 		command.add(findLaunchScript().getAbsolutePath());

@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.docker.ssl;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import org.springframework.util.FileSystemUtils;
@@ -179,7 +178,7 @@ public class PemFileWriter {
 	}
 
 	Path writeFile(String name, String... contents) throws IOException {
-		Path path = Paths.get(this.tempDir.toString(), name);
+		Path path = Path.of(this.tempDir.toString(), name);
 		for (String content : contents) {
 			Files.write(path, content.replaceAll(EXAMPLE_SECRET_QUALIFIER, "").getBytes(), StandardOpenOption.CREATE,
 					StandardOpenOption.APPEND);

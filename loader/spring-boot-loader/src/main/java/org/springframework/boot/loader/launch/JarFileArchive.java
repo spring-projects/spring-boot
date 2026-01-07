@@ -24,7 +24,6 @@ import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
@@ -58,7 +57,7 @@ class JarFileArchive implements Archive {
 	private static final FileAttribute<?>[] FILE_PERMISSION_ATTRIBUTES = asFileAttributes(
 			PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE);
 
-	private static final Path TEMP = Paths.get(System.getProperty("java.io.tmpdir"));
+	private static final Path TEMP = Path.of(System.getProperty("java.io.tmpdir"));
 
 	private final File file;
 
@@ -133,7 +132,7 @@ class JarFileArchive implements Archive {
 
 	private Path createUnpackDirectory(Path parent) {
 		int attempts = 0;
-		String fileName = Paths.get(this.jarFile.getName()).getFileName().toString();
+		String fileName = Path.of(this.jarFile.getName()).getFileName().toString();
 		while (attempts++ < 100) {
 			Path unpackDirectory = parent.resolve(fileName + "-spring-boot-libs-" + UUID.randomUUID());
 			try {

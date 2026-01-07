@@ -18,7 +18,7 @@ package org.springframework.boot.docker.compose.lifecycle;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -157,7 +157,7 @@ class DockerComposeLifecycleManagerTests {
 				this.applicationContext, this.shutdownHandlers, this.properties, this.eventListeners, this.skipCheck,
 				this.serviceReadinessChecks);
 		assertThatIllegalStateException().isThrownBy(manager::start)
-			.withMessageContaining(Paths.get(".").toAbsolutePath().toString());
+			.withMessageContaining(Path.of(".").toAbsolutePath().toString());
 	}
 
 	@Test
@@ -166,7 +166,7 @@ class DockerComposeLifecycleManagerTests {
 				this.shutdownHandlers, this.properties, this.eventListeners, this.skipCheck,
 				this.serviceReadinessChecks);
 		assertThatIllegalStateException().isThrownBy(manager::start)
-			.withMessageContaining(Paths.get(".").toAbsolutePath().toString());
+			.withMessageContaining(Path.of(".").toAbsolutePath().toString());
 	}
 
 	@Test

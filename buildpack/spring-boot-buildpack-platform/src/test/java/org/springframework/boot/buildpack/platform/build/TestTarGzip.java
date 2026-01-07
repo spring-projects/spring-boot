@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +58,7 @@ class TestTarGzip {
 	}
 
 	private Path createArchive(boolean addContent) throws Exception {
-		Path path = Paths.get(this.buildpackDir.getAbsolutePath(), "buildpack.tar");
+		Path path = Path.of(this.buildpackDir.getAbsolutePath(), "buildpack.tar");
 		Path archive = Files.createFile(path);
 		if (addContent) {
 			writeBuildpackContentToArchive(archive);
@@ -68,7 +67,7 @@ class TestTarGzip {
 	}
 
 	private Path compressBuildpackArchive(Path archive) throws Exception {
-		Path tgzPath = Paths.get(this.buildpackDir.getAbsolutePath(), "buildpack.tgz");
+		Path tgzPath = Path.of(this.buildpackDir.getAbsolutePath(), "buildpack.tgz");
 		FileCopyUtils.copy(Files.newInputStream(archive),
 				new GzipCompressorOutputStream(Files.newOutputStream(tgzPath)));
 		return tgzPath;

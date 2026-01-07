@@ -23,7 +23,6 @@ import java.io.PrintWriter;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
@@ -163,7 +162,7 @@ class MavenBuild {
 				}
 
 			});
-			String settingsXml = Files.readString(Paths.get("build", "generated-resources", "settings", "settings.xml"))
+			String settingsXml = Files.readString(Path.of("build", "generated-resources", "settings", "settings.xml"))
 				.replace("@localCentralUrl@", new File("build/test-maven-repository").toURI().toURL().toString())
 				.replace("@localRepositoryPath@", new File("build/local-maven-repository").getAbsolutePath());
 			Files.writeString(destination.resolve("settings.xml"), settingsXml, StandardOpenOption.CREATE_NEW);

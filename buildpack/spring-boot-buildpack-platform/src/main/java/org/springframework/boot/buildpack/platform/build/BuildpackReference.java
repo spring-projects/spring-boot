@@ -20,7 +20,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.jspecify.annotations.Nullable;
 
@@ -54,7 +53,7 @@ public final class BuildpackReference {
 		try {
 			URL url = new URL(this.value);
 			if (url.getProtocol().equals("file")) {
-				return Paths.get(url.toURI());
+				return Path.of(url.toURI());
 			}
 			return null;
 		}
@@ -62,7 +61,7 @@ public final class BuildpackReference {
 			// not a URL, fall through to attempting to find a plain file path
 		}
 		try {
-			return Paths.get(this.value);
+			return Path.of(this.value);
 		}
 		catch (Exception ex) {
 			return null;

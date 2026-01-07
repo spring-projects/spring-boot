@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -86,7 +85,7 @@ final class TarGzipBuildpack implements Buildpack {
 
 	private void copyAndRebaseEntries(OutputStream outputStream) throws IOException {
 		String id = this.coordinates.getSanitizedId();
-		Path basePath = Paths.get("/cnb/buildpacks/", id, this.coordinates.getVersion());
+		Path basePath = Path.of("/cnb/buildpacks/", id, this.coordinates.getVersion());
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(
 				new GzipCompressorInputStream(Files.newInputStream(this.path)));
 				TarArchiveOutputStream output = new TarArchiveOutputStream(outputStream)) {

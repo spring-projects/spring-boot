@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.io;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -61,7 +60,7 @@ class FilePermissionsTests {
 	@DisabledOnOs(OS.WINDOWS)
 	void umaskForPathWithNonExistentFile() {
 		assertThatIOException()
-			.isThrownBy(() -> FilePermissions.umaskForPath(Paths.get(this.tempDir.toString(), "does-not-exist")));
+			.isThrownBy(() -> FilePermissions.umaskForPath(Path.of(this.tempDir.toString(), "does-not-exist")));
 	}
 
 	@Test

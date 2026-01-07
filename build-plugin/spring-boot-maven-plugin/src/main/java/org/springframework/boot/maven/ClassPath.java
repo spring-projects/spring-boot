@@ -24,7 +24,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -139,7 +138,7 @@ final class ClassPath {
 
 	private static String toPathString(URL url) {
 		try {
-			return Paths.get(url.toURI()).toString();
+			return Path.of(url.toURI()).toString();
 		}
 		catch (URISyntaxException ex) {
 			throw new IllegalArgumentException(ex);

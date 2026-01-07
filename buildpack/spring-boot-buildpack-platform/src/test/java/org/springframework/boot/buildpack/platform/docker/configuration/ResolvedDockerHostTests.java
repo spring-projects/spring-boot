@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -212,7 +211,7 @@ class ResolvedDockerHostTests {
 
 	private String pathToResource(String resource) throws URISyntaxException {
 		URL url = getClass().getResource(resource);
-		Path parent = Paths.get(url.toURI()).getParent();
+		Path parent = Path.of(url.toURI()).getParent();
 		assertThat(parent).isNotNull();
 		return parent.toAbsolutePath().toString();
 	}

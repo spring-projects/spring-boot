@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -352,7 +351,7 @@ class ValueObjectBinderTests {
 		Bindable<PathBean> target = Bindable.of(PathBean.class);
 		PathBean bound = this.binder.bind("test", target).get();
 		assertThat(bound.getName()).isEqualTo("test");
-		assertThat(bound.getPath()).isEqualTo(Paths.get("specific_value"));
+		assertThat(bound.getPath()).isEqualTo(Path.of("specific_value"));
 	}
 
 	@Test
@@ -363,7 +362,7 @@ class ValueObjectBinderTests {
 		Bindable<PathBean> target = Bindable.of(PathBean.class);
 		PathBean bound = this.binder.bindOrCreate("test", target);
 		assertThat(bound.getName()).isEqualTo("test");
-		assertThat(bound.getPath()).isEqualTo(Paths.get("default_value"));
+		assertThat(bound.getPath()).isEqualTo(Path.of("default_value"));
 	}
 
 	@Test

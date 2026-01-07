@@ -354,8 +354,8 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		removeImages(projectName);
 		String tempDir = System.getProperty("java.io.tmpdir");
-		Path buildCachePath = Paths.get(tempDir, "junit-image-cache-" + projectName + "-build");
-		Path launchCachePath = Paths.get(tempDir, "junit-image-cache-" + projectName + "-launch");
+		Path buildCachePath = Path.of(tempDir, "junit-image-cache-" + projectName + "-build");
+		Path launchCachePath = Path.of(tempDir, "junit-image-cache-" + projectName + "-launch");
 		assertThat(buildCachePath).exists().isDirectory();
 		assertThat(launchCachePath).exists().isDirectory();
 		cleanupCache(buildCachePath);
@@ -595,7 +595,7 @@ class BootBuildImageIntegrationTests {
 		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
 		Path path = this.gradleBuild.getProjectDir()
 			.toPath()
-			.resolve(Paths.get("src", "main", "resources", name.toString()));
+			.resolve(Path.of("src", "main", "resources", name.toString()));
 		Files.createDirectories(path.getParent());
 		Files.createFile(path);
 	}
@@ -620,13 +620,13 @@ class BootBuildImageIntegrationTests {
 			writer.println("[[stacks]]\n");
 			writer.println("id = \"*\"");
 		}
-		File detect = Files.createFile(Paths.get(binDir.getAbsolutePath(), "detect"), execFileAttribute).toFile();
+		File detect = Files.createFile(Path.of(binDir.getAbsolutePath(), "detect"), execFileAttribute).toFile();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(detect))) {
 			writer.println("#!/usr/bin/env bash");
 			writer.println("set -eo pipefail");
 			writer.println("exit 0");
 		}
-		File build = Files.createFile(Paths.get(binDir.getAbsolutePath(), "build"), execFileAttribute).toFile();
+		File build = Files.createFile(Path.of(binDir.getAbsolutePath(), "build"), execFileAttribute).toFile();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(build))) {
 			writer.println("#!/usr/bin/env bash");
 			writer.println("set -eo pipefail");

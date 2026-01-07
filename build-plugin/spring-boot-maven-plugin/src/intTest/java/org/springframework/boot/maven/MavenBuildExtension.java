@@ -19,7 +19,6 @@ package org.springframework.boot.maven;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -49,7 +48,7 @@ class MavenBuildExtension implements TestTemplateInvocationContextProvider {
 		try {
 			// Returning a stream which must be closed here is fine, as JUnit will take
 			// care of closing it
-			return Files.list(Paths.get("build/maven-binaries")).map(MavenVersionTestTemplateInvocationContext::new);
+			return Files.list(Path.of("build/maven-binaries")).map(MavenVersionTestTemplateInvocationContext::new);
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);

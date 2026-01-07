@@ -18,7 +18,6 @@ package org.springframework.boot.buildpack.platform.docker.ssl;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -53,10 +52,10 @@ public class SslContextFactory {
 	 */
 	public SSLContext forDirectory(String directory) {
 		try {
-			Path keyPath = Paths.get(directory, "key.pem");
-			Path certPath = Paths.get(directory, "cert.pem");
-			Path caPath = Paths.get(directory, "ca.pem");
-			Path caKeyPath = Paths.get(directory, "ca-key.pem");
+			Path keyPath = Path.of(directory, "key.pem");
+			Path certPath = Path.of(directory, "cert.pem");
+			Path caPath = Path.of(directory, "ca.pem");
+			Path caKeyPath = Path.of(directory, "ca-key.pem");
 			verifyCertificateFiles(keyPath, certPath, caPath);
 			KeyManagerFactory keyManagerFactory = getKeyManagerFactory(keyPath, certPath);
 			TrustManagerFactory trustManagerFactory = getTrustManagerFactory(caPath, caKeyPath);

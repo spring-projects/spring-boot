@@ -28,7 +28,7 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.Channels;
 import java.nio.channels.CompletionHandler;
 import java.nio.file.FileSystemException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
@@ -62,7 +62,7 @@ public class NamedPipeSocket extends Socket {
 		long startTime = System.nanoTime();
 		while (true) {
 			try {
-				return new AsynchronousFileByteChannel(AsynchronousFileChannel.open(Paths.get(path),
+				return new AsynchronousFileByteChannel(AsynchronousFileChannel.open(Path.of(path),
 						StandardOpenOption.READ, StandardOpenOption.WRITE));
 			}
 			catch (FileSystemException ex) {

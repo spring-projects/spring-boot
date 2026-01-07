@@ -26,7 +26,6 @@ import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,11 +82,11 @@ class Resources {
 			for (URL source : sources) {
 				URI sourceUri = source.toURI();
 				try {
-					consumer.accept(Paths.get(sourceUri));
+					consumer.accept(Path.of(sourceUri));
 				}
 				catch (FileSystemNotFoundException ex) {
 					try (FileSystem fileSystem = FileSystems.newFileSystem(sourceUri, Collections.emptyMap())) {
-						consumer.accept(Paths.get(sourceUri));
+						consumer.accept(Path.of(sourceUri));
 					}
 				}
 			}

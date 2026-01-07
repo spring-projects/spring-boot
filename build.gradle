@@ -16,6 +16,7 @@
 
 plugins {
 	id "base"
+	id "org.openrewrite.rewrite" version "7.23.0" apply false
 }
 
 description = "Spring Boot Build"
@@ -46,3 +47,5 @@ subprojects {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
+
+apply from: rootProject.file("gradle/plugins/config/sanity.gradle")

@@ -26,7 +26,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -725,7 +724,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		try {
 			Path path = this.gradleBuild.getProjectDir()
 				.toPath()
-				.resolve(Paths.get("src", "main", "resources", "static", "file.txt"));
+				.resolve(Path.of("src", "main", "resources", "static", "file.txt"));
 			Files.createDirectories(path.getParent());
 			Files.createFile(path);
 		}

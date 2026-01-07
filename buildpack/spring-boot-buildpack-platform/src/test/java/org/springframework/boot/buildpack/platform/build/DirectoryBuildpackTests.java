@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,7 +96,7 @@ class DirectoryBuildpackTests {
 
 	@Test
 	void resolveWhenFileReturnsNull() throws Exception {
-		Path file = Files.createFile(Paths.get(this.buildpackDir.toString(), "test"));
+		Path file = Files.createFile(Path.of(this.buildpackDir.toString(), "test"));
 		BuildpackReference reference = BuildpackReference.of(file.toString());
 		Buildpack buildpack = DirectoryBuildpack.resolve(this.resolverContext, reference);
 		assertThat(buildpack).isNull();
@@ -145,7 +144,7 @@ class DirectoryBuildpackTests {
 	}
 
 	private void writeBuildpackDescriptor() throws IOException {
-		Path descriptor = Files.createFile(Paths.get(this.buildpackDir.getAbsolutePath(), "buildpack.toml"),
+		Path descriptor = Files.createFile(Path.of(this.buildpackDir.getAbsolutePath(), "buildpack.toml"),
 				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-r--r--")));
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(descriptor))) {
 			writer.println("[buildpack]");
@@ -159,16 +158,16 @@ class DirectoryBuildpackTests {
 	}
 
 	private void writeScripts() throws IOException {
-		Path binDirectory = Files.createDirectory(Paths.get(this.buildpackDir.getAbsolutePath(), "bin"),
+		Path binDirectory = Files.createDirectory(Path.of(this.buildpackDir.getAbsolutePath(), "bin"),
 				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x")));
 		binDirectory.toFile().mkdirs();
-		Path detect = Files.createFile(Paths.get(binDirectory.toString(), "detect"),
+		Path detect = Files.createFile(Path.of(binDirectory.toString(), "detect"),
 				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr--r--")));
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(detect))) {
 			writer.println("#!/usr/bin/env bash");
 			writer.println("echo \"---> detect\"");
 		}
-		Path build = Files.createFile(Paths.get(binDirectory.toString(), "build"),
+		Path build = Files.createFile(Path.of(binDirectory.toString(), "build"),
 				PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxr--r--")));
 		try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(build))) {
 			writer.println("#!/usr/bin/env bash");

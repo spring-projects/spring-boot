@@ -18,7 +18,6 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +65,7 @@ class ClassPathTests {
 		List<String> args = classPath.args(true);
 		assertThat(args.get(0)).isEqualTo("-cp");
 		assertThat(args.get(1)).startsWith("@");
-		assertThat(Paths.get(args.get(1).substring(1)))
+		assertThat(Path.of(args.get(1).substring(1)))
 			.hasContent("\"" + (path1 + File.pathSeparator + path2).replace("\\", "\\\\") + "\"");
 	}
 

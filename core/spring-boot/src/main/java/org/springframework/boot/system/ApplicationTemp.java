@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -135,7 +134,7 @@ public class ApplicationTemp {
 	private Path getTempDirectory() {
 		String property = System.getProperty("java.io.tmpdir");
 		Assert.state(StringUtils.hasLength(property), "No 'java.io.tmpdir' property set");
-		Path tempDirectory = Paths.get(property);
+		Path tempDirectory = Path.of(property);
 		Assert.state(Files.exists(tempDirectory), () -> "Temp directory '" + tempDirectory + "' does not exist");
 		Assert.state(Files.isDirectory(tempDirectory),
 				() -> "Temp location '" + tempDirectory + "' is not a directory");

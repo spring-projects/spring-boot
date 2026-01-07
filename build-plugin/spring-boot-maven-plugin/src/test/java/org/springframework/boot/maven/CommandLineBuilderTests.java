@@ -23,7 +23,6 @@ import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +114,7 @@ class CommandLineBuilderTests {
 		assertThat(args.get(0)).isEqualTo("-cp");
 		assertThat(args.get(1)).startsWith("@");
 		assertThat(args.get(2)).isEqualTo(CLASS_NAME);
-		assertThat(Paths.get(args.get(1).substring(1)))
+		assertThat(Path.of(args.get(1).substring(1)))
 			.hasContent("\"" + (file + File.pathSeparator + file1).replace("\\", "\\\\") + "\"");
 	}
 
@@ -140,7 +139,7 @@ class CommandLineBuilderTests {
 
 	private URL toURL(String path) {
 		try {
-			return Paths.get(path).toUri().toURL();
+			return Path.of(path).toUri().toURL();
 		}
 		catch (MalformedURLException ex) {
 			throw new RuntimeException(ex);

@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import org.springframework.boot.env.ConfigTreePropertySource;
@@ -37,7 +36,7 @@ public class ConfigTreeConfigDataResource extends ConfigDataResource {
 
 	ConfigTreeConfigDataResource(String path) {
 		Assert.notNull(path, "'path' must not be null");
-		this.path = Paths.get(path).toAbsolutePath();
+		this.path = Path.of(path).toAbsolutePath();
 	}
 
 	ConfigTreeConfigDataResource(Path path) {

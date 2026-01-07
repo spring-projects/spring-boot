@@ -16,7 +16,7 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
@@ -84,13 +84,13 @@ class BuildpackReferenceTests {
 	@Test
 	void asPathWhenFileUrlReturnsPath() {
 		BuildpackReference reference = BuildpackReference.of("file:///test.dat");
-		assertThat(reference.asPath()).isEqualTo(Paths.get("/test.dat"));
+		assertThat(reference.asPath()).isEqualTo(Path.of("/test.dat"));
 	}
 
 	@Test
 	void asPathWhenPathReturnsPath() {
 		BuildpackReference reference = BuildpackReference.of("/test.dat");
-		assertThat(reference.asPath()).isEqualTo(Paths.get("/test.dat"));
+		assertThat(reference.asPath()).isEqualTo(Path.of("/test.dat"));
 	}
 
 }

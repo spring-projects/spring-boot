@@ -17,7 +17,7 @@
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import com.sun.jna.Platform;
 import org.jspecify.annotations.Nullable;
@@ -70,7 +70,7 @@ public class ResolvedDockerHost extends DockerHost {
 
 	public boolean isLocalFileReference() {
 		try {
-			return Files.exists(Paths.get(getAddress()));
+			return Files.exists(Path.of(getAddress()));
 		}
 		catch (Exception ex) {
 			return false;

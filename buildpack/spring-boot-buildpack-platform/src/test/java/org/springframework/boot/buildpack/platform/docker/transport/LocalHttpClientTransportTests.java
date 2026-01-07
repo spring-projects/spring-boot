@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.docker.transport;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -47,7 +46,7 @@ class LocalHttpClientTransportTests {
 
 	@Test
 	void createWhenDockerHostIsFileThatDoesNotExistReturnsTransport(@TempDir Path tempDir) {
-		String socketFilePath = Paths.get(tempDir.toString(), "dummy").toAbsolutePath().toString();
+		String socketFilePath = Path.of(tempDir.toString(), "dummy").toAbsolutePath().toString();
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(new DockerConnectionConfiguration.Host(socketFilePath));
 		LocalHttpClientTransport transport = LocalHttpClientTransport.create(dockerHost);
 		assertThat(transport).isNotNull();

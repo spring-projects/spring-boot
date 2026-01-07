@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
@@ -82,7 +81,7 @@ final class DirectoryBuildpack implements Buildpack {
 
 	private void addLayerContent(Layout layout) throws IOException {
 		String id = this.coordinates.getSanitizedId();
-		Path cnbPath = Paths.get("/cnb/buildpacks/", id, this.coordinates.getVersion());
+		Path cnbPath = Path.of("/cnb/buildpacks/", id, this.coordinates.getVersion());
 		writeBasePathEntries(layout, cnbPath);
 		Files.walkFileTree(this.path, new LayoutFileVisitor(this.path, cnbPath, layout));
 	}
@@ -152,7 +151,7 @@ final class DirectoryBuildpack implements Buildpack {
 
 		private String relocate(Path path) {
 			Path node = path.subpath(this.basePath.getNameCount(), path.getNameCount());
-			return Paths.get(this.layerPath.toString(), node.toString()).toString();
+			return Path.of(this.layerPath.toString(), node.toString()).toString();
 		}
 
 	}
