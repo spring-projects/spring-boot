@@ -25,6 +25,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.core.StreamReadFeature;
+import tools.jackson.core.StreamWriteFeature;
 import tools.jackson.core.json.JsonReadFeature;
 import tools.jackson.core.json.JsonWriteFeature;
 import tools.jackson.databind.DeserializationFeature;
@@ -123,6 +125,16 @@ public class JacksonProperties {
 
 	private final Datatype datatype = new Datatype();
 
+	/**
+	 * Jackson on/off token reader features common to multiple formats.
+	 */
+	private final Map<StreamReadFeature, Boolean> read = new EnumMap<>(StreamReadFeature.class);
+
+	/**
+	 * Jackson on/off token writer features common to multiple formats.
+	 */
+	private final Map<StreamWriteFeature, Boolean> write = new EnumMap<>(StreamWriteFeature.class);
+
 	private final Json json = new Json();
 
 	public @Nullable String getDateFormat() {
@@ -215,6 +227,14 @@ public class JacksonProperties {
 
 	public Datatype getDatatype() {
 		return this.datatype;
+	}
+
+	public Map<StreamReadFeature, Boolean> getRead() {
+		return this.read;
+	}
+
+	public Map<StreamWriteFeature, Boolean> getWrite() {
+		return this.write;
 	}
 
 	public Json getJson() {

@@ -347,6 +347,24 @@ class JacksonAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void enableWriteBigDecimalAsPlain() {
+		this.contextRunner.withPropertyValues("spring.jackson.write.write-bigdecimal-as-plain:true").run((context) -> {
+			JsonMapper mapper = context.getBean(JsonMapper.class);
+			assertThat(StreamWriteFeature.WRITE_BIGDECIMAL_AS_PLAIN.enabledByDefault()).isFalse();
+			assertThat(mapper.isEnabled(StreamWriteFeature.WRITE_BIGDECIMAL_AS_PLAIN)).isTrue();
+		});
+	}
+
+	@Test
+	void enableStringDuplicateDetection() {
+		this.contextRunner.withPropertyValues("spring.jackson.read.strict-duplicate-detection:true").run((context) -> {
+			JsonMapper mapper = context.getBean(JsonMapper.class);
+			assertThat(StreamReadFeature.STRICT_DUPLICATE_DETECTION.enabledByDefault()).isFalse();
+			assertThat(mapper.isEnabled(StreamReadFeature.STRICT_DUPLICATE_DETECTION)).isTrue();
+		});
+	}
+
 	@EnumSource
 	@ParameterizedTest
 	void enableDatetimeFeature(MapperType mapperType) {

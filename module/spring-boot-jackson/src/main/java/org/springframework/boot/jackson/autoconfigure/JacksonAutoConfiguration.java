@@ -158,6 +158,8 @@ public final class JacksonAutoConfiguration {
 			@Override
 			public void customize(JsonMapper.Builder builder) {
 				super.customize(builder);
+				configureFeatures(builder, properties().getRead(), builder::configure);
+				configureFeatures(builder, properties().getWrite(), builder::configure);
 				configureFeatures(builder, properties().getJson().getRead(), builder::configure);
 				configureFeatures(builder, properties().getJson().getWrite(), builder::configure);
 			}
