@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cloud.cloudfoundry;
+package org.springframework.boot.cloud;
 
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
