@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cloud.cloudfoundry;
+package org.springframework.boot.cloud;
 
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -42,6 +43,8 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 
 	private final ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 
+	private final SpringApplication application = new SpringApplication();
+
 	@Test
 	void testApplicationProperties() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
@@ -54,7 +57,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
 						+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
 						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
-		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
+		this.initializer.postProcessEnvironment(this.context.getEnvironment(), this.application);
 		assertThat(getProperty("vcap.application.instance_id")).isEqualTo("bb7935245adf3e650dfb7c58a06e9ece");
 	}
 
@@ -62,14 +65,14 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 	void testApplicationUris() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"VCAP_APPLICATION={\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"uris\":[\"foo.cfapps.io\"]}");
-		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
+		this.initializer.postProcessEnvironment(this.context.getEnvironment(), this.application);
 		assertThat(getProperty("vcap.application.uris[0]")).isEqualTo("foo.cfapps.io");
 	}
 
 	@Test
 	void testUnparseableApplicationProperties() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "VCAP_APPLICATION:");
-		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
+		this.initializer.postProcessEnvironment(this.context.getEnvironment(), this.application);
 		assertThat(getProperty("vcap")).isNull();
 	}
 
@@ -86,7 +89,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
 						+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
 						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
-		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
+		this.initializer.postProcessEnvironment(this.context.getEnvironment(), this.application);
 		assertThat(getProperty("vcap")).isNull();
 	}
 
@@ -100,7 +103,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
 						+ "\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":"
 						+ "\"urpRuqTf8Cpe6\",\"password\":\"pxLsGVpsC9A5S\"}}]}");
-		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
+		this.initializer.postProcessEnvironment(this.context.getEnvironment(), this.application);
 		assertThat(getProperty("vcap.services.mysql.name")).isEqualTo("mysql");
 		assertThat(getProperty("vcap.services.mysql.credentials.port")).isEqualTo("3306");
 		assertThat(getProperty("vcap.services.mysql.credentials.ssl")).isEqualTo("true");
@@ -116,7 +119,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
 						+ "\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":\"urpRuqTf8Cpe6\","
 						+ "\"password\":\"pxLsGVpsC9A5S\"}}]}");
-		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
+		this.initializer.postProcessEnvironment(this.context.getEnvironment(), this.application);
 		assertThat(getProperty("vcap.services.mysql.name")).isEqualTo("mysql");
 		assertThat(getProperty("vcap.services.mysql.credentials.port")).isEqualTo("3306");
 	}
@@ -127,7 +130,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 		assertThat(this.initializer.getOrder()).isLessThan(ConfigDataEnvironmentPostProcessor.ORDER - 1);
 	}
 
-	private String getProperty(String key) {
+	private @Nullable String getProperty(String key) {
 		return this.context.getEnvironment().getProperty(key);
 	}
 
