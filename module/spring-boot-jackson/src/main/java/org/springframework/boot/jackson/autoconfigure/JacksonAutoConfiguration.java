@@ -160,6 +160,8 @@ public final class JacksonAutoConfiguration {
 				super.customize(builder);
 				configureFeatures(builder, properties().getJson().getRead(), builder::configure);
 				configureFeatures(builder, properties().getJson().getWrite(), builder::configure);
+				configureFeatures(builder, properties().getStream().getRead(), builder::configure);
+				configureFeatures(builder, properties().getStream().getWrite(), builder::configure);
 			}
 
 		}
