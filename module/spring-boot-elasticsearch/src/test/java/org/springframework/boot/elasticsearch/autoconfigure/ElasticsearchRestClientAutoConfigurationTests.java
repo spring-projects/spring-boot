@@ -243,17 +243,17 @@ class ElasticsearchRestClientAutoConfigurationTests {
 		Rest5Client client = Rest5Client.builder(new HttpHost("http", "localhost", 9201)).build();
 		assertThat(client.getHttpClient()).extracting("ioReactor.workers")
 			.asInstanceOf(InstanceOfAssertFactories.ARRAY)
-			.satisfies((workers) -> assertThat(workers[0]).extracting("reactorConfig.soKeepAlive").isEqualTo(false));
+			.satisfies((workers) -> assertThat(workers[0]).extracting("reactorConfig.soKeepAlive").isEqualTo(true));
 	}
 
 	@Test
 	void configureWithCustomSocketKeepAlive() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.socket-keep-alive=true")
+		this.contextRunner.withPropertyValues("spring.elasticsearch.socket-keep-alive=false")
 			.run((context) -> assertThat(context.getBean(Rest5Client.class).getHttpClient())
 				.extracting("ioReactor.workers")
 				.asInstanceOf(InstanceOfAssertFactories.ARRAY)
 				.satisfies(
-						(workers) -> assertThat(workers[0]).extracting("reactorConfig.soKeepAlive").isEqualTo(true)));
+						(workers) -> assertThat(workers[0]).extracting("reactorConfig.soKeepAlive").isEqualTo(false)));
 	}
 
 	@Test
