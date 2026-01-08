@@ -592,7 +592,7 @@ bom {
 				.formatted(version.major(), version.minor()))
 		}
 	}
-	library("Hibernate Validator", "9.0.1.Final") {
+	library("Hibernate Validator", "9.1.0.Final") {
 		group("org.hibernate.validator") {
 			modules = [
 				"hibernate-validator",
