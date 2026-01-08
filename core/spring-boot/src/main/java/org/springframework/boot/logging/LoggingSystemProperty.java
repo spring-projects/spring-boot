@@ -89,6 +89,12 @@ public enum LoggingSystemProperty {
 	FILE_PATTERN("FILE_LOG_PATTERN", "logging.pattern.file"),
 
 	/**
+	 * Logging system property for explicitly disabling structured logging.
+	 * @since 4.0.3
+	 */
+	STRUCTURED_LOGGING_DISABLED("STRUCTURED_LOGGING_DISABLED", "logging.structured.disable"),
+
+	/**
 	 * Logging system property for the console structured logging format.
 	 * @since 3.4.0
 	 */

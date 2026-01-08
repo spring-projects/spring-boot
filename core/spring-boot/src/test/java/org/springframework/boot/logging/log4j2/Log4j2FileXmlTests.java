@@ -17,8 +17,14 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.io.File;
+import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
+import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -32,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Vasily Pelikh
  */
 class Log4j2FileXmlTests extends Log4j2XmlTests {
 
@@ -50,35 +57,103 @@ class Log4j2FileXmlTests extends Log4j2XmlTests {
 
 	@Test
 	void whenLogExceptionConversionWordIsNotConfiguredThenFileAppenderUsesDefault() {
-		assertThat(fileAppenderPattern()).contains("%xwEx");
+		assertThat(fileAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+			.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+			.contains("%xwEx");
 	}
 
 	@Test
 	void whenLogExceptionConversionWordIsSetThenFileAppenderUsesIt() {
 		withSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD.getEnvironmentVariableName(), "custom",
-				() -> assertThat(fileAppenderPattern()).contains("custom"));
+				() -> assertThat(fileAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+					.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+					.contains("custom"));
 	}
 
 	@Test
 	void whenLogLevelPatternIsNotConfiguredThenFileAppenderUsesDefault() {
-		assertThat(fileAppenderPattern()).contains("%5p");
+		assertThat(fileAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+			.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+			.contains("%5p");
 	}
 
 	@Test
 	void whenLogLevelPatternIsSetThenFileAppenderUsesIt() {
 		withSystemProperty(LoggingSystemProperty.LEVEL_PATTERN.getEnvironmentVariableName(), "custom",
-				() -> assertThat(fileAppenderPattern()).contains("custom"));
+				() -> assertThat(fileAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+					.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+					.contains("custom"));
 	}
 
 	@Test
 	void whenLogLDateformatPatternIsNotConfiguredThenFileAppenderUsesDefault() {
-		assertThat(fileAppenderPattern()).contains("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		assertThat(fileAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+			.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+			.contains("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	}
 
 	@Test
 	void whenLogDateformatPatternIsSetThenFileAppenderUsesIt() {
 		withSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN.getEnvironmentVariableName(), "dd-MM-yyyy",
-				() -> assertThat(fileAppenderPattern()).contains("dd-MM-yyyy"));
+				() -> assertThat(fileAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+					.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+					.contains("dd-MM-yyyy"));
+	}
+
+	@Test
+	void whenStructuredLogIsDisabledThenFileAppenderUsesDefault() {
+		Map<String, String> properties = Map
+			.of(LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "true");
+		withSystemProperties(properties, () -> assertThat(fileAppenderLayout()).isInstanceOf(PatternLayout.class));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledAndFormatIsNotSetThenFileAppenderUsesDefault() {
+		Map<String, String> properties = Map
+			.of(LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false");
+		withSystemProperties(properties, () -> assertThat(fileAppenderLayout()).isInstanceOf(PatternLayout.class));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledAndFormatIsEmptyThenFileAppenderUsesDefault() {
+		Map<String, String> properties = Map.of(
+				LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false",
+				LoggingSystemProperty.FILE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "");
+		withSystemProperties(properties, () -> assertThat(fileAppenderLayout()).isInstanceOf(PatternLayout.class));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledThenFileAppenderUsesIt() {
+		Map<String, String> properties = Map.of(
+				LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false",
+				LoggingSystemProperty.FILE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "ecs");
+		withSystemProperties(properties,
+				() -> assertThat(fileAppenderLayout()).isInstanceOf(StructuredLogLayout.class));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledAndCharsetIsSetThenFileAppenderUsesIt() {
+		Map<String, String> properties = Map.of(
+				LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false",
+				LoggingSystemProperty.FILE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "ecs",
+				LoggingSystemProperty.FILE_CHARSET.getEnvironmentVariableName(), "ISO_8859_1");
+		withSystemProperties(properties,
+				() -> assertThat(fileAppenderLayout())
+					.asInstanceOf(InstanceOfAssertFactories.type(StructuredLogLayout.class))
+					.extracting(StructuredLogLayout::getCharset, InstanceOfAssertFactories.type(Charset.class))
+					.isEqualTo(StandardCharsets.ISO_8859_1));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledAndCharsetIsNotSetThenFileAppenderUsesStructuredLoggingWithDefaultCharset() {
+		Map<String, String> properties = Map.of(
+				LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false",
+				LoggingSystemProperty.FILE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "ecs");
+		withSystemProperties(properties,
+				() -> assertThat(fileAppenderLayout())
+					.asInstanceOf(InstanceOfAssertFactories.type(StructuredLogLayout.class))
+					.extracting(StructuredLogLayout::getCharset, InstanceOfAssertFactories.type(Charset.class))
+					.isEqualTo(StandardCharsets.UTF_8));
 	}
 
 	@Override
@@ -93,10 +168,10 @@ class Log4j2FileXmlTests extends Log4j2XmlTests {
 		super.prepareConfiguration();
 	}
 
-	private String fileAppenderPattern() {
+	private Layout<? extends Serializable> fileAppenderLayout() {
 		prepareConfiguration();
 		assertThat(this.configuration).isNotNull();
-		return ((PatternLayout) this.configuration.getAppender("File").getLayout()).getConversionPattern();
+		return this.configuration.getAppender("File").getLayout();
 	}
 
 }

@@ -18,17 +18,26 @@ package org.springframework.boot.logging.log4j2;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.LoggingSystemProperty;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,10 +46,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Vasily Pelikh
  */
 class Log4j2XmlTests {
 
 	protected @Nullable Configuration configuration;
+
+	private LoggerContext loggerContext;
+
+	@BeforeEach
+	void setup() {
+		MockEnvironment environment = new MockEnvironment();
+		this.loggerContext = new LoggerContext("test");
+		this.loggerContext.putObject(Log4J2LoggingSystem.ENVIRONMENT_KEY, environment);
+	}
+
+	@AfterEach
+	void cleanup() {
+		this.loggerContext.removeObject(Log4J2LoggingSystem.ENVIRONMENT_KEY);
+	}
 
 	@AfterEach
 	void stopConfiguration() {
@@ -51,35 +75,106 @@ class Log4j2XmlTests {
 
 	@Test
 	void whenLogExceptionConversionWordIsNotConfiguredThenConsoleUsesDefault() {
-		assertThat(consolePattern()).contains("%xwEx");
+		assertThat(consoleAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+			.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+			.contains("%xwEx");
 	}
 
 	@Test
 	void whenLogExceptionConversionWordIsSetThenConsoleUsesIt() {
 		withSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD.getEnvironmentVariableName(), "custom",
-				() -> assertThat(consolePattern()).contains("custom"));
+				() -> assertThat(consoleAppenderLayout())
+					.asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+					.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+					.contains("custom"));
 	}
 
 	@Test
 	void whenLogLevelPatternIsNotConfiguredThenConsoleUsesDefault() {
-		assertThat(consolePattern()).contains("%5p");
+		assertThat(consoleAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+			.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+			.contains("%5p");
 	}
 
 	@Test
 	void whenLogLevelPatternIsSetThenConsoleUsesIt() {
 		withSystemProperty(LoggingSystemProperty.LEVEL_PATTERN.getEnvironmentVariableName(), "custom",
-				() -> assertThat(consolePattern()).contains("custom"));
+				() -> assertThat(consoleAppenderLayout())
+					.asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+					.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+					.contains("custom"));
 	}
 
 	@Test
 	void whenLogLDateformatPatternIsNotConfiguredThenConsoleUsesDefault() {
-		assertThat(consolePattern()).contains("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		assertThat(consoleAppenderLayout()).asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+			.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+			.contains("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	}
 
 	@Test
 	void whenLogDateformatPatternIsSetThenConsoleUsesIt() {
 		withSystemProperty(LoggingSystemProperty.DATEFORMAT_PATTERN.getEnvironmentVariableName(), "dd-MM-yyyy",
-				() -> assertThat(consolePattern()).contains("dd-MM-yyyy"));
+				() -> assertThat(consoleAppenderLayout())
+					.asInstanceOf(InstanceOfAssertFactories.type(PatternLayout.class))
+					.extracting(PatternLayout::getConversionPattern, InstanceOfAssertFactories.STRING)
+					.contains("dd-MM-yyyy"));
+	}
+
+	@Test
+	void whenStructuredLogIsDisabledThenConsoleUsesDefault() {
+		Map<String, String> properties = Map
+			.of(LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "true");
+		withSystemProperties(properties, () -> assertThat(consoleAppenderLayout()).isInstanceOf(PatternLayout.class));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledAndFormatIsNotSetThenConsoleUsesDefault() {
+		Map<String, String> properties = Map
+			.of(LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false");
+		withSystemProperties(properties, () -> assertThat(consoleAppenderLayout()).isInstanceOf(PatternLayout.class));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledAndFormatIsEmptyThenConsoleUsesDefault() {
+		Map<String, String> properties = Map.of(
+				LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false",
+				LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "");
+		withSystemProperties(properties, () -> assertThat(consoleAppenderLayout()).isInstanceOf(PatternLayout.class));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledThenConsoleUsesIt() {
+		Map<String, String> properties = Map.of(
+				LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false",
+				LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "ecs");
+		withSystemProperties(properties,
+				() -> assertThat(consoleAppenderLayout()).isInstanceOf(StructuredLogLayout.class));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledAndCharsetIsSetThenConsoleUsesIt() {
+		Map<String, String> properties = Map.of(
+				LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false",
+				LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "ecs",
+				LoggingSystemProperty.CONSOLE_CHARSET.getEnvironmentVariableName(), "ISO_8859_1");
+		withSystemProperties(properties,
+				() -> assertThat(consoleAppenderLayout())
+					.asInstanceOf(InstanceOfAssertFactories.type(StructuredLogLayout.class))
+					.extracting(StructuredLogLayout::getCharset, InstanceOfAssertFactories.type(Charset.class))
+					.isEqualTo(StandardCharsets.ISO_8859_1));
+	}
+
+	@Test
+	void whenStructuredLogIsEnabledAndCharsetIsNotSetThenConsoleUsesStructuredLoggingWithDefaultCharset() {
+		Map<String, String> properties = Map.of(
+				LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName(), "false",
+				LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getEnvironmentVariableName(), "ecs");
+		withSystemProperties(properties,
+				() -> assertThat(consoleAppenderLayout())
+					.asInstanceOf(InstanceOfAssertFactories.type(StructuredLogLayout.class))
+					.extracting(StructuredLogLayout::getCharset, InstanceOfAssertFactories.type(Charset.class))
+					.isEqualTo(StandardCharsets.UTF_8));
 	}
 
 	protected void withSystemProperty(String name, String value, Runnable action) {
@@ -93,10 +188,35 @@ class Log4j2XmlTests {
 		}
 	}
 
-	private String consolePattern() {
+	protected static void withSystemProperties(Map<String, String> properties, Runnable action) {
+		Map<String, String> previousMap = new HashMap<>(properties.size());
+		properties.forEach((name, newValue) -> {
+			String previousValue = System.getProperty(name);
+			previousMap.put(name, previousValue);
+
+			System.setProperty(name, newValue);
+		});
+
+		try {
+			action.run();
+		}
+		finally {
+			properties.forEach((name, newValue) -> {
+				String previousValue = previousMap.get(name);
+				if (previousValue != null) {
+					System.setProperty(name, previousValue);
+				}
+				else {
+					System.clearProperty(name);
+				}
+			});
+		}
+	}
+
+	private Layout<? extends Serializable> consoleAppenderLayout() {
 		prepareConfiguration();
 		assertThat(this.configuration).isNotNull();
-		return ((PatternLayout) this.configuration.getAppender("Console").getLayout()).getConversionPattern();
+		return this.configuration.getAppender("Console").getLayout();
 	}
 
 	protected void prepareConfiguration() {
@@ -105,9 +225,8 @@ class Log4j2XmlTests {
 	}
 
 	protected Configuration initializeConfiguration() {
-		LoggerContext context = new LoggerContext("test");
 		Configuration configuration = ConfigurationFactory.getInstance()
-			.getConfiguration(context, configurationSource());
+			.getConfiguration(this.loggerContext, configurationSource());
 		configuration.initialize();
 		return configuration;
 	}

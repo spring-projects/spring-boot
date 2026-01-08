@@ -235,6 +235,12 @@
       "defaultValue": true
     },
     {
+      "name": "logging.structured.disable",
+      "type": "java.lang.Boolean",
+      "description": "Whether to explicitly disable structured logging.",
+      "defaultValue": false
+    },
+    {
       "name": "logging.structured.ecs.service.environment",
       "type": "java.lang.String",
       "description": "Structured ECS service environment."

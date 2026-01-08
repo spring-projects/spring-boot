@@ -3,10 +3,18 @@
 	<Properties>
 		<Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
 		<Property name="LOG_LEVEL_PATTERN">%5p</Property>
+		<Property name="CONSOLE_LOG_CHARSET">UTF-8</Property>
 	</Properties>
 	<Appenders>
 		<Console name="STDOUT" target="SYSTEM_OUT" follow="true">
-			<PatternLayout pattern="%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{${LOG_LEVEL_PATTERN}} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}"/>
+			<Select>
+				<SystemPropertyArbiter propertyName="STRUCTURED_LOGGING_ENABLED" propertyValue="true">
+					<StructuredLogLayout format="${sys:CONSOLE_LOG_STRUCTURED_FORMAT}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+				</SystemPropertyArbiter>
+				<DefaultArbiter>
+					<PatternLayout pattern="%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{${LOG_LEVEL_PATTERN}} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}"/>
+				</DefaultArbiter>
+			</Select>
 		</Console>
 	</Appenders>
 	<Loggers>

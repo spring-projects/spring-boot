@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ApplicationProperties}.
  *
  * @author Moritz Halbritter
+ * @author Vasily Pelikh
  */
 class ApplicationPropertiesTests {
 
@@ -40,11 +41,19 @@ class ApplicationPropertiesTests {
 	}
 
 	@Test
-	void bannerModeShouldBeOffIfStructuredLoggingIsEnabled() {
+	void bannerModeShouldBeOffIfStructuredLoggingConsoleFormatIsSet() {
 		ApplicationProperties properties = new ApplicationProperties();
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.format.console", "ecs");
 		assertThat(properties.getBannerMode(environment)).isEqualTo(Mode.OFF);
+	}
+
+	@Test
+	void bannerModeShouldBeConsoleIfStructuredLoggingIsDisabled() {
+		ApplicationProperties properties = new ApplicationProperties();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.structured.disable", "true");
+		assertThat(properties.getBannerMode(environment)).isEqualTo(Mode.CONSOLE);
 	}
 
 	@Test

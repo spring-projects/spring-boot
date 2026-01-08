@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
+ * @author Vasily Pelikh
  */
 class DefaultLogbackConfiguration {
 
@@ -115,6 +116,7 @@ class DefaultLogbackConfiguration {
 		putProperty(config, "FILE_LOG_CHARSET", "${FILE_LOG_CHARSET:-" + DEFAULT_CHARSET + "}");
 		putProperty(config, "FILE_LOG_THRESHOLD", "${FILE_LOG_THRESHOLD:-TRACE}");
 		putProperty(config, "FILE_LOG_STRUCTURED_FORMAT", "${FILE_LOG_STRUCTURED_FORMAT:-}");
+		putProperty(config, "STRUCTURED_LOGGING_DISABLED", "${STRUCTURED_LOGGING_DISABLED:-false}");
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -170,11 +172,14 @@ class DefaultLogbackConfiguration {
 
 	private Encoder<ILoggingEvent> createEncoder(LogbackConfigurator config, String type) {
 		Charset charset = resolveCharset(config, "${" + type + "_LOG_CHARSET}");
-		String structuredLogFormat = resolve(config, "${" + type + "_LOG_STRUCTURED_FORMAT}");
-		if (StringUtils.hasLength(structuredLogFormat)) {
-			StructuredLogEncoder encoder = createStructuredLogEncoder(structuredLogFormat);
-			encoder.setCharset(charset);
-			return encoder;
+		boolean structuredLogDisabled = resolveBoolean(config, "${STRUCTURED_LOGGING_DISABLED}");
+		if (!structuredLogDisabled) {
+			String structuredLogFormat = resolve(config, "${" + type + "_LOG_STRUCTURED_FORMAT}");
+			if (StringUtils.hasLength(structuredLogFormat)) {
+				StructuredLogEncoder encoder = createStructuredLogEncoder(structuredLogFormat);
+				encoder.setCharset(charset);
+				return encoder;
+			}
 		}
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setCharset(charset);

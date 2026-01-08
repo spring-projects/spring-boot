@@ -67,6 +67,13 @@ class SampleStructuredLoggingApplicationTests {
 	}
 
 	@Test
+	void structuredDisabled(CapturedOutput output) {
+		SampleStructuredLoggingApplication.main(new String[] { "--spring.profiles.active=structured-disabled" });
+		assertThat(output).contains(" :: Spring Boot :: ");
+		assertThat(output).doesNotContain("epoch=").doesNotContain("msg=\"Starting SampleStructuredLoggingApplication");
+	}
+
+	@Test
 	void shouldCaptureCustomizerError(CapturedOutput output) {
 		SampleStructuredLoggingApplication.main(new String[] { "--spring.profiles.active=on-error" });
 		assertThat(output).contains("The name 'test' has already been written");

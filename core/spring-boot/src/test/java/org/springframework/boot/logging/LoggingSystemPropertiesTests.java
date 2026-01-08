@@ -45,6 +45,7 @@ import static org.mockito.Mockito.spy;
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
+ * @author Vasily Pelikh
  */
 class LoggingSystemPropertiesTests {
 
@@ -214,6 +215,22 @@ class LoggingSystemPropertiesTests {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.threshold.file", "false")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperty.FILE_THRESHOLD.getEnvironmentVariableName()))
 			.isEqualTo("OFF");
+	}
+
+	@Test
+	void shouldSupportEnabledStructuredLogging() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.structured.disable", "true"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName()))
+			.isEqualTo("true");
+	}
+
+	@Test
+	void shouldSupportDisabledStructuredLogging() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.structured.disable", "false"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getEnvironmentVariableName()))
+			.isEqualTo("false");
 	}
 
 	@Test

@@ -33,6 +33,7 @@ import org.springframework.util.Assert;
  * Spring application properties.
  *
  * @author Moritz Halbritter
+ * @author Vasily Pelikh
  */
 class ApplicationProperties {
 
@@ -105,9 +106,18 @@ class ApplicationProperties {
 		if (this.bannerMode != null) {
 			return this.bannerMode;
 		}
-		String applicationPropertyName = LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getApplicationPropertyName();
-		Assert.state(applicationPropertyName != null, "applicationPropertyName must not be null");
-		boolean structuredLoggingEnabled = environment.containsProperty(applicationPropertyName);
+
+		String disabledPropertyName = LoggingSystemProperty.STRUCTURED_LOGGING_DISABLED.getApplicationPropertyName();
+		Assert.state(disabledPropertyName != null, "disabledPropertyName must not be null");
+		boolean structuredLoggingDisabledProperty = environment.getProperty(disabledPropertyName, Boolean.class,
+				Boolean.FALSE);
+		if (structuredLoggingDisabledProperty) {
+			return Mode.CONSOLE;
+		}
+
+		String formatPropertyName = LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getApplicationPropertyName();
+		Assert.state(formatPropertyName != null, "formatPropertyName must not be null");
+		boolean structuredLoggingEnabled = environment.containsProperty(formatPropertyName);
 		return (structuredLoggingEnabled) ? Mode.OFF : Banner.Mode.CONSOLE;
 	}
 

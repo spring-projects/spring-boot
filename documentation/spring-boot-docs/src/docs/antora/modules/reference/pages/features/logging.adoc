@@ -373,6 +373,10 @@ The properties that are transferred are described in the following table:
 | `LOG_LEVEL_PATTERN`
 | The format to use when rendering the log level (default `%5p`).
 
+| configprop:logging.structured.disable[]
+| `STRUCTURED_LOGGING_DISABLED`
+| If structured logging should be explicitly disabled (default `false`).
+
 | configprop:logging.structured.format.console[]
 | `CONSOLE_LOG_STRUCTURED_FORMAT`
 | The structured logging format to use for console logging.
@@ -451,6 +455,9 @@ Spring Boot supports structured logging and has support for the following JSON f
 * xref:#features.logging.structured.logstash[Logstash]
 
 To enable structured logging, set the property configprop:logging.structured.format.console[] (for console output) or configprop:logging.structured.format.file[] (for file output) to the id of the format you want to use.
+
+When testing, you most likely want to see the logs in a usual human-readable format.
+In order to explicitly disable structured logging, you can set the configprop:logging.structured.disable[] property to `true`.
 
 If you are using xref:#features.logging.custom-log-configuration[Custom Log Configuration], update your configuration to respect `CONSOLE_LOG_STRUCTURED_FORMAT` and `FILE_LOG_STRUCTURED_FORMAT` system properties.
 Take `CONSOLE_LOG_STRUCTURED_FORMAT` for example:

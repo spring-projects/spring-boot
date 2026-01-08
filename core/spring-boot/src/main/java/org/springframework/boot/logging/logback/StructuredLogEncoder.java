@@ -59,6 +59,10 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 		this.format = format;
 	}
 
+	public @Nullable Charset getCharset() {
+		return this.charset;
+	}
+
 	public void setCharset(@Nullable Charset charset) {
 		this.charset = charset;
 	}
