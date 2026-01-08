@@ -1494,7 +1494,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-shade-plugin/releases/tag/maven-shade-plugin-{version}")
 		}
 	}
-	library("Maven Source Plugin", "3.3.1") {
+	library("Maven Source Plugin", "3.4.0") {
 		prohibit {
 			contains "-beta-"
 			because "we don't want betas"
