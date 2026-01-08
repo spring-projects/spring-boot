@@ -1470,7 +1470,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-javadoc-plugin/releases/tag/maven-javadoc-plugin-{version}")
 		}
 	}
-	library("Maven Resources Plugin", "3.3.1") {
+	library("Maven Resources Plugin", "3.4.0") {
 		prohibit {
 			contains "-beta-"
 			because "we don't want betas"
