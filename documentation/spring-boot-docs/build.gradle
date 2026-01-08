@@ -161,7 +161,9 @@ dependencies {
 	implementation("jakarta.validation:jakarta.validation-api")
 	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.apache.commons:commons-dbcp2")
-	implementation("org.apache.kafka:kafka-streams")
+	implementation("org.apache.kafka:kafka-streams") {
+		exclude group: "org.lz4", module: "lz4-java"
+	}
 	implementation("org.apache.logging.log4j:log4j-to-slf4j")
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
 	implementation("org.assertj:assertj-core")
@@ -208,7 +210,9 @@ dependencies {
 	implementation("org.springframework.data:spring-data-r2dbc")
 	implementation("org.springframework.graphql:spring-graphql")
 	implementation("org.springframework.graphql:spring-graphql-test")
-	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.kafka:spring-kafka") {
+		exclude group: "org.lz4", module: "lz4-java"
+	}
 	implementation("org.springframework.kafka:spring-kafka-test")
 	implementation("org.springframework.pulsar:spring-pulsar")
 	implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
@@ -409,9 +413,13 @@ project.rootProject.gradle.projectsEvaluated {
 		.findAll { !it.name.startsWith('spring-boot-starter') }
 		.each { javadocProject ->
 			dependencies {
-				javadoc(project(javadocProject.path))
+				javadoc(project(javadocProject.path)) {
+					exclude group: "org.lz4", module: "lz4-java"
+				}
 				if (javadocProject.plugins.hasPlugin(OptionalDependenciesPlugin)) {
-					javadoc(project(path: javadocProject.path, configuration: 'optional'))
+					javadoc(project(path: javadocProject.path, configuration: 'optional')) {
+						exclude group: "org.lz4", module: "lz4-java"
+					}
 				}
 			}
 		}

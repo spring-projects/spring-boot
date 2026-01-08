@@ -1924,11 +1924,7 @@ bom {
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
 		}
 	}
-	library("Rabbit Stream Client", "0.23.0") {
-		prohibit {
-			versionRange "[0.24.0,)"
-			because "It requires Netty 4.2.0"
-		}
+	library("Rabbit Stream Client", "1.4.0") {
 		group("com.rabbitmq") {
 			modules = [
 					"stream-client"
