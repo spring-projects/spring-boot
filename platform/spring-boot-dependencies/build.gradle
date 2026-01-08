@@ -1333,7 +1333,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-antrun-plugin/releases/tag/maven-antrun-plugin-{version}")
 		}
 	}
-	library("Maven Assembly Plugin", "3.7.1") {
+	library("Maven Assembly Plugin", "3.8.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-assembly-plugin"
