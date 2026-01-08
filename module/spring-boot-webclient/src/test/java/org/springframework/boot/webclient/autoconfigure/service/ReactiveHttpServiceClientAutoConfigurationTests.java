@@ -34,6 +34,7 @@ import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientPropertiesAutoConfiguration;
 import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.webclient.WebClientCustomizer;
@@ -69,8 +70,9 @@ import static org.mockito.Mockito.mock;
 class ReactiveHttpServiceClientAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ReactiveHttpServiceClientAutoConfiguration.class,
-				ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HttpServiceClientPropertiesAutoConfiguration.class,
+				ReactiveHttpServiceClientAutoConfiguration.class, ReactiveHttpClientAutoConfiguration.class,
+				WebClientAutoConfiguration.class));
 
 	@Test
 	void configuresClientFromProperties() {

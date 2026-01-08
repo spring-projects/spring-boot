@@ -40,6 +40,7 @@ import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.imperative.ImperativeHttpClientAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.service.HttpServiceClientPropertiesAutoConfiguration;
 import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -68,7 +69,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
- * Tests for {@link HttpServiceClientAutoConfiguration},
+ * Tests for {@link HttpServiceClientPropertiesAutoConfiguration},
  * {@link PropertiesRestClientHttpServiceGroupConfigurer} and
  * {@link RestClientCustomizerHttpServiceGroupConfigurer}.
  *
@@ -77,8 +78,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 class HttpServiceClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(HttpServiceClientAutoConfiguration.class,
-				ImperativeHttpClientAutoConfiguration.class, RestClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HttpServiceClientPropertiesAutoConfiguration.class,
+				HttpServiceClientAutoConfiguration.class, ImperativeHttpClientAutoConfiguration.class,
+				RestClientAutoConfiguration.class));
 
 	@Test
 	void configuresClientFromProperties() {

@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.HttpRedirects;
 import org.springframework.boot.http.client.autoconfigure.HttpClientProperties;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -50,28 +49,23 @@ class HttpServiceClientPropertiesTests {
 		environment.setProperty("spring.http.serviceclient.c1.ssl.bundle", "usual");
 		environment.setProperty("spring.http.serviceclient.c2.base-url", "https://example.com/rossen");
 		environment.setProperty("spring.http.serviceclient.c3.base-url", "https://example.com/phil");
-		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
-			applicationContext.setEnvironment(environment);
-			applicationContext.register(PropertiesConfiguration.class);
-			applicationContext.refresh();
-			HttpServiceClientProperties properties = applicationContext.getBean(HttpServiceClientProperties.class);
-			assertThat(properties).containsOnlyKeys("c1", "c2", "c3");
-			HttpClientProperties c1 = properties.get("c1");
-			assertThat(c1).isNotNull();
-			assertThat(c1.getBaseUrl()).isEqualTo("https://example.com/olga");
-			assertThat(c1.getDefaultHeader()).containsOnly(Map.entry("secure", List.of("very", "somewhat")),
-					Map.entry("test", List.of("true")));
-			assertThat(c1.getRedirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
-			assertThat(c1.getConnectTimeout()).isEqualTo(Duration.ofSeconds(10));
-			assertThat(c1.getReadTimeout()).isEqualTo(Duration.ofSeconds(20));
-			assertThat(c1.getSsl().getBundle()).isEqualTo("usual");
-			HttpClientProperties c2 = properties.get("c2");
-			assertThat(c2).isNotNull();
-			assertThat(c2.getBaseUrl()).isEqualTo("https://example.com/rossen");
-			HttpClientProperties c3 = properties.get("c3");
-			assertThat(c3).isNotNull();
-			assertThat(c3.getBaseUrl()).isEqualTo("https://example.com/phil");
-		}
+		HttpServiceClientProperties properties = HttpServiceClientProperties.bind(environment);
+		HttpClientProperties c1 = properties.get("c1");
+		assertThat(c1).isNotNull();
+		assertThat(c1.getBaseUrl()).isEqualTo("https://example.com/olga");
+		assertThat(c1.getDefaultHeader()).containsOnly(Map.entry("secure", List.of("very", "somewhat")),
+				Map.entry("test", List.of("true")));
+		assertThat(c1.getRedirects()).isEqualTo(HttpRedirects.DONT_FOLLOW);
+		assertThat(c1.getConnectTimeout()).isEqualTo(Duration.ofSeconds(10));
+		assertThat(c1.getReadTimeout()).isEqualTo(Duration.ofSeconds(20));
+		assertThat(c1.getSsl().getBundle()).isEqualTo("usual");
+		HttpClientProperties c2 = properties.get("c2");
+		assertThat(c2).isNotNull();
+		assertThat(c2.getBaseUrl()).isEqualTo("https://example.com/rossen");
+		HttpClientProperties c3 = properties.get("c3");
+		assertThat(c3).isNotNull();
+		assertThat(c3.getBaseUrl()).isEqualTo("https://example.com/phil");
+		assertThat(properties.get("c4")).isNull();
 	}
 
 	@Configuration
