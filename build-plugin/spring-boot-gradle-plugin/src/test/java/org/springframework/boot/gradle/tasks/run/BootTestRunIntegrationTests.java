@@ -162,7 +162,7 @@ class BootTestRunIntegrationTests {
 	private void copyApplication(String name) throws IOException {
 		File output = new File(this.gradleBuild.getProjectDir(), "src/test/java/com/example/boottestrun/" + name);
 		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/boottestrun/" + name), output);
+		FileSystemUtils.copyRecursively(new File("src/test/resources/com/example/boottestrun/" + name), output);
 	}
 
 	private String canonicalPathOf(String path) throws IOException {

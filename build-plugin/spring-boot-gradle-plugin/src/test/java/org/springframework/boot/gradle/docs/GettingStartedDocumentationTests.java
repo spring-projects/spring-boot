@@ -31,6 +31,7 @@ import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 @ExtendWith(GradleMultiDslExtension.class)
 class GettingStartedDocumentationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	// NOTE: We can't run any 'apply-plugin' tests because during a release the

@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 @ExtendWith(GradleMultiDslExtension.class)
 class ManagingDependenciesDocumentationTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@TestTemplate

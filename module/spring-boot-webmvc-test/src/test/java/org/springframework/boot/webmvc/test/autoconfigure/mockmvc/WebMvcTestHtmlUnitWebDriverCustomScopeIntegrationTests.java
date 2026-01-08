@@ -16,6 +16,7 @@
 
 package org.springframework.boot.webmvc.test.autoconfigure.mockmvc;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -44,8 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WebMvcTestHtmlUnitWebDriverCustomScopeIntegrationTests {
 
 	// gh-7454
-
-	private static WebDriver previousWebDriver;
+	private static @Nullable WebDriver previousWebDriver;
 
 	@Autowired
 	private WebDriver webDriver;

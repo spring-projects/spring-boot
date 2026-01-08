@@ -16,8 +16,6 @@
 
 package org.springframework.boot.build.architecture;
 
-import java.util.Collections;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
@@ -39,30 +37,22 @@ public class ArchitecturePlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		ArchitectureCheckExtension extension = project.getExtensions()
-			.create("architectureCheck", ArchitectureCheckExtension.class);
-		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> registerTasks(project, extension));
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> registerTasks(project));
 	}
 
-	private void registerTasks(Project project, ArchitectureCheckExtension extension) {
+	private void registerTasks(Project project) {
 		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 		for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
-			registerArchitectureCheck(sourceSet, "java", project).configure((task) -> {
-				task.setClasses(project.files(project.getTasks()
+			registerArchitectureCheck(sourceSet, "java", project)
+				.configure((task) -> task.setClasses(project.files(project.getTasks()
 					.named(sourceSet.getCompileTaskName("java"), JavaCompile.class)
-					.flatMap((compile) -> compile.getDestinationDirectory())));
-				task.getNullMarkedEnabled().set(extension.getNullMarked().getEnabled());
-				task.getNullMarkedIgnoredPackages().set(extension.getNullMarked().getIgnoredPackages());
-			});
+					.flatMap((compile) -> compile.getDestinationDirectory()))));
 			project.getPlugins()
 				.withId("org.jetbrains.kotlin.jvm",
-						(kotlinPlugin) -> registerArchitectureCheck(sourceSet, "kotlin", project).configure((task) -> {
-							task.setClasses(project.files(project.getTasks()
+						(kotlinPlugin) -> registerArchitectureCheck(sourceSet, "kotlin", project)
+							.configure((task) -> task.setClasses(project.files(project.getTasks()
 								.named(sourceSet.getCompileTaskName("kotlin"), KotlinCompileTool.class)
-								.flatMap((compile) -> compile.getDestinationDirectory())));
-							task.getNullMarkedEnabled().set(false);
-							task.getNullMarkedIgnoredPackages().set(Collections.emptySet());
-						}));
+								.flatMap((compile) -> compile.getDestinationDirectory())))));
 		}
 	}
 

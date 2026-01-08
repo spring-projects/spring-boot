@@ -62,8 +62,6 @@ dependencies {
 	testRuntimeOnly("org.hibernate.validator:hibernate-validator")
 }
 
-architectureCheck {
-	nullMarked {
-		enabled = false
-	}
+nullability {
+	requireExplicitNullMarking = false
 }

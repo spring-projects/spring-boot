@@ -49,6 +49,7 @@ public class GradleBuildInjectionExtension implements BeforeEachCallback {
 			.gradleVersion(GradleVersions.minimumCompatible())
 			.bootVersion(this.bootVersion);
 		Field field = ReflectionUtils.findField(context.getRequiredTestClass(), "gradleBuild");
+		Assert.notNull(field, "No gradleBuild field found in " + context.getRequiredTestClass().getName());
 		field.setAccessible(true);
 		field.set(context.getRequiredTestInstance(), gradleBuild);
 	}

@@ -29,8 +29,10 @@ import org.springframework.data.cassandra.core.mapping.Table;
 public class ExampleEntity {
 
 	@PrimaryKey
+	@SuppressWarnings("NullAway.Init")
 	private String id;
 
+	@SuppressWarnings("NullAway.Init")
 	private String description;
 
 	public String getId() {

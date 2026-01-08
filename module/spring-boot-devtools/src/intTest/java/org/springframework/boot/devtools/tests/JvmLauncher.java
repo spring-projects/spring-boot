@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -43,7 +44,7 @@ class JvmLauncher implements BeforeTestExecutionCallback {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
-	private File outputDirectory;
+	private @Nullable File outputDirectory;
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {

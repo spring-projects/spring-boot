@@ -18,6 +18,8 @@ package org.springframework.boot.data.ldap.autoconfigure.domain.person;
 
 import javax.naming.Name;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.DnAttribute;
 import org.springframework.ldap.odm.annotations.Entry;
@@ -27,10 +29,10 @@ import org.springframework.ldap.odm.annotations.Id;
 public class Person {
 
 	@Id
-	private Name dn;
+	private @Nullable Name dn;
 
 	@Attribute(name = "cn")
 	@DnAttribute(value = "cn", index = 1)
-	private String fullName;
+	private @Nullable String fullName;
 
 }

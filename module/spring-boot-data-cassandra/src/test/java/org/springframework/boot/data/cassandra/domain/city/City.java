@@ -16,6 +16,8 @@
 
 package org.springframework.boot.data.cassandra.domain.city;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.CassandraType.Name;
 import org.springframework.data.cassandra.core.mapping.Column;
@@ -27,21 +29,21 @@ public class City {
 
 	@PrimaryKey
 	@CassandraType(type = Name.BIGINT)
-	private Long id;
+	private @Nullable Long id;
 
 	@Column
-	private String name;
+	private @Nullable String name;
 
 	@Column
-	private String state;
+	private @Nullable String state;
 
 	@Column
-	private String country;
+	private @Nullable String country;
 
 	@Column
-	private String map;
+	private @Nullable String map;
 
-	public Long getId() {
+	public @Nullable Long getId() {
 		return this.id;
 	}
 
@@ -49,7 +51,7 @@ public class City {
 		this.id = id;
 	}
 
-	public String getName() {
+	public @Nullable String getName() {
 		return this.name;
 	}
 
@@ -57,7 +59,7 @@ public class City {
 		this.name = name;
 	}
 
-	public String getState() {
+	public @Nullable String getState() {
 		return this.state;
 	}
 
@@ -65,7 +67,7 @@ public class City {
 		this.state = state;
 	}
 
-	public String getCountry() {
+	public @Nullable String getCountry() {
 		return this.country;
 	}
 
@@ -73,7 +75,7 @@ public class City {
 		this.country = country;
 	}
 
-	public String getMap() {
+	public @Nullable String getMap() {
 		return this.map;
 	}
 

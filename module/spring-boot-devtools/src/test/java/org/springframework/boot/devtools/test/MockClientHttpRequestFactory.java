@@ -24,6 +24,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.jspecify.annotations.Nullable;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -105,11 +107,11 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 		private final int delay;
 
-		private final byte[] payload;
+		private final byte @Nullable [] payload;
 
 		private final HttpStatus status;
 
-		Response(int delay, byte[] payload, HttpStatus status) {
+		Response(int delay, byte @Nullable [] payload, HttpStatus status) {
 			this.delay = delay;
 			this.payload = payload;
 			this.status = status;

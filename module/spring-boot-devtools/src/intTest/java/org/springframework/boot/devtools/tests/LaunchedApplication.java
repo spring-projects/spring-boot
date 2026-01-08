@@ -20,6 +20,8 @@ import java.io.File;
 import java.time.Instant;
 import java.util.function.BiFunction;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * An application launched by {@link ApplicationLauncher}.
  *
@@ -35,14 +37,14 @@ class LaunchedApplication {
 
 	private final Process localProcess;
 
-	private Process remoteProcess;
+	private @Nullable Process remoteProcess;
 
 	private final Instant launchTime = Instant.now();
 
-	private final BiFunction<Integer, File, Process> remoteProcessRestarter;
+	private final @Nullable BiFunction<Integer, File, Process> remoteProcessRestarter;
 
 	LaunchedApplication(File classesDirectory, File standardOut, File standardError, Process localProcess,
-			Process remoteProcess, BiFunction<Integer, File, Process> remoteProcessRestarter) {
+			@Nullable Process remoteProcess, @Nullable BiFunction<Integer, File, Process> remoteProcessRestarter) {
 		this.classesDirectory = classesDirectory;
 		this.standardOut = standardOut;
 		this.standardError = standardError;
@@ -63,7 +65,7 @@ class LaunchedApplication {
 		stop(this.remoteProcess);
 	}
 
-	private void stop(Process process) throws InterruptedException {
+	private void stop(@Nullable Process process) throws InterruptedException {
 		if (process != null) {
 			process.destroy();
 			process.waitFor();

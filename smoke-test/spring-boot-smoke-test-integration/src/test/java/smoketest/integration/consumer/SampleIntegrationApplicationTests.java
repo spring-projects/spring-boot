@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 
 import org.awaitility.Awaitility;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,7 +53,7 @@ import static org.hamcrest.Matchers.containsString;
 @ExtendWith(OutputCaptureExtension.class)
 class SampleIntegrationApplicationTests {
 
-	private ConfigurableApplicationContext context;
+	private @Nullable ConfigurableApplicationContext context;
 
 	@AfterEach
 	void stopAndCheck(CapturedOutput output) {
@@ -82,12 +83,13 @@ class SampleIntegrationApplicationTests {
 		awaitOutputContaining(this.context.getBean(ServiceProperties.class).getOutputDir(), "testviamg");
 	}
 
-	private void awaitOutputContaining(File outputDir, String requiredContents) {
+	private void awaitOutputContaining(@Nullable File outputDir, String requiredContents) {
+		assertThat(outputDir).isNotNull();
 		Awaitility.waitAtMost(Duration.ofSeconds(30))
 			.until(() -> outputIn(outputDir), containsString(requiredContents));
 	}
 
-	private String outputIn(File outputDir) throws IOException {
+	private @Nullable String outputIn(File outputDir) throws IOException {
 		Resource[] resources = findResources(outputDir);
 		if (resources.length == 0) {
 			return null;

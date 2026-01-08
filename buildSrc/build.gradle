@@ -26,6 +26,7 @@ repositories {
 	mavenCentral()
 	spring.mavenRepositoriesFor("${springFrameworkVersion}")
 	gradlePluginPortal()
+	maven { url = "https://repo.spring.io/snapshot" }
 }
 
 java {

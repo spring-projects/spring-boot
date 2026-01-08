@@ -306,12 +306,6 @@ final class ArchitectureRules {
 			.allowEmptyShould(true);
 	}
 
-	static ArchRule packagesShouldBeAnnotatedWithNullMarked(Set<String> ignoredPackages) {
-		return ArchRuleDefinition.all(packages((javaPackage) -> !ignoredPackages.contains(javaPackage.getName())))
-			.should(beAnnotatedWithNullMarked())
-			.allowEmptyShould(true);
-	}
-
 	private static ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType(
 			String annotation) {
 		return check("not specify only a type that is the same as the method's return type", (item, events) -> {
@@ -605,18 +599,6 @@ final class ArchitectureRules {
 			@Override
 			public Iterable<JavaPackage> doTransform(JavaClasses collection) {
 				return collection.stream().map(JavaClass::getPackage).filter(filter).collect(Collectors.toSet());
-			}
-		};
-	}
-
-	private static ArchCondition<JavaPackage> beAnnotatedWithNullMarked() {
-		return new ArchCondition<>("be annotated with @NullMarked") {
-			@Override
-			public void check(JavaPackage item, ConditionEvents events) {
-				if (!item.isAnnotatedWith("org.jspecify.annotations.NullMarked")) {
-					String message = String.format("Package %s is not annotated with @NullMarked", item.getName());
-					events.add(SimpleConditionEvent.violated(item, message));
-				}
 			}
 		};
 	}

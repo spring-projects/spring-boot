@@ -37,8 +37,6 @@ tasks.configureEach {
 	}
 }
 
-architectureCheck {
-	nullMarked {
-		enabled = false
-	}
+nullability {
+	requireExplicitNullMarking = false
 }

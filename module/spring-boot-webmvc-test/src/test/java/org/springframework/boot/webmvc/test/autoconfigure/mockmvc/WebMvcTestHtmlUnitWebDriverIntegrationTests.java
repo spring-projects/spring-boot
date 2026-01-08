@@ -16,6 +16,7 @@
 
 package org.springframework.boot.webmvc.test.autoconfigure.mockmvc;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -42,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @AutoConfigureMockMvc(htmlUnit = @HtmlUnit(url = "http://localhost:8181"))
 class WebMvcTestHtmlUnitWebDriverIntegrationTests {
 
-	private static WebDriver previousWebDriver;
+	private static @Nullable WebDriver previousWebDriver;
 
 	@Autowired
 	private WebDriver webDriver;
@@ -60,8 +61,8 @@ class WebMvcTestHtmlUnitWebDriverIntegrationTests {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
-		assertThatExceptionOfType(NoSuchSessionException.class).isThrownBy(previousWebDriver::getWindowHandle);
 		assertThat(previousWebDriver).isNotNull().isNotSameAs(this.webDriver);
+		assertThatExceptionOfType(NoSuchSessionException.class).isThrownBy(previousWebDriver::getWindowHandle);
 		assertThat(this.webDriver.getCurrentUrl()).isEqualTo("http://localhost:8181/html");
 	}
 

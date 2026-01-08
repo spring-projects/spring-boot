@@ -31,7 +31,9 @@ import java.util.jar.JarFile;
 import com.github.dockerjava.api.model.ContainerConfig;
 import org.assertj.core.api.Condition;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -62,6 +64,7 @@ import static org.assertj.core.api.Assertions.entry;
 @ExtendWith({ GradleBuildInjectionExtension.class, GradleBuildExtension.class })
 class PaketoBuilderTests {
 
+	@SuppressWarnings("NullAway.Init")
 	GradleBuild gradleBuild;
 
 	@BeforeEach
@@ -81,7 +84,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
@@ -113,7 +116,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withCommand("--server.port=9090");
@@ -131,7 +134,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
@@ -140,7 +143,7 @@ class PaketoBuilderTests {
 		}
 		this.gradleBuild.expectDeprecationMessages("BOM table is deprecated");
 		result = buildImage(imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
 			container.waitingFor(Wait.forHttp("/test")).start();
@@ -158,7 +161,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + projectName;
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName, "assemble", "bootDistZip");
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
@@ -195,7 +198,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + projectName;
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName, "assemble", "bootDistZip");
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
@@ -233,7 +236,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
@@ -266,7 +269,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImageWithRetry(imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
@@ -316,7 +319,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
@@ -346,7 +349,7 @@ class PaketoBuilderTests {
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.task(":bootBuildImage")).extracting(BuildTask::getOutcome).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
@@ -569,7 +572,7 @@ class PaketoBuilderTests {
 
 	private static class DigestCapturingCondition extends Condition<Object> {
 
-		private static String digest;
+		private static @Nullable String digest;
 
 		DigestCapturingCondition() {
 			super(predicate(), "a value starting with 'sha256:'");
@@ -583,6 +586,7 @@ class PaketoBuilderTests {
 		}
 
 		String getDigest() {
+			assertThat(digest).isNotNull();
 			return digest;
 		}
 
@@ -590,14 +594,15 @@ class PaketoBuilderTests {
 
 	private static class DigestsCapturingCondition extends Condition<Object> {
 
-		private static List<String> digests;
+		private static @Nullable List<String> digests;
 
 		DigestsCapturingCondition() {
 			super(predicate(), "a value starting with 'sha256:'");
 		}
 
 		private static Predicate<Object> predicate() {
-			digests = new ArrayList<>();
+			List<String> digests = new ArrayList<>();
+			DigestsCapturingCondition.digests = digests;
 			return (sha) -> {
 				digests.add(sha.toString());
 				return sha.toString().startsWith("sha256:");
@@ -605,6 +610,7 @@ class PaketoBuilderTests {
 		}
 
 		String getDigest(int index) {
+			assertThat(digests).isNotNull();
 			return digests.get(index);
 		}
 
