@@ -1,8 +1,8 @@
 [[howto.class-data-sharing]]
-= Class Data Sharing
+= Class Data Sharing and AOT Cache
 
-This section includes information about using Class Data Sharing (CDS) with Spring Boot applications.
-For an overview of Spring Boot support for CDS, see xref:reference:packaging/class-data-sharing.adoc[].
+This section includes information about using Class Data Sharing (CDS) and AOT Cache with Spring Boot applications.
+For an overview of Spring Boot support for CDS and AOT Cache, see xref:reference:packaging/class-data-sharing.adoc[].
 
 
 
@@ -18,11 +18,31 @@ The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring
 
 
 
+[[howto.class-data-sharing.buildpacks-aot-cache]]
+== Packaging an Application Using AOT Cache and Buildpacks
+
+Spring Boot's xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[support for Cloud Native Buildpacks] along with the https://paketo.io/docs/reference/java-reference[Paketo Java buildpack] and its https://paketo.io/docs/reference/java-reference/#spring-boot-applications[Spring Boot support] can be used to generate a Docker image containing an AOT Cache-optimized application.
+
+To enable the AOT Cache in a generated Docker image, you need to use Java 25 or later, and the buildpack environment variable `BP_JVM_AOTCACHE_ENABLED` should be set to `true` when building the image as described in the xref:maven-plugin:build-image.adoc#build-image.examples.builder-configuration[Maven plugin] and xref:gradle-plugin:packaging-oci-image.adoc#build-image.examples.builder-configuration[Gradle plugin] documentation.
+This will cause the buildpack to do a training run of the application, save the AOT Cache in the image, and use this cache when launching the application.
+
+The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables, like `TRAINING_RUN_JAVA_TOOL_OPTIONS` that allows to override the default `JAVA_TOOL_OPTIONS`, only for the AOT Cache training run.
+
+
+
 [[howto.class-data-sharing.dockerfiles]]
 == Packaging an Application Using CDS and Dockerfiles
 
 If you don't want to use Cloud Native Buildpacks, it is also possible to use CDS with a `Dockerfile`.
 For more information about that, please see the xref:reference:packaging/container-images/dockerfiles.adoc#packaging.container-images.dockerfiles.cds[Dockerfiles reference documentation].
+
+
+
+[[howto.class-data-sharing.dockerfiles-aot-cache]]
+== Packaging an Application Using AOT Cache and Dockerfiles
+
+If you don't want to use Cloud Native Buildpacks, it is also possible to use AOT Cache with a `Dockerfile`.
+For more information about that, please see the xref:reference:packaging/container-images/dockerfiles.adoc#packaging.container-images.dockerfiles.aot-cache[Dockerfiles reference documentation].
 
 
 
