@@ -107,8 +107,10 @@ class ElasticsearchRestClientConfigurations {
 				builder.setDefaultHeaders(
 						new Header[] { new BasicHeader("Authorization", "ApiKey " + connectionDetails.getApiKey()) });
 			}
-			builder.setHttpClientConfigCallback((httpClientBuilder) -> builderCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(httpClientBuilder)));
+			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
+				httpClientBuilder.disableContentCompression();
+				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
+			});
 			builder.setConnectionManagerCallback((connectionManagerBuilder) -> builderCustomizers.orderedStream()
 				.forEach((customizer) -> customizer.customize(connectionManagerBuilder)));
 			builder.setConnectionConfigCallback((connectionConfigBuilder) -> builderCustomizers.orderedStream()
