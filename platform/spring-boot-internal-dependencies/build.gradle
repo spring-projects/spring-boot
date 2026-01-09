@@ -24,7 +24,10 @@ bom {
 	upgrade {
 		policy = "same-major-version"
 		gitHub {
-			issueLabels = ["type: task"]
+			issueLabels = [
+				"type: task",
+				"status: team-only"
+			]
 		}
 	}
 	library("API Guardian", "1.1.2") {
