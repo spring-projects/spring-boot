@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
@@ -30,6 +31,7 @@ import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.PathSensitive;
@@ -159,6 +161,20 @@ public abstract class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	public abstract MapProperty<String, String> getEnvironment();
+
+	/**
+	 * Returns environment variables contributed from the command line.
+	 * Each entry must be in the form NAME=VALUE.
+	 * @return the environment variables from the command line
+	 */
+	@Internal
+	public abstract ListProperty<String> getEnvironmentFromCommandLine();
+
+	@Option(option = "environment",
+			description = "Environment variable to set for the build (NAME=VALUE). Can be specified multiple times.")
+	public void environment(List<String> environment) {
+		getEnvironmentFromCommandLine().addAll(environment);
+	}
 
 	/**
 	 * Returns whether caches should be cleaned before packaging.
@@ -413,8 +429,8 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeEnvironment(BuildRequest request) {
-		Map<String, String> environment = getEnvironment().getOrNull();
-		if (!CollectionUtils.isEmpty(environment)) {
+		Map<String, String> environment = getEffectiveEnvironment();
+		if (!environment.isEmpty()) {
 			request = request.withEnv(environment);
 		}
 		return request;
@@ -500,6 +516,33 @@ public abstract class BootBuildImage extends DefaultTask {
 			}
 		}
 		return request;
+	}
+
+	private Map<String, String> getEffectiveEnvironment() {
+		Map<String, String> environment = new java.util.LinkedHashMap<>();
+		Map<String, String> configured = getEnvironment().getOrNull();
+		if (!CollectionUtils.isEmpty(configured)) {
+			environment.putAll(configured);
+		}
+		List<String> fromCli = getEnvironmentFromCommandLine().getOrNull();
+		if (!CollectionUtils.isEmpty(fromCli)) {
+			for (String entry : fromCli) {
+				Map.Entry<String, String> parsed = parseEnvironmentEntry(entry);
+				environment.put(parsed.getKey(), parsed.getValue());
+			}
+		}
+		return environment;
+	}
+
+	private Map.Entry<String, String> parseEnvironmentEntry(String entry) {
+		int index = entry.indexOf('=');
+		if (index <= 0) {
+			throw new GradleException(
+					"Invalid value for option '--environment'. Expected 'NAME=VALUE' but got '" + entry + "'.");
+		}
+		String name = entry.substring(0, index);
+		String value = entry.substring(index + 1);
+		return Map.entry(name, value);
 	}
 
 }
