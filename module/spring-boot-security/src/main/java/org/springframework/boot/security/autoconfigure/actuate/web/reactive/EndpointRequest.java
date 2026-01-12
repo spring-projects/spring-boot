@@ -334,7 +334,7 @@ public final class EndpointRequest {
 			streamPaths(this.includes, endpoints).forEach(paths::add);
 			streamPaths(this.excludes, endpoints).forEach(paths::remove);
 			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths, this.httpMethod);
-			if (this.includeLinks && StringUtils.hasText(endpoints.getBasePath())) {
+			if (this.includeLinks) {
 				delegateMatchers.add(new LinksServerWebExchangeMatcher());
 			}
 			if (delegateMatchers.isEmpty()) {
@@ -370,12 +370,13 @@ public final class EndpointRequest {
 
 		@Override
 		protected ServerWebExchangeMatcher createDelegate(WebEndpointProperties properties) {
-			if (StringUtils.hasText(properties.getBasePath())) {
-				return new OrServerWebExchangeMatcher(
-						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath()),
-						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath() + "/"));
+			String basePath = properties.getBasePath();
+			String linksBasePath = (StringUtils.hasText(basePath)) ? basePath : "/";
+			if ("/".equals(linksBasePath)) {
+				return new PathPatternParserServerWebExchangeMatcher(linksBasePath);
 			}
-			return EMPTY_MATCHER;
+			return new OrServerWebExchangeMatcher(new PathPatternParserServerWebExchangeMatcher(linksBasePath),
+					new PathPatternParserServerWebExchangeMatcher(linksBasePath + "/"));
 		}
 
 		@Override

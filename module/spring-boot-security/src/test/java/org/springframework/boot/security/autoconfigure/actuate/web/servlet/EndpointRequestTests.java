@@ -84,10 +84,10 @@ class EndpointRequestTests {
 	}
 
 	@Test
-	void toAnyEndpointWhenBasePathIsEmptyShouldNotMatchLinks() {
+	void toAnyEndpointWhenBasePathIsEmptyShouldMatchLinks() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "");
-		assertMatcher.doesNotMatch("/");
+		assertMatcher.matches("/");
 		assertMatcher.matches("/foo");
 		assertMatcher.matches("/bar");
 	}
@@ -143,12 +143,12 @@ class EndpointRequestTests {
 	}
 
 	@Test
-	void toLinksWhenBasePathEmptyShouldNotMatch() {
+	void toLinksWhenBasePathEmptyShouldMatch() {
 		RequestMatcher matcher = EndpointRequest.toLinks();
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "");
 		assertMatcher.doesNotMatch("/actuator/foo");
 		assertMatcher.doesNotMatch("/actuator/bar");
-		assertMatcher.doesNotMatch("/");
+		assertMatcher.matches("/");
 	}
 
 	@Test
@@ -262,11 +262,11 @@ class EndpointRequestTests {
 	}
 
 	@Test
-	void toAnyEndpointWhenEndpointPathMappedToRootIsExcludedShouldNotMatchRoot() {
+	void toAnyEndpointWhenEndpointPathMappedToRootIsExcludedShouldStillMatchLinks() {
 		EndpointRequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("root");
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("", () -> List
 			.of(mockEndpoint(EndpointId.of("root"), "/"), mockEndpoint(EndpointId.of("alpha"), "alpha"))));
-		assertMatcher.doesNotMatch("/");
+		assertMatcher.matches("/");
 		assertMatcher.matches("/alpha");
 		assertMatcher.matches("/alpha/sub");
 	}

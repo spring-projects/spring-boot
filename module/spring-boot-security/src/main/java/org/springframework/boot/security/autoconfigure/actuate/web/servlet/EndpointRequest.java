@@ -226,8 +226,11 @@ public final class EndpointRequest {
 		protected List<RequestMatcher> getLinksMatchers(RequestMatcherFactory requestMatcherFactory,
 				RequestMatcherProvider matcherProvider, String basePath) {
 			List<RequestMatcher> linksMatchers = new ArrayList<>();
-			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath));
-			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, basePath, "/"));
+			String linksBasePath = (StringUtils.hasText(basePath)) ? basePath : "/";
+			linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, linksBasePath));
+			if (!"/".equals(linksBasePath)) {
+				linksMatchers.add(requestMatcherFactory.antPath(matcherProvider, null, linksBasePath, "/"));
+			}
 			return linksMatchers;
 		}
 
@@ -341,7 +344,7 @@ public final class EndpointRequest {
 			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths,
 					this.httpMethod);
 			String basePath = endpoints.getBasePath();
-			if (this.includeLinks && StringUtils.hasText(basePath)) {
+			if (this.includeLinks) {
 				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
 			}
 			if (delegateMatchers.isEmpty()) {
@@ -376,11 +379,8 @@ public final class EndpointRequest {
 				RequestMatcherFactory requestMatcherFactory) {
 			WebEndpointProperties properties = context.getBean(WebEndpointProperties.class);
 			String basePath = properties.getBasePath();
-			if (StringUtils.hasText(basePath)) {
-				return new OrRequestMatcher(
-						getLinksMatchers(requestMatcherFactory, getRequestMatcherProvider(context), basePath));
-			}
-			return EMPTY_MATCHER;
+			RequestMatcherProvider matcherProvider = getRequestMatcherProvider(context);
+			return new OrRequestMatcher(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
 		}
 
 		@Override
