@@ -17,11 +17,13 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
@@ -366,8 +368,62 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	BuildRequest createRequest() {
-		return customize(BuildRequest.of(getImageName().map(ImageReference::of).get(),
+		BuildRequest request = customize(BuildRequest.of(getImageName().map(ImageReference::of).get(),
 				(owner) -> new ZipFileTarArchive(getArchiveFile().get().getAsFile(), owner)));
+		validatePublishRegistry(request);
+		return request;
+	}
+
+	private void validatePublishRegistry(BuildRequest request) {
+		if (!request.isPublish()) {
+			return;
+		}
+		String publishRegistryUrl = this.docker.getPublishRegistry().getUrl().getOrNull();
+		if (!StringUtils.hasText(publishRegistryUrl)) {
+			return;
+		}
+		String publishRegistryHost = extractRegistryHost(publishRegistryUrl);
+		if (!StringUtils.hasText(publishRegistryHost)) {
+			return;
+		}
+		String imageRegistry = request.getName().getDomain();
+		if (!publishRegistryHost.equalsIgnoreCase(imageRegistry)) {
+			throw new GradleException("Invalid Docker publish registry configuration: image name '"
+					+ request.getName() + "' uses registry '" + imageRegistry
+					+ "' but docker.publishRegistry.url is '" + publishRegistryUrl
+					+ "'. Update the image name to use the same registry or remove docker.publishRegistry.url.");
+		}
+	}
+
+	private String extractRegistryHost(String publishRegistryUrl) {
+		String trimmed = publishRegistryUrl.trim();
+		if (!StringUtils.hasText(trimmed)) {
+			return trimmed;
+		}
+		String host = null;
+		if (trimmed.contains("://")) {
+			try {
+				URI uri = URI.create(trimmed);
+				host = uri.getHost();
+				if (host != null && uri.getPort() != -1) {
+					host = host + ":" + uri.getPort();
+				}
+			}
+			catch (IllegalArgumentException ex) {
+				host = null;
+			}
+		}
+		if (host == null) {
+			host = trimmed;
+			int slashIndex = host.indexOf('/');
+			if (slashIndex != -1) {
+				host = host.substring(0, slashIndex);
+			}
+		}
+		if ("index.docker.io".equalsIgnoreCase(host)) {
+			return "docker.io";
+		}
+		return host;
 	}
 
 	private BuildRequest customize(BuildRequest request) {

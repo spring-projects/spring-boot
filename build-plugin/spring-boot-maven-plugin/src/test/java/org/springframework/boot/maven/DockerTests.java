@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConnectionConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -247,6 +248,22 @@ class DockerTests {
 		docker.setPublishRegistry(dockerRegistry);
 		BuilderDockerConfiguration dockerConfiguration = docker.asDockerConfiguration(this.log, false);
 		assertThat(dockerConfiguration.publishRegistryAuthentication()).isNull();
+	}
+
+	@Test
+	void validatePublishRegistryWhenUrlDoesNotMatchImageNameDomainFails() {
+		Docker docker = new Docker();
+		docker.setPublishRegistry(new Docker.DockerRegistry("user", "secret", "https://registry.example.com", null));
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> docker.validatePublishRegistry(ImageReference.of("docker.io/library/app:1.0"), true))
+			.withMessageContaining("docker.publishRegistry.url");
+	}
+
+	@Test
+	void validatePublishRegistryWhenUrlMatchesImageNameDomainSucceeds() {
+		Docker docker = new Docker();
+		docker.setPublishRegistry(new Docker.DockerRegistry("user", "secret", "http://172.2.3.5:9000/", null));
+		docker.validatePublishRegistry(ImageReference.of("172.2.3.5:9000/my-app:1.0"), true);
 	}
 
 	private BuilderDockerConfiguration createDockerConfiguration(Docker docker) {

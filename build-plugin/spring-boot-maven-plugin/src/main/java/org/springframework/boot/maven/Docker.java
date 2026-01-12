@@ -16,12 +16,16 @@
 
 package org.springframework.boot.maven;
 
+import java.net.URI;
+
 import org.apache.maven.plugin.logging.Log;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.buildpack.platform.build.BuilderDockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Docker configuration options.
@@ -156,6 +160,61 @@ public class Docker {
 		dockerConfiguration = customizeBuilderAuthentication(log, dockerConfiguration);
 		dockerConfiguration = customizePublishAuthentication(log, dockerConfiguration, publish);
 		return dockerConfiguration;
+	}
+
+	void validatePublishRegistry(ImageReference imageReference, boolean publish) {
+		if (!publish) {
+			return;
+		}
+		if (this.publishRegistry == null) {
+			return;
+		}
+		String publishRegistryUrl = this.publishRegistry.getUrl();
+		if (!StringUtils.hasText(publishRegistryUrl)) {
+			return;
+		}
+		String publishRegistryHost = extractRegistryHost(publishRegistryUrl);
+		if (!StringUtils.hasText(publishRegistryHost)) {
+			return;
+		}
+		String imageRegistry = imageReference.getDomain();
+		if (!publishRegistryHost.equalsIgnoreCase(imageRegistry)) {
+			throw new IllegalArgumentException("Invalid Docker publish registry configuration: image name '"
+					+ imageReference + "' uses registry '" + imageRegistry + "' but docker.publishRegistry.url is '"
+					+ publishRegistryUrl
+					+ "'. Update the image name to use the same registry or remove docker.publishRegistry.url.");
+		}
+	}
+
+	private String extractRegistryHost(String publishRegistryUrl) {
+		String trimmed = publishRegistryUrl.trim();
+		if (!StringUtils.hasText(trimmed)) {
+			return trimmed;
+		}
+		String host = null;
+		if (trimmed.contains("://")) {
+			try {
+				URI uri = URI.create(trimmed);
+				host = uri.getHost();
+				if (host != null && uri.getPort() != -1) {
+					host = host + ":" + uri.getPort();
+				}
+			}
+			catch (IllegalArgumentException ex) {
+				host = null;
+			}
+		}
+		if (host == null) {
+			host = trimmed;
+			int slashIndex = host.indexOf('/');
+			if (slashIndex != -1) {
+				host = host.substring(0, slashIndex);
+			}
+		}
+		if ("index.docker.io".equalsIgnoreCase(host)) {
+			return "docker.io";
+		}
+		return host;
 	}
 
 	private BuilderDockerConfiguration customizeHost(BuilderDockerConfiguration dockerConfiguration) {

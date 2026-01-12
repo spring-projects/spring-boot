@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BootBuildImage}.
@@ -92,6 +94,24 @@ class BootBuildImageTests {
 		assertThat(request.getName().getName()).isEqualTo("test/build-image");
 		assertThat(request.getName().getTag()).isEqualTo("1.0");
 		assertThat(request.getName().getDigest()).isNull();
+	}
+
+	@Test
+	void whenPublishRegistryUrlDoesNotMatchImageNameDomainThenCreateRequestFails() {
+		this.buildImage.getPublish().set(true);
+		this.buildImage.getImageName().set("docker.io/library/app:1.0");
+		this.buildImage.getDocker().getPublishRegistry().getUrl().set("https://registry.example.com");
+		assertThatExceptionOfType(GradleException.class).isThrownBy(this.buildImage::createRequest)
+			.withMessageContaining("docker.publishRegistry.url");
+	}
+
+	@Test
+	void whenPublishRegistryUrlMatchesImageNameDomainThenCreateRequestSucceeds() {
+		this.buildImage.getPublish().set(true);
+		this.buildImage.getImageName().set("172.2.3.5:9000/my-app:1.0");
+		this.buildImage.getDocker().getPublishRegistry().getUrl().set("http://172.2.3.5:9000/");
+		BuildRequest request = this.buildImage.createRequest();
+		assertThat(request.getName().getDomain()).isEqualTo("172.2.3.5:9000");
 	}
 
 	@Test
