@@ -2541,7 +2541,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
-	library("Spring Security", "7.0.2") {
+	library("Spring Security", "7.1.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			bom("spring-security-bom")
@@ -2549,8 +2549,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-security")
 			github("https://github.com/spring-projects/spring-security")
-			javadoc(version -> "https://docs.spring.io/spring-security/site/docs/%s/api"
-				.formatted(version.forMajorMinorGeneration()), "org.springframework.security")
+			javadoc(version -> "https://docs.spring.io/spring-security/reference/%s/api/java"
+				.formatted(version.forAntora()), "org.springframework.security")
 			docs(version -> "https://docs.spring.io/spring-security/reference/%s"
 				.formatted(version.forAntora()))
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
