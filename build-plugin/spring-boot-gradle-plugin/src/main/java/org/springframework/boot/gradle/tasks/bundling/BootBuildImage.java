@@ -17,12 +17,14 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
+import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
@@ -104,6 +106,23 @@ public abstract class BootBuildImage extends DefaultTask {
 		this.docker = getProject().getObjects().newInstance(DockerSpec.class);
 		this.pullPolicy = getProject().getObjects().property(PullPolicy.class);
 		getSecurityOptions().convention((Iterable<? extends String>) null);
+		getEffectiveEnvironment().putAll(getEnvironment());
+		getEffectiveEnvironment().putAll(getEnvironmentFromCommandLine().map(BootBuildImage::asMap));
+	}
+
+	private static Map<String, String> asMap(List<String> variables) {
+		Map<String, String> environment = new LinkedHashMap<>();
+		for (String variable : variables) {
+			int index = variable.indexOf('=');
+			if (index <= 0) {
+				throw new InvalidUserDataException(
+						"Invalid value for option '--environment'. Expected 'NAME=VALUE' but got '" + variable + "'.");
+			}
+			String name = variable.substring(0, index);
+			String value = variable.substring(index + 1);
+			environment.put(name, value);
+		}
+		return environment;
 	}
 
 	/**
@@ -159,22 +178,21 @@ public abstract class BootBuildImage extends DefaultTask {
 	 * Returns the environment that will be used when building the image.
 	 * @return the environment
 	 */
-	@Input
+	@Internal
 	public abstract MapProperty<String, String> getEnvironment();
 
 	/**
-	 * Returns environment variables contributed from the command line.
-	 * Each entry must be in the form NAME=VALUE.
+	 * Returns environment variables contributed from the command line. Each entry must be
+	 * in the form NAME=VALUE.
 	 * @return the environment variables from the command line
 	 */
 	@Internal
-	public abstract ListProperty<String> getEnvironmentFromCommandLine();
+	@Option(option = "environment", description = "Environment variable that will be used when building the image "
+			+ "(NAME=VALUE). Can be specified multiple times.")
+	abstract ListProperty<String> getEnvironmentFromCommandLine();
 
-	@Option(option = "environment",
-			description = "Environment variable to set for the build (NAME=VALUE). Can be specified multiple times.")
-	public void environment(List<String> environment) {
-		getEnvironmentFromCommandLine().addAll(environment);
-	}
+	@Input
+	abstract MapProperty<String, String> getEffectiveEnvironment();
 
 	/**
 	 * Returns whether caches should be cleaned before packaging.
@@ -429,7 +447,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeEnvironment(BuildRequest request) {
-		Map<String, String> environment = getEffectiveEnvironment();
+		Map<String, String> environment = getEffectiveEnvironment().getOrElse(Collections.emptyMap());
 		if (!environment.isEmpty()) {
 			request = request.withEnv(environment);
 		}
@@ -516,33 +534,6 @@ public abstract class BootBuildImage extends DefaultTask {
 			}
 		}
 		return request;
-	}
-
-	private Map<String, String> getEffectiveEnvironment() {
-		Map<String, String> environment = new java.util.LinkedHashMap<>();
-		Map<String, String> configured = getEnvironment().getOrNull();
-		if (!CollectionUtils.isEmpty(configured)) {
-			environment.putAll(configured);
-		}
-		List<String> fromCli = getEnvironmentFromCommandLine().getOrNull();
-		if (!CollectionUtils.isEmpty(fromCli)) {
-			for (String entry : fromCli) {
-				Map.Entry<String, String> parsed = parseEnvironmentEntry(entry);
-				environment.put(parsed.getKey(), parsed.getValue());
-			}
-		}
-		return environment;
-	}
-
-	private Map.Entry<String, String> parseEnvironmentEntry(String entry) {
-		int index = entry.indexOf('=');
-		if (index <= 0) {
-			throw new GradleException(
-					"Invalid value for option '--environment'. Expected 'NAME=VALUE' but got '" + entry + "'.");
-		}
-		String name = entry.substring(0, index);
-		String value = entry.substring(index + 1);
-		return Map.entry(name, value);
 	}
 
 }

@@ -473,8 +473,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithMultipleCommandLineEnvironments() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage",
-				"--environment", "BP_LIVE_RELOAD_ENABLED=true",
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--environment", "BP_LIVE_RELOAD_ENABLED=true",
 				"--environment", "MY_CUSTOM_VAR=hello_world");
 		BuildTask task = result.task(":bootBuildImage");
 		assertThat(task).isNotNull();
