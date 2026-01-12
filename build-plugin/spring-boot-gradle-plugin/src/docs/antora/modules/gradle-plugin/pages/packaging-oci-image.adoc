@@ -162,7 +162,7 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `ALWAYS`
 
 | `environment`
-|
+| `--environment`
 | Environment variables that should be passed to the builder.
 | Empty.
 
@@ -345,6 +345,15 @@ Kotlin::
 include::example$packaging/boot-build-image-env.gradle.kts[tags=env]
 ----
 ======
+
+Environment variables can also be specified on the command line, as shown in the following example:
+
+[source,shell]
+----
+$ gradle bootBuildImage --environment BP_JVM_VERSION=17
+----
+
+`--environment` can be used multiple times to specify multiple environment variables.
 
 If there is a network proxy between the Docker daemon the builder runs in and network locations that buildpacks download artifacts from, you will need to configure the builder to use the proxy.
 When using the Paketo builder, this can be accomplished by setting the `HTTPS_PROXY` and/or `HTTP_PROXY` environment variables as show in the following example:
